@@ -1,7 +1,5 @@
 package com.arn.scrobble.charts
 
-import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,28 +7,46 @@ import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import coil.load
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.GridItemChartBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
 import com.google.android.material.shape.ShapeAppearanceModel
-import de.umass.lastfm.*
-import java.text.NumberFormat
 import java.util.Objects
 
 
 open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
-    RecyclerView.Adapter<ChartsAdapter.VHChart>(), LoadMoreGetter {
+    ListAdapter<MusicEntry, ChartsAdapter.VHChart>(
+        GenericDiffCallback { o, n ->
+            if (o is Artist && n is Artist)
+                o.name == n.name
+            else if (o is Album && n is Album)
+                o.name == n.name && o.artist?.name == n.artist?.name
+            else if (o is Track && n is Track)
+                o.name == n.name && o.artist.name == n.artist.name
+            else
+                false
+        }
+    ), LoadMoreGetter {
 
     lateinit var clickListener: MusicEntryItemClickListener
-    lateinit var viewModel: ChartsVM
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     protected open val isHorizontalList = false
     private var maxCount = -2
@@ -44,10 +60,10 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     private val getMaxCount = {
         if (checkAllForMax) {
             if (maxCount == -2)
-                maxCount = viewModel.chartsData.maxOfOrNull { it.playcount } ?: -1
+                maxCount = currentList.maxOfOrNull { it.playcount ?: 0 } ?: -1
             maxCount
         } else
-            viewModel.chartsData[0].playcount
+            getItem(0).playcount ?: -1
     }
 
     private val getSpan = {
@@ -55,7 +71,7 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     }
 
     init {
-        super.setHasStableIds(true)
+//        super.setHasStableIds(true)
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
         binding.chartsProgress.show()
     }
@@ -72,46 +88,52 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
         return VHChart(holderBinding, clickListener, getMaxCount, getSpan)
     }
 
-    override fun getItemCount() = viewModel.chartsData.size
-
     override fun getItemId(position: Int): Long {
-        return when (val item = viewModel.chartsData[position]) {
+        return when (val item = getItem(position)) {
             is Artist -> item.name.hashCode().toLong()
-            is Album -> Objects.hash(item.artist, item.name).toLong()
-            is Track -> Objects.hash(item.artist, item.name).toLong()
-            else -> 0L
+            is Album -> Objects.hash(item.artist!!.name, item.name).toLong()
+            is Track -> Objects.hash(item.artist.name, item.name).toLong()
         }
     }
 
     override fun onBindViewHolder(holder: VHChart, position: Int) {
-        val item = viewModel.chartsData[position]
-        holder.setItemData(position, item, showArtists, showDuration)
+        holder.setItemData(position, getItem(position), showArtists, showDuration)
     }
 
-    open fun populate() {
+    fun progressVisible(visible: Boolean) {
+        if (visible) {
+            binding.chartsProgress.show()
+            binding.chartsList.visibility = View.INVISIBLE
+        } else {
+            binding.chartsProgress.hide()
+            binding.chartsList.visibility = View.VISIBLE
+        }
+    }
+
+    open fun populate(newList: List<MusicEntry>, scrollToFirst: Boolean) {
+        submitList(newList) {
+            if (scrollToFirst)
+                binding.chartsList.scrollToPosition(0)
+        }
         binding.chartsList.layoutAnimation = null
-        if (viewModel.chartsData.isEmpty()) {
-            if (itemCount == 0) {
-                if (!Stuff.isOnline)
-                    binding.chartsStatus.text =
-                        binding.root.context.getString(R.string.unavailable_offline)
-                else
-                    binding.chartsStatus.text = binding.root.context.getString(emptyTextRes)
-                TransitionManager.beginDelayedTransition(binding.root, Fade())
-                binding.chartsStatus.visibility = View.VISIBLE
-                binding.chartsProgress.hide()
-                binding.chartsList.visibility = View.INVISIBLE
-            }
+        if (newList.isEmpty()) {
+            if (!Stuff.isOnline)
+                binding.chartsStatus.text =
+                    binding.root.context.getString(R.string.unavailable_offline)
+            else
+                binding.chartsStatus.text = binding.root.context.getString(emptyTextRes)
+            TransitionManager.beginDelayedTransition(binding.root, Fade())
+            binding.chartsStatus.visibility = View.VISIBLE
+            binding.chartsList.visibility = View.INVISIBLE
         } else {
             if (binding.chartsList.visibility != View.VISIBLE) {
                 TransitionManager.beginDelayedTransition(binding.root, Fade())
                 binding.chartsList.visibility = View.VISIBLE
             }
             binding.chartsStatus.visibility = View.GONE
-            binding.chartsProgress.hide()
         }
+        progressVisible(false)
         loadMoreListener.loading = false
-        notifyDataSetChanged()
     }
 
     class VHChart(
@@ -174,11 +196,13 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
                 is Artist -> {
                     binding.chartInfoSubtitle.visibility = View.GONE
                 }
+
                 is Album -> {
-                    binding.chartInfoSubtitle.text = entry.artist
-                    imgUrl = entry.getWebpImageURL(ImageSize.EXTRALARGE)
+                    binding.chartInfoSubtitle.text = entry.artist!!.name
+                    imgUrl = entry.webp300
                 }
-                is Track -> binding.chartInfoSubtitle.text = entry.artist
+
+                is Track -> binding.chartInfoSubtitle.text = entry.artist.name
             }
 
             binding.chartInfoTitle.text =
@@ -192,18 +216,20 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
             )
 
             var numScrobblesString = itemView.context.resources.getQuantityString(
-                R.plurals.num_scrobbles_noti, entry.playcount,
-                NumberFormat.getInstance().format(entry.playcount)
+                R.plurals.num_scrobbles_noti, entry.playcount ?: 0,
+                entry.playcount?.format()
             )
 
-            if (showDuration && entry is Track && entry.duration > 0) {
-                numScrobblesString += " • " + Stuff.humanReadableDuration(entry.duration * entry.playcount)
+            if (showDuration && entry is Track && (entry.duration ?: 0) > 0) {
+                numScrobblesString += " • " + Stuff.humanReadableDuration(
+                    entry.duration!! * (entry.playcount ?: 0)
+                )
             }
 
             if (BuildConfig.DEBUG && entry.stonksDelta != Int.MAX_VALUE && entry.stonksDelta != null)
                 numScrobblesString += " • ${entry.stonksDelta}"
 
-            if (entry.playcount >= 0) {
+            if (entry.playcount != null) {
                 binding.chartInfoScrobbles.visibility = View.VISIBLE
                 binding.chartInfoScrobbles.text = numScrobblesString
             } else {
@@ -213,16 +239,14 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
             if (!showArtists)
                 binding.chartInfoSubtitle.visibility = View.GONE
 
-            val progressValue = if (entry.similarityMatch > 0)
-                (entry.similarityMatch * 100).toInt()
-            else {
+            var progressValue = entry.match?.let { (it * 100).toInt() }
+
+            if (entry.playcount != null && entry.match == null) {
                 val maxCount = getMaxCount()
                 if (maxCount > 0)
-                    (entry.playcount * 100 / maxCount)
-                else
-                    -1
+                    progressValue = entry.playcount!! * 100 / maxCount
             }
-            if (progressValue >= 0) {
+            if (progressValue != null) {
                 binding.chartInfoBar.progress = progressValue
                 binding.chartInfoBar.visibility = View.VISIBLE
             } else {

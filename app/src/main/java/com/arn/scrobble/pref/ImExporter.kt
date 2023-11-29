@@ -4,7 +4,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.Converters
 import com.arn.scrobble.db.PanoDb

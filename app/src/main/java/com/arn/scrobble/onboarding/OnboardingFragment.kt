@@ -15,9 +15,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.databinding.ContentOnboardingBinding
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.google.android.material.transition.MaterialSharedAxis
 import ernestoyaquello.com.verticalstepperform.Step

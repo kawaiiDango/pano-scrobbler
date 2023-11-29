@@ -24,7 +24,6 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.firstOrNull
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentThemesBinding
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
@@ -32,6 +31,7 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.Stuff.firstOrNull
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
@@ -128,7 +128,7 @@ class ThemesFragment : Fragment() {
             setSwatchesEnabled(!checked)
         }
 
-        mainNotifierViewModel.fabData.value = FabData(
+        val fabData = FabData(
             viewLifecycleOwner,
             com.google.android.material.R.string.abc_action_mode_done,
             R.drawable.vd_check_simple,
@@ -153,6 +153,8 @@ class ThemesFragment : Fragment() {
                     findNavController().navigate(R.id.billingFragment)
                 }
             })
+
+        mainNotifierViewModel.setFabData(fabData)
 
         if (DynamicColors.isDynamicColorAvailable()) {
             binding.themeDynamic.visibility = View.VISIBLE

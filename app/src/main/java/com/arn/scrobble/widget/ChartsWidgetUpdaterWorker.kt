@@ -16,31 +16,24 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.mapConcurrently
-import com.arn.scrobble.Stuff.setMidnight
-import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Period
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.UiUtils
-import de.umass.lastfm.Album
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.PaginatedResult
-import de.umass.lastfm.Period
-import de.umass.lastfm.Track
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.Stuff.setMidnight
+import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.DateFormat
@@ -62,6 +55,9 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
     // runs in Dispatchers.DEFAULT
     override suspend fun doWork(): Result {
+        // not logged in
+        Scrobblables.current ?: return Result.failure()
+
         logTimestampToFile("started")
 
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
@@ -92,7 +88,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
         appWidgetIds.forEach { id ->
             if (widgetPrefs[id].lastUpdated != null && widgetPrefs[id].period == null) { // set default value for old prefs
-                widgetPrefs[id].period = Period.ONE_MONTH.string
+                widgetPrefs[id].period = Period.MONTH.value
             }
             widgetPrefs[id].period?.let { period ->
                 appWidgetIdToPeriodStr[id] = period
@@ -107,11 +103,11 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
             errored = true
         }
 
-        withContext(Dispatchers.IO + exHandler) {
+        withContext(exHandler) {
             // support a max of 3 widgets at a time
             appWidgetIdToPeriodStr.values.toSet().take(3).mapConcurrently(3) { periodStr ->
                 val timePeriod = widgetTimePeriods.periodsMap[periodStr]
-                    ?: widgetTimePeriods.periodsMap[Period.ONE_MONTH.string]!! // default to 1 month
+                    ?: widgetTimePeriods.periodsMap[Period.MONTH.value]!! // default to 1 month
 
                 val cal = Calendar.getInstance().setUserFirstDayOfWeek()
                 cal.setMidnight()
@@ -139,47 +135,46 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                     Stuff.TYPE_ALBUMS,
                     Stuff.TYPE_TRACKS
                 ).mapConcurrently(3) { type ->
-                    val pr = LFMRequester(this)
-                        .execHere<PaginatedResult<out MusicEntry>> {
-                            getChartsWithStonks(
-                                type,
-                                timePeriod,
-                                prevTimePeriod,
-                                1,
-                                null,
-                                limit = 50
-                            )
+                    Scrobblables.current!!.getChartsWithStonks(
+                        type,
+                        timePeriod,
+                        prevTimePeriod,
+                        1,
+                        limit = 50
+                    )
+                        .map { pr ->
+                            pr.entries.map {
+                                val subtitle = when (it) {
+                                    is Album -> it.artist!!.name
+                                    is Track -> it.artist.name
+                                    else -> ""
+                                }
+
+                                val imgUrl = if (it is Album) it.webp300 else null
+
+                                ChartsWidgetListItem(
+                                    it.name,
+                                    subtitle,
+                                    it.playcount ?: 0,
+                                    imgUrl ?: "",
+                                    it.stonksDelta
+                                )
+                            }
                         }
-                    if (pr == null || pr.pageResults == null) {// todo check if not 200
-                        errored = true
-                        cancel()
-                    }
 
-                    pr!!.pageResults!!.map {
-                        val subtitle = when (it) {
-                            is Album -> it.artist
-                            is Track -> it.artist
-                            else -> ""
-                        }
-
-                        val imgUrl = if (it is Album) it.getWebpImageURL(ImageSize.LARGE) else null
-
-                        ChartsWidgetListItem(
-                            it.name,
-                            subtitle,
-                            it.playcount,
-                            imgUrl ?: "",
-                            it.stonksDelta
-                        )
-                    }
                 }
 
-                if (!isActive || errored)
-                    return@mapConcurrently
+                artists.onSuccess {
+                    widgetPrefs.chartsData(Stuff.TYPE_ARTISTS, periodStr).dataJson = it
+                }
 
-                widgetPrefs.chartsData(Stuff.TYPE_ARTISTS, periodStr).dataJson = artists
-                widgetPrefs.chartsData(Stuff.TYPE_ALBUMS, periodStr).dataJson = albums
-                widgetPrefs.chartsData(Stuff.TYPE_TRACKS, periodStr).dataJson = tracks
+                albums.onSuccess {
+                    widgetPrefs.chartsData(Stuff.TYPE_ALBUMS, periodStr).dataJson = it
+                }
+
+                tracks.onSuccess {
+                    widgetPrefs.chartsData(Stuff.TYPE_TRACKS, periodStr).dataJson = it
+                }
             }
 
             if (!errored)

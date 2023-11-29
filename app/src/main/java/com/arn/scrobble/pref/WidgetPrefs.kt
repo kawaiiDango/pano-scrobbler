@@ -2,12 +2,19 @@ package com.arn.scrobble.pref
 
 import android.content.Context
 import androidx.core.content.edit
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.widget.ChartsWidgetListItem
 import com.frybits.harmony.getHarmonySharedPreferences
 import com.google.android.material.color.DynamicColors
-import hu.autsoft.krate.*
+import hu.autsoft.krate.Krate
+import hu.autsoft.krate.booleanPref
 import hu.autsoft.krate.default.withDefault
+import hu.autsoft.krate.floatPref
+import hu.autsoft.krate.intPref
+import hu.autsoft.krate.kotlinx.json
 import hu.autsoft.krate.kotlinx.kotlinxPref
+import hu.autsoft.krate.longPref
+import hu.autsoft.krate.stringPref
 
 class WidgetPrefs(context: Context) {
 
@@ -25,6 +32,10 @@ class WidgetPrefs(context: Context) {
 
     inner class SpecificWidgetPrefs(private val widgetId: Int) : Krate {
         override val sharedPreferences = this@WidgetPrefs.sharedPreferences
+
+        init {
+            json = Stuff.myJson
+        }
 
         var tab by intPref(PREF_WIDGET_TAB.prefName)
         var bgAlpha by floatPref(PREF_WIDGET_BG_ALPHA.prefName).withDefault(0.6f)

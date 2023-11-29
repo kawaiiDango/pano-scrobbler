@@ -6,31 +6,36 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainDialogActivity
-import com.arn.scrobble.NLService
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.toBundle
-import com.arn.scrobble.TrackFeatures
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.spotify.TrackFeatures
 import com.arn.scrobble.charts.ChartsOverviewAdapter
-import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.ContentInfoExtraBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.LayoutSpotifyTrackFeaturesBinding
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.MusicEntryLoaderInput
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.arn.scrobble.ui.UiUtils.startFadeLoop
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.copyToClipboard
+import com.arn.scrobble.utils.Stuff.getData
+import com.arn.scrobble.utils.Stuff.putData
 import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.data.RadarData
@@ -39,7 +44,8 @@ import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
-import de.umass.lastfm.MusicEntry
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
@@ -48,13 +54,8 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
     private val trackFeaturesVM by viewModels<TrackFeaturesVM>()
     private val infoExtraVM by viewModels<InfoExtraVM>()
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
-    private val track by lazy {
-        requireArguments().getString(NLService.B_TRACK)
-    }
-    private val artist by lazy {
-        requireArguments().getString(NLService.B_ARTIST)!!
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,124 +63,162 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         savedInstanceState: Bundle?
     ): View {
         val binding = ContentInfoExtraBinding.inflate(inflater, container, false)
+        val musicEntry = requireArguments().getData<MusicEntry>()!!
 
-        if (track == null) {
-            initSection(binding.infoExtraFrame3, infoExtraVM.artistsVM, true)
-            initSection(binding.infoExtraFrame2, infoExtraVM.albumsVM, false)
-            initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, false)
+        binding.infoExtraTitle.setOnLongClickListener {
+            requireContext().copyToClipboard(binding.infoExtraTitle.text.toString())
+            true
+        }
 
-            binding.infoExtraHeader3.headerText.text = getString(R.string.similar_artists)
-            binding.infoExtraHeader3.headerAction.setOnClickListener {
-                showFullFragment(R.id.infoPagerFragment, Stuff.TYPE_ARTISTS)
-            }
-            binding.infoExtraHeader3.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                R.drawable.vd_mic,
-                0,
-                0,
-                0
-            )
-            binding.infoExtraHeader2.headerText.text = getString(R.string.top_albums)
-            binding.infoExtraHeader2.headerAction.setOnClickListener {
-                showFullFragment(R.id.infoPagerFragment, Stuff.TYPE_ALBUMS)
-            }
-            binding.infoExtraHeader2.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                R.drawable.vd_album,
-                0,
-                0,
-                0
-            )
-            binding.infoExtraHeader1.headerText.text = getString(R.string.top_tracks)
-            binding.infoExtraHeader1.headerAction.setOnClickListener {
-                showFullFragment(R.id.infoPagerFragment, Stuff.TYPE_TRACKS)
-            }
-            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                R.drawable.vd_note,
-                0,
-                0,
-                0
-            )
+        val musicEntryLoaderInput = MusicEntryLoaderInput(
+            type = -1,
+            entry = musicEntry,
+            timePeriod = null,
+            user = mainNotifierViewModel.currentUser,
+            page = 1
+        )
 
-            binding.infoExtraTitle.text = artist
+        when (musicEntry) {
+            is Artist -> {
+                initSection(binding.infoExtraFrame3, infoExtraVM.artistsVM, true)
+                initSection(binding.infoExtraFrame2, infoExtraVM.albumsVM, false)
+                initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, false)
 
-            binding.infoExtraFrame1.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
-            binding.infoExtraFrame2.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
-            binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
-            binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoScrobbles.visibility = View.GONE
-
-            if (infoExtraVM.tracksVM.chartsData.isEmpty()) {
-                LFMRequester(
-                    infoExtraVM.artistsVM.viewModelScope,
-                    infoExtraVM.artistsVM.listReceiver
-                ).getSimilarArtists(artist)
-                LFMRequester(
-                    infoExtraVM.albumsVM.viewModelScope,
-                    infoExtraVM.albumsVM.listReceiver
-                ).getArtistTopAlbums(artist)
-                LFMRequester(
-                    infoExtraVM.tracksVM.viewModelScope,
-                    infoExtraVM.tracksVM.listReceiver
-                ).getArtistTopTracks(artist)
-            }
-        } else {
-            // spotify info
-            trackFeaturesVM.spotifyTrackWithFeatures.observe(viewLifecycleOwner) { spotifyTrack ->
-                if (spotifyTrack?.features == null) {
-                    binding.root.clearAnimation()
-                    return@observe
+                binding.infoExtraHeader3.headerText.text = getString(R.string.similar_artists)
+                binding.infoExtraHeader3.headerAction.setOnClickListener {
+                    showFullFragment(R.id.infoPagerFragment, 2)
                 }
-                val features = spotifyTrack.features!!
-
-                this@InfoExtraFragment.scheduleTransition()
-                val spotifyFeaturesBinding = LayoutSpotifyTrackFeaturesBinding.bind(
-                    binding.infoSpotifyFeatures.inflate()
+                binding.infoExtraHeader3.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.vd_mic,
+                    0,
+                    0,
+                    0
                 )
-                drawRadarChart(spotifyFeaturesBinding.featuresRadarChart, features)
+                binding.infoExtraHeader2.headerText.text = getString(R.string.top_albums)
+                binding.infoExtraHeader2.headerAction.setOnClickListener {
+                    showFullFragment(R.id.infoPagerFragment, 1)
+                }
+                binding.infoExtraHeader2.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.vd_album,
+                    0,
+                    0,
+                    0
+                )
+                binding.infoExtraHeader1.headerText.text = getString(R.string.top_tracks)
+                binding.infoExtraHeader1.headerAction.setOnClickListener {
+                    showFullFragment(R.id.infoPagerFragment, 0)
+                }
+                binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.vd_note,
+                    0,
+                    0,
+                    0
+                )
 
-                spotifyFeaturesBinding.featuresPopularityProgress.progress = spotifyTrack.popularity
-                spotifyFeaturesBinding.featuresPopularity.text =
-                    getString(R.string.popularity, spotifyTrack.popularity)
+                binding.infoExtraTitle.text = musicEntry.name
 
-                spotifyFeaturesBinding.featuresReleaseDate.text = DateFormat
-                    .getDateInstance(DateFormat.MEDIUM)
-                    .format(spotifyTrack.getReleaseDateDate()!!)
-                spotifyFeaturesBinding.featuresKey.text = features.getKeyString()
-                spotifyFeaturesBinding.featuresBpm.text =
-                    "${features.tempo.roundToInt()} bpm • ${features.time_signature}/4"
-                spotifyFeaturesBinding.featuresLoudness.text =
-                    String.format("%.2f dB", features.loudness)
+                binding.infoExtraFrame1.gridItemToReserveSpace.chartInfoSubtitle.visibility =
+                    View.GONE
+                binding.infoExtraFrame2.gridItemToReserveSpace.chartInfoSubtitle.visibility =
+                    View.GONE
+                binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoSubtitle.visibility =
+                    View.GONE
+                binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoScrobbles.visibility =
+                    View.GONE
 
-                binding.root.clearAnimation()
+
+                infoExtraVM.tracksVM.setInput(musicEntryLoaderInput.copy(type = Stuff.TYPE_TRACKS))
+                infoExtraVM.albumsVM.setInput(musicEntryLoaderInput.copy(type = Stuff.TYPE_ALBUMS))
+                infoExtraVM.artistsVM.setInput(musicEntryLoaderInput.copy(type = Stuff.TYPE_ARTISTS))
+
+                collectLatestLifecycleFlow(
+                    combine(
+                        infoExtraVM.tracksVM.hasLoaded,
+                        infoExtraVM.albumsVM.hasLoaded,
+                        infoExtraVM.artistsVM.hasLoaded
+                    ) { tracksLoaded, albumsLoaded, artistsLoaded ->
+                        tracksLoaded && albumsLoaded && artistsLoaded
+                    }
+                ) {
+                    if (!it)
+                        binding.root.startFadeLoop()
+                    else
+                        binding.root.clearAnimation()
+                }
             }
 
-            if (trackFeaturesVM.spotifyTrackWithFeatures.value == null)
-                trackFeaturesVM.loadTrackFeatures(artist, track!!)
+            is Track -> {
+                // spotify info
 
-            initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, true)
-            binding.infoExtraHeader1.headerText.text = getString(R.string.similar_tracks)
-            binding.infoExtraHeader1.headerAction.setOnClickListener {
-                showFullFragment(R.id.trackExtraFragment, Stuff.TYPE_TRACKS)
+                collectLatestLifecycleFlow(trackFeaturesVM.spotifyTrackWithFeatures.filterNotNull()) { spotifyTrack ->
+
+                    spotifyTrack.features ?: return@collectLatestLifecycleFlow
+                    val features = spotifyTrack.features
+
+                    this@InfoExtraFragment.scheduleTransition()
+                    val spotifyFeaturesBinding = LayoutSpotifyTrackFeaturesBinding.bind(
+                        binding.infoSpotifyFeatures.inflate()
+                    )
+                    drawRadarChart(spotifyFeaturesBinding.featuresRadarChart, features)
+
+                    spotifyFeaturesBinding.featuresPopularityProgress.progress =
+                        spotifyTrack.popularity
+                    spotifyFeaturesBinding.featuresPopularity.text =
+                        getString(R.string.popularity, spotifyTrack.popularity)
+
+                    spotifyFeaturesBinding.featuresReleaseDate.text = DateFormat
+                        .getDateInstance(DateFormat.MEDIUM)
+                        .format(spotifyTrack.getReleaseDateDate()!!)
+                    spotifyFeaturesBinding.featuresKey.text = features.getKeyString()
+                    spotifyFeaturesBinding.featuresBpm.text =
+                        "${features.tempo.roundToInt()} bpm • ${features.time_signature}/4"
+                    spotifyFeaturesBinding.featuresLoudness.text =
+                        String.format("%.2f dB", features.loudness)
+
+                }
+
+                trackFeaturesVM.loadTrackFeaturesIfNeeded(musicEntry)
+
+                initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, true)
+                binding.infoExtraHeader1.headerText.text = getString(R.string.similar_tracks)
+                binding.infoExtraHeader1.headerAction.setOnClickListener {
+                    showFullFragment(R.id.trackExtraFragment, 0)
+                }
+
+                binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.vd_note,
+                    0,
+                    0,
+                    0
+                )
+                binding.infoExtraHeader2.root.visibility = View.GONE
+                binding.infoExtraFrame2.root.visibility = View.GONE
+                binding.infoExtraHeader3.root.visibility = View.GONE
+                binding.infoExtraFrame3.root.visibility = View.GONE
+
+                binding.infoExtraTitle.text =
+                    getString(R.string.artist_title, musicEntry.artist.name, musicEntry.name)
+
+                infoExtraVM.tracksVM.setInput(musicEntryLoaderInput.copy(type = Stuff.TYPE_TRACKS))
+
+                collectLatestLifecycleFlow(
+                    combine(
+                        infoExtraVM.tracksVM.hasLoaded,
+                        trackFeaturesVM.hasLoaded
+                    ) { tracksLoaded, featuresLoaded ->
+                        tracksLoaded && featuresLoaded
+                    }
+                ) {
+                    if (!it)
+                        binding.root.startFadeLoop()
+                    else
+                        binding.root.clearAnimation()
+                }
             }
 
-            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                R.drawable.vd_note,
-                0,
-                0,
-                0
-            )
-            binding.infoExtraHeader2.root.visibility = View.GONE
-            binding.infoExtraFrame2.root.visibility = View.GONE
-            binding.infoExtraHeader3.root.visibility = View.GONE
-            binding.infoExtraFrame3.root.visibility = View.GONE
-
-            binding.infoExtraTitle.text = getString(R.string.artist_title, artist, track)
-
-            if (infoExtraVM.tracksVM.chartsData.isEmpty()) {
-                LFMRequester(
-                    infoExtraVM.tracksVM.viewModelScope,
-                    infoExtraVM.tracksVM.listReceiver
-                ).getSimilarTracks(artist, track!!)
+            else -> {
+                throw IllegalArgumentException("MusicEntry must be either Artist or Track")
             }
-            binding.root.startFadeLoop()
         }
 
         return binding.root
@@ -187,14 +226,13 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
     private fun initSection(
         rootViewBinding: FrameChartsListBinding,
-        sectionVM: ChartsVM,
+        sectionVM: InfoExtraFullVM,
         showArtists: Boolean
     ) {
         val adapter = ChartsOverviewAdapter(rootViewBinding)
-        adapter.viewModel = sectionVM
         adapter.clickListener = this
         adapter.emptyTextRes = R.string.not_found
-        //top tracks/albums are ordered by listeners and not by play count
+        // top tracks/albums are ordered by listeners and not by play count
         adapter.checkAllForMax = true
         adapter.showArtists = showArtists
 
@@ -213,16 +251,12 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             false
         rootViewBinding.chartsList.adapter = adapter
 
-        sectionVM.listReceiver.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(sectionVM.entries.filterNotNull()) {
+//            if (sectionVM.hasLoaded.value) {
             sectionVM.reachedEnd = true
-            synchronized(sectionVM.chartsData) {
-                sectionVM.chartsData.addAll(it)
-            }
-            adapter.populate()
+            adapter.populate(it, true)
+//            }
         }
-
-        if (sectionVM.chartsData.isNotEmpty())
-            adapter.populate()
     }
 
     override fun onStart() {
@@ -231,13 +265,13 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {
-        val args = entry.toBundle()
+        val args = Bundle().putData(entry)
         findNavController().navigate(R.id.infoFragment, args)
     }
 
-    private fun showFullFragment(@IdRes fragmentId: Int, type: Int) {
+    private fun showFullFragment(@IdRes fragmentId: Int, expandedTabIdx: Int) {
         val args = requireArguments().clone() as Bundle
-        args.putInt(Stuff.ARG_TYPE, type)
+        args.putInt(Stuff.ARG_TAB, expandedTabIdx)
 
         if (activity is MainDialogActivity) {
             NavDeepLinkBuilder(requireContext())

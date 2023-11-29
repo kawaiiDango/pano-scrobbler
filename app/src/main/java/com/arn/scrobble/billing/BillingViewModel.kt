@@ -3,22 +3,21 @@ package com.arn.scrobble.billing
 import android.app.Activity
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import com.android.billingclient.api.ProductDetails
-import com.arn.scrobble.BuildConfig
+import kotlinx.coroutines.flow.StateFlow
 
 
 class BillingViewModel(application: Application) : AndroidViewModel(application) {
 
-    val proStatus: LiveData<Boolean>
-    val proProductDetails: LiveData<ProductDetails>
-    val proPendingSince: LiveData<Long>
+    val proStatus: StateFlow<Boolean>
+    val proProductDetails: StateFlow<ProductDetails?>
+    val proPendingSince: StateFlow<Long>
 
-    private val repository = BillingRepository.getInstance(application).apply {
-        startDataSourceConnections()
-        proStatus = proStatusLd
-        proProductDetails = proProductDetailsLd
-        proPendingSince = proPendingSinceLd
+    private val repository = BillingRepository.getInstance(application).also {
+        it.startDataSourceConnections()
+        proStatus = it.proStatus
+        proProductDetails = it.proProductDetails
+        proPendingSince = it.proPendingSince
     }
 
     fun queryPurchases() = repository.queryPurchasesAsync()

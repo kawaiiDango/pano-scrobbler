@@ -1,39 +1,101 @@
 package com.arn.scrobble.search
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.Requesters.toFlow
+import com.arn.scrobble.api.lastfm.SearchResults
+import com.arn.scrobble.db.CachedAlbum.Companion.toAlbum
+import com.arn.scrobble.db.CachedArtist.Companion.toArtist
+import com.arn.scrobble.db.CachedTrack.Companion.toTrack
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.SectionedVirtualList
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.Track
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 
 
 class SearchVM : ViewModel() {
-    val searchResults by lazy { MutableLiveData<SearchResults>() }
+    private val _searchTerm = MutableSharedFlow<Pair<String, SearchResultsAdapter.SearchType>>()
+    private val _searchResults = MutableSharedFlow<SearchResults>(replay = 1)
+    val searchResults = _searchResults.asSharedFlow()
     val virtualList = SectionedVirtualList()
-    private var searchJob: LFMRequester? = null
 
-    fun loadSearches(term: String, searchType: SearchResultsAdapter.SearchType) {
-        searchJob?.cancel()
-        searchJob = LFMRequester(viewModelScope, searchResults).apply {
-            when (searchType) {
-                SearchResultsAdapter.SearchType.GLOBAL -> getSearches(term)
-                SearchResultsAdapter.SearchType.LOCAL -> getLocalSearches(term)
-            }
+    init {
+        viewModelScope.launch {
+            _searchTerm
+                .distinctUntilChanged()
+                .debounce(500)
+                .collectLatest { (term, searchType) ->
+                    val results = when (searchType) {
+                        SearchResultsAdapter.SearchType.GLOBAL ->
+                            Requesters.lastfmUnauthedRequester.search(term)
+
+                        SearchResultsAdapter.SearchType.LOCAL -> withContext(Dispatchers.IO) {
+                            getLocalSearches(term)
+                        }
+                    }
+                    _searchResults.emitAll(results.toFlow())
+                }
         }
     }
 
-    class SearchResults(
-        val term: String,
-        val searchType: SearchResultsAdapter.SearchType,
-        val lovedTracks: List<Track>,
-        val tracks: List<Track>,
-        val artists: List<Artist>,
-        val albums: List<Album>,
-    ) {
-        val isEmpty: Boolean
-            get() = lovedTracks.isEmpty() && tracks.isEmpty() && artists.isEmpty() && albums.isEmpty()
+    fun search(term: String, searchType: SearchResultsAdapter.SearchType) {
+        viewModelScope.launch {
+            _searchTerm.emit(term to searchType)
+        }
     }
+
+    private suspend fun getLocalSearches(term: String) = supervisorScope {
+        val db = PanoDb.db
+
+        val artists = async {
+            kotlin.runCatching {
+                db.getCachedArtistsDao().find(term).map { it.toArtist() }
+            }
+        }.await()
+        val albums = async {
+            kotlin.runCatching {
+                db.getCachedAlbumsDao().find(term).map { it.toAlbum() }
+            }
+        }.await()
+        val tracks = async {
+            kotlin.runCatching {
+                db.getCachedTracksDao().findTop(term).map { it.toTrack() }
+            }
+        }.await()
+        val lovedTracks = async {
+            kotlin.runCatching {
+                db.getCachedTracksDao().findLoved(term).map { it.toTrack() }
+            }
+        }.await()
+
+        if (artists.isFailure || albums.isFailure || tracks.isFailure || lovedTracks.isFailure)
+            return@supervisorScope Result.failure(
+                artists.exceptionOrNull()
+                    ?: albums.exceptionOrNull()
+                    ?: tracks.exceptionOrNull()
+                    ?: lovedTracks.exceptionOrNull()!!
+            )
+
+        val sr = SearchResults(
+            term,
+            SearchResultsAdapter.SearchType.LOCAL,
+            lovedTracks.getOrDefault(listOf()),
+            tracks.getOrDefault(listOf()),
+            artists.getOrDefault(listOf()),
+            albums.getOrDefault(listOf()),
+        )
+
+        Result.success(sr)
+    }
+
 }

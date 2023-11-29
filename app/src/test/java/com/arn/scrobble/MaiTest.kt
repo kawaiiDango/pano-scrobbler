@@ -4,6 +4,7 @@ package com.arn.scrobble
  * Created by arn on 20/09/2017.
  */
 
+import com.arn.scrobble.utils.MetadataUtils
 import org.junit.Test
 import java.net.URL
 
@@ -61,17 +62,4 @@ class MaiTest {
         println(url.host)
         println(MetadataUtils.sanitizeAlbum(txt))
     }
-
-    @Test
-    fun librefmArtistInfo() {
-        val a = LFMRequester.getArtistInfoLibreFM("れをる/ギガP")
-        println(a)
-    }
-
-    @Test
-    fun spotifyArtistInfo() {
-        val a = LFMRequester.getArtistInfoSpotify("MYTH & ROID")
-        println(a)
-    }
-
 }

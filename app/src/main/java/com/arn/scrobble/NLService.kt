@@ -31,31 +31,34 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.media.app.MediaStyleMod
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
-import com.arn.scrobble.LocaleUtils.getStringInDeviceLocale
-import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.PlayerActions.love
 import com.arn.scrobble.PlayerActions.skip
 import com.arn.scrobble.PlayerActions.unlove
-import com.arn.scrobble.Stuff.getScrobblerExitReasons
-import com.arn.scrobble.Stuff.getSingle
-import com.arn.scrobble.Stuff.isChannelEnabled
-import com.arn.scrobble.Stuff.putSingle
+import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.edits.EditDialogFragmentArgs
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils.toast
-import de.umass.lastfm.Track
-import de.umass.lastfm.scrobble.ScrobbleData
+import com.arn.scrobble.utils.LocaleUtils.getStringInDeviceLocale
+import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.utils.MetadataUtils
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.Stuff.getScrobblerExitReasons
+import com.arn.scrobble.utils.Stuff.getSingle
+import com.arn.scrobble.utils.Stuff.isChannelEnabled
+import com.arn.scrobble.utils.Stuff.putSingle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.text.NumberFormat
-import java.util.Date
 import java.util.Objects
 import java.util.PriorityQueue
 import kotlin.math.min
@@ -71,7 +74,7 @@ class NLService : NotificationListenerService() {
     }
     private var sessListener: SessListener? = null
     private lateinit var scrobbleHandler: ScrobbleHandler
-    private var lastNpTask: LFMRequester? = null
+    private var lastNpTask: Job? = null
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var packageTrackMap: MutableMap<String, PlayingTrackInfo> // package name to track info
     private var notiColor: Int? = Color.MAGENTA
@@ -472,15 +475,11 @@ class NLService : NotificationListenerService() {
             applicationContext, 5, i,
             Stuff.updateCurrentOrImmutable
         )
-        val editArgs = EditDialogFragmentArgs.Builder().apply {
-            track = trackInfo.title
-            album = trackInfo.album
-            artist = trackInfo.artist
-            albumArtist = trackInfo.albumArtist
-            timeMillis = trackInfo.playStartTime
-            this.nowPlaying = nowPlaying
-            hash = trackInfo.hash
-        }
+
+        val editArgs = EditDialogFragmentArgs.Builder(
+            trackInfo.toScrobbleData()
+        )
+            .setHash(trackInfo.hash)
             .build()
             .toBundle()
 
@@ -530,7 +529,7 @@ class NLService : NotificationListenerService() {
                     resources.getQuantityString(
                         R.plurals.num_scrobbles_noti,
                         trackInfo.userPlayCount,
-                        "~" + NumberFormat.getInstance().format(trackInfo.userPlayCount)
+                        "~" + trackInfo.userPlayCount?.format()
                     )
                 )
         else
@@ -559,15 +558,10 @@ class NLService : NotificationListenerService() {
     }
 
     private fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val editArgs = EditDialogFragmentArgs.Builder().apply {
-            track = trackInfo.title
-            album = trackInfo.album
-            artist = trackInfo.artist
-            albumArtist = trackInfo.albumArtist
-            timeMillis = trackInfo.playStartTime
-            nowPlaying = true
-            hash = trackInfo.hash
-        }
+        val editArgs = EditDialogFragmentArgs.Builder(
+            trackInfo.toScrobbleData()
+        )
+            .setHash(trackInfo.hash)
             .build()
             .toBundle()
 
@@ -774,10 +768,15 @@ class NLService : NotificationListenerService() {
                                 toast(R.string.unavailable_offline)
                                 return
                             }
-                            val track = Track(trackInfo.title, null, trackInfo.artist).apply {
-                                playedWhen = Date(trackInfo.playStartTime)
+                            val track = Track(
+                                trackInfo.title,
+                                null,
+                                Artist(trackInfo.artist),
+                                date = (trackInfo.playStartTime / 1000).toInt()
+                            )
+                            coroutineScope.launch(Dispatchers.IO) {
+                                ScrobbleEverywhere.delete(track)
                             }
-                            LFMRequester(coroutineScope).delete(track)
                         }
                         notifyUnscrobbled(hash)
                     }
@@ -812,8 +811,13 @@ class NLService : NotificationListenerService() {
                         )
                     }
 
-                    LFMRequester(coroutineScope)
-                        .loveOrUnlove(Track(trackInfo.title, null, trackInfo.artist), loved)
+                    coroutineScope.launch {
+                        ScrobbleEverywhere
+                            .loveOrUnlove(
+                                Track(trackInfo.title, null, Artist(trackInfo.artist)),
+                                loved
+                            )
+                    }
 
                     trackInfo.userLoved = loved
                     notifyScrobble(trackInfo)
@@ -1039,8 +1043,8 @@ class NLService : NotificationListenerService() {
             trackInfo.scrobbleElapsedRealtime = submitTime
             val trackInfoCopy = addScrobble(trackInfo)
 
-            lastNpTask = LFMRequester(coroutineScope).apply {
-                scrobble(true, trackInfoCopy, unparsedScrobbleData)
+            lastNpTask = coroutineScope.launch {
+                ScrobbleEverywhere.scrobble(true, trackInfoCopy, unparsedScrobbleData)
             }
 
             notifyScrobble(trackInfo)
@@ -1056,10 +1060,9 @@ class NLService : NotificationListenerService() {
                 !audioManager.isMusicActive
             )
                 return
-
-            LFMRequester(coroutineScope)
-                .scrobble(false, trackInfoCopy)
-
+            coroutineScope.launch {
+                ScrobbleEverywhere.scrobble(false, trackInfoCopy)
+            }
             val trackInfo = sessListener?.findTrackInfoByHash(trackInfoCopy.hash) ?: return
 
             if (trackInfo.userPlayCount > 0)

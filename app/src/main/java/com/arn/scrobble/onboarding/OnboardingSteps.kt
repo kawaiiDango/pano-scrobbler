@@ -21,20 +21,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ButtonStepperBinding
 import com.arn.scrobble.databinding.ButtonStepperForLoginBinding
 import com.arn.scrobble.friends.UserAccountSerializable
-import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.pref.MigratePrefs
-import com.arn.scrobble.scrobbleable.AccountType
-import com.arn.scrobble.scrobbleable.LoginFlows
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.postRequestFocus
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import de.umass.lastfm.ImageSize
 import ernestoyaquello.com.verticalstepperform.Step
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -148,22 +145,16 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                         if (splits.size == 3) {
                             val username = splits[0]
                             val authKey = splits[1]
-                            MigratePrefs.migrateV2(prefs)
 
                             Scrobblables.add(
                                 UserAccountSerializable(
                                     AccountType.LASTFM,
-                                    UserSerializable(
+                                    UserCached(
                                         username,
                                         "https://last.fm/user/$username",
                                         username,
                                         "",
                                         -1,
-                                        mapOf(
-                                            ImageSize.MEDIUM to (""),
-                                            ImageSize.LARGE to (""),
-                                            ImageSize.EXTRALARGE to (""),
-                                        ),
                                     ),
                                     authKey
                                 )

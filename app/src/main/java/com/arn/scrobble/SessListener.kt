@@ -11,10 +11,12 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
-import com.arn.scrobble.Stuff.dump
-import com.arn.scrobble.Stuff.isUrlOrDomain
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.utils.MetadataUtils
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.dump
+import com.arn.scrobble.utils.Stuff.isUrlOrDomain
 import java.util.Locale
 import java.util.Objects
 

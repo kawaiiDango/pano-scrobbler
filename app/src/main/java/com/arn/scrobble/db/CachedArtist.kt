@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import de.umass.lastfm.Artist
-import de.umass.lastfm.Track
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.Track
 
 @Entity(
     tableName = CachedArtistsDao.tableName,
@@ -27,30 +27,25 @@ data class CachedArtist(
 ) {
     companion object {
         fun CachedArtist.toArtist() = Artist(
-            _id,
-            artistName,
-            artistUrl,
-            artistMbid,
-            0,
-            userPlayCount,
-            0,
-            false,
+            name = artistName,
+            url = artistUrl,
+            mbid = artistMbid,
+            playcount = userPlayCount,
+            userplaycount = userPlayCount,
         )
 
         fun Artist.toCachedArtist() = CachedArtist(
-            _id = id?.toInt() ?: 0,
             artistName = name,
             artistUrl = url ?: "",
             artistMbid = mbid ?: "",
-            userPlayCount = playcount,
+            userPlayCount = playcount ?: -1,
         )
 
         fun Track.toCachedArtist() = CachedArtist(
-            _id = id?.toInt() ?: 0,
-            artistName = artist,
-            artistUrl = artistUrl ?: "",
-            artistMbid = artistMbid ?: "",
-            userPlayCount = playcount,
+            artistName = artist.name,
+            artistUrl = artist.url ?: "",
+            artistMbid = artist.mbid ?: "",
+            userPlayCount = playcount ?: -1,
         )
     }
 }

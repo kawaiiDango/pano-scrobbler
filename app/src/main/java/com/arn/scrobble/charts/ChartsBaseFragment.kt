@@ -7,26 +7,33 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.HtmlImageResGetter
+import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.filterNotNull
 
 
 open class ChartsBaseFragment : ChartsPeriodFragment() {
+
+    override val viewModel by viewModels<ChartsVM>()
 
     private val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
     private lateinit var adapter: ChartsAdapter
@@ -114,7 +121,15 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
 
     override fun loadFirstPage(networkOnly: Boolean) {
         _chartsBinding ?: return
-        viewModel.loadCharts(networkOnly = networkOnly)
+
+        viewModel.setInput(
+            MusicEntryLoaderInput(
+                page = 1,
+                timePeriod = viewModel.selectedPeriod.value,
+                type = chartsType,
+                user = activityViewModel.currentUser,
+            )
+        )
     }
 
     override fun postInit() {
@@ -148,14 +163,18 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         chartsBinding.frameChartsList.chartsList.addItemDecoration(itemDecor)
 
         val loadMoreListener =
-            EndlessRecyclerViewScrollListener(chartsBinding.frameChartsList.chartsList.layoutManager!!) {
-                loadCharts(it)
+            EndlessRecyclerViewScrollListener(chartsBinding.frameChartsList.chartsList.layoutManager!!) { page ->
+                if (viewModel.reachedEnd && page != 1) {
+                    adapter.loadMoreListener.isAllPagesLoaded = true
+                    return@EndlessRecyclerViewScrollListener
+                }
+
+                viewModel.setInput(viewModel.input.value!!.copy(page = page))
             }
-        loadMoreListener.currentPage = viewModel.page
+        loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         chartsBinding.frameChartsList.chartsList.addOnScrollListener(loadMoreListener)
         adapter.loadMoreListener = loadMoreListener
         adapter.clickListener = this
-        adapter.viewModel = viewModel
 
         chartsBinding.swipeRefresh.isEnabled = false
         chartsBinding.swipeRefresh.setProgressCircleColors()
@@ -163,33 +182,27 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
             loadFirstPage(true)
         }
 
-        viewModel.chartsReceiver.observe(viewLifecycleOwner) {
-            chartsBinding.swipeRefresh.isRefreshing = false
-
-            viewModel.totalCount = it.total
-            if (it.page >= it.totalPages)
-                viewModel.reachedEnd = true
-            synchronized(viewModel.chartsData) {
-                if (it.page == 1)
-                    viewModel.chartsData.clear()
-                viewModel.chartsData.addAll(it.pageResults)
-            }
-            loadMoreListener.currentPage = it.page
-            adapter.populate()
-
+        collectLatestLifecycleFlow(
+            viewModel.entries.filterNotNull(),
+            Lifecycle.State.RESUMED
+        ) {
+            loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
+            adapter.populate(it, viewModel.input.value?.page == 1)
             // sometimes does somersaults
-//            if (it.page == 1)
-//                chartsBinding.frameChartsList.chartsList.smoothScrollToPosition(0)
             updateTitle()
         }
 
-        if (viewModel.chartsData.isNotEmpty())
-            adapter.populate()
+        collectLatestLifecycleFlow(
+            viewModel.hasLoaded,
+            Lifecycle.State.RESUMED
+        ) {
+            adapter.progressVisible(!it)
+        }
 
-        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) {(_, menuItemId) ->
-            if (!isResumed)
-                return@observe
-
+        collectLatestLifecycleFlow(
+            optionsMenuViewModel.menuEvent,
+            Lifecycle.State.RESUMED
+        ) { (_, menuItemId) ->
             optionsMenuSelected(menuItemId)
         }
 
@@ -216,14 +229,5 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
                 viewModel.periodType.value
             )
         )
-    }
-
-    private fun loadCharts(page: Int) {
-        _chartsBinding ?: return
-        if (viewModel.reachedEnd && page != 1) {
-            adapter.loadMoreListener.isAllPagesLoaded = true
-            return
-        }
-        viewModel.loadCharts(page)
     }
 }

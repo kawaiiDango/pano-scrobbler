@@ -19,13 +19,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getSingle
-import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentRegexEditAddBinding
 import com.arn.scrobble.db.ExtractionPatterns
@@ -36,6 +32,9 @@ import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.getSingle
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
@@ -169,7 +168,7 @@ class RegexEditsAddFragment : Fragment() {
             }
         }
 
-        mainNotifierViewModel.fabData.value = FabData(
+        val fabData = FabData(
             viewLifecycleOwner,
             com.google.android.material.R.string.abc_action_mode_done,
             R.drawable.vd_check_simple,
@@ -200,6 +199,8 @@ class RegexEditsAddFragment : Fragment() {
                 }
             }
         )
+
+        mainNotifierViewModel.setFabData(fabData)
 
         setFragmentResultListener(Stuff.ARG_ALLOWED_PACKAGES) { key, bundle ->
             if (key == Stuff.ARG_ALLOWED_PACKAGES) {

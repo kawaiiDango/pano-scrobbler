@@ -4,26 +4,30 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.utils.Stuff
 
 class VHPendingLove(
     private val binding: ListItemRecentsBinding,
     isShowingAlbums: Boolean,
-    itemClickListener: ItemClickListener,
+    itemClickListener: ItemClickListener<Any>,
 ) : RecyclerView.ViewHolder(binding.root) {
+    lateinit var pl: PendingLove
+
     init {
         binding.recentsPlaying.visibility = View.GONE
         binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
         binding.recentsImgOverlay.visibility = View.VISIBLE
         if (Stuff.isTv)
             binding.root.setOnClickListener {
-                itemClickListener.call(binding.recentsMenu, bindingAdapterPosition)
+                itemClickListener.call(binding.recentsMenu, bindingAdapterPosition) {
+
+                }
             }
         binding.recentsMenu.setOnClickListener {
-            itemClickListener.call(it, bindingAdapterPosition)
+            itemClickListener.call(it, bindingAdapterPosition) { pl }
         }
         if (isShowingAlbums) {
             val albumHeight =
@@ -39,6 +43,7 @@ class VHPendingLove(
     }
 
     fun setItemData(pl: PendingLove) {
+        this.pl = pl
         binding.recentsTitle.text = pl.track
         binding.recentsSubtitle.text = pl.artist
         if (pl.shouldLove) {

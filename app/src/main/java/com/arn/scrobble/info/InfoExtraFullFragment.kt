@@ -8,26 +8,29 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.NLService
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.ChartsAdapter
-import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
-import de.umass.lastfm.MusicEntry
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.getData
+import com.arn.scrobble.utils.Stuff.putData
+import kotlinx.coroutines.flow.filterNotNull
 
 
 open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
@@ -35,18 +38,13 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
     protected open val type = 0
     private lateinit var adapter: ChartsAdapter
     private lateinit var scalableGrid: ScalableGrid
-    private val viewModel by viewModels<ChartsVM>()
-    private val artist by lazy {
-        arguments?.getString(NLService.B_ARTIST)!!
-    }
-    private val track by lazy {
-        arguments?.getString(NLService.B_TRACK)
-    }
-
+    private val viewModel by viewModels<InfoExtraFullVM>()
     private var _binding: FrameChartsListBinding? = null
     private val binding
         get() = _binding!!
     private val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val musicEntry by lazy { requireArguments().getData<MusicEntry>()!! }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,13 +62,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
         super.onDestroyView()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (binding.chartsList.adapter == null)
-            postInit()
-    }
-
-    private fun postInit() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         adapter = ChartsAdapter(binding)
         adapter.emptyTextRes = R.string.not_found
@@ -100,62 +92,36 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
         binding.chartsList.addItemDecoration(itemDecor)
 
         val loadMoreListener =
-            EndlessRecyclerViewScrollListener(binding.chartsList.layoutManager!!) {
-                loadCharts()
+            EndlessRecyclerViewScrollListener(binding.chartsList.layoutManager!!) { page ->
+                if (!viewModel.reachedEnd)
+                    viewModel.setInput(viewModel.input.value!!.copy(page = page))
             }
-        loadMoreListener.currentPage = viewModel.page
+        loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         adapter.loadMoreListener = loadMoreListener
         adapter.clickListener = this
-        adapter.viewModel = viewModel
 
         if (type == Stuff.TYPE_ALBUMS || type == Stuff.TYPE_TRACKS) {
             adapter.showArtists = false
         }
 
-        viewModel.listReceiver.observe(viewLifecycleOwner) {
-            viewModel.reachedEnd = true
-            synchronized(viewModel.chartsData) {
-                viewModel.chartsData.addAll(it)
-            }
-            adapter.populate()
+        collectLatestLifecycleFlow(viewModel.entries.filterNotNull()) {
+            viewModel.reachedEnd = true // todo load pages
+            adapter.populate(it, viewModel.input.value?.page == 1)
         }
 
-        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) {(_, menuItemId) ->
+        collectLatestLifecycleFlow(optionsMenuViewModel.menuEvent) { (_, menuItemId) ->
             optionsMenuSelected(menuItemId)
         }
 
-        if (viewModel.chartsData.isNotEmpty())
-            adapter.populate()
-        else
-            loadCharts()
-    }
-
-    private fun loadCharts() {
-        _binding ?: return
-        if (viewModel.reachedEnd) {
-            adapter.loadMoreListener.isAllPagesLoaded = true
-            return
-        }
-        if (viewModel.chartsData.isEmpty()) {
-            LFMRequester(
-                viewModel.viewModelScope,
-                viewModel.listReceiver
-            ).apply {
-                when (type) {
-                    Stuff.TYPE_ARTISTS -> getSimilarArtists(artist)
-
-                    Stuff.TYPE_ALBUMS -> getArtistTopAlbums(artist)
-
-                    Stuff.TYPE_TRACKS -> {
-
-                        if (track != null)
-                            getSimilarTracks(artist, track!!)
-                        else
-                            getArtistTopTracks(artist)
-                    }
-                }
-            }
-        }
+        viewModel.setInput(
+            MusicEntryLoaderInput(
+                type = type,
+                entry = musicEntry,
+                timePeriod = null,
+                user = mainNotifierViewModel.currentUser,
+                page = 1
+            )
+        )
     }
 
     private fun optionsMenuSelected(itemId: Int) {
@@ -168,13 +134,20 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        if (track != null)
-            setTitle(getString(R.string.artist_title, artist, track))
-        else
-            setTitle(artist)
+        if (musicEntry is Track)
+            setTitle(
+                getString(
+                    R.string.artist_title,
+                    (musicEntry as Track).artist.name,
+                    musicEntry.name
+                )
+            )
+        else if (musicEntry is Artist)
+            setTitle(musicEntry.name)
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {
-        findNavController().navigate(R.id.infoFragment, entry.toBundle())
+        val args = Bundle().putData(entry)
+        findNavController().navigate(R.id.infoFragment, args)
     }
 }

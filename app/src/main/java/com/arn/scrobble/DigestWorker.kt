@@ -16,19 +16,19 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.arn.scrobble.Stuff.isChannelEnabled
-import com.arn.scrobble.Stuff.putSingle
-import com.arn.scrobble.Stuff.setMidnight
-import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
+import com.arn.scrobble.utils.Stuff.isChannelEnabled
+import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.Stuff.setMidnight
+import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
+import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.scrobbleable.ListenbrainzRanges
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils
-import de.umass.lastfm.Period
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
@@ -70,15 +70,15 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
                 DAILY,
                 WEEKLY -> Period.WEEK
 
-                MONTHLY -> Period.ONE_MONTH
+                MONTHLY -> Period.MONTH
                 else -> throw IllegalArgumentException("Unknown action")
             }
 
-            withContext(Dispatchers.IO + coExceptionHandler) {
+            withContext(coExceptionHandler) {
                 fetchAndNotify(period)
                 // yearly digest
-                if (period == Period.ONE_MONTH && cal[Calendar.MONTH] == Calendar.DECEMBER) {
-                    fetchAndNotify(Period.TWELVE_MONTHS)
+                if (period == Period.MONTH && cal[Calendar.MONTH] == Calendar.DECEMBER) {
+                    fetchAndNotify(Period.YEAR)
                 }
             }
 
@@ -103,20 +103,20 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
             val timePeriod = TimePeriod(period).apply {
                 tag = when (period) {
                     Period.WEEK -> ListenbrainzRanges.week.name
-                    Period.ONE_MONTH -> ListenbrainzRanges.month.name
-                    Period.TWELVE_MONTHS -> ListenbrainzRanges.year.name
+                    Period.MONTH -> ListenbrainzRanges.month.name
+                    Period.YEAR -> ListenbrainzRanges.year.name
                     else -> null
                 }
             }
 
             val artists = async {
-                scrobblable.getCharts(Stuff.TYPE_ARTISTS, timePeriod, 1, null, limit = limit)
+                scrobblable.getCharts(Stuff.TYPE_ARTISTS, timePeriod, 1, limit = limit)
             }
             val albums = async {
-                scrobblable.getCharts(Stuff.TYPE_ALBUMS, timePeriod, 1, null, limit = limit)
+                scrobblable.getCharts(Stuff.TYPE_ALBUMS, timePeriod, 1, limit = limit)
             }
             val tracks = async {
-                scrobblable.getCharts(Stuff.TYPE_TRACKS, timePeriod, 1, null, limit = limit)
+                scrobblable.getCharts(Stuff.TYPE_TRACKS, timePeriod, 1, limit = limit)
             }
 
             val resultsMap = mapOf(
@@ -125,21 +125,20 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
                 R.string.top_tracks to tracks
             )
             resultsMap.forEach { (titleRes, defered) ->
-
-                val kResult = kotlin.runCatching { defered.await() }
+                val kResult = defered.await()
                 val result = kResult.getOrNull() ?: return@forEach
-                if (result.pageResults.isEmpty()) return@forEach
+                if (result.entries.isEmpty()) return@forEach
 
                 val title = applicationContext.getString(titleRes)
-                val text = result.pageResults.joinToString { it.name }
+                val text = result.entries.joinToString { it.name }
                 notificationTextList += "<b>$title:</b>\n$text"
             }
 
             val title = applicationContext.getString(
                 when (period) {
                     Period.WEEK -> R.string.digest_weekly
-                    Period.ONE_MONTH -> R.string.digest_monthly
-                    Period.TWELVE_MONTHS -> R.string.graph_yearly
+                    Period.MONTH -> R.string.digest_monthly
+                    Period.YEAR -> R.string.graph_yearly
                     else -> throw IllegalArgumentException("Invalid period")
                 }
             )

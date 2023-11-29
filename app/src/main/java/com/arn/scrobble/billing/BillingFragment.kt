@@ -16,16 +16,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentBillingBinding
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.flow.filterNotNull
 
 
 class BillingFragment : Fragment() {
@@ -115,16 +117,14 @@ class BillingFragment : Fragment() {
             findNavController().navigate(R.id.billingTroubleshootFragment)
         }
 
-        billingViewModel.proProductDetails.observe(viewLifecycleOwner) {
-            it?.let {
-                binding.startBilling.text = Html.fromHtml(
-                    "<big>" + getString(R.string.get_pro) + "</big>" +
-                            "<br><small>" + it.oneTimePurchaseOfferDetails!!.formattedPrice + "</small>"
-                )
-            }
+        collectLatestLifecycleFlow(billingViewModel.proProductDetails.filterNotNull()) {
+            binding.startBilling.text = Html.fromHtml(
+                "<big>" + getString(R.string.get_pro) + "</big>" +
+                        "<br><small>" + it.oneTimePurchaseOfferDetails!!.formattedPrice + "</small>"
+            )
         }
-        billingViewModel.proPendingSince.observe(viewLifecycleOwner) {
-            it ?: return@observe
+
+        collectLatestLifecycleFlow(billingViewModel.proPendingSince.filterNotNull()) {
 //          This doesn't go away after the slow card gets declined. So, only notify recent purchases
             if (System.currentTimeMillis() - it < Stuff.PENDING_PURCHASE_NOTIFY_THRESHOLD)
                 MaterialAlertDialogBuilder(requireContext())
@@ -132,8 +132,9 @@ class BillingFragment : Fragment() {
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
         }
-        billingViewModel.proStatus.observe(viewLifecycleOwner) {
-            if (it == true) {
+
+        collectLatestLifecycleFlow(billingViewModel.proStatus) {
+            if (it) {
                 requireContext().toast(R.string.thank_you)
                 if (!BuildConfig.DEBUG)
                     findNavController().popBackStack(R.id.myHomePagerFragment, false)

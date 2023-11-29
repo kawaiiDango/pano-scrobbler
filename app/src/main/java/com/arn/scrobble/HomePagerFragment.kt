@@ -6,8 +6,11 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.showWithIcons
+import com.arn.scrobble.utils.BugReportUtils
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 
@@ -35,7 +38,7 @@ class HomePagerFragment : BasePagerFragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) { (navView, menuId) ->
+        collectLatestLifecycleFlow(optionsMenuViewModel.menuEvent) { (navView, menuId) ->
             optionsMenuSelected(navView, menuId)
         }
     }

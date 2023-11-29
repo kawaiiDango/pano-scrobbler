@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.wrappedGet
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.wrappedGet
 import com.arn.scrobble.ui.UiUtils.toast
 import kotlin.math.roundToInt
 

@@ -64,27 +64,37 @@
                     app:icon="@drawable/vd_mosaic" />
 
                 <include
-                    android:id="@+id/charts_scrobble_frequencies_header"
+                    android:id="@+id/charts_listening_activity_header"
                     layout="@layout/header_with_action" />
 
                 <FrameLayout
-                    android:id="@+id/charts_scrobble_frequencies_frame"
+                    android:id="@+id/charts_listening_activity_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="8dp">
 
                     <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/charts_scrobble_frequencies"
+                        android:id="@+id/charts_listening_activity_chart"
                         android:contentDescription="@string/bar_chart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp" />
 
                     <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/charts_scrobble_frequencies_progress"
+                        android:id="@+id/charts_listening_activity_progress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         app:showAnimationBehavior="none" />
+
+                    <TextView
+                        android:id="@+id/listening_activity_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/charts_no_data"
+                        android:textAppearance="?textAppearanceHeadlineSmall"
+                        android:visibility="gone" />
 
                 </FrameLayout>
 

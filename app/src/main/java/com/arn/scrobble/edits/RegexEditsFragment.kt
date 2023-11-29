@@ -18,27 +18,28 @@ import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class RegexEditsFragment : Fragment(), ItemClickListener {
+class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
     private var _binding: ContentRegexEditBinding? = null
     private val binding
         get() = _binding!!
@@ -70,7 +71,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         postponeEnterTransition()
 
-        mainNotifierViewModel.fabData.value = FabData(
+        val fabData = FabData(
             viewLifecycleOwner,
             R.string.add,
             R.drawable.vd_add_borderless,
@@ -79,10 +80,12 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
             }
         )
 
+        mainNotifierViewModel.setFabData(fabData)
+
         binding.editsList.setupInsets()
 
-        adapter = RegexEditsAdapter(viewModel, this)
-        RegexItemTouchHelper(adapter, viewModel).apply {
+        adapter = RegexEditsAdapter(this)
+        RegexItemTouchHelper(adapter, viewModel, viewLifecycleOwner).apply {
             attachToRecyclerView(binding.editsList)
             adapter.itemTouchHelper = this
         }
@@ -101,23 +104,20 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
             }
         }
 
-        viewModel.regexesReceiver.observe(viewLifecycleOwner) {
-            it ?: return@observe
-
+        collectLatestLifecycleFlow(viewModel.regexes.filterNotNull()) {
             binding.empty.isVisible = it.isEmpty()
             binding.editsList.isVisible = it.isNotEmpty()
 
-            val oldList = viewModel.regexes.toList()
-            viewModel.regexes.clear()
-            viewModel.regexes.addAll(it)
-            adapter.autoNotify(oldList, viewModel.regexes) { o, n -> o._id == n._id }
+            adapter.submitList(it)
 
             (view.parent as? ViewGroup)?.doOnPreDraw {
                 startPostponedEnterTransition()
             }
         }
 
-        viewModel.countReceiver.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(viewModel.limitReached.filterNotNull()) {
+            if (it)
+                requireContext().toast(getString(R.string.edit_max_patterns, Stuff.MAX_PATTERNS))
         }
 
         if (arguments?.getBoolean(Stuff.ARG_SHOW_DIALOG, false) == true)
@@ -126,18 +126,19 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
             }
     }
 
-    override fun onItemClick(view: View, position: Int) {
+    override fun onItemClick(view: View, position: Int, item: RegexEdit) {
         showAddDialog(position)
     }
 
     private fun showAddDialog(position: Int) {
         val isNew = position == -1
 
-        if (isNew && hasReachedLimit())
+        if (isNew && viewModel.limitReached.value == true)
             return
 
         val regexEdit = if (!isNew)
-            RegexPresets.getPossiblePreset(viewModel.regexes[position].copy())
+            viewModel.regexes.value?.get(position)
+                ?.let { RegexPresets.getPossiblePreset(it.copy()) }
         else
             null
 
@@ -170,7 +171,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
     }
 
     private suspend fun showPresetsDialog() {
-        if (hasReachedLimit())
+        if (viewModel.limitReached.value == true)
             return
 
         val dao = PanoDb.db.getRegexEditsDao()
@@ -208,16 +209,6 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
                 }
             }
             .show()
-    }
-
-    private fun hasReachedLimit(): Boolean {
-        viewModel.countReceiver.value?.let {
-            if (it >= Stuff.MAX_PATTERNS) {
-                requireContext().toast(getString(R.string.edit_max_patterns, Stuff.MAX_PATTERNS))
-                return true
-            }
-        }
-        return false
     }
 
     companion object {

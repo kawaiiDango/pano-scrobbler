@@ -1,7 +1,7 @@
 package com.arn.scrobble
 
 import android.os.Parcelable
-import de.umass.lastfm.scrobble.ScrobbleData
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import kotlinx.parcelize.Parcelize
 
 // Why is this so confusing?
@@ -52,17 +52,14 @@ data class PlayingTrackInfo(
         this.albumArtist = albumArtist
     }
 
-    fun toScrobbleData() = ScrobbleData().also {
-        it.track = title
-        it.artist = artist
-        it.album = album
-        it.albumArtist = albumArtist
-        it.timestamp = (playStartTime / 1000).toInt()
-        it.pkgName = packageName
-
-        val durationSecs = (durationMillis / 1000).toInt() // in secs
-        if (durationSecs >= 30) it.duration = durationSecs
-    }
+    fun toScrobbleData() = ScrobbleData(
+        track = title,
+        artist = artist,
+        album = album,
+        albumArtist = albumArtist,
+        timestamp = (playStartTime / 1000).toInt(),
+        duration = if (durationMillis / 1000 >= 30) (durationMillis / 1000).toInt() else null
+    )
 
     fun updateMetaFrom(p: PlayingTrackInfo): PlayingTrackInfo {
         title = p.title
@@ -76,9 +73,9 @@ data class PlayingTrackInfo(
 
     fun updateMetaFrom(sd: ScrobbleData): PlayingTrackInfo {
         title = sd.track
-        album = sd.album
+        album = sd.album ?: ""
         artist = sd.artist
-        albumArtist = sd.albumArtist
+        albumArtist = sd.albumArtist ?: ""
         return this
     }
 

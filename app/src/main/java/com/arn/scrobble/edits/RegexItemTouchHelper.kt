@@ -1,17 +1,32 @@
 package com.arn.scrobble.edits
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.ui.UiUtils.setDragAlpha
-import java.util.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 
 
 class RegexItemTouchHelper(
     adapter: RegexEditsAdapter,
     viewModel: RegexEditsVM,
+    viewLifecycleOwner: LifecycleOwner
 ) : ItemTouchHelper(object : SimpleCallback(0, UP or DOWN) {
 
     private var changed = false
+    private lateinit var cachedList: MutableList<RegexEdit>
+
+    init {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.regexes.filterNotNull().collectLatest {
+                cachedList = it.toMutableList()
+            }
+        }
+    }
 
     override fun onMove(
         recyclerView: RecyclerView,
@@ -20,24 +35,11 @@ class RegexItemTouchHelper(
     ): Boolean {
         val fromPosition = viewHolder.bindingAdapterPosition
         val toPosition = target.bindingAdapterPosition
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(viewModel.regexes, i, i + 1)
-//                val order1 = viewModel.regexes[i].order
-//                val order2 = viewModel.regexes[i + 1].order
-//                viewModel.regexes[i].order = order2
-//                viewModel.regexes[i + 1].order = order1
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(viewModel.regexes, i, i - 1)
-//                val order1 = viewModel.regexes[i].order
-//                val order2 = viewModel.regexes[i - 1].order
-//                viewModel.regexes[i].order = order2
-//                viewModel.regexes[i - 1].order = order1
-            }
-        }
-        adapter.notifyItemMoved(fromPosition, toPosition)
+
+        val movedItem = cachedList.removeAt(fromPosition)
+        cachedList.add(toPosition, movedItem)
+
+        viewModel.tmpUpdateAll(cachedList)
         changed = true
         return true
     }
@@ -67,10 +69,10 @@ class RegexItemTouchHelper(
         viewHolder.setDragAlpha(false)
         if (changed) {
             changed = false
-            viewModel.regexes.forEachIndexed { index, regex ->
-                regex.order = index
+            val regexes = cachedList.mapIndexed { index, regex ->
+                regex.copy(order = index)
             }
-            viewModel.upsertAll(viewModel.regexes)
+            viewModel.upsertAll(regexes)
         }
     }
 })

@@ -7,7 +7,7 @@ import coil.request.SuccessResult
 import coil.transition.CrossfadeTransition
 import coil.transition.Transition
 import coil.transition.TransitionTarget
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
 
 class PaletteTransition(
     private val target: TransitionTarget,

@@ -7,12 +7,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.arn.scrobble.App
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedArtistsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
-import de.umass.lastfm.Track
 
 
 /**
@@ -103,7 +103,7 @@ interface CachedTracksDao {
 
             val maxIndexedScrobbleTime = prefs.lastMaxIndexedScrobbleTime ?: -1
             val wasIndexed =
-                track.playedWhen != null && track.playedWhen.time < maxIndexedScrobbleTime
+                track.date != null && track.date < maxIndexedScrobbleTime / 1000
 
             val mode = if (mode == DirtyUpdate.BOTH && !wasIndexed)
                 DirtyUpdate.DIRTY
@@ -113,7 +113,7 @@ interface CachedTracksDao {
             if (maxIndexedScrobbleTime > 0 && (wasIndexed || mode == DirtyUpdate.DIRTY)) {
                 val db = PanoDb.db
                 db.getCachedTracksDao().deltaUpdate(track.toCachedTrack(), deltaCount, mode)
-                if (!track.album.isNullOrEmpty()) {
+                if (track.album != null) {
                     db.getCachedAlbumsDao().deltaUpdate(track.toCachedAlbum(), deltaCount, mode)
                 }
                 db.getCachedArtistsDao().deltaUpdate(track.toCachedArtist(), deltaCount, mode)

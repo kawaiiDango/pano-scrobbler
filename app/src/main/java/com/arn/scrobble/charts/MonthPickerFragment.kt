@@ -13,16 +13,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.firstOrNull
-import com.arn.scrobble.Stuff.lastOrNull
-import com.arn.scrobble.Stuff.setMidnight
-import com.arn.scrobble.Stuff.toBimap
 import com.arn.scrobble.databinding.DialogMonthPickerBinding
 import com.arn.scrobble.ui.NoOpFilter
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.firstOrNull
+import com.arn.scrobble.utils.Stuff.lastOrNull
+import com.arn.scrobble.utils.Stuff.setMidnight
+import com.arn.scrobble.utils.Stuff.toBimap
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import java.text.DateFormat
@@ -122,7 +121,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             )
 
             val idx = timePeriods.inverse[timePeriod]
-            setFragmentResult(
+            requireActivity().supportFragmentManager.setFragmentResult(
                 Stuff.ARG_MONTH_PICKER_PERIOD,
                 bundleOf(Stuff.ARG_MONTH_PICKER_PERIOD to timePeriods[idx]!!)
             )

@@ -6,18 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
 import com.arn.scrobble.ui.ExpandableHeader
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.SectionedVirtualList
-import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.color.MaterialColors
 
 
@@ -28,12 +29,14 @@ class AppListAdapter(
     context: Context,
     private val viewModel: AppListVM,
     private val singleChoice: Boolean,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemClickListener {
+) : ListAdapter<Any, RecyclerView.ViewHolder>(
+    GenericDiffCallback { o, n ->
+        o is ExpandableHeader && n is ExpandableHeader || o === n
+    }
+), ItemClickListener<Any> {
 
     private val packageManager = context.packageManager
-    private val itemClickListener: ItemClickListener = this
-    private var oldData = SectionedVirtualList()
-    private var data = SectionedVirtualList()
+    private val itemClickListener: ItemClickListener<Any> = this
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -62,52 +65,43 @@ class AppListAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int) = data.getItemType(position)
+    override fun getItemViewType(position: Int) = if (getItem(position) is ApplicationInfo)
+        SectionedVirtualList.TYPE_ITEM_DEFAULT
+    else
+        SectionedVirtualList.TYPE_HEADER_DEFAULT
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is VHItem -> holder.setData(data[position] as ApplicationInfo)
+            is VHItem -> holder.setData(getItem(position) as ApplicationInfo)
 
-            is VHHeader -> holder.setData(data[position] as ExpandableHeader)
+            is VHHeader -> holder.setData(getItem(position) as ExpandableHeader)
 
             else -> throw RuntimeException("Invalid view type $holder")
         }
     }
 
-    override fun onItemClick(view: View, position: Int) {
-        if (getItemViewType(position) == SectionedVirtualList.TYPE_ITEM_DEFAULT) {
-            val packageName =
-                (data[position] as ApplicationInfo).packageName
+    override fun onItemClick(view: View, position: Int, item: Any) {
+        if (item !is ApplicationInfo) return
+        val packageName = item.packageName
 
-            if (singleChoice) {
-                val previousIndex = data.indexOfFirst {
-                    it is ApplicationInfo && it.packageName in viewModel.selectedPackages
-                }
-
-                viewModel.selectedPackages.clear()
-                viewModel.selectedPackages += packageName
-
-                notifyItemChanged(previousIndex, 0)
-                notifyItemChanged(position, 0)
-
-            } else {
-                if (packageName in viewModel.selectedPackages)
-                    viewModel.selectedPackages -= packageName
-                else
-                    viewModel.selectedPackages += packageName
-                notifyItemChanged(position, 0)
+        if (singleChoice) {
+            val previousIndex = currentList.indexOfFirst {
+                it is ApplicationInfo && it.packageName in viewModel.selectedPackages
             }
-        }
-    }
 
-    override fun getItemCount() = data.size
+            viewModel.selectedPackages.clear()
+            viewModel.selectedPackages += packageName
 
-    fun populate(newData: SectionedVirtualList) {
-        data = newData.copy()
-        autoNotify(oldData, data) { o, n ->
-            o is ExpandableHeader && n is ExpandableHeader || o === n
+            notifyItemChanged(previousIndex, 0)
+            notifyItemChanged(position, 0)
+
+        } else {
+            if (packageName in viewModel.selectedPackages)
+                viewModel.selectedPackages -= packageName
+            else
+                viewModel.selectedPackages += packageName
+            notifyItemChanged(position, 0)
         }
-        oldData = data
     }
 
     inner class VHItem(private val binding: ListItemAppBinding) :
@@ -118,7 +112,9 @@ class AppListAdapter(
         }
 
         override fun onClick(view: View) {
-            itemClickListener.call(itemView, bindingAdapterPosition)
+            itemClickListener.call(itemView, bindingAdapterPosition) {
+                getItem(bindingAdapterPosition)
+            }
         }
 
         fun setData(applicationInfo: ApplicationInfo) {

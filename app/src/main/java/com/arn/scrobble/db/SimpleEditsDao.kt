@@ -1,12 +1,12 @@
 package com.arn.scrobble.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import de.umass.lastfm.scrobble.ScrobbleData
+import com.arn.scrobble.api.lastfm.ScrobbleData
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -19,13 +19,26 @@ interface SimpleEditsDao {
     fun all(): List<SimpleEdit>
 
     @Query("SELECT * FROM $tableName ORDER BY _id DESC")
-    fun allLd(): LiveData<List<SimpleEdit>>
+    fun allFlow(): Flow<List<SimpleEdit>>
 
     @Query("SELECT * FROM $tableName WHERE (origArtist = :artist and origAlbum = :album and origTrack = :track) OR legacyHash = :hash")
     fun findByNamesOrHash(artist: String, album: String, track: String, hash: String): SimpleEdit?
 
+    @Query(
+        """
+        SELECT * FROM $tableName
+        WHERE
+            (origArtist LIKE '%' || :term || '%' OR artist LIKE '%' || :term || '%')
+            OR (origAlbum LIKE '%' || :term || '%' OR album LIKE '%' || :term || '%')
+            OR (origTrack LIKE '%' || :term || '%' OR track LIKE '%' || :term || '%')
+            OR (albumArtist LIKE '%' || :term || '%')
+        ORDER BY _id DESC
+"""
+    )
+    fun searchPartial(term: String): Flow<List<SimpleEdit>>
+
     @Query("SELECT count(1) FROM $tableName")
-    fun count(): Int
+    fun count(): Flow<Int>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(e: List<SimpleEdit>)
@@ -60,7 +73,12 @@ interface SimpleEditsDao {
                 artist.hashCode().toString() + album.hashCode().toString() + track.hashCode()
                     .toString()
             val edit =
-                findByNamesOrHash(artist.lowercase(), album.lowercase(), track.lowercase(), hash)
+                findByNamesOrHash(
+                    artist.lowercase(),
+                    album?.lowercase() ?: "",
+                    track.lowercase(),
+                    hash
+                )
             if (edit != null) {
                 scrobbleData.artist = edit.artist
                 scrobbleData.album = edit.album

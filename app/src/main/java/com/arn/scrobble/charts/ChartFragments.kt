@@ -1,6 +1,6 @@
 package com.arn.scrobble.charts
 
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
 
 class ArtistChartsFragment : ChartsBaseFragment() {
     override val chartsType = Stuff.TYPE_ARTISTS

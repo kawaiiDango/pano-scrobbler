@@ -12,9 +12,7 @@ import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMarginsRelative
 import androidx.viewbinding.ViewBinding
-import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityAppwidgetChartsConfigBinding
 import com.arn.scrobble.databinding.AppwidgetChartsContentBinding
@@ -28,6 +26,8 @@ import com.arn.scrobble.databinding.ListItemChipPeriodBinding
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
@@ -159,7 +159,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
     }
 
     private fun initFromPrefs() {
-        val theme = WidgetTheme.values()[prefs.theme]
+        val theme = WidgetTheme.entries[prefs.theme]
         val hasShadow = prefs.shadow
 
         val checkedChip = binding.widgetPeriod.children.firstOrNull { it.tag == prefs.period }

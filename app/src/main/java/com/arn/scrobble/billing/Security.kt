@@ -23,7 +23,7 @@ import android.content.pm.PackageManager
 import android.util.Base64
 import com.android.billingclient.api.Purchase
 import com.arn.scrobble.App
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.Tokens
 import timber.log.Timber
 import java.io.IOException

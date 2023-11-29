@@ -7,10 +7,10 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.setMidnight
-import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
-import com.arn.scrobble.scrobbleable.ListenbrainzRanges
-import de.umass.lastfm.Period
+import com.arn.scrobble.api.lastfm.Period
+import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
+import com.arn.scrobble.utils.Stuff.setMidnight
+import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
@@ -319,17 +319,17 @@ class TimePeriodsGenerator(
     companion object {
 
         fun getContinuousPeriods() =
-            Period.values().map { TimePeriod(it) }
+            Period.entries.map { TimePeriod(it) }
 
         fun Period.toDuration(
             registeredTime: Long = 0,
             endTime: Long = System.currentTimeMillis()
         ) = when (this) {
             Period.WEEK -> TimeUnit.DAYS.toMillis(7)
-            Period.ONE_MONTH -> TimeUnit.DAYS.toMillis(30)
-            Period.THREE_MONTHS -> TimeUnit.DAYS.toMillis(90)
-            Period.SIX_MONTHS -> TimeUnit.DAYS.toMillis(180)
-            Period.TWELVE_MONTHS -> TimeUnit.DAYS.toMillis(365)
+            Period.MONTH -> TimeUnit.DAYS.toMillis(30)
+            Period.QUARTER -> TimeUnit.DAYS.toMillis(90)
+            Period.HALF_YEAR -> TimeUnit.DAYS.toMillis(180)
+            Period.YEAR -> TimeUnit.DAYS.toMillis(365)
             Period.OVERALL -> min(
                 TimeUnit.DAYS.toMillis(365 * 10),
                 endTime - registeredTime
@@ -382,7 +382,7 @@ class TimePeriodsGenerator(
                 TimePeriodType.MONTH -> {
                     {
                         SimpleDateFormat("MMM", Locale.ENGLISH).format(it.start)
-                            //.take(1).uppercase()
+                        //.take(1).uppercase()
                     }
                 }
 
@@ -426,6 +426,9 @@ data class TimePeriod(
     var tag: String? = null
 ) : Parcelable {
 
+    val startSecs get() = (start / 1000).toInt()
+    val endSecs get() = (end / 1000).toInt()
+
     constructor(period: Period) : this(
         -1,
         -1,
@@ -433,10 +436,10 @@ data class TimePeriod(
         name = App.context.resources!!.let {
             when (period) {
                 Period.WEEK -> it.getQuantityString(R.plurals.num_weeks, 1, 1)
-                Period.ONE_MONTH -> it.getQuantityString(R.plurals.num_months, 1, 1)
-                Period.THREE_MONTHS -> it.getQuantityString(R.plurals.num_months, 3, 3)
-                Period.SIX_MONTHS -> it.getQuantityString(R.plurals.num_months, 6, 6)
-                Period.TWELVE_MONTHS -> it.getQuantityString(R.plurals.num_years, 1, 1)
+                Period.MONTH -> it.getQuantityString(R.plurals.num_months, 1, 1)
+                Period.QUARTER -> it.getQuantityString(R.plurals.num_months, 3, 3)
+                Period.HALF_YEAR -> it.getQuantityString(R.plurals.num_months, 6, 6)
+                Period.YEAR -> it.getQuantityString(R.plurals.num_years, 1, 1)
                 Period.OVERALL -> it.getString(R.string.charts_overall)
             }
         }

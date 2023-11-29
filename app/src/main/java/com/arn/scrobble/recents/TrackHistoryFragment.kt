@@ -4,11 +4,11 @@ import android.icu.text.DateFormat
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -18,40 +18,34 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
-import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.equalsExt
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
-import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SimpleHeaderDecoration
-import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.Stuff.getData
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.Track
-import java.text.NumberFormat
+import kotlinx.coroutines.flow.filterNotNull
 
-class TrackHistoryFragment : Fragment(), ItemClickListener {
+class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     private var _binding: ContentTrackHistoryBinding? = null
     private val binding
         get() = _binding!!
-    private val scrobbleCount: Int
-        get() = requireArguments().getInt(Stuff.ARG_COUNT)
     private val viewModel by viewModels<TracksVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     private lateinit var adapter: TrackHistoryAdapter
-    private val argToTrack by lazy {
-        Track(
-            requireArguments().getString(NLService.B_TRACK),
-            null,
-            requireArguments().getString(NLService.B_ARTIST)
-        )
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,12 +69,15 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
 
     override fun onResume() {
         super.onResume()
+
         setTitleWithCount()
     }
 
-    private fun setTitleWithCount() {
-        val formattedCount = NumberFormat.getInstance().format(scrobbleCount)
-        val title = if (mainNotifierViewModel.userIsSelf) {
+    private fun setTitleWithCount(
+        count: Int = requireArguments().getData<Track>()!!.userplaycount ?: 0
+    ) {
+        val formattedCount = count.format()
+        val title = if (mainNotifierViewModel.currentUser.isSelf) {
             getString(R.string.my_scrobbles) + ": " + formattedCount
         } else {
             val username = mainNotifierViewModel.currentUser.name
@@ -90,20 +87,14 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        postponeEnterTransition()
 
-        if (!mainNotifierViewModel.userIsSelf)
-            viewModel.username = mainNotifierViewModel.currentUser.name
-
-        viewModel.tracksReceiver.observe(viewLifecycleOwner) {
-            viewModel.totalPages = it.totalPages
-            if (it.page == 1) {
-                viewModel.tracks.clear()
-                viewModel.loadFirstScrobbleDate(it)
-            }
-            val oldList = viewModel.tracks.toList()
-            viewModel.tracks.addAll(it.pageResults)
-            populate(oldList)
+        collectLatestLifecycleFlow(viewModel.tracks.filterNotNull()) {
+            binding.progress.hide()
+            adapter.loadMoreListener.loading = false
+            binding.tracksList.visibility = View.VISIBLE
+//            if (oldList.isNotEmpty())
+//                adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
+            adapter.submitList(it)
 
 //            (view.parent as? ViewGroup)?.doOnPreDraw {
 //                startPostponedEnterTransition()
@@ -111,39 +102,39 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
             // todo transition
         }
 
-        if (scrobbleCount > 1)
-            viewModel.firstScrobbledDate.observe(viewLifecycleOwner) {
-                it ?: return@observe
-                val dateStr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                    DateFormat.getDateTimeInstance(
-                        DateFormat.MEDIUM,
-                        DateFormat.SHORT,
-                    ).format(it)
-                else
-                    Stuff.myRelativeTime(
-                        requireContext(),
-                        it
-                    ) // this might be grammatically wrong for < 24h
-                binding.firstScrobbledOn.visibility = View.VISIBLE
-                binding.firstScrobbledOn.text = getString(R.string.first_scrobbled_on, dateStr)
-            }
-        else
-            binding.firstScrobbledOn.visibility = View.GONE
+//        binding.firstScrobbledOn.visibility = View.GONE
 
-        mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
-            adapter.editTrack(it)
+        collectLatestLifecycleFlow(viewModel.firstScrobbledTime.filterNotNull()) {
+            val millis = it * 1000L
+            val dateStr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                DateFormat.getDateTimeInstance(
+                    DateFormat.MEDIUM,
+                    DateFormat.SHORT,
+                ).format(millis)
+            else
+                Stuff.myRelativeTime(
+                    requireContext(),
+                    it
+                ) // this might be grammatically wrong for < 24h
+            binding.firstScrobbledOn.visibility = View.VISIBLE
+            binding.firstScrobbledOn.text = getString(R.string.first_scrobbled_on, dateStr)
+        }
+
+
+        collectLatestLifecycleFlow(mainNotifierViewModel.editData) {
+            viewModel.editTrack(it)
         }
 
         val prefs = App.prefs
         val isShowingPlayers =
-            mainNotifierViewModel.userIsSelf && prefs.proStatus && prefs.showScrobbleSources
+            mainNotifierViewModel.currentUser.isSelf && prefs.proStatus && prefs.showScrobbleSources
 
         adapter = TrackHistoryAdapter(
             viewModel,
             this,
             prefs.showAlbumInRecents,
             isShowingPlayers,
-            PanoDb.db.getScrobbleSourcesDao()
+            mainNotifierViewModel.currentUser.isSelf
         )
 
         val llm = LinearLayoutManager(requireContext())
@@ -151,10 +142,13 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         binding.tracksList.adapter = adapter
         (binding.tracksList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
 
-        val loadMoreListener = EndlessRecyclerViewScrollListener(llm) {
-            loadTracks(it)
+        val loadMoreListener = EndlessRecyclerViewScrollListener(llm) { page ->
+            if (page <= viewModel.totalPages)
+                viewModel.setInput(viewModel.input.value!!.copy(page = page))
+            else
+                adapter.loadMoreListener.isAllPagesLoaded = true
         }
-        loadMoreListener.currentPage = viewModel.page
+        loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         adapter.loadMoreListener = loadMoreListener
 
         binding.tracksList.addOnScrollListener(loadMoreListener)
@@ -162,49 +156,44 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
 
         binding.progress.show()
 
-        if (viewModel.tracks.isEmpty()) {
-            viewModel.loadTrackScrobbles(argToTrack, 1)
-        } else {
-            populate(listOf())
-        }
+        val trackInput = requireArguments().getData<Track>()!!
+
+        setTitleWithCount()
+
+        viewModel.setInput(
+            MusicEntryLoaderInput(
+                user = mainNotifierViewModel.currentUser,
+                timePeriod = null,
+                type = Stuff.TYPE_TRACKS,
+                entry = trackInput,
+                page = 1,
+            )
+        )
     }
 
-    private fun loadTracks(page: Int) {
-        if (page <= viewModel.totalPages)
-            viewModel.loadTrackScrobbles(argToTrack, page)
-        else
-            adapter.loadMoreListener.isAllPagesLoaded = true
-    }
-
-    private fun populate(oldList: List<Track>) {
-        binding.progress.hide()
-        adapter.loadMoreListener.loading = false
-        binding.tracksList.visibility = View.VISIBLE
-        if (oldList.isNotEmpty())
-            adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
-        adapter.autoNotify(oldList, viewModel.tracks) { o, n ->
-            o.equalsExt(n)
-        }
-    }
-
-    override fun onItemClick(view: View, position: Int) {
+    override fun onItemClick(view: View, entry: MusicEntry) {
         val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         when (view.id) {
-            R.id.recents_menu -> openTrackPopupMenu(dateFrame, position)
+            R.id.recents_menu -> openTrackPopupMenu(dateFrame, entry)
             else -> {
                 if (!view.isInTouchMode)
-                    openTrackPopupMenu(dateFrame, position)
+                    openTrackPopupMenu(dateFrame, entry)
             }
         }
     }
 
-    private fun openTrackPopupMenu(anchor: View, position: Int) {
-        val track = adapter.getItem(position)
+    private fun openTrackPopupMenu(anchor: View, entry: MusicEntry) {
+        val track = entry as Track
 
         val popup = PopupMenu(requireContext(), anchor)
         popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
 
         popup.menu.removeItem(R.id.menu_love)
+        val moreMenu: Menu = popup.menu.findItem(R.id.menu_more)?.subMenu ?: popup.menu
+
+        moreMenu.removeItem(R.id.menu_hate)
+        moreMenu.removeItem(R.id.menu_share)
+        moreMenu.removeItem(R.id.menu_info)
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -215,16 +204,45 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
                     track
                 ) { succ ->
                     if (succ) {
-                        val oldList = viewModel.tracks.toList()
-                        val wasInList = viewModel.tracks.remove(track)
-                        if (wasInList) {
-                            adapter.autoNotify(oldList, viewModel.tracks) { o, n ->
-                                o.equalsExt(n)
-                            }
-                            requireArguments().putInt(Stuff.ARG_COUNT, scrobbleCount - 1)
-                            setTitleWithCount()
-                        }
+                        viewModel.removeTrack(track)
                     }
+                }
+
+                R.id.menu_play -> {
+                    val pkgName = if (track.date != null)
+                        viewModel.pkgMap[track.date]
+                    else if (track.isNowPlaying)
+                        viewModel.pkgMap[0]
+                    else
+                        null
+                    Stuff.launchSearchIntent(track, pkgName)
+                }
+
+                R.id.menu_block_track, R.id.menu_block_album, R.id.menu_block_artist -> {
+                    val blockedMetadata = when (menuItem.itemId) {
+                        R.id.menu_block_track -> BlockedMetadata(
+                            artist = track.artist.name,
+                            album = track.album?.name ?: "",
+                            track = track.name,
+                            skip = true
+                        )
+
+                        R.id.menu_block_album -> BlockedMetadata(
+                            artist = track.artist.name,
+                            album = track.album?.name ?: "",
+                            skip = true
+                        )
+
+                        R.id.menu_block_artist -> BlockedMetadata(
+                            artist = track.artist.name,
+                            skip = true
+                        )
+
+                        else -> return@setOnMenuItemClickListener false
+                    }
+
+                    val args = Bundle().putSingle(blockedMetadata)
+                    findNavController().navigate(R.id.blockedMetadataAddDialogFragment, args)
                 }
             }
             true

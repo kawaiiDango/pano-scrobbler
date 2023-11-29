@@ -13,31 +13,23 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import com.arn.scrobble.App
-import com.arn.scrobble.NLService
 import com.arn.scrobble.R
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.DialogUserTagsBinding
-import com.arn.scrobble.pref.HistoryPref
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.utils.Stuff.getData
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
+import kotlinx.coroutines.flow.filterNotNull
 
 class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val viewModel by viewModels<UserTagsVM>()
-    private val historyPref by lazy {
-        HistoryPref(
-            App.prefs.sharedPreferences,
-            MainPrefs.PREF_ACTIVITY_TAG_HISTORY,
-            20
-        )
-    }
+
     private val historyAdapter by lazy {
         object : ArrayAdapter<String>(
             requireContext(),
@@ -57,11 +49,11 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
                             .setMessage(R.string.clear_history_specific)
                             .setPositiveButton(R.string.yes) { dialogInterface, i ->
                                 val item = getItem(position)
-                                historyPref.remove(item)
+                                viewModel.historyPref.remove(item)
                             }
                             .setNegativeButton(R.string.no, null)
                             .setNeutralButton(R.string.clear_all_history) { dialogInterface, i ->
-                                historyPref.removeAll()
+                                viewModel.historyPref.removeAll()
                             }
                             .show()
                         false
@@ -70,9 +62,9 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
                 return historyTextView
             }
 
-            override fun getItem(position: Int) = historyPref.history[position]
+            override fun getItem(position: Int) = viewModel.historyPref.history[position]
 
-            override fun getCount() = historyPref.history.size
+            override fun getCount() = viewModel.historyPref.history.size
         }
     }
     private var _binding: DialogUserTagsBinding? = null
@@ -88,18 +80,15 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onShow(p0: DialogInterface?) {
-        viewModel.tags.observe(viewLifecycleOwner, object : Observer<Set<String>?> {
-            override fun onChanged(value: Set<String>?) {
-                value ?: return
-                binding.userTagsProgress.hide()
-                if (value.isEmpty())
-                    binding.userTagsStatus.visibility = View.VISIBLE
-                value.forEach {
-                    addChip(it)
-                }
-                viewModel.tags.removeObserver(this)
+        collectLatestLifecycleFlow(viewModel.tags.filterNotNull()) { value ->
+            binding.userTagsProgress.hide()
+            if (value.isEmpty())
+                binding.userTagsStatus.visibility = View.VISIBLE
+            value.forEach {
+                addChip(it)
             }
-        })
+            // todo fix viewModel.tags.removeObserver(this)
+        }
 
         val addButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 
@@ -116,48 +105,27 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
             val tags = binding.userTagsInputEdittext.text.toString().trim()
             if (tags.isNotEmpty()) {
                 viewModel.splitTags(tags).forEach {
-                    if (viewModel.tags.value?.contains(it) == false)
+                    if (viewModel.tags.value?.contains(it) != true)
                         addChip(it.trim())
-                    historyPref.add(it.trim())
+                    viewModel.historyPref.add(it.trim())
                 }
                 viewModel.addTag(tags)
                 binding.userTagsInputEdittext.text.clear()
             }
         }
 
-        viewModel.tags.value ?: viewModel.loadTags()
-        historyPref.load()
-
         binding.userTagsInputEdittext.setAdapter(historyAdapter)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val entry: MusicEntry
-        @DrawableRes val icon: Int
-        val b = requireArguments()
-        val track = b.getString(NLService.B_TRACK)
-        val album = b.getString(NLService.B_ALBUM)
-        val artist = b.getString(NLService.B_ARTIST)
-
-        when {
-            track != null -> {
-                entry = Track(track, null, artist)
-                icon = R.drawable.vd_note
-            }
-
-            album != null -> {
-                entry = Album(album, null, artist)
-                icon = R.drawable.vd_album
-            }
-
-            else -> {
-                entry = Artist(artist, null)
-                icon = R.drawable.vd_mic
-            }
+        val entry: MusicEntry = requireArguments().getData()!!
+        @DrawableRes val icon = when (entry) {
+            is Track -> R.drawable.vd_note
+            is Artist -> R.drawable.vd_mic
+            is Album -> R.drawable.vd_album
         }
 
-        viewModel.entry = entry
-        viewModel.historyPref = historyPref
+        viewModel.setEntry(entry)
         _binding = DialogUserTagsBinding.inflate(layoutInflater)
 
         return MaterialAlertDialogBuilder(requireContext())
@@ -173,7 +141,7 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     override fun onDestroyView() {
         _binding = null
-        historyPref.save()
+        viewModel.historyPref.save()
         super.onDestroyView()
     }
 

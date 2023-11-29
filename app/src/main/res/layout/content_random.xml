@@ -161,7 +161,9 @@
             android:id="@+id/random_content_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="random_big_img, random_item, random_play" />
+            android:visibility="invisible"
+            app:constraint_referenced_ids="random_big_img, random_item, random_play"
+            tools:visibility="visible" />
 
         <com.arn.scrobble.ui.ScalableDrawableTextView
             android:id="@+id/randomize_text"

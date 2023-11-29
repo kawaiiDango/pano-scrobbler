@@ -1,33 +1,31 @@
 [versions]
 aboutlibraries = "10.9.2"
 androidSnowfall = "1.2.1"
-annotation = "1.7.0"
 bimap = "1.1.0"
 coil = "2.5.0"
 constraintlayout = "2.2.0-alpha13"
 billing = "6.1.0"
-core-ktx = "1.13.0-alpha01"
+core-ktx = "1.13.0-alpha02"
 appcompat = "1.7.0-alpha03"
 core-remoteviews = "1.0.0"
 desugar_jdk_libs = "2.0.4"
 espresso-core = "3.6.0-alpha01"
 firebase-bom = "32.6.0"
 crashlytics = "2.9.9"
-fragment-ktx = "1.7.0-alpha06"
+fragment-ktx = "1.7.0-alpha07"
 harmony = "1.2.4"
 junit = "4.13.2"
-kotlin = "1.9.20"
-kotlinx-serialization-json = "1.6.1"
+kotlin = "1.9.21"
+kotlinx-serialization-json = "1.6.2"
 ktorBom = "2.3.6"
 kumo-core = "1.28.1"
 krate = "2.0.0"
 lifecycle = "2.6.2"
-live-event = "1.3.0"
 material = "1.11.0-rc01"
 media = "1.7.0-rc01"
 mpAndroidChart = "v3.1.0"
 navigation = "2.7.5"
-nestedscrollwebview = "0.1.5"
+nestedscrollwebview = "0.1.6"
 okhttp = "5.0.0-alpha.11"
 palette-ktx = "1.0.0"
 persistentCookieJar = "v1.0.1"
@@ -36,6 +34,7 @@ preference-ktx = "1.2.1"
 profileinstaller = "1.3.1"
 recyclerview = "1.3.2"
 runner = "1.6.0-alpha04"
+slf4jSimple = "2.0.9"
 timber = "5.0.1"
 swiperefreshlayout = "1.2.0-alpha01"
 room = "2.6.0"
@@ -44,13 +43,13 @@ uiautomator = "2.3.0-alpha05"
 vertical-stepper-form = "2.7.0"
 work-runtime-ktx = "2.9.0-rc01"
 google-services = "4.4.0"
-android-application = "8.3.0-alpha14"
+android-application = "8.3.0-alpha16"
 benchmark-macro-junit4 = "1.2.1"
-ksp = "1.9.20-1.0.14"
+ksp = "1.9.21-1.0.15"
 github-release = "2.4.1"
 baselineprofile = "1.2.1"
 androidx-test-ext-junit = "1.1.5"
-transition = "1.5.0-alpha04"
+transition = "1.5.0-alpha05"
 
 [libraries]
 android-snowfall = { module = "com.github.jetradarmobile:android-snowfall", version.ref = "androidSnowfall" }
@@ -58,6 +57,7 @@ desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktorBom" }
 ktor-client-core = { module = "io.ktor:ktor-client-core" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging"}
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp" }
 ktor-client-android = { module = "io.ktor:ktor-client-android" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth" }
@@ -65,7 +65,6 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
 play-publisher = { module = "com.github.triplet.gradle:play-publisher", version.ref = "play-publisher" }
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
-androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
@@ -92,11 +91,9 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kumo-core = { module = "io.github.kawaiidango.kumo-android:kumo-core", version.ref = "kumo-core" }
 krate-kotlinx = { module = "hu.autsoft:krate-kotlinx", version.ref = "krate" }
 krate = { module = "hu.autsoft:krate", version.ref = "krate" }
-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
-live-event = { module = "com.github.hadilq:live-event", version.ref = "live-event" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 media = { module = "androidx.media:media", version.ref = "media" }
 mpAndroidChart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpAndroidChart" }
@@ -107,6 +104,7 @@ persistentCookieJar = { module = "com.github.franmontiel:PersistentCookieJar", v
 preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference-ktx" }
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jSimple" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
 vertical-stepper-form = { module = "com.ernestoyaquello.stepperform:vertical-stepper-form", version.ref = "vertical-stepper-form" }

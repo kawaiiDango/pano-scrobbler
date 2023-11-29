@@ -49,8 +49,8 @@
             android:id="@+id/info_track_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
             android:layout_marginHorizontal="4dp"
+            android:visibility="invisible"
             tools:text="05:30"
             tools:visibility="visible" />
 
@@ -61,10 +61,8 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/more_info"
             android:tooltipText="@string/more_info"
-            android:visibility="gone"
             app:icon="@drawable/vd_open_in_new"
-            app:iconTint="?colorSecondary"
-            tools:visibility="visible" />
+            app:iconTint="?colorSecondary" />
 
     </LinearLayout>
 
@@ -91,9 +89,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layoutAnimation="@anim/layout_animation_slide_up"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:orientation="vertical">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/info_tags"
@@ -145,6 +141,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/info_listeners_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -169,6 +166,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/info_scrobbles_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -240,10 +238,8 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/my_tags"
                 android:tooltipText="@string/my_tags"
-                android:visibility="gone"
                 app:icon="@drawable/vd_user_tag"
-                app:iconTint="?colorSecondary"
-                tools:visibility="visible" />
+                app:iconTint="?colorSecondary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/info_play"
@@ -290,6 +286,7 @@
             android:id="@+id/info_extra_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="50dp"
             android:visibility="gone"
             tools:visibility="visible" />
     </LinearLayout>

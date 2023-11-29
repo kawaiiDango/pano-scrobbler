@@ -16,11 +16,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.databinding.ContentRecBinding
-import com.arn.scrobble.scrobbleable.LoginFlows
+import com.arn.scrobble.onboarding.LoginFlows
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.setTextAndAnimate
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.delay
@@ -89,26 +91,23 @@ class RecFragment : Fragment() {
             }
         }
 
-        viewModel.fadeValue.observe(viewLifecycleOwner) {
-            it ?: return@observe
+        collectLatestLifecycleFlow(viewModel.fadeValue) {
             binding.recImg.alpha = it
         }
 
-        viewModel.progressValue.observe(viewLifecycleOwner) {
-            it ?: return@observe
+        collectLatestLifecycleFlow(viewModel.progressValue) {
             binding.recProgress.progress = it
         }
 
-        viewModel.statusText.observe(viewLifecycleOwner) {
-            it ?: return@observe
+        collectLatestLifecycleFlow(viewModel.statusText) {
             binding.recStatus.setTextAndAnimate(it)
         }
 
-        viewModel.rateLimitedEvent.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(viewModel.rateLimitedEvent) {
             showAddApiKey()
         }
 
-        viewModel.scrobbleEvent.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(viewModel.scrobbleEvent) {
             Snackbar.make(requireView(), R.string.state_scrobbled, Stuff.SCROBBLE_FROM_MIC_DELAY)
                 .setAction(android.R.string.cancel) {
                     viewModel.scrobbleJob?.cancel()
@@ -178,7 +177,7 @@ class RecFragment : Fragment() {
         prefs.acrcloudSecret = null
     }
     */
-    
+
     private fun showAddApiKey() {
         Snackbar.make(requireView(), R.string.add_acr_consider, 8 * 1000)
             .setAction(R.string.add) {

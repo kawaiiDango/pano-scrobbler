@@ -6,17 +6,19 @@ import android.media.MediaRecorder
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.acrcloud.rec.ACRCloudClient
 import com.acrcloud.rec.ACRCloudConfig
 import com.acrcloud.rec.ACRCloudResult
 import com.acrcloud.rec.IACRCloudListener
-import com.hadilq.liveevent.LiveEvent
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
+import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
@@ -27,15 +29,16 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
     private val prefs = App.prefs
     var started = false
     private var inited = false
-    val progressValue = MutableLiveData<Int>()
-    val fadeValue = MutableLiveData<Float>()
-    val statusText = MutableLiveData<String>()
-    val rateLimitedEvent = LiveEvent<Unit>()
-    val scrobbleEvent = LiveEvent<Unit>()
+    val progressValue = MutableStateFlow(0)
+    val fadeValue = MutableStateFlow(1f)
+    val statusText = MutableStateFlow("")
+    private val _rateLimitedEvent = MutableSharedFlow<Unit>()
+    val rateLimitedEvent = _rateLimitedEvent.asSharedFlow()
+    private val _scrobbleEvent = MutableSharedFlow<Unit>()
+    val scrobbleEvent = _scrobbleEvent.asSharedFlow()
     private var progressAnimator: ValueAnimator? = null
     private var stopJob: Job? = null
     var scrobbleJob: Job? = null
-    private var delayDeferred: Deferred<Unit>? = null
 
     private val acrConfig by lazy {
         ACRCloudConfig().apply {
@@ -157,21 +160,24 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
 
         when (statusCode) {
             0 -> {
-//                binding.recImg.setImageResource(R.drawable.vd_check_simple)
-                statusText.value =
-                    "✅ " + App.context.getString(R.string.artist_title, artist, title)
-                scrobbleEvent.value = Unit
+                viewModelScope.launch {
+                    statusText.emit(
+                        "✅ " + App.context.getString(R.string.artist_title, artist, title)
+                    )
 
-                val trackInfo = PlayingTrackInfo(
-                    App.context.packageName,
-                    playStartTime = System.currentTimeMillis()
-                )
+                    _scrobbleEvent.emit(Unit)
 
-                trackInfo.putOriginals(artist, title, album, "")
+                    val trackInfo = PlayingTrackInfo(
+                        App.context.packageName,
+                        playStartTime = System.currentTimeMillis()
+                    )
 
-                scrobbleJob = GlobalScope.launch {
-                    delay(Stuff.SCROBBLE_FROM_MIC_DELAY.toLong())
-                    LFMRequester(this).scrobble(false, trackInfo)
+                    trackInfo.putOriginals(artist, title, album, "")
+
+                    scrobbleJob = launch(Dispatchers.IO) {
+                        delay(Stuff.SCROBBLE_FROM_MIC_DELAY.toLong())
+                        ScrobbleEverywhere.scrobble(false, trackInfo)
+                    }
                 }
             }
 
@@ -185,7 +191,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             }
 
             2001 -> statusText.value = App.context.getString(R.string.recording_failed)
-            3003, 3015 -> rateLimitedEvent.value = Unit
+            3003, 3015 -> _rateLimitedEvent.tryEmit(Unit)
             else -> {
                 Stuff.logW("rec error: $statusCode - $statusMsg")
                 statusText.value = App.context.getString(R.string.network_error)

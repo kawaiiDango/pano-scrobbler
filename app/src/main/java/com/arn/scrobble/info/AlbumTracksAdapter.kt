@@ -2,21 +2,27 @@ package com.arn.scrobble.info
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.ListItemAlbumTracksBinding
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.ItemClickListener
-import de.umass.lastfm.Track
-import java.text.NumberFormat
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
 
 
 class AlbumTracksAdapter(private val tracks: List<Track>) :
-    RecyclerView.Adapter<AlbumTracksAdapter.VHAlbumTrack>() {
+    ListAdapter<Track, AlbumTracksAdapter.VHAlbumTrack>(
+        GenericDiffCallback { o, n -> o.name == n.name }
+    ) {
 
-    lateinit var itemClickListener: ItemClickListener
+    lateinit var itemClickListener: ItemClickListener<Track>
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+        submitList(tracks)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHAlbumTrack {
@@ -31,18 +37,23 @@ class AlbumTracksAdapter(private val tracks: List<Track>) :
         holder.setItemData(position, tracks[position])
     }
 
-    class VHAlbumTrack(
+    inner class VHAlbumTrack(
         private val binding: ListItemAlbumTracksBinding,
-        itemClickListener: ItemClickListener
+        itemClickListener: ItemClickListener<Track>
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
+            itemView.setOnClickListener {
+                itemClickListener.call(
+                    it,
+                    bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
+            }
         }
 
         fun setItemData(pos: Int, track: Track) {
-            binding.albumTrackNumber.text = NumberFormat.getInstance().format(pos + 1)
+            binding.albumTrackNumber.text = (pos + 1).format()
             binding.albumTrackName.text = track.name
-            if (track.duration > 0)
+            if (track.duration != null)
                 binding.albumTrackDuration.text = Stuff.humanReadableDuration(track.duration)
             else
                 binding.albumTrackDuration.text = ""

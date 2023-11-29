@@ -1,12 +1,12 @@
 package com.arn.scrobble.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import de.umass.lastfm.scrobble.ScrobbleData
+import com.arn.scrobble.api.lastfm.ScrobbleData
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BlockedMetadataDao {
@@ -14,10 +14,10 @@ interface BlockedMetadataDao {
     fun all(): List<BlockedMetadata>
 
     @Query("SELECT * FROM $tableName ORDER BY _id DESC")
-    fun allLd(): LiveData<List<BlockedMetadata>>
+    fun allFlow(): Flow<List<BlockedMetadata>>
 
     @Query("SELECT count(1) FROM $tableName")
-    fun count(): Int
+    fun count(): Flow<Int>
 
     @Query(
         """SELECT * FROM $tableName
@@ -36,6 +36,18 @@ interface BlockedMetadataDao {
         track: String,
         ignoredArtist: String?
     ): List<BlockedMetadata>
+
+    @Query(
+        """
+        SELECT * FROM $tableName
+        WHERE (artist LIKE '%' || :term || '%' OR
+        album LIKE '%' || :term || '%' OR
+        albumArtist LIKE '%' || :term || '%' OR
+        track LIKE '%' || :term || '%')
+        ORDER BY _id DESC
+    """
+    )
+    fun searchPartial(term: String): Flow<List<BlockedMetadata>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(e: List<BlockedMetadata>)

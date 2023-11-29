@@ -18,11 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.utils.Stuff.putData
+import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
@@ -30,8 +32,6 @@ import com.arn.scrobble.ui.UiUtils.showKeyboard
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.MusicEntry
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -49,9 +49,6 @@ class SearchFragment : Fragment() {
     private var _binding: ContentSearchBinding? = null
     private val binding
         get() = _binding!!
-
-    private val autoSubmitDelay = 1500L
-    private var lastTimerJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +93,7 @@ class SearchFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
             ) {
-                loadSearches(textView.text.toString())
+                doSearch(textView.text.toString())
                 hideKeyboard()
                 textView.clearFocus()
                 true
@@ -118,14 +115,7 @@ class SearchFragment : Fragment() {
                     binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
                     binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
 
-                    if (viewModel.searchResults.value?.term != term) {
-                        lastTimerJob?.cancel()
-                        lastTimerJob = viewLifecycleOwner.lifecycleScope.launch {
-                            delay(autoSubmitDelay)
-                            loadSearches(term)
-                        }
-                    }
-
+                    viewModel.search(term, prefs.searchType)
                 } else {
                     binding.searchTerm.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
                 }
@@ -145,7 +135,7 @@ class SearchFragment : Fragment() {
                             hideKeyboard()
                             binding.searchEdittext.setText(term, false)
                             binding.searchTerm.clearFocus()
-                            loadSearches(term)
+                            doSearch(term)
                         }
                         historyTextView.setOnLongClickListener {
                             MaterialAlertDialogBuilder(context)
@@ -179,7 +169,8 @@ class SearchFragment : Fragment() {
 
         val resultsItemClickListener = object : MusicEntryItemClickListener {
             override fun onItemClick(view: View, entry: MusicEntry) {
-                findNavController().navigate(R.id.infoFragment, entry.toBundle())
+                val args = Bundle().putData(entry)
+                findNavController().navigate(R.id.infoFragment, args)
             }
         }
         val resultsAdapter =
@@ -207,12 +198,11 @@ class SearchFragment : Fragment() {
 
             val searchTerm = binding.searchTerm.editText?.text?.toString()
             if (checkedChipId != null && !searchTerm.isNullOrBlank()) {
-                loadSearches(searchTerm)
+                doSearch(searchTerm)
             }
         }
 
-        viewModel.searchResults.observe(viewLifecycleOwner) {
-            it ?: return@observe
+        collectLatestLifecycleFlow(viewModel.searchResults) {
             binding.searchProgress.isIndeterminate = true
             binding.searchProgress.hide()
             binding.searchResultsList.visibility = View.VISIBLE
@@ -236,16 +226,14 @@ class SearchFragment : Fragment() {
         super.onStop()
     }
 
-    private fun loadSearches(term: String) {
-        lastTimerJob?.cancel()
-
+    private fun doSearch(term: String) {
         binding.searchResultsList.visibility = View.GONE
 
         if (prefs.searchType == SearchResultsAdapter.SearchType.LOCAL && prefs.lastMaxIndexTime == null)
             findNavController().navigate(R.id.indexingDialogFragment)
         else {
             binding.searchProgress.show()
-            viewModel.loadSearches(term, prefs.searchType)
+            viewModel.search(term, prefs.searchType)
         }
     }
 }

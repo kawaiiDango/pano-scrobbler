@@ -16,7 +16,8 @@ import coil.memory.MemoryCache
 import coil.size.Scale
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.ContentScrobblesBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
@@ -41,8 +42,7 @@ import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
 import com.arn.scrobble.ui.UiUtils.showWithIcons
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Track
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -56,12 +56,14 @@ import java.util.Objects
 
 class ScrobblesAdapter(
     private val fragmentBinding: ContentScrobblesBinding,
-    private val itemClickListener: ItemClickListener,
-    private val itemLongClickListener: ItemLongClickListener,
+    private val itemClickListener: ItemClickListener<Any>,
+    private val itemLongClickListener: ItemLongClickListener<Any>,
     private val focusChangeListener: FocusChangeListener,
     private val setHeroListener: SetHeroTrigger,
     private val viewModel: TracksVM,
+    private val userIsSelf: Boolean,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), LoadMoreGetter {
+
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     var isShowingAlbums = false
     var isShowingPlayers = false
@@ -116,7 +118,7 @@ class ScrobblesAdapter(
 
     override fun getItemCount() = viewModel.virtualList.size
 
-    fun updateTracks(tracks: List<Track>) {
+    private fun updateTracks(tracks: List<Track>) {
         viewModel.virtualList.addSection(
             SectionWithHeader(
                 Section.SCROBBLES,
@@ -128,7 +130,7 @@ class ScrobblesAdapter(
     }
 
     fun updatePendingScrobbles(pendingScrobbles: List<PendingScrobble>, notify: Boolean = true) {
-        val list = if (!viewModel.isShowingLoves && viewModel.username == null)
+        val list = if (!viewModel.isShowingLoves && userIsSelf)
             pendingScrobbles
         else
             emptyList()
@@ -153,7 +155,7 @@ class ScrobblesAdapter(
     }
 
     fun updatePendingLoves(pendingLoves: List<PendingLove>, notify: Boolean = true) {
-        val list = if (!viewModel.isShowingLoves && viewModel.username == null)
+        val list = if (!viewModel.isShowingLoves && userIsSelf)
             pendingLoves
         else
             emptyList()
@@ -178,45 +180,7 @@ class ScrobblesAdapter(
 
     }
 
-    fun removeTrack(track: Track) {
-        val idx = viewModel.virtualList
-            .indexOfFirst {
-                it is Track && it.playedWhen == track.playedWhen &&
-                        it.name == track.name && it.artist == track.artist
-            }
-
-        if (idx == -1) return
-        val foundTrack = viewModel.virtualList[idx] as Track
-
-        viewModel.deletedTracksStringSet += track.toString()
-
-        synchronized(viewModel.tracks) {
-            viewModel.tracks.remove(foundTrack)
-        }
-
-        updateTracks(viewModel.tracks.toList())
-
-        notifyItemRemoved(idx)
-    }
-
-    fun editTrack(track: Track) {
-        val idx =
-            viewModel.virtualList.indexOfFirst { it is Track && it.playedWhen == track.playedWhen }
-        val idxTracks = viewModel.tracks.indexOfFirst { it.playedWhen == track.playedWhen }
-
-        if (idx == -1 || idxTracks == -1) return
-        val prevTrack = viewModel.virtualList[idx] as Track
-
-        if (prevTrack.artist == track.artist && prevTrack.album == track.album && prevTrack.name == track.name)
-            return
-
-        viewModel.tracks[idxTracks] = track
-        updateTracks(viewModel.tracks.toList())
-        viewModel.deletedTracksStringSet += prevTrack.toString()
-        notifyItemChanged(idx)
-    }
-
-    fun populate() {
+    fun populate(tracks: List<Track>) {
         val oldVirtualList = viewModel.virtualList.copy()
         val prevSelectedItem =
             if (viewModel.virtualList.isEmpty())
@@ -226,13 +190,13 @@ class ScrobblesAdapter(
         val firstTrack = viewModel.virtualList[Section.SCROBBLES]?.items?.firstOrNull()
         val firstTrackSelected = prevSelectedItem === firstTrack
 
-        updatePendingScrobbles(viewModel.pendingScrobblesLd.value ?: listOf(), false)
-        updatePendingLoves(viewModel.pendingLovesLd.value ?: listOf(), false)
-        updateTracks(viewModel.tracks.toList())
+        updatePendingScrobbles(viewModel.pendingScrobbles.value, false)
+        updatePendingLoves(viewModel.pendingLoves.value, false)
+        updateTracks(tracks)
 
         if (!firstTrackSelected && prevSelectedItem is Track) {
             val pos =
-                viewModel.virtualList.indexOfFirst { it is Track && it.playedWhen?.time == prevSelectedItem.playedWhen?.time }
+                viewModel.virtualList.indexOfFirst { it is Track && it.date == prevSelectedItem.date }
             if (pos != -1) {
                 viewModel.selectedPos = pos
             }
@@ -240,7 +204,7 @@ class ScrobblesAdapter(
             viewModel.selectedPos = viewModel.virtualList.indexOfFirst { it is Track }
         }
 
-        if (oldVirtualList.isEmpty() && viewModel.virtualList.isNotEmpty() || fragmentBinding.swipeRefresh.isRefreshing) {
+        if (oldVirtualList.isEmpty() && viewModel.virtualList.isNotEmpty()) {
             fragmentBinding.scrobblesList.scheduleLayoutAnimation()
             notifyItemChanged(0, 0) //animation gets delayed otherwise
         } else if (oldVirtualList.size < viewModel.virtualList.size) // remove the loading gap from the last item
@@ -262,7 +226,7 @@ class ScrobblesAdapter(
                     oldItem is ExpandableHeader && newItem is ExpandableHeader -> oldItem.title == newItem.title
                     oldItem is PendingScrobble && newItem is PendingScrobble -> oldItem._id == newItem._id
                     oldItem is PendingLove && newItem is PendingLove -> oldItem._id == newItem._id
-                    oldItem is Track && newItem is Track -> oldItem.playedWhen?.time == newItem.playedWhen?.time
+                    oldItem is Track && newItem is Track -> oldItem.date == newItem.date
                     else -> false
                 }
             },
@@ -274,11 +238,7 @@ class ScrobblesAdapter(
                     oldItem is ExpandableHeader && newItem is ExpandableHeader -> oldItem == newItem
                     oldItem is PendingScrobble && newItem is PendingScrobble -> oldItem == newItem
                     oldItem is PendingLove && newItem is PendingLove -> oldItem == newItem
-                    oldItem is Track && newItem is Track -> oldItem.name == newItem.name &&
-                            oldItem.album == newItem.album && oldItem.artist == newItem.artist &&
-                            oldItem.isLoved == newItem.isLoved &&
-                            oldItem.getImageURL(ImageSize.MEDIUM) == newItem.getImageURL(ImageSize.MEDIUM)
-
+                    oldItem is Track && newItem is Track -> oldItem == newItem
                     else -> false
                 }
             }
@@ -291,15 +251,21 @@ class ScrobblesAdapter(
 
         init {
             binding.root.setOnClickListener {
-                itemClickListener.call(itemView, bindingAdapterPosition)
+                itemClickListener.call(itemView, bindingAdapterPosition) {
+                    getItem(bindingAdapterPosition)
+                }
             }
             binding.root.setOnLongClickListener {
-                itemLongClickListener.call(itemView, bindingAdapterPosition)
+                itemLongClickListener.call(itemView, bindingAdapterPosition) {
+                    getItem(bindingAdapterPosition)
+                }
                 true
             }
             binding.root.onFocusChangeListener = this
             binding.recentsMenu.setOnClickListener {
-                itemClickListener.call(it, bindingAdapterPosition)
+                itemClickListener.call(it, bindingAdapterPosition) {
+                    getItem(bindingAdapterPosition)
+                }
             }
         }
 
@@ -320,7 +286,7 @@ class ScrobblesAdapter(
         }
 
         private fun setPlayerIcon(track: Track) {
-            val timeMillis = track.playedWhen?.time
+            val timeSecs = track.date
             binding.playerIcon.visibility = View.VISIBLE
 
             fun fetchIcon(pkgName: String) {
@@ -333,19 +299,19 @@ class ScrobblesAdapter(
                 }
             }
 
-            if (timeMillis != null && viewModel.pkgMap[timeMillis] != null) {
-                fetchIcon(viewModel.pkgMap[timeMillis]!!)
+            if (timeSecs != null && viewModel.pkgMap[timeSecs] != null) {
+                fetchIcon(viewModel.pkgMap[timeSecs]!!)
             } else {
                 binding.playerIcon.dispose()
                 binding.playerIcon.load(null)
                 binding.playerIcon.contentDescription = null
                 job?.cancel()
 
-                if (timeMillis != null) {
+                if (timeSecs != null) {
                     job = viewModel.viewModelScope.launch(Dispatchers.IO) {
                         delay(100)
-                        playerDao.findPlayer(timeMillis)?.pkg?.let { pkgName ->
-                            viewModel.pkgMap[timeMillis] = pkgName
+                        playerDao.findPlayer(timeSecs)?.pkg?.let { pkgName ->
+                            viewModel.pkgMap[timeSecs] = pkgName
                             fetchIcon(pkgName)
                         }
                     }
@@ -355,11 +321,11 @@ class ScrobblesAdapter(
 
         fun setItemData(track: Track) {
             binding.recentsTitle.text = track.name
-            binding.recentsSubtitle.text = track.artist
+            binding.recentsSubtitle.text = track.artist.name
 
             if (isShowingAlbums) {
-                if (!track.album.isNullOrEmpty()) {
-                    binding.recentsAlbum.text = track.album
+                if (track.album != null) {
+                    binding.recentsAlbum.text = track.album.name
                     binding.recentsAlbum.visibility = View.VISIBLE
                     binding.recentsTrackLl.setPaddingRelative(
                         0,
@@ -388,9 +354,9 @@ class ScrobblesAdapter(
             } else {
                 binding.recentsDate.visibility = View.VISIBLE
                 binding.recentsDate.text =
-                    Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0)
+                    Stuff.myRelativeTime(itemView.context, track.date ?: 0)
 
-                if (track.isLastScrobbleOfTheDay) {
+                if (track.date in viewModel.lastScrobbleOfTheDaySet) {
                     binding.root.updatePaddingRelative(top = 16.dp)
                     binding.recentsDate.typeface = Typeface.DEFAULT_BOLD
                     binding.dividerCircle.isVisible = true
@@ -404,10 +370,10 @@ class ScrobblesAdapter(
                 UiUtils.nowPlayingAnim(binding.recentsPlaying, false)
             }
 
-            if (track.isLoved || track.isHated) {
+            if (track.userloved == true || track.userHated == true) {
                 binding.recentsImgOverlay.background = ContextCompat.getDrawable(
                     binding.recentsImgOverlay.context,
-                    if (track.isLoved)
+                    if (track.userloved == true)
                         R.drawable.vd_heart_stroked
                     else
                         R.drawable.vd_heart_break_stroked
@@ -421,7 +387,7 @@ class ScrobblesAdapter(
                 setPlayerIcon(track)
             }
 
-            val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
+            val imgUrl = track.webp300
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
                 Objects.hash(track.artist, track.name)
@@ -434,7 +400,7 @@ class ScrobblesAdapter(
                     error(errorDrawable)
                 }
             } else {
-                val musicEntryImageReq = MusicEntryImageReq(track, ImageSize.LARGE, true)
+                val musicEntryImageReq = MusicEntryImageReq(track)
                 binding.recentsImg.load(musicEntryImageReq) {
                     allowHardware(false)
                     placeholder(R.drawable.vd_wave_simple_filled)

@@ -18,15 +18,16 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.putSingle
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.databinding.ContentRegexTestBinding
 import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.chip.Chip
 import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.scrobble.ScrobbleData
 
 class RegexEditsTestFragment : Fragment() {
 
@@ -60,18 +61,20 @@ class RegexEditsTestFragment : Fragment() {
                     binding.regexTestArtist.text.isNullOrEmpty() &&
                     binding.regexTestAlbumArtist.text.isNullOrEmpty())
         ) {
-            viewModel.scrobbleData.value = null
+            viewModel.setScrobbleData(null)
             return
         }
 
-        val sd = ScrobbleData().apply {
-            track = binding.regexTestTrack.text.toString()
-            album = binding.regexTestAlbum.text.toString()
-            artist = binding.regexTestArtist.text.toString()
-            albumArtist = binding.regexTestAlbumArtist.text.toString()
-        }
+        val sd = ScrobbleData(
+            track = binding.regexTestTrack.text.toString(),
+            album = binding.regexTestAlbum.text.toString(),
+            artist = binding.regexTestArtist.text.toString(),
+            albumArtist = binding.regexTestAlbumArtist.text.toString(),
+            timestamp = 0,
+            duration = null,
+        )
 
-        viewModel.scrobbleData.value = sd
+        viewModel.setScrobbleData(sd)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,7 +108,7 @@ class RegexEditsTestFragment : Fragment() {
         }
 
         binding.regexTestPackage.setOnCloseIconClickListener {
-            viewModel.pkgNameSelected.value = null
+            viewModel.setPkgName(null)
         }
 
         fun onAppIconResult(drawable: Drawable?) {
@@ -115,16 +118,16 @@ class RegexEditsTestFragment : Fragment() {
         setFragmentResultListener(Stuff.ARG_ALLOWED_PACKAGES) { key, bundle ->
             if (key == Stuff.ARG_ALLOWED_PACKAGES) {
                 val pkgName = bundle.getStringArray(key)?.firstOrNull()
-                viewModel.pkgNameSelected.value = pkgName
+                viewModel.setPkgName(pkgName)
             }
         }
 
-        viewModel.regexMatches.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(viewModel.regexMatches) {
             if (it == null) {
                 binding.regexTestErr.isVisible = true
                 binding.regexTestMatchesViewgroup.isVisible = false
                 binding.regexTestErr.text = getString(R.string.required_fields_empty)
-                return@observe
+                return@collectLatestLifecycleFlow
             }
 
             if (it.values.all { it.isEmpty() }) {
@@ -135,7 +138,7 @@ class RegexEditsTestFragment : Fragment() {
                     0,
                     0
                 )
-                return@observe
+                return@collectLatestLifecycleFlow
             }
 
             binding.regexTestErr.isVisible = false
@@ -211,14 +214,11 @@ class RegexEditsTestFragment : Fragment() {
 
         }
 
-        viewModel.hasPkgName.observe(viewLifecycleOwner)
-        {
-            it ?: return@observe
+        collectLatestLifecycleFlow(viewModel.hasPkgName) {
             binding.regexTestPackage.isVisible = it
         }
 
-        viewModel.pkgNameSelected.observe(viewLifecycleOwner)
-        {
+        collectLatestLifecycleFlow(viewModel.pkgNameSelected) {
             if (it == null) {
                 binding.regexTestPackage.text = getString(R.string.choose_an_app)
                 binding.regexTestPackage.setChipIconResource(R.drawable.vd_add)
@@ -251,15 +251,6 @@ class RegexEditsTestFragment : Fragment() {
             }
 
             putScrobbleData()
-        }
-
-        viewModel.scrobbleData.observe(viewLifecycleOwner) {
-            if (it == null) {
-                viewModel.regexMatches.value = null
-                return@observe
-            }
-
-            viewModel.performRegexReplace()
         }
     }
 }

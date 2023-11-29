@@ -10,9 +10,9 @@ import android.widget.TextView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
 import com.google.android.material.slider.Slider
-import java.text.NumberFormat
 
 
 /**
@@ -142,11 +142,13 @@ class PersistedSliderPref(context: Context, attrs: AttributeSet?, defAttrs: Int,
             "per",
             "percent" ->
                 "$value%"
+
             "secs",
             "time" ->
                 Stuff.humanReadableDuration(value)
+
             else ->
-                NumberFormat.getInstance().format(value)
+                value.format()
         }
     }
 

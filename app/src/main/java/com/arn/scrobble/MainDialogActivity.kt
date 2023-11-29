@@ -9,11 +9,12 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
-import com.arn.scrobble.LocaleUtils.setLocaleCompat
-import com.arn.scrobble.Stuff.myHash
+import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.utils.Stuff.myHash
 import com.arn.scrobble.billing.BillingViewModel
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.utils.Stuff
 import java.util.Objects
 
 class MainDialogActivity : AppCompatActivity() {

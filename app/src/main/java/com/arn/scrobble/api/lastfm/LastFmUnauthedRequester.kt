@@ -1,0 +1,227 @@
+package com.arn.scrobble.api.lastfm
+
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.Requesters.getPageResult
+import com.arn.scrobble.api.Requesters.getResult
+import com.arn.scrobble.search.SearchResultsAdapter
+import com.arn.scrobble.utils.Stuff
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.parameter
+import io.ktor.client.request.url
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
+
+class LastFmUnauthedRequester {
+
+    private val apiKey = Stuff.LAST_KEY
+    private val client by lazy { Requesters.genericKtorClient }
+
+    // search
+    suspend fun search(
+        term: String,
+        limitEach: Int? = null,
+    ): Result<SearchResults> = supervisorScope {
+        val request = HttpRequestBuilder().apply {
+            this.url(Stuff.LASTFM_API_ROOT)
+            parameter("limit", limitEach)
+            parameter("format", "json")
+            parameter("api_key", apiKey)
+        }
+
+        val artists = async {
+            client.getResult<ArtistSearchResponse>(Stuff.LASTFM_API_ROOT) {
+                takeFrom(request)
+                parameter("method", "artist.search")
+                parameter("artist", term)
+            }.map { it.results.artistmatches.entries }
+        }.await()
+
+        val albums = async {
+            client.getResult<AlbumSearchResponse>(Stuff.LASTFM_API_ROOT) {
+                takeFrom(request)
+                parameter("method", "album.search")
+                parameter("album", term)
+            }.map { it.results.albummatches.entries }
+        }.await()
+
+        val tracks = async {
+            client.getResult<TrackSearchResponse>(Stuff.LASTFM_API_ROOT) {
+                takeFrom(request)
+                parameter("method", "track.search")
+                parameter("track", term)
+            }.map { it.results.trackmatches.entries }
+        }.await()
+
+        if (artists.isFailure || albums.isFailure || tracks.isFailure)
+            return@supervisorScope Result.failure(
+                artists.exceptionOrNull()
+                    ?: albums.exceptionOrNull()
+                    ?: tracks.exceptionOrNull()!!
+            )
+
+        val sr = SearchResults(
+            term,
+            searchType = SearchResultsAdapter.SearchType.GLOBAL,
+            lovedTracks = listOf(),
+            tracks = tracks.getOrDefault(listOf()),
+            artists = artists.getOrDefault(listOf()),
+            albums = albums.getOrDefault(listOf()),
+        )
+        Result.success(sr)
+    }
+
+
+    suspend fun <T : MusicEntry> getInfo(
+        musicEntry: T,
+        username: String? = null,
+        autocorrect: Boolean = true,
+    ): Result<T> {
+        val reqBuilder = HttpRequestBuilder().apply {
+            url(Stuff.LASTFM_API_ROOT)
+            parameter("autocorrect", if (autocorrect) 1 else 0)
+            parameter("username", username)
+            parameter("format", "json")
+            parameter("api_key", apiKey)
+        }
+
+        return when (musicEntry) {
+            is Artist -> client.getResult<ArtistInfoResponse> {
+                takeFrom(reqBuilder)
+                parameter("method", "artist.getInfo")
+                parameter("artist", musicEntry.name)
+            }.map { it.artist as T }
+
+            is Album -> client.getResult<AlbumInfoResponse> {
+                takeFrom(reqBuilder)
+                parameter("method", "album.getInfo")
+                parameter("artist", musicEntry.artist!!.name)
+                parameter("album", musicEntry.name)
+            }.map { it.album as T }
+
+            is Track -> client.getResult<TrackInfoResponse> {
+                takeFrom(reqBuilder)
+                parameter("method", "track.getInfo")
+                parameter("artist", musicEntry.artist.name)
+                parameter("track", musicEntry.name)
+            }.map {
+                // fix duration returned in millis
+                (it.track.copy(duration = it.track.duration?.div(1000)) as T)
+            }
+
+            else -> throw IllegalArgumentException("Unknown type")
+        }
+    }
+
+    suspend fun <T : MusicEntry> getTopTags(
+        musicEntry: T,
+        autocorrect: Boolean = true,
+    ): Result<TagsResponse> {
+        val reqBuilder = HttpRequestBuilder().apply {
+            url(Stuff.LASTFM_API_ROOT)
+            parameter("autocorrect", if (autocorrect) 1 else 0)
+            parameter("format", "json")
+            parameter("api_key", apiKey)
+        }
+
+        return when (musicEntry) {
+            is Artist -> client.getResult<TagsResponse> {
+                takeFrom(reqBuilder)
+                parameter("method", "artist.getTopTags")
+                parameter("artist", musicEntry.name)
+            }
+
+            is Album -> client.getResult<TagsResponse> {
+                takeFrom(reqBuilder)
+                parameter("method", "album.getTopTags")
+                parameter("artist", musicEntry.artist!!.name)
+                parameter("album", musicEntry.name)
+            }
+
+            is Track -> client.getResult<TagsResponse> {
+                takeFrom(reqBuilder)
+                parameter("method", "track.getTopTags")
+                parameter("artist", musicEntry.artist.name)
+                parameter("track", musicEntry.name)
+            }
+
+            else -> throw IllegalArgumentException("Unknown type")
+        }
+    }
+
+    suspend fun artistGetTopTracks(
+        artist: Artist,
+        autocorrect: Boolean = true,
+        limit: Int? = null,
+        page: Int? = null,
+    ) = client.getPageResult<TopTracksResponse, Track>(
+        Stuff.LASTFM_API_ROOT,
+        { it.toptracks }
+    ) {
+        parameter("method", "artist.getTopTracks")
+        parameter("artist", artist.name)
+        parameter("autocorrect", if (autocorrect) 1 else 0)
+        parameter("limit", limit)
+        parameter("page", page)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+    }
+
+    suspend fun artistGetTopAlbums(
+        artist: Artist,
+        autocorrect: Boolean = true,
+        limit: Int? = null,
+        page: Int? = null,
+    ) = client.getPageResult<TopAlbumsResponse, Album>(
+        Stuff.LASTFM_API_ROOT,
+        { it.topalbums }
+    ) {
+        parameter("method", "artist.getTopAlbums")
+        parameter("artist", artist.name)
+        parameter("autocorrect", if (autocorrect) 1 else 0)
+        parameter("limit", limit)
+        parameter("page", page)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+    }
+
+    suspend fun artistGetSimilar(
+        artist: Artist,
+        autocorrect: Boolean = true,
+        limit: Int? = null,
+    ) = client.getResult<SimilarArtistsResponse> {
+        url(Stuff.LASTFM_API_ROOT)
+        parameter("method", "artist.getSimilar")
+        parameter("artist", artist.name)
+        parameter("autocorrect", if (autocorrect) 1 else 0)
+        parameter("limit", limit)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+    }.map { it.similarartists.artist }
+
+
+    suspend fun trackGetSimilar(
+        track: Track,
+        autocorrect: Boolean = true,
+        limit: Int? = null,
+    ) = client.getResult<SimilarTracksResponse> {
+        url(Stuff.LASTFM_API_ROOT)
+        parameter("method", "track.getSimilar")
+        parameter("artist", track.artist.name)
+        parameter("track", track.name)
+        parameter("autocorrect", if (autocorrect) 1 else 0)
+        parameter("limit", limit)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+    }.map { it.similartracks.track }
+
+    // tag
+    suspend fun tagGetInfo(tag: String) =
+        client.getResult<TagGetInfoResponse> {
+            url(Stuff.LASTFM_API_ROOT)
+            parameter("method", "tag.getInfo")
+            parameter("tag", tag)
+            parameter("format", "json")
+            parameter("api_key", apiKey)
+        }.map { it.tag }
+
+}

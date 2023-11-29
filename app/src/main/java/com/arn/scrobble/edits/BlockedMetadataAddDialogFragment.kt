@@ -13,8 +13,8 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.getSingle
-import com.arn.scrobble.Stuff.putSingle
+import com.arn.scrobble.utils.Stuff.getSingle
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.databinding.DialogBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase

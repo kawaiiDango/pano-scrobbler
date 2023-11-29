@@ -10,7 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.SearchResults
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.ui.ExpandableHeader
@@ -20,12 +24,9 @@ import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
-import de.umass.lastfm.Album
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
 import java.text.DateFormat
-import java.text.NumberFormat
 
 
 class SearchResultsAdapter(
@@ -78,7 +79,7 @@ class SearchResultsAdapter(
 
     fun getItem(pos: Int) = data[pos]
 
-    fun populate(searchResults: SearchVM.SearchResults) {
+    fun populate(searchResults: SearchResults) {
         searchType = searchResults.searchType
 
         if (searchResults.isEmpty) {
@@ -146,7 +147,7 @@ class SearchResultsAdapter(
         if (searchType == SearchType.LOCAL) {
             var lastIndexedInfo = context.getString(
                 R.string.searched_n_items,
-                NumberFormat.getInstance().format(Stuff.MAX_INDEXED_ITEMS)
+                Stuff.MAX_INDEXED_ITEMS.format()
             )
             lastIndexedInfo += "\n" + context.getString(
                 R.string.last_indexed,
@@ -187,29 +188,29 @@ class SearchResultsAdapter(
 
         fun setData(entry: MusicEntry) {
             binding.recentsTitle.text = entry.name
-            if (entry.listeners > 0 && searchType == SearchType.GLOBAL) {
+            if ((entry.listeners ?: 0) > 0 && searchType == SearchType.GLOBAL) {
                 binding.recentsDate.text = itemView.context.resources.getQuantityString(
                     R.plurals.num_listeners,
-                    entry.listeners,
-                    NumberFormat.getInstance().format(entry.listeners)
+                    entry.listeners!!,
+                    entry.listeners!!.format()
                 )
-            } else if (entry.userPlaycount > 0 && searchType == SearchType.LOCAL) {
+            } else if ((entry.userplaycount ?: 0) > 0 && searchType == SearchType.LOCAL) {
                 binding.recentsDate.text = itemView.context.resources.getQuantityString(
                     R.plurals.num_scrobbles_noti,
-                    entry.userPlaycount,
-                    NumberFormat.getInstance().format(entry.userPlaycount)
+                    entry.userplaycount!!,
+                    entry.userplaycount!!.format()
                 )
             } else {
                 binding.recentsDate.text = ""
             }
             when (entry) {
-                is Album -> binding.recentsSubtitle.text = entry.artist
-                is Track -> binding.recentsSubtitle.text = entry.artist
+                is Album -> binding.recentsSubtitle.text = entry.artist!!.name
+                is Track -> binding.recentsSubtitle.text = entry.artist.name
                 else -> binding.recentsSubtitle.text = ""
             }
 
             binding.recentsImgOverlay.visibility =
-                if ((entry as? Track)?.isLoved == true) View.VISIBLE else View.INVISIBLE
+                if ((entry as? Track)?.userloved == true) View.VISIBLE else View.INVISIBLE
 
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
@@ -217,13 +218,13 @@ class SearchResultsAdapter(
             )
 
             if (entry is Album && searchType == SearchType.GLOBAL) {
-                binding.recentsImg.load(entry.getWebpImageURL(ImageSize.LARGE) ?: "") {
+                binding.recentsImg.load(entry.webp300 ?: "") {
                     placeholder(R.drawable.vd_wave_simple_filled)
                     error(errorDrawable)
                     allowHardware(false)
                 }
             } else {
-                binding.recentsImg.load(MusicEntryImageReq(entry, ImageSize.LARGE, false)) {
+                binding.recentsImg.load(MusicEntryImageReq(entry)) {
                     placeholder(R.drawable.vd_wave_simple_filled)
                     error(errorDrawable)
                     allowHardware(false) // crashes on back otherwise

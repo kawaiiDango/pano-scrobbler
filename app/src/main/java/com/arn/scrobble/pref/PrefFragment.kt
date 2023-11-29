@@ -11,9 +11,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Icon
-import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -36,31 +34,31 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
-import androidx.recyclerview.widget.DividerItemDecoration
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.ForceLogException
-import com.arn.scrobble.LocaleUtils
-import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.copyToClipboard
-import com.arn.scrobble.Stuff.isChannelEnabled
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.scrobbleable.AccountType
-import com.arn.scrobble.scrobbleable.LoginFlows
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.onboarding.LoginFlows
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.ForceLogException
+import com.arn.scrobble.utils.LocaleUtils
+import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.copyToClipboard
+import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.Stuff.isChannelEnabled
 import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +66,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
 
@@ -347,9 +344,14 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<SwitchPreference>(MainPrefs.PREF_CRASHLYTICS_ENABLED)!!
             .setOnPreferenceChangeListener { preference, newValue ->
+                newValue as Boolean
+
                 kotlin.runCatching {
-                    FirebaseCrashlytics.getInstance()
-                        .setCrashlyticsCollectionEnabled(newValue as Boolean)
+                    FirebaseCrashlytics.getInstance().apply {
+                        setCrashlyticsCollectionEnabled(newValue)
+                        if (!newValue)
+                            deleteUnsentReports()
+                    }
                 }
                 true
             }
@@ -370,6 +372,26 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
 
         }
+
+
+        val simpleEdits = findPreference<Preference>("simple_edits")!!
+        simpleEdits.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.simpleEditsFragment)
+            true
+        }
+
+        val regexEdits = findPreference<Preference>("regex_edits")!!
+        regexEdits.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.regexEditsFragment)
+            true
+        }
+
+        val blockedMetadata = findPreference<Preference>("blocked_metadata")!!
+        blockedMetadata.setOnPreferenceClickListener {
+            findNavController().navigate(R.id.blockedMetadataFragment)
+            true
+        }
+
 
         if (prefs.checkForUpdates == null) {
             findPreference<SwitchPreference>("check_for_updates")!!
@@ -727,64 +749,32 @@ class PrefFragment : PreferenceFragmentCompat() {
         setAuthLabel("listenbrainz", AccountType.LISTENBRAINZ)
         setAuthLabel("lb", AccountType.CUSTOM_LISTENBRAINZ)
 
-        val simpleEdits = findPreference<Preference>("simple_edits")!!
-        simpleEdits.setOnPreferenceClickListener {
-            findNavController().navigate(R.id.simpleEditsFragment)
-            true
+        collectLatestLifecycleFlow(PanoDb.db.getSimpleEditsDao().count()) {
+            findPreference<Preference>("simple_edits")!!.title =
+                resources.getQuantityString(
+                    R.plurals.num_simple_edits,
+                    it,
+                    it.format()
+                )
+
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.db.getSimpleEditsDao().count()
-            }
-            withContext(Dispatchers.Main) {
-                simpleEdits.title =
-                    resources.getQuantityString(
-                        R.plurals.num_simple_edits,
-                        numEdits,
-                        NumberFormat.getInstance().format(numEdits)
-                    )
-            }
+        collectLatestLifecycleFlow(PanoDb.db.getRegexEditsDao().count()) {
+            findPreference<Preference>("regex_edits")!!.title =
+                resources.getQuantityString(
+                    R.plurals.num_regex_edits,
+                    it,
+                    it.format()
+                )
         }
 
-        val regexEdits = findPreference<Preference>("regex_edits")!!
-        regexEdits.setOnPreferenceClickListener {
-            findNavController().navigate(R.id.regexEditsFragment)
-            true
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.db.getRegexEditsDao().count()
-            }
-            withContext(Dispatchers.Main) {
-                regexEdits.title =
-                    resources.getQuantityString(
-                        R.plurals.num_regex_edits,
-                        numEdits,
-                        NumberFormat.getInstance().format(numEdits)
-                    )
-            }
-        }
-
-        val blockedMetadata = findPreference<Preference>("blocked_metadata")!!
-        blockedMetadata.setOnPreferenceClickListener {
-            findNavController().navigate(R.id.blockedMetadataFragment)
-            true
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.db.getBlockedMetadataDao().count()
-            }
-            withContext(Dispatchers.Main) {
-                blockedMetadata.title =
-                    resources.getQuantityString(
-                        R.plurals.num_blocked_metadata,
-                        numEdits,
-                        NumberFormat.getInstance().format(numEdits)
-                    )
-            }
+        collectLatestLifecycleFlow(PanoDb.db.getBlockedMetadataDao().count()) {
+            findPreference<Preference>("blocked_metadata")!!.title =
+                resources.getQuantityString(
+                    R.plurals.num_blocked_metadata,
+                    it,
+                    it.format()
+                )
         }
 
         findPreference<SwitchPreference>("show_scrobble_sources")!!.isVisible = prefs.proStatus

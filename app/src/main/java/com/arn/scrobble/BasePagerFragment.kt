@@ -10,7 +10,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.activityViewModels
-import com.arn.scrobble.NavUtils.setupWithNavUi
+import com.arn.scrobble.utils.NavUtils.setupWithNavUi
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions

@@ -2,19 +2,23 @@ package com.arn.scrobble
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.api.github.GithubReleases
+import com.arn.scrobble.api.github.Updater
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.scrobbleable.Lastfm
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.api.lastfm.LastFm
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.FabData
-import com.hadilq.liveevent.LiveEvent
-import de.umass.lastfm.Track
-import kotlinx.coroutines.Dispatchers
+import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -24,24 +28,27 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     var prevDestinationId: Int? = null
     private var lastDrawerDataRefreshTime = 0L
 
-    val drawerData by lazy {
-        MutableLiveData<DrawerData>(
-            if (userIsSelf)
-                prefs.drawerDataCached
-            else
-                null
-        )
+    private val _drawerData by lazy {
+        MutableStateFlow<DrawerData?>(prefs.drawerDataCached)
     }
 
-    val canIndex by lazy { MutableLiveData(false) }
+    val drawerData = _drawerData.asStateFlow()
 
-    val fabData by lazy { MutableLiveData<FabData>() }
+    private val _canIndex = MutableStateFlow(false)
+    val canIndex = _canIndex.asStateFlow()
 
-    val editData by lazy { LiveEvent<Track>() }
+    private val _fabData = MutableStateFlow<FabData?>(null)
+    val fabData = _fabData.asStateFlow()
 
-    lateinit var currentUser: UserSerializable
+    private val _editData = MutableSharedFlow<Track>()
+    val editData = _editData.asSharedFlow()
 
-    private var prevDrawerUser: UserSerializable? = null
+    private val _updateAvailable = MutableSharedFlow<GithubReleases>()
+    val updateAvailable = _updateAvailable.asSharedFlow()
+
+    lateinit var currentUser: UserCached
+
+    private var prevDrawerUser: UserCached? = null
 
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
@@ -51,12 +58,12 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun updateCanIndex() {
-        canIndex.value = BuildConfig.DEBUG && Scrobblables.current is Lastfm &&
+        _canIndex.value = BuildConfig.DEBUG && Scrobblables.current is LastFm &&
                 System.currentTimeMillis() -
                 (prefs.lastMaxIndexTime ?: 0) > TimeUnit.HOURS.toMillis(12)
     }
 
-    fun initializeCurrentUser(user: UserSerializable) {
+    fun initializeCurrentUser(user: UserCached) {
         if (!::currentUser.isInitialized)
             currentUser = user
     }
@@ -66,10 +73,12 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
             prevDrawerUser != currentUser ||
             System.currentTimeMillis() - lastDrawerDataRefreshTime > Stuff.RECENTS_REFRESH_INTERVAL
         )
-            viewModelScope.launch(LFMRequester.ExceptionNotifier()) {
-                drawerData.value = withContext(Dispatchers.IO) {
-                    Scrobblables.current?.loadDrawerData(currentUser.name)
-                }
+            viewModelScope.launch {
+                Scrobblables.current
+                    ?.loadDrawerData(currentUser.name)
+                    ?.let {
+                        _drawerData.emit(it)
+                    }
                 lastDrawerDataRefreshTime = System.currentTimeMillis()
             }
     }
@@ -78,8 +87,42 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
         PanoDb.destroyInstance()
     }
 
-    val userIsSelf
-        get() = ::currentUser.isInitialized && currentUser == Scrobblables.currentScrobblableUser
-
     val destroyEventPending = Semaphore(1)
+
+    fun setFabData(fabData: FabData?) {
+        viewModelScope.launch {
+            _fabData.emit(fabData)
+        }
+    }
+
+    fun clearDrawerData() {
+        viewModelScope.launch {
+            _drawerData.emit(null)
+        }
+    }
+
+    fun notifyEdit(track: Track) {
+        viewModelScope.launch {
+            _editData.emit(track)
+        }
+    }
+
+    // from activity
+    fun checkForUpdatesIfNeeded() {
+        // check if play store exists
+        val hasPlayStore = getApplication<App>()
+            .packageManager
+            .getLaunchIntentForPackage("com.android.vending") != null
+
+        if (hasPlayStore) {
+            prefs.checkForUpdates = null
+            return
+        } else if (prefs.checkForUpdates == null) {
+            prefs.checkForUpdates = true
+        }
+
+        viewModelScope.launch {
+            _updateAvailable.emitAll(Updater().checkGithubForUpdates())
+        }
+    }
 }

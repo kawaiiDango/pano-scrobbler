@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.drawToBitmap
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -29,20 +30,22 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.LayoutCollageFooterBinding
+import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.RoundedBarChart
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.ui.UiUtils.sp
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
@@ -62,6 +65,7 @@ import com.kennycason.kumo.palette.LinearGradientColorPalette
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -70,7 +74,8 @@ import java.io.FileOutputStream
 
 open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
-    private val chartsOverviewVM by viewModels<ChartsOverviewVM>()
+    override val viewModel by viewModels<ChartsOverviewVM>()
+
     private var scrobbleFrequenciesChartInited = false
     private var _binding: ContentChartsOverviewBinding? = null
     private val binding
@@ -82,9 +87,12 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-      childFragmentManager.setFragmentResultListener(Stuff.ARG_HIDDEN_TAGS_CHANGED, this) { requestKey, bundle ->
+        childFragmentManager.setFragmentResultListener(
+            Stuff.ARG_HIDDEN_TAGS_CHANGED,
+            this
+        ) { requestKey, bundle ->
             if (requestKey == Stuff.ARG_HIDDEN_TAGS_CHANGED && bundle.getBoolean(Stuff.ARG_HIDDEN_TAGS_CHANGED)) {
-                chartsOverviewVM.tagCloudRequested = false
+                viewModel.tagCloudRequested = false
                 loadMoreSectionsIfNeeded()
             }
         }
@@ -111,32 +119,22 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     override fun onResume() {
         super.onResume()
         setTitle(R.string.charts)
-        if (binding.chartsArtistsFrame.chartsList.adapter == null)
-            postInit()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        postInit()
     }
 
     override fun loadFirstPage(networkOnly: Boolean) {
-        viewModel.periodType.value.let {
-            chartsOverviewVM.artistsVM.periodType.value = it
-            chartsOverviewVM.albumsVM.periodType.value = it
-            chartsOverviewVM.tracksVM.periodType.value = it
-        }
-        viewModel.selectedPeriod.value.let {
-            chartsOverviewVM.artistsVM.selectedPeriod.value = it
-            chartsOverviewVM.albumsVM.selectedPeriod.value = it
-            chartsOverviewVM.tracksVM.selectedPeriod.value = it
-        }
-        viewModel.timePeriods.value.let {
-            chartsOverviewVM.artistsVM.timePeriods.value = it
-            chartsOverviewVM.albumsVM.timePeriods.value = it
-            chartsOverviewVM.tracksVM.timePeriods.value = it
-        }
-        chartsOverviewVM.artistsVM.loadCharts(1)
-        chartsOverviewVM.albumsVM.loadCharts(1)
-        chartsOverviewVM.tracksVM.loadCharts(1)
-        chartsOverviewVM.resetRequestedState()
-        chartsOverviewVM.listeningActivity.value = null
-        loadMoreSectionsIfNeeded()
+        val input = MusicEntryLoaderInput(
+            type = 0,
+            page = 1,
+            timePeriod = viewModel.selectedPeriod.value,
+            user = activityViewModel.currentUser,
+        )
+
+        viewModel.setInput(input)
     }
 
     override fun postInit() {
@@ -171,8 +169,8 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             0
         )
 
-        binding.chartsScrobbleFrequenciesHeader.headerAction.visibility = View.GONE
-        binding.chartsScrobbleFrequenciesHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+        binding.chartsListeningActivityHeader.headerAction.visibility = View.GONE
+        binding.chartsListeningActivityHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             R.drawable.vd_line_chart,
             0,
             0,
@@ -243,47 +241,57 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
         binding.chartsCreateCollage.setOnClickListener {
             val arguments = Bundle().apply {
-                putSingle(viewModel.selectedPeriod.value ?: return@setOnClickListener)
+                putSingle(viewModel.selectedPeriod.value)
                 putInt(Stuff.ARG_TYPE, Stuff.TYPE_ALL)
             }
             findNavController().navigate(R.id.collageGeneratorFragment, arguments)
         }
 
-        chartsOverviewVM.listeningActivity.observe(viewLifecycleOwner) {
-            it ?: return@observe
+        collectLatestLifecycleFlow(
+            viewModel.listeningActivity.filterNotNull(),
+        ) {
             var idx = 0
 
             val entries = it.map { (timePeriod, count) ->
                 BarEntry((idx++).toFloat(), count.toFloat(), timePeriod.name)
             }
 
-            setListeningActivityData(entries)
-            binding.chartsScrobbleFrequenciesProgress.hide()
+            if (it.all { (k, v) -> v == 0 })
+                binding.listeningActivityStatus.isVisible = true
+            else {
+                binding.listeningActivityStatus.isVisible = false
+                setListeningActivityData(entries)
+            }
+
+            binding.chartsListeningActivityProgress.hide()
         }
 
-        chartsOverviewVM.listeningActivityHeader.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            binding.chartsScrobbleFrequenciesHeader.headerText.text = it
+        collectLatestLifecycleFlow(
+            viewModel.listeningActivityHeader,
+        ) {
+            binding.chartsListeningActivityHeader.headerText.text = it
         }
 
         var lastTagCloudJob: Job? = null
 
-        chartsOverviewVM.tagCloudProgressLd.observe(viewLifecycleOwner) {
-            it ?: return@observe
+        collectLatestLifecycleFlow(
+            viewModel.tagCloudProgress,
+        ) {
+            if (it == 0.0) {
+                binding.chartsTagCloud.visibility = View.INVISIBLE
+                binding.chartsTagCloudProgress.progress = 0
+                binding.chartsTagCloudProgress.show()
+            }
+
             binding.chartsTagCloudProgress.progress =
-                (it * binding.chartsTagCloudProgress.max * 0.8).toInt()
+                (it * binding.chartsTagCloudProgress.max).toInt()
         }
 
-        chartsOverviewVM.tagCloud.observe(viewLifecycleOwner) { tagWeights ->
-            tagWeights ?: return@observe
+        collectLatestLifecycleFlow(
+            viewModel.tagCloud.filterNotNull(),
+        ) { tagWeights ->
             lastTagCloudJob?.cancel()
-
-            if (tagWeights.isEmpty()) {
-                binding.chartsTagCloudStatus.visibility = View.VISIBLE
-                return@observe
-            } else {
-                binding.chartsTagCloudStatus.visibility = View.GONE
-            }
+            binding.chartsTagCloudStatus.visibility = View.GONE
 
             // this fixes java.lang.IllegalArgumentException: width and height must be > 0
             //            at android.graphics.Bitmap.createBitmap(Bitmap.java:1120)
@@ -291,15 +299,15 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
                 lastTagCloudJob = viewLifecycleOwner.lifecycleScope.launch {
                     val bitmap =
-                        if (chartsOverviewVM.tagCloudBitmap?.first == tagWeights.hashCode()) {
-                            chartsOverviewVM.tagCloudBitmap!!.second
+                        if (viewModel.tagCloudBitmap?.first == tagWeights.hashCode()) {
+                            viewModel.tagCloudBitmap!!.second
                         } else {
                             withContext(Dispatchers.IO) {
                                 generateTagCloud(tagWeights, binding.chartsTagCloud.width)
                             }
                         }
 
-                    chartsOverviewVM.tagCloudBitmap = tagWeights.hashCode() to bitmap
+                    viewModel.tagCloudBitmap = tagWeights.hashCode() to bitmap
 
                     binding.chartsTagCloudProgress.hide()
 
@@ -327,12 +335,18 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             }
         }
 
-        chartsOverviewVM.tagCloudError.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(
+            viewModel.tagCloudError,
+        ) {
             if (it is IllegalStateException) {
                 binding.chartsTagCloudProgress.hide()
                 binding.chartsTagCloudStatus.visibility = View.VISIBLE
             }
         }
+
+//        collectLatestLifecycleFlow(viewModel.hasLoaded) {
+//            binding.swipeRefresh.isRefreshing = !it
+//        }
 
         super.postInit()
     }
@@ -341,26 +355,14 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         if (type == Stuff.TYPE_ARTISTS)
             chartFrameBinding.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
 
-        val sectionVM = when (type) {
-            Stuff.TYPE_ARTISTS -> chartsOverviewVM.artistsVM
-            Stuff.TYPE_ALBUMS -> chartsOverviewVM.albumsVM
-            Stuff.TYPE_TRACKS -> chartsOverviewVM.tracksVM
-            else -> throw IllegalArgumentException("Unknown type $type")
-        }
-
-        sectionVM.username = activityViewModel.currentUser.name
-        sectionVM.chartsType = type
+        val sectionFlow = viewModel.getEntries(type).filterNotNull()
 
         val adapter = ChartsOverviewAdapter(chartFrameBinding)
-        adapter.viewModel = sectionVM
         adapter.clickListener = this
 
         val itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.shape_divider_chart
-            )!!
+            ContextCompat.getDrawable(requireContext(), R.drawable.shape_divider_chart)!!
         )
         chartFrameBinding.chartsList.addItemDecoration(itemDecor)
 
@@ -370,39 +372,31 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             false
         chartFrameBinding.chartsList.adapter = adapter
 
-        sectionVM.chartsReceiver.observe(viewLifecycleOwner) {
-            binding.swipeRefresh.isRefreshing = false
-
-            sectionVM.totalCount = it.total
-            if (it.total > 0)
-                viewModel.totalCount = it.total
+        collectLatestLifecycleFlow(
+            sectionFlow,
+        ) {
             setHeader(type)
-            sectionVM.reachedEnd = true
-            synchronized(sectionVM.chartsData) {
-                if (it.page == 1)
-                    sectionVM.chartsData.clear()
-                sectionVM.chartsData.addAll(it.pageResults)
-            }
-            adapter.populate()
-            if (it.page == 1)
-                chartFrameBinding.chartsList.smoothScrollToPosition(0)
+            adapter.populate(it, true)
 
             if (type == Stuff.TYPE_ARTISTS)
                 loadMoreSectionsIfNeeded() // load tag cloud
         }
 
-        if (sectionVM.chartsData.isNotEmpty())
-            adapter.populate()
+        collectLatestLifecycleFlow(
+            viewModel.hasLoaded,
+        ) {
+            adapter.progressVisible(!it)
+        }
+
     }
 
     private fun setHeader(type: Int) {
-        val count: Int
+        val count = viewModel.getTotal(type)
         val text: String
         val header: HeaderWithActionBinding
 
         when (type) {
             Stuff.TYPE_ARTISTS -> {
-                count = chartsOverviewVM.artistsVM.totalCount
                 text = Stuff.getMusicEntryQString(
                     R.string.artists,
                     R.plurals.num_artists,
@@ -413,7 +407,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             }
 
             Stuff.TYPE_ALBUMS -> {
-                count = chartsOverviewVM.albumsVM.totalCount
                 text = Stuff.getMusicEntryQString(
                     R.string.albums,
                     R.plurals.num_albums,
@@ -424,7 +417,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             }
 
             Stuff.TYPE_TRACKS -> {
-                count = chartsOverviewVM.tracksVM.totalCount
                 text = Stuff.getMusicEntryQString(
                     R.string.tracks,
                     R.plurals.num_tracks,
@@ -437,28 +429,24 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
         header.headerText.text = text
-        header.headerAction.visibility = if (count != 0)
-            View.VISIBLE
-        else
-            View.GONE
+        header.headerAction.isVisible = count != 0
     }
 
     private fun loadMoreSectionsIfNeeded() {
         _binding ?: return
         val scrollBounds = Rect()
         binding.chartsOverviewScrollview.getHitRect(scrollBounds)
-        if (!chartsOverviewVM.listeningActivityRequested) {
+        if (!viewModel.listeningActivityRequested) {
             val partiallyVisible =
-                binding.chartsScrobbleFrequenciesFrame.getLocalVisibleRect(scrollBounds)
+                binding.chartsListeningActivityFrame.getLocalVisibleRect(scrollBounds)
             if (partiallyVisible)
                 loadListeningActivityChart()
         }
 
-        if (!chartsOverviewVM.tagCloudRequested && chartsOverviewVM.artistsVM.hasLoaded()) {
+        if (!viewModel.tagCloudRequested && !viewModel.getEntries(Stuff.TYPE_ARTISTS).value.isNullOrEmpty()) {
             val partiallyVisible = binding.chartsTagCloudFrame.getLocalVisibleRect(scrollBounds)
             if (partiallyVisible) {
-                showTagCloudProgress()
-                chartsOverviewVM.loadTagCloud()
+                viewModel.loadTagCloud()
             }
         }
     }
@@ -472,16 +460,15 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
     private fun loadListeningActivityChart() {
 
-        chartsOverviewVM.listeningActivityRequested = true
+        viewModel.listeningActivityRequested = true
 
-        chartsOverviewVM.listeningActivity.value
-            ?: chartsOverviewVM.loadListeningActivity(
+        viewModel.listeningActivity.value
+            ?: viewModel.loadListeningActivity(
                 activityViewModel.currentUser,
-                viewModel.selectedPeriod.value ?: return
+                viewModel.selectedPeriod.value
             )
-        chartsOverviewVM.listeningActivityHeader.value = getString(R.string.listening_activity)
 
-        val chart = binding.chartsScrobbleFrequencies
+        val chart = binding.chartsListeningActivityChart
         scrobbleFrequenciesChartInited = true
         chart.apply {
             setNoDataText("")
@@ -528,7 +515,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     }
 
     private fun setListeningActivityData(entries: List<BarEntry>) {
-        val chart = binding.chartsScrobbleFrequencies
+        val chart = binding.chartsListeningActivityChart
         if (!scrobbleFrequenciesChartInited)
             loadListeningActivityChart()
 
@@ -569,12 +556,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             chart.clear()
         }
 
-    }
-
-    private fun showTagCloudProgress() {
-        binding.chartsTagCloud.visibility = View.INVISIBLE
-        binding.chartsTagCloudProgress.progress = 0
-        binding.chartsTagCloudProgress.show()
     }
 
     private suspend fun generateTagCloud(weights: Map<String, Float>, dimensionPx: Int): Bitmap? {
@@ -620,7 +601,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     }
 
     private suspend fun getTagCloudUri(): Uri? {
-        val tagCloudBitmap = chartsOverviewVM.tagCloudBitmap?.second ?: return null
+        val tagCloudBitmap = viewModel.tagCloudBitmap?.second ?: return null
         val selectedPeriod = viewModel.selectedPeriod.value ?: return null
 
         val footerBinding = LayoutCollageFooterBinding.inflate(layoutInflater, null, false)

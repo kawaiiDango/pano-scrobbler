@@ -7,12 +7,15 @@ import android.view.View
 import android.widget.RemoteViews
 import com.arn.scrobble.App
 import com.arn.scrobble.MainDialogActivity
-import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.Stuff.putData
 import kotlinx.serialization.json.Json
-import java.text.NumberFormat
 
 object ChartsListUtils {
 
@@ -25,7 +28,7 @@ object ChartsListUtils {
     fun createMusicItem(tab: Int, idx: Int, item: ChartsWidgetListItem): RemoteViews {
         val rv = RemoteViews(App.context.packageName, R.layout.appwidget_charts_item)
         rv.setTextViewText(
-            R.id.appwidget_charts_serial, NumberFormat.getInstance().format(idx + 1) + "."
+            R.id.appwidget_charts_serial, (idx + 1).format() + "."
         )
         rv.setTextViewText(R.id.appwidget_charts_title, item.title)
         rv.setImageViewResource(
@@ -42,24 +45,22 @@ object ChartsListUtils {
         } else rv.setViewVisibility(R.id.appwidget_charts_subtitle, View.GONE)
 
         rv.setTextViewText(
-            R.id.appwidget_charts_plays, NumberFormat.getInstance().format(item.number)
+            R.id.appwidget_charts_plays, item.number.format()
         )
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
         val navArgs = Bundle()
         when (tab) {
             Stuff.TYPE_ARTISTS -> {
-                navArgs.putString(NLService.B_ARTIST, item.title)
+                navArgs.putData(Artist(item.title))
             }
 
             Stuff.TYPE_ALBUMS -> {
-                navArgs.putString(NLService.B_ARTIST, item.subtitle)
-                navArgs.putString(NLService.B_ALBUM, item.title)
+                navArgs.putData(Album(item.title, Artist(item.subtitle)))
             }
 
             Stuff.TYPE_TRACKS -> {
-                navArgs.putString(NLService.B_ARTIST, item.subtitle)
-                navArgs.putString(NLService.B_TRACK, item.title)
+                navArgs.putData(Track(item.title, null, Artist(item.subtitle)))
             }
         }
         val fillInIntent = Intent().putExtra(MainDialogActivity.ARG_NAV_ARGS, navArgs)

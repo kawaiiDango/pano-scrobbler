@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.ui.UiUtils
 import com.google.android.material.chip.Chip

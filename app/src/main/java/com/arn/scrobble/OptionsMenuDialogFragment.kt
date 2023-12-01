@@ -47,7 +47,7 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         }
 
         mainNotifierViewModel.updateCanIndex()
-        if (mainNotifierViewModel.canIndex.value == false)
+        if (mainNotifierViewModel.canIndex.value == false || !BuildConfig.DEBUG)
             binding.optionsMenuNav.menu.removeItem(R.id.nav_do_index)
 
         if (metadata.showHeader) {

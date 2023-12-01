@@ -453,10 +453,14 @@ object UiUtils {
         }
 
         val initialsDrawable = InitialsDrawable(context, userSerializable)
+        val profilePicUrl =
+            if (userSerializable.isSelf)
+                App.prefs.drawerDataCached.profilePicUrl
+            else
+                userSerializable.getWebpImageURL(ImageSize.EXTRALARGE)
+        
         val request = ImageRequest.Builder(context)
-            .data(userSerializable
-                .getWebpImageURL(ImageSize.EXTRALARGE)
-                ?.ifEmpty { null }
+            .data(profilePicUrl?.ifEmpty { null }
                 ?: initialsDrawable
             )
             .error(initialsDrawable) // does not apply transformation to error drawable

@@ -3,6 +3,7 @@ package com.arn.scrobble.friends
 import android.os.Parcelable
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.Scrobblables
 import de.umass.lastfm.ImageHolder
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.User
@@ -42,14 +43,8 @@ data class UserSerializable(
         lastUpdated = System.currentTimeMillis()
     }
 
-    fun toUser() = User(
-        name,
-        url,
-        realname,
-        country,
-        registeredTime,
-        imgUrls
-    )
+    val isSelf
+        get() = name == Scrobblables.current?.userAccount?.user?.name
 
     companion object {
         fun User.toUserSerializable() = UserSerializable(

@@ -1,4 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="other">%1$s 스크로블</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="other">오늘 %1$s회</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="other">%1$s 청취자</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="other">%1$s일 전</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="other">%1$s주</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="other">%1$s개월</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="other">%1$s년 전</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="other">%1$s 아티스트</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="other">%1$s 앨범</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="other">%1$s 트랙</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="other">%1$d 일치</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="other">%1$s 편집</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="other">%1$s 패턴 편집</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="other">%1$s 차단된 메타데이터</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="other">%1$d 분</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="other">%1$s 친구</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="other">%1$s 대기중</item>
+    </plurals>
+    <string name="yes">네</string>
+    <string name="no">아니오</string>
+    <string name="reset">초기화</string>
+    <string name="settings">환경설정</string>
+    <string name="bug_report">오류 신고</string>
+    <string name="faq">자주 묻는 질문</string>
+    <string name="album_art">앨범 아트</string>
+    <string name="artist_image">아티스트 이미지</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">구문 오류</string>
+    <string name="network_error">네트워크 오류</string>
+    <string name="disable_tls_verify">TLS 오류 무시</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">스크로블 인식 안됨</string>
+    <string name="scrobble_ignored_save_edit">스크로블이 너무 오래되었기 때문에 Lastfm이 편집을 무시한 것 같습니다. 이 편집을 이후 스크로블을 위해 저장하시겠습니까?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">필요한 항목이 비었습니다</string>
+    <string name="artist">아티스트</string>
+    <string name="artists">아티스트</string>
+    <string name="top_artists" comment="Top artists the user has listened to">상위 아티스트</string>
+    <string name="album_artist">앨범 아티스트</string>
+    <string name="artist_channel" comment="Artist or youtube channel">아티스트 / 채널</string>
+    <string name="similar_artists">유사 아티스트</string>
+    <string name="album_optional">앨범 (선택사항)</string>
+    <string name="album">앨범</string>
+    <string name="albums">앨범</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">상위 앨범</string>
+    <string name="track">트랙</string>
+    <string name="tracks">트랙</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">상위 트랙</string>
+    <string name="similar_tracks">유사 트랙</string>
+    <string name="similar" comment="Similar tracks but in short">유사</string>
+    <string name="state_scrobbling">현재 스크로블 중...</string>
+    <string name="state_scrobbled">스크로블됨</string>
+    <string name="unscrobble">스크로블 취소</string>
+    <string name="state_unscrobbled">스크로블 취소됨</string>
+    <string name="state_unrecognised_artist">인식할 수 없는 아티스트</string>
+    <string name="tap_to_edit">(눌러서 편집)</string>
+    <string name="recently_scrobbled">최근 Scrobbled</string>
+    <string name="recents" comment="Short for recently scrobbled">최근</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">%1$s 첫 scrobbled</string>
+    <string name="auto" comment="automatic or default setting">자동</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">거의 다 왔습니다…</string>
+    <string name="music_players">음악 플레이어</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">기타 앱</string>
+    <string name="choose_apps">앱 선택</string>
+    <string name="choose_an_app">앱 선택</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">앱</string>
+    <string name="offline">오프라인. 표시된 데이터가 최신이 아닐 수 있습니다.</string>
+    <string name="unavailable_offline">오프라인 사용 불가능</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">서비스</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%2$s %1$s을 듣고 있었습니다</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s은 %2$s %1$s을 듣고 있었습니다</string>
+    <string name="share">공유하기</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">범례</string>
+    <string name="grid_size">그리드 크기 조절</string>
+    <string name="more_info">더 알아보기</string>
+    <string name="more" comment="More options menu in short">더보기</string>
+    <string name="learn" comment="(Learn java regex syntax)">배우기</string>
+    <string name="hide">숨기기</string>
+    <string name="rank_change" comment="%1= delta change">순위 변경: %s</string>
+    <string name="rank_change_no_change">변경사항 없음</string>
+    <string name="search">검색</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">기록 전체 삭제</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">기록에서 이 항목을 제거하시겠습니까?</string>
+    <string name="library" comment="search within the library">보관함</string>
+    <string name="reindex">빠른 색인</string>
+    <string name="full_index">전체 색인</string>
+    <string name="take_long_time">시간이 많이 걸릴 수 있습니다</string>
+    <string name="full_index_desc">이것은 웹사이트에서 스크로블을 편집하거나 삭제한 경우에만 사용하십시오.</string>
+    <string name="profile">프로필</string>
+    <string name="profile_pic">프로필 사진</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">이 항목에 대한 옵션</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s 감지됨</string>
+    <string name="new_player_prompt">이 앱을 계속 scrobbling 할까요?</string>
+    <string name="no_scrobbles">여기엔 아직 노래가 없습니다...</string>
+    <string name="no_friends">아직 아무도 팔로잉하고 있지 않습니다...</string>
+    <string name="new_app">새로운 앱</string>
+    <string name="no_apps_enabled">가능한 앱이 없습니다</string>
+    <string name="show_all">전체 보기</string>
+    <string name="edit">편집</string>
+    <string name="delete">삭제</string>
+    <string name="delete_all">모두 삭제</string>
+    <string name="rate_msg">이 앱에 만족하십니까?</string>
+    <string name="time_just_now">방금 전</string>
+    <string name="no_mail_apps">설치된 이메일 앱이 없습니다</string>
+    <string name="grant_rec_perm">마이크를 사용하기 위해 권한을 허용해 주십시오</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">태그 클라우드</string>
+    <string name="scrobble_from_mic" comment="Its a verb">마이크를 통해 scrobble</string>
+    <string name="add_to_hs">홈화면에 추가하기</string>
+    <string name="reports" comment="Like last.week reports and stuff">보고서</string>
+    <string name="weekly">주간</string>
+    <string name="weeks">주</string>
+    <string name="monthly">월간</string>
+    <string name="months">월</string>
+    <string name="years" comment="For the charts menu which displays year by year">년</string>
+    <string name="charts_overall">전체</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">청취 활동</string>
+    <string name="charts_no_data">이 기간동안 데이터 없음</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">사용자 지정</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">연속적</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s 기준</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">데이터가 충분하지 않습니다</string>
+    <string name="pref_regex_edits">패턴 편집</string>
+    <string name="pref_translate">앱 번역하기</string>
+    <string name="pref_translate_credits">번역 크레딧</string>
+    <string name="pref_oss_credits">오픈 소스 크레딧</string>
+    <string name="pref_check_updates">업데이트 확인</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">업데이트 가능: %1$s</string>
+    <string name="download" comment="Its a verb">다운로드</string>
+    <string name="changelog">변경 내역</string>
     <!--  pro  -->
+    <string name="pro_also_get">다음과 같은 기능도 이용하실 수 있습니다:</string>
+    <string name="thank_you">감사합니다!</string>
+    <string name="purchase_pending">아직 지불 공급처에서 구매가 확인되지 않았습니다. 몇 분 후에 다시 확인해 주세요.</string>
+    <string name="billing_troubleshoot_title">구매 복원</string>
+    <string name="billing_troubleshoot">"이미 구매하셨나요?
+
+구매한 항목은 Google Play에서 관리됩니다. 구매를 완료한 Google Play 계정과 연결되어 있습니다. 여러 계정이 있는 새로운 기기에 앱을 설치하면 Google Play가 잘못된 계정과 연결할 수 있습니다. 구매를 소유한 계정을 명시적으로 선택하는 가장 좋은 해결책은 다음과 같습니다:
+
+• 이 앱을 제거하세요. 
+• 컴퓨터에서 Google Play 웹 페이지를 엽니다. 
+• 구매를 소유한 계정으로 로그인하세요. 
+• Google Play 웹 페이지에서 직접 이 앱을 설치하세요.
+"</string>
+    <string name="billing_block">아티스트/트랙을 차단하고 자동 스킵 또는 뮤트</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">친구를 최대 %1$d명까지 고정하고 재정렬하세요</string>
+    <string name="billing_sharing">공유 시 앱 이름 제거</string>
+    <string name="billing_scrobble_source">스크로블한 앱들을 기억하고 그 앱들에서 직접 검색해 보세요</string>
+    <string name="billing_regex_extract">정규식을 사용하여 사용자 지정 메타데이터 추출 규칙을 작성하세요</string>
 </resources>

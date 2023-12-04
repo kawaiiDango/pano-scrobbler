@@ -141,6 +141,12 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">싫어요 취소</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">좋아요 취소</string>
     <string name="friends">친구</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s부터, %1$s 스크로블</string>
+    <string name="allow_background">백그라운드 스크로블링 허용</string>
+    <string name="grant_notification_access">알림 접근 권한 부여</string>
+    <string name="grant_notification_access_desc">음악 메타데이터를 검색하는 데 필요합니다. 음악 알림이 아니면 읽지 않습니다.</string>
+    <string name="send_notifications">알림 허용</string>
+    <string name="notification_channel_blocked">이를 위해서는 알림이 활성화되어야 합니다.</string>
     <string name="rate_msg">이 앱에 만족하십니까?</string>
     <string name="time_just_now">방금 전</string>
     <string name="no_mail_apps">설치된 이메일 앱이 없습니다</string>

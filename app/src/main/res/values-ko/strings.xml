@@ -252,16 +252,25 @@
     <string name="edit_case_sensitive">대/소문자 구분</string>
     <string name="edit_regex_test" comment="(Test regex rules)">테스트</string>
     <string name="edit_presets" comment="Regex presets">프리셋</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">드래그 핸들 버튼</string>
     <string name="text" comment="text to test regex rules with">내용</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">눌러서 차단하고 건너뛰기</string>
     <string name="skip" comment="skip to next track">건너뛰기</string>
+    <string name="mute" comment="mute the music">음소거</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">무시</string>
     <string name="block" comment="block the track from scrobbling">차단</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">숨겨진 태그</string>
     <string name="pin" comment="pin a friend to the top">고정</string>
     <string name="unpin" comment="unpin a friend to the top">고정 해제</string>
+    <string name="use_channel" comment="(Use youtube channel name)">채널 이름 사용하기</string>
+    <string name="persistent_noti_desc">길게 눌러 숨기기</string>
+    <string name="scrobbler_off">스크로블러 비활성화</string>
+    <string name="scrobbler_on">스크로블러 활성화</string>
     <string name="acoustic" comment="(Acoustic music)">어쿠스틱</string>
     <string name="instrumental">인스트루멘탈</string>
     <string name="energetic" comment="(Energetic music)">에너제틱</string>
     <string name="danceable">신나는</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">인기도: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">분석</string>
     <string name="enable" comment="To enable the scrobbler">활성화</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">크기</string>
@@ -269,6 +278,7 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">이미지 캡션</string>
     <string name="username" comment="last.fm Username">사용자이름</string>
     <string name="pref_master">음악 스크로블</string>
+    <string name="pref_master_qs_hint">빠른 설정 타일에서도 전환할 수 있습니다</string>
     <string name="pref_master_qs_add">빠른 설정 타일 추가하기</string>
     <string name="pref_master_qs_already_addded">빠른 설정 타일이 이미 추가되었습니다</string>
     <string name="pref_noti">알림</string>

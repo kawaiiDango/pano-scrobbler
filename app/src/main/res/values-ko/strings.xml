@@ -86,7 +86,7 @@
     <string name="state_unscrobbled">스크로블 취소됨</string>
     <string name="state_unrecognised_artist">인식할 수 없는 아티스트</string>
     <string name="tap_to_edit">(눌러서 편집)</string>
-    <string name="recently_scrobbled">최근 Scrobbled</string>
+    <string name="recently_scrobbled">최근 스크로블</string>
     <string name="recents" comment="Short for recently scrobbled">최근</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">%1$s 첫 scrobbled</string>
     <string name="auto" comment="automatic or default setting">자동</string>
@@ -123,6 +123,8 @@
     <string name="full_index">전체 색인</string>
     <string name="take_long_time">시간이 많이 걸릴 수 있습니다</string>
     <string name="full_index_desc">이것은 웹사이트에서 스크로블을 편집하거나 삭제한 경우에만 사용하십시오.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">각 카테고리에서 검색된 상위 %1$s 항목</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">마지막으로 %1$s에 색인화.</string>
     <string name="profile">프로필</string>
     <string name="profile_pic">프로필 사진</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">이 항목에 대한 옵션</string>
@@ -133,6 +135,7 @@
     <string name="channel_err" comment="Its a noun">스크로블 오류</string>
     <string name="new_app">새로운 앱</string>
     <string name="no_apps_enabled">가능한 앱이 없습니다</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">그 외 %1$d개</string>
     <string name="show_all">전체 보기</string>
     <string name="edit">편집</string>
     <string name="delete">삭제</string>
@@ -141,6 +144,9 @@
     <string name="hate" comment="Hate or dislike a song">싫어요</string>
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">싫어요 취소</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">좋아요 취소</string>
+    <string name="pending_scrobbles">스크로블 보류 중</string>
+    <string name="pending_scrobble">스크로블 보류 중</string>
+    <string name="pending_scrobbles_noti">보류 중인 스크로블 처리 중</string>
     <string name="friends">친구</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s부터, %1$s 스크로블</string>
     <string name="allow_background">백그라운드 스크로블링 허용</string>
@@ -148,18 +154,39 @@
     <string name="grant_notification_access_desc">음악 메타데이터를 검색하는 데 필요합니다. 음악 알림이 아니면 읽지 않습니다.</string>
     <string name="send_notifications">알림 허용</string>
     <string name="notification_channel_blocked">이를 위해서는 알림이 활성화되어야 합니다.</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- 스크로블 상태 및 횟수 확인
+- 알림에서 직접 '좋아요' 또는 '차단'
+- 스크로블 오류 및 조치 가능한 작업에 대한 알림
+- 매주 최상위 스크로블 받기
+- 그 외 다양한 기능
+- 알림은 소리를 내지 않습니다.\"\""</string>
+    <string name="will_not_scrobble">이 단계를 건너뛰면 스크로블링이 비활성화됩니다</string>
+    <string name="swap" comment="(Swap title and artist)">맞교환</string>
     <string name="rate_msg">이 앱에 만족하십니까?</string>
     <string name="time_just_now">방금 전</string>
     <string name="no_mail_apps">설치된 이메일 앱이 없습니다</string>
+    <string name="simple_edits">편집</string>
     <string name="grant_rec_perm">마이크를 사용하기 위해 권한을 허용해 주십시오</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">태그 클라우드</string>
     <string name="scrobble_from_mic" comment="Its a verb">마이크를 통해 scrobble</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">마이크를 통해</string>
     <string name="add_to_hs">홈화면에 추가하기</string>
+    <string name="listening">주변에서 재생되는 음악 듣기</string>
     <string name="uploading">업로드 중…</string>
+    <string name="recording_failed">녹음을 시작하지 못했습니다. 마이크가 사용 중이거나 이 장치에서 사용할 수 없습니다</string>
+    <string name="press_back">완료되면 뒤로 가기를 누르세요</string>
+    <string name="powered_acr"><i><b>ACR</b>Cloud</i>에서 제공</string>
+    <string name="details">세부사항</string>
+    <string name="saved_as_pending">보류 중인 스크로블로 저장됨</string>
+    <string name="sort">정렬</string>
+    <string name="my_scrobbles">나의 스크로블</string>
+    <string name="listeners">청취자</string>
+    <string name="scrobbles">스크로블</string>
     <string name="collapse" comment="(view only a few items)">접음</string>
     <string name="expand" comment="(view all items)">펼치기</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s명이 좋아요 누름</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s에서</string>
     <string name="not_found" comment="Shown in search">찾을 수 없음</string>
     <string name="save" comment="saves a file">저장</string>
     <string name="saved_to_gallery">갤러리에 저장</string>
@@ -176,6 +203,7 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">연속적</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s 기준</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">데이터가 충분하지 않습니다</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">맡겨주세요</string>
     <string name="random_not_found">트랙을 찾을 수 없음</string>
     <string name="loved_track">좋아요한 트랙</string>
     <string name="randomize" comment="(To randomize or fetch a new random item)">무작위</string>
@@ -219,29 +247,50 @@
     <string name="edit_first" comment="First occurrence of a pattern">첫번째</string>
     <string name="edit_all" comment="All occurrences of a pattern">모두</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">추출</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">다른 필드에서 이들을 추출하려면 <i>track, album, artist</i> 또는 <i>albumArtist</i>로 캡처 그룹에 이름을 붙이세요.</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">예를 들어, 아티스트와 제목을 교체하려면 아티스트 정규식을 (?&lt;track&gt;.*)로, 트랙 정규식을 (?&lt;artist&gt;.*)로 설정하면 됩니다.</string>
     <string name="edit_case_sensitive">대/소문자 구분</string>
     <string name="edit_regex_test" comment="(Test regex rules)">테스트</string>
+    <string name="edit_presets" comment="Regex presets">프리셋</string>
+    <string name="text" comment="text to test regex rules with">내용</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">눌러서 차단하고 건너뛰기</string>
     <string name="skip" comment="skip to next track">건너뛰기</string>
     <string name="block" comment="block the track from scrobbling">차단</string>
     <string name="pin" comment="pin a friend to the top">고정</string>
     <string name="unpin" comment="unpin a friend to the top">고정 해제</string>
+    <string name="acoustic" comment="(Acoustic music)">어쿠스틱</string>
+    <string name="instrumental">인스트루멘탈</string>
+    <string name="energetic" comment="(Energetic music)">에너제틱</string>
+    <string name="danceable">신나는</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">분석</string>
+    <string name="enable" comment="To enable the scrobbler">활성화</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">크기</string>
+    <string name="create_collage">콜라주 만들기</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">이미지 캡션</string>
     <string name="username" comment="last.fm Username">사용자이름</string>
+    <string name="pref_master">음악 스크로블</string>
+    <string name="pref_master_qs_add">빠른 설정 타일 추가하기</string>
+    <string name="pref_master_qs_already_addded">빠른 설정 타일이 이미 추가되었습니다</string>
+    <string name="pref_noti">알림</string>
     <string name="pref_noti_categories">알림 카테고리</string>
     <string name="pref_scrobble_noti">스크로블 알림</string>
     <string name="pref_lockscreen_noti">잠금화면 알림</string>
     <string name="pref_enabled_apps_title">앱 선택</string>
     <string name="pref_auto_detect">자동으로 새 앱을 통해 스크로블</string>
     <string name="pref_spotify_remote">스포티파이 다른 기기에서 재생 스크로블</string>
+    <string name="pref_delay">스크로블 딜레이 (빠른 쪽 우선)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">분</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">퍼센트</string>
     <string name="pref_logout">로그아웃</string>
+    <string name="sure_tap_again">확실합니까? 다시 탭하세요</string>
     <string name="pref_login">로그인</string>
     <string name="pref_about" comment="Info about this app">정보</string>
     <string name="pref_privacy_policy">개인정보 취급방침</string>
+    <string name="pref_scrobble_only">(스크로블만)</string>
     <string name="pref_user_label" comment="(Like username)">사용자</string>
     <string name="pref_token_label" comment="For Listenbrainz">인증 토큰</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="pref_now_playing">지금 재생 중인 음악 제출하기</string>
     <string name="pref_locale">언어</string>
     <string name="pref_change_locale">언어 변경</string>
     <string name="pref_crashlytics_enabled">자동으로 오류 보고</string>
@@ -253,6 +302,7 @@
     <string name="pref_import">가져오기</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">개인화</string>
     <string name="pref_themes" comment="Color themes">테마</string>
+    <string name="pref_show_albums">앨범 이름 보이기</string>
     <string name="pref_lists" comment="Such as edits list and block lists">목록</string>
     <string name="pref_regex_edits">패턴 편집</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">차단된 메타데이터</string>
@@ -275,6 +325,8 @@
     <string name="copied">복사 완료!</string>
     <string name="lastfm_reauth">스크로블을 편집하거나 삭제하려면 다시 인증해야 합니다</string>
     <string name="failed_encode_url">URL 인코딩 실패</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s 확인</string>
+    <string name="artist_extra">트랙, 앨범 &amp; 유사항목</string>
     <string name="no_browser">브라우저가 설치되어 있지 않습니다</string>
     <string name="no_player">음악 플레이어가 설치되어 있지 않습니다</string>
     <string name="not_running">⚠ 스크로블러가 시스템에 의해 종료되었습니다</string>
@@ -284,9 +336,12 @@
     <string name="acr_host" comment="Web hostname">호스트</string>
     <string name="acr_key" comment="API key">액세스 키</string>
     <string name="acr_secret" comment="API secret">시크릿</string>
+    <string name="add_acr_key">ACRCloud 키 추가</string>
+    <string name="remove_acr_key">ACRCloud 키 제거</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">추가</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d 남음</string>
     <string name="bar_chart">막대 차트</string>
+    <string name="fix_it_battery_title">배터리 최적화 비활성화</string>
     <string name="fix_it_action" comment="(To open an app)">열기</string>
     <string name="delete_account">계정 삭제</string>
     <string name="delete_account_custom_servers">사용자 정의 서버의 경우, 해당 서버의 문서를 확인하세요.</string>

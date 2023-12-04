@@ -104,6 +104,7 @@
     <string name="share">공유하기</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">범례</string>
     <string name="grid_size">그리드 크기 조절</string>
+    <string name="pinch_to_zoom">두 손가락으로 확대</string>
     <string name="more_info">더 알아보기</string>
     <string name="more" comment="More options menu in short">더보기</string>
     <string name="learn" comment="(Learn java regex syntax)">배우기</string>

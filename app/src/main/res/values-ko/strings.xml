@@ -101,6 +101,7 @@
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">서비스</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%2$s %1$s을 듣고 있었습니다</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s은 %2$s %1$s을 듣고 있었습니다</string>
+    <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">공유하기</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">범례</string>
     <string name="grid_size">그리드 크기 조절</string>

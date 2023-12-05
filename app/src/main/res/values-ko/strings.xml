@@ -165,6 +165,8 @@
     <string name="rate_msg">이 앱에 만족하십니까?</string>
     <string name="time_just_now">방금 전</string>
     <string name="no_mail_apps">설치된 이메일 앱이 없습니다</string>
+    <string name="loved" comment="Its a noun">좋아요 등록</string>
+    <string name="unloved" comment="Its a noun">좋아요 해제</string>
     <string name="simple_edits">편집</string>
     <string name="grant_rec_perm">마이크를 사용하기 위해 권한을 허용해 주십시오</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
@@ -180,7 +182,9 @@
     <string name="details">세부사항</string>
     <string name="saved_as_pending">보류 중인 스크로블로 저장됨</string>
     <string name="sort">정렬</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">시간 점프</string>
     <string name="my_scrobbles">나의 스크로블</string>
+    <string name="their_scrobbles">친구의 스크로블</string>
     <string name="listeners">청취자</string>
     <string name="scrobbles">스크로블</string>
     <string name="collapse" comment="(view only a few items)">접음</string>
@@ -249,12 +253,24 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">추출</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">다른 필드에서 이들을 추출하려면 <i>track, album, artist</i> 또는 <i>albumArtist</i>로 캡처 그룹에 이름을 붙이세요.</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">예를 들어, 아티스트와 제목을 교체하려면 아티스트 정규식을 (?&lt;track&gt;.*)로, 트랙 정규식을 (?&lt;artist&gt;.*)로 설정하면 됩니다.</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">정규식은 적어도 이러한 이름의 캡처 그룹을 포함해야 합니다: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">정규식이 하나 이상의 허용되지 않는 \"%1$s\" 캡처 그룹을 포함하고 있습니다</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">유효하지 않은 정규표현식: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">사용된 패턴:</string>
+    <string name="edit_continue">존재하면, 다른 정규표현식을 계속 매칭</string>
     <string name="edit_case_sensitive">대/소문자 구분</string>
     <string name="edit_regex_test" comment="(Test regex rules)">테스트</string>
     <string name="edit_presets" comment="Regex presets">프리셋</string>
+    <string name="edit_presets_available">프리셋 사용가능</string>
+    <string name="edit_no_presets_available">모든 프리셋이 사용중</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">프리셋: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">패턴 제한에 도달(%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">드래그 핸들 버튼</string>
     <string name="text" comment="text to test regex rules with">내용</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ 사용하기 전에 <a href="https://www.google.com/search?q=regex+tutorial">자바 정규표현식</a>을 숙지하거나, 제공되는 <b>프리셋</b>을 사용하세요. 정규표현식 매치는 위부터 아래로 시도합니다.</string>
+    <string name="blocked_metadata_info">ℹ️ 이 필드 중 하나 이상을 채우면 이들 사이에 AND 연산자가 적용됩니다.</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">눌러서 차단하고 건너뛰기</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">플레이어 동작</string>
     <string name="skip" comment="skip to next track">건너뛰기</string>
     <string name="mute" comment="mute the music">음소거</string>
     <string name="ignore" comment="ignore the track so that it doesn't scrobble">무시</string>

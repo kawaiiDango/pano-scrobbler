@@ -344,6 +344,7 @@
     <string name="pref_show_albums">앨범 이름 보이기</string>
     <string name="pref_show_scrobble_sources">스크로블한 앱의 아이콘 표시하기</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">...각 스크로블 옆에. 이 데이터는 당신의 기기에 남아 있습니다</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">지원되는 앱</string>
     <string name="pref_lists" comment="Such as edits list and block lists">목록</string>
     <string name="pref_regex_edits">패턴 편집</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">차단된 메타데이터</string>

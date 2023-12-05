@@ -303,6 +303,7 @@
     <string name="pref_master_qs_hint">빠른 설정 타일에서도 전환할 수 있습니다</string>
     <string name="pref_master_qs_add">빠른 설정 타일 추가하기</string>
     <string name="pref_master_qs_already_addded">빠른 설정 타일이 이미 추가되었습니다</string>
+    <string name="pref_noti_q">아이콘이 보이지 않으면, 알림을 띄웁니다</string>
     <string name="pref_noti">알림</string>
     <string name="pref_noti_categories">알림 카테고리</string>
     <string name="pref_scrobble_noti">스크로블 알림</string>
@@ -344,6 +345,7 @@
     <string name="pref_show_albums">앨범 이름 보이기</string>
     <string name="pref_show_scrobble_sources">스크로블한 앱의 아이콘 표시하기</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">...각 스크로블 옆에. 이 데이터는 당신의 기기에 남아 있습니다</string>
+    <string name="pref_search_in_source">스크로블한 앱에서 검색 &amp; 재생</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">지원되는 앱</string>
     <string name="pref_lists" comment="Such as edits list and block lists">목록</string>
     <string name="pref_regex_edits">패턴 편집</string>
@@ -355,6 +357,7 @@
     <string name="update_available" formatted="true" comment="%1= the version number">업데이트 가능: %1$s</string>
     <string name="download" comment="Its a verb">다운로드</string>
     <string name="changelog">변경 내역</string>
+    <string name="import_hey_wtf">Pano Scrobbler 내보내기 파일이 아닙니다</string>
     <string name="export_failed">내보내기 실패</string>
     <string name="imported">불러옴</string>
     <string name="import_options">가져오기 옵션</string>
@@ -381,8 +384,17 @@
     <string name="add_acr_key">ACRCloud 키 추가</string>
     <string name="remove_acr_key">ACRCloud 키 제거</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">추가</string>
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• https://console.acrcloud.com에서 가입하세요.
+• Projects&gt; Audio &amp; video recognition으로 이동하세요.
+• 새 프로젝트를 생성하고, Recorded Audio 및 ACRCloud Music bucket을 선택하세요."</string>
+    <string name="shazam_scrobbling">지속적으로 스크로블하려면, <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>을 대신 열고 Auto Shazam을 시작하세요. 또한 Shazam에서 스크로블링이 활성화되어 있는지 확인하세요.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d 남음</string>
+    <string name="submitting_loves" formatted="true">좋아요 제출 중, %1$d 남음</string>
+    <string name="pending_batch" comment="For pending scrobbles">일괄 제출 중</string>
+    <string name="webview_error">페이지를 불러오는 데 실패했습니다 (인터넷에 연결되어 있습니까?)</string>
     <string name="bar_chart">막대 차트</string>
+    <string name="cleared_disabled_apps">비활성화된 앱 지우기</string>
+    <string name="fix_it_startup_title">절전 모드 / 시작 시 관리</string>
     <string name="fix_it_battery_title">배터리 최적화 비활성화</string>
     <string name="fix_it_action" comment="(To open an app)">열기</string>
     <string name="delete_account">계정 삭제</string>

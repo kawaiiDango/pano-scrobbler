@@ -278,7 +278,12 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">숨겨진 태그</string>
     <string name="pin" comment="pin a friend to the top">고정</string>
     <string name="unpin" comment="unpin a friend to the top">고정 해제</string>
+    <string name="pin_limit_reached" formatted="true">고정하기 제한 도달(%1$d)</string>
+    <string name="pin_help">길게 눌러 고정된 항목 재정렬하기</string>
     <string name="use_channel" comment="(Use youtube channel name)">채널 이름 사용하기</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">패턴 편집 규칙을 활성화 하시겠습니까: %1$s?</string>
+    <string name="show_persistent_noti">지속적인 알림 표시</string>
+    <string name="fix_it_desc">몇몇 기기에서 스크로블러의 백그라운드 실행을 유지하는 데 도움이 될 수 있습니다.</string>
     <string name="persistent_noti_desc">길게 눌러 숨기기</string>
     <string name="scrobbler_off">스크로블러 비활성화</string>
     <string name="scrobbler_on">스크로블러 활성화</string>
@@ -290,6 +295,7 @@
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">분석</string>
     <string name="enable" comment="To enable the scrobbler">활성화</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">크기</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">누락된 이미지 건너뛰기</string>
     <string name="create_collage">콜라주 만들기</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">이미지 캡션</string>
     <string name="username" comment="last.fm Username">사용자이름</string>
@@ -301,9 +307,12 @@
     <string name="pref_noti_categories">알림 카테고리</string>
     <string name="pref_scrobble_noti">스크로블 알림</string>
     <string name="pref_lockscreen_noti">잠금화면 알림</string>
+    <string name="pref_offline_info">ℹ️ 오프라인 스크로블 &amp; 좋아요는 저장되었다가, 나중에 전송됩니다.</string>
+    <string name="pref_enabled_apps_summary">ℹ️ 음악 메타데이터를 공개하는 앱을 지원합니다. Spotify에서는 중복 스크로블을 피하기 위해 한 군데에서만 활성화하세요.</string>
     <string name="pref_enabled_apps_title">앱 선택</string>
     <string name="pref_auto_detect">자동으로 새 앱을 통해 스크로블</string>
     <string name="pref_spotify_remote">스포티파이 다른 기기에서 재생 스크로블</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">기기에서 음악이 재생 중일 때는 마이크를 통한 연속적인 스크로블링 비활성화</string>
     <string name="pref_delay">스크로블 딜레이 (빠른 쪽 우선)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">분</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">퍼센트</string>
@@ -316,7 +325,9 @@
     <string name="pref_user_label" comment="(Like username)">사용자</string>
     <string name="pref_token_label" comment="For Listenbrainz">인증 토큰</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">인증 토큰은 다음 위치에서 찾을 수 있습니다: %1$s</string>
     <string name="pref_now_playing">지금 재생 중인 음악 제출하기</string>
+    <string name="pref_fetch_album">LastFM에서 누락된 앨범 데이터 가져오기</string>
     <string name="pref_locale">언어</string>
     <string name="pref_change_locale">언어 변경</string>
     <string name="pref_crashlytics_enabled">자동으로 오류 보고</string>
@@ -328,7 +339,11 @@
     <string name="pref_import">가져오기</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">개인화</string>
     <string name="pref_themes" comment="Color themes">테마</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">믹스 앤 매치\n알림 색상 또한 변경됩니다</string>
+    <string name="pref_widget_charts">홈스크린 위젯 - 차트</string>
     <string name="pref_show_albums">앨범 이름 보이기</string>
+    <string name="pref_show_scrobble_sources">스크로블한 앱의 아이콘 표시하기</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">...각 스크로블 옆에. 이 데이터는 당신의 기기에 남아 있습니다</string>
     <string name="pref_lists" comment="Such as edits list and block lists">목록</string>
     <string name="pref_regex_edits">패턴 편집</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">차단된 메타데이터</string>

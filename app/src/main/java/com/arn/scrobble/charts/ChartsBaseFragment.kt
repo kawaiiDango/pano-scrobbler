@@ -136,7 +136,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         super.postInit()
 
         chartsBinding.frameChartsList.chartsList.isNestedScrollingEnabled = true
-        adapter = ChartsAdapter(chartsBinding.frameChartsList)
+        adapter = ChartsAdapter(viewLifecycleOwner, chartsBinding.frameChartsList)
         scalableGrid = ScalableGrid(chartsBinding.frameChartsList.chartsList)
 
         (chartsBinding.frameChartsList.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
@@ -164,11 +164,10 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
 
         val loadMoreListener =
             EndlessRecyclerViewScrollListener(chartsBinding.frameChartsList.chartsList.layoutManager!!) { page ->
-                if (viewModel.reachedEnd && page != 1) {
-                    adapter.loadMoreListener.isAllPagesLoaded = true
-                    return@EndlessRecyclerViewScrollListener
-                }
-
+//                if (viewModel.reachedEnd && page != 1) {
+//                    return@EndlessRecyclerViewScrollListener
+//                }
+                adapter.loadMoreListener.isAllPagesLoaded = viewModel.reachedEnd
                 viewModel.setInput(viewModel.input.value!!.copy(page = page))
             }
         loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
@@ -187,7 +186,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
             Lifecycle.State.RESUMED
         ) {
             loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
-            adapter.populate(it, viewModel.input.value?.page == 1)
+            adapter.populate(it, false)
             // sometimes does somersaults
             updateTitle()
         }

@@ -22,6 +22,7 @@ import com.arn.scrobble.utils.Stuff.copyToClipboard
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getData
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.flow.filterNotNull
 import java.net.URLEncoder
 
 
@@ -64,7 +65,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
         }
         binding.root.startFadeLoop()
 
-        collectLatestLifecycleFlow(viewModel.info) {
+        collectLatestLifecycleFlow(viewModel.info.filterNotNull()) {
             binding.root.clearAnimation()
             scheduleTransition()
 

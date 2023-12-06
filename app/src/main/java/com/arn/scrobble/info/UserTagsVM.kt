@@ -3,18 +3,17 @@ package com.arn.scrobble.info
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.App
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.api.lastfm.LastFm
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
@@ -38,18 +37,19 @@ class UserTagsVM : ViewModel() {
 
         historyPref.load()
 
-        entry.filterNotNull()
-            .mapLatest {
-                (Scrobblables.current as? LastFm)
-                    ?.getUserTagsFor(entry.value!!)
-                    ?.map {
-                        it.toptags.tag.map { it.name }
-                            .toSet()
-                    }
-                    ?.getOrNull() ?: emptySet()
-            }
-            .onEach { _tags.emit(it) }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            entry.filterNotNull()
+                .mapLatest {
+                    (Scrobblables.current as? LastFm)
+                        ?.getUserTagsFor(entry.value!!)
+                        ?.map {
+                            it.toptags.tag.map { it.name }
+                                .toSet()
+                        }
+                        ?.getOrNull() ?: emptySet()
+                }
+                .collectLatest { _tags.emit(it) }
+        }
     }
 
     fun setEntry(musicEntry: MusicEntry) {

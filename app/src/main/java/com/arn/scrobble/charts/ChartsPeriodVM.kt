@@ -18,14 +18,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
 
-open class BaseChartsVM : ViewModel() {
+open class ChartsPeriodVM : ViewModel() {
 
     private val prefs = App.prefs
 
@@ -99,15 +99,16 @@ open class BaseChartsVM : ViewModel() {
 //                }
             } else
                 selectedPeriod
-        }.onEach {
+        }.mapLatest {
             prefs.lastChartsPeriodSelectedJson = it
+            it
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, prefs.lastChartsPeriodSelectedJson)
 
 
     init {
         selectedPeriod
-            .combine(_input.filterNotNull().take(1)) { period, input ->
+            .combine(_input.filterNotNull()) { period, input ->
                 loadCharts(
                     type = input.type,
                     page = input.page,
@@ -117,10 +118,9 @@ open class BaseChartsVM : ViewModel() {
             }.launchIn(viewModelScope)
     }
 
-    fun setInput(input: MusicEntryLoaderInput) {
-        viewModelScope.launch {
-            _input.emit(input)
-        }
+    fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {
+        if (initial && _input.value == null || !initial)
+            _input.value = input
     }
 
     protected open suspend fun loadCharts(

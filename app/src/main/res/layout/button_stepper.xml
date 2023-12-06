@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:clickable="false"
     android:focusable="false"
+    android:gravity="end"
     android:orientation="horizontal">
 
     <com.google.android.material.button.MaterialButton
@@ -15,9 +16,8 @@
         android:text="@string/skip" />
 
     <Space
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_width="32dp"
+        android:layout_height="wrap_content" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/open_button"

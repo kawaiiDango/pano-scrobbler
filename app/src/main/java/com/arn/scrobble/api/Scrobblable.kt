@@ -56,6 +56,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
     abstract suspend fun getFriends(
         page: Int,
         username: String = userAccount.user.name,
+        cached: Boolean = false,
         limit: Int = 50,
     ): Result<PageResult<User>>
 

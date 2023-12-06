@@ -21,17 +21,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/random_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
-
         <TextView
             android:id="@+id/random_status"
             android:layout_width="wrap_content"
@@ -164,6 +153,20 @@
             android:visibility="invisible"
             app:constraint_referenced_ids="random_big_img, random_item, random_play"
             tools:visibility="visible" />
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/random_big_img"
+            app:layout_constraintEnd_toEndOf="@+id/random_big_img"
+            app:layout_constraintStart_toStartOf="@+id/random_big_img"
+            app:layout_constraintTop_toTopOf="@+id/random_big_img">
+
+            <View
+                android:id="@+id/random_skeleton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
 
         <com.arn.scrobble.ui.ScalableDrawableTextView
             android:id="@+id/randomize_text"

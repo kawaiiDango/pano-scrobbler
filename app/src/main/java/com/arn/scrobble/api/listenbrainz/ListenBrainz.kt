@@ -252,6 +252,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             else
                 CacheStrategy.NETWORK_ONLY
 
+        val actualLimit = if (limit > 0) limit else 25
+
         val listens =
             client.getPageResult<ListenBrainzData<ListenBrainzListensPayload>, Track>("user/$username/listens",
                 {
@@ -261,7 +263,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         .let { PageEntries(it) }
                 },
                 {
-                    val totalPages = if (it.payload.listens.size < limit) page else page + 1
+                    val totalPages = if (it.payload.count < actualLimit) page else page + 2
                     PageAttr(
                         page,
                         totalPages,
@@ -273,7 +275,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     parameter("max_ts", to)
                 if (from > 0L)
                     parameter("min_ts", from)
-                parameter("count", limit)
+                parameter("count", actualLimit)
                 cacheStrategy(cacheStrategy)
             }
 
@@ -353,6 +355,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             else
                 CacheStrategy.NETWORK_ONLY
 
+        val actualLimit = if (limit > 0) limit else 25
+
         Stuff.log(this::getLoves.name + " " + page)
 
 
@@ -365,12 +369,12 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     .let { PageEntries(it) }
             },
             {
-                val totalPages = ceil(it.total_count.toFloat() / limit).toInt()
-                PageAttr(page, totalPages, it.count)
+                val totalPages = ceil(it.total_count.toFloat() / actualLimit).toInt()
+                PageAttr(page, totalPages, it.total_count)
             }
         ) {
             parameter("metadata", true)
-            parameter("offset", limit * (page - 1))
+            parameter("offset", actualLimit * (page - 1))
             cacheStrategy(cacheStrategy)
         }
     }
@@ -378,12 +382,12 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     override suspend fun getFriends(
         page: Int,
         username: String,
+        cached: Boolean,
         limit: Int
     ): Result<PageResult<User>> {
-        val cacheStrategy = if (Stuff.isOnline)
-            CacheStrategy.NETWORK_ONLY
-        else
-            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        val cacheStrategy = if (!Stuff.isOnline && cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        else if (cached) CacheStrategy.CACHE_FIRST
+        else CacheStrategy.NETWORK_ONLY
 
         return client.getPageResult<ListenBrainzFollowing, User>("user/$username/following",
             {
@@ -475,6 +479,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         }
 
         val range = timePeriod.tag ?: "all_time"
+        val actualLimit = if (limit > 0) limit else 25
 
         val typeStr = when (type) {
             Stuff.TYPE_ARTISTS -> "artists"
@@ -496,21 +501,15 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     .let { PageEntries(it) }
             },
             {
-                val totalPages = ceil(
-                    min(
-                        it.payload.total_artist_count ?: it.payload.total_release_count
-                        ?: it.payload.total_recording_count ?: 0,
-                        1000
-                    ).toFloat() / limit
-                ).toInt()
+                val total = it.payload.total_artist_count ?: it.payload.total_release_count
+                ?: it.payload.total_recording_count ?: 0
+                val totalPages = ceil(min(total, 1000).toFloat() / actualLimit).toInt()
 
-                PageAttr(page, totalPages, it.payload.count)
+                PageAttr(page, totalPages, total)
             }
         ) {
-            if (limit > -1) {
-                parameter("count", limit)
-                parameter("offset", limit * (page - 1))
-            }
+            parameter("count", actualLimit)
+            parameter("offset", actualLimit * (page - 1))
             parameter("range", range)
             cacheStrategy(cacheStrategy)
         }
@@ -562,7 +561,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             val client = Requesters.genericKtorClient
 
             val result =
-                client.postResult<ValidateToken>("${userAccountTemp.apiRoot}1/validate-token") {
+                client.getResult<ValidateToken>("${userAccountTemp.apiRoot}1/validate-token") {
                     contentType(ContentType.Application.Json)
                     header("Authorization", "token ${userAccountTemp.authKey}")
                 }

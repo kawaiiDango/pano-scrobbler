@@ -56,14 +56,13 @@ class TracksVM : ViewModel() {
     private var loadedInitialCachedVersion = false
     var selectedPos = 0
     private val limit = 100
-    var lastRecentsLoadTime = 0L
+    var lastRecentsLoadTime = System.currentTimeMillis()
         private set
 
     init {
         viewModelScope.launch {
             _input.filterNotNull()
                 .collectLatest {
-                    _hasLoaded.emit(false)
                     when (it.type) {
                         Stuff.TYPE_TRACKS -> {
                             if (it.entry is Track) {
@@ -80,15 +79,13 @@ class TracksVM : ViewModel() {
 
                         else -> throw IllegalArgumentException("Unknown type")
                     }
-                    _hasLoaded.emit(true)
                 }
         }
     }
 
-    fun setInput(input: MusicEntryLoaderInput) {
-        viewModelScope.launch {
-            _input.emit(input)
-        }
+    fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {
+        if (initial && _input.value == null || !initial)
+            _input.value = input
     }
 
     fun setPaletteColors(colors: PaletteColors) {
@@ -97,12 +94,20 @@ class TracksVM : ViewModel() {
         }
     }
 
-    private suspend fun loadRecents(page: Int, username: String, timePeriod: TimePeriod?) {
+    private suspend fun loadRecents(
+        page: Int,
+        username: String,
+        timePeriod: TimePeriod?,
+        setLoading: Boolean = true
+    ) {
         val isListenbrainz = Scrobblables.current is ListenBrainz
         val _to = if (isListenbrainz && page > 1)
             tracks.value?.lastOrNull()?.date ?: -1
         else
             timePeriod?.end?.div(1000)?.toInt() ?: -1
+
+        if (setLoading)
+            _hasLoaded.emit(false)
 
         val pr = Scrobblables.current!!.getRecents(
             page,
@@ -116,10 +121,10 @@ class TracksVM : ViewModel() {
         if (!loadedInitialCachedVersion) {
             selectedPos = 0
             loadedInitialCachedVersion = true
-
-            viewModelScope.launch {
-                loadRecents(page, username, timePeriod)
-            }
+            if (pr.getOrNull()?.fromCache == true)
+                viewModelScope.launch {
+                    loadRecents(page, username, timePeriod, setLoading = false)
+                }
         }
 
         // time jump pg 1 always resets selection
@@ -131,9 +136,14 @@ class TracksVM : ViewModel() {
         }
 
         emitTracks(pr, page > 1)
+
+        if (setLoading)
+            _hasLoaded.emit(true)
     }
 
     private suspend fun loadLoves(page: Int, username: String) {
+        _hasLoaded.emit(false)
+
         val pr = Scrobblables.current!!.getLoves(
             page,
             username,
@@ -144,9 +154,10 @@ class TracksVM : ViewModel() {
             selectedPos = 0
             loadedInitialCachedVersion = true
 
-            viewModelScope.launch {
-                loadLoves(page, username)
-            }
+            if (pr.getOrNull()?.fromCache == true)
+                viewModelScope.launch {
+                    loadLoves(page, username)
+                }
         }
 
         pr.onSuccess {
@@ -178,9 +189,13 @@ class TracksVM : ViewModel() {
             }
         }
         emitTracks(pr, page > 1)
+
+        _hasLoaded.emit(true)
     }
 
     private suspend fun loadTrackScrobbles(track: Track, page: Int, username: String) {
+        _hasLoaded.emit(false)
+
         (Scrobblables.current as? LastFm)
             ?.userGetTrackScrobbles(track, page, username, limit)
             ?.let {
@@ -193,6 +208,8 @@ class TracksVM : ViewModel() {
                 }
                 emitTracks(it, page > 1)
             }
+
+        _hasLoaded.emit(true)
     }
 
     private suspend fun emitTracks(result: Result<PageResult<Track>>, concat: Boolean) {

@@ -9,10 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -26,9 +25,11 @@ class RegexEditsVM : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
-        _regexesFromDb.onEach {
-            _regexes.value = it
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            _regexesFromDb.collectLatest {
+                _regexes.value = it
+            }
+        }
     }
 
     fun tmpUpdateAll(el: List<RegexEdit>) {

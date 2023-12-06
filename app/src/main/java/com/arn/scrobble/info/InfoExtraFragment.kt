@@ -229,7 +229,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         sectionVM: InfoExtraFullVM,
         showArtists: Boolean
     ) {
-        val adapter = ChartsOverviewAdapter(rootViewBinding)
+        val adapter = ChartsOverviewAdapter(viewLifecycleOwner, rootViewBinding)
         adapter.clickListener = this
         adapter.emptyTextRes = R.string.not_found
         // top tracks/albums are ordered by listeners and not by play count
@@ -250,6 +250,8 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         (rootViewBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
             false
         rootViewBinding.chartsList.adapter = adapter
+
+        adapter.progressVisible(true)
 
         collectLatestLifecycleFlow(sectionVM.entries.filterNotNull()) {
 //            if (sectionVM.hasLoaded.value) {

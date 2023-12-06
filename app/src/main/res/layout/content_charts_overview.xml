@@ -73,18 +73,16 @@
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="8dp">
 
+                    <View
+                        android:id="@+id/charts_listening_activity_skeleton"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp" />
+
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/charts_listening_activity_chart"
                         android:contentDescription="@string/bar_chart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp" />
-
-                    <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/charts_listening_activity_progress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        app:showAnimationBehavior="none" />
 
                     <TextView
                         android:id="@+id/listening_activity_status"
@@ -109,6 +107,11 @@
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="4dp"
                     app:maxSize="370dp">
+
+                    <View
+                        android:id="@+id/charts_tag_cloud_skeleton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
                     <ImageView
                         android:id="@+id/charts_tag_cloud"

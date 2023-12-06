@@ -38,6 +38,7 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
@@ -47,6 +48,7 @@ import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.transition.platform.MaterialElevationScale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -72,6 +74,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
     private var _binding: ContentFriendsBinding? = null
     private val binding
         get() = _binding!!
+    private var skeletonJob: Job? = null
 
 
     override fun onCreateView(
@@ -156,16 +159,20 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
 
 
         val loadMoreListener = EndlessRecyclerViewScrollListener(glm) { page ->
-            if (page <= viewModel.totalPages) {
+            if (page <= viewModel.totalPages)
                 viewModel.setInput(viewModel.input.value!!.copy(page = page))
-            } else {
-                adapter.loadMoreListener.isAllPagesLoaded = true
-            }
+            adapter.loadMoreListener.isAllPagesLoaded = page >= viewModel.totalPages
         }
 
         loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         adapter.loadMoreListener = loadMoreListener
         binding.friendsGrid.isVisible = true
+
+        val skeleton = binding.friendsGrid.applySkeleton(
+            R.layout.grid_item_friend,
+            10,
+            UiUtils.mySkeletonConfig(requireContext(), 200f)
+        )
 
         collectLatestLifecycleFlow(
             viewModel.friendsCombined.filterNotNull(),
@@ -176,7 +183,6 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
             if (binding.swipeRefresh.isRefreshing) {
                 binding.friendsGrid.scheduleLayoutAnimation()
             }
-            loadMoreListener.loading = false
             binding.empty.isVisible = it.isEmpty()
 
             adapter.submitList(it)
@@ -187,7 +193,31 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
         }
 
         collectLatestLifecycleFlow(viewModel.hasLoaded, Lifecycle.State.RESUMED) {
-            binding.swipeRefresh.isRefreshing = !it
+            loadMoreListener.loading = !it
+
+            if (!it) {
+                if (adapter.itemCount == 0) {
+                    skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
+                        delay(100)
+                        skeleton.showSkeleton()
+                    }
+                }
+
+                if (!skeleton.isSkeleton() && viewModel.input.value?.page == 1)
+                    binding.swipeRefresh.isRefreshing = true
+
+                binding.empty.isVisible = false
+            } else {
+                skeletonJob?.cancel()
+                skeletonJob = null
+                if (skeleton.isSkeleton())
+                    skeleton.showOriginal()
+                binding.swipeRefresh.isRefreshing = false
+
+                if (viewModel.friendsCombined.value?.isEmpty() == true) {
+                    binding.empty.isVisible = true
+                }
+            }
         }
 
         binding.friendsGrid.addOnScrollListener(loadMoreListener)
@@ -201,7 +231,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                         timePeriod = null,
                         type = Stuff.TYPE_FRIENDS,
                         page = 1,
-                    )
+                    ), initial = true
                 )
             }
         }
@@ -286,10 +316,8 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
             contentBinding.friendsPic.layoutParams.width = 150.dp
             contentBinding.friendsPic.layoutParams.height = 150.dp
             val playCount = friendsItemHolder.playCount
-            if (playCount > 0) {
-                val since = if ((userCached.registeredTime / 1000) <= Stuff.TIME_2002)
-                    ""
-                else
+            if (playCount > 0 && (userCached.registeredTime / 1000) >= Stuff.TIME_2002) {
+                val since =
                     DateFormat.getMediumDateFormat(context).format(userCached.registeredTime)
                 contentBinding.friendsScrobblesSince.text = getString(
                     R.string.num_scrobbles_since,

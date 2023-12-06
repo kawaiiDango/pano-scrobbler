@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.Calendar
 
 
-class ChartsVM : BaseChartsVM() {
+class ChartsVM : ChartsPeriodVM() {
     private val _entries = MutableStateFlow<List<MusicEntry>?>(null)
     val entries = _entries.asStateFlow()
     var reachedEnd = false
@@ -64,8 +64,7 @@ class ChartsVM : BaseChartsVM() {
         _hasLoaded.emit(true)
 
         result.onSuccess {
-            if (it.attr.page >= it.attr.totalPages)
-                reachedEnd = true
+            reachedEnd = it.attr.page >= it.attr.totalPages
             it.attr.total?.let { totalCount = it }
         }
 

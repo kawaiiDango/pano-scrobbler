@@ -12,6 +12,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -27,6 +28,7 @@ import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
@@ -36,8 +38,12 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 
 class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     private var _binding: ContentTrackHistoryBinding? = null
@@ -46,6 +52,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     private val viewModel by viewModels<TracksVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     private lateinit var adapter: TrackHistoryAdapter
+    private var skeletonJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,42 +95,6 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        collectLatestLifecycleFlow(viewModel.tracks.filterNotNull()) {
-            binding.progress.hide()
-            adapter.loadMoreListener.loading = false
-            binding.tracksList.visibility = View.VISIBLE
-//            if (oldList.isNotEmpty())
-//                adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
-            adapter.submitList(it)
-
-//            (view.parent as? ViewGroup)?.doOnPreDraw {
-//                startPostponedEnterTransition()
-//            }
-            // todo transition
-        }
-
-//        binding.firstScrobbledOn.visibility = View.GONE
-
-        collectLatestLifecycleFlow(viewModel.firstScrobbledTime.filterNotNull()) {
-            val millis = it * 1000L
-            val dateStr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                DateFormat.getDateTimeInstance(
-                    DateFormat.MEDIUM,
-                    DateFormat.SHORT,
-                ).format(millis)
-            else
-                Stuff.myRelativeTime(
-                    requireContext(),
-                    it
-                ) // this might be grammatically wrong for < 24h
-            binding.firstScrobbledOn.visibility = View.VISIBLE
-            binding.firstScrobbledOn.text = getString(R.string.first_scrobbled_on, dateStr)
-        }
-
-
-        collectLatestLifecycleFlow(mainNotifierViewModel.editData) {
-            viewModel.editTrack(it)
-        }
 
         val prefs = App.prefs
         val isShowingPlayers =
@@ -154,7 +125,59 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
         binding.tracksList.addOnScrollListener(loadMoreListener)
         binding.tracksList.addItemDecoration(SimpleHeaderDecoration())
 
-        binding.progress.show()
+        val skeleton = binding.tracksList.applySkeleton(
+            R.layout.list_item_recents_skeleton,
+            10,
+            UiUtils.mySkeletonConfig(requireContext())
+        )
+
+        skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
+            delay(100)
+            skeleton.showSkeleton()
+        }
+
+        collectLatestLifecycleFlow(viewModel.tracks.filterNotNull()) {
+            adapter.loadMoreListener.loading = false
+            binding.tracksList.visibility = View.VISIBLE
+//            if (oldList.isNotEmpty())
+//                adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
+            adapter.submitList(it)
+
+//            (view.parent as? ViewGroup)?.doOnPreDraw {
+//                startPostponedEnterTransition()
+//            }
+            // todo transition
+        }
+
+//        binding.firstScrobbledOn.visibility = View.GONE
+
+        collectLatestLifecycleFlow(viewModel.firstScrobbledTime.filterNotNull()) {
+            val millis = it * 1000L
+            val dateStr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                DateFormat.getDateTimeInstance(
+                    DateFormat.MEDIUM,
+                    DateFormat.SHORT,
+                ).format(millis)
+            else
+                Stuff.myRelativeTime(
+                    requireContext(),
+                    it
+                ) // this might be grammatically wrong for < 24h
+            binding.firstScrobbledOn.visibility = View.VISIBLE
+            binding.firstScrobbledOn.text = getString(R.string.first_scrobbled_on, dateStr)
+        }
+
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
+            if (it) {
+                skeletonJob?.cancel()
+                if (skeleton.isSkeleton())
+                    skeleton.showOriginal()
+            }
+        }
+
+        collectLatestLifecycleFlow(mainNotifierViewModel.editData) {
+            viewModel.editTrack(it)
+        }
 
         val trackInput = requireArguments().getData<Track>()!!
 
@@ -167,7 +190,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
                 type = Stuff.TYPE_TRACKS,
                 entry = trackInput,
                 page = 1,
-            )
+            ), true
         )
     }
 

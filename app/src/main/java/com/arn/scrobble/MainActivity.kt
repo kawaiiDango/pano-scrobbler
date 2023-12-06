@@ -359,10 +359,10 @@ class MainActivity : AppCompatActivity(),
                 Snackbar.LENGTH_INDEFINITE
             )
                 .setAction(R.string.enable) {
-                    if (!prefs.scrobblerEnabled)
-                        prefs.scrobblerEnabled = true
-                    else
+                    if (!nlsEnabled)
                         navController.navigate(R.id.onboardingFragment)
+                    else
+                        prefs.scrobblerEnabled = true
                 }
                 .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
                 .focusOnTv()

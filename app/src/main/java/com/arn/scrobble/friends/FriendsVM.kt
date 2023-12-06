@@ -20,12 +20,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -85,51 +84,42 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     val total = _total.asStateFlow()
     var sorted = false
         private set
-    var lastFriendsLoadTime = 0L
+    var lastFriendsLoadTime = System.currentTimeMillis()
         private set
+    private var loadedInitialCachedVersion = false
 
     init {
-        _input.filterNotNull()
-            .onEach { input ->
-                showsPins = input.user.isSelf &&
-                        Scrobblables.current?.userAccount?.type == AccountType.LASTFM &&
-                        prefs.proStatus
+        viewModelScope.launch {
+            _input.filterNotNull()
+                .collectLatest { input ->
+                    showsPins = input.user.isSelf &&
+                            Scrobblables.current?.userAccount?.type == AccountType.LASTFM &&
+                            prefs.proStatus
 
-                if (showsPins && _pinnedFriends.value.isEmpty()) {
-                    val pinnedJson = prefs.pinnedFriendsJson
-                    _pinnedFriends.emit(pinnedJson.sortedBy { it.order })
+                    if (showsPins && _pinnedFriends.value.isEmpty()) {
+                        val pinnedJson = prefs.pinnedFriendsJson
+                        _pinnedFriends.emit(pinnedJson.sortedBy { it.order })
+                    }
+                    loadFriends(input.page, input.user.name)
+
                 }
-                _hasLoaded.emit(false)
-                Scrobblables.current!!.getFriends(input.page, input.user.name)
-                    .onSuccess {
-                        totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0
-                        _total.emit(it.attr.total!!)
-                        sorted = false
-                        lastFriendsLoadTime = System.currentTimeMillis()
-                    }
-                    .let { result ->
-                        emitUsers(result, input.page > 1)
-                    }
-
-                _hasLoaded.emit(true)
-
-            }.launchIn(viewModelScope)
-
+        }
         viewModelScope.launch {
             refreshPins()
         }
 
-        _pinnedFriends.onEach { pinnedFriends ->
-            if (showsPins)
-                prefs.pinnedFriendsJson = pinnedFriends
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            _pinnedFriends.collectLatest { pinnedFriends ->
+                if (showsPins)
+                    prefs.pinnedFriendsJson = pinnedFriends
+            }
+        }
     }
 
 
-    fun setInput(input: MusicEntryLoaderInput) {
-        viewModelScope.launch {
-            _input.emit(input)
-        }
+    fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {
+        if (initial && _input.value == null || !initial)
+            _input.value = input
     }
 
     suspend fun loadFriendsRecents(username: String) {
@@ -149,6 +139,40 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
             privateUsers += username
         }
     }
+
+
+    private suspend fun loadFriends(
+        page: Int,
+        username: String,
+        setLoading: Boolean = true
+    ) {
+        if (setLoading)
+            _hasLoaded.emit(false)
+
+        val pr = Scrobblables.current!!.getFriends(
+            page, username, cached = !loadedInitialCachedVersion
+        )
+            .onSuccess {
+                totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0
+                _total.emit(it.attr.total!!)
+                sorted = false
+                lastFriendsLoadTime = System.currentTimeMillis()
+            }
+
+        emitUsers(pr, page > 1)
+
+        if (!loadedInitialCachedVersion) {
+            loadedInitialCachedVersion = true
+            if (pr.getOrNull()?.fromCache == true)
+                viewModelScope.launch {
+                    loadFriends(page, username, setLoading = false)
+                }
+        }
+
+        if (setLoading)
+            _hasLoaded.emit(true)
+    }
+
 
     private suspend fun emitUsers(result: Result<PageResult<User>>, concat: Boolean) {
         if (concat)

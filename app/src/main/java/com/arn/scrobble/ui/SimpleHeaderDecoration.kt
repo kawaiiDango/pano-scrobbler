@@ -27,7 +27,11 @@ class SimpleHeaderDecoration(
     private var paintInited = false
 
     private fun initPaint(context: Context) {
-        paint.color = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnBackground, null)
+        paint.color = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorOnBackground,
+            null
+        )
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 3.dp.toFloat()
 
@@ -35,10 +39,11 @@ class SimpleHeaderDecoration(
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        val lm = (parent.adapter as? LoadMoreGetter)?.loadMoreListener ?: return
+        
         if (!paintInited)
             initPaint(parent.context)
 
-        val lm = (parent.adapter as LoadMoreGetter).loadMoreListener
         if (lm.loading && !lm.isAllPagesLoaded) {
             for (i in (parent.childCount - 1) downTo 0) {
                 val view = parent.getChildAt(i) ?: break
@@ -73,6 +78,7 @@ class SimpleHeaderDecoration(
             childAdapterPosition < span -> outRect.top = headerHeight
             childAdapterPosition >= parent.adapter!!.itemCount - span ->
                 outRect.bottom = footerHeight
+
             else -> outRect.set(0, 0, 0, 0)
         }
     }

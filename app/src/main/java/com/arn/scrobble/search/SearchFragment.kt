@@ -18,20 +18,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showKeyboard
+import com.arn.scrobble.utils.Stuff.putData
+import com.faltenreich.skeletonlayout.Skeleton
+import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -49,6 +53,8 @@ class SearchFragment : Fragment() {
     private var _binding: ContentSearchBinding? = null
     private val binding
         get() = _binding!!
+    private var skeletonJob: Job? = null
+    private lateinit var skeleton: Skeleton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,6 +186,12 @@ class SearchFragment : Fragment() {
         binding.searchResultsList.layoutManager = LinearLayoutManager(context)
         binding.searchResultsList.itemAnimator?.changeDuration = 0
 
+        skeleton = binding.searchResultsList.applySkeleton(
+            R.layout.list_item_recents_skeleton,
+            10,
+            UiUtils.mySkeletonConfig(requireContext())
+        )
+
         val checkedChip = when (prefs.searchType) {
             SearchResultsAdapter.SearchType.LOCAL -> binding.searchLibrary
             else -> binding.searchGlobal
@@ -203,9 +215,9 @@ class SearchFragment : Fragment() {
         }
 
         collectLatestLifecycleFlow(viewModel.searchResults) {
-            binding.searchProgress.isIndeterminate = true
-            binding.searchProgress.hide()
-            binding.searchResultsList.visibility = View.VISIBLE
+            skeletonJob?.cancel()
+            if (skeleton.isSkeleton())
+                skeleton.showOriginal()
 
             resultsAdapter.populate(it)
 
@@ -227,12 +239,14 @@ class SearchFragment : Fragment() {
     }
 
     private fun doSearch(term: String) {
-        binding.searchResultsList.visibility = View.GONE
 
         if (prefs.searchType == SearchResultsAdapter.SearchType.LOCAL && prefs.lastMaxIndexTime == null)
             findNavController().navigate(R.id.indexingDialogFragment)
         else {
-            binding.searchProgress.show()
+            skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                skeleton.showSkeleton()
+            }
             viewModel.search(term, prefs.searchType)
         }
     }

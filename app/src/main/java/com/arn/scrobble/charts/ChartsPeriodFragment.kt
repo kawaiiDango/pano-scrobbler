@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.MainNotifierViewModel
@@ -31,11 +33,12 @@ import com.arn.scrobble.utils.Stuff.lastOrNull
 import com.arn.scrobble.utils.Stuff.putData
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
 abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
-    protected open val viewModel by viewModels<BaseChartsVM>()
+    protected open val viewModel by viewModels<ChartsPeriodVM>()
     protected open val chartsType = 0
     protected abstract val periodChipsBinding: ChipsChartsPeriodBinding
     private lateinit var periodChipsAdapter: PeriodChipsAdapter
@@ -94,10 +97,6 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                 periodType in arrayOf(TimePeriodType.WEEK, TimePeriodType.MONTH)
         }
 
-        collectLatestLifecycleFlow(viewModel.selectedPeriod, Lifecycle.State.RESUMED) {
-            loadFirstPage()
-        }
-
         periodChipsBinding.chartsPeriodsList.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         periodChipsBinding.chartsPeriodsList.adapter = periodChipsAdapter
@@ -114,6 +113,13 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
         }
 
         periodChipsBinding.chartsPeriodType.isVisible = Scrobblables.current is LastFm
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                if (viewModel.input.value == null)
+                    loadFirstPage()
+            }
+        }
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {

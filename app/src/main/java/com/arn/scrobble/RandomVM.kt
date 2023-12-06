@@ -7,20 +7,21 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.charts.BaseChartsVM
+import com.arn.scrobble.charts.ChartsPeriodVM
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 
-class RandomVM : BaseChartsVM() {
+class RandomVM : ChartsPeriodVM() {
     private val _musicEntry = MutableStateFlow<MusicEntry?>(null)
     val musicEntry = _musicEntry.asStateFlow()
     private val _error = MutableStateFlow<Throwable?>(null)
@@ -33,29 +34,33 @@ class RandomVM : BaseChartsVM() {
     private var totalAlbums = -1
 
     init {
-        input.filterNotNull()
-            .mapLatest {
-                _hasLoaded.emit(false)
-                App.prefs.lastRandomType = it.type
-                loadRandom(it)
-            }
-            .catch { exception ->
-                emit(null to input.value!!.type)
-            }
-            .onEach { (entry, total) ->
-                _hasLoaded.emit(true)
-                if (entry != null) {
-                    _musicEntry.emit(entry)
-                    _error.emit(null)
-                } else {
-                    _musicEntry.emit(null)
-                    _error.emit(IllegalStateException(App.context.getString(R.string.charts_no_data)))
+        viewModelScope.launch {
+            input.filterNotNull()
+                .combine(selectedPeriod) { input, period ->
+                    input.copy(timePeriod = period)
                 }
-                input.value?.type?.let { type ->
-                    setTotal(type, total)
+                .mapLatest {
+                    _hasLoaded.emit(false)
+                    App.prefs.lastRandomType = it.type
+                    loadRandom(it)
                 }
-            }
-            .launchIn(viewModelScope)
+                .catch { exception ->
+                    emit(null to input.value!!.type)
+                }
+                .collectLatest { (entry, total) ->
+                    _hasLoaded.emit(true)
+                    if (entry != null) {
+                        _musicEntry.emit(entry)
+                        _error.emit(null)
+                    } else {
+                        _musicEntry.emit(null)
+                        _error.emit(IllegalStateException(App.context.getString(R.string.charts_no_data)))
+                    }
+                    input.value?.type?.let { type ->
+                        setTotal(type, total)
+                    }
+                }
+        }
     }
 
     private fun getTotal(type: Int = input.value?.type ?: -1): Int {

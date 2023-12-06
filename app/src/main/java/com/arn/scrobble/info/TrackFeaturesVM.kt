@@ -8,9 +8,8 @@ import com.arn.scrobble.api.spotify.SpotifyTrack
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class TrackFeaturesVM : ViewModel() {
@@ -21,21 +20,21 @@ class TrackFeaturesVM : ViewModel() {
     val hasLoaded = _hasLoaded.asStateFlow()
 
     init {
-        _track.filterNotNull().onEach { track ->
-            val spotifyTrack = Requesters.spotifyRequester.getSpotifyTrack(track)?.let {
-                val features = Requesters.spotifyRequester.getTrackFeatures(it.id)
-                if (features.getOrNull() != null) {
-                    it.copy(features = features.getOrThrow())
-                } else {
-                    it
+        viewModelScope.launch {
+            _track.filterNotNull().collectLatest { track ->
+                val spotifyTrack = Requesters.spotifyRequester.getSpotifyTrack(track)?.let {
+                    val features = Requesters.spotifyRequester.getTrackFeatures(it.id)
+                    if (features.getOrNull() != null) {
+                        it.copy(features = features.getOrThrow())
+                    } else {
+                        it
+                    }
                 }
-            }
-            _hasLoaded.emit(true)
-            
-            _spotifyTrackWithFeatures.emit(spotifyTrack)
+                _hasLoaded.emit(true)
 
+                _spotifyTrackWithFeatures.emit(spotifyTrack)
+            }
         }
-            .launchIn(viewModelScope)
     }
 
     fun loadTrackFeaturesIfNeeded(track: Track) {

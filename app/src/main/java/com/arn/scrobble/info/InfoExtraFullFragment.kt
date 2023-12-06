@@ -64,7 +64,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        adapter = ChartsAdapter(binding)
+        adapter = ChartsAdapter(viewLifecycleOwner, binding)
         adapter.emptyTextRes = R.string.not_found
 
         scalableGrid = ScalableGrid(binding.chartsList)
@@ -95,18 +95,23 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
             EndlessRecyclerViewScrollListener(binding.chartsList.layoutManager!!) { page ->
                 if (!viewModel.reachedEnd)
                     viewModel.setInput(viewModel.input.value!!.copy(page = page))
+
+                adapter.loadMoreListener.isAllPagesLoaded = viewModel.reachedEnd
             }
         loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         adapter.loadMoreListener = loadMoreListener
         adapter.clickListener = this
 
+        binding.chartsList.addOnScrollListener(loadMoreListener)
+
         if (type == Stuff.TYPE_ALBUMS || type == Stuff.TYPE_TRACKS) {
             adapter.showArtists = false
         }
 
+        adapter.progressVisible(true)
+
         collectLatestLifecycleFlow(viewModel.entries.filterNotNull()) {
-            viewModel.reachedEnd = true // todo load pages
-            adapter.populate(it, viewModel.input.value?.page == 1)
+            adapter.populate(it, false)
         }
 
         collectLatestLifecycleFlow(optionsMenuViewModel.menuEvent) { (_, menuItemId) ->
@@ -120,7 +125,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
                 timePeriod = null,
                 user = mainNotifierViewModel.currentUser,
                 page = 1
-            )
+            ), true
         )
     }
 

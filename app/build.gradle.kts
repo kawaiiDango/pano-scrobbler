@@ -166,10 +166,9 @@ dependencies {
     implementation(libs.harmony)
     implementation(libs.kumo.core)
     implementation(libs.bimap)
-    implementation(libs.vertical.stepper.form)
     implementation(libs.mpAndroidChart)
     implementation(libs.nestedscrollwebview)
-
+    implementation(libs.skeletonlayout)
     implementation(libs.coil)
     implementation(libs.coil.gif)
 

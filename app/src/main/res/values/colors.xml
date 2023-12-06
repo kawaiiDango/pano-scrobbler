@@ -32,4 +32,6 @@
     <color name="stonks_new">@color/mdcolor_blue_500</color>
     <color name="stonks_neutral">#757575</color>
 
+    <color name="skeleton_mask">#407F7F7F</color>
+    <color name="skeleton_shimmer">#597F7F7F</color>
 </resources>

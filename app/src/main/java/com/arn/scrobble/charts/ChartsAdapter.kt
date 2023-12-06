@@ -5,7 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -25,14 +28,22 @@ import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
+import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.shape.ShapeAppearanceModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Objects
 
 
-open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
+open class ChartsAdapter(
+    private val lifecycleOwner: LifecycleOwner,
+    protected val binding: FrameChartsListBinding
+) :
     ListAdapter<MusicEntry, ChartsAdapter.VHChart>(
         GenericDiffCallback { o, n ->
             if (o is Artist && n is Artist)
@@ -51,6 +62,14 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     protected open val isHorizontalList = false
     private var maxCount = -2
     var checkAllForMax = false
+    private var skeletonJob: Job? = null
+    private val skeleton by lazy {
+        binding.chartsList.applySkeleton(
+            R.layout.grid_item_chart_skeleton,
+            10,
+            UiUtils.mySkeletonConfig(binding.root.context)
+        )
+    }
 
     @StringRes
     var emptyTextRes = R.string.charts_no_data
@@ -71,9 +90,7 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     }
 
     init {
-//        super.setHasStableIds(true)
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
-        binding.chartsProgress.show()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHChart {
@@ -101,12 +118,21 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     }
 
     fun progressVisible(visible: Boolean) {
-        if (visible) {
-            binding.chartsProgress.show()
-            binding.chartsList.visibility = View.INVISIBLE
+        if (visible && itemCount == 0) {
+            skeletonJob = lifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                skeleton.showSkeleton()
+            }
+            binding.chartsStatus.isVisible = false
         } else {
-            binding.chartsProgress.hide()
-            binding.chartsList.visibility = View.VISIBLE
+            skeletonJob?.cancel()
+            if (skeleton.isSkeleton()) {
+                skeleton.showOriginal()
+                binding.root.scheduleLayoutAnimation()
+            }
+
+            if (itemCount == 0)
+                binding.chartsStatus.isVisible = true
         }
     }
 
@@ -123,14 +149,12 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
             else
                 binding.chartsStatus.text = binding.root.context.getString(emptyTextRes)
             TransitionManager.beginDelayedTransition(binding.root, Fade())
-            binding.chartsStatus.visibility = View.VISIBLE
-            binding.chartsList.visibility = View.INVISIBLE
+            binding.chartsStatus.isVisible = true
         } else {
             if (binding.chartsList.visibility != View.VISIBLE) {
                 TransitionManager.beginDelayedTransition(binding.root, Fade())
-                binding.chartsList.visibility = View.VISIBLE
             }
-            binding.chartsStatus.visibility = View.GONE
+            binding.chartsStatus.isVisible = false
         }
         progressVisible(false)
         loadMoreListener.loading = false

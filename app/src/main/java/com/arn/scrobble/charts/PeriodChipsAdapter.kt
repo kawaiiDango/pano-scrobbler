@@ -8,7 +8,7 @@ import com.arn.scrobble.databinding.ListItemChipPeriodBinding
 import com.google.android.material.chip.Chip
 
 class PeriodChipsAdapter(
-    private val viewModel: BaseChartsVM,
+    private val viewModel: ChartsPeriodVM,
     private val onClick: (Int) -> Unit
 ) : RecyclerView.Adapter<PeriodChipsAdapter.PeriodChipVH>() {
 

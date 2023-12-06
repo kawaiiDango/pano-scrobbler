@@ -43,6 +43,7 @@ import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import coil.dispose
 import coil.load
 import coil.memory.MemoryCache
 import com.arn.scrobble.App
@@ -81,6 +82,7 @@ import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
@@ -113,6 +115,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
     private val billingViewModel by activityViewModels<BillingViewModel>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var animSet: AnimatorSet? = null
+    private var skeletonJob: Job? = null
 
     private val focusChangeListener by lazy {
         object : FocusChangeListener {
@@ -149,6 +152,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
 
     override fun onDestroyView() {
         coordinatorBinding.heroButtonsGroup.children.forEach { it.setOnClickListener(null) }
+        coordinatorBinding.heroImg.dispose()
+        coordinatorBinding.heroImg.setImageBitmap(null)
         _binding = null
         super.onDestroyView()
     }
@@ -227,18 +232,22 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
             false
 
         loadMoreListener = EndlessRecyclerViewScrollListener(llm) { page ->
-            if (page <= viewModel.totalPages) {
+            if (page <= viewModel.totalPages)
                 viewModel.setInput(
                     viewModel.input.value!!.copy(page = page)
                 )
-            } else {
-                loadMoreListener.isAllPagesLoaded = true
-            }
+            loadMoreListener.isAllPagesLoaded = page >= viewModel.totalPages
         }
         loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         adapter.loadMoreListener = loadMoreListener
 
         binding.scrobblesList.addOnScrollListener(loadMoreListener)
+
+        val skeleton = binding.scrobblesList.applySkeleton(
+            R.layout.list_item_recents_skeleton,
+            10,
+            UiUtils.mySkeletonConfig(requireContext())
+        )
 
         collectLatestLifecycleFlow(viewModel.pendingScrobbles, Lifecycle.State.RESUMED) {
             adapter.updatePendingScrobbles(it)
@@ -264,7 +273,30 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
 
         collectLatestLifecycleFlow(viewModel.hasLoaded, Lifecycle.State.RESUMED) {
             loadMoreListener.loading = !it
-            binding.swipeRefresh.isRefreshing = !it
+
+            if (!it) {
+                if (adapter.itemCount == 0) {
+                    skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
+                        delay(100)
+                        skeleton.showSkeleton()
+                    }
+                }
+
+                if (!skeleton.isSkeleton() && viewModel.input.value?.page == 1)
+                    binding.swipeRefresh.isRefreshing = true
+
+                binding.empty.isVisible = false
+            } else {
+                skeletonJob?.cancel()
+                skeletonJob = null
+                if (skeleton.isSkeleton())
+                    skeleton.showOriginal()
+                binding.swipeRefresh.isRefreshing = false
+
+                if (viewModel.tracks.value?.isEmpty() == true) {
+                    binding.empty.isVisible = true
+                }
+            }
         }
 
         collectLatestLifecycleFlow(activityViewModel.editData, Lifecycle.State.RESUMED) {
@@ -295,7 +327,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
         }
 
         coordinatorBinding.heroShare.setOnClickListener {
-            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
+            val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
             if (track is Track) {
                 val heart = when {
                     track.userloved == true -> "♥️"
@@ -350,7 +382,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
         }
 
         coordinatorBinding.heroInfo.setOnClickListener {
-            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
+            val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
             if (track is Track) {
                 showTrackInfo(track)
                 if (!prefs.longPressLearnt) {
@@ -443,6 +475,10 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
             viewModel.paletteColors.filterNotNull(),
             Lifecycle.State.RESUMED
         ) { colors ->
+
+            if (skeleton.isSkeleton())
+                return@collectLatestLifecycleFlow
+
             val contentBgFrom = (binding.root.background as ColorDrawable).color
             val tintButtonsFrom =
                 (coordinatorBinding.heroButtonsGroup.children.first() as MaterialButton)
@@ -517,7 +553,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
                         page = 1,
                         user = activityViewModel.currentUser,
                         timePeriod = null,
-                    )
+                    ), true
                 )
             }
         }
@@ -588,7 +624,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
         _binding ?: return
 
         //TODO: check
-        coordinatorBinding.heroImg.setTag(R.id.hero_track, track)
         val imgUrl = track.webp300?.replace("300x300", "600x600")
 
         val errColor = UiUtils.getMatColor(

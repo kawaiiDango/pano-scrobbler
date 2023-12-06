@@ -2,8 +2,8 @@ package com.arn.scrobble.info
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.App
 import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.api.Requesters.toFlow
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
@@ -12,7 +12,6 @@ import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -39,10 +38,9 @@ class InfoExtraFullVM : ViewModel() {
         }
     }
 
-    fun setInput(input: MusicEntryLoaderInput) {
-        viewModelScope.launch {
-            _input.emit(input)
-        }
+    fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {
+        if (initial && _input.value == null || !initial)
+            _input.value = input
     }
 
     private suspend fun loadAppropriateCharts(type: Int, entry: MusicEntry, page: Int) {
@@ -55,11 +53,15 @@ class InfoExtraFullVM : ViewModel() {
             }
 
             entry is Artist && type == Stuff.TYPE_ALBUMS -> {
-                requester.artistGetTopAlbums(entry, page = page, limit = limit).map { it.entries }
+                requester.artistGetTopAlbums(entry, page = page, limit = limit)
+                    .onSuccess { reachedEnd = page >= it.attr.totalPages }
+                    .map { it.entries }
             }
 
             entry is Artist && type == Stuff.TYPE_TRACKS -> {
-                requester.artistGetTopTracks(entry, page = page, limit = limit).map { it.entries }
+                requester.artistGetTopTracks(entry, page = page, limit = limit)
+                    .onSuccess { reachedEnd = page >= it.attr.totalPages }
+                    .map { it.entries }
             }
 
             entry is Track && type == Stuff.TYPE_TRACKS -> {
@@ -73,6 +75,16 @@ class InfoExtraFullVM : ViewModel() {
         }
 
         _hasLoaded.emit(true)
-        _entries.emitAll(result.toFlow())
+
+        result.onFailure {
+            App.globalExceptionFlow.emit(it)
+        }
+
+        result.onSuccess {
+            if (page > 1)
+                _entries.emit((_entries.value ?: emptyList()) + it)
+            else
+                _entries.emit(it)
+        }
     }
 }

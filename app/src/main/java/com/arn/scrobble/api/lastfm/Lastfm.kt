@@ -1,7 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
 import com.arn.scrobble.App
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.DrawerData
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CacheMarkerInterceptor
@@ -28,10 +27,6 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.ANDROID
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.parameter
 import io.ktor.client.request.url
@@ -79,12 +74,12 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 json(Stuff.myJson)
             }
 
-            if (BuildConfig.DEBUG) {
-                install(Logging) {
-                    logger = Logger.ANDROID
-                    level = LogLevel.ALL
-                }
-            }
+//            if (BuildConfig.DEBUG) {
+//                install(Logging) {
+//                    logger = Logger.ANDROID
+//                    level = LogLevel.ALL
+//                }
+//            }
 
             defaultRequest {
                 url(apiRoot)
@@ -274,10 +269,14 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     }
 
     override suspend fun getFriends(
-        page: Int, username: String, limit: Int
+        page: Int,
+        username: String,
+        cached: Boolean,
+        limit: Int
     ): Result<PageResult<User>> {
-        val cacheStrategy = if (Stuff.isOnline) CacheStrategy.NETWORK_ONLY
-        else CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        val cacheStrategy = if (!Stuff.isOnline && cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        else if (cached) CacheStrategy.CACHE_FIRST
+        else CacheStrategy.NETWORK_ONLY
 
         return client.getPageResult<FriendsResponse, User>(transform = { it.friends }) {
             parameter("method", "user.getFriends")

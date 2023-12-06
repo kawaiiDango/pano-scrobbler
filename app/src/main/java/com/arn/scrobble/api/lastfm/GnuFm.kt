@@ -33,6 +33,7 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
     override suspend fun getFriends(
         page: Int,
         username: String,
+        cached: Boolean,
         limit: Int
     ): Result<PageResult<User>> {
         val pr = PageResult(

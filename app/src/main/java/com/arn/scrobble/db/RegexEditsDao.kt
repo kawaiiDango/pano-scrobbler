@@ -51,6 +51,26 @@ interface RegexEditsDao {
     companion object {
         const val tableName = "regexEdits"
 
+        fun RegexEdit.countNamedCaptureGroups(): Map<String, Int> {
+            val extractionPatterns = extractionPatterns ?: return emptyMap()
+
+            return arrayOf(
+                NLService.B_TRACK,
+                NLService.B_ALBUM,
+                NLService.B_ARTIST,
+                "albumArtist"
+            ).associateWith { groupName ->
+                arrayOf(
+                    extractionPatterns.extractionTrack,
+                    extractionPatterns.extractionAlbum,
+                    extractionPatterns.extractionArtist,
+                    extractionPatterns.extractionAlbumArtist,
+                )
+                    .filterNot { it.isEmpty() }
+                    .sumOf { it.split("(?<$groupName>").size - 1 }
+            }
+        }
+
         fun RegexEditsDao.performRegexReplace(
             scrobbleData: ScrobbleData,
             pkgName: String? = null, // null means all
@@ -112,12 +132,14 @@ interface RegexEditsDao {
                                 value.toRegex(RegexOption.IGNORE_CASE)
                         }
 
-                        val (track, album, artist, albumArtist) = arrayOf(
+                        val namedCaptureGroupsCount = regexEdit.countNamedCaptureGroups()
+
+                        val extractionsMap = arrayOf(
                             NLService.B_TRACK,
                             NLService.B_ALBUM,
                             NLService.B_ARTIST,
                             "albumArtist"
-                        ).map { groupName ->
+                        ).associateWith { groupName ->
                             scrobbleDataToRegexes.forEach { (sdField, regex) ->
                                 if (regex.pattern.isEmpty() || sdField.isNullOrEmpty()) return@forEach
                                 val namedGroups =
@@ -126,22 +148,33 @@ interface RegexEditsDao {
                                     runCatching { namedGroups[groupName] }.getOrNull()
                                         ?: return@forEach
 
-                                numMatches[groupName.lowercase()]?.add(regexEdit)
-                                return@map groupValue.value
+                                return@associateWith groupValue.value
                             }
                             null
                         }
 
-                        val found =
-                            track != null || album != null || artist != null || albumArtist != null
+                        val allFound = extractionsMap.all { (sdField, extraction) ->
+                            val count = namedCaptureGroupsCount[sdField] ?: 0
+                            count == 1 && extraction != null ||
+                                    count == 0 && extraction == null
+                        }
 
-                        if (track != null) scrobbleData.track = track
-                        if (album != null) scrobbleData.album = album
-                        if (artist != null) scrobbleData.artist = artist
-                        if (albumArtist != null) scrobbleData.albumArtist = albumArtist
+                        if (allFound) {
+                            extractionsMap.forEach { (sdField, extraction) ->
+                                if (extraction != null)
+                                    numMatches[sdField.lowercase()]?.add(regexEdit)
+                            }
 
-                        if (found && !regexEdit.continueMatching)
-                            return
+                            scrobbleData.track = extractionsMap[NLService.B_TRACK] ?: ""
+                            scrobbleData.album = extractionsMap[NLService.B_ALBUM] ?: ""
+                            scrobbleData.artist = extractionsMap[NLService.B_ARTIST] ?: ""
+                            scrobbleData.albumArtist = extractionsMap["albumArtist"] ?: ""
+
+                            if (!regexEdit.continueMatching)
+                                return
+                        }
+
+
                     }
             }
 

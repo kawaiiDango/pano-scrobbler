@@ -27,6 +27,7 @@ import com.arn.scrobble.databinding.ContentRegexEditAddBinding
 import com.arn.scrobble.db.ExtractionPatterns
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.db.RegexEditsDao.Companion.countNamedCaptureGroups
 import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
@@ -191,6 +192,14 @@ class RegexEditsAddFragment : Fragment() {
 
                     if (newRegexEdit.preset != null)
                         newRegexEdit.preset = null
+
+                    if (newRegexEdit.extractionPatterns != null) {
+                        newRegexEdit.pattern = null
+                        newRegexEdit.replacement = ""
+                        newRegexEdit.fields = null
+                    } else {
+                        newRegexEdit.extractionPatterns = null
+                    }
 
                     withContext(Dispatchers.IO) {
                         dao.insert(listOf(newRegexEdit))
@@ -432,38 +441,33 @@ class RegexEditsAddFragment : Fragment() {
     }
 
     private fun areExtractionRulesValid(): Boolean {
-        val (trackGroups, albumGroups, artistGroups, albumArtistGroups) =
-            arrayOf(
-                NLService.B_TRACK,
-                NLService.B_ALBUM,
-                NLService.B_ARTIST,
-                "albumArtist"
-            ).map { groupName ->
-                arrayOf(
-                    binding.editExtractInclude.editExtractTrack,
-                    binding.editExtractInclude.editExtractAlbum,
-                    binding.editExtractInclude.editExtractArtist,
-                    binding.editExtractInclude.editExtractAlbumArtist,
-                )
-                    .map { it.text.toString() }
-                    .filterNot { it.isEmpty() }
-                    .map {
-                        try {
-                            Pattern.compile(binding.editReplaceInclude.editPattern.text.toString())
-                            it
-                        } catch (e: Exception) {
-                            MaterialAlertDialogBuilder(requireContext())
-                                .setMessage(
-                                    getString(R.string.edit_regex_invalid, e.message)
-                                )
-                                .setPositiveButton(android.R.string.ok, null)
-                                .show()
-                            return false
-                        }
-                    }
-                    .sumOf { it.split("(?<$groupName>").size - 1 }
-            }
+        val regexEdit = saveRegexEditToArgs()
+        val extractionPatterns = regexEdit.extractionPatterns ?: return false
 
+        val regexesValid = arrayOf(
+            extractionPatterns.extractionTrack,
+            extractionPatterns.extractionAlbum,
+            extractionPatterns.extractionArtist,
+            extractionPatterns.extractionAlbumArtist,
+        ).all {
+            try {
+                Pattern.compile(it)
+                true
+            } catch (e: Exception) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(
+                        getString(R.string.edit_regex_invalid, e.message)
+                    )
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+                false
+            }
+        }
+
+        if (!regexesValid)
+            return false
+
+        val (trackGroups, albumGroups, artistGroups, albumArtistGroups) = regexEdit.countNamedCaptureGroups().values.toList()
 
         val isSuccess =
             trackGroups == 1 && albumGroups <= 1 && artistGroups == 1 && albumArtistGroups <= 1

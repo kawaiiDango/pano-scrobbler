@@ -61,7 +61,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     protected open fun postInit() {
         context ?: return
 
-        childFragmentManager
+        requireActivity().supportFragmentManager
             .setFragmentResultListener(Stuff.ARG_MONTH_PICKER_PERIOD, this) { key, bundle ->
                 when (key) {
                     Stuff.ARG_MONTH_PICKER_PERIOD -> {

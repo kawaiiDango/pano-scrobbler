@@ -171,8 +171,7 @@
     <string name="grant_rec_perm">마이크를 사용하기 위해 권한을 허용해 주십시오</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">태그 클라우드</string>
-    <string name="scrobble_from_mic" comment="Its a verb">마이크를 통해 scrobble</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">마이크를 통해</string>
+    <string name="scrobble_from_mic" comment="Its a verb">마이크를 통해 스크로블</string>
     <string name="add_to_hs">홈화면에 추가하기</string>
     <string name="listening">주변에서 재생되는 음악 듣기</string>
     <string name="uploading">업로드 중…</string>

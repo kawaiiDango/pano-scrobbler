@@ -816,7 +816,7 @@ class LFMRequester(
     fun scrobble(
         nowPlaying: Boolean,
         trackInfo: PlayingTrackInfo,
-        unparsedData: ScrobbleData? = null
+        parseTitle: Boolean = trackInfo.ignoreOrigArtist
     ) {
         toExec = {
             Stuff.log(
@@ -830,31 +830,31 @@ class LFMRequester(
 
                 var scrobbleResults = mapOf<Scrobblable, ScrobbleResult>()
                 var savedAsPending = false
-                val forceable = unparsedData == null
-
                 val scrobbleData = trackInfo.toScrobbleData()
+                val scrobbleDataOrig = ScrobbleData(scrobbleData)
 
                 fun doFallbackScrobble(): Boolean {
-                    if (trackInfo.canDoFallbackScrobble && unparsedData != null) {
-
-                        val newTrackInfo = trackInfo.updateMetaFrom(unparsedData)
+                    if (trackInfo.canDoFallbackScrobble && parseTitle) {
+                        trackInfo.updateMetaFrom(scrobbleDataOrig)
+                            .apply { canDoFallbackScrobble = false }
+                        
                         val i = Intent(NLService.iMETA_UPDATE_S)
                             .setPackage(context.packageName)
-                            .putSingle(newTrackInfo)
+                            .putSingle(trackInfo)
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
 
                         LFMRequester(scope, liveData)
-                            .scrobble(nowPlaying, newTrackInfo)
+                            .scrobble(nowPlaying, trackInfo, false)
                         return true
                     }
                     return false
                 }
 
-                fun shouldBlockScrobble(otherArtist: String?): Boolean {
+                fun shouldBlockScrobble(): Boolean {
                     if (prefs.proStatus) {
                         val blockedMetadata = PanoDb.db
                             .getBlockedMetadataDao()
-                            .getBlockedEntry(scrobbleData, otherArtist)
+                            .getBlockedEntry(scrobbleData)
                         if (blockedMetadata != null) {
                             val i = Intent(NLService.iCANCEL).apply {
                                 `package` = context.packageName
@@ -884,47 +884,59 @@ class LFMRequester(
                     var track: Track? = null
                     var correctedArtist: String? = null
 
-                    val editsDao = PanoDb.db.getSimpleEditsDao()
-                    var edit = editsDao.performEdit(scrobbleData)
-
                     val oldArtist = scrobbleData.artist
                     val oldTrack = scrobbleData.track
+
+                    if (shouldBlockScrobble()) // check if youtube channel name was blocked
+                        return@coroutineScope
+
+                    // music only items have an album field,
+                    // and the correct artist name on official youtube tv app
+
+                    val editsDao = PanoDb.db.getSimpleEditsDao()
+                    var edit = editsDao.performEdit(scrobbleData)
 
                     val regexEdits = PanoDb.db
                         .getRegexEditsDao()
                         .performRegexReplace(scrobbleData, trackInfo.packageName)
 
-                    if (scrobbleData.artist.isNullOrBlank())
-                        scrobbleData.artist = oldArtist
+                    if (parseTitle) { // youtube
+                        if (edit == null && !regexEdits.values.any { it.isNotEmpty() }) { // do not parse if an edit is found
+                            val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(
+                                trackInfo.origTitle
+                            )
+                            scrobbleData.artist = parsedArtist
+                            scrobbleData.track = parsedTitle
+                            scrobbleData.albumArtist = ""
+                            scrobbleData.album = ""
+                        }
+                    } else { // parseTitle can make it blank to show iBAD_META_S
+                        if (scrobbleData.artist.isNullOrBlank())
+                            scrobbleData.artist = oldArtist
 
-                    if (scrobbleData.track.isNullOrBlank())
-                        scrobbleData.track = oldTrack
+                        if (scrobbleData.track.isNullOrBlank())
+                            scrobbleData.track = oldTrack
+                    }
 
                     if (regexEdits.values.any { it.isNotEmpty() })
                         edit = editsDao.performEdit(scrobbleData)
-
-                    if (shouldBlockScrobble(unparsedData?.artist))
-                        return@coroutineScope
 
                     if (scrobbleData.artist.isNullOrBlank() || scrobbleData.track.isNullOrBlank()) {
                         if (!doFallbackScrobble()) {
                             val i = Intent(NLService.iBAD_META_S)
                                 .setPackage(context.packageName)
-                                .putSingle(
-                                    trackInfo.updateMetaFrom(scrobbleData)
-                                )
+                                .putSingle(trackInfo.copy(albumArtist = ""))
                                 .putSingle(
                                     ScrobbleError(
                                         context.getString(R.string.parse_error),
                                         null,
                                         trackInfo.packageName,
-                                        canForceScrobble = forceable
                                     )
                                 )
                             context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                         }
                         return@coroutineScope
-                    } else if (edit != null || regexEdits.values.any { it.isNotEmpty() }) {
+                    } else if (scrobbleDataOrig != scrobbleData) {
                         val i = Intent(NLService.iMETA_UPDATE_S)
                             .setPackage(context.packageName)
                             .putSingle(trackInfo.updateMetaFrom(scrobbleData))
@@ -963,9 +975,9 @@ class LFMRequester(
                             }
                         }
                         correctedArtist =
-                            if (track != null && (track.listeners >= Stuff.MIN_LISTENER_COUNT || forceable))
+                            if (track != null && (track.listeners >= Stuff.MIN_LISTENER_COUNT || !parseTitle))
                                 track.artist
-                            else if (forceable)
+                            else if (!parseTitle)
                                 scrobbleData.artist
                             else
                                 getValidArtist(
@@ -985,10 +997,11 @@ class LFMRequester(
                             if (regexEdits.values.any { it.isNotEmpty() })
                                 edit = editsDao.performEdit(scrobbleData, false)
 
-                            if (shouldBlockScrobble(null))
-                                return@coroutineScope
                         }
                     }
+
+                    if (scrobbleDataOrig != scrobbleData && shouldBlockScrobble())
+                        return@coroutineScope
 
                     val cachedTrack: CachedTrack? =
                         if (prefs.lastMaxIndexTime != null)
@@ -1027,7 +1040,6 @@ class LFMRequester(
                                             context.getString(R.string.state_unrecognised_artist),
                                             null,
                                             trackInfo.packageName,
-                                            canForceScrobble = forceable
                                         )
                                     )
                                 context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
@@ -1124,7 +1136,6 @@ class LFMRequester(
                                         "",
                                         failedText,
                                         trackInfo.packageName,
-                                        canForceScrobble = forceable
                                     )
                                 )
                         } else {

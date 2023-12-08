@@ -47,7 +47,6 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils.toast
 import de.umass.lastfm.Track
-import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -997,22 +996,6 @@ class NLService : NotificationListenerService() {
             trackInfo.userPlayCount = 0
             trackInfo.userLoved = false
 
-            var unparsedScrobbleData: ScrobbleData? = null
-
-            // music only items have an album field,
-            // and the correct artist name on official youtube tv app
-
-            if (trackInfo.ignoreOrigArtist) { // not parsed yet
-                val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(trackInfo.origTitle)
-
-                unparsedScrobbleData = trackInfo.toScrobbleData()
-
-                trackInfo.artist = parsedArtist
-                trackInfo.title = parsedTitle
-                trackInfo.albumArtist = ""
-                trackInfo.album = ""
-            }
-
             lastNpTask?.cancel()
 
             trackInfo.isPlaying = true
@@ -1040,7 +1023,7 @@ class NLService : NotificationListenerService() {
             val trackInfoCopy = addScrobble(trackInfo)
 
             lastNpTask = LFMRequester(coroutineScope).apply {
-                scrobble(true, trackInfoCopy, unparsedScrobbleData)
+                scrobble(true, trackInfoCopy)
             }
 
             notifyScrobble(trackInfo)

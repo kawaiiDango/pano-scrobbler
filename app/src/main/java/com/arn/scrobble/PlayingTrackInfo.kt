@@ -94,5 +94,4 @@ data class ScrobbleError(
     val title: String,
     val description: String?,
     val packageName: String,
-    val canForceScrobble: Boolean = true,
 ) : Parcelable

@@ -59,7 +59,9 @@ class MainPrefs : Krate {
         get() = _delayPercent.coerceIn(PREF_DELAY_PER_MIN, PREF_DELAY_PER_MAX)
 
     var scrobbleSpotifyRemote by booleanPref(PREF_SCROBBLE_SPOTIFY_REMOTE).withDefault(false)
-    var preventDuplicateAmbientScrobbles by booleanPref(PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES).withDefault(false)
+    var preventDuplicateAmbientScrobbles by booleanPref(PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES).withDefault(
+        false
+    )
     var allowedArtists by stringSetPref(PREF_ALLOWED_ARTISTS).withDefault(setOf())
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
     var fetchAlbum by booleanPref(PREF_FETCH_ALBUM).withDefault(false)

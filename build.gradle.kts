@@ -1,17 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-buildscript {
-    repositories {
-        google()
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath(libs.play.publisher)
-    }
-}
-
 plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.navigation.safeargs) apply false

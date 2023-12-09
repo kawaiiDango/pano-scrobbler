@@ -1,0 +1,12 @@
+{
+    "uniqueId": "WebScrobbler",
+    "artifactVersion": "[imported]",
+    "scm": {
+        "url": "https://github.com/web-scrobbler/web-scrobbler"
+    },
+    "name": "Web Scrobbler",
+    "website": "https://web-scrobbler.github.io/",
+    "licenses": [
+        "MIT"
+    ]
+}

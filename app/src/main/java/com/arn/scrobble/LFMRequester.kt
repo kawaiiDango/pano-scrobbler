@@ -830,21 +830,19 @@ class LFMRequester(
 
                 var scrobbleResults = mapOf<Scrobblable, ScrobbleResult>()
                 var savedAsPending = false
+                val trackInfoOrig = trackInfo.copy().apply { canDoFallbackScrobble = false }
                 val scrobbleData = trackInfo.toScrobbleData()
                 val scrobbleDataOrig = ScrobbleData(scrobbleData)
 
                 fun doFallbackScrobble(): Boolean {
                     if (trackInfo.canDoFallbackScrobble && parseTitle) {
-                        trackInfo.updateMetaFrom(scrobbleDataOrig)
-                            .apply { canDoFallbackScrobble = false }
-                        
                         val i = Intent(NLService.iMETA_UPDATE_S)
                             .setPackage(context.packageName)
-                            .putSingle(trackInfo)
+                            .putSingle(trackInfoOrig)
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
 
                         LFMRequester(scope, liveData)
-                            .scrobble(nowPlaying, trackInfo, false)
+                            .scrobble(nowPlaying, trackInfoOrig.copy(), false)
                         return true
                     }
                     return false
@@ -896,13 +894,13 @@ class LFMRequester(
                     val editsDao = PanoDb.db.getSimpleEditsDao()
                     var edit = editsDao.performEdit(scrobbleData)
 
-                    val regexEdits = PanoDb.db
+                    var regexEdits = PanoDb.db
                         .getRegexEditsDao()
                         .performRegexReplace(scrobbleData, trackInfo.packageName)
 
                     if (parseTitle) { // youtube
                         if (edit == null && !regexEdits.values.any { it.isNotEmpty() }) { // do not parse if an edit is found
-                            val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(
+                            val (parsedArtist, parsedTitle) = MetadataUtils.parseYoutubeTitle(
                                 trackInfo.origTitle
                             )
                             scrobbleData.artist = parsedArtist
@@ -925,7 +923,7 @@ class LFMRequester(
                         if (!doFallbackScrobble()) {
                             val i = Intent(NLService.iBAD_META_S)
                                 .setPackage(context.packageName)
-                                .putSingle(trackInfo.copy(albumArtist = ""))
+                                .putSingle(trackInfoOrig.copy(albumArtist = ""))
                                 .putSingle(
                                     ScrobbleError(
                                         context.getString(R.string.parse_error),
@@ -990,7 +988,7 @@ class LFMRequester(
                         if (scrobbleDataBeforeAutocorrect != scrobbleData) {
                             edit = editsDao.performEdit(scrobbleData, false)
 
-                            PanoDb.db
+                            regexEdits = PanoDb.db
                                 .getRegexEditsDao()
                                 .performRegexReplace(scrobbleData, trackInfo.packageName)
 
@@ -1034,7 +1032,7 @@ class LFMRequester(
                             if (!doFallbackScrobble()) {
                                 val i = Intent(NLService.iBAD_META_S)
                                     .setPackage(context.packageName)
-                                    .putSingle(trackInfo.updateMetaFrom(scrobbleData))
+                                    .putSingle(trackInfoOrig.copy(albumArtist = ""))
                                     .putSingle(
                                         ScrobbleError(
                                             context.getString(R.string.state_unrecognised_artist),

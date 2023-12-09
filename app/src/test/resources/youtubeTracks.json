@@ -1,0 +1,442 @@
+[
+  {
+    "description": "should do nothing with clean string",
+    "funcParameter": "Track Title",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should trim whitespaces",
+    "funcParameter": "  Track Title  ",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should trim leading whitespaces",
+    "funcParameter": "    Track Title",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should trim trailing whitespaces",
+    "funcParameter": "Track Title    ",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove leftovers after e.g. (official video)",
+    "funcParameter": "Track Title (    )",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove empty leftovers after e.g. (official video)",
+    "funcParameter": "Track Title ()",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'HD' string",
+    "funcParameter": "Track Title HD",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(HD)' string",
+    "funcParameter": "Track Title (HD)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'HQ' string",
+    "funcParameter": "Track Title HQ",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(HQ)' string",
+    "funcParameter": "Track Title (HQ)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should extract title from single quotes",
+    "funcParameter": "'Track Title'",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should extract title from double quotes",
+    "funcParameter": "'Track Title' whatever",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove .avi extension",
+    "funcParameter": "Track Title.avi",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove .wmv extension",
+    "funcParameter": "Track Title.wmv",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove .mpg extension",
+    "funcParameter": "Track Title.mpg",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove .flv extension",
+    "funcParameter": "Track Title.flv",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove .mpeg extension",
+    "funcParameter": "Track Title.mpeg",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '**NEW**' string",
+    "funcParameter": "Track Title **NEW**",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '[whatever]' string",
+    "funcParameter": "Track Title [Official Video]",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '【whatever】' string",
+    "funcParameter": "Track Title 【Official Video】",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '（whatever）' string",
+    "funcParameter": "Track Title （Official Video）",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '[whatever] + (whatever)' string",
+    "funcParameter": "Track Title [Official Video] (Official Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(whatever) + [whatever]' string",
+    "funcParameter": "Track Title (Official Video) [Official Video]",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Video' string",
+    "funcParameter": "Track Title (Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Music Video' string",
+    "funcParameter": "Track Title (Music Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Official Video' string",
+    "funcParameter": "Track Title (Official Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Official Music Video' string",
+    "funcParameter": "Track Title (Official Music Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Official Music Video' string",
+    "funcParameter": "Track Title - Official Music Video",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Official Video' string",
+    "funcParameter": "Track Title - Official Video",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Music Video' string",
+    "funcParameter": "Track Title - Music Video",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Video' string",
+    "funcParameter": "Track Title - Video",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Official Music Audio' string",
+    "funcParameter": "Track Title - Official Music Video",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Official Audio' string",
+    "funcParameter": "Track Title - Official Video",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Music Audio' string",
+    "funcParameter": "Track Title - Music Audio",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '- Audio' string",
+    "funcParameter": "Track Title - Audio",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Audio' string",
+    "funcParameter": "Track Title (Audio)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Music Audio' string",
+    "funcParameter": "Track Title (Music Audio)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Official Audio' string",
+    "funcParameter": "Track Title (Official Audio)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Official Music Audio' string",
+    "funcParameter": "Track Title (Official Music Audio)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should not remove Video from track name",
+    "funcParameter": "Video Killed the Radio Star",
+    "expectedValue": "Video Killed the Radio Star"
+  },
+  {
+    "description": "should remove '(official)' string",
+    "funcParameter": "Track Title (Official)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(oficial)' string",
+    "funcParameter": "Track Title (Oficial)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'offizielles Video' string",
+    "funcParameter": "Track Title offizielles Video",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'video clip officiel' string",
+    "funcParameter": "Track Title video clip officiel",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'video clip official' string",
+    "funcParameter": "Track Title video clip official",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'videoclip oficiel' string",
+    "funcParameter": "Track Title videoclip oficiel",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'videoclip oficial' string",
+    "funcParameter": "Track Title videoclip oficial",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'video clip' string",
+    "funcParameter": "Track Title video clip",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'videoclip' string",
+    "funcParameter": "Track Title videoclip",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'vid\u00e9o clip' string",
+    "funcParameter": "Track Title vid\u00e9o clip",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'clip' string",
+    "funcParameter": "Track Title clip",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should not remove 'clip' from string",
+    "funcParameter": "Eclipse",
+    "expectedValue": "Eclipse"
+  },
+  {
+    "description": "should remove '(YYYY)' string",
+    "funcParameter": "Track Title (2348)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Whatever version)' string",
+    "funcParameter": "Track Title (Super Cool Version)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Lyric Video)' string",
+    "funcParameter": "Track Title (Lyric Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Whatever Lyric Video)' string",
+    "funcParameter": "Track Title (Official Lyric Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Lyrics Video)' string",
+    "funcParameter": "Track Title (Lyrics Video)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Whatever Lyrics Video)' string",
+    "funcParameter": "Track Title (OFFICIAL LYRICS VIDEO)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(With Lyrics)' string",
+    "funcParameter": "Track Title (With Lyrics)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Official Track Stream)' string",
+    "funcParameter": "Track Title (Official Track Stream)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Track Stream)' string",
+    "funcParameter": "Track Title (Track Stream)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Official Stream)' string",
+    "funcParameter": "Track Title (Official Stream)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Stream)' string",
+    "funcParameter": "Track Title (Stream)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove (live) suffix",
+    "funcParameter": "Track Title (Live)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove (live ...) suffix",
+    "funcParameter": "Track Title (Live at somewhere)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove Full Album suffix",
+    "funcParameter": "Track Title Full Album",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '| something' suffix",
+    "funcParameter": "Track Title | Foo | Bar",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove leading colon",
+    "funcParameter": ":Track Title",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove leading semicolon",
+    "funcParameter": ";Track Title",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove leading dash",
+    "funcParameter": "-Track Title",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove leading double quote",
+    "funcParameter": "\"Track Title",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove trailing colon",
+    "funcParameter": "Track Title:",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove trailing semicolon",
+    "funcParameter": "Track Title;",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove trailing dash",
+    "funcParameter": "Track Title-",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove trailing double quote",
+    "funcParameter": "Track Title\"",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should leave single quotes around joined",
+    "funcParameter": "Track 'n' Title",
+    "expectedValue": "Track 'n' Title"
+  },
+  {
+    "description": "should remove '(whatever 2/12/18)' string",
+    "funcParameter": "Track Title (whatever 2/12/18)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should not remove trailing 'Live' word",
+    "funcParameter": "Track Title Live",
+    "expectedValue": "Track Title Live"
+  },
+  {
+    "description": "should not remove 'Live' word",
+    "funcParameter": "Track Live Title",
+    "expectedValue": "Track Live Title"
+  },
+  {
+    "description": "should not remove 'live' as a part of a word from string",
+    "funcParameter": "Fully Alive",
+    "expectedValue": "Fully Alive"
+  },
+  {
+    "description": "should remove '(Letra)' string",
+    "funcParameter": "Track Title (Letra)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Letra/Lyrics)' string",
+    "funcParameter": "Track Title (Letra/Lyrics)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(En vivo)' string",
+    "funcParameter": "Track Title (En vivo)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove 'Sub Espa\u00f1ol' string",
+    "funcParameter": "Track Title Sub Espa\u00f1ol",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Album Track)' string",
+    "funcParameter": "Track Title (Album Track)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove '(Whatever Album Track)' string",
+    "funcParameter": "Track Title (Whatever Album Track)",
+    "expectedValue": "Track Title"
+  },
+  {
+    "description": "should remove multiple spaces",
+    "funcParameter": "Imminent (Lyric Video) ft. Joshua Idehen",
+    "expectedValue": "Imminent ft. Joshua Idehen"
+  },
+  {
+    "description": "shouldn't remove ideographic space",
+    "funcParameter": "space　between",
+    "expectedValue": "space　between"
+  }
+]

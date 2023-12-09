@@ -4,52 +4,125 @@ package com.arn.scrobble
  * Created by arn on 20/09/2017.
  */
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import org.hamcrest.CoreMatchers.equalTo
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ErrorCollector
 import java.net.URL
 
 class MaiTest {
+    val testTitles = arrayOf(
+        "Lauren Aquilina | Sinners - Official MUsic Video (Download 'Sinners' EP on iTunes now!) ",//
+        "[MV] REOL - ちるちる HQ / ChiruChiru HD",
+        "REOL -「mede:mede」 ",
+        "Sia - Cheap Thrills Ft. Sean Paul (Remix)",
+        "【kradness×reol】Jitter Doll",
+        "kradness - 零の位相 [Official Music Video]",
+        "Lindsey Stirling Feat. Becky G - Christmas c' mon (official audio) .avi",
+        "INNA - Tropical | Lyric Video",
+        "Klaypex - Stars (feat. Sara Kay)",
+
+        "【東方Jazz／Chillout】 Trip To Mourning 「C-CLAYS」",//
+        "【MIX300曲】世界中のパリピをブチアゲた洋楽たち大集結！Mushup Remix BGM 2018 #2",
+        "【東方Piano／Traditional】 Resentment 「流派未階堂／流派華劇団」",//
+        "[Future Core] Srav3R feat. shully - Hereafter",
+        "BEATLESS OP/Opening Full「Error - GARNiDELiA」cover by Kami",//
+        "RΞOL - New type Tokyo (ニュータイプトーキョー) 「 Reol - Endless EP 」",
+        "[東方Vocal]Resolution[Poplica]",//
+        "【東方ボーカル】 「Resolution」 【 Poplica＊】",
+        "【東方ボーカル】 「背徳のAgape」 【幽閉サテライト】",
+        "【東方ボーカル】「幽閉サテライト」 - 背徳のAgape",//
+        "【東方ボーカル】 「Please kiss my love」 【Syrufit】",
+        "【東方Vocalアレンジ】 Syrufit - Please kiss my love",
+
+        "[MV] 이달의 소녀/츄 (LOONA/Chuu) \"Heart Attack\"",
+        "【macaroom | Halozy】Song of an Anxious Galley【Subbed】",
+        "[Electro] - Au5 & Fractal - Smoke [Secret Weapon EP]",
+        "M|O|O|N - M|O|O|N",
+        "【NORISTRY】シニカルナイトプラン【歌ってみた】"
+    )
+
+    @Serializable
+    data class YoutubeArtistTrackData(
+        val description: String,
+        val args: List<String?>,
+        val expected: Expected
+    )
+
+    @Serializable
+    data class Expected(
+        val artist: String?,
+        val track: String?
+    )
+
+    @Serializable
+    data class YoutubeTrackData(
+        val description: String,
+        val funcParameter: String,
+        val expectedValue: String
+    )
+
+    val json = Json { ignoreUnknownKeys = true }
+
+    @get:Rule
+    val collector = ErrorCollector()
 
     @Test
-    fun testParseTitle() {
-        val title = arrayOf(
-            "Lauren Aquilina | Sinners - Official MUsic Video (Download 'Sinners' EP on iTunes now!) ",//
-            "[MV] REOL - ちるちる HQ / ChiruChiru HD",
-            "REOL -「mede:mede」 ",
-            "Sia - Cheap Thrills Ft. Sean Paul (Remix)",
-            "【kradness×reol】Jitter Doll",
-            "kradness - 零の位相 [Official Music Video]",
-            "Lindsey Stirling Feat. Becky G - Christmas c' mon (official audio) .avi",
-            "INNA - Tropical | Lyric Video",
-            "Klaypex - Stars (feat. Sara Kay)",
+    fun parseYoutubeTitles() {
+        val youtubeTitlesStream =
+            javaClass.classLoader!!.getResourceAsStream("youtubeArtistTracks.json")!!
 
-            "【東方Jazz／Chillout】 Trip To Mourning 「C-CLAYS」",//
-            "【MIX300曲】世界中のパリピをブチアゲた洋楽たち大集結！Mushup Remix BGM 2018 #2",
-            "【東方Piano／Traditional】 Resentment 「流派未階堂／流派華劇団」",//
-            "[Future Core] Srav3R feat. shully - Hereafter",
-            "BEATLESS OP/Opening Full「Error - GARNiDELiA」cover by Kami",//
-            "RΞOL - New type Tokyo (ニュータイプトーキョー) 「 Reol - Endless EP 」",
-            "[東方Vocal]Resolution[Poplica]",//
-            "【東方ボーカル】 「Resolution」 【 Poplica＊】",
-            "【東方ボーカル】 「背徳のAgape」 【幽閉サテライト】",
-            "【東方ボーカル】「幽閉サテライト」 - 背徳のAgape",//
-            "【東方ボーカル】 「Please kiss my love」 【Syrufit】",
-            "【東方Vocalアレンジ】 Syrufit - Please kiss my love",
-
-            "[MV] 이달의 소녀/츄 (LOONA/Chuu) \"Heart Attack\"",
-            "【macaroom | Halozy】Song of an Anxious Galley【Subbed】",
-            "[Electro] - Au5 & Fractal - Smoke [Secret Weapon EP]",
-            "M|O|O|N - M|O|O|N",
-            "【NORISTRY】シニカルナイトプラン【歌ってみた】"
-
-        )
-        title.forEachIndexed { i, it ->
-            print("\n $i-> ")
+        val youtubeTitles = json.decodeFromStream<List<YoutubeArtistTrackData>>(youtubeTitlesStream)
+        youtubeTitles.forEachIndexed { i, it ->
+            print("${it.args[0]} -> ")
             val then = System.currentTimeMillis()
-            val splits = MetadataUtils.parseArtistTitle(it)
+            val (artist, track) = MetadataUtils.parseYoutubeTitle(it.args[0] ?: "")
             val now = System.currentTimeMillis()
-            print(" (" + (now - then) + ") ")
-            splits.forEach { print("$it, ") }
+            println("$artist - $track in ${now - then}ms")
+
+            collector.checkThat(artist, equalTo(it.expected.artist))
+            collector.checkThat(track, equalTo(it.expected.track))
         }
+    }
+
+    @Test
+    fun cleanYoutubeTracks() {
+        val youtubeTracksStream =
+            javaClass.classLoader!!.getResourceAsStream("youtubeTracks.json")!!
+
+        val youtubeTitles = json.decodeFromStream<List<YoutubeTrackData>>(youtubeTracksStream)
+        youtubeTitles.forEachIndexed { i, it ->
+            print("${it.funcParameter} -> ")
+            val then = System.currentTimeMillis()
+            val track = MetadataUtils.cleanYoutubeTrack(it.funcParameter)
+            val now = System.currentTimeMillis()
+            println("$track in ${now - then}ms")
+
+            collector.checkThat(track, equalTo(it.expectedValue))
+        }
+    }
+
+
+    @Test
+    fun parseTitle() {
+
+        testTitles.forEachIndexed { i, it ->
+            print("$i-> ")
+            val then = System.currentTimeMillis()
+            val (artist, track) = MetadataUtils.parseYoutubeTitle(it)
+            val now = System.currentTimeMillis()
+            println("$artist - $track in ${now - then}ms")
+        }
+    }
+
+    @Test
+    fun parseTitleSingle() {
+        val title = "【東方ヴォーカルPV】Let’s Ghost【暁Records公式】"
+        val (artist, track) = MetadataUtils.parseYoutubeTitle(title)
+        println("$artist - $track")
     }
 
     @Test
@@ -60,18 +133,6 @@ class MaiTest {
         val url = URL(txt)
         println(url.host)
         println(MetadataUtils.sanitizeAlbum(txt))
-    }
-
-    @Test
-    fun librefmArtistInfo() {
-        val a = LFMRequester.getArtistInfoLibreFM("れをる/ギガP")
-        println(a)
-    }
-
-    @Test
-    fun spotifyArtistInfo() {
-        val a = LFMRequester.getArtistInfoSpotify("MYTH & ROID")
-        println(a)
     }
 
 }

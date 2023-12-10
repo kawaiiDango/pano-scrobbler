@@ -19,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -44,6 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
+import java.util.regex.PatternSyntaxException
 
 class RegexEditsAddFragment : Fragment() {
 
@@ -155,6 +155,9 @@ class RegexEditsAddFragment : Fragment() {
                             .toList()
                             .toTypedArray()
             )
+
+            saveRegexEditToArgs()
+
             findNavController().navigate(R.id.appListFragment, args)
         }
 
@@ -193,14 +196,6 @@ class RegexEditsAddFragment : Fragment() {
 
                     if (newRegexEdit.preset != null)
                         newRegexEdit.preset = null
-
-                    if (newRegexEdit.extractionPatterns != null) {
-                        newRegexEdit.pattern = null
-                        newRegexEdit.replacement = ""
-                        newRegexEdit.fields = null
-                    } else {
-                        newRegexEdit.extractionPatterns = null
-                    }
 
                     withContext(Dispatchers.IO) {
                         dao.insert(listOf(newRegexEdit))
@@ -355,7 +350,18 @@ class RegexEditsAddFragment : Fragment() {
                 return false
             }
 
-            if (!areExtractionRulesValid()) {
+            val extractRulesResult = areExtractionRulesValid()
+
+            if (extractRulesResult.isFailure) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(
+                        getString(
+                            R.string.edit_regex_invalid,
+                            extractRulesResult.exceptionOrNull()!!.message
+                        )
+                    )
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
                 return false
             }
 
@@ -364,6 +370,9 @@ class RegexEditsAddFragment : Fragment() {
                 return false
             }
 
+            // clear the other screen's fields
+            binding.editReplaceInclude.editPattern.text = null
+            binding.editReplaceInclude.editReplacement.text = null
         } else {
             if (binding.editReplaceInclude.editPattern.text.isNullOrBlank()) {
                 binding.editReplaceInclude.editPattern.error =
@@ -387,6 +396,14 @@ class RegexEditsAddFragment : Fragment() {
                 requireContext().toast(R.string.required_fields_empty)
                 return false
             }
+
+            // clear the other screen's fields
+            arrayOf(
+                binding.editExtractInclude.editExtractTrack,
+                binding.editExtractInclude.editExtractAlbum,
+                binding.editExtractInclude.editExtractArtist,
+                binding.editExtractInclude.editExtractAlbumArtist,
+            ).forEach { it.text = null }
         }
 
 
@@ -439,11 +456,14 @@ class RegexEditsAddFragment : Fragment() {
         return regexEdit
     }
 
-    private fun areExtractionRulesValid(): Boolean {
+    private fun areExtractionRulesValid(): Result<Unit> {
         val regexEdit = saveRegexEditToArgs()
-        val extractionPatterns = regexEdit.extractionPatterns ?: return false
+        val extractionPatterns = regexEdit.extractionPatterns
+            ?: return Result.failure(
+                IllegalArgumentException(getString(R.string.edit_extract_no_groups))
+            )
 
-        val regexesValid = arrayOf(
+        arrayOf(
             extractionPatterns.extractionTrack,
             extractionPatterns.extractionAlbum,
             extractionPatterns.extractionArtist,
@@ -452,19 +472,12 @@ class RegexEditsAddFragment : Fragment() {
             try {
                 Pattern.compile(it)
                 true
-            } catch (e: Exception) {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(
-                        getString(R.string.edit_regex_invalid, e.message)
-                    )
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
-                false
+            } catch (e: PatternSyntaxException) {
+                return Result.failure(
+                    IllegalArgumentException(getString(R.string.edit_regex_invalid, e.message))
+                )
             }
         }
-
-        if (!regexesValid)
-            return false
 
         val (trackGroups, albumGroups, artistGroups, albumArtistGroups) = regexEdit.countNamedCaptureGroups().values.toList()
 
@@ -489,13 +502,10 @@ class RegexEditsAddFragment : Fragment() {
                 else -> getString(R.string.edit_regex_invalid, "Unknown error")
             }
 
-            MaterialAlertDialogBuilder(requireContext())
-                .setMessage(errMsg)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
+            return Result.failure(IllegalArgumentException(errMsg))
         }
 
-        return isSuccess
+        return Result.success(Unit)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

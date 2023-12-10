@@ -56,7 +56,7 @@ which is a bug specific to WSA.
 
 - Inspiration from Musixmatch's FloatingLyrics
 - Lastfm API wrapper: Based on https://github.com/jkovacs/lastfm-java
-- YouTube title parser from (Web Scrobbler)[https://github.com/web-scrobbler/web-scrobbler] and (Metadata Filter)[https://github.com/web-scrobbler/metadata-filter]
+- YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler) and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
 - Icons from https://materialdesignicons.com and https://material.io
 - Genres filter from https://everynoise.com
 

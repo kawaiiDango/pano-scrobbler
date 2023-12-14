@@ -71,7 +71,7 @@
     <string name="yes">Si</string>
     <string name="no">No</string>
     <string name="reset">Restablecer</string>
-    <string name="settings">Configuración</string>
+    <string name="settings">Ajustes</string>
     <string name="bug_report">Reportar error</string>
     <string name="faq">Preguntas frecuentes</string>
     <string name="album_art">Imagen del álbum</string>
@@ -97,7 +97,7 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Canciones más escuchadas</string>
     <string name="similar_tracks">Canciones similares</string>
     <string name="similar" comment="Similar tracks but in short">Similar</string>
-    <string name="state_scrobbling">Ahora en scrobbling…</string>
+    <string name="state_scrobbling">Scrobbleando ahora…</string>
     <string name="state_scrobbled">Scrobbleado</string>
     <string name="unscrobble">Remover scrobble</string>
     <string name="state_unscrobbled">Scrobble removido</string>

@@ -131,6 +131,8 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="learn" comment="(Learn java regex syntax)">Išmokti</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iš %1$s</string>
+    <string name="close" comment="To close a dialog or something">Uždaryti</string>
+    <string name="info_long_press_hint" comment="'This' is a dialog">Ilgai paspausk ant takelio, kad atidarytum jį</string>
     <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>
     <string name="edit_regex">Reguliarusis reiškianos šablonas</string>
     <string name="edit_regex_replacement">Reguliarusis reiškianos keitimas</string>
@@ -147,6 +149,11 @@
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudodamas (-a) įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar nori įjungti šablono redagavimo taisyklę: %1$s?</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
+    <string name="username" comment="last.fm Username">Naudotojo vardas</string>
+    <string name="pref_logout">Atsijungti</string>
+    <string name="sure_tap_again">Tikrai? Paliesk dar kartą</string>
+    <string name="pref_login">Prisijungti</string>
+    <string name="pref_export_desc">Padaro atsarginę nustatymų, redagavimų ir blokavimo sąrašo kopiją. Saugumo sumetimais neišsaugo prisijungimų. Naudinga perkeliant iš vieno įrenginio į kitą arba bendrinti su draugais.</string>
     <string name="pref_import">Importuoti</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizavimas</string>
     <string name="pref_themes" comment="Color themes">Temos</string>
@@ -171,6 +178,14 @@
     <string name="import_hey_wtf">Tai tikriausiai ne Pano Scrobbler eksporto failas.</string>
     <string name="export_failed">Eksportuoti nepavyko.</string>
     <string name="imported">Importuota</string>
+    <string name="import_options">Importavimo parinktys</string>
+    <string name="import_lists_nope">Neimportuoti redagavimų ir blokavimo sąrašo</string>
+    <string name="import_lists_replace_all">Pakeisti visus redagavimus ir blokavimo sąrašą</string>
+    <string name="custom_listenbrainz">Pasirinktinis Listenbrainz</string>
+    <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrink %1$s</string>
+    <string name="artist_extra">Takeliai, albumai ir panašūs</string>
+    <string name="no_browser">Neįdiegta jokia naršyklė</string>
     <string name="no_player">Nėra įdiegtas joks muzikos grotuvas</string>
     <string name="not_running">⚠ Sistema sustabdė skrobuoklį</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sistemos nurodyta sustabdymo priežastis: %s.</string>

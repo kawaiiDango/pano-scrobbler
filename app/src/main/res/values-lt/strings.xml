@@ -147,8 +147,45 @@
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudodamas (-a) įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar nori įjungti šablono redagavimo taisyklę: %1$s?</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
+    <string name="pref_import">Importuoti</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizavimas</string>
+    <string name="pref_themes" comment="Color themes">Temos</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Maišyti ir derinti\nTaip pat keičia pranešimo spalvą</string>
+    <string name="pref_widget_charts">Pradžios ekrano valdiklis – Diagramos</string>
+    <string name="pref_show_albums">Rodyti albumų pavadinimus</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…skroblams.</string>
+    <string name="pref_show_scrobble_sources">Rodyti programėlių, iš kurių nuskrobuoliniai, piktogramas</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…prie kiekvieno skroblo. Šie duomenys lieka tavo įrenginyje.</string>
+    <string name="pref_search_in_source">Ieškok ir leisk programėlėje, iš kurios nuskrobuoliniai</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Palaikomoms programėlėms.</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Sąrašai</string>
     <string name="pref_regex_edits">Šablonų redagavimai</string>
-    <string name="pending_batch" comment="For pending scrobbles">Pateikiama paketas</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">Užblokuoti metaduomenys</string>
+    <string name="pref_translate">Išversti šia programėlę</string>
+    <string name="pref_translate_credits">Vertimo kūrėjai</string>
+    <string name="pref_oss_credits">Atvirojo kodo kūrėjai</string>
+    <string name="pref_check_updates">Tikrinti naujinimus</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Yra naujinimas: %1$s</string>
+    <string name="download" comment="Its a verb">Atsisiųsti</string>
+    <string name="changelog">Pakeitimų žurnalas</string>
+    <string name="import_hey_wtf">Tai tikriausiai ne Pano Scrobbler eksporto failas.</string>
+    <string name="export_failed">Eksportuoti nepavyko.</string>
+    <string name="imported">Importuota</string>
+    <string name="no_player">Nėra įdiegtas joks muzikos grotuvas</string>
+    <string name="not_running">⚠ Sistema sustabdė skrobuoklį</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sistemos nurodyta sustabdymo priežastis: %s.</string>
+    <string name="not_running_fix_action">Taisyti</string>
+    <string name="login_submit" comment="Verifies the login details">Patikrinti</string>
+    <string name="remove_acr_key">Pašalinti ACRCloud raktą</string>
+    <string name="add_acr_consider">Kad išvengtum spartos ribojimų, apsvarstyk galimybę pridėti savo ACRCloud raktą</string>
+    <string name="add" comment="Add a new item such as an edit, a tag, etc">Pridėti</string>
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Užsiregistruok adresu https://console.acrcloud.com.
+• Naršyk į Projects &gt; Audio &amp; video recognition.
+• Sukurk naują projektą, pasirink Recorded Audio ir ACRCloud Music kaušas."</string>
+    <string name="shazam_scrobbling">Jei nori nuolat skrobuolinti, vietoj to atidaryk <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> ir įjunk Auto Shazam. Taip pat įsitikink, kad Shazam įjungtas skrobavimui.</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d likusių</string>
+    <string name="submitting_loves" formatted="true">Siunčiami mėgstamiausi, liko %1$d</string>
+    <string name="pending_batch" comment="For pending scrobbles">Siunčiamas paketas</string>
     <string name="webview_error">Puslapio nepavyko užkrauti (ar tavo internetas veikia?)</string>
     <string name="bar_chart">Juostinė diagrama</string>
     <string name="cleared_disabled_apps">Išvalytos išjungtos programėlės</string>

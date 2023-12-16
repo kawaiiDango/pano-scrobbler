@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s skroblas</item>
+        <item quantity="few">%1$s skroblai</item>
+        <item quantity="many">%1$s skroblo</item>
+        <item quantity="other">%1$s skroblų</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s šiandien</item>
+        <item quantity="few">%1$s šiandien</item>
+        <item quantity="many">%1$s šiandien</item>
+        <item quantity="other">%1$s šiandien</item>
+    </plurals>
+    <!--  pro  -->
+</resources>

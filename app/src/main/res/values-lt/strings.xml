@@ -12,5 +12,105 @@
         <item quantity="many">%1$s šiandien</item>
         <item quantity="other">%1$s šiandien</item>
     </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s klausytojas</item>
+        <item quantity="few">%1$s klausytojai</item>
+        <item quantity="many">%1$s klausytojo</item>
+        <item quantity="other">%1$s klausytojų</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s diena</item>
+        <item quantity="few">%1$s dienos</item>
+        <item quantity="many">%1$s dienos</item>
+        <item quantity="other">%1$s dienų</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s savaitė</item>
+        <item quantity="few">%1$s savaites</item>
+        <item quantity="many">%1$s savaitės</item>
+        <item quantity="other">%1$s savaičių</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s mėnesį</item>
+        <item quantity="few">%1$s mėnesiai</item>
+        <item quantity="many">%1$s mėnesio</item>
+        <item quantity="other">%1$s mėnesių</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s metus</item>
+        <item quantity="few">%1$s metai</item>
+        <item quantity="many">%1$s metų</item>
+        <item quantity="other">%1$s metų</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s atlikėjas</item>
+        <item quantity="few">%1$s atlikėjai</item>
+        <item quantity="many">%1$s atlikėjo</item>
+        <item quantity="other">%1$s atlikėjų</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s albumas</item>
+        <item quantity="few">%1$s albumai</item>
+        <item quantity="many">%1$s albumo</item>
+        <item quantity="other">%1$s albumų</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s takelis</item>
+        <item quantity="few">%1$s takeliai</item>
+        <item quantity="many">%1$s takelio</item>
+        <item quantity="other">%1$s takelių</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d atitikimas</item>
+        <item quantity="few">%1$d atitikimai</item>
+        <item quantity="many">%1$d atitikimo</item>
+        <item quantity="other">%1$d atitikimų</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s redagavimas</item>
+        <item quantity="few">%1$s redagavimai</item>
+        <item quantity="many">%1$s redagavimų</item>
+        <item quantity="other">%1$s redagavimų</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s šablono redagavimas</item>
+        <item quantity="few">%1$s šablonų redagavimai</item>
+        <item quantity="many">%1$s šablono redagavimų</item>
+        <item quantity="other">%1$s šablonų redagavimų</item>
+    </plurals>
+    <string name="yes">Taip</string>
+    <string name="no">Ne</string>
+    <string name="reset">Atstatyti</string>
+    <string name="settings">Konfigūracija</string>
+    <string name="bug_report">Pranešimas apie riktą</string>
+    <string name="faq">DUK</string>
+    <string name="album_art">Albumo viršelis</string>
+    <string name="artist_image">Atlikėjo vaizdas</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Nepavyko analizuoti pavadinimo</string>
+    <string name="network_error">Tinklo klaida</string>
+    <string name="disable_tls_verify">Ignoruoti TLS klaidas</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Skroblas ignoruotas</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ignoravo redagavimą, tikriausiai dėl to, kad skroblas yra per senas. Ar norėtum išsaugoti šį redagavimą būsimiems skrobliams?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Privalomi laukai tušti</string>
+    <string name="artist">Atlikėjas</string>
+    <string name="artists">Atlikėjai</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Geriausi atlikėjai</string>
+    <string name="album_artist">Albumo atlikėjas</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Atlikėjas / kanalas</string>
+    <string name="similar_artists">Panašūs atlikėjai</string>
+    <string name="album_optional">Albumas (pasirinktinai)</string>
+    <string name="album">Albumas</string>
+    <string name="albums">Albumai</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Geriausi albumai</string>
+    <string name="track">Takelis</string>
+    <string name="tracks">Takeliai</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Geriausi takeliai</string>
+    <string name="similar_tracks">Panašūs takeliai</string>
+    <string name="similar" comment="Similar tracks but in short">Panašus</string>
+    <string name="state_scrobbling">Dabar skrobalinama…</string>
+    <string name="state_scrobbled">Nuskrobuolinta</string>
+    <string name="state_unscrobbled">Neskrobuolinta</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iš %1$s</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
     <!--  pro  -->
 </resources>

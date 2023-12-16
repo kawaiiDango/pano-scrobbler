@@ -110,7 +110,31 @@
     <string name="state_scrobbling">Dabar skrobalinama…</string>
     <string name="state_scrobbled">Nuskrobuolinta</string>
     <string name="state_unscrobbled">Neskrobuolinta</string>
+    <string name="state_unrecognised_artist">Neatpažintas atlikėjas</string>
+    <string name="tap_to_edit">(Paliesk, kad redaguoti)</string>
+    <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
+    <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
+    <string name="auto" comment="automatic or default setting">Automatiškai</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Beveik ten…</string>
+    <string name="music_players">Muzikos leistuvai</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Kitos programėlės</string>
+    <string name="choose_apps">Pasirinkti programėles</string>
+    <string name="choose_an_app">Pasirinkti programėlę</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programėlės</string>
+    <string name="offline">Atsijungę. Rodomi duomenys nėra nauji.</string>
+    <string name="unavailable_offline">Nepasiekiama neprisijungus</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Klausiausi\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s klausėsi\n%1$s %2$s</string>
+    <string name="share_sig">(per Pano Scrobbler)</string>
+    <string name="share">Bendrinti</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iš %1$s</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
     <!--  pro  -->
+    <string name="pro_support">Tai paprastas ir greitas būdas nuostabiems naudotojams, tokiems kaip tu, išreikšti paramą, pripažįstant šios programos teikiamą vertę.</string>
+    <string name="pro_also_get">Taip pat gausi toliau nurodytas funkcijas:</string>
+    <string name="thank_you">Ačiū!</string>
+    <string name="purchase_pending">Mokėjimo paslaugų teikėjas dar nepatvirtino pirkimo. Patikrink po kelių minučių.</string>
+    <string name="billing_troubleshoot_title">Atkurti pirkimą</string>
 </resources>

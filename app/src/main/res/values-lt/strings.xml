@@ -129,12 +129,55 @@
     <string name="share_sig">(per Pano Scrobbler)</string>
     <string name="share">Bendrinti</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
+    <string name="learn" comment="(Learn java regex syntax)">Išmokti</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iš %1$s</string>
+    <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>
+    <string name="edit_regex">Reguliarusis reiškianos šablonas</string>
+    <string name="edit_regex_replacement">Reguliarusis reiškianos keitimas</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pavadink savo fiksavimo grupes <i>track, album, artist</i> arba <i>albumArtist</i>, kad galėtum jas išgauti iš kitų laukų.</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">pvz., kad pakeistum atlikėją ir pavadinimą, turėtum įrašyti atlikėjo reguliarį reiškinį kaip (?&lt;track&gt;.*), o takelio reguliarį reiškinį kaip (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliarams reiškiniams turėtų turėti bent jau šias pavadintas užfiksavimo grupes: „track“, „artist“.</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliariai reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkama reguliari reikšmė: %1$s.</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Naudojami šablonai:</string>
+    <string name="edit_continue">Jei rasta, toliau atitikti kitų reguliarių reiškinių</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Testas</string>
+    <string name="edit_presets" comment="Regex presets">Numatytieji</string>
+    <string name="text" comment="text to test regex rules with">Tekstas</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudodamas (-a) įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar nori įjungti šablono redagavimo taisyklę: %1$s?</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
+    <string name="pref_regex_edits">Šablonų redagavimai</string>
+    <string name="pending_batch" comment="For pending scrobbles">Pateikiama paketas</string>
+    <string name="webview_error">Puslapio nepavyko užkrauti (ar tavo internetas veikia?)</string>
+    <string name="bar_chart">Juostinė diagrama</string>
+    <string name="cleared_disabled_apps">Išvalytos išjungtos programėlės</string>
+    <string name="fix_it_title">Galimi taisymai</string>
+    <string name="fix_it_startup_title">Energijos taupyklės / paleidimo tvarkyklės</string>
+    <string name="fix_it_battery_title">Išjungti akumuliatoriaus optimizavimą</string>
+    <string name="fix_it_action" comment="(To open an app)">Atidaryti</string>
+    <string name="delete_account">Ištrinti paskyrą</string>
+    <string name="delete_account_custom_servers">Apie pasirinktinius serverius žiūrėk atitinkamus jų dokumentus.</string>
     <!--  pro  -->
+    <string name="get_pro">Palaikyti šią programėlę</string>
+    <string name="help">Pagalba</string>
     <string name="pro_support">Tai paprastas ir greitas būdas nuostabiems naudotojams, tokiems kaip tu, išreikšti paramą, pripažįstant šios programos teikiamą vertę.</string>
     <string name="pro_also_get">Taip pat gausi toliau nurodytas funkcijas:</string>
     <string name="thank_you">Ačiū!</string>
     <string name="purchase_pending">Mokėjimo paslaugų teikėjas dar nepatvirtino pirkimo. Patikrink po kelių minučių.</string>
     <string name="billing_troubleshoot_title">Atkurti pirkimą</string>
+    <string name="billing_troubleshoot">"Jau nusipirkai?
+
+Tavo pirkimus tvarko Google Play. Jie susieti su Google Play paskyra, kurioje atliktas pirkimas. Įdiegus programėlę naujame įrenginyje su keliomis paskyromis, Google Play gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programėlę iš kompiuterio per Google Play tinklalapį:
+
+• Išdiegk šią programėlę.
+• Atidaryk Google Play tinklalapį iš kompiuterio.
+• Prisijunk su paskyra, kuriai priklauso pirkimas.
+• Įdiek šią programėlę tiesiogiai iš Google Play tinklalapio.
+"</string>
+    <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti garsą</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos</string>
+    <string name="billing_sharing">Pašalinti programėlės pavadinimą bendrinant</string>
+    <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobalinai, ir tiesiogiai jose ieškoti</string>
+    <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliarį reiškinį</string>
 </resources>

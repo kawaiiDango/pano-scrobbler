@@ -67,6 +67,7 @@ import com.arn.scrobble.ui.ItemLongClickListener
 import com.arn.scrobble.ui.PaletteTransition
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.expandToHeroIfNeeded
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
 import com.arn.scrobble.ui.UiUtils.scrollToTopOnInsertToTop
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
@@ -172,6 +173,9 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
         activity ?: return
         viewModel.reemitColors()
+
+        coordinatorBinding.appBar.expandToHeroIfNeeded(true)
+
     }
 
     override fun onPause() {
@@ -190,6 +194,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         )
         coordinatorBinding.sidebarNav.setBackgroundColor(bgColor)
         coordinatorBinding.ctl.setStatusBarScrimColor(bgColor)
+
+        coordinatorBinding.appBar.expandToHeroIfNeeded(false)
     }
 
     private fun postInit() {

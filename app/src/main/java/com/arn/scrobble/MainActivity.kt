@@ -22,7 +22,6 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -72,9 +71,6 @@ class MainActivity : AppCompatActivity(),
 
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)
-
-//        if (!BuildConfig.DEBUG)
-        FragmentManager.enablePredictiveBack(false)
 
         binding = ContentMainBinding.inflate(layoutInflater)
 

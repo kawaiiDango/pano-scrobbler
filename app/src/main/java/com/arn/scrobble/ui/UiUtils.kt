@@ -328,6 +328,18 @@ object UiUtils {
         }
     }
 
+    fun StatefulAppBar.expandToHeroIfNeeded(expand: Boolean) {
+        if (getTag(R.id.app_bar_can_change_size) != true)
+            return
+
+        updateHeight(expand)
+
+        if (expand && !isExpanded)
+            setExpanded(true, true)
+
+        setTag(R.id.app_bar_can_change_size, false)
+    }
+
     fun PopupMenu.showWithIcons(iconTintColor: Int? = null) {
         (menu as? MenuBuilder)?.showIcons(iconTintColor)
         show()
@@ -458,7 +470,7 @@ object UiUtils {
                 App.prefs.drawerDataCached.profilePicUrl
             else
                 userSerializable.getWebpImageURL(ImageSize.EXTRALARGE)
-        
+
         val request = ImageRequest.Builder(context)
             .data(profilePicUrl?.ifEmpty { null }
                 ?: initialsDrawable

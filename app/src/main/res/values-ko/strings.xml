@@ -165,7 +165,7 @@
     <string name="rate_msg">이 앱에 만족하십니까?</string>
     <string name="time_just_now">방금 전</string>
     <string name="no_mail_apps">설치된 이메일 앱이 없습니다</string>
-    <string name="loved" comment="Its a noun">좋아요 등록</string>
+    <string name="loved" comment="Its a noun">좋아요</string>
     <string name="unloved" comment="Its a noun">좋아요 해제</string>
     <string name="simple_edits">편집</string>
     <string name="grant_rec_perm">마이크를 사용하기 위해 권한을 허용해 주십시오</string>
@@ -181,7 +181,7 @@
     <string name="details">세부사항</string>
     <string name="saved_as_pending">보류 중인 스크로블로 저장됨</string>
     <string name="sort">정렬</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">시간 점프</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">시간 이동</string>
     <string name="my_scrobbles">나의 스크로블</string>
     <string name="their_scrobbles">친구의 스크로블</string>
     <string name="listeners">청취자</string>

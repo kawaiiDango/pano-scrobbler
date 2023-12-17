@@ -133,11 +133,13 @@
     <string name="similar" comment="Similar tracks but in short">Panašus</string>
     <string name="state_scrobbling">Dabar skrobalinama…</string>
     <string name="state_scrobbled">Nuskrobuolinta</string>
+    <string name="unscrobble">Neskrobuolinti</string>
     <string name="state_unscrobbled">Neskrobuolinta</string>
     <string name="state_unrecognised_artist">Neatpažintas atlikėjas</string>
     <string name="tap_to_edit">(Paliesk, kad redaguoti)</string>
     <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatiškai</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Beveik ten…</string>
     <string name="music_players">Muzikos leistuvai</string>
@@ -153,8 +155,58 @@
     <string name="share_sig">(per Pano Scrobbler)</string>
     <string name="share">Bendrinti</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
+    <string name="grid_size">Keisti tinklelio dydį</string>
+    <string name="pinch_to_zoom">Prispausti, kad priartinti</string>
+    <string name="more_info">Daugiau informacijos</string>
+    <string name="more" comment="More options menu in short">Daugiau</string>
     <string name="learn" comment="(Learn java regex syntax)">Išmokti</string>
+    <string name="hide">Slėpti</string>
+    <string name="rank_change" comment="%1= delta change">Reitingo pokytis: %s</string>
+    <string name="rank_change_no_change">Jokių pokyčių</string>
+    <string name="rank_change_new">Per praėjusį laikotarpį nenuskrobuolinta</string>
+    <string name="search">Paieška</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Išvalyti visą istoriją</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Pašalinti šį elementą iš istorijos?</string>
+    <string name="library" comment="search within the library">Biblioteka</string>
+    <string name="global" comment="search globally across lastfm">Globalus</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Ieškota geriausių %1$s elementų kiekvienoje kategorijoje.</string>
+    <string name="profile">Profilis</string>
+    <string name="profile_pic">Profilio nuotrauka</string>
+    <string name="no_scrobbles">Jokių dainų čia kol kas…</string>
+    <string name="new_app">Nauja programėlė</string>
+    <string name="no_apps_enabled">Nėra įjungtų programėlių</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d daugiau</string>
+    <string name="show_all">Žiūrėti viską</string>
+    <string name="edit">Redaguoti</string>
+    <string name="delete">Ištrinti</string>
+    <string name="delete_all">Ištrinti viską</string>
+    <string name="love" comment="Love/like a song">Pamėgti</string>
+    <string name="hate" comment="Hate or dislike a song">Nemėgsti</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Panaikinti nemėgstą</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Panaikinti nemėgstą</string>
+    <string name="pending_scrobbles">Laukiami skroblai</string>
+    <string name="pending_scrobble">Laukiama skroblas</string>
+    <string name="pending_scrobbles_noti">Apdorojama laukiančių skroblų</string>
+    <string name="friends">Draugai</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblų, nuo %2$s</string>
+    <string name="allow_background">Leisti skrobalinimą fone</string>
+    <string name="grant_notification_access">Suteikti prieigą prie pranešimų</string>
+    <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
+    <string name="send_notifications">Leisti pranešimus</string>
+    <string name="notification_channel_blocked">Tam reikia, kad pranešimai būtų įjungti</string>
+    <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobavimas</string>
+    <string name="swap" comment="(Swap title and artist)">Sukeisti</string>
+    <string name="rate_msg">Patinka ši programėlė?</string>
+    <string name="time_just_now">ką tik</string>
+    <string name="no_mail_apps">Nėra įdiegta el. pašto kliento programėlė</string>
+    <string name="loved" comment="Its a noun">Pamėgta</string>
+    <string name="unloved" comment="Its a noun">Panaikinta mėgstą</string>
+    <string name="simple_edits">Redagavimai</string>
+    <string name="grant_rec_perm">Suteik leidimą naudoti mikrofoną</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Žymių debesis</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iš %1$s</string>
+    <string name="not_found" comment="Shown in search">Nerasta</string>
+    <string name="years" comment="For the charts menu which displays year by year">Metai</string>
     <string name="close" comment="To close a dialog or something">Uždaryti</string>
     <string name="info_long_press_hint" comment="'This' is a dialog">Ilgai paspausk ant takelio, kad atidarytum jį</string>
     <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>
@@ -162,8 +214,8 @@
     <string name="edit_regex_replacement">Reguliarusis reiškianos keitimas</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pavadink savo fiksavimo grupes <i>track, album, artist</i> arba <i>albumArtist</i>, kad galėtum jas išgauti iš kitų laukų.</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">pvz., kad pakeistum atlikėją ir pavadinimą, turėtum įrašyti atlikėjo reguliarį reiškinį kaip (?&lt;track&gt;.*), o takelio reguliarį reiškinį kaip (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliarams reiškiniams turėtų turėti bent jau šias pavadintas užfiksavimo grupes: „track“, „artist“.</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliariai reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliarams reiškiniams turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliari reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkama reguliari reikšmė: %1$s.</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Naudojami šablonai:</string>
     <string name="edit_continue">Jei rasta, toliau atitikti kitų reguliarių reiškinių</string>

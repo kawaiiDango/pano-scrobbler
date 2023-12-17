@@ -131,12 +131,12 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Geriausi takeliai</string>
     <string name="similar_tracks">Panašūs takeliai</string>
     <string name="similar" comment="Similar tracks but in short">Panašus</string>
-    <string name="state_scrobbling">Dabar skrobalinama…</string>
+    <string name="state_scrobbling">Dabar skrobuolinama…</string>
     <string name="state_scrobbled">Nuskrobuolinta</string>
     <string name="unscrobble">Neskrobuolinti</string>
     <string name="state_unscrobbled">Neskrobuolinta</string>
     <string name="state_unrecognised_artist">Neatpažintas atlikėjas</string>
-    <string name="tap_to_edit">(Paliesk, kad redaguoti)</string>
+    <string name="tap_to_edit">(Spausk, kad redaguoti)</string>
     <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
@@ -148,7 +148,7 @@
     <string name="choose_an_app">Pasirinkti programėlę</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programėlės</string>
     <string name="offline">Atsijungę. Rodomi duomenys nėra nauji.</string>
-    <string name="unavailable_offline">Nepasiekiama neprisijungus</string>
+    <string name="unavailable_offline">Nepasiekiama neprisijungus.</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Klausiausi\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s klausėsi\n%1$s %2$s</string>
@@ -170,7 +170,7 @@
     <string name="library" comment="search within the library">Biblioteka</string>
     <string name="global" comment="search globally across lastfm">Globalus</string>
     <string name="reindex">Spartusis indeksas</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeksuok savo skroblus</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeksuoti savo skroblus</string>
     <string name="full_index">Pilnas indeksas</string>
     <string name="take_long_time">Tai gali užtrukti ilgai</string>
     <string name="full_index_desc">Naudok tai tik tada, jei redagavai arba ištrynei skroblus iš svetainės.</string>
@@ -222,7 +222,7 @@
     <string name="grant_rec_perm">Suteik leidimą naudoti mikrofoną</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Žymių debesis</string>
-    <string name="scrobble_from_mic" comment="Its a verb">Skrobalinti iš mikrofono</string>
+    <string name="scrobble_from_mic" comment="Its a verb">Skrobuolinti iš mikrofono</string>
     <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Iš mikrofono</string>
     <string name="add_to_hs">Pridėti prie pradžios ekrano</string>
     <string name="listening">Klausoma muzika, grojanti aplink tave…</string>
@@ -351,13 +351,44 @@
     <string name="create_collage">Kurti koliažą</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Vaizdų antraštės</string>
     <string name="username" comment="last.fm Username">Naudotojo vardas</string>
-    <string name="pref_master">Skrobalinti muzika</string>
+    <string name="pref_master">Skrobuolinti muzika</string>
     <string name="pref_master_qs_hint">Taip pat galima perjungti iš sparčiųjų nustatymų plytelės</string>
     <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
     <string name="pref_master_qs_already_addded">Sparčiųjų nustatymų plytelė jau pridėta.</string>
+    <string name="pref_noti_q">Jei piktograma nerodoma, galima skatinti pranešimą</string>
+    <string name="pref_noti">Pranešimai</string>
+    <string name="pref_noti_categories">Pranešimų kategorijos</string>
+    <string name="pref_scrobble_noti">Skroblo pranešimai</string>
+    <string name="pref_lockscreen_noti">Užrakinto ekrano pranešimai</string>
+    <string name="pref_offline_info">ℹ️ Atsijungę skroblai ir pamėgti bus išsaugoti, kad būtų išsiųsti vėliau.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Skrobuolinti iš</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Palaiko muzikos metaduomenis atskleidžiančias programėles. Kad išvengtum dvigubo Spotify skroblo, įjunk šią funkciją tik vienoje vietoje.</string>
+    <string name="pref_enabled_apps_title">Pasirinkti programėles</string>
+    <string name="pref_auto_detect">Automatiškai skrobuolinti iš naujų programėlių</string>
+    <string name="pref_spotify_remote">Skrobuolinti Spotify grojant kituose įrenginiuose</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobalinimą, kai įrenginys groja muziką</string>
+    <string name="pref_delay">Skroblo delsa (priklausomai nuo to, kuri ankstesnė)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutės</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procentas</string>
     <string name="pref_logout">Atsijungti</string>
-    <string name="sure_tap_again">Tikrai? Paliesk dar kartą</string>
+    <string name="sure_tap_again">Tikrai? Spausk dar kartą</string>
     <string name="pref_login">Prisijungti</string>
+    <string name="pref_about" comment="Info about this app">Apie</string>
+    <string name="pref_privacy_policy">Privatumo politika</string>
+    <string name="pref_scrobble_only">(Tik skrobuolinti)</string>
+    <string name="pref_user_label" comment="(Like username)">Naudotojas</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Tapatybės nustatymo raktas</string>
+    <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Tapatybės nustatymo raktą galima rasti adresu: %1$s</string>
+    <string name="pref_now_playing">Pateikti dabar grojama</string>
+    <string name="pref_fetch_album">Gauti trūkstamus albumo duomenis iš lastFM</string>
+    <string name="pref_locale">Kalbos</string>
+    <string name="pref_change_locale">Keisti kalbą</string>
+    <string name="pref_crashlytics_enabled">Pranešti klaidas automatiškai</string>
+    <string name="pref_misc">Kita</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Savaitė prasideda</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Importavimas ir eksportavimas</string>
+    <string name="pref_export">Eksportuoti</string>
     <string name="pref_export_desc">Padaro atsarginę nustatymų, redagavimų ir blokavimo sąrašo kopiją. Saugumo sumetimais neišsaugo prisijungimų. Naudinga perkeliant iš vieno įrenginio į kitą arba bendrinti su draugais.</string>
     <string name="pref_import">Importuoti</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizavimas</string>
@@ -386,16 +417,29 @@
     <string name="import_options">Importavimo parinktys</string>
     <string name="import_lists_nope">Neimportuoti redagavimų ir blokavimo sąrašo</string>
     <string name="import_lists_replace_all">Pakeisti visus redagavimus ir blokavimo sąrašą</string>
+    <string name="import_lists_replace_existing">Sujungti, pakeičiant esamus redagavimus ir blokavimo sąrašą</string>
+    <string name="import_lists_keep">Sujungti, išsaugant esamus redagavimus ir blokavimo sąrašą</string>
+    <string name="import_settings">Importuoti nustatymus</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Transliavimo intencijos</string>
+    <string name="current_track">Dabartinė daina:</string>
+    <string name="pref_intents">Tasker ketinimai ir pan.</string>
+    <string name="copied">Nukopijuota!</string>
+    <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti savo tapatybę</string>
     <string name="custom_listenbrainz">Pasirinktinis Listenbrainz</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrink %1$s</string>
-    <string name="artist_extra">Takeliai, albumai ir panašūs</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Speciali prieiga prie programėlės &gt; Prieiga prie pranešimų &gt; %1$s</string>
+    <string name="artist_extra">Takeliai, albumai ir panašumai</string>
     <string name="no_browser">Neįdiegta jokia naršyklė</string>
-    <string name="no_player">Nėra įdiegtas joks muzikos grotuvas</string>
+    <string name="no_player">Nėra įdiegtas joks muzikos leistuvas</string>
     <string name="not_running">⚠ Sistema sustabdė skrobuoklį</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sistemos nurodyta sustabdymo priežastis: %s.</string>
     <string name="not_running_fix_action">Taisyti</string>
     <string name="login_submit" comment="Verifies the login details">Patikrinti</string>
+    <string name="acr_host" comment="Web hostname">Serveris</string>
+    <string name="acr_key" comment="API key">Prieigos raktas</string>
+    <string name="acr_secret" comment="API secret">Paslaptis</string>
+    <string name="add_acr_key">Pridėti ACRCloud raktą</string>
     <string name="remove_acr_key">Pašalinti ACRCloud raktą</string>
     <string name="add_acr_consider">Kad išvengtum spartos ribojimų, apsvarstyk galimybę pridėti savo ACRCloud raktą</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Pridėti</string>
@@ -435,6 +479,6 @@ Tavo pirkimus tvarko Google Play. Jie susieti su Google Play paskyra, kurioje at
     <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti garsą</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos</string>
     <string name="billing_sharing">Pašalinti programėlės pavadinimą bendrinant</string>
-    <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobalinai, ir tiesiogiai jose ieškoti</string>
+    <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobuolinai, ir tiesiogiai jose ieškoti</string>
     <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliarį reiškinį</string>
 </resources>

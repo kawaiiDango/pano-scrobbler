@@ -194,6 +194,12 @@
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
     <string name="send_notifications">Leisti pranešimus</string>
     <string name="notification_channel_blocked">Tam reikia, kad pranešimai būtų įjungti</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Patikrinti skroblų būseną ir skaičių.
+- Pamėgti arba blokuoti tiesiai iš pranešimo.
+- Gauti pranešimus apie skroblo klaidas ir veiksmus, kurių galima imtis.
+- Kiekvieną savaitę gauti geriausius skroblus.
+- Ir daugiau.
+- Pranešimai nedaro garso.\"\""</string>
     <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobavimas</string>
     <string name="swap" comment="(Swap title and artist)">Sukeisti</string>
     <string name="rate_msg">Patinka ši programėlė?</string>
@@ -203,10 +209,26 @@
     <string name="unloved" comment="Its a noun">Panaikinta mėgstą</string>
     <string name="simple_edits">Redagavimai</string>
     <string name="grant_rec_perm">Suteik leidimą naudoti mikrofoną</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Žymių debesis</string>
+    <string name="scrobble_from_mic" comment="Its a verb">Skrobalinti iš mikrofono</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Iš mikrofono</string>
+    <string name="add_to_hs">Pridėti prie pradžios ekrano</string>
+    <string name="listening">Klausoma muzika, grojanti aplink tave…</string>
+    <string name="uploading">Įkeliama…</string>
+    <string name="recording_failed">Nepavyko pradėti įrašymo. Mikrofonas gali būti užimtas arba nepasiekiamas šiame įrenginyje.</string>
+    <string name="powered_acr">Veikia <i><b>ACR</b>Cloud</i></string>
+    <string name="details">Išsamiau</string>
+    <string name="sort">Rūšiuoti</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iš %1$s</string>
     <string name="not_found" comment="Shown in search">Nerasta</string>
     <string name="years" comment="For the charts menu which displays year by year">Metai</string>
+    <string name="charts_overall">Iš viso</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Klausymo veikla</string>
+    <string name="charts_no_data">Nėra šio laikotarpio duomenų</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Pasirinktinis</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Nuolatinis</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nepakanka duomenų</string>
     <string name="close" comment="To close a dialog or something">Uždaryti</string>
     <string name="info_long_press_hint" comment="'This' is a dialog">Ilgai paspausk ant takelio, kad atidarytum jį</string>
     <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>

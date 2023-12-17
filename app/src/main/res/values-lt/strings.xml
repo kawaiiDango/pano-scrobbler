@@ -169,10 +169,21 @@
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Pašalinti šį elementą iš istorijos?</string>
     <string name="library" comment="search within the library">Biblioteka</string>
     <string name="global" comment="search globally across lastfm">Globalus</string>
+    <string name="reindex">Spartusis indeksas</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeksuok savo skroblus</string>
+    <string name="full_index">Pilnas indeksas</string>
+    <string name="take_long_time">Tai gali užtrukti ilgai</string>
+    <string name="full_index_desc">Naudok tai tik tada, jei redagavai arba ištrynei skroblus iš svetainės.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Ieškota geriausių %1$s elementų kiekvienoje kategorijoje.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Paskutinį kartą indeksuota %1$s.</string>
     <string name="profile">Profilis</string>
     <string name="profile_pic">Profilio nuotrauka</string>
-    <string name="no_scrobbles">Jokių dainų čia kol kas…</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">Šio elemento parinktys</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Aptikta %1$s</string>
+    <string name="new_player_prompt">Toliau skrobuolinti šią programėlę?</string>
+    <string name="no_scrobbles">Nėra dainų čia kol kas…</string>
+    <string name="no_friends">Dar nė vieno neseki kol kas…</string>
+    <string name="channel_err" comment="Its a noun">Skroblo klaidos.</string>
     <string name="new_app">Nauja programėlė</string>
     <string name="no_apps_enabled">Nėra įjungtų programėlių</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d daugiau</string>
@@ -272,9 +283,19 @@
     <string name="appwidget_theme">Tema</string>
     <string name="appwidget_shadow">Šešėlis</string>
     <string name="appwidget_show">Rodyti</string>
+    <string name="system_colors">Sistemos spalvos</string>
+    <string name="appwidget_alpha">Fono skaidrumas</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Valdiklis bus atnaujinamas kas %1$s</string>
+    <string name="primary_color">Pagrindinė spalva</string>
+    <string name="secondary_color">Antrinė spalva</string>
+    <string name="tint_background" comment="Tint the background with the primary color">Fono atspalvis</string>
+    <string name="random_theme">Atrinkti atsitiktine tvarka kiekvieno paleidimo metu</string>
     <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>
     <string name="edit_regex">Reguliarusis reiškianos šablonas</string>
     <string name="edit_regex_replacement">Reguliarusis reiškianos keitimas</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Laukai</string>
+    <string name="edit_replace">Pakeisti</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Ištraukti</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pavadink savo fiksavimo grupes <i>track, album, artist</i> arba <i>albumArtist</i>, kad galėtum jas išgauti iš kitų laukų.</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">pvz., kad pakeistum atlikėją ir pavadinimą, turėtum įrašyti atlikėjo reguliarį reiškinį kaip (?&lt;track&gt;.*), o takelio reguliarį reiškinį kaip (?&lt;artist&gt;.*)</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliarams reiškiniams turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
@@ -282,13 +303,32 @@
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkama reguliari reikšmė: %1$s.</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Naudojami šablonai:</string>
     <string name="edit_continue">Jei rasta, toliau atitikti kitų reguliarių reiškinių</string>
+    <string name="edit_case_sensitive">Skirti raidžių lygį</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Testas</string>
     <string name="edit_presets" comment="Regex presets">Numatytieji</string>
+    <string name="edit_presets_available">Pasiekimi numatytieji</string>
+    <string name="edit_no_presets_available">Visi numatytieji yra naudojami</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Numatytasis: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono riba (%1$d).</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Vilkimo rankenėlė</string>
     <string name="text" comment="text to test regex rules with">Tekstas</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudodamas (-a) įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar nori įjungti šablono redagavimo taisyklę: %1$s?</string>
+    <string name="instrumental">Instrumentinė</string>
+    <string name="energetic" comment="(Energetic music)">Energinga</string>
+    <string name="danceable">Šokių tinkamas</string>
+    <string name="valence" comment="(Musical positivity)">Pozityvumas</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analizė</string>
+    <string name="enable" comment="To enable the scrobbler">Įjungti</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Dydis</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">Praleisti trūkstamus vaizdus</string>
+    <string name="create_collage">Kurti koliažą</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Vaizdų antraštės</string>
     <string name="username" comment="last.fm Username">Naudotojo vardas</string>
+    <string name="pref_master">Skrobalinti muzika</string>
+    <string name="pref_master_qs_hint">Taip pat galima perjungti iš sparčiųjų nustatymų plytelės</string>
+    <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
     <string name="pref_logout">Atsijungti</string>
     <string name="sure_tap_again">Tikrai? Paliesk dar kartą</string>
     <string name="pref_login">Prisijungti</string>

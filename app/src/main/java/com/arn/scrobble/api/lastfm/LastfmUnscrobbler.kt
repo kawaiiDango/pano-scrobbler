@@ -1,116 +1,98 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.App
-import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.utils.Stuff
-import com.franmontiel.persistentcookiejar.PersistentCookieJar
-import com.franmontiel.persistentcookiejar.cache.SetCookieCache
-import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
-import com.frybits.harmony.getHarmonySharedPreferences
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.cookies.HttpCookies
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Parameters
+import io.ktor.http.Url
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import okhttp3.Cookie
-import okhttp3.CookieJar
-import okhttp3.FormBody
-import okhttp3.Headers
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.Request
-import org.json.JSONObject
 
 
-class LastfmUnscrobbler {
+object LastfmUnscrobbler {
 
-    private val client by lazy {
-        Requesters.okHttpClient.newBuilder()
-            .cookieJar(cookieJar)
-            .build()
-    }
-    private val cookieCache = SetCookieCache()
-    private val cookieJar: CookieJar
-    private val username by lazy { Scrobblables.byType(AccountType.LASTFM)!!.userAccount.user.name }
-    private val csrfToken by lazy {
-        cookieCache.find {
-            it.name == COOKIE_CSRFTOKEN && it.expiresAt > System.currentTimeMillis()
-        }?.value
-    }
+    class CookiesInvalidatedException : IllegalStateException("cookies invalidated")
 
-    init {
-        cookieJar = PersistentCookieJar(
-            cookieCache,
-            SharedPrefsCookiePersistor(App.context.getHarmonySharedPreferences("CookiePersistence"))
-        )
-    }
-
-    fun putCookies(url: HttpUrl, cookies: List<Cookie>) {
-        cookieJar.saveFromResponse(url, cookies)
-    }
-
-    fun clearCookies() {
-        (cookieJar as PersistentCookieJar).clear()
-    }
-
-    // intercepted from webview login
-    fun haveCsrfCookie() = csrfToken != null
-
-    suspend fun unscrobble(artist: String, track: String, timeSecs: Int): Boolean =
+    suspend fun unscrobble(track: Track, username: String): Unit =
         lock.withLock { // does this fix the csrf invalidation problem?
-            var success = false
-            val body = FormBody.Builder()
-                .add(
+            val csrfToken =
+                cookieStorage.get(Url(URL_USER)).find { it.name == COOKIE_CSRFTOKEN }?.value
+
+            val parameters = Parameters.build {
+                append(
                     FIELD_CSRFTOKEN,
-                    csrfToken ?: throw RuntimeException("You've been logged out...")
+                    csrfToken ?: throw CookiesInvalidatedException()
                 )
-                .add(FIELD_ARTIST, artist)
-                .add(FIELD_TRACK, track)
-                .add(FIELD_TIMESTAMP, timeSecs.toString())
-                .add("ajax", "1")
-                .build()
+                append(FIELD_ARTIST, track.artist.name)
+                append(FIELD_TRACK, track.name)
+                append(
+                    FIELD_TIMESTAMP,
+                    track.date?.toString() ?: throw IllegalStateException("no date")
+                )
+                append("ajax", "1")
+            }
 
             val url = "$URL_USER$username/library/delete"
-            val request = Request(
-                url.toHttpUrl(),
-                headers = Headers.headersOf("Referer", URL_USER + username),
-                body = body
-            )
 
-            client.newCall(request).execute().use { resp ->
-                val respStr = kotlin.runCatching { resp.body.string() }.getOrDefault("")
-                if (resp.code == 200) {
-                    success = JSONObject(respStr).getBoolean("result")
+            val response = client.submitForm(url, parameters) {
+                header(HttpHeaders.Referrer, URL_USER + username)
+            }
 
-                    if (success)
-                        Stuff.log("LastfmUnscrobbler unscrobbled")
-                } else if (resp.code == 403) {
-                    clearCookies()
-                    throw RuntimeException("csrf token invalidated")
-                } else {
-                    Stuff.logW("LastfmUnscrobbler: error unscrobbling: " + resp.code)
-                }
+            if (response.status == HttpStatusCode.OK) {
+                val success = response.body<DeleteScrobbleResponse>().result
+
+                if (success)
+                    Stuff.log("LastfmUnscrobbler unscrobbled")
+                else
+                    throw IllegalStateException("LastfmUnscrobbler: error unscrobbling")
+            } else if (response.status == HttpStatusCode.Forbidden) {
+                cookieStorage.clear()
+                throw CookiesInvalidatedException()
+            } else {
+                throw ResponseException(
+                    response,
+                    "LastfmUnscrobbler: error unscrobbling: " + response.status.value
+                )
             }
 
             // add a random delay to prevent 406 error
             delay((250L..1000L).random())
-
-            success
         }
 
-    companion object {
-        const val COOKIE_CSRFTOKEN = "csrftoken"
-        const val COOKIE_SESSIONID = "sessionid"
+    const val COOKIE_CSRFTOKEN = "csrftoken"
+    const val COOKIE_SESSIONID = "sessionid"
 
-        private const val URL_USER = "https://www.last.fm/user/"
+    private const val URL_USER = "https://www.last.fm/user/"
 
-        private const val FIELD_CSRFTOKEN = "csrfmiddlewaretoken"
+    private const val FIELD_CSRFTOKEN = "csrfmiddlewaretoken"
 
-        private const val FIELD_ARTIST = "artist_name"
-        private const val FIELD_TRACK = "track_name"
-        private const val FIELD_TIMESTAMP = "timestamp"
+    private const val FIELD_ARTIST = "artist_name"
+    private const val FIELD_TRACK = "track_name"
+    private const val FIELD_TIMESTAMP = "timestamp"
 
-        private val lock by lazy { Mutex() }
+    private val lock by lazy { Mutex() }
+
+    val cookieStorage by lazy { SharedPreferencesCookiesStorage(SharedPreferencesCookiesStorage.LASTFM_COOKIES) }
+    private val client by lazy {
+        HttpClient(OkHttp) {
+            install(HttpCookies) {
+                storage = cookieStorage
+            }
+
+            install(ContentNegotiation) {
+                json(Stuff.myJson)
+            }
+        }
     }
 }
 

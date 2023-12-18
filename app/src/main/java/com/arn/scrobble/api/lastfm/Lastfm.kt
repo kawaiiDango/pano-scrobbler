@@ -1,6 +1,7 @@
 package com.arn.scrobble.api.lastfm
 
 import com.arn.scrobble.App
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.DrawerData
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CacheMarkerInterceptor
@@ -27,8 +28,14 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.ANDROID
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
+import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.Parameters
 import io.ktor.http.isSuccess
@@ -74,12 +81,12 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 json(Stuff.myJson)
             }
 
-//            if (BuildConfig.DEBUG) {
-//                install(Logging) {
-//                    logger = Logger.ANDROID
-//                    level = LogLevel.ALL
-//                }
-//            }
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    logger = Logger.ANDROID
+                    level = LogLevel.ALL
+                }
+            }
 
             defaultRequest {
                 url(apiRoot)
@@ -115,13 +122,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             "format" to "json"
         )
 
-        return client.postResult<NowPlayingResponse>(
-            params = toFormParametersWithSig(
-                params,
-                secret
-            )
-        )
-            .map { ScrobbleIgnored(it.nowplaying.ignoredMessage.code != 0) }
+        return client.postResult<NowPlayingResponse> {
+            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+        }.map { ScrobbleIgnored(it.nowplaying.ignoredMessage.code != 0) }
     }
 
     override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
@@ -141,8 +144,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             "format" to "json"
         )
 
-        return client.postResult<ScrobbleResponse>(params = toFormParametersWithSig(params, secret))
-            .map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
+        return client.postResult<ScrobbleResponse> {
+            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+        }.map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
     }
 
     override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleIgnored> {
@@ -165,8 +169,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             params["chosenByUser[$index]"] = "1"
         }
 
-        return client.postResult<ScrobbleResponse>(params = toFormParametersWithSig(params, secret))
-            .map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
+        return client.postResult<ScrobbleResponse> {
+            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+        }.map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
     }
 
     override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleIgnored> {
@@ -179,21 +184,13 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             "format" to "json"
         )
 
-        return client.postResult<String>(
-            params = toFormParametersWithSig(
-                params,
-                secret
-            )
-        )
-            .map { ScrobbleIgnored(false) }
+        return client.postResult<String> {
+            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+        }.map { ScrobbleIgnored(false) }
     }
 
-    override suspend fun delete(track: Track): Boolean {
-        val unscrobbler = LastfmUnscrobbler()
-        val success = unscrobbler.haveCsrfCookie() && track.date != null && unscrobbler.unscrobble(
-            track.artist.name, track.name, track.date
-        )
-        return success
+    override suspend fun delete(track: Track) = runCatching {
+        LastfmUnscrobbler.unscrobble(track, userAccount.user.name)
     }
 
     override suspend fun getRecents(
@@ -479,9 +476,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             }
         }
 
-        return client.postResult<String>(
-            params = toFormParametersWithSig(params, userAccount.authKey)
-        )
+        return client.postResult<String> {
+            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+        }
     }
 
     suspend fun removeUserTagFor(entry: MusicEntry, tag: String): Result<String> {
@@ -510,9 +507,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             }
         }
 
-        return client.postResult<String>(
-            params = toFormParametersWithSig(params, userAccount.authKey)
-        )
+        return client.postResult<String> {
+            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+        }
     }
 
     suspend fun getUserTagsFor(entry: MusicEntry) = client.getResult<TagsResponse> {
@@ -626,11 +623,12 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 "token" to userAccountTemp.authKey,
             )
 
-            val result = client.postResult<SessionResponse>(
+            val session = client.postResult<SessionResponse>(
                 userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT,
-                toFormParametersWithSig(params, apiSecret)
-            ).map { it.session }
-            result.onSuccess { session ->
+            ) {
+                setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
+            }.map { it.session }
+            session.onSuccess { session ->
                 // get user info
                 client.getResult<UserGetInfoResponse> {
                     url(userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT)
@@ -638,22 +636,22 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                     parameter("format", "json")
                     parameter("api_key", apiKey)
                     parameter("sk", session.key)
+                    parameter("user", session.name)
                 }.map { it.user }
                     .onSuccess { user ->
                         // save account
                         val account = UserAccountSerializable(
                             userAccountTemp.type,
                             user.toUserCached(),
-                            userAccountTemp.authKey,
+                            session.key,
                             userAccountTemp.apiRoot,
-                            userAccountTemp.tlsNoVerify,
                         )
 
                         Scrobblables.add(account)
                     }
             }
 
-            return result
+            return session
         }
     }
 }

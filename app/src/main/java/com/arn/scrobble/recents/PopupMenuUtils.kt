@@ -28,26 +28,20 @@ import kotlinx.coroutines.withContext
 
 object PopupMenuUtils {
 
-    fun cookieExists(navController: NavController): Boolean {
-        val cookieExists = LastfmUnscrobbler().haveCsrfCookie() ||
-                Scrobblables.byType(AccountType.LASTFM) == null // don't need cookies for others
-
-        if (!cookieExists) {
-            MaterialAlertDialogBuilder(navController.context)
-                .setMessage(R.string.lastfm_reauth)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    LoginFlows(navController).go(AccountType.LASTFM)
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-        }
-        return cookieExists
+    fun showReauthenticatePrompt(navController: NavController) {
+        MaterialAlertDialogBuilder(navController.context)
+            .setMessage(R.string.lastfm_reauth)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                LoginFlows(navController).go(AccountType.LASTFM)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     fun editScrobble(navController: NavController, track: Track) {
         if (!Stuff.isOnline)
             navController.context.toast(R.string.unavailable_offline)
-        else if (cookieExists(navController)) {
+        else {
             val sd = ScrobbleData(
                 track = track.name,
                 artist = track.artist.name,
@@ -74,13 +68,16 @@ object PopupMenuUtils {
     ) {
         if (!Stuff.isOnline)
             navController.context.toast(R.string.unavailable_offline)
-        else if (cookieExists(navController)) {
+        else {
             scope.launch {
-                val result = withContext(Dispatchers.IO) {
+                val results = withContext(Dispatchers.IO) {
                     ScrobbleEverywhere.delete(track)
                 }
                 withContext(Dispatchers.Main) {
-                    deleteAction(result)
+                    if (results.any { it.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException })
+                        showReauthenticatePrompt(navController)
+                    else
+                        deleteAction(results.all { it.isSuccess })
                 }
             }
         }

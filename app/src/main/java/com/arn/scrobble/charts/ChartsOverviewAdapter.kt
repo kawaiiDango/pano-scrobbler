@@ -1,7 +1,6 @@
 package com.arn.scrobble.charts
 
 import android.view.View
-import androidx.lifecycle.LifecycleOwner
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.R
@@ -10,11 +9,8 @@ import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.utils.Stuff
 
 
-class ChartsOverviewAdapter(
-    lifecycleOwner: LifecycleOwner,
-    rootViewBinding: FrameChartsListBinding
-) :
-    ChartsAdapter(lifecycleOwner, rootViewBinding) {
+class ChartsOverviewAdapter(rootViewBinding: FrameChartsListBinding) :
+    ChartsAdapter(rootViewBinding) {
 
     override val isHorizontalList = true
 

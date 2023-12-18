@@ -47,10 +47,10 @@ class LicensesFragment : Fragment() {
         val adapter = LicensesAdapter()
         binding.list.adapter = adapter
 
-        adapter.submitList(viewModel.libraries)
-
-        (view.parent as? ViewGroup)?.doOnPreDraw {
-            startPostponedEnterTransition()
+        adapter.submitList(viewModel.libraries) {
+            (view.parent as? ViewGroup)?.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
         }
     }
 }

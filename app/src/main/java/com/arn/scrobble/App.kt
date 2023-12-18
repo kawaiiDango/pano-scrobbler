@@ -163,6 +163,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
     companion object {
         // not a leak
         lateinit var context: Context
+            private set
         val prefs by lazy { MainPrefs() }
         val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
     }

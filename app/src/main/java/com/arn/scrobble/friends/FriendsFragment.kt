@@ -38,17 +38,17 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SimpleHeaderDecoration
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.expandToHeroIfNeeded
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.putSingle
-import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.transition.platform.MaterialElevationScale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -74,7 +74,6 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
     private var _binding: ContentFriendsBinding? = null
     private val binding
         get() = _binding!!
-    private var skeletonJob: Job? = null
 
 
     override fun onCreateView(
@@ -103,6 +102,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
         if (binding.friendsGrid.adapter != null)
             doNextTimedRefresh()
         showFabIfNeeded()
+        (activity as MainActivity).binding.appBar.expandToHeroIfNeeded(false)
     }
 
     override fun onPause() {
@@ -166,21 +166,18 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
 
         loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         adapter.loadMoreListener = loadMoreListener
-        binding.friendsGrid.isVisible = true
 
-        val skeleton = binding.friendsGrid.applySkeleton(
-            R.layout.grid_item_friend,
-            10,
-            UiUtils.mySkeletonConfig(requireContext(), 200f)
+        val skeleton = binding.friendsGrid.createSkeletonWithFade(
+            listItemLayoutResId = R.layout.grid_item_friend,
+            skeletonConfigRadiusDp = 100
         )
 
         collectLatestLifecycleFlow(
             viewModel.friendsCombined.filterNotNull(),
-            Lifecycle.State.RESUMED
         ) {
             loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
 
-            if (binding.swipeRefresh.isRefreshing) {
+            if (binding.swipeRefresh.isRefreshing && isResumed) {
                 binding.friendsGrid.scheduleLayoutAnimation()
             }
             binding.empty.isVisible = it.isEmpty()
@@ -192,15 +189,12 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
             doNextTimedRefresh()
         }
 
-        collectLatestLifecycleFlow(viewModel.hasLoaded, Lifecycle.State.RESUMED) {
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
             loadMoreListener.loading = !it
 
             if (!it) {
                 if (adapter.itemCount == 0) {
-                    skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
-                        delay(100)
-                        skeleton.showSkeleton()
-                    }
+                    skeleton.showSkeleton()
                 }
 
                 if (!skeleton.isSkeleton() && viewModel.input.value?.page == 1)
@@ -208,10 +202,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
 
                 binding.empty.isVisible = false
             } else {
-                skeletonJob?.cancel()
-                skeletonJob = null
-                if (skeleton.isSkeleton())
-                    skeleton.showOriginal()
+                skeleton.showOriginal()
                 binding.swipeRefresh.isRefreshing = false
 
                 if (viewModel.friendsCombined.value?.isEmpty() == true) {

@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
@@ -26,8 +27,11 @@ import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.google.android.material.transition.MaterialSharedAxis
-import okhttp3.Cookie
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import io.ktor.http.Cookie
+import io.ktor.http.CookieEncoding
+import io.ktor.http.Url
+import io.ktor.util.date.GMTDate
+import kotlinx.coroutines.launch
 
 
 /**
@@ -90,6 +94,25 @@ class WebViewFragment : Fragment() {
         super.onDestroyView()
     }
 
+    private fun stringToCookies(cookieString: String, requestUrl: Url): List<Cookie> =
+        cookieString.split(";").mapNotNull { cookie ->
+            val (name, value) = cookie.trim().split("=", limit = 2)
+            if (name.isNotBlank() && value.isNotBlank()) {
+                Cookie(
+                    name,
+                    value,
+                    CookieEncoding.RAW,
+                    domain = requestUrl.host,
+                    path = "/",
+                    expires = GMTDate(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 11),
+                    //somewhat less than 1y, similar to what lastfm does
+                    secure = true,
+                )
+            } else {
+                null
+            }
+        }
+
     private fun handleCallbackUrl(url: String): Boolean {
         val uri = Uri.parse(url)
         val path = uri.path ?: return false
@@ -99,34 +122,39 @@ class WebViewFragment : Fragment() {
         when (path) {
             "/lastfm" -> {
                 if (saveCookies) {
-                    val httpUrl = "https://www.last.fm/".toHttpUrl()
-                    val cookieString =
-                        CookieManager.getInstance().getCookie(httpUrl.toString()) ?: ""
+                    val httpUrlString = "https://www.last.fm/"
+                    val httpUrl = Url(httpUrlString)
                     // intercept lastfm cookies for edit and delete to work
-                    val cookies = mutableListOf<Cookie>()
+                    val cookieString =
+                        CookieManager.getInstance().getCookie(httpUrlString) ?: ""
+                    val cookies = stringToCookies(cookieString, httpUrl)
 
-                    cookieString.split("; ")
-                        .forEach {
-                            val nvpair = it.split("=", limit = 2)
-                            if (nvpair[0] == LastfmUnscrobbler.COOKIE_CSRFTOKEN ||
-                                nvpair[0] == LastfmUnscrobbler.COOKIE_SESSIONID
-                            ) {
-                                val okCookie = Cookie.Builder()
-                                    .domain("last.fm")
-                                    .expiresAt(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 11)
-                                    //somewhat less than 1y, similar to what lastfm does
-                                    .name(nvpair[0])
-                                    .value(nvpair[1])
-                                    .path("/")
-                                    .secure()
-                                    //bad but this makes it https on SharedPrefsCookiePersistor
-                                    .build()
+//                    cookieString.split("; ")
+//                        .forEach {
+//                            val nvpair = it.split("=", limit = 2)
+//                            if (nvpair[0] == LastfmUnscrobbler.COOKIE_CSRFTOKEN ||
+//                                nvpair[0] == LastfmUnscrobbler.COOKIE_SESSIONID
+//                            ) {
+//                                val okCookie = Cookie.Builder()
+//                                    .domain("last.fm")
+//                                    .expiresAt(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 11)
+//                                    //somewhat less than 1y, similar to what lastfm does
+//                                    .name(nvpair[0])
+//                                    .value(nvpair[1])
+//                                    .path("/")
+//                                    .secure()
+//                                    //bad but this makes it https on SharedPrefsCookiePersistor
+//                                    .build()
+//
+//                                cookies.add(okCookie)
+//                            }
+//                        }
 
-                                cookies.add(okCookie)
-                            }
+                    viewModel.viewModelScope.launch {
+                        cookies.forEach {
+                            LastfmUnscrobbler.cookieStorage.addCookie(httpUrl, it)
                         }
-                    val unscrobbler = LastfmUnscrobbler()
-                    unscrobbler.putCookies(httpUrl, cookies)
+                    }
                 }
 
                 viewModel.doAuth(

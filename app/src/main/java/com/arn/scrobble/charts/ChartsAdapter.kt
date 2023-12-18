@@ -7,8 +7,6 @@ import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -28,20 +26,15 @@ import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryItemClickListener
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
+import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.shape.ShapeAppearanceModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.Objects
 
 
 open class ChartsAdapter(
-    private val lifecycleOwner: LifecycleOwner,
     protected val binding: FrameChartsListBinding
 ) :
     ListAdapter<MusicEntry, ChartsAdapter.VHChart>(
@@ -62,12 +55,9 @@ open class ChartsAdapter(
     protected open val isHorizontalList = false
     private var maxCount = -2
     var checkAllForMax = false
-    private var skeletonJob: Job? = null
     private val skeleton by lazy {
-        binding.chartsList.applySkeleton(
+        binding.chartsList.createSkeletonWithFade(
             R.layout.grid_item_chart_skeleton,
-            10,
-            UiUtils.mySkeletonConfig(binding.root.context)
         )
     }
 
@@ -119,17 +109,11 @@ open class ChartsAdapter(
 
     fun progressVisible(visible: Boolean) {
         if (visible && itemCount == 0) {
-            skeletonJob = lifecycleOwner.lifecycleScope.launch {
-                delay(100)
-                skeleton.showSkeleton()
-            }
+            skeleton.showSkeleton()
             binding.chartsStatus.isVisible = false
         } else {
-            skeletonJob?.cancel()
-            if (skeleton.isSkeleton()) {
-                skeleton.showOriginal()
-                binding.root.scheduleLayoutAnimation()
-            }
+            skeleton.showOriginal()
+//            binding.root.scheduleLayoutAnimation()
 
             if (itemCount == 0)
                 binding.chartsStatus.isVisible = true

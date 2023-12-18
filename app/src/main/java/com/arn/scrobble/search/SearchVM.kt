@@ -13,6 +13,7 @@ import com.arn.scrobble.ui.SectionedVirtualList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -25,7 +26,7 @@ import kotlinx.coroutines.withContext
 
 class SearchVM : ViewModel() {
     private val _searchTerm = MutableSharedFlow<Pair<String, SearchResultsAdapter.SearchType>>()
-    private val _searchResults = MutableSharedFlow<SearchResults>(replay = 1)
+    private val _searchResults = MutableStateFlow<SearchResults?>(null)
     val searchResults = _searchResults.asSharedFlow()
     val virtualList = SectionedVirtualList()
 

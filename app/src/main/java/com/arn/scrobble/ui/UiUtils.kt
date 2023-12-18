@@ -79,8 +79,6 @@ import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
-import com.faltenreich.skeletonlayout.SkeletonConfig
-import com.faltenreich.skeletonlayout.mask.SkeletonShimmerDirection
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -290,6 +288,18 @@ object UiUtils {
                 scrollToPosition(position)
             }
         }
+    }
+
+    fun StatefulAppBar.expandToHeroIfNeeded(expand: Boolean) {
+        if (getTag(R.id.app_bar_can_change_size) != true)
+            return
+
+        updateHeight(expand)
+
+        if (expand && !isExpanded)
+            setExpanded(true, true)
+
+        setTag(R.id.app_bar_can_change_size, false)
     }
 
     @SuppressLint("RestrictedApi")
@@ -669,19 +679,6 @@ object UiUtils {
             }
         }
     }
-
-    fun mySkeletonConfig(context: Context, radius: Float = 50f) = SkeletonConfig(
-        maskCornerRadius = radius,
-        shimmerAngle = 22,
-        shimmerColor = ContextCompat.getColor(context, R.color.skeleton_shimmer),
-        maskColor = ContextCompat.getColor(context, R.color.skeleton_mask),
-        showShimmer = true,
-        shimmerDurationInMillis = 1000,
-        shimmerDirection = if (context.resources.getBoolean(R.bool.is_rtl))
-            SkeletonShimmerDirection.RIGHT_TO_LEFT
-        else
-            SkeletonShimmerDirection.LEFT_TO_RIGHT
-    )
 
     fun <T> AppCompatActivity.collectLatestLifecycleFlow(
         flow: Flow<T>,

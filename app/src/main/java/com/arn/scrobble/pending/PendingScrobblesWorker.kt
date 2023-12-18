@@ -14,6 +14,9 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
+import com.arn.scrobble.api.Scrobblable
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.FmException
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -21,9 +24,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.api.Scrobblable
-import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CancellationException
@@ -121,7 +121,7 @@ class PendingScrobblesWorker(
 
                         if (result.isFailure) {
                             // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
-                            if ((result.exceptionOrNull() as FmException).code == 29)
+                            if ((result.exceptionOrNull() as? FmException)?.code == 29)
                                 return true
                         }
 

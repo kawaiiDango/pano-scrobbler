@@ -80,9 +80,9 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/charts_listening_activity_chart"
-                        android:contentDescription="@string/bar_chart"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp" />
+                        android:layout_height="200dp"
+                        android:contentDescription="@string/bar_chart" />
 
                     <TextView
                         android:id="@+id/listening_activity_status"
@@ -127,6 +127,7 @@
                         android:layout_gravity="center"
                         android:indeterminate="false"
                         android:max="1000"
+                        android:visibility="invisible"
                         app:showAnimationBehavior="none" />
 
                     <TextView

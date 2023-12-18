@@ -126,10 +126,10 @@ class SimpleEditsFragment : Fragment(), ItemClickListener<SimpleEdit> {
         }
 
         collectLatestLifecycleFlow(viewModel.simpleEditsFiltered.filterNotNull()) {
-            adapter.submitList(it)
-
-            (view.parent as? ViewGroup)?.doOnPreDraw {
-                startPostponedEnterTransition()
+            adapter.submitList(it) {
+                (view.parent as? ViewGroup)?.doOnPreDraw {
+                    startPostponedEnterTransition()
+                }
             }
         }
     }

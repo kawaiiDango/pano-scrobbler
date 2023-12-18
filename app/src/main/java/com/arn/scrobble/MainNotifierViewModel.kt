@@ -3,22 +3,24 @@ package com.arn.scrobble
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.api.github.GithubReleases
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.github.Updater
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.api.lastfm.LastFm
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.FabData
+import com.arn.scrobble.ui.SnackbarData
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
+import timber.log.Timber
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -43,8 +45,8 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     private val _editData = MutableSharedFlow<Track>()
     val editData = _editData.asSharedFlow()
 
-    private val _updateAvailable = MutableSharedFlow<GithubReleases>()
-    val updateAvailable = _updateAvailable.asSharedFlow()
+    private val _actionNeededSnackbar = MutableSharedFlow<SnackbarData>()
+    val actionNeededSnackbar = _actionNeededSnackbar.asSharedFlow()
 
     lateinit var currentUser: UserCached
 
@@ -55,6 +57,10 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
         BuildConfig.DEBUG ||
                 (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 25) ||
                 (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
+    }
+
+    init {
+        showNoticesIfNeeded()
     }
 
     fun updateCanIndex() {
@@ -108,21 +114,61 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     }
 
     // from activity
-    fun checkForUpdatesIfNeeded() {
-        // check if play store exists
-        val hasPlayStore = getApplication<App>()
-            .packageManager
-            .getLaunchIntentForPackage("com.android.vending") != null
-
-        if (hasPlayStore) {
-            prefs.checkForUpdates = null
+    private fun showNoticesIfNeeded() {
+        if (!Stuff.isLoggedIn())
             return
-        } else if (prefs.checkForUpdates == null) {
-            prefs.checkForUpdates = true
-        }
 
-        viewModelScope.launch {
-            _updateAvailable.emitAll(Updater().checkGithubForUpdates())
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(3000)
+
+
+            val nlsEnabled = Stuff.isNotificationListenerEnabled()
+
+            if (nlsEnabled && !Stuff.isScrobblerRunning()) { // scrobbler killed
+                _actionNeededSnackbar.emit(
+                    SnackbarData(
+                        message = getApplication<App>().getString(R.string.not_running),
+                        actionText = getApplication<App>().getString(R.string.not_running_fix_action),
+                        destinationId = R.id.fixItFragment
+                    )
+                )
+                Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
+            } else if (!nlsEnabled || !prefs.scrobblerEnabled) {
+                _actionNeededSnackbar.emit(
+                    SnackbarData(
+                        message = getApplication<App>().getString(R.string.scrobbler_off),
+                        actionText = getApplication<App>().getString(R.string.enable),
+                        destinationId = if (!nlsEnabled)
+                            R.id.onboardingFragment
+                        else
+                            R.id.prefFragment
+                    )
+                )
+            }
+
+            // check if play store exists
+            val hasPlayStore = getApplication<App>()
+                .packageManager
+                .getLaunchIntentForPackage("com.android.vending") != null
+
+            if (hasPlayStore) {
+                prefs.checkForUpdates = null
+            } else if (prefs.checkForUpdates == null) {
+                prefs.checkForUpdates = true
+                val releases = Updater().checkGithubForUpdates() ?: return@launch
+                _actionNeededSnackbar.emit(
+                    SnackbarData(
+                        message = getApplication<App>().getString(
+                            R.string.update_available,
+                            releases.tag_name
+                        ),
+                        actionText = getApplication<App>().getString(R.string.changelog),
+                        destinationId = 0,
+                        updateData = releases
+                    )
+                )
+                return@launch
+            }
         }
     }
 }

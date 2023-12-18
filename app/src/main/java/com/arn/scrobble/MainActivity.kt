@@ -22,7 +22,6 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -54,9 +53,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity(),
@@ -75,11 +71,11 @@ class MainActivity : AppCompatActivity(),
 
         super.onCreate(savedInstanceState)
 
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)
 
 //        if (!BuildConfig.DEBUG)
-        FragmentManager.enablePredictiveBack(false)
+//        FragmentManager.enablePredictiveBack(false)
 
         binding = ContentMainBinding.inflate(layoutInflater)
 
@@ -223,28 +219,6 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        collectLatestLifecycleFlow(mainNotifierViewModel.updateAvailable) { release ->
-            Snackbar.make(
-                binding.coordinator,
-                getString(R.string.update_available, release.tag_name),
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction(getString(R.string.changelog)) {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(release.tag_name)
-                        .setMessage(release.body)
-                        .setPositiveButton(R.string.download) { _, _ ->
-                            release.downloadUrl?.let {
-                                Stuff.openInBrowser(it)
-                            }
-                        }
-                        .show()
-                }
-                .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
-                .focusOnTv()
-                .show()
-        }
-
         collectLatestLifecycleFlow(billingViewModel.proStatus) {
             if (it) {
                 binding.sidebarNav.menu.removeItem(R.id.nav_pro)
@@ -253,8 +227,28 @@ class MainActivity : AppCompatActivity(),
         billingViewModel.queryPurchases()
 
         if (canShowNotices) {
-            lifecycleScope.launch {
-                showSnackbarIfNeeded()
+            collectLatestLifecycleFlow(mainNotifierViewModel.actionNeededSnackbar) { snackbarData ->
+                Snackbar.make(
+                    binding.coordinator,
+                    snackbarData.message,
+                    snackbarData.duration
+                ).setAction(snackbarData.actionText) {
+                    if (snackbarData.updateData != null) {
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle(snackbarData.message)
+                            .setMessage(snackbarData.updateData.body)
+                            .setPositiveButton(R.string.download) { _, _ ->
+                                snackbarData.updateData.downloadUrl?.let {
+                                    Stuff.openInBrowser(it)
+                                }
+                            }
+                            .show()
+                    } else if (snackbarData.destinationId != 0)
+                        navController.navigate(snackbarData.destinationId)
+                }
+                    .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
+                    .focusOnTv()
+                    .show()
             }
         }
 
@@ -279,6 +273,11 @@ class MainActivity : AppCompatActivity(),
             }
         }
 //        navController.navigate(R.id.fixItFragment)
+    }
+
+    override fun onDestroy() {
+        mainNotifierViewModel.prevDestinationId = null
+        super.onDestroy()
     }
 
     fun hideFab(removeListeners: Boolean = true) {
@@ -333,42 +332,6 @@ class MainActivity : AppCompatActivity(),
         }
 
         mainNotifierViewModel.prevDestinationId = destination.id
-    }
-
-    private suspend fun showSnackbarIfNeeded() {
-        delay(1500)
-        val nlsEnabled = Stuff.isNotificationListenerEnabled()
-
-        if (nlsEnabled && !Stuff.isScrobblerRunning()) {
-            Snackbar.make(
-                binding.root,
-                R.string.not_running,
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction(R.string.not_running_fix_action) {
-                    navController.navigate(R.id.fixItFragment)
-                }
-                .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
-                .focusOnTv()
-                .show()
-            Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
-        } else if (!nlsEnabled || !prefs.scrobblerEnabled) {
-            Snackbar.make(
-                binding.root,
-                R.string.scrobbler_off,
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction(R.string.enable) {
-                    if (!nlsEnabled)
-                        navController.navigate(R.id.onboardingFragment)
-                    else
-                        prefs.scrobblerEnabled = true
-                }
-                .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
-                .focusOnTv()
-                .show()
-        } else
-            mainNotifierViewModel.checkForUpdatesIfNeeded()
     }
 
     override fun onNewIntent(intent: Intent?) {

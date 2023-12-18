@@ -31,6 +31,7 @@ import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.LastFm
+import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.CachedTracksDao
@@ -43,6 +44,7 @@ import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
 import com.arn.scrobble.onboarding.LoginFragment
 import com.arn.scrobble.onboarding.LoginFragmentArgs
+import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -303,9 +305,13 @@ class EditDialogFragment : LoginFragment() {
             } else {
                 if (!isNowPlaying) {
                     // The user might submit the edit after it has been scrobbled, so delete anyways
-                    val deleteSucc = lastfmScrobblable.delete(origTrackObj)
-                    if (deleteSucc)
+                    val deleteResult = lastfmScrobblable.delete(origTrackObj)
+                    if (deleteResult.isSuccess)
                         CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
+                    else if (deleteResult.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException) {
+                        PopupMenuUtils.showReauthenticatePrompt(findNavController())
+                        return false
+                    }
                 }
                 if (rescrobbleRequired)
                     lastfmScrobblable.scrobble(scrobbleData)

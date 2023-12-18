@@ -5,7 +5,7 @@
     <item type="id" name="time" />
     <item type="id" name="should_show_user" />
     <item type="id" name="more_menu" />
-    <item type="id" name="hero_track" />
+    <item type="id" name="app_bar_can_change_size" />
     <item type="id" name="img_url" />
     <item type="id" name="inited" />
     <item type="id" name="raw_text" />

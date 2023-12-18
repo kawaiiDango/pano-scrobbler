@@ -43,17 +43,6 @@ class HomePagerFragment : BasePagerFragment() {
         }
     }
 
-    fun expandAppBar(tabPosition: Int) {
-        val appBar = (activity as MainActivity).binding.appBar
-
-        val expand = tabPosition == 0
-
-        appBar.updateHeight(expand)
-
-        if (expand && !appBar.isExpanded)
-            appBar.setExpanded(true, true)
-    }
-
     private fun optionsMenuSelected(navView: NavigationView, menuItemId: Int) {
         val navController = findNavController()
         when (menuItemId) {

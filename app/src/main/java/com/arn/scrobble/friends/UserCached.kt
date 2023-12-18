@@ -45,7 +45,6 @@ data class UserAccountSerializable(
     val user: UserCached,
     val authKey: String,
     val apiRoot: String? = null,
-    val tlsNoVerify: Boolean = false,
 )
 
 @Parcelize
@@ -53,5 +52,4 @@ data class UserAccountTemp(
     val type: AccountType,
     val authKey: String,
     val apiRoot: String? = null,
-    val tlsNoVerify: Boolean = false,
 ) : Parcelable

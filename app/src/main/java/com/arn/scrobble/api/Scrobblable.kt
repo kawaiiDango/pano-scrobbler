@@ -34,7 +34,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
 
     abstract suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleIgnored>
 
-    abstract suspend fun delete(track: Track): Boolean
+    abstract suspend fun delete(track: Track): Result<Unit>
 
     abstract suspend fun getRecents(
         page: Int,
@@ -180,16 +180,18 @@ object Scrobblables {
         synchronized(all) {
             all.clear()
             all.addAll(
-                prefs.scrobbleAccounts.map {
-                    when (it.type) {
-                        AccountType.LASTFM -> LastFm(it)
-                        AccountType.LIBREFM,
-                        AccountType.GNUFM -> GnuFm(it)
+                prefs.scrobbleAccounts
+                    .distinctBy { it.type }
+                    .map {
+                        when (it.type) {
+                            AccountType.LASTFM -> LastFm(it)
+                            AccountType.LIBREFM,
+                            AccountType.GNUFM -> GnuFm(it)
 
-                        AccountType.LISTENBRAINZ,
-                        AccountType.CUSTOM_LISTENBRAINZ -> ListenBrainz(it)
+                            AccountType.LISTENBRAINZ,
+                            AccountType.CUSTOM_LISTENBRAINZ -> ListenBrainz(it)
+                        }
                     }
-                }
             )
         }
 
@@ -225,7 +227,7 @@ object Scrobblables {
         updateScrobblables()
 
         if (type == AccountType.LASTFM) {
-            LastfmUnscrobbler().clearCookies()
+            LastfmUnscrobbler.cookieStorage.clear()
         }
     }
 
@@ -236,12 +238,14 @@ object Scrobblables {
         updateScrobblables()
 
         if (userAccount.type == AccountType.LASTFM) {
-            LastfmUnscrobbler().clearCookies()
+            LastfmUnscrobbler.cookieStorage.clear()
         }
     }
 
     fun add(userAccount: UserAccountSerializable) {
-        App.prefs.scrobbleAccounts += userAccount
+        // if already exists, remove it first
+        App.prefs.scrobbleAccounts =
+            App.prefs.scrobbleAccounts.filterNot { it.type == userAccount.type } + userAccount
         updateScrobblables()
     }
 

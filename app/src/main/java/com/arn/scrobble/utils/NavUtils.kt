@@ -32,9 +32,9 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.OptionsMenuMetadata
 import com.arn.scrobble.R
-import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.showWithIcons
@@ -298,6 +298,12 @@ object NavUtils {
                             }
 
                             activityBinding.bottomNav.setOnItemSelectedListener { menuItem ->
+
+                                activityBinding.appBar.setTag(
+                                    R.id.app_bar_can_change_size,
+                                    true
+                                )
+
                                 val itemId = menuItem.itemId - idOffset
                                 if (itemId in adapter.tabMetadata.indices) {
                                     binding.pager.setCurrentItem(itemId, true)
@@ -362,8 +368,6 @@ object NavUtils {
                                         if (this@setupWithNavUi is HomePagerFragment) {
                                             if (findNavController().currentDestination?.id == R.id.myHomePagerFragment)
                                                 prefs.lastHomePagerTab = position
-
-                                            expandAppBar(position)
                                         }
                                     }
                                 }
@@ -373,6 +377,11 @@ object NavUtils {
 
                             binding.pager.addOnPageChangeListener(onPageChangeListener)
                             onPageChangeListener.onPageSelected(binding.pager.currentItem)
+                            
+                            activityBinding.appBar.setTag(
+                                R.id.app_bar_can_change_size,
+                                true
+                            )
 
                             arguments?.getInt(Stuff.ARG_TAB, -1)
                                 ?.coerceAtMost(adapter.count - 1)

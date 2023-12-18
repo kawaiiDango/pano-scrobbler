@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,19 +17,15 @@ import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentAppListBinding
 import com.arn.scrobble.ui.FabData
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
-import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.transition.MaterialSharedAxis
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.launch
 
 
 /**
@@ -49,8 +44,6 @@ class AppListFragment : Fragment() {
 
     private val singleChoiceArg
         get() = arguments?.getBoolean(Stuff.ARG_SINGLE_CHOICE, false) ?: false
-
-    private var skeletonJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,16 +89,12 @@ class AppListFragment : Fragment() {
         val adapter = AppListAdapter(requireActivity(), viewModel, singleChoiceArg)
         binding.appList.adapter = adapter
 
-        val skeleton = binding.appList.applySkeleton(
+        val skeleton = binding.appList.createSkeletonWithFade(
             R.layout.list_item_app_skeleton,
             15,
-            UiUtils.mySkeletonConfig(requireContext())
         )
 
-        skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
-            delay(100)
-            skeleton.showSkeleton()
-        }
+        skeleton.showSkeleton()
 
         if (!Stuff.isTv) {
             binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -154,9 +143,7 @@ class AppListFragment : Fragment() {
                 prefs.allowedPackages = viewModel.selectedPackages
             }
 
-            skeletonJob?.cancel()
-            if (skeleton.isSkeleton())
-                skeleton.showOriginal()
+            skeleton.showOriginal()
 
         }
 

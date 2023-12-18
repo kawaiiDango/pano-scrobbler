@@ -2,7 +2,6 @@ package com.arn.scrobble.api.spotify
 
 import com.arn.scrobble.App
 import com.arn.scrobble.Tokens
-import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.lastfm.CacheInterceptor
 import com.arn.scrobble.api.lastfm.ExpirationPolicy
@@ -10,27 +9,29 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.similarity
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.parametersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import okhttp3.FormBody
-import okhttp3.Headers
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.Request
 import org.json.JSONObject
-import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -59,45 +60,40 @@ class SpotifyRequester {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        BearerTokens(prefs.spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
+                        if (prefs.spotifyAccessTokenExpires >= System.currentTimeMillis())
+                            BearerTokens(prefs.spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
+                        else
+                            null
                     }
 
                     refreshTokens {
-                        putTokens()
-                        BearerTokens(prefs.spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
-                    }
-                }
-            }
-        }
-    }
-
-    private suspend fun putTokens() {
-        authMutex.withLock {
-            if (prefs.spotifyAccessTokenExpires < System.currentTimeMillis()) { // expired
-                try {
-                    val request = Request(
-                        "https://accounts.spotify.com/api/token".toHttpUrl(),
-                        headers = Headers.headersOf(
-                            "Authorization", "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}",
-                            "Content-Type", "application/x-www-form-urlencoded",
-                        ),
-                        body = FormBody.Builder()
-                            .add("grant_type", "client_credentials")
-                            .build()
-                    )
-                    Requesters.okHttpClient
-                        .newCall(request)
-                        .execute().use { response ->
-                            if (response.isSuccessful) {
-                                val jsonObject = JSONObject(response.body.string())
-                                prefs.spotifyAccessToken =
-                                    jsonObject.getString("access_token")
-                                prefs.spotifyAccessTokenExpires =
-                                    System.currentTimeMillis() + (jsonObject.getLong("expires_in") - 60) * 1000
+                        authMutex.withLock {
+                            if (prefs.spotifyAccessTokenExpires >= System.currentTimeMillis())
+                                return@withLock
+                            
+                            withContext(Dispatchers.IO) {
+                                client.post("https://accounts.spotify.com/api/token") {
+                                    markAsRefreshTokenRequest()
+                                    header(
+                                        HttpHeaders.Authorization,
+                                        "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}"
+                                    )
+                                    setBody(
+                                        FormDataContent(
+                                            parametersOf("grant_type", "client_credentials")
+                                        )
+                                    )
+                                }
+                                    .body<SpotifyTokenResponse>()
+                                    .let {
+                                        prefs.spotifyAccessToken = it.access_token
+                                        prefs.spotifyAccessTokenExpires =
+                                            System.currentTimeMillis() + (it.expires_in - 60) * 1000
+                                    }
                             }
                         }
-                } catch (e: Exception) {
-                    Timber.tag(Stuff.TAG).w(e)
+                        BearerTokens(prefs.spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
+                    }
                 }
             }
         }
@@ -211,6 +207,12 @@ data class SpotifyTrack(
         return sdf.parse(releaseDate)
     }
 }
+
+@Serializable
+data class SpotifyTokenResponse(
+    val access_token: String,
+    val expires_in: Int,
+)
 
 @Serializable
 data class TrackFeatures(

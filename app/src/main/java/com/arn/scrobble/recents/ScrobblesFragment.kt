@@ -54,7 +54,7 @@ import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
+import com.arn.scrobble.api.lastfm.webp600
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.charts.TimePeriod
@@ -67,11 +67,13 @@ import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.ItemLongClickListener
+import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.PaletteTransition
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.ui.UiUtils.expandToHeroIfNeeded
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
 import com.arn.scrobble.ui.UiUtils.scrollToTopOnInsertToTop
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
@@ -79,10 +81,10 @@ import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.Stuff.putSingle
-import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
@@ -115,7 +117,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
     private val billingViewModel by activityViewModels<BillingViewModel>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var animSet: AnimatorSet? = null
-    private var skeletonJob: Job? = null
 
     private val focusChangeListener by lazy {
         object : FocusChangeListener {
@@ -178,6 +179,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
         }
         activity ?: return
         viewModel.reEmitColors()
+
+        coordinatorBinding.appBar.expandToHeroIfNeeded(true)
     }
 
     override fun onPause() {
@@ -243,21 +246,19 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
 
         binding.scrobblesList.addOnScrollListener(loadMoreListener)
 
-        val skeleton = binding.scrobblesList.applySkeleton(
-            R.layout.list_item_recents_skeleton,
-            10,
-            UiUtils.mySkeletonConfig(requireContext())
+        val skeleton = binding.scrobblesList.createSkeletonWithFade(
+            listItemLayoutResId = R.layout.list_item_recents_skeleton,
         )
 
-        collectLatestLifecycleFlow(viewModel.pendingScrobbles, Lifecycle.State.RESUMED) {
+        collectLatestLifecycleFlow(viewModel.pendingScrobbles) {
             adapter.updatePendingScrobbles(it)
         }
 
-        collectLatestLifecycleFlow(viewModel.pendingLoves, Lifecycle.State.RESUMED) {
+        collectLatestLifecycleFlow(viewModel.pendingLoves) {
             adapter.updatePendingLoves(it)
         }
 
-        collectLatestLifecycleFlow(viewModel.tracks.filterNotNull(), Lifecycle.State.RESUMED) {
+        collectLatestLifecycleFlow(viewModel.tracks.filterNotNull()) {
             if (it.isEmpty()) {
                 binding.empty.isVisible = true
             } else {
@@ -271,15 +272,12 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
             }
         }
 
-        collectLatestLifecycleFlow(viewModel.hasLoaded, Lifecycle.State.RESUMED) {
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
             loadMoreListener.loading = !it
 
             if (!it) {
                 if (adapter.itemCount == 0) {
-                    skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
-                        delay(100)
-                        skeleton.showSkeleton()
-                    }
+                    skeleton.showSkeleton()
                 }
 
                 if (!skeleton.isSkeleton() && viewModel.input.value?.page == 1)
@@ -287,10 +285,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
 
                 binding.empty.isVisible = false
             } else {
-                skeletonJob?.cancel()
-                skeletonJob = null
-                if (skeleton.isSkeleton())
-                    skeleton.showOriginal()
+                skeleton.showOriginal()
                 binding.swipeRefresh.isRefreshing = false
 
                 if (viewModel.tracks.value?.isEmpty() == true) {
@@ -349,7 +344,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
                         activityViewModel.currentUser.name
                     )
 
-                if (billingViewModel.proStatus.value != true)
+                if (!billingViewModel.proStatus.value)
                     shareText += "\n\n" + getString(R.string.share_sig)
 
                 val i = Intent(Intent.ACTION_SEND).apply {
@@ -623,8 +618,10 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
     override fun onSetHero(track: Track, cacheKey: MemoryCache.Key?) {
         _binding ?: return
 
-        //TODO: check
-        val imgUrl = track.webp300?.replace("300x300", "600x600")
+        val reqData: Any = if (viewModel.isShowingLoves)
+            MusicEntryImageReq(track, true)
+        else
+            (track.webp600 ?: "")
 
         val errColor = UiUtils.getMatColor(
             coordinatorBinding.heroImg.context,
@@ -634,7 +631,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
             ContextCompat.getDrawable(requireContext(), R.drawable.vd_wave_simple_filled)!!
                 .apply { setTint(errColor) }
 
-        coordinatorBinding.heroImg.load(imgUrl ?: "") {
+        coordinatorBinding.heroImg.load(reqData) {
             placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
             placeholder(errDrawable)
             error(errDrawable)
@@ -644,8 +641,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
             })
             listener(
                 onError = { imageRequest, errorResult ->
-                    Stuff.logW("Coil err for ${imageRequest.data} : ${errorResult.throwable.message}")
-
                     val swatch = Palette.Swatch(errColor, 1)
                     val palette = Palette.from(listOf(swatch))
                     viewModel.setPaletteColors(PaletteColors(requireContext(), palette))

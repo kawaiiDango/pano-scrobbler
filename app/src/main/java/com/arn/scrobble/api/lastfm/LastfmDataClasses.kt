@@ -301,12 +301,12 @@ data class RecentTracksResponse(
 
 
 enum class Period(val value: String) {
-    OVERALL("overall"),
     WEEK("7day"),
     MONTH("1month"),
     QUARTER("3month"),
     HALF_YEAR("6month"),
     YEAR("12month"),
+    OVERALL("overall"),
 }
 
 @Serializable
@@ -459,9 +459,9 @@ data class NowPlayingResponse(
 data class ScrobbleDetails(
     val artist: CorrectedDetails,
     val track: CorrectedDetails,
-    val ignoredMessage: IgnoredDetails,
     val albumArtist: CorrectedDetails,
-    val album: CorrectedDetails
+    val album: CorrectedDetails,
+    val ignoredMessage: IgnoredDetails,
 )
 
 @Serializable
@@ -469,7 +469,7 @@ data class CorrectedDetails(
     @Serializable(with = StringOrBoolSerializer::class)
     val corrected: Boolean,
     @SerialName("#text")
-    val name: String
+    val name: String?
 )
 
 @Serializable
@@ -499,6 +499,11 @@ data class ScrobbleResponse(
         )
     }
 }
+
+@Serializable
+data class DeleteScrobbleResponse(
+    val result: Boolean,
+)
 
 
 data class SearchResults(

@@ -15,8 +15,8 @@ plugins {
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.github.release)
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.play.publisher)
     id(libs.plugins.parcelize.get().pluginId)
-    id(libs.plugins.play.publisher.get().pluginId)
 }
 
 android {
@@ -160,7 +160,6 @@ dependencies {
     implementation(libs.crashlytics.ktx)
 
     implementation(libs.okhttp)
-    implementation(libs.persistentCookieJar)
     implementation(libs.krate)
     implementation(libs.krate.kotlinx)
     implementation(libs.harmony)

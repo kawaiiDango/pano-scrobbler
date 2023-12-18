@@ -32,12 +32,12 @@ class MusicEntryImageInterceptor : Interceptor {
         val entry = musicEntryImageReq.musicEntry
         val key = genKey(entry)
         val cachedOptional = musicEntryCache[key]
-        var fetchedImage = cachedOptional?.value
+        var fetchedImageUrl = cachedOptional?.value
 
         if (cachedOptional == null) {
             withContext(Dispatchers.IO) {
                 try {
-                    fetchedImage = when (entry) {
+                    fetchedImageUrl = when (entry) {
                         is Artist -> {
                             semaphore.withPermit {
                                 delay(delayMs)
@@ -66,15 +66,18 @@ class MusicEntryImageInterceptor : Interceptor {
                                 .getOrNull()?.webp300
                         }
                     }
-                    musicEntryCache.put(key, Optional(fetchedImage))
+                    musicEntryCache.put(key, Optional(fetchedImageUrl))
                 } catch (e: Exception) {
                     throw e
                 }
             }
         }
 
+        if (musicEntryImageReq.isHeroImage && (entry is Album || entry is Track))
+            fetchedImageUrl = fetchedImageUrl?.replace("300x300", "600x600")
+
         val request = ImageRequest.Builder(chain.request)
-            .data(fetchedImage ?: "")
+            .data(fetchedImageUrl ?: "")
             .allowHardware(false)
             .build()
 
@@ -90,6 +93,7 @@ class MusicEntryImageInterceptor : Interceptor {
 
 class MusicEntryImageReq(
     val musicEntry: MusicEntry,
+    val isHeroImage: Boolean = false,
 )
 
 private class Optional<T>(val value: T?)

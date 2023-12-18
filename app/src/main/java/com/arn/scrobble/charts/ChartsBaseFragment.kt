@@ -136,7 +136,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         super.postInit()
 
         chartsBinding.frameChartsList.chartsList.isNestedScrollingEnabled = true
-        adapter = ChartsAdapter(viewLifecycleOwner, chartsBinding.frameChartsList)
+        adapter = ChartsAdapter(chartsBinding.frameChartsList)
         scalableGrid = ScalableGrid(chartsBinding.frameChartsList.chartsList)
 
         (chartsBinding.frameChartsList.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
@@ -183,7 +183,6 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
 
         collectLatestLifecycleFlow(
             viewModel.entries.filterNotNull(),
-            Lifecycle.State.RESUMED
         ) {
             loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
             adapter.populate(it, false)
@@ -193,7 +192,6 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
 
         collectLatestLifecycleFlow(
             viewModel.hasLoaded,
-            Lifecycle.State.RESUMED
         ) {
             adapter.progressVisible(!it)
         }

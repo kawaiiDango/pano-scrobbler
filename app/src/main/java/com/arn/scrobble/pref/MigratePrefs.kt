@@ -1,14 +1,26 @@
 package com.arn.scrobble.pref
 
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.App
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.utils.Stuff
+import com.franmontiel.persistentcookiejar.persistence.SerializableCookie
+import com.frybits.harmony.getHarmonySharedPreferences
+import io.ktor.http.Url
+import kotlinx.coroutines.runBlocking
+
 
 object MigratePrefs {
     fun migrate(prefs: MainPrefs) {
         if (prefs.prefVersion < 3) {
             migrateV3(prefs)
             prefs.prefVersion = 3
+        }
+
+        if (prefs.prefVersion < 4) {
+            migrateV4()
+            prefs.prefVersion = 4
         }
     }
 
@@ -45,4 +57,26 @@ object MigratePrefs {
 
         prefs.scrobbleAccounts = accounts
     }
+
+    private fun migrateV4() {
+
+        // migrate old cookies
+        val prefs = App.context.getHarmonySharedPreferences("CookiePersistence")
+        prefs.all.forEach { (key, value) ->
+            if ("|sessionid" in key || "|csrftoken" in key) {
+                val cookie = SerializableCookie.decode(value as String)
+                if (cookie != null)
+                    runBlocking {
+                        LastfmUnscrobbler.cookieStorage.addCookie(
+                            Url("https://" + cookie.domain!!),
+                            cookie
+                        )
+                    }
+            }
+        }
+
+        // clear old cookies
+        prefs.edit().clear().apply()
+    }
+
 }

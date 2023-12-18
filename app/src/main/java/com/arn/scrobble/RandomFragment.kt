@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import coil.load
@@ -26,18 +25,14 @@ import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.putData
-import com.faltenreich.skeletonlayout.Skeleton
-import com.faltenreich.skeletonlayout.createSkeleton
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.MaterialSharedAxis
 import io.michaelrocks.bimap.HashBiMap
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 
@@ -53,8 +48,6 @@ class RandomFragment : ChartsPeriodFragment() {
     override val periodChipsBinding: ChipsChartsPeriodBinding
         get() = _periodChipsBinding!!
     private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
-    private var skeletonJob: Job? = null
-    private lateinit var skeleton: Skeleton
 
     private val buttonToTypeBimap by lazy {
         HashBiMap.create(
@@ -128,7 +121,7 @@ class RandomFragment : ChartsPeriodFragment() {
             }
         }
 
-        skeleton = binding.randomSkeleton.createSkeleton(UiUtils.mySkeletonConfig(requireContext()))
+        val skeleton = binding.randomContentGroup.createSkeletonWithFade(binding.randomSkeleton)
 
         collectLatestLifecycleFlow(viewModel.musicEntry.filterNotNull()) {
             setData(it)
@@ -153,17 +146,13 @@ class RandomFragment : ChartsPeriodFragment() {
 
         collectLatestLifecycleFlow(viewModel.hasLoaded) {
             if (it) {
-                skeletonJob?.cancel()
                 skeleton.showOriginal()
                 if (viewModel.error.value == null)
                     binding.randomContentGroup.visibility = View.VISIBLE
             } else {
                 binding.randomStatus.isVisible = false
                 binding.randomContentGroup.visibility = View.INVISIBLE
-                skeletonJob = viewLifecycleOwner.lifecycleScope.launch {
-                    delay(100)
-                    skeleton.showSkeleton()
-                }
+                skeleton.showSkeleton()
             }
         }
 

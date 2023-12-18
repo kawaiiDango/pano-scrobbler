@@ -230,12 +230,17 @@ class InfoVM : ViewModel() {
             infoMap[NLService.B_ALBUM] = it
         }
 
-        doDirtyDeltaUpdates(
-            artistDef.await(),
-            albumDef.await(),
-            trackDef.await(),
-            albumArtistDef.await()
-        )
+        // dirty delta updates only for lastfm and self
+        if (Scrobblables.current?.userAccount?.type == AccountType.LASTFM &&
+            Scrobblables.current?.userAccount?.user?.isSelf == true
+        ) {
+            doDirtyDeltaUpdates(
+                artistDef.await(),
+                albumDef.await(),
+                trackDef.await(),
+                albumArtistDef.await()
+            )
+        }
 
         infoMap.toMap()
     }

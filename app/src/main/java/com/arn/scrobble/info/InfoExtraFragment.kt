@@ -229,7 +229,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         sectionVM: InfoExtraFullVM,
         showArtists: Boolean
     ) {
-        val adapter = ChartsOverviewAdapter(viewLifecycleOwner, rootViewBinding)
+        val adapter = ChartsOverviewAdapter(rootViewBinding)
         adapter.clickListener = this
         adapter.emptyTextRes = R.string.not_found
         // top tracks/albums are ordered by listeners and not by play count

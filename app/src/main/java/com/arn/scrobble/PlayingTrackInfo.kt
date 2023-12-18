@@ -1,7 +1,11 @@
 package com.arn.scrobble
 
 import android.os.Parcelable
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntryAttr
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.api.lastfm.Track
 import kotlinx.parcelize.Parcelize
 
 // Why is this so confusing?
@@ -61,6 +65,18 @@ data class PlayingTrackInfo(
         duration = if (durationMillis / 1000 >= 30) (durationMillis / 1000).toInt() else null
     )
 
+    fun toTrack() = Track(
+        name = title,
+        artist = Artist(artist),
+        album = if (album.isNotEmpty()) Album(album, Artist(albumArtist)) else null,
+        userplaycount = userPlayCount,
+        userloved = userLoved,
+        duration = (durationMillis / 1000).toInt(),
+        _attr = MusicEntryAttr(
+            nowplaying = isPlaying,
+        ),
+    )
+
     fun updateMetaFrom(p: PlayingTrackInfo): PlayingTrackInfo {
         title = p.title
         album = p.album
@@ -91,5 +107,4 @@ data class ScrobbleError(
     val title: String,
     val description: String?,
     val packageName: String,
-    val canForceScrobble: Boolean = true,
 ) : Parcelable

@@ -21,8 +21,7 @@ interface BlockedMetadataDao {
 
     @Query(
         """SELECT * FROM $tableName
-          WHERE (artist IN ("", :artist) OR
-          artist IN ("", :ignoredArtist)) AND
+          WHERE artist IN ("", :artist) AND
           album IN ("", :album) AND
           albumArtist IN ("", :albumArtist) AND
           track IN ("", :track) AND
@@ -34,7 +33,6 @@ interface BlockedMetadataDao {
         album: String,
         albumArtist: String,
         track: String,
-        ignoredArtist: String?
     ): List<BlockedMetadata>
 
     @Query(
@@ -66,14 +64,12 @@ interface BlockedMetadataDao {
 
         fun BlockedMetadataDao.getBlockedEntry(
             scrobbleData: ScrobbleData,
-            ignoredArtist: String?
         ): BlockedMetadata? {
             val entries = getBlockedEntries(
-                scrobbleData.artist?.lowercase() ?: "",
+                scrobbleData.artist.lowercase(),
                 scrobbleData.album?.lowercase() ?: "",
                 scrobbleData.albumArtist?.lowercase() ?: "",
-                scrobbleData.track?.lowercase() ?: "",
-                ignoredArtist?.lowercase()
+                scrobbleData.track.lowercase(),
             )
 
             if (entries.isEmpty()) return null

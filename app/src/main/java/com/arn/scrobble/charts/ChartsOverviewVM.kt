@@ -34,6 +34,7 @@ class ChartsOverviewVM : ChartsPeriodVM() {
     val tagCloud = _tagCloud.asStateFlow()
     private val _tagCloudError = MutableSharedFlow<Throwable>(replay = 1)
     val tagCloudError = _tagCloudError.asSharedFlow()
+    private val _hiddenTags = MutableStateFlow(prefs.hiddenTags)
     private val _listeningActivityVisible = MutableStateFlow(false)
     private val _tagCloudVisible = MutableStateFlow(false)
     private val _tagCloudProgress = MutableStateFlow(0.0)
@@ -83,25 +84,25 @@ class ChartsOverviewVM : ChartsPeriodVM() {
         }
 
         viewModelScope.launch {
-            entriesMap[Stuff.TYPE_ARTISTS]!!
-                .filterNotNull()
-                .combine(_tagCloudVisible) { entries, visible ->
-                    entries to visible
-                }
+            combine(
+                entriesMap[Stuff.TYPE_ARTISTS]!!.filterNotNull(),
+                _tagCloudVisible,
+                _hiddenTags
+            ) { entries, visible, hiddenTags ->
+                Triple(entries, visible, hiddenTags)
+            }.collectLatest { (entries, visible, hiddenTags) ->
+                if (!visible || _tagCloud.value != null)
+                    return@collectLatest
 
-                .collectLatest { (entries, visible) ->
-                    if (!visible || _tagCloud.value != null)
-                        return@collectLatest
-
-                    _tagCloudProgress.emit(0.0)
-                    try {
-                        _tagCloud.emit(loadTagCloud(entries))
-                    } catch (e: Exception) {
-                        _tagCloudError.emit(e)
-                    } finally {
-                        _tagCloudProgress.emit(1.0)
-                    }
+                _tagCloudProgress.emit(0.0)
+                try {
+                    _tagCloud.emit(loadTagCloud(entries, hiddenTags))
+                } catch (e: Exception) {
+                    _tagCloudError.emit(e)
+                } finally {
+                    _tagCloudProgress.emit(1.0)
                 }
+            }
         }
     }
 
@@ -192,7 +193,15 @@ class ChartsOverviewVM : ChartsPeriodVM() {
         }
     }
 
-    private suspend fun loadTagCloud(artists: List<MusicEntry>): Map<String, Float> {
+    fun updateHiddenTags() {
+        _tagCloud.value = null
+        _hiddenTags.value = prefs.hiddenTags
+    }
+
+    private suspend fun loadTagCloud(
+        artists: List<MusicEntry>,
+        hiddenTags: Set<String>
+    ): Map<String, Float> {
         val nArtists = 30
         val minArtists = 10
         val nTags = 65
@@ -238,7 +247,7 @@ class ChartsOverviewVM : ChartsPeriodVM() {
 
         val topTags = tags
             .toList()
-            .filter { AcceptableTags.isAcceptable(it.first) }
+            .filter { AcceptableTags.isAcceptable(it.first, hiddenTags) }
             .sortedByDescending { it.second.score }
             .take(nTags)
             .toMap()

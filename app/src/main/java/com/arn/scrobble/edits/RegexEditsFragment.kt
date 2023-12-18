@@ -108,10 +108,10 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
             binding.empty.isVisible = it.isEmpty()
             binding.editsList.isVisible = it.isNotEmpty()
 
-            adapter.submitList(it)
-
-            (view.parent as? ViewGroup)?.doOnPreDraw {
-                startPostponedEnterTransition()
+            adapter.submitList(it) {
+                (view.parent as? ViewGroup)?.doOnPreDraw {
+                    startPostponedEnterTransition()
+                }
             }
         }
 

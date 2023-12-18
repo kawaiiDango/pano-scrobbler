@@ -33,7 +33,6 @@
             android:layoutAnimation="@anim/layout_animation_slide_up"
             android:paddingStart="8dp"
             android:paddingTop="8dp"
-            android:visibility="invisible"
             tools:listitem="@layout/grid_item_friend"
             tools:visibility="visible" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

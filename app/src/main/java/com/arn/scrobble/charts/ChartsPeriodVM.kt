@@ -27,7 +27,7 @@ import kotlin.math.max
 
 open class ChartsPeriodVM : ViewModel() {
 
-    private val prefs = App.prefs
+    val prefs = App.prefs
 
     private val _periodType = MutableStateFlow(
         if (Scrobblables.current is ListenBrainz)

@@ -82,25 +82,6 @@ class AppIconsPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defSty
                 }.forEach {
                     context.imageLoader.enqueue(it)
                 }
-
-//            for (i in 0 until minOf(maxIcons, packageNames.size)) {
-//                ShapeableImageView(context).apply {
-//                    scaleType = ImageView.ScaleType.FIT_CENTER
-//                    layoutParams = LinearLayout.LayoutParams(wPx, wPx)
-//                    val padding = wPx / 8
-//                    setPadding(padding, padding, padding, padding)
-//                    load(PackageName(packageNames.elementAt(i))) {
-//                        allowHardware(false)
-//                        scale(Scale.FIT)
-//                        listener(
-//                            onError = { _, _ ->
-//                                binding.appIconsContainer.removeView(this@apply)
-//                            }
-//                        )
-//                    }
-//                    binding.appIconsContainer.addView(this)
-//                }
-//            }
             prevPackageNames = packageNames
         }
     }

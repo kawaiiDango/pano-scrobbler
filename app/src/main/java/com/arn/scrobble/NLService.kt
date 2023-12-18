@@ -29,14 +29,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.media.app.MediaStyleMod
-import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import com.arn.scrobble.PlayerActions.love
 import com.arn.scrobble.PlayerActions.skip
 import com.arn.scrobble.PlayerActions.unlove
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
@@ -52,6 +50,7 @@ import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
+import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.Stuff.putSingle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -452,11 +451,7 @@ class NLService : NotificationListenerService() {
             )
         }
 
-        val infoArgs = bundleOf(
-            B_ARTIST to trackInfo.artist,
-            B_ALBUM to trackInfo.album,
-            B_TRACK to trackInfo.title,
-        )
+        val infoArgs = trackInfo.toTrack().let { Bundle().putData(it) }
         val launchPi =
             MainDialogActivity.createDestinationPendingIntent(R.id.infoFragment, infoArgs)
 
@@ -1001,24 +996,6 @@ class NLService : NotificationListenerService() {
             trackInfo.userPlayCount = 0
             trackInfo.userLoved = false
 
-            var unparsedScrobbleData: ScrobbleData? = null
-
-            // music only items have an album field,
-            // and the correct artist name on official youtube tv app
-
-            if (trackInfo.ignoreOrigArtist) { // not parsed yet
-                val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(trackInfo.origTitle)
-
-                unparsedScrobbleData = trackInfo.toScrobbleData()
-
-                trackInfo.artist = parsedArtist
-                trackInfo.title = parsedTitle
-                trackInfo.albumArtist = ""
-                trackInfo.album = ""
-            }
-
-            lastNpTask?.cancel()
-
             trackInfo.isPlaying = true
 
             var finalDelay: Long
@@ -1043,8 +1020,9 @@ class NLService : NotificationListenerService() {
             trackInfo.scrobbleElapsedRealtime = submitTime
             val trackInfoCopy = addScrobble(trackInfo)
 
+            lastNpTask?.cancel()
             lastNpTask = coroutineScope.launch {
-                ScrobbleEverywhere.scrobble(true, trackInfoCopy, unparsedScrobbleData)
+                ScrobbleEverywhere.scrobble(true, trackInfoCopy)
             }
 
             notifyScrobble(trackInfo)

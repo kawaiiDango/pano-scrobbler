@@ -382,7 +382,8 @@ object Stuff {
                 true
             )
 
-            else -> DateUtils.getRelativeTimeSpanString(
+            else -> DateUtils.getRelativeDateTimeString(
+                context,
                 secs * 1000L,
                 System.currentTimeMillis(),
                 DateUtils.MINUTE_IN_MILLIS,

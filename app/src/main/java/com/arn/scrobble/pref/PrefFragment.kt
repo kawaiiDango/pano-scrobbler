@@ -585,18 +585,6 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         super.onViewCreated(view, savedInstanceState)
 
-//        val decoration =
-//            MaterialDividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-//        decoration.setDividerInsetStartResource(requireContext(), R.dimen.divider_inset)
-//        decoration.setDividerInsetEndResource(requireContext(), R.dimen.divider_inset)
-//        val colorDrawable = ColorDrawable(decoration.dividerColor)
-//        val insetDrawable = InsetDrawable(
-//            colorDrawable,
-//            decoration.dividerInsetStart,
-//            0,
-//            decoration.dividerInsetEnd,
-//            0
-//        )
         setDivider(null)
 
         (view.parent as? ViewGroup)?.doOnPreDraw {

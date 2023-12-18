@@ -64,7 +64,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        adapter = ChartsAdapter(viewLifecycleOwner, binding)
+        adapter = ChartsAdapter(binding)
         adapter.emptyTextRes = R.string.not_found
 
         scalableGrid = ScalableGrid(binding.chartsList)

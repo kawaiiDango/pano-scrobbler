@@ -4,32 +4,29 @@ import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 
 class Updater {
     private val prefs = App.prefs
 
-    suspend fun checkGithubForUpdates(): Flow<GithubReleases> {
+    suspend fun checkGithubForUpdates(): GithubReleases? {
         val now = System.currentTimeMillis()
         if (prefs.checkForUpdates != true
             || (now - (prefs.lastUpdateCheckTime ?: -1)) <= UPDATE_CHECK_INTERVAL
         )
-            return emptyFlow()
+            return null
 
         Requesters.genericKtorClient.getResult<GithubReleases>(githubApiUrl)
             .onSuccess { releases ->
                 prefs.lastUpdateCheckTime = now
 
                 if (releases.versionCode > BuildConfig.VERSION_CODE) {
-                    return flowOf(releases)
+                    return releases
                 }
             }
             .onFailure { it.printStackTrace() }
 
-        return emptyFlow()
+        return null
     }
 }
 

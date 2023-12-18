@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
@@ -37,18 +38,17 @@ import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.RoundedBarChart
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.ui.UiUtils.expandToHeroIfNeeded
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.ui.UiUtils.sp
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
-import com.faltenreich.skeletonlayout.SkeletonLayout
-import com.faltenreich.skeletonlayout.createSkeleton
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
@@ -87,20 +87,15 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     override val periodChipsBinding
         get() = _periodChipsBinding!!
 
-    private var listeningActivitySkeletonJob: Job? = null
-    private var tagCloudSkeletonJob: Job? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        childFragmentManager.setFragmentResultListener(
+        requireActivity().supportFragmentManager.setFragmentResultListener(
             Stuff.ARG_HIDDEN_TAGS_CHANGED,
             this
         ) { requestKey, bundle ->
             if (requestKey == Stuff.ARG_HIDDEN_TAGS_CHANGED && bundle.getBoolean(Stuff.ARG_HIDDEN_TAGS_CHANGED)) {
-//                viewModel.tagCloudRequested = false
-//                loadMoreSectionsIfNeeded()
-                // todo reload
+                viewModel.updateHiddenTags()
             }
         }
     }
@@ -128,6 +123,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         setTitle(R.string.charts)
         if (!listeningActivityChartInited)
             initListeningActivityChart()
+        (activity as MainActivity).binding.appBar.expandToHeroIfNeeded(false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -257,12 +253,14 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         }
         binding.chartsListeningActivityHeader.headerText.setText(R.string.listening_activity)
 
-        val listeningActivitySkeleton = binding.chartsListeningActivitySkeleton.createSkeleton(
-            UiUtils.mySkeletonConfig(requireContext(), 100f)
-        ) as SkeletonLayout
+        val listeningActivitySkeleton = binding.chartsListeningActivityChart.createSkeletonWithFade(
+            binding.chartsListeningActivitySkeleton,
+            50
+        )
 
-        val tagCloudSkeleton = binding.chartsTagCloudSkeleton.createSkeleton(
-            UiUtils.mySkeletonConfig(requireContext(), 1000f)
+        val tagCloudSkeleton = binding.chartsTagCloud.createSkeletonWithFade(
+            binding.chartsTagCloudSkeleton,
+            500
         )
 
         collectLatestLifecycleFlow(
@@ -286,13 +284,9 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             if (!it && viewModel.listeningActivity.value.isNullOrEmpty()) {
                 binding.listeningActivityStatus.isVisible = false
 
-                listeningActivitySkeletonJob = viewLifecycleOwner.lifecycleScope.launch {
-                    delay(100)
-                    binding.chartsListeningActivityChart.clear()
-                    listeningActivitySkeleton.showSkeleton()
-                }
+                binding.chartsListeningActivityChart.clear()
+                listeningActivitySkeleton.showSkeleton()
             } else {
-                listeningActivitySkeletonJob?.cancel()
                 listeningActivitySkeleton.showOriginal()
             }
         }
@@ -304,18 +298,14 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             viewModel.tagCloudProgress,
         ) {
             if (it == 0.0) {
-                binding.chartsTagCloud.visibility = View.INVISIBLE
+//                binding.chartsTagCloud.visibility = View.INVISIBLE
                 binding.chartsTagCloudProgress.progress = 0
                 binding.chartsTagCloudStatus.isVisible = false
 
-                tagCloudSkeletonJob = viewLifecycleOwner.lifecycleScope.launch {
-                    delay(100)
-                    tagCloudSkeleton.showSkeleton()
-                    delay(5000)
-                    binding.chartsTagCloudProgress.show()
-                }
+                tagCloudSkeleton.showSkeleton()
+//                    delay(5000)
+//                    binding.chartsTagCloudProgress.show()
             } else if (it == 1.0) {
-                tagCloudSkeletonJob?.cancel()
                 binding.chartsTagCloudProgress.hide()
             }
 
@@ -346,8 +336,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                     viewModel.tagCloudBitmap = tagWeights.hashCode() to bitmap
 
                     binding.chartsTagCloudProgress.hide()
-                    tagCloudSkeletonJob?.cancel()
-                    tagCloudSkeleton.showOriginal()
 
                     binding.chartsTagCloud.setImageBitmap(bitmap)
 
@@ -364,7 +352,8 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                     )
                     delay(200)
 
-                    binding.chartsTagCloud.visibility = View.VISIBLE
+                    tagCloudSkeleton.showOriginal()
+//                    binding.chartsTagCloud.visibility = View.VISIBLE
                     binding.chartsTagCloudNotice.text =
                         getString(R.string.based_on, getString(R.string.artists))
                     binding.chartsTagCloudNotice.visibility = View.VISIBLE
@@ -400,7 +389,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
         val sectionFlow = viewModel.getEntries(type).filterNotNull()
 
-        val adapter = ChartsOverviewAdapter(viewLifecycleOwner, chartFrameBinding)
+        val adapter = ChartsOverviewAdapter(chartFrameBinding)
         adapter.clickListener = this
 
         val itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
@@ -632,7 +621,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
     private suspend fun getTagCloudUri(): Uri? {
         val tagCloudBitmap = viewModel.tagCloudBitmap?.second ?: return null
-        val selectedPeriod = viewModel.selectedPeriod.value ?: return null
+        val selectedPeriod = viewModel.selectedPeriod.value
 
         val footerBinding = LayoutCollageFooterBinding.inflate(layoutInflater, null, false)
 

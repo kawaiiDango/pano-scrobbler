@@ -83,10 +83,10 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener<BlockedMetadata> {
         }
 
         collectLatestLifecycleFlow(viewModel.blockedMetadataFiltered.filterNotNull()) {
-            adapter.submitList(it)
-
-            (view.parent as? ViewGroup)?.doOnPreDraw {
-                startPostponedEnterTransition()
+            adapter.submitList(it) {
+                (view.parent as? ViewGroup)?.doOnPreDraw {
+                    startPostponedEnterTransition()
+                }
             }
         }
 

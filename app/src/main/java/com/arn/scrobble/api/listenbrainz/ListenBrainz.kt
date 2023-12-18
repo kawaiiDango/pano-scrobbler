@@ -294,18 +294,18 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         return listens
     }
 
-    override suspend fun delete(track: Track): Boolean {
-        track.date ?: return false
-        val msid = track.msid ?: return true // ignore error
+    override suspend fun delete(track: Track): Result<Unit> {
+        track.date ?: return Result.failure(IllegalStateException("no date"))
+        val msid = track.msid ?: return Result.success(Unit) // ignore error
 
         return client.postResult<ListenBrainzResponse>("delete-listen") {
             contentType(ContentType.Application.Json)
             setBody(
                 ListenBrainzDeleteRequest(track.date, msid)
             )
-        }.isSuccess
+        }.map { }
 
-//            if (response.error == INVALID_METHOD) // maloja
+//            if (response.error == INVALID_METHOD) // todo maloja
 //                return true
     }
 
@@ -585,7 +585,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     ),
                     userAccountTemp.authKey,
                     userAccountTemp.apiRoot,
-                    userAccountTemp.tlsNoVerify,
                 )
 
                 Scrobblables.add(account)

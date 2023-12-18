@@ -1,6 +1,7 @@
 package com.arn.scrobble.api
 
 import com.arn.scrobble.App
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.CacheMarkerInterceptor.Companion.isFromCache
 import com.arn.scrobble.api.lastfm.CacheInterceptor
 import com.arn.scrobble.api.lastfm.FmErrorResponse
@@ -17,11 +18,13 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.ANDROID
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.post
-import io.ktor.http.Parameters
 import io.ktor.http.isSuccess
 import io.ktor.serialization.JsonConvertException
 import io.ktor.serialization.kotlinx.json.json
@@ -29,7 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import okhttp3.Cache
-import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
@@ -38,29 +40,6 @@ object Requesters {
     val spotifyRequester by lazy { SpotifyRequester() }
 
     val lastfmUnauthedRequester by lazy { LastFmUnauthedRequester() }
-
-    val okHttpClient by lazy {
-        OkHttpClient.Builder()
-            .followRedirects(false)
-            .readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .build()
-        // default timeouts are 10 seconds for each step and none for call
-    }
-
-//    fun OkHttpClient.Builder.tlsNoVerify(): OkHttpClient.Builder {
-//        val sslContext = SSLContext.getInstance("TLS")
-//        val trustAllCerts = object : X509TrustManager {
-//            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-//
-//            override fun checkClientTrusted(certs: Array<X509Certificate>, authType: String) {}
-//
-//            override fun checkServerTrusted(certs: Array<X509Certificate>, authType: String) {}
-//        }
-//
-//        sslContext.init(null, arrayOf(trustAllCerts), SecureRandom())
-//        return sslSocketFactory(sslContext.socketFactory, trustAllCerts)
-//            .hostnameVerifier { _, _ -> true }
-//    }
 
     val genericKtorClient by lazy {
         HttpClient(OkHttp) {
@@ -79,12 +58,12 @@ object Requesters {
                 json(Stuff.myJson)
             }
 
-//            if (BuildConfig.DEBUG) {
-//                install(Logging) {
-//                    logger = Logger.ANDROID
-//                    level = LogLevel.ALL
-//                }
-//            }
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    logger = Logger.ANDROID
+                    level = LogLevel.ALL
+                }
+            }
 
             install(HttpCallValidator) {
                 validateResponse { response ->
@@ -124,24 +103,16 @@ object Requesters {
         urlString: String = "",
         crossinline block: HttpRequestBuilder.() -> Unit = {}
     ) = try {
-        val resp = withContext(Dispatchers.IO) {
-            post(urlString, block).body<T>()
+        withContext(Dispatchers.IO) {
+            val resp = post(urlString, block)
+            try {
+                val body = resp.body<T>()
+                Result.success(body)
+            } catch (e: JsonConvertException) {
+                val errorResponse = resp.body<FmErrorResponse>()
+                Result.failure(FmException(errorResponse.code, errorResponse.message))
+            }
         }
-        Result.success(resp)
-    } catch (e: CancellationException) {
-        throw e
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
-
-    suspend inline fun <reified T> HttpClient.postResult(
-        urlString: String = "",
-        params: Parameters,
-    ) = try {
-        val resp = withContext(Dispatchers.IO) {
-            submitForm(urlString, params).body<T>()
-        }
-        Result.success(resp)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {

@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobblaus</item>
         <item quantity="other">%1$s scrobblausta</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s tänään</item>
+        <item quantity="other">%1$s tänään</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s kuuntelija</item>
         <item quantity="other">%1$s kuuntelijaa</item>
@@ -12,9 +16,17 @@
         <item quantity="one">%1$s päivä</item>
         <item quantity="other">%1$s päivää</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s viikko</item>
+        <item quantity="other">%1$s viikkoa</item>
+    </plurals>
     <plurals name="num_months">
         <item quantity="one">%1$s kuukausi</item>
         <item quantity="other">%1$s kuukautta</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s vuosi</item>
+        <item quantity="other">%1$s vuotta</item>
     </plurals>
     <plurals name="num_artists">
         <item quantity="one">%1$s esittäjä</item>
@@ -31,6 +43,14 @@
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d osuma</item>
         <item quantity="other">%1$d osumaa</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s muokkaus</item>
+        <item quantity="other">%1$s muokkausta</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s estetty metadata</item>
+        <item quantity="other">%1$s estettyä metadataa</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minuutti</item>
@@ -162,7 +182,7 @@
     <string name="unloved" comment="Its a noun">Tykkäys poistettu</string>
     <string name="simple_edits">Muokkaukset</string>
     <string name="grant_rec_perm">Ole hyvä ja myönnä lupa mikrofonin käyttöön</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Kaaviot</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listat</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tunnistepilvi</string>
     <string name="scrobble_from_mic" comment="Its a verb">Scrobblaa mikrofonista</string>
     <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Mikistä</string>
@@ -321,7 +341,7 @@
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personointi</string>
     <string name="pref_themes" comment="Color themes">Teemat</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix and match\nVaihtaa myös ilmoituksen värin</string>
-    <string name="pref_widget_charts">Widget aloitusnäytölle - Kaaviot</string>
+    <string name="pref_widget_charts">Widget aloitusnäytölle - Listat</string>
     <string name="pref_show_albums">Näytä albumien nimet</string>
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…scrobblauksille</string>
     <string name="pref_show_scrobble_sources">Näytä kuvakkeet sovelluksille, joista on scrobblattu</string>

@@ -12,6 +12,10 @@
         <item quantity="one">%1$s päivä</item>
         <item quantity="other">%1$s päivää</item>
     </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s kuukausi</item>
+        <item quantity="other">%1$s kuukautta</item>
+    </plurals>
     <plurals name="num_artists">
         <item quantity="one">%1$s esittäjä</item>
         <item quantity="other">%1$s esittäjää</item>
@@ -276,7 +280,7 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Kuvateksti</string>
     <string name="username" comment="last.fm Username">Käyttäjänimi</string>
     <string name="pref_master">Scrobblaa musiikkia</string>
-    <string name="pref_master_qs_hint">Voidaan laittaa päälle myös painikeruudukosta</string>
+    <string name="pref_master_qs_hint">Voidaan laittaa päälle myös laitteen painikeruudukosta</string>
     <string name="pref_master_qs_add">Lisää painikeruudukkoon</string>
     <string name="pref_master_qs_already_addded">Painike on jo lisätty painikeruudukkoon</string>
     <string name="pref_noti">Ilmoitukset</string>
@@ -394,7 +398,7 @@ Ostojasi hallinnoi Google Play. Ne on yhdistetty Google Play -tiliin, joka teki 
 • Kirjaudu sisään oston omistavalla tilillä.
 • Asenna tämä sovellus suoraan Google Playn nettisivulta.
 "</string>
-    <string name="billing_block">Estä esittäjät/kappaleet ja ohita tai mykistä automaattisesti</string>
+    <string name="billing_block">Estä esittäjiä/kappaleita ja ohita tai mykistä automaattisesti</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Kiinnitä enintään %1$d ystävää ja järjestele heidät uudelleen</string>
     <string name="billing_sharing">Poista sovelluksen nimi jaettaessa</string>
     <string name="billing_scrobble_source">Muista ja näytä sovellukset, joista scrobblasit ja hae suoraan niistä</string>

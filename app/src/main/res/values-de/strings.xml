@@ -433,4 +433,5 @@ Ihre Käufe werden von Google Play verwaltet. Sie sind mit einem Google Play-Kon
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Bis zu %1$d Freunde anheften und neu anordnen</string>
     <string name="billing_sharing">Entfernen Sie den App-Namen beim Teilen</string>
     <string name="billing_scrobble_source">Merke und sieh Apps, von denen gescrobbelt wurde und suche direkt in ihnen</string>
+    <string name="billing_regex_extract">Erstelle benutzerdefinierte Regeln zum Extrahieren von Metadaten (regex)</string>
 </resources>

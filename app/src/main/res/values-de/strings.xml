@@ -260,6 +260,10 @@
     <string name="edit_first" comment="First occurrence of a pattern">Erster</string>
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrahieren</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Benenne deine Capture-Gruppen <i>track, album, artist</i> oder <i>albumArtist</i> um diese aus anderen Feldern zu extrahieren</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">z.B. um den Interpreten und Titel zu tauschen, kannst du als Interpreten Regex-Ausdruck (?&lt;track&gt;.*) und als Titel Regex-Ausdruck (?&lt;artist&gt;.*) hinterlegen</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Deine Regex-Ausdrücke sollten mindestens die folgenden genannten Capture-Gruppen beinhalten: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Der Regex-Ausdruck enthält mehr als eine \"%1$s\" Capture-Gruppen, was nicht zulässig ist</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Ungültiger Regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Verwendete Muster:</string>
     <string name="edit_continue">Wenn gefunden, setze die Suche mit anderen Regexes fort</string>
@@ -320,6 +324,7 @@
     <string name="pref_enabled_apps_title">Apps auswählen</string>
     <string name="pref_auto_detect">Automatisch von neuen Apps scrobbeln</string>
     <string name="pref_spotify_remote">Spotify-Wiedergabe auf anderen Geräten scrobbeln</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Kontinuierliches Scrobbeln vom Mikrofon deaktivieren, wenn das Gerät Musik abspielt</string>
     <string name="pref_delay">Scrobble Verzögerung (je nachdem, was früher war)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Prozent</string>
@@ -433,5 +438,5 @@ Ihre Käufe werden von Google Play verwaltet. Sie sind mit einem Google Play-Kon
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Bis zu %1$d Freunde anheften und neu anordnen</string>
     <string name="billing_sharing">Entfernen Sie den App-Namen beim Teilen</string>
     <string name="billing_scrobble_source">Merke und sieh Apps, von denen gescrobbelt wurde und suche direkt in ihnen</string>
-    <string name="billing_regex_extract">Erstelle benutzerdefinierte Regeln zum Extrahieren von Metadaten (regex)</string>
+    <string name="billing_regex_extract">Erstellen benutzerdefinierter Regex-Regeln zum Extrahieren von Metadaten</string>
 </resources>

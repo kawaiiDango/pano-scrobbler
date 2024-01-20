@@ -76,7 +76,7 @@
     <string name="network_error">Verkkovirhe</string>
     <string name="disable_tls_verify">Älä huomioi TLS-virheitä</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobblaus ohitettu</string>
-    <string name="scrobble_ignored_save_edit">Lastfm ohitti muokkauksen todennäköisesti koska scrobblaus on liian vanha. Haluatko sen sijaan tallentaa tämän muokkauksen tulevia scrobblauksia varten?</string>
+    <string name="scrobble_ignored_save_edit">Last.fm ohitti muokkauksen todennäköisesti koska scrobblaus on liian vanha. Haluatko sen sijaan tallentaa tämän muokkauksen tulevia scrobblauksia varten?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Pakollisia kenttiä tyhjänä</string>
     <string name="artist">Esittäjä</string>
     <string name="artists">Esittäjät</string>

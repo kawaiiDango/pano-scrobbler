@@ -58,7 +58,7 @@
     </plurals>
     <plurals name="num_friends">
         <item quantity="one">%1$s ystävä</item>
-        <item quantity="other">%1$s ystävät</item>
+        <item quantity="other">%1$s ystävää</item>
     </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s odottaa</item>
@@ -69,7 +69,7 @@
     <string name="reset">Nollaa</string>
     <string name="settings">Asetukset</string>
     <string name="bug_report">Vikailmoitus</string>
-    <string name="faq">FAQ</string>
+    <string name="faq">UKK</string>
     <string name="album_art">Albumin kansi</string>
     <string name="artist_image">Esittäjän kuva</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nimeä ei voitu jäsentää</string>
@@ -99,7 +99,7 @@
     <string name="state_unscrobbled">Scrobblaus poistettu</string>
     <string name="state_unrecognised_artist">Tunnistamaton esittäjä</string>
     <string name="tap_to_edit">(Muokkaa napauttamalla)</string>
-    <string name="recently_scrobbled">Äskettäin Scrobblattu</string>
+    <string name="recently_scrobbled">Äskettäin scrobblattu</string>
     <string name="recents" comment="Short for recently scrobbled">Viimeaikaiset</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobblattu ensimmäistä kertaa: %1$s</string>
     <string name="auto" comment="automatic or default setting">Automaattinen</string>
@@ -219,7 +219,7 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Jatkuva</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Perustuu %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Ei tarpeeksi tietoja</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">Kokeile onneasi</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Kokeilen onneani</string>
     <string name="random_not_found">Kappaletta ei löytynyt</string>
     <string name="loved_track">Tykätty kappale</string>
     <string name="randomize" comment="(To randomize or fetch a new random item)">Satunnaista</string>
@@ -250,7 +250,7 @@
     <string name="dark">Tumma</string>
     <string name="system_colors">Järjestelmän värit</string>
     <string name="appwidget_alpha">Taustan läpinäkyvyys</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget päivittyy %1$s välein</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Pienoisohjelma päivittyy %1$s välein</string>
     <string name="primary_color">Ensisijainen väri</string>
     <string name="secondary_color">Toissijainen väri</string>
     <string name="tint_background" comment="Tint the background with the primary color">Värjää tausta</string>
@@ -341,7 +341,7 @@
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personointi</string>
     <string name="pref_themes" comment="Color themes">Teemat</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix and match\nVaihtaa myös ilmoituksen värin</string>
-    <string name="pref_widget_charts">Widget aloitusnäytölle - Listat</string>
+    <string name="pref_widget_charts">Pienoisohjelma aloitusnäytölle - Listat</string>
     <string name="pref_show_albums">Näytä albumien nimet</string>
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…scrobblauksille</string>
     <string name="pref_show_scrobble_sources">Näytä kuvakkeet sovelluksille, joista on scrobblattu</string>

@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s heute</item>
+        <item quantity="other">%1$s heute</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s Zuhörer</item>
         <item quantity="other">%1$s Zuhörer</item>
@@ -59,6 +63,10 @@
     <plurals name="num_friends">
         <item quantity="one">%1$s Freund</item>
         <item quantity="other">%1$s Freunde</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s ausstehend</item>
+        <item quantity="other">%1$s ausstehend</item>
     </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>

@@ -80,16 +80,18 @@ object Scrobblables {
         synchronized(all) {
             all.clear()
             all.addAll(
-                prefs.scrobbleAccounts.map {
-                    when (it.type) {
-                        AccountType.LASTFM -> Lastfm(it)
-                        AccountType.LIBREFM,
-                        AccountType.GNUFM -> GnuFm(it)
+                prefs.scrobbleAccounts
+                    .distinctBy { it.type }
+                    .map {
+                        when (it.type) {
+                            AccountType.LASTFM -> Lastfm(it)
+                            AccountType.LIBREFM,
+                            AccountType.GNUFM -> GnuFm(it)
 
-                        AccountType.LISTENBRAINZ,
-                        AccountType.CUSTOM_LISTENBRAINZ -> ListenBrainz(it)
+                            AccountType.LISTENBRAINZ,
+                            AccountType.CUSTOM_LISTENBRAINZ -> ListenBrainz(it)
+                        }
                     }
-                }
             )
         }
 
@@ -141,7 +143,8 @@ object Scrobblables {
     }
 
     fun add(userAccount: UserAccountSerializable) {
-        App.prefs.scrobbleAccounts += userAccount
+        App.prefs.scrobbleAccounts =
+            App.prefs.scrobbleAccounts.filterNot { it.type == userAccount.type } + userAccount
         updateScrobblables()
     }
 

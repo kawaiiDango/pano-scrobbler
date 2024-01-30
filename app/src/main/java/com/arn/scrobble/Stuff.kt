@@ -190,6 +190,7 @@ object Stuff {
         "com.liskovsoft.smarttubetv.beta",
         "com.liskovsoft.smarttubetv",
         "app.revanced.android.youtube",
+        "app.rvx.android.youtube",
 
         "com.google.android.apps.youtube.music",
         "com.vanced.android.apps.youtube.music",
@@ -265,7 +266,7 @@ object Stuff {
         }
 
     val isWindows11 by lazy { Build.BOARD == "windows" }
-    
+
     val isTestLab by lazy {
         Settings.System.getString(
             App.context.contentResolver,

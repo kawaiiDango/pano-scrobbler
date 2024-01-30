@@ -48,7 +48,6 @@ import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Period
 import de.umass.lastfm.ResponseBuilder
-import de.umass.lastfm.Result
 import de.umass.lastfm.Session
 import de.umass.lastfm.Tag
 import de.umass.lastfm.Track
@@ -296,7 +295,7 @@ class LFMRequester(
                     return@mapConcurrently
 
                 // caller.call is non nullable
-                val result: Result = try {
+                val result: de.umass.lastfm.Result = try {
                     val caller = Caller.getInstance()
                     when (musicEntry) {
                         is Artist -> {
@@ -898,6 +897,8 @@ class LFMRequester(
                         .getRegexEditsDao()
                         .performRegexReplace(scrobbleData, trackInfo.packageName)
 
+                    val scrobbleDataBeforeParseAndLookup = ScrobbleData(scrobbleData)
+
                     if (parseTitle) { // youtube
                         if (edit == null && !regexEdits.values.any { it.isNotEmpty() }) { // do not parse if an edit is found
                             val (parsedArtist, parsedTitle) = MetadataUtils.parseYoutubeTitle(
@@ -952,7 +953,6 @@ class LFMRequester(
 
                         if (!isActive)
                             return@coroutineScope
-                        val scrobbleDataBeforeAutocorrect = ScrobbleData(scrobbleData)
                         if (track != null) {
                             if (scrobbleData.duration == -1)
                                 scrobbleData.duration = track.duration
@@ -984,18 +984,17 @@ class LFMRequester(
                                 )
                         if (correctedArtist != null && scrobbleData.album == "")
                             scrobbleData.artist = correctedArtist
+                    }
 
-                        if (scrobbleDataBeforeAutocorrect != scrobbleData) {
+                    if (scrobbleDataBeforeParseAndLookup != scrobbleData) {
+                        edit = editsDao.performEdit(scrobbleData, false)
+
+                        regexEdits = PanoDb.db
+                            .getRegexEditsDao()
+                            .performRegexReplace(scrobbleData, trackInfo.packageName)
+
+                        if (regexEdits.values.any { it.isNotEmpty() })
                             edit = editsDao.performEdit(scrobbleData, false)
-
-                            regexEdits = PanoDb.db
-                                .getRegexEditsDao()
-                                .performRegexReplace(scrobbleData, trackInfo.packageName)
-
-                            if (regexEdits.values.any { it.isNotEmpty() })
-                                edit = editsDao.performEdit(scrobbleData, false)
-
-                        }
                     }
 
                     if (scrobbleDataOrig != scrobbleData && shouldBlockScrobble())

@@ -95,6 +95,7 @@
     <string name="reset">Скинути</string>
     <string name="settings">Налаштувати</string>
     <string name="bug_report">Сповістити про помилку</string>
+    <string name="faq">ЧаПи</string>
     <string name="album_art">Обкладинка альбому</string>
     <string name="artist_image">Зображення виконавця</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не вдалося проаналізувати дані</string>
@@ -131,6 +132,9 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Майже тут…</string>
     <string name="music_players">Музичні програвачі</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Інші додатки</string>
+    <string name="choose_apps">Вибрати застосунки</string>
+    <string name="choose_an_app">Обрати застосунок</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Застосунки</string>
     <string name="offline">Офлайн. Дані не оновлюються</string>
     <string name="unavailable_offline">Недоступно в офлайн режимі</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервіси</string>
@@ -143,6 +147,8 @@
     <string name="pinch_to_zoom">Щипніть для збільшення</string>
     <string name="more_info">Детальніше</string>
     <string name="more" comment="More options menu in short">Більше</string>
+    <string name="learn" comment="(Learn java regex syntax)">Детальніше</string>
+    <string name="hide">Сховати</string>
     <string name="rank_change" comment="%1= delta change">Зміна рангу: %s</string>
     <string name="rank_change_no_change">Без змін</string>
     <string name="rank_change_new">Не скроблено за попередній період</string>
@@ -174,6 +180,8 @@
     <string name="delete">Видалити</string>
     <string name="delete_all">Видалити всі</string>
     <string name="love" comment="Love/like a song">Вподобати</string>
+    <string name="hate" comment="Hate or dislike a song">Огидка</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Не огидно</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Скасувати вподобання</string>
     <string name="pending_scrobbles">Очікуючі Скробли</string>
     <string name="pending_scrobble">Очікуючі Скробли</string>
@@ -215,6 +223,7 @@
     <string name="sort">Сортувати</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Стрибок у часі</string>
     <string name="my_scrobbles">Мої скробли</string>
+    <string name="their_scrobbles">Їх скробли</string>
     <string name="listeners">Слухачі</string>
     <string name="scrobbles">Скробли</string>
     <string name="collapse" comment="(view only a few items)">Згорнути</string>
@@ -231,6 +240,7 @@
     <string name="months">Місяці</string>
     <string name="years" comment="For the charts menu which displays year by year">Роки</string>
     <string name="charts_overall">Всього</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Статистика прослуховувань</string>
     <string name="charts_no_data">Немає даних за цей період</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Власний</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Безперервний</string>
@@ -272,12 +282,20 @@
     <string name="secondary_color">Додатковий колір</string>
     <string name="tint_background" comment="Tint the background with the primary color">Відтінок фону</string>
     <string name="random_theme">Перемішати при кожному запуску</string>
+    <string name="edit_name" comment="name for regex pattern">Назва</string>
     <string name="edit_regex">Шаблон регулярного виразу</string>
     <string name="edit_regex_replacement">Заміна регулярного виразу</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Поля</string>
     <string name="edit_replace">Заміна</string>
     <string name="edit_first" comment="First occurrence of a pattern">Перший</string>
     <string name="edit_all" comment="All occurrences of a pattern">Усі</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Розпакувати</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Назвіть групи запису <i>track, album, artist</i> або <i>albumArtist</i>, щоб витягти їх з інших полів</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">напр. Щоб змінити виконавця та назву, потрібно поставити regex виконавця як (?&lt;track&gt;.*), і regex композиції як (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Ваші regex\'и повинні мати принаймні ці іменовані групи: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Ваші regex\'и містять більше \"%1$s\" груп, що забороняється</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Неприпустимий regex: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Використані шаблони:</string>
     <string name="edit_continue">Якщо знайдено, продовжуйте співпадати з іншими регулярними виразами</string>
     <string name="edit_case_sensitive">З урахуванням регістру</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Перевірка</string>
@@ -294,6 +312,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Дії плеєра</string>
     <string name="skip" comment="skip to next track">Пропустити</string>
     <string name="mute" comment="mute the music">Вимкнути звук</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ігнорувати</string>
     <string name="block" comment="block the track from scrobbling">Заблокувати</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Приховані теги</string>
     <string name="pin" comment="pin a friend to the top">Закріпити</string>
@@ -308,6 +327,7 @@
     <string name="scrobbler_off">Скроблер вимкнено</string>
     <string name="scrobbler_on">Скроблер увімкнений</string>
     <string name="acoustic" comment="(Acoustic music)">Акустична</string>
+    <string name="instrumental">Інструментальна</string>
     <string name="energetic" comment="(Energetic music)">Енергетика</string>
     <string name="danceable">Танцювальність</string>
     <string name="valence" comment="(Musical positivity)">Позитивність</string>
@@ -334,6 +354,7 @@
     <string name="pref_enabled_apps_title">Виберіть додатки</string>
     <string name="pref_auto_detect">Автоматично скробблити з нових додатків</string>
     <string name="pref_spotify_remote">Скробблити Spotify, коли він грає на інших пристроях</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Вимкнути безперервний скроблінг з мікрофона, коли пристрій відтворює музику</string>
     <string name="pref_delay">Затримка скроблінгу (яка є раніше)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Хвилини</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Відсотки</string>
@@ -346,6 +367,7 @@
     <string name="pref_user_label" comment="(Like username)">Користувач</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентифікації</string>
     <string name="api_url" comment="For Listenbrainz">URL-адреса API</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Ви можете знайти ваш токен автентифікації на: %1$s</string>
     <string name="pref_now_playing">Показати, що зараз грає</string>
     <string name="pref_fetch_album">Отримати відсутні дані альбомів з lastFM</string>
     <string name="pref_locale">Мови</string>
@@ -391,6 +413,7 @@
     <string name="pref_intents">Інтенти для Tasker та інших додатків</string>
     <string name="copied">Скопійовано!</string>
     <string name="lastfm_reauth">Вам потрібно перезапустити автентифікацію для редагування або видалення скробблів</string>
+    <string name="custom_listenbrainz">Власний Listenbrainz</string>
     <string name="failed_encode_url">Не вдалося застосувати URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Перевірити %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Спеціальний доступ до програми &gt; Повідомлень &gt; %1$s</string>
@@ -416,6 +439,7 @@
     <string name="submitting_loves" formatted="true">Відправка вподобайок, %1$d залишилось</string>
     <string name="pending_batch" comment="For pending scrobbles">Відправка пакета</string>
     <string name="webview_error">Не вдалося завантажити сторінку (ваш інтернет працює?)</string>
+    <string name="bar_chart">Гістограма</string>
     <string name="cleared_disabled_apps">Видалені вимкнені програми</string>
     <string name="fix_it_title">Можливі виправлення</string>
     <string name="fix_it_startup_title">Економія енергії, менеджер запусків</string>
@@ -444,4 +468,5 @@
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закріпити до %1$d друзів і змінити їх порядок</string>
     <string name="billing_sharing">Видаляти ім\'я застосунку при поширенні</string>
     <string name="billing_scrobble_source">Запам\'ятати та переглянути програми, з яких ви скробблили, і шукати прямо в них</string>
+    <string name="billing_regex_extract">Записати правила вилучення користувацьких метаданих використовуючи regex</string>
 </resources>

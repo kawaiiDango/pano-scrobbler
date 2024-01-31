@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s heute</item>
+        <item quantity="other">%1$s heute</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s Zuhörer</item>
         <item quantity="other">%1$s Zuhörer</item>
@@ -60,6 +64,10 @@
         <item quantity="one">%1$s Freund</item>
         <item quantity="other">%1$s Freunde</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s ausstehend</item>
+        <item quantity="other">%1$s ausstehend</item>
+    </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="reset">Zurücksetzen</string>
@@ -102,6 +110,8 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Fast geschafft…</string>
     <string name="music_players">Musik-Player</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
+    <string name="choose_apps">Apps auswählen</string>
+    <string name="choose_an_app">App auswählen</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Apps</string>
     <string name="offline">Offline. Angezeigte Daten sind nicht aktuell</string>
     <string name="unavailable_offline">Nicht verfügbar im Offline-Modus</string>
@@ -258,6 +268,12 @@
     <string name="edit_first" comment="First occurrence of a pattern">Erster</string>
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrahieren</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Benenne deine Capture-Gruppen <i>track, album, artist</i> oder <i>albumArtist</i> um diese aus anderen Feldern zu extrahieren</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">z.B. um den Interpreten und Titel zu tauschen, kannst du als Interpreten Regex-Ausdruck (?&lt;track&gt;.*) und als Titel Regex-Ausdruck (?&lt;artist&gt;.*) hinterlegen</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Deine Regex-Ausdrücke sollten mindestens die folgenden genannten Capture-Gruppen beinhalten: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Der Regex-Ausdruck enthält mehr als eine \"%1$s\" Capture-Gruppen, was nicht zulässig ist</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Ungültiger Regex: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Verwendete Muster:</string>
     <string name="edit_continue">Wenn gefunden, setze die Suche mit anderen Regexes fort</string>
     <string name="edit_case_sensitive">Unterscheidet Groß-/Kleinschreibung</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
@@ -274,6 +290,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Player-Aktionen</string>
     <string name="skip" comment="skip to next track">Überspringen</string>
     <string name="mute" comment="mute the music">Stummschalten</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorieren</string>
     <string name="block" comment="block the track from scrobbling">Blockieren</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Versteckte Tags</string>
     <string name="pin" comment="pin a friend to the top">Anpinnen</string>
@@ -315,10 +332,12 @@
     <string name="pref_enabled_apps_title">Apps auswählen</string>
     <string name="pref_auto_detect">Automatisch von neuen Apps scrobbeln</string>
     <string name="pref_spotify_remote">Spotify-Wiedergabe auf anderen Geräten scrobbeln</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Kontinuierliches Scrobbeln vom Mikrofon deaktivieren, wenn das Gerät Musik abspielt</string>
     <string name="pref_delay">Scrobble Verzögerung (je nachdem, was früher war)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Prozent</string>
     <string name="pref_logout">Abmelden</string>
+    <string name="sure_tap_again">Sicher? Nochmals antippen</string>
     <string name="pref_login">Anmelden</string>
     <string name="pref_about" comment="Info about this app">Über</string>
     <string name="pref_privacy_policy">Datenschutzrichtlinie</string>
@@ -326,12 +345,14 @@
     <string name="pref_user_label" comment="(Like username)">Benutzer</string>
     <string name="pref_token_label" comment="For Listenbrainz">Authentifizierungstoken</string>
     <string name="api_url" comment="For Listenbrainz">API-URL</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Du findest deinen Authentifizierungs-Token unter: %1$s</string>
     <string name="pref_now_playing">\"Scrobbelt gerade\" senden</string>
     <string name="pref_fetch_album">Fehlende Albumdaten von lastFM abrufen</string>
     <string name="pref_locale">Sprachen</string>
     <string name="pref_change_locale">Sprache ändern</string>
     <string name="pref_crashlytics_enabled">Fehler automatisch melden</string>
     <string name="pref_misc">Sonst.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Wochenbeginn</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importieren &amp; Exportieren</string>
     <string name="pref_export">Exportieren</string>
     <string name="pref_export_desc">Sichert Einstellungen, Bearbeitungen und Sperrliste. Speichert keine Logins aus Sicherheitsgründen. Nützlich um zwischen Geräten zu wechseln oder mit Freunden zu teilen.</string>
@@ -396,6 +417,7 @@
     <string name="submitting_loves" formatted="true">Sende Favoriten, %1$d verbleibend</string>
     <string name="pending_batch" comment="For pending scrobbles">Übermittlung mehrerer</string>
     <string name="webview_error">Die Seite konnte nicht geladen werden (funktioniert Ihre Internetverbindung?)</string>
+    <string name="bar_chart">Säulendiagramm</string>
     <string name="cleared_disabled_apps">Deaktivierte Apps entfernt</string>
     <string name="fix_it_title">Mögliche Korrekturen</string>
     <string name="fix_it_startup_title">Stromsparer / Start-Manager</string>
@@ -424,4 +446,5 @@ Ihre Käufe werden von Google Play verwaltet. Sie sind mit einem Google Play-Kon
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Bis zu %1$d Freunde anheften und neu anordnen</string>
     <string name="billing_sharing">Entfernen Sie den App-Namen beim Teilen</string>
     <string name="billing_scrobble_source">Merke und sieh Apps, von denen gescrobbelt wurde und suche direkt in ihnen</string>
+    <string name="billing_regex_extract">Erstellen benutzerdefinierter Regex-Regeln zum Extrahieren von Metadaten</string>
 </resources>

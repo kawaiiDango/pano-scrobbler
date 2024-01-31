@@ -37,7 +37,7 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() {
-        rule.collect("com.arn.scrobble") {
+        rule.collect("com.arn.scrobble", includeInStartupProfile = true) {
             // This block defines the app's critical user journey. Here we are interested in
             // optimizing for app startup. But you can also navigate and scroll
             // through your most important UI.
@@ -47,7 +47,7 @@ class BaselineProfileGenerator {
             startActivityAndWait()
             device.setOrientationPortrait()
             loginIfNeeded()
-            Thread.sleep(1500)
+            Thread.sleep(2000)
             switchTabs()
             Thread.sleep(1000)
 

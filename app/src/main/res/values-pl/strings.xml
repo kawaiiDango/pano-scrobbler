@@ -95,6 +95,7 @@
     <string name="reset">Resetuj</string>
     <string name="settings">Ustawienia</string>
     <string name="bug_report">Zgłoś błąd</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Okładka albumu</string>
     <string name="artist_image">Obraz artysty</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nie udało się przetworzyć tytułu</string>
@@ -131,6 +132,9 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Prawie gotowe…</string>
     <string name="music_players">Odtwarzacze muzyki</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Inne aplikacje</string>
+    <string name="choose_apps">Wybierz aplikacje</string>
+    <string name="choose_an_app">Wybierz aplikację</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikacje</string>
     <string name="offline">Offline. Dane nie są aktualne</string>
     <string name="unavailable_offline">Niedostępne w trybie offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Usługi</string>
@@ -142,6 +146,9 @@
     <string name="grid_size">Zmień rozmiar siatki</string>
     <string name="pinch_to_zoom">Uszczypnij, aby powiększyć</string>
     <string name="more_info">Więcej informacji</string>
+    <string name="more" comment="More options menu in short">Więcej</string>
+    <string name="learn" comment="(Learn java regex syntax)">Naucz się</string>
+    <string name="hide">Ukryj</string>
     <string name="rank_change" comment="%1= delta change">Zmiana rangi: %s</string>
     <string name="rank_change_no_change">Bez zmian</string>
     <string name="rank_change_new">Nie scrobblowano w poprzednim okresie</string>
@@ -151,6 +158,7 @@
     <string name="library" comment="search within the library">Biblioteka</string>
     <string name="global" comment="search globally across lastfm">Globalnie</string>
     <string name="reindex">Szybki indeks</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeksuj swoje scrobble</string>
     <string name="full_index">Pełny indeks</string>
     <string name="take_long_time">Może to zająć dużo czasu</string>
     <string name="full_index_desc">Użyj tego tylko wtedy, gdy edytowałeś lub usunąłeś scrobble ze strony internetowej.</string>
@@ -162,6 +170,7 @@
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Wykryto %1$s</string>
     <string name="new_player_prompt">Scrobblować z tej aplikacji?</string>
     <string name="no_scrobbles">Jeszcze nie ma tutaj utworów…</string>
+    <string name="no_friends">Nikogo jeszcze nie obserwujesz…</string>
     <string name="channel_err" comment="Its a noun">Błąd scrobblowania</string>
     <string name="new_app">Nowa aplikacja</string>
     <string name="no_apps_enabled">Brak włączonych aplikacji</string>
@@ -169,6 +178,7 @@
     <string name="show_all">Pokaż wszystko</string>
     <string name="edit">Edytuj</string>
     <string name="delete">Usuń</string>
+    <string name="delete_all">Usuń wszystko</string>
     <string name="love" comment="Love/like a song">Polub</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Usuń z polubionych</string>
     <string name="pending_scrobbles">Oczekujące Scrobble</string>

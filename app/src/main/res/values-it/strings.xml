@@ -73,6 +73,7 @@
     <string name="reset">Ripristina</string>
     <string name="settings">Configura</string>
     <string name="bug_report">Segnalazione Bug</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Copertina album</string>
     <string name="artist_image">Foto artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
@@ -109,6 +110,9 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ci siamo quasi…</string>
     <string name="music_players">Lettori musicali</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altre app</string>
+    <string name="choose_apps">Scegli le app</string>
+    <string name="choose_an_app">Scegli un\'app</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">App</string>
     <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
     <string name="unavailable_offline">Non disponibile offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servizi</string>
@@ -121,6 +125,8 @@
     <string name="pinch_to_zoom">Pizzica per ingrandire</string>
     <string name="more_info">Altre info</string>
     <string name="more" comment="More options menu in short">Altro</string>
+    <string name="learn" comment="(Learn java regex syntax)">Impara</string>
+    <string name="hide">Nascondi</string>
     <string name="rank_change" comment="%1= delta change">Spostamento in classifica: %s</string>
     <string name="rank_change_no_change">Nessuno spostamento</string>
     <string name="rank_change_new">Nessuno scrobbling nel periodo precedente</string>
@@ -130,6 +136,7 @@
     <string name="library" comment="search within the library">Libreria</string>
     <string name="global" comment="search globally across lastfm">Globale</string>
     <string name="reindex">Indice rapido</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indicizza i tuoi scrobble</string>
     <string name="full_index">Indice completo</string>
     <string name="take_long_time">Potrebbe richiedere molto tempo</string>
     <string name="full_index_desc">Usa solo in caso tu abbia modificato o cancellato scrobbles dal sito web.</string>
@@ -149,7 +156,10 @@
     <string name="show_all">Mostra tutti</string>
     <string name="edit">Modifica</string>
     <string name="delete">Elimina</string>
+    <string name="delete_all">Elimina tutto</string>
     <string name="love" comment="Love/like a song">Aggiungi preferito</string>
+    <string name="hate" comment="Hate or dislike a song">Aggiungi detestato</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Rimuovi detestato</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Rimuovi preferito</string>
     <string name="pending_scrobbles">Scrobbling in attesa</string>
     <string name="pending_scrobble">Scrobbling in attesa</string>
@@ -191,6 +201,7 @@
     <string name="sort">Ordina</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporale</string>
     <string name="my_scrobbles">I miei scrobbling</string>
+    <string name="their_scrobbles">I loro scrobble</string>
     <string name="listeners">Ascoltatori</string>
     <string name="scrobbles">Scrobbling</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
@@ -207,6 +218,7 @@
     <string name="months">Mesi</string>
     <string name="years" comment="For the charts menu which displays year by year">Anni</string>
     <string name="charts_overall">Generale</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Attività di ascolto</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personalizzato</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continuo</string>
@@ -248,12 +260,20 @@
     <string name="secondary_color">Colore secondario</string>
     <string name="tint_background" comment="Tint the background with the primary color">Colore sfondo</string>
     <string name="random_theme">Casuale a ogni avvio</string>
+    <string name="edit_name" comment="name for regex pattern">Nome descrittivo</string>
     <string name="edit_regex">Modello dell\'Espressione Regolare (regex)</string>
     <string name="edit_regex_replacement">Sostituzione del regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Campi</string>
     <string name="edit_replace">Sostituisci</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tutte</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Estrai</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Dai un nome ai tuoi gruppi di acquisizione <i>track, album, artist</i> o <i>albumArtist</i> per estrarli da altri campi</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">es. Per scambiare l\'artista con il titolo, imposteresti il regex artista come (?&lt;track&gt;.*) e il regex della traccia come (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">I tuoi regex dovrebbero almeno avere questi gruppi di acquisizione: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">I tuoi regex contengono più di un gruppo di acquisizione \"%1$s\", il che non è consentito</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex non valido: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Pattern utilizzati:</string>
     <string name="edit_continue">Se trovato, continua ad abbinare altri regex</string>
     <string name="edit_case_sensitive">Differenzia maiuscole/minuscole</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Prova</string>
@@ -270,6 +290,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Comandi lettore musicale</string>
     <string name="skip" comment="skip to next track">Salta</string>
     <string name="mute" comment="mute the music">Silenzia</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignora</string>
     <string name="block" comment="block the track from scrobbling">Blocca</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tag nascoste</string>
     <string name="pin" comment="pin a friend to the top">Fissa in primo piano</string>
@@ -311,10 +332,12 @@
     <string name="pref_enabled_apps_title">Scegli app</string>
     <string name="pref_auto_detect">Scrobble automatico da nuove app</string>
     <string name="pref_spotify_remote">Scrobble di Spotify da altri dispositivi</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Disabilita lo scrobbling continuo dal microfono quando il dispositivo sta riproducendo musica</string>
     <string name="pref_delay">Ritardo dello scrobbling (quello che viene prima)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuti</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentuale</string>
     <string name="pref_logout">Esci</string>
+    <string name="sure_tap_again">Confermi? Tocca di nuovo</string>
     <string name="pref_login">Accedi</string>
     <string name="pref_about" comment="Info about this app">Informazioni</string>
     <string name="pref_privacy_policy">Informativa sulla privacy</string>
@@ -322,12 +345,14 @@
     <string name="pref_user_label" comment="(Like username)">Utente</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token di autenticazione</string>
     <string name="api_url" comment="For Listenbrainz">URL dell\'API</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Puoi trovare il tuo token di autenticazione su: %1$s</string>
     <string name="pref_now_playing">Invia scrobbling in corso</string>
     <string name="pref_fetch_album">Recupera i dati dell\'album mancanti da lastFM</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
     <string name="pref_misc">Varie</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La settimana inizia da</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importazione &amp; esportazione</string>
     <string name="pref_export">Esporta</string>
     <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
@@ -366,6 +391,7 @@
     <string name="pref_intents">Intenti per Tasker ecc.</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
+    <string name="custom_listenbrainz">Server Listenbrainz personale</string>
     <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
@@ -391,6 +417,7 @@
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
+    <string name="bar_chart">Grafico a barre</string>
     <string name="cleared_disabled_apps">App disabilitate cancellate</string>
     <string name="fix_it_title">Possibili soluzioni</string>
     <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
@@ -419,4 +446,5 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fissa in primo piano e riordina gli amici (fino a %1$d)</string>
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
     <string name="billing_scrobble_source">Ricorda e vedi le app da cui hai effettuato lo scrobble, e cerca direttamente in queste</string>
+    <string name="billing_regex_extract">Scrivi regole di estrazione dei metadati personalizzate usando regex</string>
 </resources>

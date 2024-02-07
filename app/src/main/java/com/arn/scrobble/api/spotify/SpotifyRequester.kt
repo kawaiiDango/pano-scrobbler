@@ -70,7 +70,7 @@ class SpotifyRequester {
                         authMutex.withLock {
                             if (prefs.spotifyAccessTokenExpires >= System.currentTimeMillis())
                                 return@withLock
-                            
+
                             withContext(Dispatchers.IO) {
                                 client.post("https://accounts.spotify.com/api/token") {
                                     markAsRefreshTokenRequest()
@@ -143,7 +143,7 @@ class SpotifyRequester {
     suspend fun getSpotifyTrack(track: Track, similarityThreshold: Float = 1f): SpotifyTrack? {
         val response = withContext(Dispatchers.IO) {
             client.get("https://api.spotify.com/v1/search") {
-                parameter("q", "${track.artist} ${track.name}")
+                parameter("q", "${track.artist.name} ${track.name}")
                 parameter("type", "track")
                 parameter("limit", 1)
             }

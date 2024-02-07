@@ -122,7 +122,7 @@ class SessListener(
     fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later
         // lollipop requires reflection, and i dont want to use that
-        if (mutedHash == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && audioManager.isStreamMute(
+        if (mutedHash == null && audioManager.isStreamMute(
                 AudioManager.STREAM_MUSIC
             )
         )
@@ -130,17 +130,12 @@ class SessListener(
 
         val callback = findCallbackByHash(hash)
         if (callback != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                audioManager.adjustStreamVolume(
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.ADJUST_MUTE,
-                    0
-                )
-                Stuff.log("mute: done")
-
-            } else {
-                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true)
-            }
+            audioManager.adjustStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_MUTE,
+                0
+            )
+            Stuff.log("mute: done")
 
             mutedHash = hash
             callback.isMuted = true
@@ -437,16 +432,12 @@ class SessListener(
 
         private fun unmute(clearMutedHash: Boolean) {
             if (mutedHash != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    audioManager.adjustStreamVolume(
-                        AudioManager.STREAM_MUSIC,
-                        AudioManager.ADJUST_UNMUTE,
-                        0
-                    )
-                    Stuff.log("unmute: done")
-                } else {
-                    audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false)
-                }
+                audioManager.adjustStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.ADJUST_UNMUTE,
+                    0
+                )
+                Stuff.log("unmute: done")
                 if (clearMutedHash)
                     mutedHash = null
                 isMuted = false

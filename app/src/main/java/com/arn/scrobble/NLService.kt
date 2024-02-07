@@ -91,7 +91,6 @@ class NLService : NotificationListenerService() {
         if (BuildConfig.DEBUG)
             toast(R.string.scrobbler_on)
         super.onCreate()
-//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
         init()
     }
 

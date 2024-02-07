@@ -1,6 +1,7 @@
 package com.arn.scrobble.charts
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -26,9 +27,7 @@ import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.getSingle
-import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -37,11 +36,13 @@ import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
 import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.getSelectedItemPosition
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.getSingle
+import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.ChipGroup
 import kotlinx.coroutines.Dispatchers
@@ -558,8 +559,9 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         binding.collageSaveButton.visibility = View.VISIBLE
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 }

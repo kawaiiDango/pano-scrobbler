@@ -114,8 +114,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         val cm = ContextCompat.getSystemService(this, ConnectivityManager::class.java)!!
         val nr = NetworkRequest.Builder().apply {
             addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         }.build()
 
         cm.registerNetworkCallback(nr, object : ConnectivityManager.NetworkCallback() {

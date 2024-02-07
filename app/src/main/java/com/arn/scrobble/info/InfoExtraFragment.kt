@@ -1,5 +1,6 @@
 package com.arn.scrobble.info
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -261,9 +262,10 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {

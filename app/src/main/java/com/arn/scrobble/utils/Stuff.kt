@@ -27,7 +27,6 @@ import android.os.Parcelable
 import android.os.Process
 import android.provider.MediaStore
 import android.provider.Settings
-import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.format.DateUtils
 import android.view.InputDevice
 import androidx.annotation.Keep
@@ -143,9 +142,6 @@ object Stuff {
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
     const val LISTENBRAINZ_API_ROOT = "https://api.listenbrainz.org/"
 
-    val NLS_SETTINGS = if (Build.VERSION.SDK_INT > 21)
-        ACTION_NOTIFICATION_LISTENER_SETTINGS
-    else "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
     val LASTFM_AUTH_CB_URL =
         "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm"
     const val LIBREFM_AUTH_CB_URL =
@@ -195,6 +191,7 @@ object Stuff {
         "com.google.android.apps.youtube.music",
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
+        "app.rvx.android.youtube",
 
         "org.schabi.newpipe",
         PACKAGE_YMUSIC,
@@ -253,19 +250,12 @@ object Stuff {
         )
     }
 
-    val updateCurrentOrImmutable: Int
-        get() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            return PendingIntent.FLAG_UPDATE_CURRENT
-        }
+    val updateCurrentOrImmutable = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
-    val updateCurrentOrMutable: Int
-        get() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-            return PendingIntent.FLAG_UPDATE_CURRENT
-        }
+    val updateCurrentOrMutable =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        else PendingIntent.FLAG_UPDATE_CURRENT
 
     val isWindows11 by lazy { Build.BOARD == "windows" }
 
@@ -447,13 +437,7 @@ object Stuff {
 
     fun getBrowsers(pm: PackageManager): List<ResolveInfo> {
         val browsersIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
-        return pm.queryIntentActivities(
-            browsersIntent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                PackageManager.MATCH_ALL
-            else
-                0
-        )
+        return pm.queryIntentActivities(browsersIntent, PackageManager.MATCH_ALL)
     }
 
     fun getBrowsersAsStrings(pm: PackageManager) =

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -32,7 +33,6 @@ import com.arn.scrobble.databinding.ContentOnboardingStepperBinding
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.postRequestFocus
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
@@ -131,7 +131,7 @@ class OnboardingFragment : Fragment() {
                         )
                     )
                 else
-                    Intent(Stuff.NLS_SETTINGS)
+                    Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS)
 
                 if (requireContext().packageManager.resolveActivity(
                         intent,
@@ -233,7 +233,7 @@ class OnboardingFragment : Fragment() {
         binding.buttonService.setOnClickListener {
             LoginFlows(findNavController()).go(AccountType.LASTFM)
         }
-        binding.buttonService.postRequestFocus()
+        binding.buttonService.post { binding.buttonService.requestFocus() }
 
         binding.buttonServiceChooser.setOnClickListener { v ->
             val popup = PopupMenu(binding.root.context, v)

@@ -188,7 +188,7 @@ class FriendsAdapter(
 
                 binding.friendsPic
                     .load(userImgUrl) {
-                        placeholder(R.drawable.vd_placeholder_user)
+                        placeholder(R.drawable.color_image_loading)
                         error(InitialsDrawable(itemView.context, item.user))
                         allowHardware(false)
                         if (!wasCached)

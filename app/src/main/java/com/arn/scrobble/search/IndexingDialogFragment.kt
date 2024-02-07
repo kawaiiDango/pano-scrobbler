@@ -1,6 +1,7 @@
 package com.arn.scrobble.search
 
 import android.animation.ObjectAnimator
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,9 +44,10 @@ class IndexingDialogFragment : BottomSheetDialogFragment() {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded(true)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it, true)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

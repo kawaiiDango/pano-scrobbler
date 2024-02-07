@@ -1,5 +1,6 @@
 package com.arn.scrobble.info
 
+import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -126,8 +127,9 @@ class TagInfoFragment : BottomSheetDialogFragment() {
         viewModel.loadInfoIfNeeded(tag)
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 }

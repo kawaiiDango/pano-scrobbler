@@ -55,7 +55,7 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
         BuildConfig.DEBUG ||
-                (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 25) ||
+                (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
                 (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
     }
 

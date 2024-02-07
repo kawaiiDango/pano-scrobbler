@@ -286,7 +286,7 @@ class RandomFragment : ChartsPeriodFragment() {
 
         binding.randomBigImg.load(imageReq) {
             allowHardware(false) // because crash on oreo
-            placeholder(R.drawable.vd_wave_simple_filled)
+            placeholder(R.drawable.color_image_loading)
             error(R.drawable.vd_wave_simple_filled)
         }
     }

@@ -267,7 +267,7 @@ open class ChartsAdapter(
             )
 
             binding.chartImg.load(imgUrl ?: entry) {
-                placeholder(R.drawable.vd_wave_simple_filled)
+                placeholder(R.drawable.color_image_loading)
                 error(errorDrawable)
             }
         }

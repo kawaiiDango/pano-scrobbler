@@ -2,11 +2,10 @@ package com.arn.scrobble.ui
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Dialog
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
@@ -44,6 +43,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updateLayoutParams
@@ -83,6 +83,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
@@ -389,7 +390,7 @@ object UiUtils {
                     }
                 })
                 anim?.start()
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && anim is AnimatedVectorDrawable && !anim.isRunning) {
+            } else if (anim is AnimatedVectorDrawable && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
                         if (drawable?.isVisible == true)
@@ -484,18 +485,6 @@ object UiUtils {
         return ContextCompat.getColor(c, colorId)
     }
 
-    // https://stackoverflow.com/a/32973351/1067596
-    private fun Context.getActivity(): Activity? {
-        var context: Context? = this
-        while (context is ContextWrapper) {
-            if (context is Activity) {
-                return context
-            }
-            context = context.baseContext
-        }
-        return null
-    }
-
     fun View.setupInsets(
         marginMode: Boolean = this !is RecyclerView &&
                 this !is ScrollView && this !is NestedScrollView,
@@ -564,12 +553,16 @@ object UiUtils {
         activity.binding.ctl.title = title
     }
 
-    fun BottomSheetDialogFragment.expandIfNeeded(force: Boolean = false) {
-        val bottomSheetView =
-            dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-        if (view?.isInTouchMode == false || Stuff.hasMouse || force)
-            BottomSheetBehavior.from(bottomSheetView).state =
-                BottomSheetBehavior.STATE_EXPANDED
+    fun BottomSheetDialogFragment.expandIfNeeded(dialog: Dialog, force: Boolean = false) {
+        dialog.setOnShowListener {
+            val bottomSheetDialog = it as BottomSheetDialog
+            if (view?.isInTouchMode == false || Stuff.hasMouse || force) {
+                val bottomSheetView =
+                    bottomSheetDialog.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
+            }
+            WindowCompat.setDecorFitsSystemWindows(bottomSheetDialog.window!!, false)
+        }
     }
 
     fun AutoCompleteTextView.getSelectedItemPosition(): Int {
@@ -607,10 +600,6 @@ object UiUtils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-    }
-
-    fun View.postRequestFocus() {
-        post { requestFocus() }
     }
 
     fun EditText.trimmedText() = text.toString().trim()

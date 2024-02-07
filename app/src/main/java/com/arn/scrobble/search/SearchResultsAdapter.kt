@@ -1,7 +1,6 @@
 package com.arn.scrobble.search
 
 import android.content.Context
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -219,13 +218,13 @@ class SearchResultsAdapter(
 
             if (entry is Album && searchType == SearchType.GLOBAL) {
                 binding.recentsImg.load(entry.webp300 ?: "") {
-                    placeholder(R.drawable.vd_wave_simple_filled)
+                    placeholder(R.drawable.color_image_loading)
                     error(errorDrawable)
                     allowHardware(false)
                 }
             } else {
                 binding.recentsImg.load(MusicEntryImageReq(entry)) {
-                    placeholder(R.drawable.vd_wave_simple_filled)
+                    placeholder(R.drawable.color_image_loading)
                     error(errorDrawable)
                     allowHardware(false) // crashes on back otherwise
                 }
@@ -252,9 +251,7 @@ class SearchResultsAdapter(
             binding.headerText.text = headerData.title
 
             if (headerData.section.sectionId != Section.REINDEX) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    binding.headerText.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleMedium)
-                }
+                binding.headerText.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleMedium)
 
                 binding.headerAction.setOnClickListener {
                     (data[bindingAdapterPosition] as? ExpandableHeader)?.let {

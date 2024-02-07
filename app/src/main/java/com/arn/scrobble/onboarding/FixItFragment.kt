@@ -1,5 +1,6 @@
 package com.arn.scrobble.onboarding
 
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -37,9 +38,10 @@ class FixItFragment : BottomSheetDialogFragment() {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,17 +63,15 @@ class FixItFragment : BottomSheetDialogFragment() {
                 button.isEnabled = false
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-            if (requireActivity().packageManager.queryIntentActivities(
-                    batteryIntent,
-                    PackageManager.MATCH_DEFAULT_ONLY
-                ).isNotEmpty()
-            ) {
-                binding.fixItBattery.visibility = View.VISIBLE
-                binding.fixItBatteryAction.setOnClickListener {
-                    startActivity(batteryIntent)
-                }
+        val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+        if (requireActivity().packageManager.queryIntentActivities(
+                batteryIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            ).isNotEmpty()
+        ) {
+            binding.fixItBattery.visibility = View.VISIBLE
+            binding.fixItBatteryAction.setOnClickListener {
+                startActivity(batteryIntent)
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

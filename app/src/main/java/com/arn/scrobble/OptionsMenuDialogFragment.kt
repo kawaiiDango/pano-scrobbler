@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.app.Dialog
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -93,9 +94,10 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 
     override fun onDestroyView() {

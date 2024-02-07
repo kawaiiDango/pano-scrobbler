@@ -142,7 +142,7 @@ class TrackHistoryAdapter(
             if (!imgUrl.isNullOrEmpty()) {
                 binding.recentsImg.load(imgUrl) {
                     allowHardware(false)
-                    placeholder(R.drawable.vd_wave_simple_filled)
+                    placeholder(R.drawable.color_image_loading)
                     error(errorDrawable)
                 }
             } else {

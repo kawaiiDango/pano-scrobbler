@@ -428,13 +428,11 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
             )
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            popup.exitTransition = Fade().apply {
-                duration = 100
-            }
-            popup.enterTransition = MaterialElevationScale(true).apply {
-                duration = 300
-            }
+        popup.exitTransition = Fade().apply {
+            duration = 100
+        }
+        popup.enterTransition = MaterialElevationScale(true).apply {
+            duration = 300
         }
         contentBinding.root.postDelayed({ postTransition() }, 10)
 

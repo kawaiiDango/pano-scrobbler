@@ -396,14 +396,14 @@ class ScrobblesAdapter(
             if (!viewModel.isShowingLoves) {
                 binding.recentsImg.load(imgUrl ?: "") {
                     allowHardware(false)
-                    placeholder(R.drawable.vd_wave_simple_filled)
+                    placeholder(R.drawable.color_image_loading)
                     error(errorDrawable)
                 }
             } else {
                 val musicEntryImageReq = MusicEntryImageReq(track)
                 binding.recentsImg.load(musicEntryImageReq) {
                     allowHardware(false)
-                    placeholder(R.drawable.vd_wave_simple_filled)
+                    placeholder(R.drawable.color_image_loading)
                     error(errorDrawable)
                     listener(onSuccess = { request, _ ->
                         (request.data as? String)?.let {

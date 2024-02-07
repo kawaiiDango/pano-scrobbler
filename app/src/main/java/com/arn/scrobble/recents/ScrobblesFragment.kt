@@ -633,7 +633,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdap
 
         coordinatorBinding.heroImg.load(reqData) {
             placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
-            placeholder(errDrawable)
+            placeholder(R.drawable.color_image_loading)
             error(errDrawable)
             allowHardware(false)
             transitionFactory(PaletteTransition.Factory { palette ->

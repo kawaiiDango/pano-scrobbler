@@ -123,7 +123,10 @@ class OnboardingFragment : Fragment() {
             canSkip = true,
             isCompleted = { Stuff.isNotificationListenerEnabled() },
             openAction = {
-                val intent = if (Stuff.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                val intent = if (Stuff.isTv &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                    Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+                )
                     Intent().setComponent(
                         ComponentName(
                             "com.android.tv.settings",
@@ -139,17 +142,17 @@ class OnboardingFragment : Fragment() {
                     ) != null
                 ) {
                     requireContext().startActivity(intent)
-                    if (Stuff.isTv)
+                    if (intent.action == ACTION_NOTIFICATION_LISTENER_SETTINGS)
                         requireContext().toast(
                             getString(
-                                R.string.check_nls_tv,
+                                R.string.check_nls,
                                 getString(R.string.app_name)
                             )
                         )
                     else
                         requireContext().toast(
                             getString(
-                                R.string.check_nls,
+                                R.string.check_nls_tv,
                                 getString(R.string.app_name)
                             )
                         )

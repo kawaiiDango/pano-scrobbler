@@ -3,7 +3,9 @@ package com.arn.scrobble.recents
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.App
 import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
@@ -25,6 +27,8 @@ class TracksVM : ViewModel() {
     val virtualList = SectionedVirtualList()
     val pendingScrobblesLd by lazy { PanoDb.db.getPendingScrobblesDao().allLd(10000) }
     val pendingLovesLd by lazy { PanoDb.db.getPendingLovesDao().allLd(10000) }
+    var scrobblerEnabled = true
+        private set
     var isShowingLoves = false
     var pendingSubmitAttempted = false
 
@@ -42,6 +46,13 @@ class TracksVM : ViewModel() {
     var toTime: Long? = null
     private var lastLoadJob: Job? = null
 
+    init {
+        updateScrobblerEnabled()
+    }
+
+    fun updateScrobblerEnabled() {
+        scrobblerEnabled = Stuff.isNotificationListenerEnabled() && App.prefs.scrobblerEnabled
+    }
 
     fun loadRecents(page: Int) {
         this.page = page

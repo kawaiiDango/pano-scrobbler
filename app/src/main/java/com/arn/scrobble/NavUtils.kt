@@ -101,7 +101,11 @@ object NavUtils {
             navNumEntriesList.forEach { it.isVisible = false }
         }
 
-        val profilePicUrl = currentUser.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
+        val profilePicUrl = if (currentUser.isSelf)
+            App.prefs.drawerDataCached.profilePicUrl
+        else
+            currentUser.getWebpImageURL(ImageSize.EXTRALARGE)
+                ?: ""
         if (headerNavBinding.navProfilePic.getTag(R.id.img_url) != profilePicUrl + username) // todo prevent flash
             headerNavBinding.navProfilePic.load(profilePicUrl) {
                 allowHardware(false)

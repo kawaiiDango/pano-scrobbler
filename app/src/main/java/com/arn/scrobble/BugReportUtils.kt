@@ -52,7 +52,8 @@ object BugReportUtils {
         //keep the email in english
 
         val log = Stuff.exec("logcat -d")
-        val logFile = File(App.context.filesDir, "log.txt")
+        val logFile = File(App.context.cacheDir, "share/log.txt")
+        logFile.parentFile!!.mkdirs()
         logFile.writeText(log)
         val logUri =
             FileProvider.getUriForFile(

@@ -292,9 +292,7 @@ class MainActivity : AppCompatActivity(),
 
     private suspend fun showSnackbarIfNeeded() {
         delay(1500)
-        val nlsEnabled = Stuff.isNotificationListenerEnabled()
-
-        if (nlsEnabled && !Stuff.isScrobblerRunning()) {
+        if (Stuff.isNotificationListenerEnabled() && prefs.scrobblerEnabled && !Stuff.isScrobblerRunning()) {
             Snackbar.make(
                 binding.root,
                 R.string.not_running,
@@ -306,20 +304,6 @@ class MainActivity : AppCompatActivity(),
                 .focusOnTv()
                 .show()
             Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
-        } else if (!nlsEnabled || !prefs.scrobblerEnabled) {
-            Snackbar.make(
-                binding.root,
-                R.string.scrobbler_off,
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction(R.string.enable) {
-                    if (!prefs.scrobblerEnabled)
-                        prefs.scrobblerEnabled = true
-                    else
-                        navController.navigate(R.id.onboardingFragment)
-                }
-                .focusOnTv()
-                .show()
         } else
             Updater(this).withSnackbar()
     }

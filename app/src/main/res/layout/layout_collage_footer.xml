@@ -7,8 +7,8 @@
     android:background="#000"
     android:paddingHorizontal="16px"
     android:paddingVertical="8px"
-    tools:ignore="PxUsage"
-    android:theme="@style/Theme.Material3.Dark">
+    android:theme="@style/Theme.Material3.Dark"
+    tools:ignore="PxUsage">
 
     <TextView
         android:id="@+id/collage_footer_type"
@@ -28,12 +28,15 @@
         tools:text="Overall" />
 
     <!--  Compound drawables do not appear in the image for some reason  -->
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/collage_username_image"
-        android:layout_width="wrap_content"
+        android:layout_width="42px"
         android:layout_height="0dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@id/collage_footer_type"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintTop_toTopOf="@id/collage_footer_type"
+        app:shapeAppearance="@style/circleImageView"
         app:srcCompat="@drawable/vd_user"
         app:tint="?colorControlNormal" />
 
@@ -72,10 +75,10 @@
         android:id="@+id/collage_footer_branding_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleX="1.3"
-        android:scaleY="1.3"
         android:layout_marginVertical="8px"
         android:scaleType="centerCrop"
+        android:scaleX="1.3"
+        android:scaleY="1.3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"

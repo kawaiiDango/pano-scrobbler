@@ -62,6 +62,7 @@ class BillingFragment : Fragment() {
             R.drawable.vd_apps to getString(R.string.billing_scrobble_source),
             R.drawable.vd_ban to getString(R.string.billing_block),
             R.drawable.vd_pin to getString(R.string.billing_pin_friends, 10),
+            R.drawable.vd_heart to getString(R.string.pref_link_heart_button_rating),
             R.drawable.vd_extract to getString(R.string.billing_regex_extract),
             R.drawable.vd_share to getString(R.string.billing_sharing),
         ).reversedArray()

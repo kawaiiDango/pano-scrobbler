@@ -816,7 +816,8 @@ class NLService : NotificationListenerService() {
 
                     trackInfo.userLoved = loved
                     notifyScrobble(trackInfo)
-                    if (BuildConfig.DEBUG)
+
+                    if (prefs.linkHeartButtonToRating && prefs.proStatus)
                         sessListener?.findControllersByPackage(trackInfo.packageName)?.apply {
                             if (loved)
                                 love()
@@ -1033,13 +1034,6 @@ class NLService : NotificationListenerService() {
         }
 
         private fun submitScrobble(trackInfoCopy: PlayingTrackInfo) {
-            if (!prefs.scrobbleSpotifyRemote &&
-//                !isRemotePlayback &&
-                trackInfoCopy.packageName == Stuff.PACKAGE_SPOTIFY &&
-                !audioManager.isMusicActive
-            )
-                return
-
             LFMRequester(coroutineScope)
                 .scrobble(false, trackInfoCopy)
 

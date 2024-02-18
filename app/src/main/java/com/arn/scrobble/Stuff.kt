@@ -28,6 +28,7 @@ import android.os.Process
 import android.provider.MediaStore
 import android.provider.Settings
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+import android.support.v4.media.session.PlaybackStateCompat
 import android.text.format.DateUtils
 import android.view.InputDevice
 import androidx.annotation.Keep
@@ -173,8 +174,14 @@ object Stuff {
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_SPOTIFY = "com.spotify.music"
     const val PACKAGE_YOUTUBE_TV = "com.google.android.youtube.tv"
+    const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
     const val PACKAGE_YMUSIC = "com.kapp.youtube.final"
     const val PACKAGE_SOUNDCLOUD = "com.soundcloud.android"
+    const val PACKAGE_OTO_MUSIC = "com.piyush.music"
+    const val PACKAGE_PI_MUSIC = "com.Project100Pi.themusicplayer"
+    const val PACKAGE_SYMFONIUM = "app.symfonik.music.player"
+    const val PACKAGE_PLEXAMP = "tv.plex.labs.plexamp"
+    const val PACKAGE_BANDCAMP = "com.bandcamp.android"
     const val PACKAGE_NICOBOX = "jp.nicovideo.nicobox"
     const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
     const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
@@ -192,7 +199,7 @@ object Stuff {
         "app.revanced.android.youtube",
         "app.rvx.android.youtube",
 
-        "com.google.android.apps.youtube.music",
+        PACKAGE_YOUTUBE_MUSIC,
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
 
@@ -209,9 +216,14 @@ object Stuff {
         PACKAGE_SOUNDCLOUD,
         PACKAGE_NICOBOX,
         PACKAGE_YMUSIC,
-        "com.google.android.apps.youtube.music",
+        PACKAGE_YOUTUBE_MUSIC,
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
+    )
+
+    val BLOCKED_MEDIA_SESSION_TAGS = mapOf(
+        "*" to listOf("CastMediaSession"),
+        PACKAGE_YAMAHA_MUSIC_CAST to listOf("MediaHttpService"),
     )
 
     val PACKAGES_PIXEL_NP = setOf(
@@ -288,7 +300,7 @@ object Stuff {
     }
 
     fun logD(s: () -> String) {
-        if (BuildConfig.DEBUG && false)
+        if (BuildConfig.DEBUG && true)
             Timber.tag(TAG).d(s())
     }
 
@@ -317,6 +329,76 @@ object Stuff {
         }
         return s
     }
+
+    fun actionsToString(actions: Long): String {
+        var s = "[\n"
+        if (actions and PlaybackStateCompat.ACTION_PREPARE != 0L) {
+            s += "\tACTION_PREPARE\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PREPARE_FROM_MEDIA_ID != 0L) {
+            s += "\tACTION_PREPARE_FROM_MEDIA_ID\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PREPARE_FROM_SEARCH != 0L) {
+            s += "\tACTION_PREPARE_FROM_SEARCH\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PREPARE_FROM_URI != 0L) {
+            s += "\tACTION_PREPARE_FROM_URI\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PLAY != 0L) {
+            s += "\tACTION_PLAY\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID != 0L) {
+            s += "\tACTION_PLAY_FROM_MEDIA_ID\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH != 0L) {
+            s += "\tACTION_PLAY_FROM_SEARCH\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PLAY_FROM_URI != 0L) {
+            s += "\tACTION_PLAY_FROM_URI\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PLAY_PAUSE != 0L) {
+            s += "\tACTION_PLAY_PAUSE\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_PAUSE != 0L) {
+            s += "\tACTION_PAUSE\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_STOP != 0L) {
+            s += "\tACTION_STOP\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SEEK_TO != 0L) {
+            s += "\tACTION_SEEK_TO\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
+            s += "\tACTION_SKIP_TO_NEXT\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
+            s += "\tACTION_SKIP_TO_PREVIOUS\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_QUEUE_ITEM != 0L) {
+            s += "\tACTION_SKIP_TO_QUEUE_ITEM\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
+            s += "\tACTION_FAST_FORWARD\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
+            s += "\tACTION_REWIND\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SET_RATING != 0L) {
+            s += "\tACTION_SET_RATING\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SET_REPEAT_MODE != 0L) {
+            s += "\tACTION_SET_REPEAT_MODE\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE != 0L) {
+            s += "\tACTION_SET_SHUFFLE_MODE\n"
+        }
+        if (actions and PlaybackStateCompat.ACTION_SET_CAPTIONING_ENABLED != 0L) {
+            s += "\tACTION_SET_CAPTIONING_ENABLED\n"
+        }
+        s += "]"
+        return s
+    }
+
 
     fun exec(command: String): String {
         var resp = ""
@@ -474,61 +556,55 @@ object Stuff {
             )
     }
 
-    fun launchSearchIntent(musicEntry: MusicEntry, pkgName: String?) {
-        var searchQueryFirst = ""
-        var searchQuerySecond = ""
-
-        when (musicEntry) {
-            is Artist -> {
-                searchQueryFirst = musicEntry.name
-            }
-
-            is Album -> {
-                searchQueryFirst = musicEntry.artist
-                searchQuerySecond = musicEntry.name
-            }
-
-            is Track -> {
-                searchQueryFirst = musicEntry.artist
-                searchQuerySecond = musicEntry.name
-            }
-        }
-
-        launchSearchIntent(searchQueryFirst, searchQuerySecond, pkgName)
-    }
-
-    private fun launchSearchIntent(
-        artist: String,
-        track: String,
+    fun launchSearchIntent(
+        musicEntry: MusicEntry,
         pkgName: String?
     ) {
-        if (artist.isEmpty() && track.isEmpty())
-            return
-
         val prefs = App.prefs
-
-        if (false && isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
-            val searchUrl = prefs.songSearchUrl
-                .replace("\$artist", artist)
-                .replace("\$title", track)
-            openInBrowser(searchUrl)
-            return
-        }
 
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            if (artist.isNotEmpty())
-                putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
-            if (track.isNotEmpty())
-                putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
+            var searchQuery = ""
 
-            val query = when {
-                artist.isEmpty() -> track
-                track.isEmpty() -> artist
-                else -> "$artist $track"
+            when (musicEntry) {
+                is Artist -> {
+                    searchQuery = musicEntry.name
+                    putExtra(
+                        MediaStore.EXTRA_MEDIA_FOCUS,
+                        MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE
+                    )
+                    putExtra(MediaStore.EXTRA_MEDIA_ARTIST, musicEntry.name)
+                }
+
+                is Album -> {
+                    searchQuery = musicEntry.artist + " " + musicEntry.name
+                    putExtra(
+                        MediaStore.EXTRA_MEDIA_FOCUS,
+                        MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE
+                    )
+                    putExtra(MediaStore.EXTRA_MEDIA_ARTIST, musicEntry.artist)
+                    putExtra(MediaStore.EXTRA_MEDIA_ALBUM, musicEntry.name)
+                }
+
+                is Track -> {
+                    searchQuery = musicEntry.artist + " " + musicEntry.name
+                    putExtra(
+                        MediaStore.EXTRA_MEDIA_FOCUS,
+                        MediaStore.Audio.Media.ENTRY_CONTENT_TYPE
+                    )
+                    putExtra(MediaStore.EXTRA_MEDIA_ARTIST, musicEntry.artist)
+                    putExtra(MediaStore.EXTRA_MEDIA_TITLE, musicEntry.name)
+                    if (musicEntry.album.isNotEmpty()) {
+                        putExtra(MediaStore.EXTRA_MEDIA_ALBUM, musicEntry.album)
+                    }
+                }
             }
-            putExtra(SearchManager.QUERY, query)
+
+            if (searchQuery.isBlank())
+                return
+
+            putExtra(SearchManager.QUERY, searchQuery)
 
             if (pkgName != null && prefs.proStatus && prefs.searchInSource)
                 `package` = pkgName

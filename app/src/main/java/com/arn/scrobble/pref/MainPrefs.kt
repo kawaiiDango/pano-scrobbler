@@ -59,6 +59,7 @@ class MainPrefs : Krate {
         get() = _delayPercent.coerceIn(PREF_DELAY_PER_MIN, PREF_DELAY_PER_MAX)
 
     var scrobbleSpotifyRemote by booleanPref(PREF_SCROBBLE_SPOTIFY_REMOTE).withDefault(false)
+    var linkHeartButtonToRating by booleanPref(PREF_LINK_HEART_BUTTON_TO_RATING).withDefault(false)
     var preventDuplicateAmbientScrobbles by booleanPref(PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES).withDefault(
         false
     )
@@ -307,6 +308,7 @@ class MainPrefs : Krate {
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
         const val PREF_SCROBBLE_SPOTIFY_REMOTE = "scrobble_spotify_remote"
+        const val PREF_LINK_HEART_BUTTON_TO_RATING = "link_heart_button_to_rating"
         const val PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES = "prevent_duplicate_ambient_scrobbles"
         const val PREF_FIRST_DAY_OF_WEEK = "first_day_of_week"
         const val PREF_LAST_SCREEN_ON_TIME = "last_screen_on_time"

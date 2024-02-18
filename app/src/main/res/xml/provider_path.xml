@@ -1,3 +1,5 @@
 <paths>
-    <files-path name="log" path="."/>
+    <cache-path
+        name="share"
+        path="share"/>
 </paths>

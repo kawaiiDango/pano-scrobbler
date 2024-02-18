@@ -11,9 +11,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Icon
-import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -36,7 +34,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
-import androidx.recyclerview.widget.DividerItemDecoration
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ForceLogException
@@ -60,7 +57,6 @@ import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.Dispatchers
@@ -355,16 +351,34 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
 
         val showScrobbleSources = findPreference<SwitchPreference>("show_scrobble_sources")!!
-        val fakeShowScrobbleSources =
-            findPreference<SwitchPreference>("fake_show_scrobble_sources")!!
+
+        if (!prefs.proStatus) {
+            showScrobbleSources.isPersistent = false
+            showScrobbleSources.isChecked = false
+            showScrobbleSources.setOnPreferenceClickListener {
+                findNavController().navigate(R.id.billingFragment)
+                true
+            }
+        }
+
         val searchInSource = findPreference<SwitchPreference>("search_in_source")!!
 
-        fakeShowScrobbleSources.isVisible = !prefs.proStatus
-        showScrobbleSources.isVisible = prefs.proStatus
         if (!prefs.proStatus) {
             searchInSource.isPersistent = false
             searchInSource.isChecked = false
             searchInSource.setOnPreferenceClickListener {
+                findNavController().navigate(R.id.billingFragment)
+                true
+            }
+
+        }
+
+        val linkHeartButtonToRating =
+            findPreference<SwitchPreference>("link_heart_button_to_rating")!!
+        if (!prefs.proStatus) {
+            linkHeartButtonToRating.isPersistent = false
+            linkHeartButtonToRating.isChecked = false
+            linkHeartButtonToRating.setOnPreferenceClickListener {
                 findNavController().navigate(R.id.billingFragment)
                 true
             }
@@ -784,20 +798,6 @@ class PrefFragment : PreferenceFragmentCompat() {
                         numEdits,
                         NumberFormat.getInstance().format(numEdits)
                     )
-            }
-        }
-
-        findPreference<SwitchPreference>("show_scrobble_sources")!!.isVisible = prefs.proStatus
-        findPreference<SwitchPreference>("fake_show_scrobble_sources")!!.isVisible =
-            !prefs.proStatus
-
-        if (!prefs.proStatus) {
-            val fakeShowScrobbleSources =
-                findPreference<SwitchPreference>("fake_show_scrobble_sources")!!
-            fakeShowScrobbleSources.isChecked = false
-            fakeShowScrobbleSources.setOnPreferenceClickListener {
-                findNavController().navigate(R.id.billingFragment)
-                true
             }
         }
 

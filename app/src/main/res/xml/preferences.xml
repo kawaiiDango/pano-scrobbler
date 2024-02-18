@@ -90,12 +90,6 @@
         <SwitchPreference
             android:title="@string/pref_show_scrobble_sources"
             android:summary="@string/pref_show_scrobble_sources_desc"
-            android:key="fake_show_scrobble_sources"
-            android:persistent="false"/>
-
-        <SwitchPreference
-            android:title="@string/pref_show_scrobble_sources"
-            android:summary="@string/pref_show_scrobble_sources_desc"
             android:key="show_scrobble_sources"
             android:defaultValue="true"
             android:persistent="true"/>
@@ -106,6 +100,13 @@
             android:key="search_in_source"
             android:defaultValue="false"
             android:dependency="show_scrobble_sources"
+            android:persistent="true"/>
+
+        <SwitchPreference
+            android:title="@string/pref_link_heart_button_rating"
+            android:summary="@string/pref_search_in_source_desc"
+            android:key="link_heart_button_to_rating"
+            android:defaultValue="false"
             android:persistent="true"/>
 
         <Preference

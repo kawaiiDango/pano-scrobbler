@@ -91,7 +91,10 @@ class OnboardingFragment : Fragment(), StepperFormListener {
             .init()
 
         binding.onboardingPrivacyPolicy.setOnClickListener {
-            Stuff.openInBrowser(getString(R.string.privacy_policy_link))
+            val args = Bundle().apply {
+                putString(Stuff.ARG_URL, getString(R.string.privacy_policy_link))
+            }
+            findNavController().navigate(R.id.webViewFragment, args)
         }
     }
 

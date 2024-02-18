@@ -82,7 +82,10 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-      childFragmentManager.setFragmentResultListener(Stuff.ARG_HIDDEN_TAGS_CHANGED, this) { requestKey, bundle ->
+        childFragmentManager.setFragmentResultListener(
+            Stuff.ARG_HIDDEN_TAGS_CHANGED,
+            this
+        ) { requestKey, bundle ->
             if (requestKey == Stuff.ARG_HIDDEN_TAGS_CHANGED && bundle.getBoolean(Stuff.ARG_HIDDEN_TAGS_CHANGED)) {
                 chartsOverviewVM.tagCloudRequested = false
                 loadMoreSectionsIfNeeded()
@@ -668,8 +671,9 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             drawBitmap(footerBitmap, 0f, tagCloudBitmap.height.toFloat(), null)
         }
 
-        val tagCloudFile = File(requireContext().filesDir, "tagCloud.jpg")
+        val tagCloudFile = File(requireContext().cacheDir, "share/tag_cloud.jpg")
         withContext(Dispatchers.IO) {
+            tagCloudFile.parentFile!!.mkdirs()
             FileOutputStream(tagCloudFile).use { fos ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
             }

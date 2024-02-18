@@ -23,7 +23,6 @@ import androidx.lifecycle.lifecycleScope
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.arn.scrobble.App
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
@@ -31,8 +30,8 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
-import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
+import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
@@ -43,6 +42,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.ChipGroup
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
+import de.umass.lastfm.ImageSize
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
@@ -359,7 +359,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         val totalWidth = imageDimensionPx * prefs.collageSize
         var bitmap: Bitmap
 
-        val collageFile = File(requireContext().filesDir, "collage.jpg")
+        val collageFile = File(requireContext().cacheDir, "share/collage.jpg")
         val specHeight = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         val specWidth = View.MeasureSpec.makeMeasureSpec(totalWidth, View.MeasureSpec.EXACTLY)
         collageRoot.measure(specWidth, specHeight)
@@ -371,6 +371,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         )
 
         withContext(Dispatchers.IO) {
+            collageFile.parentFile!!.mkdirs()
             FileOutputStream(collageFile).use { fos ->
                 bitmap = collageRoot.drawToBitmap()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
@@ -385,13 +386,32 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 )
     }
 
-    private fun createAddFooter(collageRoot: LinearLayout, type: Int, textScaler: Float) {
+    private suspend fun createAddFooter(collageRoot: LinearLayout, type: Int, textScaler: Float) {
         val collageFooter = LayoutCollageFooterBinding.inflate(layoutInflater, collageRoot, true)
 
         if (prefs.collageUsername) {
             collageFooter.collageFooterUsername.visibility = View.VISIBLE
             collageFooter.collageUsernameImage.visibility = View.VISIBLE
             collageFooter.collageFooterUsername.text = activityViewModel.currentUser.name
+
+            // load profile pic
+            val profilePicUrl = if (activityViewModel.currentUser.isSelf)
+                prefs.drawerDataCached.profilePicUrl
+            else
+                activityViewModel.currentUser.getWebpImageURL(ImageSize.EXTRALARGE)
+
+            val profilePicRequest = ImageRequest.Builder(requireContext()).apply {
+                data(profilePicUrl ?: R.drawable.vd_user)
+                allowHardware(false)
+                crossfade(false)
+                error(R.drawable.vd_user)
+                placeholder(null)
+            }.build()
+
+            withContext(Dispatchers.IO) {
+                requireContext().imageLoader.execute(profilePicRequest).drawable
+            }.let { collageFooter.collageUsernameImage.setImageDrawable(it) }
+
         } else {
             collageFooter.collageFooterUsername.visibility = View.GONE
             collageFooter.collageUsernameImage.visibility = View.GONE

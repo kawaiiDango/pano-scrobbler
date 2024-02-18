@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import coil.dispose
 import coil.load
@@ -56,6 +57,7 @@ import java.util.Objects
 
 class ScrobblesAdapter(
     private val fragmentBinding: ContentScrobblesBinding,
+    private val navController: NavController,
     private val itemClickListener: ItemClickListener,
     private val itemLongClickListener: ItemLongClickListener,
     private val focusChangeListener: FocusChangeListener,
@@ -125,6 +127,28 @@ class ScrobblesAdapter(
                 header = null
             )
         )
+    }
+
+    private fun updateScrobblerDisabledNotice(notify: Boolean = true) {
+        val oldVirtualList = viewModel.virtualList.copy()
+
+        viewModel.virtualList.addSection(
+            SectionWithHeader(
+                Section.NOTICE_SECTION,
+                emptyList(),
+                Section.NOTICE_SECTION.ordinal,
+                header = ExpandableHeader(
+                    R.drawable.vd_error,
+                    R.string.scrobbler_off,
+                    R.string.enable,
+                    R.string.enable,
+                ),
+                showHeaderWhenEmpty = !viewModel.scrobblerEnabled
+            )
+        )
+
+        if (notify)
+            notify(oldVirtualList)
     }
 
     fun updatePendingScrobbles(pendingScrobbles: List<PendingScrobble>, notify: Boolean = true) {
@@ -226,6 +250,7 @@ class ScrobblesAdapter(
         val firstTrack = viewModel.virtualList[Section.SCROBBLES]?.items?.firstOrNull()
         val firstTrackSelected = prevSelectedItem === firstTrack
 
+        updateScrobblerDisabledNotice(false)
         updatePendingScrobbles(viewModel.pendingScrobblesLd.value ?: listOf(), false)
         updatePendingLoves(viewModel.pendingLovesLd.value ?: listOf(), false)
         updateTracks(viewModel.tracks.toList())
@@ -468,40 +493,68 @@ class ScrobblesAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun setItemData(headerData: ExpandableHeader) {
-            if (headerData.section.itemType in arrayOf(
-                    Section.PENDING_SCROBBLES.ordinal,
-                    Section.PENDING_LOVES.ordinal
-                )
-            ) {
-                val listSize = headerData.section.listSize
-                binding.headerText.text = headerData.title + ": " +
-                        itemView.context.resources.getQuantityString(
-                            R.plurals.num_pending,
-                            listSize,
-                            listSize
+            when (headerData.section.itemType) {
+                Section.PENDING_SCROBBLES.ordinal,
+                Section.PENDING_LOVES.ordinal -> {
+                    val listSize = headerData.section.listSize
+                    binding.headerText.text = headerData.title + ": " +
+                            itemView.context.resources.getQuantityString(
+                                R.plurals.num_pending,
+                                listSize,
+                                listSize
+                            )
+                    binding.headerOverflowButton.isVisible = true
+                    binding.headerOverflowButton.setOnClickListener {
+                        val popupMenu = PopupMenu(
+                            binding.headerOverflowButton.context,
+                            binding.headerOverflowButton
                         )
-                binding.headerOverflowButton.isVisible = true
-                binding.headerOverflowButton.setOnClickListener {
-                    val popupMenu = PopupMenu(
-                        binding.headerOverflowButton.context,
-                        binding.headerOverflowButton
-                    )
-                    popupMenu.inflate(R.menu.delete_all_menu)
-                    popupMenu.setOnMenuItemClickListener {
-                        if (it.itemId == R.id.delete_all_confirm) {
-                            viewModel.viewModelScope.launch(Dispatchers.IO) {
-                                PanoDb.db.getPendingScrobblesDao().nuke()
-                                PanoDb.db.getPendingLovesDao().nuke()
-                            }
-                            true
-                        } else
-                            false
+                        popupMenu.inflate(R.menu.delete_all_menu)
+                        popupMenu.setOnMenuItemClickListener {
+                            if (it.itemId == R.id.delete_all_confirm) {
+                                viewModel.viewModelScope.launch(Dispatchers.IO) {
+                                    PanoDb.db.getPendingScrobblesDao().nuke()
+                                    PanoDb.db.getPendingLovesDao().nuke()
+                                }
+                                true
+                            } else
+                                false
+                        }
+                        popupMenu.showWithIcons()
                     }
-                    popupMenu.showWithIcons()
                 }
-            } else {
-                binding.headerText.text = headerData.title
-                binding.headerOverflowButton.isVisible = false
+
+                Section.NOTICE_SECTION.ordinal -> {
+                    binding.headerText.text = headerData.title
+                    binding.headerOverflowButton.isVisible = true
+
+                    binding.headerOverflowButton.setOnClickListener {
+                        val popupMenu = PopupMenu(
+                            binding.headerOverflowButton.context,
+                            binding.headerOverflowButton
+                        )
+                        popupMenu.inflate(R.menu.scrobbler_enable_menu)
+                        popupMenu.setOnMenuItemClickListener {
+                            if (it.itemId == R.id.scrobbler_enable) {
+                                if (!prefs.scrobblerEnabled) {
+                                    prefs.scrobblerEnabled = true
+                                    viewModel.updateScrobblerEnabled()
+                                    updateScrobblerDisabledNotice(true)
+                                } else {
+                                    navController.navigate(R.id.onboardingFragment)
+                                }
+                                true
+                            } else
+                                false
+                        }
+                        popupMenu.show()
+                    }
+                }
+
+                else -> {
+                    binding.headerText.text = headerData.title
+                    binding.headerOverflowButton.isVisible = false
+                }
             }
 
             if (headerData.section.listSize > 3) {
@@ -533,6 +586,7 @@ class ScrobblesAdapter(
 
 
 private enum class Section {
+    NOTICE_SECTION,
     PENDING_SCROBBLES,
     PENDING_LOVES,
     SCROBBLES,

@@ -210,6 +210,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             activityViewModel.currentUser.name
         adapter = ScrobblesAdapter(
             fragmentBinding = binding,
+            findNavController(),
             itemClickListener = this,
             itemLongClickListener = itemLongClickListener,
             focusChangeListener = focusChangeListener,
@@ -344,7 +345,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
 
                 val shareAlbumArt = coordinatorBinding.heroImg.drawable as? BitmapDrawable
                 if (shareAlbumArt != null) {
-                    val albumArtFile = File(requireContext().filesDir, "album_art.jpg")
+                    val albumArtFile = File(requireContext().cacheDir, "share/album_art.jpg")
+                    albumArtFile.parentFile!!.mkdirs()
                     FileOutputStream(albumArtFile).use { fos ->
                         shareAlbumArt.bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
                     }

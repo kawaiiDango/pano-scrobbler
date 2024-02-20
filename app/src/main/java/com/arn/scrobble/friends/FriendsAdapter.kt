@@ -9,28 +9,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.load
 import com.arn.scrobble.App
-import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.recents.PaletteColors
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.PaletteTransition
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import de.umass.lastfm.ImageSize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -42,10 +42,12 @@ import kotlinx.coroutines.launch
 
 class FriendsAdapter(
     private val fragmentBinding: ContentFriendsBinding,
-    private val viewModel: FriendsVM
-) : RecyclerView.Adapter<FriendsAdapter.VHUser>(), LoadMoreGetter {
-
-    lateinit var itemClickListener: ItemClickListener
+    private val viewModel: FriendsVM,
+    private val viewLifecycleOwner: LifecycleOwner
+) : ListAdapter<FriendsVM.FriendsItemHolder, FriendsAdapter.VHUser>(
+    GenericDiffCallback { o, n -> o.user.name == n.user.name }
+), LoadMoreGetter {
+    lateinit var itemClickListener: ItemClickListener<FriendsVM.FriendsItemHolder>
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
 
     private val shapeAppearanceModel by lazy {
@@ -58,9 +60,8 @@ class FriendsAdapter(
     }
 
     init {
-        setHasStableIds(true)
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
-        FriendsItemTouchHelper(this, viewModel)
+        FriendsItemTouchHelper(this, viewModel, viewLifecycleOwner)
             .attachToRecyclerView(fragmentBinding.friendsGrid)
     }
 
@@ -69,33 +70,22 @@ class FriendsAdapter(
         return VHUser(GridItemFriendBinding.inflate(inflater, parent, false))
     }
 
-    fun getViewBindingForPopup(context: Context, position: Int): GridItemFriendBinding {
+    fun getViewBindingForPopup(
+        context: Context,
+        item: FriendsVM.FriendsItemHolder
+    ): GridItemFriendBinding {
         val inflater = LayoutInflater.from(context)
         val binding = GridItemFriendBinding.inflate(inflater, fragmentBinding.root, false)
 
-        val user = viewModel.sectionedList[position] as UserSerializable
         val holder = VHUser(binding, false)
-        holder.setItemData(user)
+        holder.setItemData(item)
         if (!App.prefs.demoMode)
-            binding.friendsName.text = (user.realname.ifEmpty { user.name })
+            binding.friendsName.text = (item.user.realname.ifEmpty { item.user.name })
         return binding
     }
 
     override fun onBindViewHolder(holder: VHUser, position: Int) {
-        holder.setItemData(viewModel.sectionedList[position] as UserSerializable)
-    }
-
-    // total number of cells
-    override fun getItemCount() = viewModel.sectionedList.size
-
-    suspend fun loadFriendsRecents(username: String) {
-        delay(Stuff.FRIENDS_RECENTS_DELAY)
-        val glm = fragmentBinding.friendsGrid.layoutManager as? GridLayoutManager ?: return
-        viewModel.loadFriendsRecents(username)
-    }
-
-    override fun getItemId(position: Int): Long {
-        return (viewModel.sectionedList[position] as UserSerializable).name.hashCode().toLong()
+        holder.setItemData(getItem(position))
     }
 
     inner class VHUser(
@@ -116,25 +106,29 @@ class FriendsAdapter(
 
         override fun onClick(view: View) {
             if (clickable)
-                itemClickListener.call(itemView, bindingAdapterPosition)
+                itemClickListener.call(itemView, bindingAdapterPosition) {
+                    getItem(
+                        bindingAdapterPosition
+                    )
+                }
         }
 
-        fun setItemData(userSerializable: UserSerializable) {
-            isPinned = viewModel.isPinned(userSerializable.name)
+        fun setItemData(item: FriendsVM.FriendsItemHolder) {
+            isPinned = item.isPinned
 
             binding.friendsName.text =
-                (userSerializable.realname.ifEmpty { userSerializable.name }) +
-                        (if (isPinned) " 📍" else "")
+                (item.user.realname.ifEmpty { item.user.name }) +
+                        (if (item.isPinned) " 📍" else "")
 
             if (App.prefs.demoMode)
                 binding.friendsName.text = "User ${bindingAdapterPosition + 1}"
 
-            val track = viewModel.lastPlayedTracksMap[userSerializable.name]
-            if (track != null && track.name != null && track.name != "") {
+            val track = item.track
+            if (track?.name != null && track.name != "") {
                 binding.friendsTrackLl.visibility = View.VISIBLE
                 binding.friendsTitle.text = track.name
-                binding.friendsSubtitle.text = track.artist
-                binding.friendsDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen)
+                binding.friendsSubtitle.text = track.artist.name
+                binding.friendsDate.text = Stuff.myRelativeTime(itemView.context, track.date)
 
                 if (track.isNowPlaying) {
                     if (binding.friendsMusicIcon.drawable == null ||
@@ -161,17 +155,16 @@ class FriendsAdapter(
                 )
                     binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
-                if (userSerializable.name !in viewModel.privateUsers &&
-                    bindingAdapterPosition > -1
-                ) {
+                if (bindingAdapterPosition > -1) {
                     friendsRecentsJob?.cancel()
-                    friendsRecentsJob = viewModel.viewModelScope.launch(LFMRequester.ExceptionNotifier()) {
-                        loadFriendsRecents(userSerializable.name)
+                    friendsRecentsJob = viewLifecycleOwner.lifecycleScope.launch {
+                        delay(Stuff.FRIENDS_RECENTS_DELAY)
+                        viewModel.loadFriendsRecents(item.user.name)
                     }
                 }
             }
 
-            val userImgUrl = userSerializable.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
+            val userImgUrl = item.user.largeImage
 
             if (userImgUrl != binding.friendsPic.tag) {
                 binding.friendsPic.tag = userImgUrl
@@ -195,8 +188,8 @@ class FriendsAdapter(
 
                 binding.friendsPic
                     .load(userImgUrl) {
-                        placeholder(R.drawable.vd_placeholder_user)
-                        error(InitialsDrawable(itemView.context, userSerializable))
+                        placeholder(R.drawable.color_image_loading)
+                        error(InitialsDrawable(itemView.context, item.user))
                         allowHardware(false)
                         if (!wasCached)
                             transitionFactory(PaletteTransition.Factory { palette ->
@@ -217,10 +210,5 @@ class FriendsAdapter(
                     }
             }
         }
-    }
-
-    enum class FriendType {
-        FRIEND,
-        PINNED
     }
 }

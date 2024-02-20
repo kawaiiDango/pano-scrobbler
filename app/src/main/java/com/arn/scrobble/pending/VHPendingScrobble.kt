@@ -4,16 +4,18 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.utils.Stuff
 
 class VHPendingScrobble(
     private val binding: ListItemRecentsBinding,
     private val isShowingAlbums: Boolean,
-    itemClickListener: ItemClickListener,
+    itemClickListener: ItemClickListener<Any>,
 ) : RecyclerView.ViewHolder(binding.root) {
+    lateinit var ps: PendingScrobble
+
     init {
         binding.recentsPlaying.visibility = View.GONE
         binding.recentsImgOverlay.background =
@@ -24,17 +26,22 @@ class VHPendingScrobble(
             itemView.context.getString(R.string.pending_scrobble)
         if (Stuff.isTv)
             binding.root.setOnClickListener {
-                itemClickListener.call(binding.recentsMenu, bindingAdapterPosition)
+                itemClickListener.call(binding.recentsMenu, bindingAdapterPosition) { ps }
             }
         binding.recentsMenu.setOnClickListener {
-            itemClickListener.call(it, bindingAdapterPosition)
+            itemClickListener.call(it, bindingAdapterPosition) { ps }
         }
     }
 
     fun setItemData(ps: PendingScrobble) {
+        this.ps = ps
+
         binding.recentsTitle.text = ps.track
         binding.recentsSubtitle.text = ps.artist
-        binding.recentsDate.text = Stuff.myRelativeTime(itemView.context, ps.timestamp)
+        binding.recentsDate.text = Stuff.myRelativeTime(
+            itemView.context,
+            (ps.timestamp / 1000).toInt()
+        )
 
         if (isShowingAlbums) {
             if (ps.album.isNotEmpty()) {

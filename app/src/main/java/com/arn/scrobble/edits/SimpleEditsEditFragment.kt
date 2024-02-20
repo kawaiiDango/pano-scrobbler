@@ -11,8 +11,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.putSingle
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.ui.UiUtils.toast

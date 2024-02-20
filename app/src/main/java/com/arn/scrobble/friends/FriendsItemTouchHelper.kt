@@ -1,17 +1,31 @@
 package com.arn.scrobble.friends
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.ui.UiUtils.setDragAlpha
-import java.util.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 
 
 open class FriendsItemTouchHelper(
     adapter: FriendsAdapter,
     viewModel: FriendsVM,
+    viewLifecycleOwner: LifecycleOwner
 ) : ItemTouchHelper(object : SimpleCallback(UP or DOWN or LEFT or RIGHT, 0) {
 
     private var changed = false
+    private lateinit var cachedList: MutableList<FriendsVM.FriendsItemHolder>
+
+    init {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.friendsCombined.filterNotNull().collectLatest {
+                cachedList = it.toMutableList()
+            }
+        }
+    }
 
     override fun onMove(
         recyclerView: RecyclerView,
@@ -27,18 +41,11 @@ open class FriendsItemTouchHelper(
             return false
         }
 
-        val pinnedFriendsList = viewModel.pinnedFriends
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(pinnedFriendsList, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(pinnedFriendsList, i, i - 1)
-            }
-        }
+        val movedItem = cachedList.removeAt(fromPosition)
+        cachedList.add(toPosition, movedItem)
 
-        adapter.notifyItemMoved(fromPosition, toPosition)
+//        adapter.notifyItemMoved(fromPosition, toPosition)
+        adapter.submitList(cachedList)
         changed = true
         return true
     }
@@ -72,10 +79,13 @@ open class FriendsItemTouchHelper(
 
         if (changed) {
             changed = false
-            viewModel.pinnedFriends.forEachIndexed { index, pinnedFriend ->
-                pinnedFriend.order = index
-            }
-            viewModel.savePinnedFriends()
+            val newList = cachedList
+                .filter { it.isPinned }
+                .map { it.user }
+                .mapIndexed { index, pinnedFriend ->
+                    pinnedFriend.copy(order = index)
+                }.sortedBy { it.order }
+            viewModel.savePinnedFriends(newList)
         }
     }
 

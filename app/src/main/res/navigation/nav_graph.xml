@@ -139,7 +139,7 @@
         android:id="@+id/onboardingFragment"
         android:name="com.arn.scrobble.onboarding.OnboardingFragment"
         android:label=" "
-        tools:layout="@layout/content_onboarding">
+        tools:layout="@layout/content_onboarding_stepper">
         <argument
             android:name="nopass"
             android:defaultValue="false"
@@ -165,7 +165,7 @@
         tools:layout="@layout/content_themes" />
     <fragment
         android:id="@+id/webViewFragment"
-        android:name="com.arn.scrobble.WebViewFragment"
+        android:name="com.arn.scrobble.onboarding.WebViewFragment"
         android:label=" "
         tools:layout="@layout/content_webview" />
     <fragment
@@ -207,7 +207,7 @@
         tools:layout="@layout/dialog_user_tags" />
     <dialog
         android:id="@+id/fixItFragment"
-        android:name="com.arn.scrobble.FixItFragment"
+        android:name="com.arn.scrobble.onboarding.FixItFragment"
         android:label="FixItFragment"
         tools:layout="@layout/dialog_fix_it" />
     <dialog
@@ -222,7 +222,7 @@
         tools:layout="@layout/content_licenses" />
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.arn.scrobble.LoginFragment"
+        android:name="com.arn.scrobble.onboarding.LoginFragment"
         android:label="{login_title}"
         tools:layout="@layout/content_login">
         <argument
@@ -270,26 +270,6 @@
         android:label="@string/edit"
         tools:layout="@layout/dialog_edit_edits">
         <argument
-            android:name="track"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="album"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="artist"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="albumArtist"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
             android:name="msid"
             android:defaultValue="@null"
             app:argType="string"
@@ -300,17 +280,12 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="timeMillis"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="nowPlaying"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
             android:name="hash"
             android:defaultValue="-1"
             app:argType="integer" />
+        <argument
+            android:name="data"
+            app:argType="com.arn.scrobble.api.lastfm.ScrobbleData" />
     </dialog>
     <dialog
         android:id="@+id/infoFragment"
@@ -359,7 +334,7 @@
         tools:layout="@layout/dialog_collage_generator" />
     <fragment
         android:id="@+id/loadingFragment"
-        android:name="com.arn.scrobble.LoadingFragment"
+        android:name="com.arn.scrobble.friends.LoadingFragment"
         android:label="@string/appwidget_loading"
         tools:layout="@layout/content_loading">
         <action

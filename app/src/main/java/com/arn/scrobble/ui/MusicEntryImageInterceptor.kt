@@ -4,15 +4,12 @@ import android.util.LruCache
 import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.SpotifyRequester
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Tokens
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
@@ -23,85 +20,64 @@ import kotlinx.coroutines.withContext
 class MusicEntryImageInterceptor : Interceptor {
 
     private val delayMs = 200L
-    private val musicEntryCache by lazy { LruCache<String, Optional<MusicEntry>>(500) }
+    private val musicEntryCache by lazy { LruCache<String, Optional<String>>(500) }
     private val semaphore = Semaphore(3)
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val musicEntryImageReq = when (val data = chain.request.data) {
             is MusicEntryImageReq -> data
-            is MusicEntry -> MusicEntryImageReq(data, ImageSize.EXTRALARGE, false) // defaults
+            is MusicEntry -> MusicEntryImageReq(data) // defaults
             else -> return chain.proceed(chain.request)
         }
         val entry = musicEntryImageReq.musicEntry
         val key = genKey(entry)
         val cachedOptional = musicEntryCache[key]
-        var fetchedEntry = cachedOptional?.value
+        var fetchedImageUrl = cachedOptional?.value
 
         if (cachedOptional == null) {
             withContext(Dispatchers.IO) {
                 try {
-                    fetchedEntry = when (entry) {
+                    fetchedImageUrl = when (entry) {
                         is Artist -> {
-                            if (Tokens.SPOTIFY_ARTIST_INFO_SERVER.isNotEmpty()) {
-                                val info =
-                                    semaphore.withPermit {
-                                        delay(delayMs)
-                                        LFMRequester.getArtistInfoSpotify(entry.name)
-                                    }
-                                if (info?.name.equals(entry.name, ignoreCase = true))
-                                    info
-                                else
-                                    null
-                            } else {
-                                val imagesMap = semaphore.withPermit {
-                                    delay(delayMs)
-                                    SpotifyRequester.getSpotifyArtistImages(entry.name)
-                                }
-                                Artist(entry.name, null)
-                                    .apply { imageUrlsMap = imagesMap }
+                            semaphore.withPermit {
+                                delay(delayMs)
+                                Requesters.spotifyRequester.getSpotifyArtistImage(entry.name)
                             }
                         }
 
                         is Album -> {
-                            val hasMissingArtwork = entry.imageUrlsMap?.values?.firstOrNull()
-                                ?.let { imgUrl ->
-                                    StarInterceptor.starPatterns.any { imgUrl.contains(it) }
-                                } ?: true
+                            val webp300 = entry.webp300
+                            val needImage = webp300 == null ||
+                                    StarInterceptor.starPattern in webp300
 
-                            if (hasMissingArtwork)
+                            if (needImage)
                                 semaphore.withPermit {
                                     delay(delayMs)
-                                    Album.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+                                    Requesters.lastfmUnauthedRequester.getInfo(entry)
+                                        .getOrNull()?.webp300
                                 }
                             else
-                                entry
+                                webp300
                         }
 
                         is Track -> semaphore.withPermit {
                             delay(delayMs)
-                            Track.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+                            Requesters.lastfmUnauthedRequester.getInfo(entry)
+                                .getOrNull()?.webp300
                         }
-
-                        else -> throw IllegalArgumentException("Not valid MusicEntry")
                     }
-                    musicEntryCache.put(key, Optional(fetchedEntry))
+                    musicEntryCache.put(key, Optional(fetchedImageUrl))
                 } catch (e: Exception) {
                     throw e
                 }
             }
         }
 
-        if (musicEntryImageReq.replace)
-            entry.imageUrlsMap = fetchedEntry?.imageUrlsMap
-
-        val imgUrl = if (entry is Artist)
-            fetchedEntry?.getImageURL(musicEntryImageReq.size) ?: ""
-        // Spotify image isnt webp
-        else
-            fetchedEntry?.getWebpImageURL(musicEntryImageReq.size) ?: ""
+        if (musicEntryImageReq.isHeroImage && (entry is Album || entry is Track))
+            fetchedImageUrl = fetchedImageUrl?.replace("300x300", "600x600")
 
         val request = ImageRequest.Builder(chain.request)
-            .data(imgUrl)
+            .data(fetchedImageUrl ?: "")
             .allowHardware(false)
             .build()
 
@@ -110,16 +86,14 @@ class MusicEntryImageInterceptor : Interceptor {
 
     private fun genKey(entry: MusicEntry) = when (entry) {
         is Artist -> Artist::class.java.name + entry.name
-        is Album -> entry.artist + Album::class.java.name + entry.name
-        is Track -> entry.artist + Track::class.java.name + entry.name
-        else -> throw IllegalArgumentException("Invalid MusicEntry")
+        is Album -> entry.artist!!.name + Album::class.java.name + entry.name
+        is Track -> entry.artist.name + Track::class.java.name + entry.name
     }
 }
 
 class MusicEntryImageReq(
     val musicEntry: MusicEntry,
-    val size: ImageSize,
-    val replace: Boolean
+    val isHeroImage: Boolean = false,
 )
 
 private class Optional<T>(val value: T?)

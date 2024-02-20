@@ -7,15 +7,20 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.AppwidgetChartsItemBinding
-import java.text.NumberFormat
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
 
 
 class FakeChartsAdapter(
     context: Context,
 ) : ArrayAdapter<ChartsWidgetListItem>(context, R.layout.appwidget_charts_item) {
-    private val inflater by lazy { ContextCompat.getSystemService(context, LayoutInflater::class.java)!! }
+    private val inflater by lazy {
+        ContextCompat.getSystemService(
+            context,
+            LayoutInflater::class.java
+        )!!
+    }
 
     init {
         addAll(
@@ -33,10 +38,10 @@ class FakeChartsAdapter(
         val view = convertView ?: inflater.inflate(R.layout.appwidget_charts_item, parent, false)
         val binding = AppwidgetChartsItemBinding.bind(view)
         val item = getItem(position)!!
-        binding.appwidgetChartsSerial.text = NumberFormat.getInstance().format(position + 1) + "."
+        binding.appwidgetChartsSerial.text = (position + 1).format() + "."
         binding.appwidgetChartsTitle.text = item.title
         binding.appwidgetChartsSubtitle.text = item.subtitle
-        binding.appwidgetChartsPlays.text = NumberFormat.getInstance().format(item.number)
+        binding.appwidgetChartsPlays.text = item.number.format()
         binding.appwidgetChartsStonksIcon.setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
         binding.appwidgetChartsStonksIconShadow.setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
 

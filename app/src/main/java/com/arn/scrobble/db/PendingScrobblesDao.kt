@@ -1,12 +1,12 @@
 package com.arn.scrobble.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -19,7 +19,7 @@ interface PendingScrobblesDao {
     fun all(limit: Int): List<PendingScrobbleWithSource>
 
     @Query("SELECT * FROM $tableName ORDER BY _id DESC LIMIT :limit")
-    fun allLd(limit: Int): LiveData<List<PendingScrobble>>
+    fun allFlow(limit: Int): Flow<List<PendingScrobble>>
 
     @Query("SELECT count(1) FROM $tableName")
     fun count(): Int

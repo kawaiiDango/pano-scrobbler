@@ -40,7 +40,7 @@ android {
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${
@@ -136,7 +136,6 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
-    implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
@@ -161,17 +160,14 @@ dependencies {
     implementation(libs.crashlytics.ktx)
 
     implementation(libs.okhttp)
-    implementation(libs.persistentCookieJar)
     implementation(libs.krate)
     implementation(libs.krate.kotlinx)
     implementation(libs.harmony)
     implementation(libs.kumo.core)
     implementation(libs.bimap)
-    implementation(libs.live.event)
-    implementation(libs.vertical.stepper.form)
     implementation(libs.mpAndroidChart)
     implementation(libs.nestedscrollwebview)
-
+    implementation(libs.skeletonlayout)
     implementation(libs.coil)
     implementation(libs.coil.gif)
 
@@ -182,11 +178,11 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.content.negotiation)
+    debugImplementation(libs.ktor.client.logging)
+    debugImplementation(libs.slf4j.simple)
 
     implementation(libs.aboutlibraries.core)
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
-
-    implementation(project(":lastfm"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.uiautomator)

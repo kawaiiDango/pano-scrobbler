@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.ComponentName
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -20,23 +18,22 @@ import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.size.Precision
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
-import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.AppIconFetcher
 import com.arn.scrobble.ui.AppIconKeyer
 import com.arn.scrobble.ui.DemoInterceptor
 import com.arn.scrobble.ui.MusicEntryImageInterceptor
 import com.arn.scrobble.ui.StarInterceptor
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import de.umass.lastfm.Caller
+import kotlinx.coroutines.flow.MutableSharedFlow
 import timber.log.Timber
-import java.io.File
-import java.util.logging.Level
 
 
 class App : Application(), ImageLoaderFactory, Configuration.Provider {
@@ -56,8 +53,6 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
 
         context = applicationContext
         super.onCreate()
-
-        initCaller()
 
         Timber.plant(Timber.DebugTree())
 
@@ -82,22 +77,11 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.P
             ) {
                 FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-            } // do manual collection in other (background) processes
+            }
             Timber.plant(CrashlyticsTree())
         }
 
         createChannels()
-    }
-
-    private fun initCaller() {
-        Caller.getInstance().apply {
-            logger.level = Level.WARNING
-            client = LFMRequester.okHttpClient
-            setCache(File(cacheDir, "lastfm-java"), Stuff.LASTFM_JAVA_CACHE_SIZE)
-            setErrorNotifier(29) { e ->
-                Timber.tag(Stuff.TAG).w(e)
-            }
-        }
     }
 
     private fun enableStrictMode() {
@@ -130,8 +114,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         val cm = ContextCompat.getSystemService(this, ConnectivityManager::class.java)!!
         val nr = NetworkRequest.Builder().apply {
             addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         }.build()
 
         cm.registerNetworkCallback(nr, object : ConnectivityManager.NetworkCallback() {
@@ -179,7 +162,9 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
     companion object {
         // not a leak
         lateinit var context: Context
+            private set
         val prefs by lazy { MainPrefs() }
+        val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
     }
 
 

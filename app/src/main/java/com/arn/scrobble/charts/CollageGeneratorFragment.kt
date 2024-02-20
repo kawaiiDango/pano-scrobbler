@@ -1,6 +1,7 @@
 package com.arn.scrobble.charts
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -26,25 +27,24 @@ import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getSingle
-import com.arn.scrobble.Stuff.mapConcurrently
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
 import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
-import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.getSelectedItemPosition
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.getSingle
+import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.ChipGroup
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -157,17 +157,17 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                     Stuff.TYPE_ALBUMS,
                     Stuff.TYPE_TRACKS
                 ).mapConcurrently(3) {
-                    kotlin.runCatching { fetchCharts(it, timePeriod) }
+                    fetchCharts(it, timePeriod)
                 }
             } else {
-                val result = kotlin.runCatching { fetchCharts(collageType, timePeriod) }
+                val result = fetchCharts(collageType, timePeriod)
                 listOf(result)
             }
 
-            if (results.all { it.isSuccess && it.getOrNull()?.pageResults != null }) {
+            if (results.all { it.isSuccess }) {
                 val (uri, text) = createCollage(
                     collageType,
-                    results.map { it.getOrNull()!!.pageResults.toList() })
+                    results.map { it.getOrNull()!!.entries })
 
                 resetProgress()
 
@@ -205,14 +205,12 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     }
 
     private suspend fun fetchCharts(type: Int, timePeriod: TimePeriod) =
-        withContext(Dispatchers.IO) {
-            Scrobblables.current!!.getCharts(
-                type,
-                timePeriod,
-                1,
-                activityViewModel.currentUser.name
-            )
-        }
+        Scrobblables.current!!.getCharts(
+            type,
+            timePeriod,
+            1,
+            activityViewModel.currentUser.name
+        )
 
     private suspend fun createCollage(
         type: Int,
@@ -398,7 +396,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             val profilePicUrl = if (activityViewModel.currentUser.isSelf)
                 prefs.drawerDataCached.profilePicUrl
             else
-                activityViewModel.currentUser.getWebpImageURL(ImageSize.EXTRALARGE)
+                activityViewModel.currentUser.largeImage
 
             val profilePicRequest = ImageRequest.Builder(requireContext()).apply {
                 data(profilePicUrl ?: R.drawable.vd_user)
@@ -532,7 +530,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                     }
                 }
                 gridItemBinding.collagePlayCount.text = resources.getQuantityString(
-                    R.plurals.num_scrobbles_noti, entry.playcount, " " + entry.playcount
+                    R.plurals.num_scrobbles_noti, (entry.playcount ?: 0), " " + entry.playcount
                 )
             }
         }
@@ -581,8 +579,9 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         binding.collageSaveButton.visibility = View.VISIBLE
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 }

@@ -1,156 +1,26 @@
 package com.arn.scrobble.pref
 
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.App
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.friends.UserAccountSerializable
-import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.scrobbleable.AccountType
-import de.umass.lastfm.ImageSize
+import com.arn.scrobble.utils.Stuff
+import com.franmontiel.persistentcookiejar.persistence.SerializableCookie
+import com.frybits.harmony.getHarmonySharedPreferences
+import io.ktor.http.Url
+import kotlinx.coroutines.runBlocking
+
 
 object MigratePrefs {
     fun migrate(prefs: MainPrefs) {
-        if (prefs.prefVersion < 2) {
-            migrateV2(prefs)
-            prefs.prefVersion = 2
-        }
         if (prefs.prefVersion < 3) {
             migrateV3(prefs)
             prefs.prefVersion = 3
         }
 
-    }
-
-    fun migrateV2(prefs: MainPrefs) {
-        val sharedPreferences = prefs.sharedPreferences
-        val lastfmUsername = sharedPreferences.getString(MainPrefs.PREF_LASTFM_USERNAME, null)
-        val lastfmSessKey = sharedPreferences.getString(MainPrefs.PREF_LASTFM_SESS_KEY, null)
-        val scrobblingSince =
-            sharedPreferences.getLong(MainPrefs.PREF_ACTIVITY_SCROBBLING_SINCE, -1)
-        val profilePicUrlCached =
-            sharedPreferences.getString(MainPrefs.PREF_ACTIVITY_PROFILE_PIC, null)
-        val librefmSessKey = sharedPreferences.getString(MainPrefs.PREF_LIBREFM_SESS_KEY, null)
-        val librefmUsername = sharedPreferences.getString(MainPrefs.PREF_LIBREFM_USERNAME, null)
-        val gnufmSessKey = sharedPreferences.getString(MainPrefs.PREF_GNUFM_SESS_KEY, null)
-        val gnufmUsername = sharedPreferences.getString(MainPrefs.PREF_GNUFM_USERNAME, null)
-        val gnufmRoot = sharedPreferences.getString(MainPrefs.PREF_GNUFM_ROOT, null)
-        val gnufmTlsNoVerify =
-            sharedPreferences.getBoolean(MainPrefs.PREF_GNUFM_TLS_NO_VERIFY, false)
-        val listenbrainzToken = sharedPreferences.getString(MainPrefs.PREF_LISTENBRAINZ_TOKEN, null)
-        val listenbrainzUsername =
-            sharedPreferences.getString(MainPrefs.PREF_LISTENBRAINZ_USERNAME, null)
-        val customListenbrainzToken =
-            sharedPreferences.getString(MainPrefs.PREF_LB_CUSTOM_TOKEN, null)
-        val customListenbrainzUsername =
-            sharedPreferences.getString(MainPrefs.PREF_LB_CUSTOM_USERNAME, null)
-        val customListenbrainzRoot =
-            sharedPreferences.getString(MainPrefs.PREF_LB_CUSTOM_ROOT, null)
-        val customListenbrainzTlsNoVerify =
-            sharedPreferences.getBoolean(MainPrefs.PREF_LB_CUSTOM_TLS_NO_VERIFY, false)
-
-
-        if (lastfmSessKey != null && lastfmUsername != null) {
-            val scrobbleAccounts = mutableListOf<UserAccountSerializable>()
-
-            // lastfm
-            var user = UserSerializable(
-                lastfmUsername,
-                "https://last.fm/user/$lastfmUsername",
-                lastfmUsername,
-                "",
-                scrobblingSince,
-                mapOf(
-                    ImageSize.MEDIUM to (profilePicUrlCached ?: ""),
-                    ImageSize.LARGE to (profilePicUrlCached ?: ""),
-                    ImageSize.EXTRALARGE to (profilePicUrlCached ?: ""),
-                )
-            )
-            var userAccountSerializable = UserAccountSerializable(
-                AccountType.LASTFM,
-                user,
-                lastfmSessKey,
-            )
-            scrobbleAccounts += userAccountSerializable
-
-
-            // librefm
-            if (librefmSessKey != null && librefmUsername != null) {
-                user = UserSerializable(
-                    librefmUsername,
-                    "https://www.libre.fm/user/$librefmUsername",
-                    librefmUsername,
-                    "",
-                    -1,
-                    mapOf()
-                )
-                userAccountSerializable = UserAccountSerializable(
-                    AccountType.LIBREFM,
-                    user,
-                    librefmSessKey,
-                )
-                scrobbleAccounts += userAccountSerializable
-            }
-
-
-            // GNUFM
-            if (gnufmSessKey != null && gnufmUsername != null) {
-                user = UserSerializable(
-                    gnufmUsername,
-                    "$gnufmRoot/user/$gnufmUsername",
-                    gnufmUsername,
-                    "",
-                    -1,
-                    mapOf()
-                )
-                userAccountSerializable = UserAccountSerializable(
-                    AccountType.GNUFM,
-                    user,
-                    gnufmSessKey,
-                    gnufmRoot,
-                    gnufmTlsNoVerify
-                )
-                scrobbleAccounts += userAccountSerializable
-            }
-
-
-            // listenbrainz
-            if (listenbrainzToken != null && listenbrainzUsername != null) {
-                user = UserSerializable(
-                    listenbrainzUsername,
-                    "https://listenbrainz.org/user/$listenbrainzUsername",
-                    listenbrainzUsername,
-                    "",
-                    -1,
-                    mapOf()
-                )
-                userAccountSerializable = UserAccountSerializable(
-                    AccountType.LISTENBRAINZ,
-                    user,
-                    listenbrainzToken,
-                )
-                scrobbleAccounts += userAccountSerializable
-            }
-
-
-            // custom listenbrainz
-            if (customListenbrainzToken != null && customListenbrainzUsername != null) {
-                user = UserSerializable(
-                    customListenbrainzUsername,
-                    "$customListenbrainzRoot/user/$customListenbrainzUsername",
-                    customListenbrainzUsername,
-                    "",
-                    -1,
-                    mapOf()
-                )
-                userAccountSerializable = UserAccountSerializable(
-                    AccountType.CUSTOM_LISTENBRAINZ,
-                    user,
-                    customListenbrainzToken,
-                    customListenbrainzRoot,
-                    customListenbrainzTlsNoVerify
-                )
-                scrobbleAccounts += userAccountSerializable
-            }
-
-            prefs.scrobbleAccounts = scrobbleAccounts
+        if (prefs.prefVersion < 4) {
+            migrateV4()
+            prefs.prefVersion = 4
         }
     }
 
@@ -172,7 +42,6 @@ object MigratePrefs {
 
             if (acc.type == AccountType.LISTENBRAINZ && acc.apiRoot == null)
                 acc = acc.copy(apiRoot = Stuff.LISTENBRAINZ_API_ROOT)
-
             else if (acc.type in arrayOf(
                     AccountType.CUSTOM_LISTENBRAINZ,
                     AccountType.GNUFM
@@ -188,4 +57,26 @@ object MigratePrefs {
 
         prefs.scrobbleAccounts = accounts
     }
+
+    private fun migrateV4() {
+
+        // migrate old cookies
+        val prefs = App.context.getHarmonySharedPreferences("CookiePersistence")
+        prefs.all.forEach { (key, value) ->
+            if ("|sessionid" in key || "|csrftoken" in key) {
+                val cookie = SerializableCookie.decode(value as String)
+                if (cookie != null)
+                    runBlocking {
+                        LastfmUnscrobbler.cookieStorage.addCookie(
+                            Url("https://" + cookie.domain!!),
+                            cookie
+                        )
+                    }
+            }
+        }
+
+        // clear old cookies
+        prefs.edit().clear().apply()
+    }
+
 }

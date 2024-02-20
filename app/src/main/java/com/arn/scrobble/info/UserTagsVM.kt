@@ -1,35 +1,101 @@
 package com.arn.scrobble.info
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.App
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.LastFm
+import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.pref.HistoryPref
-import de.umass.lastfm.MusicEntry
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
 
 
 class UserTagsVM : ViewModel() {
-    lateinit var entry: MusicEntry
-    lateinit var historyPref: HistoryPref
-    val tags = MutableLiveData<Set<String>>()
+    private val prefs = App.prefs
+    val historyPref by lazy {
+        HistoryPref(
+            App.prefs.sharedPreferences,
+            MainPrefs.PREF_ACTIVITY_TAG_HISTORY,
+            20
+        )
+    }
 
-    fun loadTags() {
-        LFMRequester(viewModelScope, tags).getUserTagsForEntry(entry, historyPref)
+    private val entry = MutableStateFlow<MusicEntry?>(null)
+
+    private val _tags = MutableStateFlow<Set<String>?>(null)
+    val tags = _tags.asStateFlow()
+
+    init {
+        populateTagHistoryIfNeeded()
+
+        historyPref.load()
+
+        viewModelScope.launch {
+            entry.filterNotNull()
+                .mapLatest {
+                    (Scrobblables.current as? LastFm)
+                        ?.getUserTagsFor(entry.value!!)
+                        ?.map {
+                            it.toptags.tag.map { it.name }
+                                .toSet()
+                        }
+                        ?.getOrNull() ?: emptySet()
+                }
+                .collectLatest { _tags.emit(it) }
+        }
+    }
+
+    fun setEntry(musicEntry: MusicEntry) {
+        viewModelScope.launch {
+            entry.emit(musicEntry)
+        }
     }
 
     fun deleteTag(tag: String) {
-        tags.value = tags.value?.filter { it != tag }?.toSet()
-        LFMRequester(viewModelScope).deleteUserTagsForEntry(entry, tag)
+        viewModelScope.launch {
+            _tags.emit(tags.value?.filter { it != tag }?.toSet())
+
+            (Scrobblables.current as? LastFm)
+                ?.removeUserTagFor(entry.value!!, tag)
+
+        }
     }
 
     fun addTag(newTags: String) {
-        tags.value = tags.value?.also { it + splitTags(newTags) }
+        viewModelScope.launch {
+            _tags.emit(tags.value?.also { it + splitTags(newTags) })
 
-        if (Stuff.isTestLab)
-            return
+            if (Stuff.isTestLab)
+                return@launch
 
-        LFMRequester(viewModelScope).addUserTagsForEntry(entry, newTags)
+            (Scrobblables.current as? LastFm)
+                ?.addUserTagsFor(entry.value!!, newTags)
+        }
+    }
+
+    private fun populateTagHistoryIfNeeded() {
+        if (prefs.userTopTagsFetched) return
+
+        viewModelScope.launch {
+            (Scrobblables.current as? LastFm)
+                ?.userGetTopTags(limit = 20)
+                ?.map { it.toptags.tag }
+                ?.onSuccess {
+                    it.reversed()
+                        .forEach {
+                            historyPref.add(it.name)
+                        }
+                    historyPref.save()
+                    prefs.userTopTagsFetched = true
+                }
+        }
     }
 
     fun splitTags(tags: String) = tags.split(",").map { it.trim() }

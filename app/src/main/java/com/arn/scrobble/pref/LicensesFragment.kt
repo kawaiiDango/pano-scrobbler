@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.databinding.ContentLicensesBinding
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
@@ -15,6 +16,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 class LicensesFragment : Fragment() {
     private var _binding: ContentLicensesBinding? = null
     private val binding get() = _binding!!
+    private val viewModel by viewModels<LicensesVM>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +44,13 @@ class LicensesFragment : Fragment() {
         postponeEnterTransition()
 
         binding.list.layoutManager = LinearLayoutManager(context)
-        binding.list.adapter = LicensesAdapter(requireContext())
+        val adapter = LicensesAdapter()
+        binding.list.adapter = adapter
 
-        (view.parent as? ViewGroup)?.doOnPreDraw {
-            startPostponedEnterTransition()
+        adapter.submitList(viewModel.libraries) {
+            (view.parent as? ViewGroup)?.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
         }
     }
 }

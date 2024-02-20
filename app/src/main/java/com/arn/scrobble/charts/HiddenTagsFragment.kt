@@ -11,12 +11,11 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResult
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -81,7 +80,7 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        setFragmentResult(
+        requireActivity().supportFragmentManager.setFragmentResult(
             Stuff.ARG_HIDDEN_TAGS_CHANGED,
             bundleOf(Stuff.ARG_HIDDEN_TAGS_CHANGED to changed)
         )

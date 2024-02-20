@@ -1,7 +1,6 @@
 package com.arn.scrobble.db
 
 import android.os.Build
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -9,9 +8,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.arn.scrobble.App
 import com.arn.scrobble.NLService
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.edits.RegexPresets
-import de.umass.lastfm.scrobble.ScrobbleData
+import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RegexEditsDao {
@@ -19,13 +19,10 @@ interface RegexEditsDao {
     fun all(): List<RegexEdit>
 
     @Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    fun allLd(): LiveData<List<RegexEdit>>
+    fun allFlow(): Flow<List<RegexEdit>>
 
     @Query("SELECT count(1) FROM $tableName")
-    fun count(): Int
-
-    @Query("SELECT count(1) FROM $tableName")
-    fun countLd(): LiveData<Int>
+    fun count(): Flow<Int>
 
     @Query("SELECT MAX(`order`) FROM $tableName")
     fun maxOrder(): Int?
@@ -34,7 +31,7 @@ interface RegexEditsDao {
     fun allPresets(): List<RegexEdit>
 
     @Query("SELECT count(1) FROM $tableName WHERE packages IS NOT NULL")
-    fun hasPkgNameLd(): LiveData<Boolean>
+    fun hasPkgNameFlow(): Flow<Boolean>
 
     @Query("UPDATE $tableName SET `order` = `order` + 1")
     fun shiftDown()
@@ -144,7 +141,7 @@ interface RegexEditsDao {
                             "albumArtist"
                         ).associateWith { groupName ->
                             scrobbleDataToRegexes.forEach { (sdField, regex) ->
-                                if (regex.pattern.isEmpty()) return@forEach
+                                if (regex.pattern.isEmpty() || sdField.isNullOrEmpty()) return@forEach
                                 val namedGroups =
                                     regex.find(sdField)?.groups ?: return@forEach
                                 val groupValue =
@@ -183,11 +180,11 @@ interface RegexEditsDao {
 
 
             try {
-                scrobbleData.artist = replaceField(scrobbleData.artist, NLService.B_ARTIST)
+                scrobbleData.artist = replaceField(scrobbleData.artist, NLService.B_ARTIST)!!
                 scrobbleData.album = replaceField(scrobbleData.album, NLService.B_ALBUM)
                 scrobbleData.albumArtist =
                     replaceField(scrobbleData.albumArtist, NLService.B_ALBUM_ARTIST)
-                scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)
+                scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)!!
 
                 // needs java 8
                 if (App.prefs.proStatus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)

@@ -1,12 +1,16 @@
 package com.arn.scrobble.ui
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import com.arn.scrobble.R
-import com.arn.scrobble.friends.UserSerializable
+import com.arn.scrobble.api.lastfm.User
+import com.arn.scrobble.friends.UserCached
 import com.google.android.material.color.MaterialColors
-import de.umass.lastfm.User
 import kotlin.math.min
 
 class InitialsDrawable(context: Context, name: String, colorFromHash: Boolean = true) : Drawable() {
@@ -50,10 +54,10 @@ class InitialsDrawable(context: Context, name: String, colorFromHash: Boolean = 
     private val textBounds = Rect()
 
 
-    constructor(context: Context, userSerializable: UserSerializable) :
+    constructor(context: Context, userCached: UserCached) :
             this(
                 context,
-                userSerializable.realname.ifEmpty { userSerializable.name }
+                userCached.realname.ifEmpty { userCached.name }
             )
 
     constructor(context: Context, user: User) :

@@ -1,6 +1,6 @@
 package com.arn.scrobble.info
 
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.utils.Stuff
 
 class ArtistExtraFragment : InfoExtraFullFragment() {
     override val type = Stuff.TYPE_ARTISTS

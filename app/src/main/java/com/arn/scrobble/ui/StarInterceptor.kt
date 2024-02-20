@@ -9,7 +9,7 @@ class StarInterceptor : Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val imgUrl = chain.request.data as? String
-        return if (imgUrl != null && starPatterns.any { imgUrl.contains(it) }) {
+        return if (imgUrl != null && starPattern in imgUrl) {
             chain.proceed(
                 ImageRequest.Builder(chain.request)
                     .data(R.drawable.vd_album_filled)
@@ -21,8 +21,6 @@ class StarInterceptor : Interceptor {
     }
 
     companion object {
-        val starPatterns = arrayOf(
-            "2a96cbd8b46e442fc41c2b86b821562f"
-        )
+        val starPattern = "2a96cbd8b46e442fc41c2b86b821562f"
     }
 }

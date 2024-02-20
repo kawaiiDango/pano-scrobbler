@@ -19,14 +19,21 @@ import androidx.navigation.fragment.navArgs
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.App
-import com.arn.scrobble.LoginFragment
-import com.arn.scrobble.LoginFragmentArgs
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.LastFm
+import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
@@ -35,19 +42,15 @@ import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
-import com.arn.scrobble.scrobbleable.AccountType
-import com.arn.scrobble.scrobbleable.Lastfm
-import com.arn.scrobble.scrobbleable.ListenBrainz
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.onboarding.LoginFragment
+import com.arn.scrobble.onboarding.LoginFragmentArgs
+import com.arn.scrobble.recents.PopupMenuUtils
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
-import de.umass.lastfm.Track
-import de.umass.lastfm.scrobble.ScrobbleData
-import de.umass.lastfm.scrobble.ScrobbleResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 
 
 class EditDialogFragment : LoginFragment() {
@@ -109,16 +112,11 @@ class EditDialogFragment : LoginFragment() {
 
         binding.loginTextfieldLast2.hint = getString(R.string.album_artist)
 
-        args.track?.let {
-            binding.loginTextfield1.editText!!.setText(it)
-        }
-        args.album?.let {
-            binding.loginTextfield2.editText!!.setText(it)
-        }
-        args.artist?.let {
-            binding.loginTextfieldLast.editText!!.setText(it)
-        }
-        args.albumArtist?.let {
+        binding.loginTextfield1.editText!!.setText(args.data.track)
+        binding.loginTextfield2.editText!!.setText(args.data.album)
+        binding.loginTextfieldLast.editText!!.setText(args.data.artist)
+
+        args.data.albumArtist?.let {
             binding.loginTextfieldLast2.visibility = View.VISIBLE
             binding.loginTextfieldLast2.editText!!.setText(it)
             moveImeActionToLast2()
@@ -134,7 +132,7 @@ class EditDialogFragment : LoginFragment() {
             binding.loginTextfieldLast.editText!!.text = tmp
         }
 
-        if (args.albumArtist.isNullOrEmpty()) {
+        if (args.data.albumArtist.isNullOrEmpty()) {
 
             binding.loginTextfieldLast.endIconMode = TextInputLayout.END_ICON_CUSTOM
             binding.loginTextfieldLast.setEndIconDrawable(R.drawable.vd_album_artist)
@@ -197,25 +195,33 @@ class EditDialogFragment : LoginFragment() {
 
     override suspend fun validateAsync(): Boolean {
         val track = binding.loginTextfield1.editText!!.text.toString().trim()
-        val origTrack = args.track ?: ""
+        val origTrack = args.data.track
         var album = binding.loginTextfield2.editText!!.text.toString().trim()
         var albumArtist = binding.loginTextfieldLast2.editText!!.text.toString().trim()
-        val origAlbum = args.album ?: ""
+        val origAlbum = args.data.album ?: ""
         val artist = binding.loginTextfieldLast.editText!!.text.toString().trim()
-        val origArtist = args.artist ?: ""
+        val origArtist = args.data.artist
         val msid = args.msid
-        val timeMillis = args.timeMillis
+        val timeSecs = args.data.timestamp
+        val isNowPlaying = args.data.timestamp > 0
+
         val fetchAlbumAndAlbumArtist = album.isBlank() && origAlbum.isBlank() && prefs.fetchAlbum
-        val rescrobbleRequired = !args.nowPlaying && (fetchAlbumAndAlbumArtist ||
+        val rescrobbleRequired = !isNowPlaying && (fetchAlbumAndAlbumArtist ||
                 (track.equals(origTrack, ignoreCase = true) &&
                         artist.equals(origArtist, ignoreCase = true)
                         && (album != origAlbum || albumArtist.isNotBlank())))
         var success = true
+        val scrobbleData = args.data
+        val lastfmScrobblable = Scrobblables.byType(AccountType.LASTFM)
+        val lastfmScrobbleResult: Result<ScrobbleIgnored>
 
-        val origTrackObj = Track(origTrack, null, origArtist).apply {
-            playedWhen = Date(timeMillis)
-            this.msid = msid
-        }
+        val origTrackObj = Track(
+            origTrack,
+            null,
+            Artist(origArtist),
+            date = timeSecs,
+            msid = msid
+        )
 
         fun saveEdit() {
             if (!(track == origTrack && artist == origArtist && album == origAlbum && albumArtist == "")) {
@@ -241,48 +247,41 @@ class EditDialogFragment : LoginFragment() {
             throw IllegalArgumentException(getString(R.string.required_fields_empty))
         }
 
-        if (!args.nowPlaying && track == origTrack &&
+        if (isNowPlaying && track == origTrack &&
             artist == origArtist && album == origAlbum && albumArtist == "" &&
             !(album == "" && prefs.fetchAlbum)
         ) {
             return true
         }
 
-        val scrobbleData = ScrobbleData().also {
-            it.artist = artist
-            it.track = track
-            it.timestamp = (timeMillis / 1000).toInt()
-            it.album = album
-            it.albumArtist = albumArtist
-            it.pkgName = args.packageName
-        }
-
         if (fetchAlbumAndAlbumArtist) {
-            val fetchedTrack = kotlin.runCatching { Track.getInfo(artist, track, Stuff.LAST_KEY) }
+            val newTrack = Track(track, null, Artist(artist))
+
+            val fetchedTrack = Requesters.lastfmUnauthedRequester
+                .getInfo(newTrack)
                 .getOrNull()
+
             if (album.isBlank() && fetchedTrack?.album != null) {
-                album = fetchedTrack.album
-                scrobbleData.album = fetchedTrack.album
+                album = fetchedTrack.album.name
+                scrobbleData.album = fetchedTrack.album.name
                 withContext(Dispatchers.Main) {
-                    binding.loginTextfield2.editText!!.setText(fetchedTrack.album)
+                    binding.loginTextfield2.editText!!.setText(fetchedTrack.album.name)
                 }
             }
-            if (albumArtist.isBlank() && fetchedTrack?.albumArtist != null) {
-                albumArtist = fetchedTrack.albumArtist
-                scrobbleData.albumArtist = fetchedTrack.albumArtist
+            if (albumArtist.isBlank() && fetchedTrack?.album?.artist != null) {
+                albumArtist = fetchedTrack.album.artist.name
+                scrobbleData.albumArtist = albumArtist
                 withContext(Dispatchers.Main) {
-                    binding.loginTextfieldLast2.editText!!.setText(fetchedTrack.albumArtist)
+                    binding.loginTextfieldLast2.editText!!.setText(albumArtist)
                 }
             }
         }
 
-        val lastfmScrobblable = Scrobblables.byType(AccountType.LASTFM)
-        var lastfmScrobbleResult: ScrobbleResult? = null
         // edit lastfm first
         if (lastfmScrobblable != null) {
             lastfmScrobbleResult = lastfmScrobblable.scrobble(scrobbleData)
-            if (lastfmScrobbleResult.isIgnored) {
-                if (System.currentTimeMillis() - timeMillis < Stuff.LASTFM_MAX_PAST_SCROBBLE)
+            if (lastfmScrobbleResult.map { it.ignored }.getOrNull() == true) {
+                if (System.currentTimeMillis() - timeSecs < Stuff.LASTFM_MAX_PAST_SCROBBLE)
                     throw IllegalArgumentException(
                         getString(R.string.lastfm) + ": " + getString(R.string.scrobble_ignored)
                     )
@@ -304,24 +303,32 @@ class EditDialogFragment : LoginFragment() {
                     }
                 }
             } else {
-                if (!args.nowPlaying) {
+                if (!isNowPlaying) {
                     // The user might submit the edit after it has been scrobbled, so delete anyways
-                    val deleteSucc = lastfmScrobblable.delete(origTrackObj)
-                    if (deleteSucc)
+                    val deleteResult = lastfmScrobblable.delete(origTrackObj)
+                    if (deleteResult.isSuccess)
                         CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
+                    else if (deleteResult.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException) {
+                        PopupMenuUtils.showReauthenticatePrompt(findNavController())
+                        return false
+                    }
                 }
                 if (rescrobbleRequired)
                     lastfmScrobblable.scrobble(scrobbleData)
 //                }
 
-                if (args.nowPlaying)
+                if (isNowPlaying)
                     lastfmScrobblable.updateNowPlaying(scrobbleData)
             }
 
-            val trackObj = Track(track, null, artist).also {
-                it.playedWhen = Date(timeMillis)
-                it.album = album
-            }
+            val _artist = Artist(artist)
+
+            val trackObj = Track(
+                track,
+                Album(album, _artist),
+                _artist,
+                date = timeSecs
+            )
 
             CachedTracksDao.deltaUpdateAll(trackObj, 1, DirtyUpdate.BOTH)
         }
@@ -329,17 +336,17 @@ class EditDialogFragment : LoginFragment() {
 
         // scrobble everywhere else (delete first)
         Scrobblables.all
-            .filter { it !is Lastfm }
+            .filter { it !is LastFm }
             .forEach {
-                if (!args.nowPlaying)
+                if (!isNowPlaying)
                     it.delete(origTrackObj)
                 // ListenBrainz cannot have two scrobbles with the same timestamp and delete is not immediate
                 // so add 1 sec
                 if (it is ListenBrainz)
-                    it.scrobble(ScrobbleData(scrobbleData).also { it.timestamp += 1 })
+                    it.scrobble(scrobbleData.copy(timestamp = scrobbleData.timestamp + 1))
                 else
                     it.scrobble(scrobbleData)
-                if (args.nowPlaying)
+                if (isNowPlaying)
                     it.updateNowPlaying(scrobbleData)
             }
 
@@ -353,15 +360,7 @@ class EditDialogFragment : LoginFragment() {
         saveEdit()
 
         // suggest regex edit
-        if (lastfmScrobbleResult == null || !lastfmScrobbleResult.isIgnored &&
-            !prefs.regexEditsLearnt
-        ) {
-            val originalScrobbleData = ScrobbleData().apply {
-                this.artist = origArtist
-                this.album = origAlbum
-                this.track = origTrack
-            }
-
+        if (success && !prefs.regexEditsLearnt) {
             val dao = PanoDb.db.getRegexEditsDao()
 
             val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets()
@@ -374,7 +373,7 @@ class EditDialogFragment : LoginFragment() {
 
             if (presetsAvailable.isNotEmpty()) {
                 val suggestedRegexReplacements = dao.performRegexReplace(
-                    originalScrobbleData,
+                    scrobbleData,
                     null,
                     presetsAvailable,
                 )
@@ -396,14 +395,17 @@ class EditDialogFragment : LoginFragment() {
         if (success) {
             // notify the edit
             (activity as? MainActivity)?.let {
-                mainNotifierViewModel.editData.postValue(
-                    Track(track, null, album, artist).apply {
-                        if (!args.nowPlaying)
-                            playedWhen = Date(timeMillis)
-                    }
+                val _artist = Artist(artist)
+                mainNotifierViewModel.notifyEdit(
+                    Track(
+                        track,
+                        Album(album, _artist),
+                        _artist,
+                        date = if (!isNowPlaying) null else timeSecs,
+                    )
                 )
             }
-            if (args.nowPlaying) {
+            if (!isNowPlaying) {
                 lockScrobble(false)
                 context?.sendBroadcast(
                     Intent(NLService.iCANCEL)

@@ -10,9 +10,9 @@ import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
 import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
+import com.arn.scrobble.utils.Stuff
 import java.util.Objects
 
 
@@ -74,7 +74,7 @@ internal fun updateAppWidget(
     val tab = prefs.tab ?: Stuff.TYPE_ARTISTS
     val period = prefs.period
     val bgAlpha = prefs.bgAlpha
-    val theme = WidgetTheme.values()[prefs.theme]
+    val theme = WidgetTheme.entries[prefs.theme]
     val hasShadow = prefs.shadow
 
     val layoutId = when {

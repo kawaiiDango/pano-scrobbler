@@ -3,16 +3,19 @@ package com.arn.scrobble.edits
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.databinding.ListItemSimpleEditBinding
 import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.ItemClickListener
 
 
 class SimpleEditsAdapter(
-    private val viewModel: SimpleEditsVM,
-    private val itemClickListener: ItemClickListener,
-) : RecyclerView.Adapter<SimpleEditsAdapter.VHSimpleEdit>() {
+    private val itemClickListener: ItemClickListener<SimpleEdit>,
+) : ListAdapter<SimpleEdit, SimpleEditsAdapter.VHSimpleEdit>(
+    GenericDiffCallback { oldItem, newItem -> oldItem._id == newItem._id }
+) {
 
     init {
         setHasStableIds(true)
@@ -28,25 +31,29 @@ class SimpleEditsAdapter(
     }
 
     override fun onBindViewHolder(holder: VHSimpleEdit, position: Int) {
-        holder.setItemData(viewModel.edits[position])
+        holder.setItemData(getItem(position))
     }
 
-    override fun getItemId(position: Int) = viewModel.edits[position]._id.toLong()
+    override fun getItemId(position: Int) =
+        getItem(position)._id.toLong()
 
-    override fun getItemCount() = viewModel.edits.size
 
-
-    fun tempUpdate(pos: Int, simpleEdit: SimpleEdit) {
-        viewModel.edits[pos] = simpleEdit
-        notifyItemChanged(pos)
-    }
-
-    class VHSimpleEdit(
+    inner class VHSimpleEdit(
         private val binding: ListItemSimpleEditBinding,
-        private val itemClickListener: ItemClickListener
+        private val itemClickListener: ItemClickListener<SimpleEdit>
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
+            itemView.setOnClickListener {
+                itemClickListener.call(
+                    it,
+                    bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
+            }
+            binding.editsDelete.setOnClickListener {
+                itemClickListener.call(
+                    it, bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
+            }
         }
 
         fun setItemData(e: SimpleEdit) {
@@ -57,9 +64,7 @@ class SimpleEditsAdapter(
             } else
                 binding.editsAlbum.visibility = View.GONE
             binding.editsArtist.text = e.artist
-            binding.editsDelete.setOnClickListener {
-                itemClickListener.call(it, bindingAdapterPosition)
-            }
+
             binding.editsImg.visibility = if (e.legacyHash != null)
                 View.INVISIBLE
             else

@@ -5,15 +5,16 @@ import android.app.Application
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
+import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import java.util.*
 import kotlin.math.min
@@ -29,9 +30,12 @@ class BillingRepository private constructor(private val application: Application
 
     private lateinit var playStoreBillingClient: BillingClient
     private val prefs = App.prefs
-    val proStatusLd by lazy { MutableLiveData(prefs.proStatus) }
-    val proPendingSinceLd by lazy { MutableLiveData(0L) }
-    val proProductDetailsLd by lazy { MutableLiveData<ProductDetails>() }
+    private val _proStatus by lazy { MutableStateFlow(prefs.proStatus) }
+    val proStatus by lazy { _proStatus.asStateFlow() }
+    private val _proPendingSince by lazy { MutableStateFlow(0L) }
+    val proPendingSince by lazy { _proPendingSince.asStateFlow() }
+    private val _proProductDetails by lazy { MutableStateFlow<ProductDetails?>(null) }
+    val proProductDetails by lazy { _proProductDetails.asStateFlow() }
     private var reconnectCount = 0
 
     fun startDataSourceConnections() {
@@ -156,7 +160,7 @@ class BillingRepository private constructor(private val application: Application
                 }
             } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
                 if (Tokens.PRO_PRODUCT_ID in purchase.products) {
-                    proPendingSinceLd.postValue(purchase.purchaseTime)
+                    _proPendingSince.tryEmit(purchase.purchaseTime)
                 }
             }
         }
@@ -219,22 +223,22 @@ class BillingRepository private constructor(private val application: Application
     private fun disburseNonConsumableEntitlement(purchase: Purchase) {
         if (Tokens.PRO_PRODUCT_ID in purchase.products) {
             prefs.proStatus = true
-            if (proStatusLd.value != true) {
-                proStatusLd.postValue(true)
+            if (_proStatus.value != true) {
+                _proStatus.tryEmit(true)
                 application.sendBroadcast(
                     Intent(NLService.iTHEME_CHANGED_S)
                         .setPackage(application.packageName),
                     NLService.BROADCAST_PERMISSION
                 )
             }
-            proPendingSinceLd.postValue(0)
+            _proPendingSince.tryEmit(0)
         }
     }
 
     private fun revokePro() {
         prefs.proStatus = false
-        if (proStatusLd.value != false)
-            proStatusLd.postValue(false)
+        if (_proStatus.value)
+            _proStatus.tryEmit(false)
     }
 
     private fun findProProduct(productDetailsList: List<ProductDetails>?): ProductDetails? {
@@ -247,7 +251,7 @@ class BillingRepository private constructor(private val application: Application
         )
             productDetails
         else if (productDetails != null) {
-            proProductDetailsLd.postValue(null)
+            _proProductDetails.tryEmit(null)
             revokePro()
             null
         } else null
@@ -272,7 +276,7 @@ class BillingRepository private constructor(private val application: Application
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
                     findProProduct(productDetailsList)?.let {
-                        proProductDetailsLd.postValue(it)
+                        _proProductDetails.tryEmit(it)
                     }
                 }
 

@@ -6,47 +6,57 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ListItemBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.ItemClickListener
 
 
 class BlockedMetadataAdapter(
-    private val viewModel: BlockedMetadataVM,
-    private val itemClickListener: ItemClickListener
-) : RecyclerView.Adapter<BlockedMetadataAdapter.VHBlockedTag>() {
+    private val itemClickListener: ItemClickListener<BlockedMetadata>
+) : ListAdapter<BlockedMetadata, BlockedMetadataAdapter.VHBlockedMetadata>(
+    GenericDiffCallback { o, n -> o._id == n._id }
+) {
 
     init {
         setHasStableIds(true)
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHBlockedTag {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHBlockedMetadata {
         val inflater = LayoutInflater.from(parent.context)
-        return VHBlockedTag(
+        return VHBlockedMetadata(
             ListItemBlockedMetadataBinding.inflate(inflater, parent, false),
             itemClickListener
         )
     }
 
-    override fun onBindViewHolder(holder: VHBlockedTag, position: Int) {
-        holder.setItemData(viewModel.blockedMetadata[position])
+    override fun onBindViewHolder(holder: VHBlockedMetadata, position: Int) {
+        holder.setItemData(getItem(position))
     }
 
-    fun getItem(idx: Int) = viewModel.blockedMetadata[idx]
 
-    override fun getItemCount() = viewModel.blockedMetadata.size
+    override fun getItemId(position: Int) = getItem(position)._id.toLong()
 
-    override fun getItemId(position: Int) = viewModel.blockedMetadata[position]._id.toLong()
-
-    class VHBlockedTag(
+    inner class VHBlockedMetadata(
         private val binding: ListItemBlockedMetadataBinding,
-        private val itemClickListener: ItemClickListener
+        private val itemClickListener: ItemClickListener<BlockedMetadata>
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
+            itemView.setOnClickListener {
+                itemClickListener.call(
+                    it,
+                    bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
+            }
+            binding.delete.setOnClickListener {
+                itemClickListener.call(
+                    it, bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
+            }
 
             fun setScaledDrawable(textView: TextView, @DrawableRes drawableRes: Int) {
                 val scaleFactor = 0.8f
@@ -88,9 +98,7 @@ class BlockedMetadataAdapter(
                 binding.action.visibility = View.GONE
             }
 
-            binding.delete.setOnClickListener {
-                itemClickListener.call(it, bindingAdapterPosition)
-            }
+
         }
     }
 }

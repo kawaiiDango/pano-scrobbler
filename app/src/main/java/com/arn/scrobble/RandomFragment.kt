@@ -1,33 +1,39 @@
 package com.arn.scrobble
 
 import android.os.Bundle
-import androidx.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
 import coil.load
-import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp600
 import com.arn.scrobble.charts.ChartsPeriodFragment
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.ui.createSkeletonWithFade
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.Stuff.putData
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
 import io.michaelrocks.bimap.HashBiMap
-import java.text.NumberFormat
+import kotlinx.coroutines.flow.filterNotNull
+import kotlin.random.Random
 
 
 /**
@@ -35,7 +41,7 @@ import java.text.NumberFormat
  */
 class RandomFragment : ChartsPeriodFragment() {
 
-    private val randomViewModel by viewModels<RandomVM>()
+    override val viewModel by viewModels<RandomVM>()
     private var _binding: ContentRandomBinding? = null
     private val binding get() = _binding!!
 
@@ -53,18 +59,6 @@ class RandomFragment : ChartsPeriodFragment() {
             )
         )
     }
-
-    override var lastPeriodSelectedJson
-        get() = App.prefs.lastRandomPeriodSelectedJson
-        set(value) {
-            App.prefs.lastRandomPeriodSelectedJson = value
-        }
-
-    override var lastPeriodType
-        get() = App.prefs.lastRandomPeriodType
-        set(value) {
-            App.prefs.lastRandomPeriodType = value
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,10 +86,7 @@ class RandomFragment : ChartsPeriodFragment() {
 
         postInit()
 
-        viewModel.username = activityViewModel.currentUser.name
-        randomViewModel.username = activityViewModel.currentUser.name
-
-        if (!activityViewModel.userIsSelf) {
+        if (!activityViewModel.currentUser.isSelf) {
             UiUtils.loadSmallUserPic(
                 binding.randomizeText.context,
                 activityViewModel.currentUser
@@ -111,7 +102,7 @@ class RandomFragment : ChartsPeriodFragment() {
 
         binding.randomScrobbleTypeGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
 
-            TransitionManager.beginDelayedTransition(group)
+//            TransitionManager.beginDelayedTransition(group)
 
             val btn = group.findViewById<MaterialButton>(checkedId)
             if (isChecked) {
@@ -121,36 +112,48 @@ class RandomFragment : ChartsPeriodFragment() {
                 btn.iconPadding = 0
                 btn.text = ""
             }
-
-            periodChipsBinding.root.visibility = (isChecked && checkedId == R.id.get_loved)
-                .let { if (it) View.INVISIBLE else View.VISIBLE }
         }
 
         binding.randomScrobbleTypeGroup.children.forEach {
             it.setOnClickListener {
                 val type = buttonToTypeBimap[it.id]!!
-                load(type)
+                load(type, true)
             }
         }
 
-        randomViewModel.data.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            randomViewModel.error.value = null
-            randomViewModel.setTotal(it.type, it.total)
-            viewModel.totalCount = it.total
+        val skeleton = binding.randomContentGroup.createSkeletonWithFade(binding.randomSkeleton)
 
-            if (it.entry != null) {
-                App.prefs.lastRandomType = it.type
-                setData(it.entry)
+        collectLatestLifecycleFlow(viewModel.musicEntry.filterNotNull()) {
+            setData(it)
+        }
+
+        collectLatestLifecycleFlow(viewModel.error) {
+            TransitionManager.beginDelayedTransition(
+                binding.root,
+                MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            )
+
+            if (it == null) {
+                binding.randomStatus.isVisible = false
+                binding.randomContentGroup.visibility = View.VISIBLE
+                return@collectLatestLifecycleFlow
             } else {
-                doneLoading(R.string.charts_no_data)
+                binding.randomStatus.text = getString(R.string.charts_no_data)
+                binding.randomContentGroup.visibility = View.INVISIBLE
+                binding.randomStatus.isVisible = true
             }
         }
 
-        randomViewModel.error.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            it.printStackTrace()
-            doneLoading(R.string.network_error)
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
+            if (it) {
+                skeleton.showOriginal()
+                if (viewModel.error.value == null)
+                    binding.randomContentGroup.visibility = View.VISIBLE
+            } else {
+                binding.randomStatus.isVisible = false
+                binding.randomContentGroup.visibility = View.INVISIBLE
+                skeleton.showSkeleton()
+            }
         }
 
         val type = arguments?.getInt(Stuff.ARG_TYPE) ?: App.prefs.lastRandomType
@@ -163,65 +166,44 @@ class RandomFragment : ChartsPeriodFragment() {
     override fun loadFirstPage(networkOnly: Boolean) {
         _binding ?: return
 
-        val type = buttonToTypeBimap[binding.randomScrobbleTypeGroup.checkedButtonId]!!
-        viewModel.selectedPeriod.value?.let { randomViewModel.timePeriod = it }
+        val type = buttonToTypeBimap[binding.randomScrobbleTypeGroup.checkedButtonId] ?: return
         load(type)
     }
 
-    private fun load(type: Int) {
-        if (randomViewModel.isLoading)
-            return
-        randomViewModel.loadRandom(type)
-        randomViewModel.isLoading = true
+    private fun load(type: Int, force: Boolean = false) {
+        periodChipsBinding.root.visibility =
+            if (type == Stuff.TYPE_LOVES)
+                View.INVISIBLE
+            else
+                View.VISIBLE
+
         if (!Stuff.isOnline) {
             binding.randomStatus.text = getString(R.string.unavailable_offline)
-            binding.randomStatus.visibility = View.VISIBLE
-            binding.randomProgress.hide()
-            randomViewModel.isLoading = false
+            binding.randomStatus.isVisible = true
         } else {
-            binding.randomStatus.visibility = View.GONE
-            binding.randomProgress.show()
+            viewModel.setInput(
+                MusicEntryLoaderInput(
+                    user = activityViewModel.currentUser,
+                    timePeriod = null,
+                    type = type,
+                    cacheBuster = if (force)
+                        Random.nextInt()
+                    else viewModel.input.value?.cacheBuster ?: 0
+                )
+            )
         }
 
         TransitionManager.beginDelayedTransition(
             binding.root,
             MaterialSharedAxis(MaterialSharedAxis.Z, false)
         )
-        binding.randomContentGroup.visibility = View.INVISIBLE
-        binding.randomScrobbleTypeGroup.children.forEach {
-            it.isClickable = false
-        }
-    }
-
-    private fun doneLoading(@StringRes errorMessageRes: Int? = null) {
-        randomViewModel.isLoading = false
-        binding.randomProgress.hide()
-
-        TransitionManager.beginDelayedTransition(
-            binding.root,
-            MaterialSharedAxis(MaterialSharedAxis.Z, true)
-        )
-
-        binding.randomScrobbleTypeGroup.children.forEach {
-            it.isClickable = true
-        }
-
-        if (errorMessageRes == null) {
-            binding.randomContentGroup.visibility = View.VISIBLE
-            binding.randomStatus.visibility = View.GONE
-        } else {
-            binding.randomStatus.text = getString(errorMessageRes)
-            binding.randomContentGroup.visibility = View.INVISIBLE
-            binding.randomStatus.visibility = View.VISIBLE
-        }
     }
 
     private fun setData(musicEntry: MusicEntry) {
-        doneLoading(null)
 
         val iconRes = when (musicEntry) {
             is Track -> {
-                if (musicEntry.isLoved)
+                if (musicEntry.userloved == true)
                     R.drawable.vd_heart
                 else
                     R.drawable.vd_note
@@ -229,7 +211,6 @@ class RandomFragment : ChartsPeriodFragment() {
 
             is Album -> R.drawable.vd_album
             is Artist -> R.drawable.vd_mic
-            else -> throw IllegalArgumentException("Unknown music entry type")
         }
 
         binding.itemName.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -241,53 +222,56 @@ class RandomFragment : ChartsPeriodFragment() {
 
         binding.itemName.text = musicEntry.name
 
+        val imageReq: Any
+
         when (musicEntry) {
             is Track -> {
                 binding.itemArtist.visibility = View.VISIBLE
-                binding.itemArtist.text = musicEntry.artist
+                binding.itemArtist.text = musicEntry.artist.name
 
-                val playedWhenTime = musicEntry.playedWhen?.time
+                val playedWhenTime = musicEntry.date
                 if (playedWhenTime != null && playedWhenTime > 0) {
                     binding.trackDate.visibility = View.VISIBLE
                     binding.trackDate.text = Stuff.myRelativeTime(requireContext(), playedWhenTime)
                 } else {
                     binding.trackDate.visibility = View.GONE
                 }
+
+                imageReq = musicEntry.webp600 ?: ""
             }
 
             is Album -> {
                 binding.itemArtist.visibility = View.VISIBLE
-                binding.itemArtist.text = musicEntry.artist
+                binding.itemArtist.text = musicEntry.artist!!.name
 
                 binding.trackDate.visibility = View.GONE
+
+                imageReq = musicEntry.webp600 ?: ""
             }
 
             is Artist -> {
                 binding.itemArtist.visibility = View.GONE
                 binding.trackDate.visibility = View.GONE
+
+                imageReq = MusicEntryImageReq(musicEntry)
             }
         }
 
         binding.randomItem.setOnClickListener {
             if (musicEntry.url != null) {
-                val args = musicEntry.toBundle()
+                val args = Bundle().putData(musicEntry)
                 findNavController().navigate(R.id.infoFragment, args)
             }
         }
 
-        val count = if (musicEntry.userPlaycount > 0)
-            musicEntry.userPlaycount
-        else if (musicEntry.playcount > 0)
-            musicEntry.playcount
-        else
-            -1
+        val count = musicEntry.userplaycount ?: musicEntry.playcount ?: -1
 
         if (count > 0) {
             binding.trackCount.visibility = View.VISIBLE
             binding.trackCount.text = resources.getQuantityString(
                 R.plurals.num_scrobbles_noti,
                 count,
-                NumberFormat.getInstance().format(count)
+                count.format()
             )
         } else {
             binding.trackCount.visibility = View.GONE
@@ -299,18 +283,10 @@ class RandomFragment : ChartsPeriodFragment() {
                     Stuff.launchSearchIntent(musicEntry, null)
                 }
             }
-        val imgUrl =
-            musicEntry.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600") ?: ""
 
-        val imgLoadData: Any = if (randomViewModel.data.value!!.type == Stuff.TYPE_ARTISTS) {
-            MusicEntryImageReq(musicEntry, ImageSize.EXTRALARGE, true)
-        } else {
-            imgUrl
-        }
-
-        binding.randomBigImg.load(imgLoadData) {
+        binding.randomBigImg.load(imageReq) {
             allowHardware(false) // because crash on oreo
-            placeholder(R.drawable.vd_wave_simple_filled)
+            placeholder(R.drawable.color_image_loading)
             error(R.drawable.vd_wave_simple_filled)
         }
     }

@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.app.Dialog
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -10,13 +11,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentOptionsMenuBinding
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
+import com.arn.scrobble.utils.NavUtils
+import com.arn.scrobble.utils.Stuff.getSingle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.parcelize.Parcelize
 
@@ -42,18 +45,19 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         val metadata = requireArguments().getSingle<OptionsMenuMetadata>()!!
         binding.optionsMenuNav.inflateMenu(metadata.menuRes)
 
-        if (billingViewModel.proStatus.value == true) {
+        if (billingViewModel.proStatus.value) {
             binding.optionsMenuNav.menu.removeItem(R.id.nav_pro)
         }
 
         mainNotifierViewModel.updateCanIndex()
-        if (mainNotifierViewModel.canIndex.value == false || !BuildConfig.DEBUG)
+        if (!mainNotifierViewModel.canIndex.value || !BuildConfig.DEBUG)
             binding.optionsMenuNav.menu.removeItem(R.id.nav_do_index)
 
         if (metadata.showHeader) {
             binding.headerNav.root.isVisible = true
-            mainNotifierViewModel.drawerData.observe(viewLifecycleOwner) {
-                it ?: return@observe
+
+            collectLatestLifecycleFlow(mainNotifierViewModel.drawerData) {
+                it ?: return@collectLatestLifecycleFlow
                 scheduleTransition()
                 NavUtils.updateHeaderWithDrawerData(binding.headerNav, mainNotifierViewModel)
             }
@@ -79,8 +83,10 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
             if (menuItem.itemId !in dontDismissForTheseIds)
                 dismiss()
             else
-                optionsMenuViewModel.menuEvent.value =
-                    binding.optionsMenuNav to selectedMenuItemId!!
+                optionsMenuViewModel.onMenuItemSelected(
+                    binding.optionsMenuNav,
+                    selectedMenuItemId!!
+                )
 
             true
         }
@@ -88,16 +94,17 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         // if the new destination is a BottomSheetDialogFragment, both get dismissed otherwise
         selectedMenuItemId?.let {
-            optionsMenuViewModel.menuEvent.value = binding.optionsMenuNav to it
+            optionsMenuViewModel.onMenuItemSelected(binding.optionsMenuNav, it)
         }
         _binding = null
     }

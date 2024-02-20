@@ -2,6 +2,7 @@ package com.arn.scrobble
 
 import android.support.v4.media.RatingCompat
 import android.support.v4.media.session.MediaControllerCompat
+import com.arn.scrobble.utils.Stuff
 
 object PlayerActions {
 

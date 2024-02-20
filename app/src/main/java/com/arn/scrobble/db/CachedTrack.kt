@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import de.umass.lastfm.Track
-import java.util.Date
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.Track
 
 @Entity(
     tableName = CachedTracksDao.tableName,
@@ -39,39 +39,32 @@ data class CachedTrack(
 
     companion object {
         fun CachedTrack.toTrack() = Track(
-            _id,
-            trackName,
-            trackUrl,
-            trackMbid,
-            null,
-            0,
-            userPlayCount,
-            if (isLoved) 1 else 0,
-            0,
-            durationSecs,
-            false,
-            null,
-            null,
-            artistName,
-            artistUrl,
-            artistMbid,
-            Date(lastPlayed),
-            false,
-            false
+            name = trackName,
+            url = trackUrl,
+            mbid = trackMbid,
+            artist = Artist(
+                name = artistName,
+                url = artistUrl,
+                mbid = artistMbid
+            ),
+            album = null,
+            duration = durationSecs,
+            playcount = userPlayCount,
+            userloved = isLoved,
+            date = lastPlayed.toInt()
         )
 
         fun Track.toCachedTrack() = CachedTrack(
-            _id = id?.toInt() ?: 0,
             trackName = name,
             trackUrl = url ?: "",
             trackMbid = mbid ?: "",
-            artistName = artist,
-            artistUrl = artistUrl ?: "",
-            artistMbid = artistMbid ?: "",
-            userPlayCount = playcount,
-            isLoved = isLoved,
-            durationSecs = duration,
-            lastPlayed = playedWhen?.time ?: -1
+            artistName = artist.name,
+            artistUrl = artist.url ?: "",
+            artistMbid = artist.mbid ?: "",
+            durationSecs = duration ?: -1,
+            userPlayCount = playcount ?: -1,
+            isLoved = userloved ?: false,
+            lastPlayed = date?.toLong() ?: -1
         )
     }
 }

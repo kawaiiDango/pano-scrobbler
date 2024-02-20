@@ -7,7 +7,8 @@ import android.widget.LinearLayout
 import androidx.core.content.res.TypedArrayUtils
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
-import coil.load
+import coil.imageLoader
+import coil.request.ImageRequest
 import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.PrefAppIconsBinding
@@ -59,19 +60,28 @@ class AppIconsPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defSty
         if (packageNames != prevPackageNames || binding.appIconsContainer.childCount == 0) {
             binding.appIconsContainer.removeAllViews()
 
-            for (i in 0 until minOf(maxIcons, packageNames.size)) {
-                ShapeableImageView(context).apply {
-                    scaleType = ImageView.ScaleType.FIT_CENTER
-                    layoutParams = LinearLayout.LayoutParams(wPx, wPx)
-                    val padding = wPx / 8
-                    setPadding(padding, padding, padding, padding)
-                    load(PackageName(packageNames.elementAt(i))) {
-                        allowHardware(false)
-                        scale(Scale.FIT)
-                    }
-                    binding.appIconsContainer.addView(this)
+            packageNames
+                .take(maxIcons)
+                .map {
+                    ImageRequest.Builder(context)
+                        .data(PackageName(it))
+                        .allowHardware(false)
+                        .scale(Scale.FIT)
+                        .target(
+                            onSuccess = { drawable ->
+                                ShapeableImageView(context).apply {
+                                    scaleType = ImageView.ScaleType.FIT_CENTER
+                                    layoutParams = LinearLayout.LayoutParams(wPx, wPx)
+                                    val padding = wPx / 8
+                                    setPadding(padding, padding, padding, padding)
+                                    setImageDrawable(drawable)
+                                    binding.appIconsContainer.addView(this)
+                                }
+                            },
+                        ).build()
+                }.forEach {
+                    context.imageLoader.enqueue(it)
                 }
-            }
             prevPackageNames = packageNames
         }
     }

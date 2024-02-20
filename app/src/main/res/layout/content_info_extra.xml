@@ -17,7 +17,6 @@
             android:layout_marginHorizontal="16dp"
             android:textAppearance="?textAppearanceTitleLarge"
             android:textColor="?colorPrimary"
-            android:textIsSelectable="true"
             tools:text="title" />
 
         <ViewStub

@@ -46,12 +46,11 @@ class TestFragment : Fragment() {
             avd.start()
         }
 
-        binding.testButton.text = viewModel.page.toString()
+        binding.testButton.text = "text"
         binding.testButton.setOnClickListener {
             findNavController().navigate(R.id.prefFragment)
         }
 
-        viewModel.page++
         // save app icon
 //        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
 //            val file = File(requireActivity().filesDir.path, "ic_launcher.png")

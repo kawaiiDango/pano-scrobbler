@@ -9,19 +9,22 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ListItemRegexEditBinding
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.color.MaterialColors
 
 
 class RegexEditsAdapter(
-    private val viewModel: RegexEditsVM,
-    private val itemClickListener: ItemClickListener,
-) : RecyclerView.Adapter<RegexEditsAdapter.VHRegexEdit>() {
+    private val itemClickListener: ItemClickListener<RegexEdit>,
+) : ListAdapter<RegexEdit, RegexEditsAdapter.VHRegexEdit>(
+    GenericDiffCallback { old, new -> old._id == new._id }
+) {
 
     lateinit var itemTouchHelper: RegexItemTouchHelper
 
@@ -46,21 +49,22 @@ class RegexEditsAdapter(
     }
 
     override fun onBindViewHolder(holder: VHRegexEdit, position: Int) {
-        holder.setItemData(viewModel.regexes[position])
+        holder.setItemData(getItem(position))
     }
 
-    fun getItem(idx: Int) = viewModel.regexes[idx]
+    override fun getItemId(position: Int) = getItem(position)._id.toLong()
 
-    override fun getItemCount() = viewModel.regexes.size
-
-    override fun getItemId(position: Int) = viewModel.regexes[position]._id.toLong()
-
-    class VHRegexEdit(
+    inner class VHRegexEdit(
         val binding: ListItemRegexEditBinding,
-        private val itemClickListener: ItemClickListener
+        private val itemClickListener: ItemClickListener<RegexEdit>
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
+            itemView.setOnClickListener {
+                itemClickListener.call(
+                    it,
+                    bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
+            }
         }
 
         fun setItemData(editParam: RegexEdit) {
@@ -103,10 +107,16 @@ class RegexEditsAdapter(
             binding.editModifiers.text = createImageSpans(modifiersSet.joinToString())
 
             binding.editHandle.setOnClickListener {
-                itemClickListener.call(it, bindingAdapterPosition)
+                itemClickListener.call(
+                    it,
+                    bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
             }
             itemView.setOnClickListener {
-                itemClickListener.call(it, bindingAdapterPosition)
+                itemClickListener.call(
+                    it,
+                    bindingAdapterPosition
+                ) { getItem(bindingAdapterPosition) }
             }
         }
 

@@ -8,26 +8,36 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AppListVM(application: Application) : AndroidViewModel(application) {
-    val data = MutableLiveData<SectionedVirtualList>()
+    private val _appList = MutableStateFlow(SectionedVirtualList())
+    val appList = _appList.asStateFlow()
     private val packageManager = application.packageManager
     val selectedPackages = mutableSetOf<String>()
-    val isLoading = MutableLiveData(true)
+    private val _hasLoaded = MutableStateFlow(false)
+    val hasLoaded = _hasLoaded.asStateFlow()
+    private val prefs = App.prefs
 
-    fun load(checkDefaultApps: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
+    init {
+        viewModelScope.launch {
+            load(!prefs.appListWasRun)
+        }
+    }
+
+    suspend fun load(checkDefaultApps: Boolean) {
+        withContext(Dispatchers.IO) {
             val application = getApplication<Application>()
             val sectionedList = SectionedVirtualList()
             val packagesAdded = mutableSetOf(application.packageName)
@@ -106,10 +116,6 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
             if (checkDefaultApps)
                 selectedPackages += musicPlayers.packagesSet
 
-            withContext(Dispatchers.Main) {
-                data.value = sectionedList
-            }
-
             val systemApps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 packageManager.getInstalledApplications(PackageManager.MATCH_SYSTEM_ONLY)
                     .filter { it.packageName in App.prefs.seenPackages }
@@ -131,12 +137,8 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
                     )
                 )
             )
-
-            withContext(Dispatchers.Main) {
-                isLoading.value = false
-                data.value = sectionedList
-            }
-
+            _appList.emit(sectionedList)
+            _hasLoaded.emit(true)
         }
     }
 

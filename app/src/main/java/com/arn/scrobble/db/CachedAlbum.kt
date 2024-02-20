@@ -4,9 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import de.umass.lastfm.Album
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Track
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.ImageSize
+import com.arn.scrobble.api.lastfm.LastFmImage
+import com.arn.scrobble.api.lastfm.Track
 
 @Entity(
     tableName = CachedAlbumsDao.tableName,
@@ -32,44 +34,38 @@ data class CachedAlbum(
 ) {
     companion object {
         fun CachedAlbum.toAlbum() = Album(
-            _id,
-            albumName,
-            albumUrl,
-            albumMbid,
-            0,
-            userPlayCount,
-            0,
-            artistName,
-            artistUrl,
-            artistMbid,
-            false
-        ).apply {
-            imageUrlsMap = mapOf(ImageSize.LARGE to (largeImageUrl ?: return@apply))
-        }
+            name = albumName,
+            url = albumUrl,
+            mbid = albumMbid,
+            artist = Artist(
+                name = artistName,
+                url = artistUrl,
+                mbid = artistMbid
+            ),
+            playcount = userPlayCount,
+            image = largeImageUrl?.let { listOf(LastFmImage(ImageSize.EXTRALARGE.value, it)) },
+        )
 
         fun Album.toCachedAlbum() = CachedAlbum(
-            _id = id?.toInt() ?: 0,
             albumName = name,
             albumUrl = url ?: "",
             albumMbid = mbid ?: "",
-            artistName = artist,
-            artistUrl = artistUrl ?: "",
-            artistMbid = artistMbid ?: "",
-            userPlayCount = playcount,
-            largeImageUrl = getImageURL(ImageSize.LARGE)?.ifEmpty { null }
-            // useless. always empty for limit=1000
+            artistName = artist!!.name,
+            artistUrl = artist.url ?: "",
+            artistMbid = artist.mbid ?: "",
+            userPlayCount = playcount ?: -1,
+            largeImageUrl = image?.find { it.size == ImageSize.EXTRALARGE.value }?.url
         )
 
         fun Track.toCachedAlbum() = CachedAlbum(
-            _id = id?.toInt() ?: 0,
-            albumName = album!!,
-            albumUrl = "",
-            albumMbid = albumMbid ?: "",
-            artistName = artist,
-            artistUrl = artistUrl ?: "",
-            artistMbid = artistMbid ?: "",
-            userPlayCount = playcount,
-            largeImageUrl = getImageURL(ImageSize.LARGE)?.ifEmpty { null }
+            albumName = album?.name ?: "",
+            albumUrl = album?.url ?: "",
+            albumMbid = album?.mbid ?: "",
+            artistName = artist.name,
+            artistUrl = artist.url ?: "",
+            artistMbid = artist.mbid ?: "",
+            userPlayCount = playcount ?: -1,
+            largeImageUrl = image?.find { it.size == ImageSize.EXTRALARGE.value }?.url
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.arn.scrobble.info
 
+import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -11,15 +12,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.copyToClipboard
+import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.databinding.ContentTagInfoBinding
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.arn.scrobble.ui.UiUtils.startFadeLoop
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.copyToClipboard
+import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.Stuff.getData
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.flow.filterNotNull
 import java.net.URLEncoder
-import java.text.NumberFormat
 
 
 class TagInfoFragment : BottomSheetDialogFragment() {
@@ -46,8 +51,8 @@ class TagInfoFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tag = requireArguments().getString(Stuff.ARG_TAG)!!
-        binding.tagInfoTitle.text = tag
+        val tag = requireArguments().getData<Tag>()!!
+        binding.tagInfoTitle.text = tag.name
 
         binding.tagInfoTitle.setOnLongClickListener {
             requireContext().copyToClipboard(binding.tagInfoTitle.text.toString())
@@ -56,25 +61,21 @@ class TagInfoFragment : BottomSheetDialogFragment() {
 
         binding.tagInfoLink.setOnClickListener {
             Stuff.openInBrowser(
-                "https://www.last.fm/tag/" + URLEncoder.encode(tag, "UTF-8")
+                "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8")
             )
         }
         binding.root.startFadeLoop()
 
-        viewModel.info.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val tagInfo = it.first ?: return@observe
-            val similarTags = it.second
-
+        collectLatestLifecycleFlow(viewModel.info.filterNotNull()) {
             binding.root.clearAnimation()
             scheduleTransition()
 
             binding.tagInfoContent.visibility = View.VISIBLE
 
-            binding.tagInfoTaggers.text = NumberFormat.getInstance().format(tagInfo.reach)
-            binding.tagInfoTaggings.text = NumberFormat.getInstance().format(tagInfo.count)
+            binding.tagInfoTaggers.text = it.reach?.format()
+            binding.tagInfoTaggings.text = it.count?.format()
 
-            var wikiText = tagInfo.wikiText ?: tagInfo.wikiSummary
+            var wikiText = it.wiki?.content
             if (!wikiText.isNullOrBlank()) {
                 var idx = wikiText.indexOf("<a href=\"http://www.last.fm")
                 if (idx == -1)
@@ -121,33 +122,14 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                     }
                 }
             }
-/*
-            if (!similarTags.isNullOrEmpty()) {
-                binding.tagInfoSimilarTitle.visibility = View.VISIBLE
-                binding.tagInfoTags.removeAllViews()
-                similarTags.forEach {
-                    val chip = Chip(requireContext())
-                    chip.text = it.name
-                    chip.setOnClickListener { _ ->
-                        val tif = TagInfoFragment()
-                        val b = Bundle()
-                        b.putString(Stuff.ARG_TAG, it.name)
-                        tif.arguments = b
-                        tif.show(parentFragmentManager, null)
-                    }
-                    binding.tagInfoTags.addView(chip)
-                }
-            }
-
- */
         }
 
-        if (viewModel.info.value == null)
-            viewModel.loadInfo(tag)
+        viewModel.loadInfoIfNeeded(tag)
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded()
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it)
+        }
     }
 }

@@ -13,7 +13,13 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arn.scrobble.App.Companion.prefs
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.PageResult
+import com.arn.scrobble.api.lastfm.Period
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.CachedAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
@@ -24,17 +30,11 @@ import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTracksDao.Companion.deltaUpdate
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.scrobbleable.AccountType
-import com.arn.scrobble.scrobbleable.GnuFm
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.lastfm.LastFm
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.UiUtils
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.PaginatedResult
-import de.umass.lastfm.Period
-import de.umass.lastfm.Track
-import de.umass.lastfm.User
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -46,9 +46,7 @@ class IndexingWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     private val db = PanoDb.db
-    private val lastfmScrobblable = Scrobblables.current as? GnuFm
-    private val session by lazy { lastfmScrobblable!!.sessionCopy() }
-    private val username by lazy { lastfmScrobblable!!.userAccount.user.name }
+    private val lastfmScrobblable = Scrobblables.current as? LastFm
 
     override suspend fun getForegroundInfo() = ForegroundInfo(
         NAME.hashCode(),
@@ -101,6 +99,7 @@ class IndexingWorker(
         val numPages = Stuff.MAX_INDEXED_ITEMS / limitPerPage
         val maxCalls = numPages * 4
         var callsMade = 0
+        lastfmScrobblable!!
 
         suspend fun postProgress(finished: Boolean = false) {
             if (finished)
@@ -114,25 +113,22 @@ class IndexingWorker(
 
         val list = mutableListOf<MusicEntry>()
 
-        val lastScrobbledTrack = User.getRecentTracks(
-            null,
-            1,
-            1,
-            session
-        ).pageResults.find { it.playedWhen != null }
+        val lastScrobbledTrack = lastfmScrobblable.getRecents(
+            page = 1,
+            limit = 1,
+        ).getOrNull()?.entries?.find { it.date != null }
             ?: throw IllegalStateException("No scrobbled tracks found")
 
         for (i in 1..numPages) {
-            val artists = User.getTopArtists(
-                username,
-                Period.OVERALL,
-                limitPerPage,
-                i,
-                session
-            )
+            val artists = lastfmScrobblable.getCharts(
+                timePeriod = TimePeriod(Period.OVERALL),
+                limit = limitPerPage,
+                page = i,
+                type = Stuff.TYPE_ARTISTS
+            ).getOrThrow()
             postProgress()
-            list.addAll(artists.pageResults)
-            if (i >= artists.totalPages)
+            list.addAll(artists.entries)
+            if (i >= artists.attr.totalPages)
                 break
         }
 
@@ -144,16 +140,15 @@ class IndexingWorker(
 
 
         for (i in 1..numPages) {
-            val albums = User.getTopAlbums(
-                username,
-                Period.OVERALL,
-                limitPerPage,
-                i,
-                session
-            )
+            val albums = lastfmScrobblable.getCharts(
+                timePeriod = TimePeriod(Period.OVERALL),
+                limit = limitPerPage,
+                page = i,
+                type = Stuff.TYPE_ALBUMS
+            ).getOrThrow()
             postProgress()
-            list.addAll(albums.pageResults)
-            if (i >= albums.totalPages)
+            list.addAll(albums.entries)
+            if (i >= albums.attr.totalPages)
                 break
         }
 
@@ -164,16 +159,15 @@ class IndexingWorker(
         list.clear()
 
         for (i in 1..numPages) {
-            val tracks = User.getTopTracks(
-                username,
-                Period.OVERALL,
-                limitPerPage,
-                i,
-                session
-            )
+            val tracks = lastfmScrobblable.getCharts(
+                timePeriod = TimePeriod(Period.OVERALL),
+                limit = limitPerPage,
+                page = i,
+                type = Stuff.TYPE_ARTISTS
+            ).getOrThrow()
             postProgress()
-            list.addAll(tracks.pageResults)
-            if (i >= tracks.totalPages)
+            list.addAll(tracks.entries)
+            if (i >= tracks.attr.totalPages)
                 break
         }
 
@@ -181,15 +175,13 @@ class IndexingWorker(
 
         for (i in 1..numPages) {
             val lovedTracks =
-                User.getLovedTracks(
-                    username,
-                    limitPerPage,
-                    i,
-                    session
-                )
+                lastfmScrobblable.getLoves(
+                    limit = limitPerPage,
+                    page = i,
+                ).getOrThrow()
             postProgress()
-            lovedTracksList.addAll(lovedTracks.pageResults)
-            if (i >= lovedTracks.totalPages)
+            lovedTracksList.addAll(lovedTracks.entries)
+            if (i >= lovedTracks.attr.totalPages)
                 break
         }
 
@@ -197,18 +189,19 @@ class IndexingWorker(
 
         list.forEach {
             it as Track
-            tracksMap[it.artist to it.name] = it
+            tracksMap[it.artist.name to it.name] = it
         }
 
         lovedTracksList.forEach {
-            val pair = it.artist to it.name
+            val pair = it.artist.name to it.name
             if (pair in tracksMap) {
-                val existingTrack = tracksMap[pair] as Track
-                existingTrack.isLoved = true
-                existingTrack.playedWhen = it.playedWhen
+                val existingTrack = (tracksMap[pair] as Track)
+                tracksMap[pair] = existingTrack.copy(
+                    userloved = true,
+                    date = it.date
+                )
             } else {
-                it.isLoved = true
-                list += it
+                list += it.copy(userloved = true)
             }
         }
 
@@ -217,7 +210,7 @@ class IndexingWorker(
             insert(list.map { (it as Track).toCachedTrack() })
         }
 
-        prefs.lastFullIndexedScrobbleTime = lastScrobbledTrack.playedWhen.time
+        prefs.lastFullIndexedScrobbleTime = lastScrobbledTrack.date!! * 1000L
         prefs.lastFullIndexTime = System.currentTimeMillis()
 
         prefs.lastDeltaIndexedScrobbleTime = null
@@ -226,7 +219,7 @@ class IndexingWorker(
         postProgress(finished = true)
     }
 
-    private suspend fun runDeltaIndex(prFromRecents: PaginatedResult<Track>? = null) {
+    private suspend fun runDeltaIndex(prFromRecents: PageResult<Track>? = null) {
 
         Stuff.log(this::runDeltaIndex.name)
 
@@ -245,36 +238,35 @@ class IndexingWorker(
                 lastfmScrobblable!!
                     .getRecents(
                         currentPage,
-                        null,
-                        from = from,
-                        to = to,
+                        from = (from / 1000).toInt(),
+                        to = (to / 1000).toInt(),
                         limit = limitPerPage,
-                    )
+                    ).getOrThrow()
             }
 
             val firstPage = recentsCall()
 
-            if (firstPage.totalPages > maxCalls)
+            if (firstPage.attr.totalPages > maxCalls)
                 throw IllegalStateException("Too many pages, run full index instead")
 
-            tracks += firstPage.pageResults
+            tracks += firstPage.entries
 
-            for (i in 2..firstPage.totalPages) {
+            for (i in 2..firstPage.attr.totalPages) {
                 currentPage = i
                 val pr = recentsCall()
-                tracks += pr.pageResults
+                tracks += pr.entries
             }
         } else {
-            val lastTrack = prFromRecents.pageResults.lastOrNull()
+            val lastTrack = prFromRecents.entries.lastOrNull()
 
-            if (prFromRecents.page == 1 && lastTrack != null) {
-                if (lastTrack.playedWhen.time > from)
+            if (prFromRecents.attr.page == 1 && lastTrack != null) {
+                if (lastTrack.date != null && lastTrack.date > from / 1000)
                     throw IllegalStateException("More than one page, run indexing manually")
 
                 // todo handle pending scrobbles submitted at an earlier time
 
-                for (track in prFromRecents.pageResults) {
-                    if (!track.isNowPlaying && track.playedWhen != null && track.playedWhen.time > from)
+                for (track in prFromRecents.entries) {
+                    if (track.date != null && track.date > from / 1000)
                         tracks += track
                     else
                         break
@@ -289,14 +281,14 @@ class IndexingWorker(
 
         tracks.forEach {
             val cachedTrack = it.toCachedTrack().apply { lastPlayed = -1 }
-            val cachedAlbum = if (!it.album.isNullOrEmpty()) it.toCachedAlbum() else null
+            val cachedAlbum = if (it.album != null) it.toCachedAlbum() else null
             val cachedArtist = it.toCachedArtist()
 
-            val playedWhen = it.playedWhen?.time ?: -1
+            val playedWhen = it.date ?: -1
 
             // put max time
             if (tracksLastPlayedMap[cachedTrack] == null || tracksLastPlayedMap[cachedTrack]!! < playedWhen)
-                tracksLastPlayedMap[cachedTrack] = playedWhen
+                tracksLastPlayedMap[cachedTrack] = playedWhen.toLong()
 
             trackCounts[cachedTrack] = (trackCounts[cachedTrack] ?: 0) + 1
             if (cachedAlbum != null)
@@ -319,7 +311,7 @@ class IndexingWorker(
         }
 
         tracks.firstOrNull()?.let {
-            prefs.lastDeltaIndexedScrobbleTime = it.playedWhen!!.time
+            prefs.lastDeltaIndexedScrobbleTime = it.date!! * 1000L
             prefs.lastDeltaIndexTime = System.currentTimeMillis()
         }
 
@@ -355,8 +347,8 @@ class IndexingWorker(
             WorkManager.getInstance(context).cancelUniqueWork(NAME)
         }
 
-        fun livedata(context: Context) =
-            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(NAME)
+        fun flow(context: Context) =
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(NAME)
 
 
     }

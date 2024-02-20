@@ -1,15 +1,14 @@
 package com.arn.scrobble.ui
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.view.ScaleGestureDetector
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.App
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.wrappedGet
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.wrappedGet
 import kotlin.math.roundToInt
 
 class ScalableGrid(
@@ -43,11 +42,8 @@ class ScalableGrid(
         }
 
         val scaleGestureDetector = ScaleGestureDetector(context, gridScaleGestureDetector)
-            .apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    isStylusScaleEnabled = true
-                }
-            }
+        scaleGestureDetector.isStylusScaleEnabled = true
+
 
         recyclerView.setOnTouchListener { view, motionEvent ->
             scaleGestureDetector.onTouchEvent(motionEvent)

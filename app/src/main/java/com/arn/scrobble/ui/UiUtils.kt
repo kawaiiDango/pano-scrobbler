@@ -2,11 +2,10 @@ package com.arn.scrobble.ui
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Dialog
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
@@ -28,7 +27,6 @@ import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ScrollView
@@ -36,8 +34,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -45,6 +43,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updateLayoutParams
@@ -52,6 +51,9 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavArgumentBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -72,22 +74,26 @@ import coil.transform.CircleCropTransformation
 import com.arn.scrobble.App
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.LayoutSnowfallBinding
-import com.arn.scrobble.friends.UserSerializable
+import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.ImageSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -234,49 +240,6 @@ object UiUtils {
         return this
     }
 
-    /**
-     * Adds an extra action button to this snackbar.
-     * [aLayoutId] must be a layout with a Button as root element.
-     * [aLabel] defines new button label string.
-     * [aListener] handles our new button click event.
-     */
-    fun Snackbar.addAction(
-        @LayoutRes aLayoutId: Int,
-        @StringRes aLabel: Int,
-        aListener: View.OnClickListener?
-    ): Snackbar {
-        addAction(aLayoutId, context.getString(aLabel), aListener)
-        return this
-    }
-
-    /**
-     * Adds an extra action button to this snackbar.
-     * [aLayoutId] must be a layout with a Button as root element.
-     * [aLabel] defines new button label string.
-     * [aListener] handles our new button click event.
-     */
-    fun Snackbar.addAction(
-        @LayoutRes aLayoutId: Int,
-        aLabel: String,
-        aListener: View.OnClickListener?
-    ): Snackbar {
-        // Add our button
-        val button = LayoutInflater.from(view.context).inflate(aLayoutId, null) as Button
-        // Using our special knowledge of the snackbar action button id we can hook our extra button next to it
-        view.findViewById<Button>(com.google.android.material.R.id.snackbar_action).let {
-            // Copy layout
-            button.layoutParams = it.layoutParams
-            // Copy colors
-            (button as? Button)?.setTextColor(it.textColors)
-            (it.parent as? ViewGroup)?.addView(button)
-        }
-        button.text = aLabel
-        /** Ideally we should use [Snackbar.dispatchDismiss] instead of [Snackbar.dismiss] though that should do for now */
-        //extraView.setOnClickListener {this.dispatchDismiss(BaseCallback.DISMISS_EVENT_ACTION); aListener?.onClick(it)}
-        button.setOnClickListener { this.dismiss(); aListener?.onClick(it) }
-        return this
-    }
-
     fun RecyclerView.mySmoothScrollToPosition(
         position: Int,
         padding: Int = 40.dp,
@@ -340,6 +303,7 @@ object UiUtils {
         setTag(R.id.app_bar_can_change_size, false)
     }
 
+    @SuppressLint("RestrictedApi")
     fun PopupMenu.showWithIcons(iconTintColor: Int? = null) {
         (menu as? MenuBuilder)?.showIcons(iconTintColor)
         show()
@@ -426,7 +390,7 @@ object UiUtils {
                     }
                 })
                 anim?.start()
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && anim is AnimatedVectorDrawable && !anim.isRunning) {
+            } else if (anim is AnimatedVectorDrawable && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
                         if (drawable?.isVisible == true)
@@ -456,7 +420,7 @@ object UiUtils {
 
     fun loadSmallUserPic(
         context: Context,
-        userSerializable: UserSerializable,
+        userCached: UserCached,
         onResult: (Drawable) -> Unit
     ) {
         if (App.prefs.demoMode) {
@@ -464,17 +428,14 @@ object UiUtils {
             return
         }
 
-        val initialsDrawable = InitialsDrawable(context, userSerializable)
+        val initialsDrawable = InitialsDrawable(context, userCached)
         val profilePicUrl =
-            if (userSerializable.isSelf)
+            if (userCached.isSelf)
                 App.prefs.drawerDataCached.profilePicUrl
             else
-                userSerializable.getWebpImageURL(ImageSize.EXTRALARGE)
-
+                userCached.largeImage
         val request = ImageRequest.Builder(context)
-            .data(profilePicUrl?.ifEmpty { null }
-                ?: initialsDrawable
-            )
+            .data(profilePicUrl?.ifEmpty { null } ?: initialsDrawable)
             .error(initialsDrawable) // does not apply transformation to error drawable
             .allowHardware(false)
             .transformations(CircleCropTransformation())
@@ -522,18 +483,6 @@ object UiUtils {
                 c.packageName
             )
         return ContextCompat.getColor(c, colorId)
-    }
-
-    // https://stackoverflow.com/a/32973351/1067596
-    private fun Context.getActivity(): Activity? {
-        var context: Context? = this
-        while (context is ContextWrapper) {
-            if (context is Activity) {
-                return context
-            }
-            context = context.baseContext
-        }
-        return null
     }
 
     fun View.setupInsets(
@@ -604,12 +553,16 @@ object UiUtils {
         activity.binding.ctl.title = title
     }
 
-    fun BottomSheetDialogFragment.expandIfNeeded(force: Boolean = false) {
-        val bottomSheetView =
-            dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-        if (view?.isInTouchMode == false || Stuff.hasMouse || force)
-            BottomSheetBehavior.from(bottomSheetView).state =
-                BottomSheetBehavior.STATE_EXPANDED
+    fun BottomSheetDialogFragment.expandIfNeeded(dialog: Dialog, force: Boolean = false) {
+        dialog.setOnShowListener {
+            val bottomSheetDialog = it as BottomSheetDialog
+            if (view?.isInTouchMode == false || Stuff.hasMouse || force) {
+                val bottomSheetView =
+                    bottomSheetDialog.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
+            }
+            WindowCompat.setDecorFitsSystemWindows(bottomSheetDialog.window!!, false)
+        }
     }
 
     fun AutoCompleteTextView.getSelectedItemPosition(): Int {
@@ -649,10 +602,6 @@ object UiUtils {
         }
     }
 
-    fun View.postRequestFocus() {
-        post { requestFocus() }
-    }
-
     fun EditText.trimmedText() = text.toString().trim()
 
     fun createNotificationForFgs(context: Context, title: String): Notification {
@@ -689,6 +638,46 @@ object UiUtils {
         }
         va.interpolator = FastOutSlowInInterpolator()
         va.start()
+    }
+
+    fun <T> Fragment.collectLatestLifecycleFlow(
+        flow: Flow<T>,
+        lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,
+        block: suspend (T) -> Unit
+    ) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(lifecycleState) {
+                flow.collectLatest(block)
+            }
+        }
+    }
+
+    // gives you both the previous and the new value
+    fun <T> Fragment.collectRunningFoldFlow(
+        flow: Flow<List<T>>,
+        lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,
+        block: suspend (List<T>, List<T>) -> Unit
+    ) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(lifecycleState) {
+                flow.runningFold(
+                    initial = null as Pair<List<T>?, List<T>>?,
+                    operation = { accumulator, new -> accumulator?.second to new }
+                ).filterNotNull()
+                    .collectLatest { block(it.first ?: emptyList(), it.second) }
+            }
+        }
+    }
+
+    fun <T> AppCompatActivity.collectLatestLifecycleFlow(
+        flow: Flow<T>,
+        block: suspend (T) -> Unit
+    ) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                flow.collectLatest(block)
+            }
+        }
     }
 
     fun applySnowfall(

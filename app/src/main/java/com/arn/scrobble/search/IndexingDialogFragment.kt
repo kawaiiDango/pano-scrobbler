@@ -1,6 +1,7 @@
 package com.arn.scrobble.search
 
 import android.animation.ObjectAnimator
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,9 +14,10 @@ import androidx.work.WorkInfo
 import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.DialogIndexingBinding
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -42,17 +44,19 @@ class IndexingDialogFragment : BottomSheetDialogFragment() {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        expandIfNeeded(true)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).also {
+            expandIfNeeded(it, true)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.indexingProgress.observe(viewLifecycleOwner) {
-            if (it.isNullOrEmpty()) return@observe
+        collectLatestLifecycleFlow(viewModel.indexingProgress) {
+            if (it.isNullOrEmpty()) return@collectLatestLifecycleFlow
             val progress = it.first().progress.getDouble(IndexingWorker.PROGRESS_KEY, 0.0)
             val errorMsg = it.first().progress.getString(IndexingWorker.ERROR_KEY)
-            val finished = it.first().state  == WorkInfo.State.SUCCEEDED || it.first().state == WorkInfo.State.FAILED
+            val finished =
+                it.first().state == WorkInfo.State.SUCCEEDED || it.first().state == WorkInfo.State.FAILED
 
             val progressInt = (binding.indexingProgress.max * progress).toInt()
             binding.indexingProgress.isIndeterminate = progressInt == 0
@@ -66,17 +70,16 @@ class IndexingDialogFragment : BottomSheetDialogFragment() {
 
             if (progress == 1.0 || finished) {
                 binding.indexingProgress.hide()
-                viewModel.indexingMessage.value =
-                    getString(com.google.android.material.R.string.abc_action_mode_done)
+                viewModel.setMessage(getString(com.google.android.material.R.string.abc_action_mode_done))
             }
 
             if (errorMsg != null) {
                 binding.indexingProgress.hide()
-                viewModel.indexingMessage.value = "❗" + errorMsg
+                viewModel.setMessage("❗$errorMsg")
             }
         }
 
-        viewModel.indexingMessage.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(viewModel.indexingMessage) {
             binding.indexingMsg.text = it
         }
 

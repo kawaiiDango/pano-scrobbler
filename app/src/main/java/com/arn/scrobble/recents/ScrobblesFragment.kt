@@ -30,7 +30,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
@@ -41,32 +43,36 @@ import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import coil.dispose
 import coil.load
 import coil.memory.MemoryCache
 import com.arn.scrobble.App
-import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.putSingle
-import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp600
+import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.billing.BillingViewModel
+import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.pending.PendingScrobblesWorker
-import com.arn.scrobble.scrobbleable.ListenBrainz
-import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.ItemLongClickListener
+import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.PaletteTransition
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.expandToHeroIfNeeded
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
 import com.arn.scrobble.ui.UiUtils.scrollToTopOnInsertToTop
@@ -75,29 +81,31 @@ import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.ui.createSkeletonWithFade
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putData
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.util.Calendar
 import java.util.Objects
-import kotlin.math.max
 
 
 /**
  * Created by arn on 09/07/2017.
  */
 
-open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.SetHeroTrigger {
+class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.SetHeroTrigger {
     private lateinit var adapter: ScrobblesAdapter
     private val prefs = App.prefs
     private var timedRefreshJob: Job? = null
@@ -105,12 +113,10 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
     private var _binding: ContentScrobblesBinding? = null
     private val binding
         get() = _binding!!
-    private var lastRefreshTime = System.currentTimeMillis()
     private val viewModel by viewModels<TracksVM>()
     private val billingViewModel by activityViewModels<BillingViewModel>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var animSet: AnimatorSet? = null
-    private val cal by lazy { Calendar.getInstance() }
 
     private val focusChangeListener by lazy {
         object : FocusChangeListener {
@@ -126,9 +132,9 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             }
         }
     }
-    private val itemLongClickListener = object : ItemLongClickListener {
-        override fun onItemLongClick(view: View, position: Int) {
-            val track = adapter.getItem(position) as? Track ?: return
+    private val itemLongClickListener = object : ItemLongClickListener<Any> {
+        override fun onItemLongClick(view: View, position: Int, item: Any) {
+            val track = item as? Track ?: return
             showTrackInfo(track)
         }
     }
@@ -147,6 +153,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
 
     override fun onDestroyView() {
         coordinatorBinding.heroButtonsGroup.children.forEach { it.setOnClickListener(null) }
+        coordinatorBinding.heroImg.dispose()
+        coordinatorBinding.heroImg.setImageBitmap(null)
         _binding = null
         super.onDestroyView()
     }
@@ -161,9 +169,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         )
         coordinatorBinding.heroFrame.isVisible = true
 
-        if (binding.scrobblesList.adapter == null)
-            postInit()
-        else {
+        if (binding.scrobblesList.adapter != null) {
             if (viewModel.selectedPos > -1 && viewModel.selectedPos < adapter.itemCount) {
                 val track = adapter.getItem(viewModel.selectedPos) as? Track
                 if (track != null)
@@ -172,10 +178,9 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             doNextTimedRefresh()
         }
         activity ?: return
-        viewModel.reemitColors()
+        viewModel.reEmitColors()
 
         coordinatorBinding.appBar.expandToHeroIfNeeded(true)
-
     }
 
     override fun onPause() {
@@ -194,20 +199,13 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         )
         coordinatorBinding.sidebarNav.setBackgroundColor(bgColor)
         coordinatorBinding.ctl.setStatusBarScrimColor(bgColor)
-
-        coordinatorBinding.appBar.expandToHeroIfNeeded(false)
     }
 
-    private fun postInit() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val activity = activity as MainActivity? ?: return
 
         val llm = LinearLayoutManager(requireContext())
         binding.scrobblesList.layoutManager = llm
-
-        viewModel.username = if (activityViewModel.userIsSelf)
-            null
-        else
-            activityViewModel.currentUser.name
         adapter = ScrobblesAdapter(
             fragmentBinding = binding,
             findNavController(),
@@ -215,125 +213,139 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             itemLongClickListener = itemLongClickListener,
             focusChangeListener = focusChangeListener,
             setHeroListener = this,
-            viewModel = viewModel
+            viewModel = viewModel,
+            userIsSelf = activityViewModel.currentUser.isSelf,
         )
         adapter.isShowingAlbums = prefs.showAlbumInRecents
-        adapter.isShowingPlayers = !viewModel.isShowingLoves && activityViewModel.userIsSelf &&
-                prefs.proStatus && prefs.showScrobbleSources
+        adapter.isShowingPlayers =
+            !viewModel.isShowingLoves && activityViewModel.currentUser.isSelf &&
+                    prefs.proStatus && prefs.showScrobbleSources
 
         animSet = AnimatorSet()
 
         binding.scrobblesList.addItemDecoration(SimpleHeaderDecoration())
         binding.swipeRefresh.setProgressCircleColors()
         binding.swipeRefresh.setOnRefreshListener {
-            loadRecents(1)
+            viewModel.setInput(
+                viewModel.input.value!!.copyCacheBusted(page = 1)
+            )
         }
-        binding.swipeRefresh.isRefreshing = false
         binding.scrobblesList.adapter = adapter
         binding.scrobblesList.scrollToTopOnInsertToTop()
         (binding.scrobblesList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations =
             false
 
-        loadMoreListener = EndlessRecyclerViewScrollListener(llm) {
-            loadRecents(it)
+        loadMoreListener = EndlessRecyclerViewScrollListener(llm) { page ->
+            if (page <= viewModel.totalPages)
+                viewModel.setInput(
+                    viewModel.input.value!!.copy(page = page)
+                )
+            loadMoreListener.isAllPagesLoaded = page >= viewModel.totalPages
         }
-        loadMoreListener.currentPage = viewModel.page
+        loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
         adapter.loadMoreListener = loadMoreListener
 
         binding.scrobblesList.addOnScrollListener(loadMoreListener)
 
-        viewModel.pendingScrobblesLd.observe(viewLifecycleOwner) {
-            adapter.updatePendingScrobbles(it ?: return@observe)
+        val skeleton = binding.scrobblesList.createSkeletonWithFade(
+            listItemLayoutResId = R.layout.list_item_recents_skeleton,
+        )
+
+        collectLatestLifecycleFlow(viewModel.pendingScrobbles) {
+            adapter.updatePendingScrobbles(it)
         }
 
-        viewModel.pendingLovesLd.observe(viewLifecycleOwner) {
-            adapter.updatePendingLoves(it ?: return@observe)
+        collectLatestLifecycleFlow(viewModel.pendingLoves) {
+            adapter.updatePendingLoves(it)
         }
 
-        viewModel.tracksReceiver.observe(viewLifecycleOwner) {
-            synchronized(viewModel.tracks) {
-                viewModel.totalPages = max(1, it.totalPages) //dont let totalpages be 0
-                if (it.page == 1) {
-                    viewModel.tracks.clear()
-                    cal.timeInMillis =
-                        it.firstOrNull()?.playedWhen?.time ?: System.currentTimeMillis()
-                } else if (viewModel.tracks.isNotEmpty())
-                    cal.timeInMillis =
-                        viewModel.tracks.last().playedWhen?.time ?: System.currentTimeMillis()
+        collectLatestLifecycleFlow(viewModel.tracks.filterNotNull()) {
+            if (it.isEmpty()) {
+                binding.empty.isVisible = true
+            } else {
+                binding.empty.isVisible = false
+                adapter.populate(it)
 
-                // mark first scrobble of the day
+                loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
 
-                var prevDate = cal[Calendar.DAY_OF_YEAR]
-                it.forEach { track ->
-                    if (it.toString() in viewModel.deletedTracksStringSet)
-                        return@forEach
-
-                    if (!track.isNowPlaying || it.page == 1) {
-                        if (track.playedWhen != null && !viewModel.isShowingLoves) {
-                            cal.time = track.playedWhen
-                            val currentDate = cal[Calendar.DAY_OF_YEAR]
-                            if (prevDate != currentDate)
-                                track.isLastScrobbleOfTheDay = true
-                            prevDate = currentDate
-                        }
-                        viewModel.tracks.add(track)
-                    }
-                }
-                adapter.populate()
-
-                submitPendingIfNeeded()
+                activityViewModel.updateCanIndex()
+                doNextTimedRefresh()
             }
-            if (viewModel.page != it.page && Stuff.isTv)
-                loadRecents(1, true)
-            loadMoreListener.currentPage = it.page
-
-            doNextTimedRefresh()
-            setLoading(false)
         }
 
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
+            loadMoreListener.loading = !it
 
-        activityViewModel.editData.observe(viewLifecycleOwner) {
-            adapter.editTrack(it)
+            if (!it) {
+                if (adapter.itemCount == 0) {
+                    skeleton.showSkeleton()
+                }
+
+                if (!skeleton.isSkeleton() && viewModel.input.value?.page == 1)
+                    binding.swipeRefresh.isRefreshing = true
+
+                binding.empty.isVisible = false
+            } else {
+                skeleton.showOriginal()
+                binding.swipeRefresh.isRefreshing = false
+
+                if (viewModel.tracks.value?.isEmpty() == true) {
+                    binding.empty.isVisible = true
+                }
+            }
+        }
+
+        collectLatestLifecycleFlow(activityViewModel.editData, Lifecycle.State.RESUMED) {
+            viewModel.editTrack(it)
             ReviewPrompter(requireActivity()).showIfNeeded()
         }
 
         binding.scrobblesChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val checkedId = checkedIds.firstOrNull() ?: return@setOnCheckedStateChangeListener
 
-            binding.swipeRefresh.isRefreshing = true
-
             when (checkedId) {
-                R.id.recents_chip,
-                R.id.loves_chip -> {
-                    viewModel.isShowingLoves = checkedId == R.id.loves_chip
-                    viewModel.toTime = null
-                    binding.timeJumpChip.isCheckable = false
-                    viewModel.loadedCached = false
-                    loadRecents(1, true)
-                }
+                R.id.recents_chip -> viewModel.setInput(
+                    viewModel.input.value!!.copy(
+                        type = Stuff.TYPE_TRACKS,
+                        page = 1,
+                        timePeriod = null,
+                    )
+                )
+
+                R.id.loves_chip -> viewModel.setInput(
+                    viewModel.input.value!!.copy(
+                        type = Stuff.TYPE_LOVES,
+                        page = 1,
+                        timePeriod = null,
+                    )
+                )
             }
         }
 
         coordinatorBinding.heroShare.setOnClickListener {
-            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
+            val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
             if (track is Track) {
-                val heart = if (track.isLoved) "♥️" else ""
+                val heart = when {
+                    track.userloved == true -> "♥️"
+                    track.userHated == true -> "💔"
+                    else -> ""
+                }
 
-                var shareText = if (activityViewModel.userIsSelf)
+                var shareText = if (activityViewModel.currentUser.isSelf)
                     getString(
                         R.string.recents_share,
                         heart + getString(R.string.artist_title, track.artist, track.name),
-                        Stuff.myRelativeTime(requireContext(), track.playedWhen, true)
+                        Stuff.myRelativeTime(requireContext(), track.date, true)
                     )
                 else
                     getString(
                         R.string.recents_share_username,
                         heart + getString(R.string.artist_title, track.artist, track.name),
-                        Stuff.myRelativeTime(requireContext(), track.playedWhen, true),
-                        viewModel.username
+                        Stuff.myRelativeTime(requireContext(), track.date, true),
+                        activityViewModel.currentUser.name
                     )
 
-                if (billingViewModel.proStatus.value != true)
+                if (!billingViewModel.proStatus.value)
                     shareText += "\n\n" + getString(R.string.share_sig)
 
                 val i = Intent(Intent.ACTION_SEND).apply {
@@ -367,7 +379,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
 
         coordinatorBinding.heroInfo.setOnClickListener {
-            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
+            val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
             if (track is Track) {
                 showTrackInfo(track)
                 if (!prefs.longPressLearnt) {
@@ -390,8 +402,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             findNavController().navigate(R.id.randomFragment, arguments)
         }
 
-        binding.timeJumpChip.setOnClickListener { view ->
-            val anchorTime = viewModel.toTime ?: System.currentTimeMillis()
+        binding.timeJumpChip.setOnClickListener { v ->
+            val anchorTime = viewModel.input.value?.timePeriod?.end ?: System.currentTimeMillis()
             val timePeriodsToIcons =
                 TimePeriodsGenerator(
                     activityViewModel.currentUser.registeredTime,
@@ -399,7 +411,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                     requireContext()
                 ).recentsTimeJumps
 
-            val popupMenu = PopupMenu(requireContext(), view)
+            val popupMenu = PopupMenu(requireContext(), v)
             timePeriodsToIcons.forEachIndexed { index, (timePeriod, iconRes) ->
                 popupMenu.menu.add(Menu.NONE, index, Menu.NONE, timePeriod.name)
                     .apply {
@@ -424,12 +436,19 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                     }
 
                     else -> {
-                        val timePeriod = timePeriodsToIcons[item.itemId].first
-                        viewModel.toTime = timePeriod.end
-                        viewModel.loadRecents(1)
+
                         binding.timeJumpChip.isCheckable = true
                         binding.timeJumpChip.isChecked = true
                         binding.scrobblesList.scheduleLayoutAnimation()
+
+                        val timePeriod = timePeriodsToIcons[item.itemId].first
+                        viewModel.setInput(
+                            viewModel.input.value!!.copy(
+                                type = Stuff.TYPE_TRACKS,
+                                page = 1,
+                                timePeriod = timePeriod,
+                            )
+                        )
                     }
                 }
                 true
@@ -443,26 +462,19 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             )
         }
 
-        if (viewModel.tracks.isEmpty())
-            loadRecents(1)
-        else
-            adapter.populate()
         if (!Stuff.isTv)
             coordinatorBinding.heroButtonsGroup.isVisible = true
 
         // old value found, could be a uiMode change
         viewModel.paletteColors.value?.setDarkModeFrom(requireContext())
 
-        viewModel.paletteColors.observe(viewLifecycleOwner) { colors ->
-            if (colors == null) {
-                // applicationcontext doesn't know about dark mode
-                viewModel.paletteColors.value = PaletteColors(requireContext())
-                return@observe
-            }
+        collectLatestLifecycleFlow(
+            viewModel.paletteColors.filterNotNull(),
+            Lifecycle.State.RESUMED
+        ) { colors ->
 
-            if (!isResumed)
-                return@observe
-
+            if (skeleton.isSkeleton())
+                return@collectLatestLifecycleFlow
 
             val contentBgFrom = (binding.root.background as ColorDrawable).color
             val tintButtonsFrom =
@@ -483,9 +495,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 }
             }
 
-            if (billingViewModel.proStatus.value != true ||
-                prefs.themeTintBackground
-            ) {
+            if (!billingViewModel.proStatus.value || prefs.themeTintBackground) {
                 if (UiUtils.isTabletUi)
                     animSetList += ObjectAnimator.ofArgb(
                         activity.binding.sidebarNav,
@@ -528,72 +538,63 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             }
         }
 
+        collectPendingScrobblesProgress()
+
         binding.scrobblesChipGroup.visibility = View.VISIBLE
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.setInput(
+                    MusicEntryLoaderInput(
+                        type = Stuff.TYPE_TRACKS,
+                        page = 1,
+                        user = activityViewModel.currentUser,
+                        timePeriod = null,
+                    ), true
+                )
+            }
+        }
     }
 
-    private fun submitPendingIfNeeded() {
-        if (!viewModel.pendingSubmitAttempted && (
-                    viewModel.pendingScrobblesLd.value?.isNotEmpty() == true ||
-                            viewModel.pendingLovesLd.value?.isNotEmpty() == true
-                    )
+    private fun collectPendingScrobblesProgress() {
+        if (!viewModel.pendingSubmitAttempted &&
+            (viewModel.pendingScrobbles.value.isNotEmpty() || viewModel.pendingLoves.value.isNotEmpty())
             && Stuff.isOnline
         ) {
-            viewModel.pendingSubmitAttempted = true
-            PendingScrobblesWorker.checkAndSchedule(requireContext(), true)
+//            viewModel.pendingSubmitAttempted = true
+//            PendingScrobblesWorker.checkAndSchedule(requireContext(), true)
             val wm = WorkManager.getInstance(requireContext())
             var lastSnackbar: Snackbar? = null
-            wm.getWorkInfosForUniqueWorkLiveData(PendingScrobblesWorker.NAME)
-                .observe(viewLifecycleOwner) {
-                    if (it.isNullOrEmpty()) return@observe
-                    val workInfo = it.first()
-                    when (workInfo.state) {
-                        WorkInfo.State.RUNNING -> {
-                            val progressText =
-                                workInfo.progress.getString(PendingScrobblesWorker.PROGRESS_KEY)
-                                    ?: return@observe
-                            lastSnackbar = Snackbar.make(
-                                coordinatorBinding.root,
-                                progressText,
-                                Snackbar.LENGTH_SHORT
-                            )
-                                .setAction(android.R.string.cancel) {
-                                    PendingScrobblesWorker.cancel(requireContext())
-                                }
-                            lastSnackbar!!.show()
-                        }
-
-                        WorkInfo.State.SUCCEEDED -> {
-                            lastSnackbar?.dismiss()
-                        }
-
-                        else -> {}
+            collectLatestLifecycleFlow(
+                wm.getWorkInfosForUniqueWorkFlow(PendingScrobblesWorker.NAME)
+                    .map { it?.firstOrNull() }
+                    .filterNotNull(),
+                Lifecycle.State.RESUMED
+            ) { workInfo ->
+                when (workInfo.state) {
+                    WorkInfo.State.RUNNING -> {
+                        val progressText =
+                            workInfo.progress.getString(PendingScrobblesWorker.PROGRESS_KEY)
+                                ?: return@collectLatestLifecycleFlow
+                        lastSnackbar = Snackbar.make(
+                            coordinatorBinding.root,
+                            progressText,
+                            Snackbar.LENGTH_SHORT
+                        )
+                            .setAction(android.R.string.cancel) {
+                                PendingScrobblesWorker.cancel(requireContext())
+                            }
+                        lastSnackbar!!.show()
                     }
+
+                    WorkInfo.State.SUCCEEDED -> {
+                        lastSnackbar?.dismiss()
+                    }
+
+                    else -> {}
                 }
-        }
-    }
-
-    private fun loadRecents(page: Int, force: Boolean = false): Boolean {
-        _binding ?: return false
-
-        if (page <= viewModel.totalPages) {
-            val firstVisible =
-                ((binding.scrobblesList.layoutManager ?: return false) as LinearLayoutManager)
-                    .findFirstVisibleItemPosition()
-            if (force || (page == 1 && firstVisible < 5) || page > 1) {
-                if (viewModel.isShowingLoves)
-                    viewModel.loadLoves(page)
-                else
-                    viewModel.loadRecents(page)
             }
-            if (adapter.itemCount == 0 || page > 1)
-                setLoading(true)
-        } else {
-            setLoading(false)
-            loadMoreListener.isAllPagesLoaded = true
-            return false
         }
-        activityViewModel.updateCanIndex()
-        return true
     }
 
     private fun doNextTimedRefresh() {
@@ -602,24 +603,27 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             if (!isResumed)
                 return@launch
 
-            if (System.currentTimeMillis() - lastRefreshTime < Stuff.RECENTS_REFRESH_INTERVAL)
+            if (System.currentTimeMillis() - viewModel.lastRecentsLoadTime < Stuff.RECENTS_REFRESH_INTERVAL)
                 delay(Stuff.RECENTS_REFRESH_INTERVAL)
 
             if (!isResumed)
                 return@launch
 
-            if (viewModel.toTime == null && !viewModel.isShowingLoves && viewModel.page == 1)
-                loadRecents(1)
-            lastRefreshTime = System.currentTimeMillis()
+            val input = viewModel.input.value ?: return@launch
+            if (input.page == 1 && !viewModel.isShowingLoves && input.timePeriod == null && input.entry == null)
+                viewModel.setInput(
+                    viewModel.input.value!!.copyCacheBusted(),
+                )
         }
     }
 
     override fun onSetHero(track: Track, cacheKey: MemoryCache.Key?) {
         _binding ?: return
 
-        //TODO: check
-        coordinatorBinding.heroImg.setTag(R.id.hero_track, track)
-        val imgUrl = track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
+        val reqData: Any = if (viewModel.isShowingLoves)
+            MusicEntryImageReq(track, true)
+        else
+            (track.webp600 ?: "")
 
         val errColor = UiUtils.getMatColor(
             coordinatorBinding.heroImg.context,
@@ -629,28 +633,25 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             ContextCompat.getDrawable(requireContext(), R.drawable.vd_wave_simple_filled)!!
                 .apply { setTint(errColor) }
 
-        coordinatorBinding.heroImg.load(imgUrl ?: "") {
+        coordinatorBinding.heroImg.load(reqData) {
             placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
-            placeholder(errDrawable)
+            placeholder(R.drawable.color_image_loading)
             error(errDrawable)
             allowHardware(false)
             transitionFactory(PaletteTransition.Factory { palette ->
-                viewModel.paletteColors.value = PaletteColors(context ?: return@Factory, palette)
+                viewModel.setPaletteColors(PaletteColors(context ?: return@Factory, palette))
             })
             listener(
                 onError = { imageRequest, errorResult ->
-                    Stuff.logW("Coil err for ${imageRequest.data} : ${errorResult.throwable.message}")
-
                     val swatch = Palette.Swatch(errColor, 1)
                     val palette = Palette.from(listOf(swatch))
-                    viewModel.paletteColors.value = PaletteColors(requireContext(), palette)
+                    viewModel.setPaletteColors(PaletteColors(requireContext(), palette))
                 }
             )
         }
     }
 
-    override fun onItemClick(view: View, position: Int) {
-        val item = adapter.getItem(position)
+    override fun onItemClick(view: View, position: Int, item: Any) {
         val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         if (item !is Track) {
             if (view.id == R.id.recents_menu)
@@ -694,21 +695,21 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
     private fun openTrackPopupMenu(anchor: View, track: Track) {
         val popup = PopupMenu(requireContext(), anchor)
 
-        if (activityViewModel.userIsSelf) {
+        if (activityViewModel.currentUser.isSelf) {
             popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
             val loveMenu = popup.menu.findItem(R.id.menu_love)
 
-            if (track.isLoved) {
+            if (track.userloved == true) {
                 loveMenu.title = getString(R.string.unlove)
                 loveMenu.icon =
                     ContextCompat.getDrawable(requireContext(), R.drawable.vd_heart_break_outline)
             }
 
-            if (track.isHated) {
+            if (track.userHated == true) {
                 popup.menu.findItem(R.id.menu_hate)?.title = getString(R.string.unhate)
             }
 
-            if (track.playedWhen == null)
+            if (track.date == null)
                 popup.menu.removeItem(R.id.menu_delete)
 
             if (viewModel.isShowingLoves) {
@@ -734,13 +735,13 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 R.id.menu_love -> loveUnloveHate(
                     (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
                     track,
-                    if (track.isLoved) 0 else 1
+                    if (track.userloved == true) 0 else 1
                 )
 
                 R.id.menu_hate -> loveUnloveHate(
                     (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
                     track,
-                    if (track.isHated) 0 else -1
+                    if (track.userHated == true) 0 else -1
                 )
 
                 R.id.menu_edit -> PopupMenuUtils.editScrobble(findNavController(), track)
@@ -750,7 +751,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                     track
                 ) { succ ->
                     if (succ)
-                        adapter.removeTrack(track)
+                        viewModel.removeTrack(track)
                     else
                         requireActivity().toast(R.string.network_error)
                 }
@@ -758,20 +759,20 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 R.id.menu_block_track, R.id.menu_block_album, R.id.menu_block_artist -> {
                     val blockedMetadata = when (menuItem.itemId) {
                         R.id.menu_block_track -> BlockedMetadata(
-                            artist = track.artist,
-                            album = track.album,
+                            artist = track.artist.name,
+                            album = track.album?.name ?: "",
                             track = track.name,
                             skip = true
                         )
 
                         R.id.menu_block_album -> BlockedMetadata(
-                            artist = track.artist,
-                            album = track.album,
+                            artist = track.artist.name,
+                            album = track.album?.name ?: "",
                             skip = true
                         )
 
                         R.id.menu_block_artist -> BlockedMetadata(
-                            artist = track.artist,
+                            artist = track.artist.name,
                             skip = true
                         )
 
@@ -783,8 +784,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 }
 
                 R.id.menu_play -> {
-                    val pkgName = if (track.playedWhen != null)
-                        viewModel.pkgMap[track.playedWhen.time]
+                    val pkgName = if (track.date != null)
+                        viewModel.pkgMap[track.date]
                     else if (track.isNowPlaying)
                         viewModel.pkgMap[0]
                     else
@@ -802,7 +803,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
     }
 
     private fun openCalendar() {
-        val time = viewModel.toTime ?: System.currentTimeMillis()
+        val time = viewModel.input.value?.timePeriod?.end ?: System.currentTimeMillis()
         val endTime = System.currentTimeMillis()
         val dpd = MaterialDatePicker.Builder
             .datePicker()
@@ -825,13 +826,20 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             .setSelection(time)
             .build()
         dpd.addOnPositiveButtonClickListener {
-            viewModel.toTime = Stuff.timeToLocal(it) + (24 * 60 * 60 - 1) * 1000
+            val toTime = Stuff.timeToLocal(it) + (24 * 60 * 60 - 1) * 1000
 //                Stuff.log("time=" + Date(viewModel.toTime))
-            loadRecents(1, true)
 
             binding.timeJumpChip.isCheckable = true
             binding.timeJumpChip.isChecked = true
             binding.scrobblesList.scheduleLayoutAnimation()
+
+            viewModel.setInput(
+                viewModel.input.value!!.copy(
+                    page = 1,
+                    type = Stuff.TYPE_TRACKS,
+                    timePeriod = TimePeriod(-1, toTime)
+                )
+            )
         }
 
         dpd.show(parentFragmentManager, null)
@@ -846,7 +854,9 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         val isRtl = resources.getBoolean(R.bool.is_rtl)
 
         if (score == 0) { // was loved or hated
-            LFMRequester(lifecycleScope).loveOrUnlove(track, false)
+            viewModel.viewModelScope.launch(Dispatchers.IO) {
+                ScrobbleEverywhere.loveOrUnlove(track, false)
+            }
 
             alphaAnimator.setFloatValues(0f)
             scalexAnimator.setFloatValues(1f, 2f)
@@ -864,9 +874,11 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             )
 
             if (score == 1)
-                LFMRequester(lifecycleScope).loveOrUnlove(track, true)
+                viewModel.viewModelScope.launch(Dispatchers.IO) {
+                    ScrobbleEverywhere.loveOrUnlove(track, true)
+                }
             else
-                viewModel.viewModelScope.launch(Dispatchers.IO + LFMRequester.ExceptionNotifier()) {
+                viewModel.viewModelScope.launch {
                     (Scrobblables.current as? ListenBrainz)?.hate(track)
                 }
 
@@ -885,13 +897,13 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         aSet.duration = 800
         aSet.start()
 
-        track.score = score
+        viewModel.editTrack(track.copy(userloved = score == 1, userHated = score == -1))
     }
 
     private fun showTrackInfo(track: Track) {
-        val arguments = track.toBundle().apply {
-            val pkgName = if (track.playedWhen != null)
-                viewModel.pkgMap[track.playedWhen.time]
+        val arguments = Bundle().putData(track).apply {
+            val pkgName = if (track.date != null)
+                viewModel.pkgMap[track.date]
             else if (track.isNowPlaying)
                 viewModel.pkgMap[0]
             else
@@ -899,10 +911,5 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             putString(Stuff.ARG_PKG, pkgName)
         }
         findNavController().navigate(R.id.infoFragment, arguments)
-    }
-
-    private fun setLoading(b: Boolean) {
-        loadMoreListener.loading = b
-        binding.swipeRefresh.isRefreshing = false
     }
 }

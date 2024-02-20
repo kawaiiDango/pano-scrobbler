@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.getOrDefaultKey
+import com.arn.scrobble.utils.Stuff.getOrDefaultKey
 import com.google.android.material.color.DynamicColors
 
 object ColorPatchUtils {
@@ -111,7 +111,8 @@ object ColorPatchUtils {
             primaryDefault
         return context.getStyledColor(
             ColorPatchMap.primaryStyles
-                .getOrDefaultKey(primaryStyle, primaryDefault), com.google.android.material.R.attr.colorPrimary
+                .getOrDefaultKey(primaryStyle, primaryDefault),
+            com.google.android.material.R.attr.colorPrimary
         )
     }
 

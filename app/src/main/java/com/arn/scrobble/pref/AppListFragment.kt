@@ -1,13 +1,10 @@
 package com.arn.scrobble.pref
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -18,14 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentAppListBinding
 import com.arn.scrobble.ui.FabData
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.ui.createSkeletonWithFade
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.flow.filter
 
 
 /**
@@ -45,24 +45,11 @@ class AppListFragment : Fragment() {
     private val singleChoiceArg
         get() = arguments?.getBoolean(Stuff.ARG_SINGLE_CHOICE, false) ?: false
 
-    private val backPressedCallback by lazy {
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupAxisTransitions(MaterialSharedAxis.X)
     }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this, backPressedCallback)
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,10 +67,11 @@ class AppListFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        postponeEnterTransition()
+//        postponeEnterTransition()
 
         binding.appList.setupInsets()
-//        binding.appListDone.setupInsets()
+
+
 
         viewModel.selectedPackages += allowedPackagesArg ?: prefs.allowedPackages
 
@@ -100,11 +88,19 @@ class AppListFragment : Fragment() {
         binding.appList.layoutManager = LinearLayoutManager(context)
         val adapter = AppListAdapter(requireActivity(), viewModel, singleChoiceArg)
         binding.appList.adapter = adapter
+
+        val skeleton = binding.appList.createSkeletonWithFade(
+            R.layout.list_item_app_skeleton,
+            15,
+        )
+
+        skeleton.showSkeleton()
+
         if (!Stuff.isTv) {
             binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
-                    if (viewModel.isLoading.value == true)
+                    if (!viewModel.hasLoaded.value)
                         return
 
 //                    if (scrollState == 0) { //scrolling stopped
@@ -115,45 +111,44 @@ class AppListFragment : Fragment() {
             })
         }
 
-        viewModel.data.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            adapter.populate(it)
+        collectLatestLifecycleFlow(viewModel.appList.filter { it.isNotEmpty() }) {
+            adapter.submitList(it)
 
-            (view.parent as? ViewGroup)?.doOnPreDraw {
-                startPostponedEnterTransition()
-            }
+//            (view.parent as? ViewGroup)?.doOnPreDraw {
+//                startPostponedEnterTransition()
+//            }
         }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            it ?: return@observe
-
-            if (!it) {
-                backPressedCallback.isEnabled = false
-
-                mainNotifierViewModel.fabData.value = FabData(
-                    viewLifecycleOwner,
-                    com.google.android.material.R.string.abc_action_mode_done,
-                    R.drawable.vd_check_simple,
-                    {
-                        findNavController().navigateUp()
-                    },
-                    {
-                        if (allowedPackagesArg == null) {
-                            prefs.blockedPackages = setOf()
-                            requireContext().toast(R.string.cleared_disabled_apps)
-                        }
-                        true
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
+            if (!it) return@collectLatestLifecycleFlow
+            val fabData = FabData(
+                viewLifecycleOwner,
+                com.google.android.material.R.string.abc_action_mode_done,
+                R.drawable.vd_check_simple,
+                {
+                    findNavController().navigateUp()
+                },
+                {
+                    if (allowedPackagesArg == null) {
+                        prefs.blockedPackages = setOf()
+                        requireContext().toast(R.string.cleared_disabled_apps)
                     }
-                )
-
-                if (allowedPackagesArg == null && !prefs.appListWasRun) {
-                    prefs.allowedPackages = viewModel.selectedPackages
+                    true
                 }
+            )
+
+            mainNotifierViewModel.setFabData(fabData)
+
+            if (allowedPackagesArg == null && !prefs.appListWasRun) {
+                prefs.allowedPackages = viewModel.selectedPackages
             }
+
+            skeleton.showOriginal()
+
         }
 
-        if (viewModel.data.value == null)
-            viewModel.load(checkDefaultApps = allowedPackagesArg == null && !prefs.appListWasRun)
+//        if (viewModel.appList.value == null)
+//            viewModel.load(checkDefaultApps = allowedPackagesArg == null && !prefs.appListWasRun)
     }
 
     override fun onStop() {
@@ -165,6 +160,8 @@ class AppListFragment : Fragment() {
     }
 
     private fun saveData() {
+        if (!viewModel.hasLoaded.value) return
+
         if (allowedPackagesArg == null) {
             prefs.allowedPackages = viewModel.selectedPackages
             //BL = old WL - new WL

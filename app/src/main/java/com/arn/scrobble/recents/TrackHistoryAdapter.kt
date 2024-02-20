@@ -5,21 +5,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.dispose
 import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.ListItemRecentsBinding
-import com.arn.scrobble.db.ScrobbleSourcesDao
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
+import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Track
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,14 +35,16 @@ import java.util.Objects
 
 class TrackHistoryAdapter(
     private val viewModel: TracksVM,
-    private val itemClickListener: ItemClickListener,
+    private val itemClickListener: MusicEntryItemClickListener,
     private val isShowingAlbums: Boolean,
     private val isShowingPlayers: Boolean,
-    private val scrobbleSourcesDao: ScrobbleSourcesDao
-) : RecyclerView.Adapter<TrackHistoryAdapter.VHTrackHistoryItem>(),
-    LoadMoreGetter {
+    private val userIsSelf: Boolean
+) : ListAdapter<Track, TrackHistoryAdapter.VHTrackHistoryItem>(
+    GenericDiffCallback { old, new -> old.date == new.date }
+), LoadMoreGetter {
 
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
+    private val scrobbleSourcesDao = PanoDb.db.getScrobbleSourcesDao()
 
     init {
         setHasStableIds(true)
@@ -56,25 +60,10 @@ class TrackHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: VHTrackHistoryItem, position: Int) {
-        holder.setItemData(viewModel.tracks[position])
+        holder.setItemData(getItem(position))
     }
 
-    fun editTrack(track: Track) {
-        val idx = viewModel.tracks.indexOfFirst { it.playedWhen == track.playedWhen }
-        if (idx != -1) {
-            val prevTrack = viewModel.tracks[idx]
-            if (prevTrack.artist == track.artist && prevTrack.album == track.album && prevTrack.name == track.name)
-                return
-            viewModel.tracks[idx] = track
-            notifyItemChanged(idx)
-        }
-    }
-
-    fun getItem(idx: Int) = viewModel.tracks[idx]
-
-    override fun getItemCount() = viewModel.tracks.size
-
-    override fun getItemId(position: Int) = viewModel.tracks[position].playedWhen?.time ?: 0L
+    override fun getItemId(position: Int) = getItem(position).date?.toLong() ?: 0L
 
     inner class VHTrackHistoryItem(
         private val binding: ListItemRecentsBinding,
@@ -84,26 +73,26 @@ class TrackHistoryAdapter(
 
         init {
             binding.root.setOnClickListener {
-                itemClickListener.call(itemView, bindingAdapterPosition)
+                itemClickListener.onItemClick(itemView, getItem(bindingAdapterPosition))
             }
             binding.recentsPlaying.visibility = View.GONE
-            if (viewModel.username != null) {
+            if (userIsSelf) {
+                binding.recentsMenu.setOnClickListener { v ->
+                    itemClickListener.onItemClick(v, getItem(bindingAdapterPosition))
+                }
+            } else {
                 binding.recentsMenu.visibility = View.GONE
                 binding.recentsMenuText.visibility = View.GONE
-            } else {
-                binding.recentsMenu.setOnClickListener {
-                    itemClickListener.call(it, bindingAdapterPosition)
-                }
             }
         }
 
         fun setItemData(track: Track) {
             binding.recentsTitle.text = track.name
-            binding.recentsSubtitle.text = track.artist
+            binding.recentsSubtitle.text = track.artist.name
 
             if (isShowingAlbums) {
-                if (!track.album.isNullOrEmpty()) {
-                    binding.recentsAlbum.text = track.album
+                if (track.album != null) {
+                    binding.recentsAlbum.text = track.album.name
                     binding.recentsAlbum.visibility = View.VISIBLE
                     binding.recentsTrackLl.setPaddingRelative(
                         0,
@@ -130,9 +119,9 @@ class TrackHistoryAdapter(
 
             binding.recentsDate.visibility = View.VISIBLE
             binding.recentsDate.text =
-                Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0)
+                Stuff.myRelativeTime(itemView.context, track.date ?: 0)
 
-            if (track.isLoved) {
+            if (track.userloved == true) {
                 if (binding.recentsImgOverlay.background == null)
                     binding.recentsImgOverlay.background = ContextCompat.getDrawable(
                         binding.recentsImgOverlay.context,
@@ -143,7 +132,7 @@ class TrackHistoryAdapter(
                 binding.recentsImgOverlay.visibility = View.INVISIBLE
             }
 
-            val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
+            val imgUrl = track.webp300
 
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
@@ -153,7 +142,7 @@ class TrackHistoryAdapter(
             if (!imgUrl.isNullOrEmpty()) {
                 binding.recentsImg.load(imgUrl) {
                     allowHardware(false)
-                    placeholder(R.drawable.vd_wave_simple_filled)
+                    placeholder(R.drawable.color_image_loading)
                     error(errorDrawable)
                 }
             } else {
@@ -162,7 +151,7 @@ class TrackHistoryAdapter(
         }
 
         private fun setPlayerIcon(track: Track) {
-            val timeMillis = track.playedWhen?.time
+            val timeSecs = track.date
             binding.playerIcon.visibility = View.VISIBLE
 
             fun fetchIcon(pkgName: String) {
@@ -175,19 +164,19 @@ class TrackHistoryAdapter(
                 }
             }
 
-            if (timeMillis != null && viewModel.pkgMap[timeMillis] != null) {
-                fetchIcon(viewModel.pkgMap[timeMillis]!!)
+            if (timeSecs != null && viewModel.pkgMap[timeSecs] != null) {
+                fetchIcon(viewModel.pkgMap[timeSecs]!!)
             } else {
                 binding.playerIcon.dispose()
                 binding.playerIcon.load(null)
                 binding.playerIcon.contentDescription = null
                 job?.cancel()
 
-                if (timeMillis != null) {
+                if (timeSecs != null) {
                     job = viewModel.viewModelScope.launch(Dispatchers.IO) {
                         delay(100)
-                        scrobbleSourcesDao.findPlayer(timeMillis)?.pkg?.let { pkgName ->
-                            viewModel.pkgMap[timeMillis] = pkgName
+                        scrobbleSourcesDao.findPlayer(timeSecs)?.pkg?.let { pkgName ->
+                            viewModel.pkgMap[timeSecs] = pkgName
                             fetchIcon(pkgName)
                         }
                     }

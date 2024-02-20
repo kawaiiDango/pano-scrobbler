@@ -9,10 +9,12 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
-import de.umass.lastfm.Track
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -29,18 +31,17 @@ object ListenAlong {
 
     suspend fun fetchTrackLoop(username: String) {
         while (true) {
-            val track = withContext(Dispatchers.IO) {
-                Scrobblables.current!!.getRecents(
-                    1,
-                    username,
-                    limit = 1,
-                )
-            }.pageResults?.firstOrNull()
+            val track = Scrobblables.current!!.getRecents(
+                1,
+                username,
+                limit = 1,
+            ).map { it.entries.firstOrNull() }
+                .getOrNull()
             if (track != null && (track.artist != currentTrack?.artist || track.name != currentTrack?.name)) {
                 currentTrack = track
 
                 val spotifyId = withContext(Dispatchers.IO) {
-                    SpotifyRequester.getSpotifyTrack(track, 0.7f)?.id
+                    Requesters.spotifyRequester.getSpotifyTrack(track, 0.7f)?.id
                 } ?: continue
 
                 val spotifyLink = "https://open.spotify.com/track/$spotifyId"

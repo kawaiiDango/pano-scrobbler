@@ -32,25 +32,27 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.arn.scrobble.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.FmException
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
-import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.search.IndexingWorker
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.fadeToolbarTitle
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.utils.NavUtils
+import com.arn.scrobble.utils.Stuff
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity(),
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity(),
 
         super.onCreate(savedInstanceState)
 
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)
 
         binding = ContentMainBinding.inflate(layoutInflater)
@@ -166,9 +168,9 @@ class MainActivity : AppCompatActivity(),
 
         navController.addOnDestinationChangedListener(this)
 
-        mainNotifierViewModel.fabData.observe(this) {
+        collectLatestLifecycleFlow(mainNotifierViewModel.fabData) {
             // onDestroy of previous fragment gets called AFTER on create of the current fragment
-            it ?: return@observe
+            it ?: return@collectLatestLifecycleFlow
 
             it.lifecycleOwner.lifecycle.addObserver(
                 object : LifecycleEventObserver {
@@ -206,34 +208,73 @@ class MainActivity : AppCompatActivity(),
             showHiddenFab()
         }
 
-        mainNotifierViewModel.canIndex.observe(this) {
+        collectLatestLifecycleFlow(mainNotifierViewModel.canIndex) {
             if (!BuildConfig.DEBUG)
                 binding.sidebarNav.menu.findItem(R.id.nav_do_index)?.isVisible = it
-            if (it == true && prefs.lastMaxIndexTime != null) {
+            if (it && prefs.lastMaxIndexTime != null) {
                 IndexingWorker.schedule(this)
             }
         }
 
-        billingViewModel.proStatus.observe(this) {
-            if (it == true) {
+        collectLatestLifecycleFlow(billingViewModel.proStatus) {
+            if (it) {
                 binding.sidebarNav.menu.removeItem(R.id.nav_pro)
             }
         }
         billingViewModel.queryPurchases()
 
         if (canShowNotices) {
-            lifecycleScope.launch {
-                showSnackbarIfNeeded()
+            collectLatestLifecycleFlow(mainNotifierViewModel.actionNeededSnackbar) { snackbarData ->
+                Snackbar.make(
+                    binding.coordinator,
+                    snackbarData.message,
+                    snackbarData.duration
+                ).setAction(snackbarData.actionText) {
+                    if (snackbarData.updateData != null) {
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle(snackbarData.message)
+                            .setMessage(snackbarData.updateData.body)
+                            .setPositiveButton(R.string.download) { _, _ ->
+                                snackbarData.updateData.downloadUrl?.let {
+                                    Stuff.openInBrowser(it)
+                                }
+                            }
+                            .show()
+                    } else if (snackbarData.destinationId != 0)
+                        navController.navigate(snackbarData.destinationId)
+                }
+                    .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
+                    .focusOnTv()
+                    .show()
             }
         }
 
-        mainNotifierViewModel.drawerData.observe(this) {
+        collectLatestLifecycleFlow(mainNotifierViewModel.drawerData) {
             NavUtils.updateHeaderWithDrawerData(
-                navHeaderbinding ?: return@observe,
+                navHeaderbinding ?: return@collectLatestLifecycleFlow,
                 mainNotifierViewModel
             )
         }
+
+        collectLatestLifecycleFlow(App.globalExceptionFlow) { e ->
+            if (BuildConfig.DEBUG)
+                e.printStackTrace()
+
+            if (e is FmException) {
+                Snackbar.make(
+                    binding.root,
+                    e.localizedMessage ?: e.message,
+                    Snackbar.LENGTH_SHORT
+                ).apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
+                    .show()
+            }
+        }
 //        navController.navigate(R.id.fixItFragment)
+    }
+
+    override fun onDestroy() {
+        mainNotifierViewModel.prevDestinationId = null
+        super.onDestroy()
     }
 
     fun hideFab(removeListeners: Boolean = true) {
@@ -247,7 +288,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         if (removeListeners) {
-            mainNotifierViewModel.fabData.value = null
+            mainNotifierViewModel.setFabData(null)
             mainFab.setOnClickListener(null)
         }
     }
@@ -288,24 +329,6 @@ class MainActivity : AppCompatActivity(),
         }
 
         mainNotifierViewModel.prevDestinationId = destination.id
-    }
-
-    private suspend fun showSnackbarIfNeeded() {
-        delay(1500)
-        if (Stuff.isNotificationListenerEnabled() && prefs.scrobblerEnabled && !Stuff.isScrobblerRunning()) {
-            Snackbar.make(
-                binding.root,
-                R.string.not_running,
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction(R.string.not_running_fix_action) {
-                    navController.navigate(R.id.fixItFragment)
-                }
-                .focusOnTv()
-                .show()
-            Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
-        } else
-            Updater(this).withSnackbar()
     }
 
     override fun onNewIntent(intent: Intent?) {

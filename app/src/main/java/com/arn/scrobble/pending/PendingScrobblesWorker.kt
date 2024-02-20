@@ -14,16 +14,18 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.api.Scrobblable
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.FmException
+import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.scrobbleable.Scrobblable
-import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils
-import de.umass.lastfm.Track
-import de.umass.lastfm.scrobble.ScrobbleData
-import de.umass.lastfm.scrobble.ScrobbleResult
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -96,31 +98,34 @@ class PendingScrobblesWorker(
 
         val scrobbleDataToEntry = mutableMapOf<ScrobbleData, PendingScrobble>()
         entries.forEach {
-            ScrobbleData().apply {
-                artist = it.pendingScrobble.artist
-                album = it.pendingScrobble.album
-                track = it.pendingScrobble.track
-                albumArtist = it.pendingScrobble.albumArtist
-                timestamp = (it.pendingScrobble.timestamp / 1000).toInt() // in secs
-                if (it.pendingScrobble.duration > 10 * 1000)
-                    duration = (it.pendingScrobble.duration / 1000).toInt() // in secs
-                pkgName = it.pkg
-                scrobbleDataToEntry[this] = it.pendingScrobble
-            }
+            val sd = ScrobbleData(
+                artist = it.pendingScrobble.artist,
+                album = it.pendingScrobble.album,
+                track = it.pendingScrobble.track,
+                albumArtist = it.pendingScrobble.albumArtist,
+                timestamp = (it.pendingScrobble.timestamp / 1000).toInt(), // in secs
+                duration = if (it.pendingScrobble.duration > 10 * 1000)
+                    (it.pendingScrobble.duration / 1000).toInt() else null, // in secs
+            )
+            scrobbleDataToEntry[sd] = it.pendingScrobble
         }
         if (scrobbleDataToEntry.isNotEmpty()) {
             try {
-                val scrobbleResults = mutableMapOf<Scrobblable, ScrobbleResult>()
+                val scrobbleResults = mutableMapOf<Scrobblable, kotlin.Result<ScrobbleIgnored>>()
                 //if an error occurs, there will be only one result
 
                 Scrobblables.all.forEach {
                     val filteredData by lazy { filterForService(it, scrobbleDataToEntry) }
                     if (filteredData.isNotEmpty()) {
-                        scrobbleResults[it] = it.scrobble(filteredData)
-                        // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
-                        if (scrobbleResults[it]?.errorCode == 29) {
-                            return false
+                        val result = it.scrobble(filteredData)
+
+                        if (result.isFailure) {
+                            // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
+                            if ((result.exceptionOrNull() as? FmException)?.code == 29)
+                                return true
                         }
+
+                        scrobbleResults[it] = result
                     }
                 }
 
@@ -129,12 +134,13 @@ class PendingScrobblesWorker(
                     var state = pendingScrobble.state
 
                     scrobbleResults.forEach { (scrobblable, result) ->
-                        if (result.errorCode == 6 ||
-                            result.errorCode == 7 ||
-                            result.isSuccessful
+                        val err = result.exceptionOrNull() as? FmException
+
+                        if (err?.code == 6 ||
+                            err?.code == 7 ||
+                            result.isSuccess
                         ) {
                             state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
-
                         }
                     }
 
@@ -150,7 +156,7 @@ class PendingScrobblesWorker(
                     scrobblesDao.delete(idsToDelete)
 
                 scrobbleResults.forEach { (scrobblable, result) ->
-                    if (!result.isSuccessful) {
+                    if (result.isFailure) {
                         Stuff.logW(
                             "PendingScrobblesWorker: err for " + scrobblable.userAccount.type.ordinal +
                                     ": " + result
@@ -196,9 +202,9 @@ class PendingScrobblesWorker(
                     val shouldSubmit by lazy { filterOneForService(it, entry) }
                     if (shouldSubmit) {
                         results[it] = it.loveOrUnlove(
-                            Track(entry.track, null, entry.artist),
+                            Track(entry.track, null, Artist(entry.artist)),
                             entry.shouldLove
-                        )
+                        ).isSuccess
                     }
                 }
 

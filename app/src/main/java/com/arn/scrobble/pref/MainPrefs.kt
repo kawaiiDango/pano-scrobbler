@@ -6,20 +6,21 @@ import androidx.core.content.ContextCompat
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.DrawerData
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.isChannelEnabled
+import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserAccountSerializable
-import com.arn.scrobble.friends.UserSerializable
+import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.isChannelEnabled
 import com.frybits.harmony.getHarmonySharedPreferences
-import de.umass.lastfm.Period
 import hu.autsoft.krate.Krate
 import hu.autsoft.krate.booleanPref
 import hu.autsoft.krate.default.withDefault
 import hu.autsoft.krate.intPref
+import hu.autsoft.krate.kotlinx.json
 import hu.autsoft.krate.kotlinx.kotlinxPref
 import hu.autsoft.krate.longPref
 import hu.autsoft.krate.stringPref
@@ -30,6 +31,10 @@ import kotlinx.serialization.Serializable
 class MainPrefs : Krate {
 
     override val sharedPreferences = App.context.getHarmonySharedPreferences(NAME)
+
+    init {
+        json = Stuff.myJson
+    }
 
     private val nm by lazy {
         ContextCompat.getSystemService(
@@ -63,7 +68,6 @@ class MainPrefs : Krate {
     var preventDuplicateAmbientScrobbles by booleanPref(PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES).withDefault(
         false
     )
-    var allowedArtists by stringSetPref(PREF_ALLOWED_ARTISTS).withDefault(setOf())
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
     var fetchAlbum by booleanPref(PREF_FETCH_ALBUM).withDefault(false)
     var searchInSource by booleanPref(PREF_SEARCH_IN_SOURCE).withDefault(false)
@@ -96,7 +100,7 @@ class MainPrefs : Krate {
     )
     var lastChartsPeriodSelectedJson by kotlinxPref<TimePeriod>(
         PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED
-    ).withDefault(TimePeriod(Period.ONE_MONTH))
+    ).withDefault(TimePeriod(Period.MONTH))
 
     var lastRandomPeriodType by stringPref(PREF_ACTIVITY_LAST_RANDOM_PERIOD_TYPE).withDefault(
         TimePeriodType.CONTINUOUS.name
@@ -165,7 +169,7 @@ class MainPrefs : Krate {
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
     var lastfmLinksEnabled by booleanPref(PREF_ENABLE_LASTFM_LINKS).withDefault(false)
     var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(setOf())
-    var pinnedFriendsJson by kotlinxPref<List<UserSerializable>>(PREF_ACTIVITY_PINNED_FRIENDS)
+    var pinnedFriendsJson by kotlinxPref<List<UserCached>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
 
     // we want 401 and not 400
@@ -265,21 +269,6 @@ class MainPrefs : Krate {
         const val PREF_DELAY_PER_DEFAULT = 50
         const val PREF_DELAY_PER_MIN = 30
         const val PREF_DELAY_PER_MAX = 95
-        const val PREF_ALLOWED_ARTISTS = "allowed_artists"
-        const val PREF_LASTFM_SESS_KEY = "lastfm_sesskey"
-        const val PREF_LASTFM_USERNAME = "lastfm_username"
-        const val PREF_LIBREFM_USERNAME = "librefm_username"
-        const val PREF_LIBREFM_SESS_KEY = "librefm_sesskey"
-        const val PREF_LISTENBRAINZ_USERNAME = "listenbrainz_username"
-        const val PREF_LISTENBRAINZ_TOKEN = "listenbrainz_token"
-        const val PREF_LB_CUSTOM_USERNAME = "lb_username"
-        const val PREF_LB_CUSTOM_ROOT = "lb_root"
-        const val PREF_LB_CUSTOM_TOKEN = "lb_token"
-        const val PREF_LB_CUSTOM_TLS_NO_VERIFY = "lb_tls_no_verify"
-        const val PREF_GNUFM_USERNAME = "gnufm_username"
-        const val PREF_GNUFM_ROOT = "gnufm_root"
-        const val PREF_GNUFM_SESS_KEY = "gnufm_sesskey"
-        const val PREF_GNUFM_TLS_NO_VERIFY = "gnufm_tls_no_verify"
         const val PREF_NOW_PLAYING = "now_playing"
         const val PREF_ACR_HOST = "acr_host"
         const val PREF_ACR_KEY = "acr_key"
@@ -325,14 +314,12 @@ class MainPrefs : Krate {
 
         const val PREF_ACTIVITY_APP_LIST_WAS_RUN = "app_list_run"
         const val PREF_ACTIVITY_LAST_TAB = "last_tab"
-        const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED = "last_charts_period_selected"
-        const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_TYPE = "last_charts_period_type"
-        const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_SELECTED = "last_random_period_selected"
-        const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_TYPE = "last_random_period_type"
+        const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED = "charts_period_selected"
+        const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_TYPE = "charts_period_type"
+        const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_SELECTED = "random_period_selected"
+        const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_TYPE = "random_period_type"
         const val PREF_ACTIVITY_DRAWER_DATA_CACHED = "drawer_data_cached"
-        const val PREF_ACTIVITY_SCROBBLING_SINCE = "scrobbling_since"
         const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"
-        const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
         const val PREF_ACTIVITY_SEARCH_HISTORY = "search_history"
         const val PREF_ACTIVITY_TAG_HISTORY = "tag_history"
         const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"

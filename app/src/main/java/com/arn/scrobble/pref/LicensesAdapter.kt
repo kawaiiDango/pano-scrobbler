@@ -1,19 +1,17 @@
 package com.arn.scrobble.pref
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemLicenseBinding
-import com.mikepenz.aboutlibraries.Libs
+import com.arn.scrobble.ui.GenericDiffCallback
+import com.arn.scrobble.utils.Stuff
 import com.mikepenz.aboutlibraries.entity.Library
-import com.mikepenz.aboutlibraries.util.withContext
 
-class LicensesAdapter(context: Context) : RecyclerView.Adapter<LicensesAdapter.LicensesVH>() {
-
-    private val libraries by lazy { Libs.Builder().withContext(context).build().libraries }
-
+class LicensesAdapter : ListAdapter<Library, LicensesAdapter.LicensesVH>(
+    GenericDiffCallback { o, n -> o.uniqueId == n.uniqueId }
+) {
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
     }
@@ -25,10 +23,8 @@ class LicensesAdapter(context: Context) : RecyclerView.Adapter<LicensesAdapter.L
     }
 
     override fun onBindViewHolder(holder: LicensesVH, position: Int) {
-        holder.setData(libraries[position])
+        holder.setData(getItem(position))
     }
-
-    override fun getItemCount() = libraries.size
 
     class LicensesVH(private val binding: ListItemLicenseBinding) :
         RecyclerView.ViewHolder(binding.root) {

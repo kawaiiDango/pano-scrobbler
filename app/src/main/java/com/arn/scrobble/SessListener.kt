@@ -11,10 +11,12 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import com.arn.scrobble.Stuff.dump
-import com.arn.scrobble.Stuff.isUrlOrDomain
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.utils.MetadataUtils
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.dump
+import com.arn.scrobble.utils.Stuff.isUrlOrDomain
 import java.util.Locale
 import java.util.Objects
 
@@ -133,24 +135,20 @@ class SessListener(
     fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later
         // lollipop requires reflection, and i dont want to use that
-        if (mutedHash == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            audioManager.isStreamMute(AudioManager.STREAM_MUSIC)
+        if (mutedHash == null && audioManager.isStreamMute(
+                AudioManager.STREAM_MUSIC
+            )
         )
             return
 
         val callback = findCallbackByHash(hash)
         if (callback != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                audioManager.adjustStreamVolume(
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.ADJUST_MUTE,
-                    0
-                )
-                Stuff.log("mute: done")
-
-            } else {
-                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true)
-            }
+            audioManager.adjustStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_MUTE,
+                0
+            )
+            Stuff.log("mute: done")
 
             mutedHash = hash
             callback.isMuted = true
@@ -470,16 +468,12 @@ class SessListener(
 
         private fun unmute(clearMutedHash: Boolean) {
             if (mutedHash != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    audioManager.adjustStreamVolume(
-                        AudioManager.STREAM_MUSIC,
-                        AudioManager.ADJUST_UNMUTE,
-                        0
-                    )
-                    Stuff.log("unmute: done")
-                } else {
-                    audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false)
-                }
+                audioManager.adjustStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.ADJUST_UNMUTE,
+                    0
+                )
+                Stuff.log("unmute: done")
                 if (clearMutedHash)
                     mutedHash = null
                 isMuted = false

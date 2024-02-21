@@ -524,18 +524,19 @@ class SessListener(
     }
 
     private fun shouldScrobble(platformController: MediaController): Boolean {
-
-        return prefs.scrobblerEnabled && loggedIn &&
+        val should = prefs.scrobblerEnabled && loggedIn &&
                 (platformController.packageName in allowedPackages ||
+                        (prefs.autoDetectApps && platformController.packageName !in blockedPackages))
 
-                        (prefs.autoDetectApps && platformController.packageName !in blockedPackages)) &&
+        if (should && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+            (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(platformController.tag) == true ||
+                    Stuff.BLOCKED_MEDIA_SESSION_TAGS[platformController.packageName]?.contains(
+                        platformController.tag
+                    ) == true)
+        )
+            return false
 
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                        Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(platformController.tag) != true &&
-                        Stuff.BLOCKED_MEDIA_SESSION_TAGS[platformController.packageName]?.contains(
-                            platformController.tag
-                        ) != true)
-
+        return should
     }
 
     private fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {

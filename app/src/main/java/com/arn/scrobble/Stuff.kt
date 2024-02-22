@@ -595,7 +595,7 @@ object Stuff {
                     )
                     putExtra(MediaStore.EXTRA_MEDIA_ARTIST, musicEntry.artist)
                     putExtra(MediaStore.EXTRA_MEDIA_TITLE, musicEntry.name)
-                    if (musicEntry.album.isNotEmpty()) {
+                    if (!musicEntry.album.isNullOrEmpty()) {
                         putExtra(MediaStore.EXTRA_MEDIA_ALBUM, musicEntry.album)
                     }
                 }

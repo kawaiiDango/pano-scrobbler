@@ -451,6 +451,8 @@ class SessListener(
                         ?.unregisterCallback(this)
                 } catch (e: DeadObjectException) {
                     Stuff.logW("DeadObjectException")
+                } catch (e: SecurityException) {
+                    Stuff.logW("SecurityException")
                 }
             }
         }

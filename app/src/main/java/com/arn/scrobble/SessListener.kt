@@ -93,7 +93,13 @@ class SessListener(
                     playingTrackInfo,
                     controller.sessionToken
                 )
-            controller.registerCallback(cb)
+
+            try {
+                controller.registerCallback(cb)
+            } catch (e: SecurityException) {
+                Stuff.logW("SecurityException")
+                continue
+            }
 
             controller.playbackState?.let { cb.onPlaybackStateChanged(it) }
             controller.metadata?.let { cb.onMetadataChanged(it) }

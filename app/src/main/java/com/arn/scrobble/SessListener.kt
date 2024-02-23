@@ -95,7 +95,13 @@ class SessListener(
                     playingTrackInfo,
                     controller.sessionToken
                 )
-            controller.registerCallback(cb)
+
+            try {
+                controller.registerCallback(cb)
+            } catch (e: SecurityException) {
+                Stuff.logW("SecurityException")
+                continue
+            }
 
             controller.playbackState?.let { cb.onPlaybackStateChanged(it) }
             controller.metadata?.let { cb.onMetadataChanged(it) }
@@ -449,6 +455,8 @@ class SessListener(
                         ?.unregisterCallback(this)
                 } catch (e: DeadObjectException) {
                     Stuff.logW("DeadObjectException")
+                } catch (e: SecurityException) {
+                    Stuff.logW("SecurityException")
                 }
             }
         }
@@ -518,18 +526,19 @@ class SessListener(
     }
 
     private fun shouldScrobble(platformController: MediaController): Boolean {
-
-        return prefs.scrobblerEnabled && loggedIn &&
+        val should = prefs.scrobblerEnabled && loggedIn &&
                 (platformController.packageName in allowedPackages ||
+                        (prefs.autoDetectApps && platformController.packageName !in blockedPackages))
 
-                        (prefs.autoDetectApps && platformController.packageName !in blockedPackages)) &&
+        if (should && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+            (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(platformController.tag) == true ||
+                    Stuff.BLOCKED_MEDIA_SESSION_TAGS[platformController.packageName]?.contains(
+                        platformController.tag
+                    ) == true)
+        )
+            return false
 
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                        Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(platformController.tag) != true &&
-                        Stuff.BLOCKED_MEDIA_SESSION_TAGS[platformController.packageName]?.contains(
-                            platformController.tag
-                        ) != true)
-
+        return should
     }
 
     private fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {

@@ -220,7 +220,7 @@ object Stuff {
 
     val BLOCKED_MEDIA_SESSION_TAGS = mapOf(
         "*" to listOf("CastMediaSession"),
-        PACKAGE_YAMAHA_MUSIC_CAST to listOf("MediaHttpService"),
+        PACKAGE_YAMAHA_MUSIC_CAST to listOf("NotificationService"),
     )
 
     val PACKAGES_PIXEL_NP = setOf(

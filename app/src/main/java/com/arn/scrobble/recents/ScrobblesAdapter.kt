@@ -504,11 +504,11 @@ class ScrobblesAdapter(
                             if (it.itemId == R.id.scrobbler_enable) {
                                 if (!prefs.scrobblerEnabled) {
                                     prefs.scrobblerEnabled = true
-                                    viewModel.updateScrobblerEnabled()
                                     updateScrobblerDisabledNotice(true)
                                 } else {
                                     navController.navigate(R.id.onboardingFragment)
                                 }
+                                viewModel.updateScrobblerEnabled()
                                 true
                             } else
                                 false

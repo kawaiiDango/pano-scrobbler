@@ -141,15 +141,13 @@ class SpotifyRequester {
 
 
     suspend fun getSpotifyTrack(track: Track, similarityThreshold: Float = 1f): SpotifyTrack? {
-        val response = withContext(Dispatchers.IO) {
-            client.get("https://api.spotify.com/v1/search") {
-                parameter("q", "${track.artist.name} ${track.name}")
-                parameter("type", "track")
-                parameter("limit", 1)
-            }
+        val responseText = client.getResult<String>("https://api.spotify.com/v1/search") {
+            parameter("q", "${track.artist.name} ${track.name}")
+            parameter("type", "track")
+            parameter("limit", 1)
         }
 
-        val jsonObject = JSONObject(response.bodyAsText())
+        val jsonObject = JSONObject(responseText.getOrNull() ?: return null)
         val tracks = jsonObject.getJSONObject("tracks")
         if (tracks.getInt("total") == 0)
             return null

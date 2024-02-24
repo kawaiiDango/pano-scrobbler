@@ -136,7 +136,7 @@ class TrackHistoryAdapter(
 
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
-                Objects.hash(track.artist, track.name)
+                Objects.hash(track.artist.name, track.name)
             )
 
             if (!imgUrl.isNullOrEmpty()) {

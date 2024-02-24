@@ -10,9 +10,9 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +37,7 @@ object ListenAlong {
                 limit = 1,
             ).map { it.entries.firstOrNull() }
                 .getOrNull()
-            if (track != null && (track.artist != currentTrack?.artist || track.name != currentTrack?.name)) {
+            if (track != null && (track.artist.name != currentTrack?.artist?.name || track.name != currentTrack?.name)) {
                 currentTrack = track
 
                 val spotifyId = withContext(Dispatchers.IO) {

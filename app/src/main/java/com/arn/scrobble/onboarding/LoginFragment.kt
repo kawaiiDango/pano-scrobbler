@@ -15,15 +15,19 @@ import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.friends.UserAccountTemp
+import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -119,16 +123,47 @@ open class LoginFragment : DialogFragment() {
         }
     }
 
-    protected fun error(errMsg: String) {
+    protected fun error(exception: Throwable) {
         if (context == null || isStateSaved)
             return
-        if (errMsg.isNotEmpty())
-            requireContext().toast(errMsg)
+
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_ban)
         binding.loginStatus.visibility = View.VISIBLE
 
         lifecycleScope.launch {
+
+            when (exception) {
+                is LastfmUnscrobbler.CookiesInvalidatedException -> {
+                    PopupMenuUtils.showReauthenticatePrompt(findNavController())
+                }
+
+                is ScrobbleIgnoredException -> {
+                    if (System.currentTimeMillis() - exception.scrobbleTimeSecs < Stuff.LASTFM_MAX_PAST_SCROBBLE)
+                        requireContext().toast(getString(R.string.lastfm) + ": " + getString(R.string.scrobble_ignored))
+                    else {
+                        withContext(Dispatchers.Main) {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setMessage(R.string.scrobble_ignored_save_edit)
+                                .setPositiveButton(R.string.yes) { _, _ ->
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        exception.altAction()
+                                    }
+                                }
+                                .setNegativeButton(R.string.no, null)
+                                .show()
+                        }
+                    }
+                }
+
+                else -> {
+                    if (!exception.message.isNullOrEmpty())
+                        requireContext().toast(exception.message!!)
+                    else
+                        requireContext().toast(R.string.network_error)
+                }
+            }
+
             delay(1500)
             if (context == null || isStateSaved)
                 return@launch
@@ -141,35 +176,27 @@ open class LoginFragment : DialogFragment() {
 
     private fun validate() {
         GlobalScope.launch {
-            val errMsg = try {
-                withContext(Dispatchers.IO) {
-                    if (validateAsync())
-                        null
-                    else
-                        ""
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                e.message
+            val result = withContext(Dispatchers.IO) {
+                validateAsync()
             }
-            withContext(Dispatchers.Main) {
-                if (errMsg == null)
+
+            lifecycleScope.launch {
+                result.onSuccess {
                     success()
-                else
-                    error(errMsg)
+                }.onFailure {
+                    error(it)
+                }
             }
         }
         hideKeyboard()
     }
 
-    protected open suspend fun validateAsync(): Boolean {
+    protected open suspend fun validateAsync(): Result<Unit> {
         val t1 = binding.loginTextfield1.editText!!.text.toString()
         val t2 = binding.loginTextfield2.editText!!.text.toString()
         val tlast = binding.loginTextfieldLast.editText!!.text.toString()
 
-        var success = false
-
-        when (args.loginTitle) {
+        return when (args.loginTitle) {
             getString(R.string.listenbrainz) -> {
                 if (tlast.isNotBlank()) {
                     val userAccount = UserAccountTemp(
@@ -178,10 +205,9 @@ open class LoginFragment : DialogFragment() {
                         Stuff.LISTENBRAINZ_API_ROOT,
                     )
                     ListenBrainz.authAndGetSession(userAccount)
-                        .map { it.name }
-                        .onSuccess {
-                            success = true
-                        }
+                        .map { Unit }
+                } else {
+                    Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
                 }
             }
 
@@ -199,13 +225,12 @@ open class LoginFragment : DialogFragment() {
                             url,
                         )
                         ListenBrainz.authAndGetSession(userAccount)
-                            .map { it.name }
-                            .onSuccess {
-                                success = true
-                            }
+                            .map { Unit }
                     } else {
-                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
+                        Result.failure(IllegalArgumentException(getString(R.string.failed_encode_url)))
                     }
+                } else {
+                    Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
                 }
             }
 
@@ -226,10 +251,12 @@ open class LoginFragment : DialogFragment() {
                             findNavController().popBackStack()
                             findNavController().navigate(R.id.webViewFragment, arguments)
                         }
-                        return true
+                        Result.success(Unit)
                     } else {
-                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
+                        Result.failure(IllegalArgumentException(getString(R.string.failed_encode_url)))
                     }
+                } else {
+                    Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
                 }
             }
 
@@ -255,15 +282,16 @@ open class LoginFragment : DialogFragment() {
                     prefs.acrcloudHost = t1
                     prefs.acrcloudKey = t2
                     prefs.acrcloudSecret = tlast
-                    success = true
+                    Result.success(Unit)
 //                    }
+                } else {
+                    Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
                 }
             }
 
             else -> withContext(Dispatchers.Main) {
-                requireActivity().toast("service not implemented")
+                throw NotImplementedError("service not implemented")
             }
         }
-        return success
     }
 }

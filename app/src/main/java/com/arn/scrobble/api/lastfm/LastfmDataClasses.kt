@@ -486,7 +486,8 @@ data class ScrobbleResponse(
 ) {
     @Serializable
     data class Scrobbles(
-        val scrobble: ScrobbleDetails,
+        @Serializable(with = ArrayOrObjectScrobbleDetailsSerializer::class)
+        val scrobble: List<ScrobbleDetails>,
         @SerialName("@attr")
         val attr: Attr,
     ) {

@@ -212,8 +212,9 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                 ) {
                     if (!it)
                         binding.root.startFadeLoop()
-                    else
+                    else {
                         binding.root.clearAnimation()
+                    }
                 }
             }
 
@@ -252,13 +253,15 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             false
         rootViewBinding.chartsList.adapter = adapter
 
-        adapter.progressVisible(true)
+//        adapter.progressVisible(true)
 
         collectLatestLifecycleFlow(sectionVM.entries.filterNotNull()) {
-//            if (sectionVM.hasLoaded.value) {
             sectionVM.reachedEnd = true
             adapter.populate(it, true)
-//            }
+        }
+
+        collectLatestLifecycleFlow(sectionVM.hasLoaded) {
+            adapter.progressVisible(!it)
         }
     }
 

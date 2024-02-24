@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
-import timber.log.Timber
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -54,13 +53,13 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
 
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
-        BuildConfig.DEBUG ||
-                (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
+//        BuildConfig.DEBUG ||
+        (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
                 (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
     }
 
     init {
-        showNoticesIfNeeded()
+        checkForUpdates()
     }
 
     fun updateCanIndex() {
@@ -114,26 +113,12 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     }
 
     // from activity
-    private fun showNoticesIfNeeded() {
+    private fun checkForUpdates() {
         if (!Stuff.isLoggedIn())
             return
 
         viewModelScope.launch(Dispatchers.IO) {
             delay(3000)
-
-
-            val nlsEnabled = Stuff.isNotificationListenerEnabled()
-
-            if (nlsEnabled && prefs.scrobblerEnabled && !Stuff.isScrobblerRunning()) { // scrobbler killed
-                _actionNeededSnackbar.emit(
-                    SnackbarData(
-                        message = getApplication<App>().getString(R.string.not_running),
-                        actionText = getApplication<App>().getString(R.string.not_running_fix_action),
-                        destinationId = R.id.fixItFragment
-                    )
-                )
-                Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
-            }
 
             // check if play store exists
             val hasPlayStore = getApplication<App>()

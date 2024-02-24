@@ -150,7 +150,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
     suspend fun lookupMbid(track: Track): ListenBrainzMbidLookup? {
         return client.getResult<ListenBrainzMbidLookup>("metadata/lookup") {
-            parameter("artist_name", track.artist)
+            parameter("artist_name", track.artist.name)
             parameter("recording_name", track.name)
         }.getOrNull()
     }

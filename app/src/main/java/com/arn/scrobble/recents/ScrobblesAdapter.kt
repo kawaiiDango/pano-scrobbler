@@ -141,11 +141,14 @@ class ScrobblesAdapter(
                 Section.NOTICE_SECTION.ordinal,
                 header = ExpandableHeader(
                     R.drawable.vd_error,
-                    R.string.scrobbler_off,
+                    if (viewModel.scrobblerEnabled && !viewModel.scrobblerServiceRunning)
+                        R.string.not_running
+                    else
+                        R.string.scrobbler_off,
                     R.string.enable,
                     R.string.enable,
                 ),
-                showHeaderWhenEmpty = !viewModel.scrobblerEnabled
+                showHeaderWhenEmpty = !(viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning)
             )
         )
 
@@ -415,7 +418,7 @@ class ScrobblesAdapter(
             val imgUrl = track.webp300
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
-                Objects.hash(track.artist, track.name)
+                Objects.hash(track.artist.name, track.name)
             )
 
             if (!viewModel.isShowingLoves) {
@@ -499,19 +502,32 @@ class ScrobblesAdapter(
                             binding.headerOverflowButton.context,
                             binding.headerOverflowButton
                         )
-                        popupMenu.inflate(R.menu.scrobbler_enable_menu)
+
+                        if (viewModel.scrobblerEnabled && !viewModel.scrobblerServiceRunning)
+                            popupMenu.inflate(R.menu.scrobbler_fix_it_menu)
+                        else
+                            popupMenu.inflate(R.menu.scrobbler_enable_menu)
+
                         popupMenu.setOnMenuItemClickListener {
-                            if (it.itemId == R.id.scrobbler_enable) {
-                                if (!prefs.scrobblerEnabled) {
-                                    prefs.scrobblerEnabled = true
-                                    updateScrobblerDisabledNotice(true)
-                                } else {
-                                    navController.navigate(R.id.onboardingFragment)
+                            when (it.itemId) {
+                                R.id.scrobbler_enable -> {
+                                    if (!prefs.scrobblerEnabled) {
+                                        prefs.scrobblerEnabled = true
+                                        updateScrobblerDisabledNotice(true)
+                                    } else {
+                                        navController.navigate(R.id.onboardingFragment)
+                                    }
+                                    viewModel.updateScrobblerServiceStatus()
+                                    true
                                 }
-                                viewModel.updateScrobblerEnabled()
-                                true
-                            } else
-                                false
+
+                                R.id.scrobbler_fix_it -> {
+                                    navController.navigate(R.id.fixItFragment)
+                                    true
+                                }
+
+                                else -> false
+                            }
                         }
                         popupMenu.show()
                     }

@@ -46,3 +46,14 @@ object ArrayOrObjectAlbumSerializer : JsonTransformingSerializer<List<Album>>(se
         }
     }
 }
+
+object ArrayOrObjectScrobbleDetailsSerializer :
+    JsonTransformingSerializer<List<ScrobbleDetails>>(serializer()) {
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        return when (element) {
+            is JsonArray -> element
+            is JsonObject -> JsonArray(listOf(element))
+            else -> JsonArray(emptyList())
+        }
+    }
+}

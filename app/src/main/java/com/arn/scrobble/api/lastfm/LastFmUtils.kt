@@ -5,4 +5,8 @@ class FmException(
     override val message: String
 ) : Exception(message)
 
+class ScrobbleIgnoredException(
+    val scrobbleTimeSecs: Int,
+    val altAction: () -> Unit
+) : Exception("Scrobble ignored")
 

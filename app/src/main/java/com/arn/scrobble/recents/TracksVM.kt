@@ -38,6 +38,8 @@ class TracksVM : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var scrobblerEnabled = true
         private set
+    var scrobblerServiceRunning = true
+        private set
     var pendingSubmitAttempted = false
 
     private val deletedTracksSet = mutableSetOf<Track>()
@@ -65,6 +67,9 @@ class TracksVM : ViewModel() {
         viewModelScope.launch {
             _input.filterNotNull()
                 .collectLatest {
+                    if (it.user.isSelf)
+                        updateScrobblerServiceStatus()
+                    
                     when (it.type) {
                         Stuff.TYPE_TRACKS -> {
                             if (it.entry is Track) {
@@ -73,6 +78,7 @@ class TracksVM : ViewModel() {
                                 loadRecents(it.page, it.user.name, it.timePeriod)
                             }
                             lastRecentsLoadTime = System.currentTimeMillis()
+
                         }
 
                         Stuff.TYPE_LOVES -> {
@@ -84,11 +90,15 @@ class TracksVM : ViewModel() {
                 }
         }
 
-        updateScrobblerEnabled()
+
     }
 
-    fun updateScrobblerEnabled() {
+    fun updateScrobblerServiceStatus() {
         scrobblerEnabled = Stuff.isNotificationListenerEnabled() && App.prefs.scrobblerEnabled
+        scrobblerServiceRunning = if (scrobblerEnabled)
+            Stuff.isNotificationListenerEnabled()
+        else
+            false
     }
 
     fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {

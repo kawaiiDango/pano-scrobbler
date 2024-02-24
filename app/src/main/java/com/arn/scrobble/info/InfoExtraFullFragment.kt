@@ -108,10 +108,14 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
             adapter.showArtists = false
         }
 
-        adapter.progressVisible(true)
+//        adapter.progressVisible(true)
 
         collectLatestLifecycleFlow(viewModel.entries.filterNotNull()) {
             adapter.populate(it, false)
+        }
+
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
+            adapter.progressVisible(!it)
         }
 
         collectLatestLifecycleFlow(optionsMenuViewModel.menuEvent) { (_, menuItemId) ->

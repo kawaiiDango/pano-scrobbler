@@ -334,13 +334,13 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 var shareText = if (activityViewModel.currentUser.isSelf)
                     getString(
                         R.string.recents_share,
-                        heart + getString(R.string.artist_title, track.artist, track.name),
+                        heart + getString(R.string.artist_title, track.artist.name, track.name),
                         Stuff.myRelativeTime(requireContext(), track.date, true)
                     )
                 else
                     getString(
                         R.string.recents_share_username,
-                        heart + getString(R.string.artist_title, track.artist, track.name),
+                        heart + getString(R.string.artist_title, track.artist.name, track.name),
                         Stuff.myRelativeTime(requireContext(), track.date, true),
                         activityViewModel.currentUser.name
                     )
@@ -627,7 +627,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
 
         val errColor = UiUtils.getMatColor(
             coordinatorBinding.heroImg.context,
-            Objects.hash(track.artist, track.name)
+            Objects.hash(track.artist.name, track.name)
         )
         val errDrawable =
             ContextCompat.getDrawable(requireContext(), R.drawable.vd_wave_simple_filled)!!

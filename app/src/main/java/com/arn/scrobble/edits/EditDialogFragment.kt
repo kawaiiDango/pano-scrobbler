@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -32,6 +31,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.CachedTracksDao
@@ -44,12 +44,10 @@ import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
 import com.arn.scrobble.onboarding.LoginFragment
 import com.arn.scrobble.onboarding.LoginFragmentArgs
-import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
@@ -193,7 +191,7 @@ class EditDialogFragment : LoginFragment() {
             .show()
     }
 
-    override suspend fun validateAsync(): Boolean {
+    override suspend fun validateAsync(): Result<Unit> {
         val track = binding.loginTextfield1.editText!!.text.toString().trim()
         val origTrack = args.data.track
         var album = binding.loginTextfield2.editText!!.text.toString().trim()
@@ -210,7 +208,6 @@ class EditDialogFragment : LoginFragment() {
                 (track.equals(origTrack, ignoreCase = true) &&
                         artist.equals(origArtist, ignoreCase = true)
                         && (album != origAlbum || albumArtist.isNotBlank())))
-        var success = true
         val scrobbleData = args.data
         val lastfmScrobblable = Scrobblables.byType(AccountType.LASTFM)
         val lastfmScrobbleResult: Result<ScrobbleIgnored>
@@ -244,14 +241,14 @@ class EditDialogFragment : LoginFragment() {
         }
 
         if (track.isBlank() || artist.isBlank()) {
-            throw IllegalArgumentException(getString(R.string.required_fields_empty))
+            return Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
         }
 
         if (isNowPlaying && track == origTrack &&
             artist == origArtist && album == origAlbum && albumArtist == "" &&
             !(album == "" && prefs.fetchAlbum)
         ) {
-            return true
+            return Result.success(Unit)
         }
 
         if (fetchAlbumAndAlbumArtist) {
@@ -281,27 +278,7 @@ class EditDialogFragment : LoginFragment() {
         if (lastfmScrobblable != null) {
             lastfmScrobbleResult = lastfmScrobblable.scrobble(scrobbleData)
             if (lastfmScrobbleResult.map { it.ignored }.getOrNull() == true) {
-                if (System.currentTimeMillis() - timeSecs < Stuff.LASTFM_MAX_PAST_SCROBBLE)
-                    throw IllegalArgumentException(
-                        getString(R.string.lastfm) + ": " + getString(R.string.scrobble_ignored)
-                    )
-                else {
-                    success = false
-                    withContext(Dispatchers.Main) {
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setMessage(R.string.scrobble_ignored_save_edit)
-                            .setPositiveButton(R.string.yes) { _, _ ->
-                                lifecycleScope.launch(Dispatchers.IO) {
-                                    saveEdit()
-                                    withContext(Dispatchers.Main) {
-                                        dismiss()
-                                    }
-                                }
-                            }
-                            .setNegativeButton(R.string.no, null)
-                            .show()
-                    }
-                }
+                return Result.failure(ScrobbleIgnoredException(timeSecs, ::saveEdit))
             } else {
                 if (!isNowPlaying) {
                     // The user might submit the edit after it has been scrobbled, so delete anyways
@@ -309,8 +286,7 @@ class EditDialogFragment : LoginFragment() {
                     if (deleteResult.isSuccess)
                         CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
                     else if (deleteResult.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException) {
-                        PopupMenuUtils.showReauthenticatePrompt(findNavController())
-                        return false
+                        return Result.failure(LastfmUnscrobbler.CookiesInvalidatedException())
                     }
                 }
                 if (rescrobbleRequired)
@@ -360,7 +336,7 @@ class EditDialogFragment : LoginFragment() {
         saveEdit()
 
         // suggest regex edit
-        if (success && !prefs.regexEditsLearnt) {
+        if (!prefs.regexEditsLearnt) {
             val dao = PanoDb.db.getRegexEditsDao()
 
             val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets()
@@ -392,31 +368,29 @@ class EditDialogFragment : LoginFragment() {
             }
         }
 
-        if (success) {
-            // notify the edit
-            (activity as? MainActivity)?.let {
-                val _artist = Artist(artist)
-                mainNotifierViewModel.notifyEdit(
-                    Track(
-                        track,
-                        Album(album, _artist),
-                        _artist,
-                        date = if (!isNowPlaying) null else timeSecs,
-                    )
+        // notify the edit
+        (activity as? MainActivity)?.let {
+            val _artist = Artist(artist)
+            mainNotifierViewModel.notifyEdit(
+                Track(
+                    track,
+                    Album(album, _artist),
+                    _artist,
+                    date = if (!isNowPlaying) null else timeSecs,
                 )
-            }
-            if (!isNowPlaying) {
-                lockScrobble(false)
-                context?.sendBroadcast(
-                    Intent(NLService.iCANCEL)
-                        .putExtra(NLService.B_HASH, args.hash)
-                        .setPackage(requireContext().packageName),
-                    NLService.BROADCAST_PERMISSION
-                )
-            }
+            )
+        }
+        if (!isNowPlaying) {
+            lockScrobble(false)
+            context?.sendBroadcast(
+                Intent(NLService.iCANCEL)
+                    .putExtra(NLService.B_HASH, args.hash)
+                    .setPackage(requireContext().packageName),
+                NLService.BROADCAST_PERMISSION
+            )
         }
 
-        return success
+        return Result.success(Unit)
     }
 
     private fun lockScrobble(lock: Boolean) {

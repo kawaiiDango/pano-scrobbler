@@ -1,7 +1,7 @@
 package com.arn.scrobble
 
-import android.support.v4.media.RatingCompat
-import android.support.v4.media.session.MediaControllerCompat
+import android.media.Rating
+import android.media.session.MediaController
 import com.arn.scrobble.utils.Stuff
 
 object PlayerActions {
@@ -41,7 +41,7 @@ object PlayerActions {
 //        ),
     )
 
-    fun List<MediaControllerCompat>.skip() {
+    fun List<MediaController>.skip() {
         forEach {
             it.transportControls.skipToNext()
         }
@@ -60,7 +60,7 @@ object PlayerActions {
     // gonemad, deezer, tidal, podcast addict, gensokyo radio, gaana, wynk, jiosaavn, DIFM,
     // antenna pod, hiby, fiio,
 
-    fun List<MediaControllerCompat>.love() {
+    fun List<MediaController>.love() {
         forEach {
             // custom actions override the rating
             if (it.packageName in customRatingActions) {
@@ -83,23 +83,23 @@ object PlayerActions {
             }
 
             val rating = when (it.ratingType) {
-                RatingCompat.RATING_THUMB_UP_DOWN ->
-                    RatingCompat.newThumbRating(true)
+                Rating.RATING_THUMB_UP_DOWN ->
+                    Rating.newThumbRating(true)
 
-                RatingCompat.RATING_HEART ->
-                    RatingCompat.newHeartRating(true)
+                Rating.RATING_HEART ->
+                    Rating.newHeartRating(true)
 
-                RatingCompat.RATING_3_STARS ->
-                    RatingCompat.newStarRating(RatingCompat.RATING_3_STARS, 3F)
+                Rating.RATING_3_STARS ->
+                    Rating.newStarRating(Rating.RATING_3_STARS, 3F)
 
-                RatingCompat.RATING_4_STARS ->
-                    RatingCompat.newStarRating(RatingCompat.RATING_4_STARS, 4F)
+                Rating.RATING_4_STARS ->
+                    Rating.newStarRating(Rating.RATING_4_STARS, 4F)
 
-                RatingCompat.RATING_5_STARS ->
-                    RatingCompat.newStarRating(RatingCompat.RATING_5_STARS, 5F)
+                Rating.RATING_5_STARS ->
+                    Rating.newStarRating(Rating.RATING_5_STARS, 5F)
 
-                RatingCompat.RATING_PERCENTAGE ->
-                    RatingCompat.newPercentageRating(100F)
+                Rating.RATING_PERCENTAGE ->
+                    Rating.newPercentageRating(100F)
 
                 else -> null
             }
@@ -110,7 +110,7 @@ object PlayerActions {
         }
     }
 
-    fun List<MediaControllerCompat>.unlove() {
+    fun List<MediaController>.unlove() {
         forEach {
             // custom actions override the rating
             if (it.packageName in customRatingActions) {
@@ -131,9 +131,9 @@ object PlayerActions {
                 return@forEach
             }
 
-            val ratingSupported = it.ratingType != RatingCompat.RATING_NONE
+            val ratingSupported = it.ratingType != Rating.RATING_NONE
             if (ratingSupported)
-                it.transportControls.setRating(RatingCompat.newUnratedRating(it.ratingType))
+                it.transportControls.setRating(Rating.newUnratedRating(it.ratingType))
         }
     }
 }

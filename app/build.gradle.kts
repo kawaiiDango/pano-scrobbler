@@ -40,7 +40,7 @@ android {
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${

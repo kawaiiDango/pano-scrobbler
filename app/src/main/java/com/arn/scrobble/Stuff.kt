@@ -19,6 +19,7 @@ import android.content.pm.ResolveInfo
 import android.content.res.Configuration
 import android.hardware.input.InputManager
 import android.media.MediaMetadata
+import android.media.session.PlaybackState
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -332,58 +333,58 @@ object Stuff {
 
     fun actionsToString(actions: Long): String {
         var s = "[\n"
-        if (actions and PlaybackStateCompat.ACTION_PREPARE != 0L) {
+        if (actions and PlaybackState.ACTION_PREPARE != 0L) {
             s += "\tACTION_PREPARE\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PREPARE_FROM_MEDIA_ID != 0L) {
+        if (actions and PlaybackState.ACTION_PREPARE_FROM_MEDIA_ID != 0L) {
             s += "\tACTION_PREPARE_FROM_MEDIA_ID\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PREPARE_FROM_SEARCH != 0L) {
+        if (actions and PlaybackState.ACTION_PREPARE_FROM_SEARCH != 0L) {
             s += "\tACTION_PREPARE_FROM_SEARCH\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PREPARE_FROM_URI != 0L) {
+        if (actions and PlaybackState.ACTION_PREPARE_FROM_URI != 0L) {
             s += "\tACTION_PREPARE_FROM_URI\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PLAY != 0L) {
+        if (actions and PlaybackState.ACTION_PLAY != 0L) {
             s += "\tACTION_PLAY\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID != 0L) {
+        if (actions and PlaybackState.ACTION_PLAY_FROM_MEDIA_ID != 0L) {
             s += "\tACTION_PLAY_FROM_MEDIA_ID\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH != 0L) {
+        if (actions and PlaybackState.ACTION_PLAY_FROM_SEARCH != 0L) {
             s += "\tACTION_PLAY_FROM_SEARCH\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PLAY_FROM_URI != 0L) {
+        if (actions and PlaybackState.ACTION_PLAY_FROM_URI != 0L) {
             s += "\tACTION_PLAY_FROM_URI\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PLAY_PAUSE != 0L) {
+        if (actions and PlaybackState.ACTION_PLAY_PAUSE != 0L) {
             s += "\tACTION_PLAY_PAUSE\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_PAUSE != 0L) {
+        if (actions and PlaybackState.ACTION_PAUSE != 0L) {
             s += "\tACTION_PAUSE\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_STOP != 0L) {
+        if (actions and PlaybackState.ACTION_STOP != 0L) {
             s += "\tACTION_STOP\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_SEEK_TO != 0L) {
+        if (actions and PlaybackState.ACTION_SEEK_TO != 0L) {
             s += "\tACTION_SEEK_TO\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
+        if (actions and PlaybackState.ACTION_SKIP_TO_NEXT != 0L) {
             s += "\tACTION_SKIP_TO_NEXT\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
+        if (actions and PlaybackState.ACTION_SKIP_TO_PREVIOUS != 0L) {
             s += "\tACTION_SKIP_TO_PREVIOUS\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_QUEUE_ITEM != 0L) {
+        if (actions and PlaybackState.ACTION_SKIP_TO_QUEUE_ITEM != 0L) {
             s += "\tACTION_SKIP_TO_QUEUE_ITEM\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_FAST_FORWARD != 0L) {
+        if (actions and PlaybackState.ACTION_FAST_FORWARD != 0L) {
             s += "\tACTION_FAST_FORWARD\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_REWIND != 0L) {
+        if (actions and PlaybackState.ACTION_REWIND != 0L) {
             s += "\tACTION_REWIND\n"
         }
-        if (actions and PlaybackStateCompat.ACTION_SET_RATING != 0L) {
+        if (actions and PlaybackState.ACTION_SET_RATING != 0L) {
             s += "\tACTION_SET_RATING\n"
         }
         if (actions and PlaybackStateCompat.ACTION_SET_REPEAT_MODE != 0L) {

@@ -2,15 +2,14 @@ package com.arn.scrobble
 
 import android.content.SharedPreferences
 import android.media.AudioManager
+import android.media.MediaMetadata
 import android.media.session.MediaController
+import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
+import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
-import android.os.DeadObjectException
 import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import com.arn.scrobble.Stuff.dump
 import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.pref.MainPrefs
@@ -31,7 +30,7 @@ class SessListener(
 
     private val prefs = App.prefs
     private val controllersMap =
-        mutableMapOf<MediaSessionCompat.Token, Pair<MediaControllerCompat, ControllerCallback>>()
+        mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
     private var platformControllers: List<MediaController>? = null
 
     private val blockedPackages = mutableSetOf<String>()
@@ -58,12 +57,8 @@ class SessListener(
             return
 
         val controllersFiltered = controllers.mapNotNull {
-            val token by lazy { MediaSessionCompat.Token.fromToken(it.sessionToken) }
-            if (shouldScrobble(it) && token !in controllersMap)
-                MediaControllerCompat(
-                    App.context,
-                    MediaSessionCompat.Token.fromToken(it.sessionToken)
-                )
+            if (shouldScrobble(it) && it.sessionToken !in controllersMap)
+                MediaController(App.context, it.sessionToken)
             else null
         }
 
@@ -94,12 +89,7 @@ class SessListener(
                     controller.sessionToken
                 )
 
-            try {
-                controller.registerCallback(cb)
-            } catch (e: SecurityException) {
-                Stuff.logW("SecurityException")
-                continue
-            }
+            controller.registerCallback(cb)
 
             controller.playbackState?.let { cb.onPlaybackStateChanged(it) }
             controller.metadata?.let { cb.onMetadataChanged(it) }
@@ -117,10 +107,10 @@ class SessListener(
 
     fun isMediaPlaying() =
         platformControllers?.any {
-            it.playbackState?.state == PlaybackStateCompat.STATE_PLAYING &&
-                    !it.metadata?.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+            it.playbackState?.state == PlaybackState.STATE_PLAYING &&
+                    !it.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
                         .isNullOrEmpty() &&
-                    !it.metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE).isNullOrEmpty()
+                    !it.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
         } ?: false
 
     fun findControllersByPackage(packageName: String) =
@@ -165,7 +155,7 @@ class SessListener(
 
     @Synchronized
     fun removeSessions(
-        tokensToKeep: Set<MediaSessionCompat.Token>,
+        tokensToKeep: Set<MediaSession.Token>,
         packageNamesToKeep: Set<String>? = null
     ) {
         val it = controllersMap.iterator()
@@ -186,11 +176,11 @@ class SessListener(
 
     inner class ControllerCallback(
         val trackInfo: PlayingTrackInfo,
-        private val token: MediaSessionCompat.Token
-    ) : MediaControllerCompat.Callback() {
+        private val token: MediaSession.Token
+    ) : MediaController.Callback() {
 
         private var lastPlayingState = -1
-        private var lastState: PlaybackStateCompat? = null
+        private var lastState: PlaybackState? = null
         private var isRemotePlayback = false
         var isMuted = false
 
@@ -216,7 +206,7 @@ class SessListener(
         }
 
         @Synchronized
-        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
+        override fun onMetadataChanged(metadata: MediaMetadata?) {
             metadata ?: return
 
             if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_ADVERTISEMENT) != 0L) {
@@ -225,14 +215,14 @@ class SessListener(
             }
 
             var albumArtist =
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
-            var artist = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)?.trim()
+                metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
+            var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim()
                 ?: albumArtist // do not scrobble empty artists, ads will get scrobbled
-            var album = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM)?.trim() ?: ""
-            var title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)?.trim() ?: ""
-//            val genre = metadata?.getString(MediaMetadataCompat.METADATA_KEY_GENRE)?.trim() ?: ""
+            var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
+            var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
+//            val genre = metadata?.getString(MediaMetadata.METADATA_KEY_GENRE)?.trim() ?: ""
             // The genre field is not used by google podcasts and podcast addict
-            var durationMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+            var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
             if (durationMillis < -1)
                 durationMillis = -1
             val youtubeHeight =
@@ -262,7 +252,7 @@ class SessListener(
 
                 Stuff.PACKAGE_SONOS,
                 Stuff.PACKAGE_SONOS2 -> {
-                    metadata.getString(MediaMetadataCompat.METADATA_KEY_COMPOSER)?.let {
+                    metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let {
                         artist = it
                         albumArtist = ""
                     }
@@ -291,7 +281,7 @@ class SessListener(
                     // google podcasts
                     if (artist == "") {
                         artist =
-                            metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE)
+                            metadata.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
                                 ?.trim()
                                 ?: ""
                     }
@@ -340,14 +330,14 @@ class SessListener(
                 if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META)
                     trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
 
-                if (mutedHash != null && trackInfo.hash != mutedHash && lastPlayingState == PlaybackStateCompat.STATE_PLAYING)
+                if (mutedHash != null && trackInfo.hash != mutedHash && lastPlayingState == PlaybackState.STATE_PLAYING)
                     unmute(clearMutedHash = isMuted)
 
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
                 if ((!scrobbleHandler.has(trackInfo.hash) || onlyDurationUpdated) &&
-                    lastPlayingState == PlaybackStateCompat.STATE_PLAYING
+                    lastPlayingState == PlaybackState.STATE_PLAYING
                 ) {
                     trackInfo.timePlayed = 0
                     scrobble()
@@ -359,18 +349,17 @@ class SessListener(
             // scrobbling may have already started from onMetadataChanged
             scrobbleHandler.remove(trackInfo.lastScrobbleHash, trackInfo.packageName)
             // do not scrobble again
-            lastPlayingState = PlaybackStateCompat.STATE_NONE
+            lastPlayingState = PlaybackState.STATE_NONE
         }
 
         @Synchronized
-        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+        override fun onPlaybackStateChanged(state: PlaybackState?) {
             lastState = state
 
             state ?: return
 
             val playingState = state.state
             val pos = state.position // can be -1
-            val extras = state.extras
 
             Stuff.log("onPlaybackStateChanged=$playingState laststate=$lastPlayingState pos=$pos cb=${this@ControllerCallback.hashCode()} sl=${this@SessListener.hashCode()}")
 
@@ -389,7 +378,7 @@ class SessListener(
             // do not scrobble youtube music ads (they are not seekable)
             if (trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_MUSIC &&
                 trackInfo.durationMillis > 0 &&
-                state.actions and PlaybackStateCompat.ACTION_SEEK_TO == 0L
+                state.actions and PlaybackState.ACTION_SEEK_TO == 0L
             ) {
                 Stuff.log("ignoring youtube music ad")
                 ignoreScrobble()
@@ -399,20 +388,20 @@ class SessListener(
             val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
 
             if (lastPlayingState == playingState /* bandcamp does this */ &&
-                !(playingState == PlaybackStateCompat.STATE_PLAYING && isPossiblyAtStart)
+                !(playingState == PlaybackState.STATE_PLAYING && isPossiblyAtStart)
             )
                 return
 
             when (playingState) {
-                PlaybackStateCompat.STATE_PAUSED,
-                PlaybackStateCompat.STATE_STOPPED,
-                PlaybackStateCompat.STATE_NONE,
-                PlaybackStateCompat.STATE_ERROR -> {
+                PlaybackState.STATE_PAUSED,
+                PlaybackState.STATE_STOPPED,
+                PlaybackState.STATE_NONE,
+                PlaybackState.STATE_ERROR -> {
                     pause()
                     Stuff.logD { "paused timePlayed=${trackInfo.timePlayed}" }
                 }
 
-                PlaybackStateCompat.STATE_PLAYING -> {
+                PlaybackState.STATE_PLAYING -> {
                     if (mutedHash != null && trackInfo.hash != mutedHash)
                         unmute(clearMutedHash = isMuted)
 
@@ -442,7 +431,7 @@ class SessListener(
                     Stuff.logD { "other ($playingState) : ${trackInfo.title}" }
                 }
             }
-            if (playingState != PlaybackStateCompat.STATE_BUFFERING)
+            if (playingState != PlaybackState.STATE_BUFFERING)
                 lastPlayingState = playingState
 
         }
@@ -451,20 +440,14 @@ class SessListener(
             Stuff.logD { "onSessionDestroyed ${trackInfo.packageName}" }
             pause()
             synchronized(this@SessListener) {
-                try {
-                    controllersMap.remove(token)
-                        ?.first
-                        ?.unregisterCallback(this)
-                } catch (e: DeadObjectException) {
-                    Stuff.logW("DeadObjectException")
-                } catch (e: SecurityException) {
-                    Stuff.logW("SecurityException")
-                }
+                controllersMap.remove(token)
+                    ?.first
+                    ?.unregisterCallback(this)
             }
         }
 
         fun pause() {
-            if (lastPlayingState == PlaybackStateCompat.STATE_PLAYING) {
+            if (lastPlayingState == PlaybackState.STATE_PLAYING) {
                 if (scrobbleHandler.has(trackInfo.lastScrobbleHash))
                     trackInfo.timePlayed += System.currentTimeMillis() - trackInfo.playStartTime
                 else
@@ -502,22 +485,11 @@ class SessListener(
             Stuff.logD { "onSessionEvent ${trackInfo.packageName}: $event ${extras.dump()}" }
         }
 
-        override fun onAudioInfoChanged(info: MediaControllerCompat.PlaybackInfo?) {
-            Stuff.logD {
-                val audioInfoString = info?.let {
-                    "PlaybackInfo: " +
-                            "type=${it.playbackType}, " +
-                            "volume=${it.volumeControl}, " +
-                            "maxVolume=${it.maxVolume}, " +
-                            "currentVolume=${it.currentVolume}, " +
-                            "audioStream=${it.audioStream}, " +
-                            "audioAttrs=${it.audioAttributes}, "
-                }
-                "audioinfo updated ${trackInfo.packageName}: $audioInfoString"
-            }
+        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
+            Stuff.logD { "audioinfo updated ${trackInfo.packageName}: $info" }
 
             isRemotePlayback =
-                info?.playbackType == MediaControllerCompat.PlaybackInfo.PLAYBACK_TYPE_REMOTE
+                info?.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE
         }
 
         private fun resetMeta() {
@@ -586,7 +558,7 @@ class SessListener(
             onActiveSessionsChanged(platformControllers)
             val pkgsToKeep = controllersMap.values
                 .map { it.first }
-                .filter { shouldScrobble(it.mediaController as MediaController) }
+                .filter { shouldScrobble(it) }
                 .map { it.packageName }
                 .toSet()
             removeSessions(controllersMap.keys.toSet(), pkgsToKeep)

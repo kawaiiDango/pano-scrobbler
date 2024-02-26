@@ -16,5 +16,6 @@
         <item quantity="one">%1$s araw</item>
         <item quantity="other">%1$s mga araw</item>
     </plurals>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
     <!--  pro  -->
 </resources>

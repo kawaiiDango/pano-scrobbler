@@ -92,6 +92,7 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">もう少しで完了です…</string>
     <string name="music_players">音楽プレーヤー</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">他のアプリ</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">アプリ</string>
     <string name="offline">現在オフラインです。表示中のデータは最新ではありません</string>
     <string name="unavailable_offline">オフライン時は利用できません</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">サービス</string>

@@ -8,5 +8,13 @@
         <item quantity="one">%1$s ngayon</item>
         <item quantity="other">%1$s ngayon</item>
     </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s tagapakinig</item>
+        <item quantity="other">%1$s mga tagapakinig</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s araw</item>
+        <item quantity="other">%1$s mga araw</item>
+    </plurals>
     <!--  pro  -->
 </resources>

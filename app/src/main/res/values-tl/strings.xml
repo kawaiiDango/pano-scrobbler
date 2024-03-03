@@ -14,7 +14,15 @@
     </plurals>
     <plurals name="num_days">
         <item quantity="one">%1$s araw</item>
-        <item quantity="other">%1$s mga araw</item>
+        <item quantity="other">%1$s na araw</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s linggo</item>
+        <item quantity="other">%1$s na linggo</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s buwan</item>
+        <item quantity="other">%1$s na buwan</item>
     </plurals>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
     <!--  pro  -->

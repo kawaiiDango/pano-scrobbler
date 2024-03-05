@@ -253,7 +253,10 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">提取</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">为捕获组 <i>track、album、artist</i> 或 <i>albumArtist</i> 命名以从其他字段中进行提取</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">例如，若要交换艺术家和标题，您应将艺术家的正则表达式设为 (?&lt;track&gt;.*)，将歌曲正则表达式设为 (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">你的正则表达式至少需要包含以下命名的捕获组： \"track\"、\"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">你的正则表达式包含超过一个名为\"%1$s\"的捕获组，这是不被允许的</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">无效的正则表达式：%1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">已使用模式：</string>
     <string name="edit_continue">若有结果，继续匹配其它正则</string>
     <string name="edit_case_sensitive">区分大小写</string>
     <string name="edit_regex_test" comment="(Test regex rules)">测试</string>
@@ -312,6 +315,7 @@
     <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect">为新应用自动开启记录</string>
     <string name="pref_spotify_remote">记录其他设备上的 Spotify 播放</string>
+    <string name="pref_link_heart_button_rating">将通知中的爱心图标与媒体播放器中的收藏操作关联</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">当设备正在播放音乐时禁用从麦克风进行连续记录</string>
     <string name="pref_delay">记录延迟（以较早者为准）</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分钟</string>
@@ -426,4 +430,5 @@
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最多钉选 %1$d 位朋友并且支持手动排序</string>
     <string name="billing_sharing">分享时移除应用名称</string>
     <string name="billing_scrobble_source">记住并查看提交记录的应用，并且可直接在这些应用中搜索</string>
+    <string name="billing_regex_extract">使用正则写入自定义元数据提取规则</string>
 </resources>

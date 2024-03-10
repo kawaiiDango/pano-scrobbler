@@ -53,9 +53,16 @@ which is a bug specific to WSA.
 
 *Compiling*: See [instructions.md](instructions.md)
 
+### F-droid repo?
+[https://kawaiidango.github.io/pano-scrobbler/fdroid/repo/
+](https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA)
 
+<img src="https://kawaiidango.github.io/pano-scrobbler/fdroid/repo/index.png" alt="QR code of the fdroid repo" width="200"/>
+
+
+### Credits
 - Inspiration from Musixmatch's FloatingLyrics
-- YouTube title parser from (Web Scrobbler)[https://github.com/web-scrobbler/web-scrobbler] and (Metadata Filter)[https://github.com/web-scrobbler/metadata-filter]
+- YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler) and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
 - Icons from https://pictogrammers.com and https://material.io
 - Genres filter from https://everynoise.com
 

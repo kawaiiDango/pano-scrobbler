@@ -37,4 +37,5 @@ curl -L -o "repo/${PACKAGE}/en-US/phoneScreenshots/4random.png" "https://i.imgur
 cp ../../app/src/main/play/listings/en-US/icon/icon.png "repo/${PACKAGE}/en-US/icon.png"
 
 # Run fdroid update
+fdroid init
 fdroid update --create-metadata

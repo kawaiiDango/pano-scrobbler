@@ -31,8 +31,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create basic directory structure
-        run: mkdir -p fdroid/repo
+#      - name: Create basic directory structure
+#        run: mkdir -p fdroid/repo
 
       - name: Restore correct mtime
         run: |
@@ -47,8 +47,8 @@ jobs:
 
       - name: Set up repo secrets
         run: |
-          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > fdroid/keystore.p12
-          echo "${{ secrets.CONFIG_YML }}" | base64 -d - > fdroid/config.yml
+          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > fdroid-repo/fdroid/keystore.p12
+          echo "${{ secrets.CONFIG_YML }}" | base64 -d - > fdroid-repo/fdroid/config.yml
         
       - name: Run update script
         run: cd fdroid-repo/fdroid && bash update.sh 2>&1

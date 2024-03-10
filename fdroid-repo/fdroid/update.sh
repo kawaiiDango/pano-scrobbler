@@ -27,6 +27,14 @@ for ((i=0; i<${#ASSET_URLS[@]} && i<5; i++)); do
     curl -L --create-dirs -o "repo/${REPO}-${TAGS[$i]}.apk" "${ASSET_URLS[$i]}"
 done
 
+# create changelogs from github release body
+mkdir -p "repo/${PACKAGE}/en-US/changelogs"
+for ((i=0; i<${#ASSET_URLS[@]} && i<5; i++)); do
+    echo "Creating changelog for ${TAGS[$i]}"
+    echo -e "## ${TAGS[$i]}\n" > "repo/${PACKAGE}/en-US/changelogs/${TAGS[$i]}.txt"
+    curl -L "https://api.github.com/repos/$USER/$REPO/releases/tags/${TAGS[$i]}" | jq -r '.body' >> "repo/${PACKAGE}/en-US/changelogs/${TAGS[$i]}.txt"
+done
+
 # download screenshots
 curl -L --create-dirs -o "repo/${PACKAGE}/en-US/phoneScreenshots/1scrobbles.png" "https://i.imgur.com/pgETfhc.png"
 curl -L -o "repo/${PACKAGE}/en-US/phoneScreenshots/2friends.png" "https://i.imgur.com/Q7yPi2z.png"

@@ -4,7 +4,7 @@ Categories:
 IssueTracker: 'https://github.com/kawaiiDango/pano-scrobbler/issues'
 Name: Pano Scrobbler
 SourceCode: 'https://github.com/kawaiiDango/pano-scrobbler'
-Summary: 'A last.fm, ListenBrainz, libre.fm and GNU FM client for Android'
+Summary: 'Feature packed music tracker with slick animations'
 Description: |
   - No ads ever
   - Scrobbles to LastFM, LibreFM, GNU FM, Listenbrainz, Maloja, Pleroma or to a file
@@ -38,4 +38,5 @@ AntiFeatures:
 WebSite: 'https://github.com/kawaiiDango/pano-scrobbler'
 Translation: https://crowdin.com/project/pscrobbler
 Donate: https://ko-fi.com/kawaiiDango
+AuthorEmail: kawaiiDango@pm.me
 License: GPL-3.0

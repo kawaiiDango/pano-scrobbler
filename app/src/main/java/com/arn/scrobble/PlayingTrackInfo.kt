@@ -6,6 +6,7 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntryAttr
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.utils.Stuff
 import kotlinx.parcelize.Parcelize
 
 // Why is this so confusing?
@@ -14,6 +15,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PlayingTrackInfo(
     val packageName: String,
+    val sessionTag: String,
 
     var title: String = "",
     var origTitle: String = "",
@@ -41,7 +43,10 @@ data class PlayingTrackInfo(
     var lastSubmittedScrobbleHash: Int = 0,
     var timePlayed: Long = 0L,
 
-    ) : Parcelable {
+    val hasBlockedTag: Boolean = (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(sessionTag) == true ||
+            Stuff.BLOCKED_MEDIA_SESSION_TAGS[packageName]
+                ?.contains(sessionTag) == true)
+) : Parcelable {
 
     fun putOriginals(artist: String, title: String) = putOriginals(artist, title, "", "")
 
@@ -61,8 +66,8 @@ data class PlayingTrackInfo(
         artist = artist,
         album = album,
         albumArtist = albumArtist,
-        timestamp = (playStartTime / 1000).toInt(),
-        duration = if (durationMillis / 1000 >= 30) (durationMillis / 1000).toInt() else null
+        timestamp = playStartTime,
+        duration = durationMillis.takeIf { it >= 30000L }
     )
 
     fun toTrack() = Track(
@@ -71,7 +76,7 @@ data class PlayingTrackInfo(
         album = if (album.isNotEmpty()) Album(album, Artist(albumArtist)) else null,
         userplaycount = userPlayCount,
         userloved = userLoved,
-        duration = (durationMillis / 1000).toInt(),
+        duration = durationMillis,
         _attr = MusicEntryAttr(
             nowplaying = isPlaying,
         ),

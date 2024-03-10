@@ -26,6 +26,22 @@ class StringOrIntSerializer : KSerializer<Int> {
     }
 }
 
+class StringSecsToMsSerializer : KSerializer<Long> {
+    override val descriptor = Int.serializer().descriptor
+
+    override fun serialize(encoder: Encoder, value: Long) {
+    }
+
+    override fun deserialize(decoder: Decoder): Long {
+        decoder as? JsonDecoder ?: throw SerializationException("Expected JsonDecoder")
+
+        return when (val element = decoder.decodeJsonElement()) {
+            is JsonPrimitive -> element.contentOrNull?.toLongOrNull()?.times(1000) ?: 0
+            else -> 0
+        }
+    }
+}
+
 class StringOrBoolSerializer : KSerializer<Boolean> {
     override val descriptor = Int.serializer().descriptor
 

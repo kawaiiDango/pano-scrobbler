@@ -19,23 +19,14 @@ import com.google.android.material.slider.Slider
  * Created by arn on 09/09/2017.
  */
 
-class PersistedSliderPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defStyle: Int) :
+class PersistedSliderPref @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defAttrs: Int = R.attr.seekBarPreferenceStyle,
+    defStyle: Int = 0
+) :
     Preference(context, attrs, defAttrs, defStyle), Slider.OnSliderTouchListener,
     Slider.OnChangeListener {
-    constructor(context: Context, attrs: AttributeSet?, defAttrs: Int) : this(
-        context,
-        attrs,
-        defAttrs,
-        0
-    )
-
-    constructor(context: Context, attrs: AttributeSet?) : this(
-        context,
-        attrs,
-        R.attr.seekBarPreferenceStyle
-    )
-
-    constructor(context: Context) : this(context, null)
 
     private val mMin: Int
     private val mMax: Int
@@ -145,7 +136,7 @@ class PersistedSliderPref(context: Context, attrs: AttributeSet?, defAttrs: Int,
 
             "secs",
             "time" ->
-                Stuff.humanReadableDuration(value)
+                Stuff.humanReadableDuration(value * 1000L)
 
             else ->
                 value.format()

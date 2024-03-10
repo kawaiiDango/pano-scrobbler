@@ -8,12 +8,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.Animatable2
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.InsetDrawable
-import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -64,14 +62,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.result
 import coil.transform.CircleCropTransformation
 import com.arn.scrobble.App
+import com.arn.scrobble.DrawerData
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.LayoutSnowfallBinding
@@ -316,15 +313,7 @@ object UiUtils {
             val iconMarginPx =
                 context.resources.getDimension(R.dimen.popup_menu_icon_padding).toInt()
             if (item.icon != null) {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                    item.icon = InsetDrawable(item.icon, iconMarginPx, 0, iconMarginPx, 0)
-                } else {
-                    item.icon =
-                        object : InsetDrawable(item.icon, iconMarginPx, 0, iconMarginPx, 0) {
-                            override fun getIntrinsicWidth() =
-                                intrinsicHeight + iconMarginPx + iconMarginPx
-                        }
-                }
+                item.icon = InsetDrawable(item.icon, iconMarginPx, 0, iconMarginPx, 0)
 
                 if (iconTintColor != null)
                     item.icon?.setTint(iconTintColor)
@@ -372,39 +361,6 @@ object UiUtils {
         255 - Color.blue(color),
     )
 
-    fun nowPlayingAnim(np: ImageView, isNowPlaying: Boolean) {
-        if (isNowPlaying) {
-            np.visibility = View.VISIBLE
-            var anim = np.drawable
-            if (anim !is AnimatedVectorDrawableCompat || anim !is AnimatedVectorDrawable) {
-                np.setImageResource(R.drawable.avd_eq)
-                anim = np.drawable
-            }
-            if (anim is AnimatedVectorDrawableCompat? && anim?.isRunning != true) {
-                anim?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                    override fun onAnimationEnd(drawable: Drawable?) {
-                        if (drawable?.isVisible == true)
-                            np.post {
-                                (np.drawable as? AnimatedVectorDrawableCompat)?.start()
-                            }
-                    }
-                })
-                anim?.start()
-            } else if (anim is AnimatedVectorDrawable && !anim.isRunning) {
-                anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-                    override fun onAnimationEnd(drawable: Drawable?) {
-                        if (drawable?.isVisible == true)
-                            (drawable as? AnimatedVectorDrawable)?.start()
-                    }
-                })
-                anim.start()
-            }
-        } else {
-            np.visibility = View.GONE
-            np.setImageDrawable(null)
-        }
-    }
-
     fun SwipeRefreshLayout.setProgressCircleColors() {
         setColorSchemeColors(
             MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary),
@@ -421,6 +377,7 @@ object UiUtils {
     fun loadSmallUserPic(
         context: Context,
         userCached: UserCached,
+        drawerData: DrawerData?,
         onResult: (Drawable) -> Unit
     ) {
         if (App.prefs.demoMode) {
@@ -431,13 +388,12 @@ object UiUtils {
         val initialsDrawable = InitialsDrawable(context, userCached)
         val profilePicUrl =
             if (userCached.isSelf)
-                App.prefs.drawerDataCached.profilePicUrl
+                drawerData?.profilePicUrl
             else
                 userCached.largeImage
         val request = ImageRequest.Builder(context)
             .data(profilePicUrl?.ifEmpty { null } ?: initialsDrawable)
             .error(initialsDrawable) // does not apply transformation to error drawable
-            .allowHardware(false)
             .transformations(CircleCropTransformation())
             .target(
                 onSuccess = onResult,
@@ -678,6 +634,12 @@ object UiUtils {
                 flow.collectLatest(block)
             }
         }
+    }
+
+    fun Bitmap.toIntArray(): IntArray {
+        val colors = IntArray(width * height)
+        getPixels(colors, 0, width, 0, 0, width, height)
+        return colors
     }
 
     fun applySnowfall(

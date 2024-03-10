@@ -43,7 +43,7 @@ data class CachedAlbum(
                 mbid = artistMbid
             ),
             playcount = userPlayCount,
-            image = largeImageUrl?.let { listOf(LastFmImage(ImageSize.EXTRALARGE.value, it)) },
+            image = largeImageUrl?.let { listOf(LastFmImage(ImageSize.extralarge.name, it)) },
         )
 
         fun Album.toCachedAlbum() = CachedAlbum(
@@ -54,7 +54,7 @@ data class CachedAlbum(
             artistUrl = artist.url ?: "",
             artistMbid = artist.mbid ?: "",
             userPlayCount = playcount ?: -1,
-            largeImageUrl = image?.find { it.size == ImageSize.EXTRALARGE.value }?.url
+            largeImageUrl = image?.find { it.size == ImageSize.extralarge.name }?.url
         )
 
         fun Track.toCachedAlbum() = CachedAlbum(
@@ -65,7 +65,7 @@ data class CachedAlbum(
             artistUrl = artist.url ?: "",
             artistMbid = artist.mbid ?: "",
             userPlayCount = playcount ?: -1,
-            largeImageUrl = image?.find { it.size == ImageSize.EXTRALARGE.value }?.url
+            largeImageUrl = image?.find { it.size == ImageSize.extralarge.name }?.url
         )
     }
 }

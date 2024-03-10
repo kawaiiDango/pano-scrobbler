@@ -12,6 +12,8 @@
     <string name="librefm" translatable="false">Libre.fm</string>
     <string name="gnufm" translatable="false">GNU FM</string>
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
+    <string name="maloja" translatable="false">Maloja</string>
+    <string name="pleroma" translatable="false">Pleroma</string>
     <string name="pixel_np" translatable="false">Pixel Now Playing</string>
     <string name="loading" translatable="false">…</string>
     <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s.json</string>
@@ -25,6 +27,9 @@
     <string name="artist_title" formatted="true" translatable="false">%1$s — %2$s</string>
     <string name="sidebar_visibility" translatable="false">gone</string>
     <string name="charts_num_text" formatted="true" translatable="false" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="csv" translatable="false">CSV</string>
+    <string name="jsonl" translatable="false">JSONL</string>
+
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
     <string name="force_exception" translatable="false">Force log an exception</string>

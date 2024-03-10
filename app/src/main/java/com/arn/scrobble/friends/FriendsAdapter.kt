@@ -2,8 +2,6 @@ package com.arn.scrobble.friends
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.drawable.AnimatedVectorDrawable
-import android.graphics.drawable.VectorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +11,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.load
 import com.arn.scrobble.App
 import com.arn.scrobble.R
@@ -27,7 +23,6 @@ import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.PaletteTransition
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -130,18 +125,12 @@ class FriendsAdapter(
                 binding.friendsSubtitle.text = track.artist.name
                 binding.friendsDate.text = Stuff.myRelativeTime(itemView.context, track.date)
 
-                if (track.isNowPlaying) {
-                    if (binding.friendsMusicIcon.drawable == null ||
-                        binding.friendsMusicIcon.drawable is VectorDrawable || binding.friendsMusicIcon.drawable is VectorDrawableCompat
-                    ) {
-                        UiUtils.nowPlayingAnim(binding.friendsMusicIcon, true)
-                    }
-                } else {
-                    if (binding.friendsMusicIcon.drawable == null ||
-                        binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat
-                    )
-                        binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
-                }
+                binding.friendsMusicIcon.load(
+                    if (track.isNowPlaying)
+                        R.drawable.avd_now_playing
+                    else
+                        R.drawable.vd_music_circle
+                )
 
                 binding.friendsTrackFrame.setOnClickListener {
                     Stuff.launchSearchIntent(track, null)
@@ -150,10 +139,7 @@ class FriendsAdapter(
                 binding.friendsTrackLl.visibility = View.INVISIBLE
                 binding.friendsTrackFrame.setOnClickListener(null)
 
-                if (binding.friendsMusicIcon.drawable == null ||
-                    binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat
-                )
-                    binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
+                binding.friendsMusicIcon.load(R.drawable.vd_music_circle)
 
                 if (bindingAdapterPosition > -1) {
                     friendsRecentsJob?.cancel()
@@ -188,9 +174,8 @@ class FriendsAdapter(
 
                 binding.friendsPic
                     .load(userImgUrl) {
-                        placeholder(R.drawable.color_image_loading)
+                        placeholder(R.drawable.avd_loading)
                         error(InitialsDrawable(itemView.context, item.user))
-                        allowHardware(false)
                         if (!wasCached)
                             transitionFactory(PaletteTransition.Factory { palette ->
                                 val paletteColors = PaletteColors(itemView.context, palette)

@@ -14,7 +14,12 @@
         <intent>
             <action android:name="android.intent.action.MAIN" />
         </intent>
-        <package android:name="com.kieronquinn.app.pixelambientmusic" />
+        <intent>
+            <action android:name="com.google.cast.action.BIND" />
+        </intent>
+        <intent>
+            <action android:name="com.google.intelligence.sense.NOW_PLAYING_HISTORY" />
+        </intent>
     </queries>
 
     <uses-feature
@@ -167,6 +172,20 @@
             <meta-data
                 android:name="android.service.quicksettings.TOGGLEABLE_TILE"
                 android:value="true" />
+        </service>
+
+        <service
+            android:name="com.google.android.gms.metadata.ModuleDependencies"
+            android:enabled="false"
+            android:exported="false"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+            </intent-filter>
+
+            <meta-data
+                android:name="photopicker_activity:0:required"
+                android:value="" />
         </service>
 
         <provider

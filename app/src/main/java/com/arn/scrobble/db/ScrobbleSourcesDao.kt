@@ -15,8 +15,8 @@ interface ScrobbleSourcesDao {
     @Query("SELECT count(1) FROM $tableName")
     fun count(): Int
 
-    @Query("SELECT * FROM $tableName WHERE ABS(timeMillis - (:timeSecs * 1000)) < $THRESHOLD ORDER BY ABS(timeMillis - (:timeSecs * 1000)) ASC LIMIT 1")
-    fun findPlayer(timeSecs: Int): ScrobbleSource?
+    @Query("SELECT * FROM $tableName WHERE ABS(timeMillis - :time) < $THRESHOLD ORDER BY ABS(timeMillis - :time) ASC LIMIT 1")
+    fun findPlayer(time: Long): ScrobbleSource?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(p: ScrobbleSource)

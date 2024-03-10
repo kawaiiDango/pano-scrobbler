@@ -77,9 +77,9 @@
             app:destination="@id/appListFragment" />
         <action
             android:id="@+id/action_prefFragment_to_onboardingFragment"
+            app:destination="@id/onboardingFragment"
             app:popUpTo="@id/myHomePagerFragment"
-            app:popUpToInclusive="true"
-            app:destination="@id/onboardingFragment" />
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/recFragment"
@@ -94,7 +94,7 @@
         android:id="@+id/searchFragment"
         android:name="com.arn.scrobble.search.SearchFragment"
         android:label="@string/search"
-        tools:layout="@layout/content_search">
+        tools:layout="@layout/content_image_search">
         <deepLink
             android:id="@+id/deepLink2"
             app:uri="pano-scrobbler://screen/search" />
@@ -149,9 +149,9 @@
             app:uri="pano-scrobbler://screen/onboarding?nopass={nopass}" />
         <action
             android:id="@+id/action_onboardingFragment_to_myHomePagerFragment"
-            app:popUpToInclusive="true"
+            app:destination="@id/myHomePagerFragment"
             app:popUpTo="@id/onboardingFragment"
-            app:destination="@id/myHomePagerFragment" />
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/blockedMetadataAddDialogFragment"
@@ -245,11 +245,6 @@
             app:nullable="false" />
         <argument
             android:name="infoText"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="textCheckbox"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
@@ -362,5 +357,44 @@
     <dialog
         android:id="@+id/simpleEditsEditFragment"
         android:name="com.arn.scrobble.edits.SimpleEditsEditFragment"
-        android:label="SimpleEditsEditFragment" />
+        android:label="SimpleEditsEditFragment"
+        tools:layout="@layout/content_simple_edits" />
+    <fragment
+        android:id="@+id/imageSearchFragment"
+        android:name="com.arn.scrobble.search.ImageSearchFragment"
+        android:label="@string/add_photo"
+        tools:layout="@layout/content_image_search" />
+    <fragment
+        android:id="@+id/loginScrobbleToFile"
+        android:name="com.arn.scrobble.onboarding.LoginFileScrobblable"
+        android:label="@string/scrobble_to_file"
+        tools:layout="@layout/content_login_file_scrobblable" />
+    <fragment
+        android:id="@+id/scrobblesFragment"
+        android:name="com.arn.scrobble.recents.ScrobblesFragment"
+        android:label="ScrobblesFragment"
+        tools:layout="@layout/content_scrobbles">
+        <argument
+            android:name="showChips"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="showAllMenuItems"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </fragment>
+    <dialog
+        android:id="@+id/changelogDialogFragment"
+        android:name="com.arn.scrobble.onboarding.ChangelogDialogFragment"
+        android:label="ChangelogDialogFragment"
+        tools:layout="@layout/dialog_changelog" >
+        <argument
+            android:name="changelog_text"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="download_url"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
 </navigation>

@@ -29,8 +29,8 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
@@ -200,15 +200,22 @@ class EditDialogFragment : LoginFragment() {
         val artist = binding.loginTextfieldLast.editText!!.text.toString().trim()
         val origArtist = args.data.artist
         val msid = args.msid
-        val timeSecs = args.data.timestamp
-        val isNowPlaying = args.data.timestamp > 0
+        val timeMillis = args.data.timestamp
+        val isNowPlaying = timeMillis == 0L
 
         val fetchAlbumAndAlbumArtist = album.isBlank() && origAlbum.isBlank() && prefs.fetchAlbum
         val rescrobbleRequired = !isNowPlaying && (fetchAlbumAndAlbumArtist ||
                 (track.equals(origTrack, ignoreCase = true) &&
                         artist.equals(origArtist, ignoreCase = true)
                         && (album != origAlbum || albumArtist.isNotBlank())))
-        val scrobbleData = args.data
+        val scrobbleData = ScrobbleData(
+            artist = artist,
+            track = track,
+            timestamp = if (timeMillis > 0) timeMillis else System.currentTimeMillis(),
+            album = album,
+            albumArtist = albumArtist,
+            duration = args.data.duration,
+        )
         val lastfmScrobblable = Scrobblables.byType(AccountType.LASTFM)
         val lastfmScrobbleResult: Result<ScrobbleIgnored>
 
@@ -216,7 +223,7 @@ class EditDialogFragment : LoginFragment() {
             origTrack,
             null,
             Artist(origArtist),
-            date = timeSecs,
+            date = timeMillis,
             msid = msid
         )
 
@@ -244,7 +251,7 @@ class EditDialogFragment : LoginFragment() {
             return Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
         }
 
-        if (isNowPlaying && track == origTrack &&
+        if (!isNowPlaying && track == origTrack &&
             artist == origArtist && album == origAlbum && albumArtist == "" &&
             !(album == "" && prefs.fetchAlbum)
         ) {
@@ -278,7 +285,7 @@ class EditDialogFragment : LoginFragment() {
         if (lastfmScrobblable != null) {
             lastfmScrobbleResult = lastfmScrobblable.scrobble(scrobbleData)
             if (lastfmScrobbleResult.map { it.ignored }.getOrNull() == true) {
-                return Result.failure(ScrobbleIgnoredException(timeSecs, ::saveEdit))
+                return Result.failure(ScrobbleIgnoredException(timeMillis, ::saveEdit))
             } else {
                 if (!isNowPlaying) {
                     // The user might submit the edit after it has been scrobbled, so delete anyways
@@ -286,15 +293,14 @@ class EditDialogFragment : LoginFragment() {
                     if (deleteResult.isSuccess)
                         CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
                     else if (deleteResult.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException) {
-                        return Result.failure(LastfmUnscrobbler.CookiesInvalidatedException())
+                        return Result.failure(deleteResult.exceptionOrNull()!!)
                     }
+                } else {
+                    lastfmScrobblable.updateNowPlaying(scrobbleData)
                 }
+
                 if (rescrobbleRequired)
                     lastfmScrobblable.scrobble(scrobbleData)
-//                }
-
-                if (isNowPlaying)
-                    lastfmScrobblable.updateNowPlaying(scrobbleData)
             }
 
             val _artist = Artist(artist)
@@ -303,7 +309,7 @@ class EditDialogFragment : LoginFragment() {
                 track,
                 Album(album, _artist),
                 _artist,
-                date = timeSecs
+                date = timeMillis
             )
 
             CachedTracksDao.deltaUpdateAll(trackObj, 1, DirtyUpdate.BOTH)
@@ -312,14 +318,19 @@ class EditDialogFragment : LoginFragment() {
 
         // scrobble everywhere else (delete first)
         Scrobblables.all
-            .filter { it !is LastFm }
+            .filter {
+                it.userAccount.type != AccountType.LASTFM &&
+                        it.userAccount.type != AccountType.PLEROMA &&
+                        it.userAccount.type != AccountType.FILE
+
+            }
             .forEach {
                 if (!isNowPlaying)
                     it.delete(origTrackObj)
                 // ListenBrainz cannot have two scrobbles with the same timestamp and delete is not immediate
                 // so add 1 sec
                 if (it is ListenBrainz)
-                    it.scrobble(scrobbleData.copy(timestamp = scrobbleData.timestamp + 1))
+                    it.scrobble(scrobbleData.copy(timestamp = scrobbleData.timestamp + 1000))
                 else
                     it.scrobble(scrobbleData)
                 if (isNowPlaying)
@@ -329,7 +340,7 @@ class EditDialogFragment : LoginFragment() {
         // track player
         args.packageName?.let {
             val scrobbleSource =
-                ScrobbleSource(timeMillis = scrobbleData.timestamp * 1000L, pkg = it)
+                ScrobbleSource(timeMillis = scrobbleData.timestamp, pkg = it)
             PanoDb.db.getScrobbleSourcesDao().insert(scrobbleSource)
         }
 
@@ -376,7 +387,7 @@ class EditDialogFragment : LoginFragment() {
                     track,
                     Album(album, _artist),
                     _artist,
-                    date = if (!isNowPlaying) null else timeSecs,
+                    date = if (isNowPlaying) null else timeMillis,
                 )
             )
         }

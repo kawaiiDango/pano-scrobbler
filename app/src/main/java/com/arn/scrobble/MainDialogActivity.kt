@@ -9,12 +9,12 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
-import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
-import com.arn.scrobble.utils.Stuff.myHash
-import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.myHash
 import java.util.Objects
 
 class MainDialogActivity : AppCompatActivity() {
@@ -24,7 +24,7 @@ class MainDialogActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
 
         setContentView(R.layout.content_main_dialog)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -32,7 +32,7 @@ class MainDialogActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
-        activityViewModel.currentUser = Scrobblables.currentScrobblableUser ?: return
+        activityViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser ?: return)
 
         navHostFragment.navController.addOnDestinationChangedListener { navController, navDestination, args ->
             if (activityViewModel.prevDestinationId != null && navDestination.id == R.id.emptyDialogFragment)

@@ -205,11 +205,6 @@ class BillingRepository private constructor(private val application: Application
                             revokePro()
                         }
                     }
-
-                    else -> {
-                        Timber.tag(LOG_TAG)
-                            .d("acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
-                    }
                 }
             }
 
@@ -223,7 +218,7 @@ class BillingRepository private constructor(private val application: Application
     private fun disburseNonConsumableEntitlement(purchase: Purchase) {
         if (Tokens.PRO_PRODUCT_ID in purchase.products) {
             prefs.proStatus = true
-            if (_proStatus.value != true) {
+            if (!_proStatus.value) {
                 _proStatus.tryEmit(true)
                 application.sendBroadcast(
                     Intent(NLService.iTHEME_CHANGED_S)

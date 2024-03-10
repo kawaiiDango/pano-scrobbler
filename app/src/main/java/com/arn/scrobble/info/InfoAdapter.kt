@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.MainNotifierViewModel
@@ -31,11 +32,11 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.ContentAlbumTracksBinding
 import com.arn.scrobble.databinding.ListItemInfoBinding
 import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.toast
@@ -176,6 +177,30 @@ class InfoAdapter(
 
             binding.infoWiki.setOnClickListener(wikiClickListener)
             binding.infoWikiExpand.setOnClickListener(wikiClickListener)
+
+            binding.infoAddPhoto.setOnClickListener {
+                val originalEntry = when (info.entry) {
+                    is Artist -> viewModel.originalEntriesMap[NLService.B_ARTIST]!!
+                    is Album -> viewModel.originalEntriesMap[NLService.B_ALBUM]!!
+                    else -> return@setOnClickListener
+                }
+
+                val args = Bundle().putData(info.entry)
+                    .putData(originalEntry, Stuff.ARG_ORIGINAL)
+
+                if (fragment.requireActivity() is MainDialogActivity) {
+                    NavDeepLinkBuilder(itemView.context)
+                        .setComponentName(MainActivity::class.java)
+                        .setGraph(R.navigation.nav_graph)
+                        .setDestination(R.id.imageSearchFragment)
+                        .setArguments(args)
+                        .createPendingIntent()
+                        .send()
+                } else {
+                    fragment.findNavController()
+                        .navigate(R.id.imageSearchFragment, args)
+                }
+            }
         }
 
         private fun setLoved(track: Track) {
@@ -288,11 +313,10 @@ class InfoAdapter(
             val prevInfo = this._info
             this._info = info
             val entry = info.entry
-            val imgData: Any? = when (entry) {
-                is Album -> entry.webp300
-                is Artist -> entry
-                else -> null
-            }
+            val imgData = if (entry is Album || entry is Artist)
+                MusicEntryImageReq(entry, fetchAlbumInfoIfMissing = true)
+            else
+                null
 
             if (prevInfo?.entry != info.entry) {
                 when (info.type) {
@@ -304,7 +328,6 @@ class InfoAdapter(
                         setLoved(entry)
 
                         if (activityViewModel.currentUser.isSelf) {
-                            binding.infoHeart.visibility = View.VISIBLE
                             binding.infoHeart.setOnClickListener {
                                 val newLoved = !(entry.userloved ?: false)
                                 viewModel.updateInfo(
@@ -316,7 +339,6 @@ class InfoAdapter(
                         } else {
                             if (entry.userloved == true) {
                                 binding.infoHeart.alpha = 0.5f
-                                binding.infoHeart.visibility = View.VISIBLE
                                 binding.infoHeart.setOnClickListener {
                                     itemView.context.toast(
                                         itemView.context.getString(
@@ -348,7 +370,7 @@ class InfoAdapter(
                         val tracks = (entry as Album).tracks?.track?.toList()
 
                         if (!tracks.isNullOrEmpty()) {
-                            var totalDuration = 0
+                            var totalDuration = 0L
                             var plus = ""
                             tracks.forEach {
                                 val duration = it.duration
@@ -406,8 +428,11 @@ class InfoAdapter(
                     }
                 }
                 binding.infoName.text = entry.name
-
             }
+
+            binding.infoHeart.isVisible = entry is Track
+            binding.infoAddPhoto.isVisible =
+                (entry is Artist || BuildConfig.DEBUG && entry is Album)
 
             if (imgData != null) {
                 binding.infoPicExpandedFrame.isVisible = info.headerExpanded
@@ -439,7 +464,8 @@ class InfoAdapter(
                 if (!activityViewModel.currentUser.isSelf) {
                     UiUtils.loadSmallUserPic(
                         binding.infoUserScrobblesLabel.context,
-                        activityViewModel.currentUser
+                        activityViewModel.currentUser,
+                        activityViewModel.drawerData.value,
                     ) {
                         binding.infoUserScrobblesLabel
                             .setCompoundDrawablesRelativeWithIntrinsicBounds(it, null, null, null)

@@ -3,18 +3,16 @@ package com.arn.scrobble.pref
 import android.app.Application
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.os.Build
-import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media.MediaBrowserServiceCompat
 import com.arn.scrobble.App
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
-import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +27,10 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
     private val prefs = App.prefs
+    private val packagesToNotConsider = setOf(
+        BuildConfig.APPLICATION_ID,
+        "com.google.android.bluetooth"
+    )
 
     init {
         viewModelScope.launch {
@@ -38,73 +40,64 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
 
     suspend fun load(checkDefaultApps: Boolean) {
         withContext(Dispatchers.IO) {
-            val application = getApplication<Application>()
             val sectionedList = SectionedVirtualList()
-            val packagesAdded = mutableSetOf(application.packageName)
+            val musicPlayers = mutableMapOf<String, ApplicationInfo>()
+            val otherApps = mutableMapOf<String, ApplicationInfo>()
 
-            var intent = Intent(MediaStore.INTENT_ACTION_MUSIC_PLAYER)
-            //the newer intent category doesn't match many players including poweramp
-            val musicPlayers = packageManager.queryIntentActivities(intent, 0)
-                .map { it.activityInfo.applicationInfo }
-                .toMutableList()
+            // this matches music players including shazam
+            var intent = Intent(MediaBrowserServiceCompat.SERVICE_INTERFACE)
 
+            musicPlayers += packageManager.queryIntentServices(
+                intent,
+                PackageManager.GET_RESOLVED_FILTER
+            ).map { it.serviceInfo.applicationInfo }
+                .removeSpam()
+                .map { it.packageName to it }
+
+            // this matches the chromecast receiver on pixel tablets and tv
+            intent = Intent("com.google.cast.action.BIND").addCategory(Intent.CATEGORY_DEFAULT)
+
+            musicPlayers += packageManager.queryIntentServices(
+                intent,
+                PackageManager.GET_RESOLVED_FILTER
+            ).map { it.serviceInfo.packageName to it.serviceInfo.applicationInfo }
+
+            // this matches pixel now playing including ambient music mod
+            intent =
+                Intent("com.google.intelligence.sense.NOW_PLAYING_HISTORY").addCategory(Intent.CATEGORY_DEFAULT)
+
+            musicPlayers += packageManager.queryIntentActivities(
+                intent,
+                PackageManager.GET_RESOLVED_FILTER
+            ).map { it.activityInfo.packageName to it.activityInfo.applicationInfo }
+
+            // apps on phone
             intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
 
-            val launcherApps = packageManager.queryIntentActivities(intent, 0)
-                .map { it.activityInfo.applicationInfo }
-                .removeSpam()
-                .toMutableList()
+            otherApps +=
+                packageManager.queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER)
+                    .map { it.activityInfo.applicationInfo }
+                    .removeSpam()
+                    .map { it.packageName to it }
 
-            val launcherPackagesSet = launcherApps.packagesSet
-
+            // apps on tv
             intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
 
-            launcherApps += packageManager.queryIntentActivities(intent, 0)
+            otherApps += packageManager.queryIntentActivities(
+                intent,
+                PackageManager.GET_RESOLVED_FILTER
+            )
                 .map { it.activityInfo.applicationInfo }
                 .removeSpam()
-                .filter { it.packageName !in launcherPackagesSet }
+                .map { it.packageName to it }
 
-            // pixel now playing
-            var nowPlayingPackageInfo: PackageInfo? = null
-            if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_GOOGLE) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                    nowPlayingPackageInfo = kotlin.runCatching {
-                        packageManager.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
-                    }.getOrNull()
-                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    nowPlayingPackageInfo = kotlin.runCatching {
-                        packageManager.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
-                    }.getOrNull()
-            }
-
-            if (nowPlayingPackageInfo == null)
-                nowPlayingPackageInfo = kotlin.runCatching {
-                    packageManager.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_AMM, 0)
-                }.getOrNull()
-
-            val ignoreMetaPackages = Stuff.IGNORE_ARTIST_META
-
-            musicPlayers += launcherApps.filter { it.packageName == Stuff.PACKAGE_SHAZAM }
-            nowPlayingPackageInfo?.applicationInfo?.let { musicPlayers += it }
-
-            // add music players to list
-            musicPlayers.removeAll { it.packageName in packagesAdded }
-            packagesAdded += musicPlayers.packagesSet
-
-            musicPlayers += launcherApps.filter { it.packageName in ignoreMetaPackages && it.packageName !in packagesAdded }
-            packagesAdded += ignoreMetaPackages
-
-            val browserApps = Stuff.getBrowsers(packageManager)
-                .map { it.activityInfo.applicationInfo }
-                .filter { it.packageName !in packagesAdded }
-
-            musicPlayers += browserApps
-            packagesAdded += browserApps.packagesSet
+            // remove music players from other apps
+            musicPlayers.forEach { (key, _) -> otherApps.remove(key) }
 
             sectionedList.addSection(
                 SectionWithHeader(
                     AppListSection.MUSIC_PLAYERS,
-                    musicPlayers.sortApps(),
+                    musicPlayers.values.sortApps(),
                     header = ExpandableHeader(
                         R.drawable.vd_play_circle,
                         R.string.music_players,
@@ -114,22 +107,13 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
             )
 
             if (checkDefaultApps)
-                selectedPackages += musicPlayers.packagesSet
-
-            val systemApps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                packageManager.getInstalledApplications(PackageManager.MATCH_SYSTEM_ONLY)
-                    .filter { it.packageName in App.prefs.seenPackages }
-            } else {
-                emptyList()
-            }
-
-            val otherApps = (launcherApps + systemApps).filter { it.packageName !in packagesAdded }
+                selectedPackages += musicPlayers.keys
 
             // add other apps to list
             sectionedList.addSection(
                 SectionWithHeader(
                     AppListSection.OTHERS,
-                    otherApps.sortApps(),
+                    otherApps.values.sortApps(),
                     header = ExpandableHeader(
                         R.drawable.vd_apps,
                         R.string.other_apps,
@@ -142,11 +126,8 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private val Collection<ApplicationInfo>.packagesSet
-        get() = map { it.packageName }.toSet()
-
     private fun Collection<ApplicationInfo>.removeSpam() = filter {
-        it.icon != 0 && it.enabled
+        it.icon != 0 && it.enabled && it.packageName !in packagesToNotConsider
     }
 
     private fun Collection<ApplicationInfo>.sortApps(): List<ApplicationInfo> {

@@ -90,10 +90,13 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             install(HttpCallValidator) {
                 validateResponse { response ->
                     if (response.status.isSuccess()) return@validateResponse
-                    val fmException = response.body<FmErrorResponse>()
-                        .let { FmException(it.code, it.message) }
 
-                    throw fmException
+                    try {
+                        val errorResponse = response.body<FmErrorResponse>()
+                        throw ApiException(errorResponse.code, errorResponse.message)
+                    } catch (e: Exception) {
+                        throw ApiException(response.status.value, response.status.description, e)
+                    }
                 }
             }
 
@@ -107,7 +110,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             "method" to "track.updateNowPlaying",
             "artist" to scrobbleData.artist,
             "track" to scrobbleData.track,
-            "duration" to scrobbleData.duration?.toString(),
+            "duration" to scrobbleData.duration?.div(1000)?.toString(),
             "album" to scrobbleData.album,
             "trackNumber" to scrobbleData.trackNumber?.toString(),
             "mbid" to scrobbleData.mbid,
@@ -127,12 +130,12 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             "method" to "track.scrobble",
             "artist" to scrobbleData.artist,
             "track" to scrobbleData.track,
-            "duration" to scrobbleData.duration?.toString(),
+            "duration" to scrobbleData.duration?.div(1000)?.toString(),
             "album" to scrobbleData.album,
             "trackNumber" to scrobbleData.trackNumber?.toString(),
             "mbid" to scrobbleData.mbid,
             "albumArtist" to scrobbleData.albumArtist,
-            "timestamp" to scrobbleData.timestamp.toString(),
+            "timestamp" to (scrobbleData.timestamp / 1000).toString(),
             "chosenByUser" to "1",
             "sk" to userAccount.authKey,
             "api_key" to apiKey,
@@ -155,12 +158,12 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         scrobbleDatas.forEachIndexed { index, scrobbleData ->
             params["artist[$index]"] = scrobbleData.artist
             params["track[$index]"] = scrobbleData.track
-            params["duration[$index]"] = scrobbleData.duration?.toString()
+            params["duration[$index]"] = scrobbleData.duration?.div(1000)?.toString()
             params["album[$index]"] = scrobbleData.album
             params["trackNumber[$index]"] = scrobbleData.trackNumber?.toString()
             params["mbid[$index]"] = scrobbleData.mbid
             params["albumArtist[$index]"] = scrobbleData.albumArtist
-            params["timestamp[$index]"] = scrobbleData.timestamp.toString()
+            params["timestamp[$index]"] = (scrobbleData.timestamp / 1000).toString()
             params["chosenByUser[$index]"] = "1"
         }
 
@@ -192,8 +195,8 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         page: Int,
         username: String,
         cached: Boolean,
-        from: Int,
-        to: Int,
+        from: Long,
+        to: Long,
         includeNowPlaying: Boolean,
         limit: Int,
     ): Result<PageResult<Track>> {
@@ -203,8 +206,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 else if (cached) CacheStrategy.CACHE_FIRST
                 else CacheStrategy.NETWORK_ONLY
 
-            val _from = if (to > 0 && from <= 0) 1 else from
-            val _to = if (from > 0 && to <= 0) (System.currentTimeMillis() / 1000).toInt() else to
+            val _from = if (to > 0 && from <= 0) 1 else (from / 1000)
+            val _to =
+                if (from > 0 && to <= 0) (System.currentTimeMillis() / 1000) else (to / 1000)
 
             client.getPageResult<RecentTracksResponse, Track>(
                 transform = { it.recenttracks },
@@ -281,7 +285,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             cacheStrategy(cacheStrategy)
         }.recoverCatching {
             // {"message":"no such page","error":6}
-            if (it is FmException && it.code == 6) {
+            if (it is ApiException && it.code == 6) {
                 PageResult(
                     PageAttr(
                         page = 1,
@@ -310,8 +314,8 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             page = 1,
             limit = 1,
             cached = false,
-            from = (cal.timeInMillis / 1000).toInt(),
-            to = (System.currentTimeMillis() / 1000).toInt()
+            from = cal.timeInMillis,
+            to = System.currentTimeMillis()
         ).getOrNull()?.attr?.total
 
         val drawerData = DrawerData(
@@ -322,7 +326,11 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             trackCount = user?.track_count ?: 0,
             profilePicUrl = user?.webp300
         ).also {
-            if (isSelf) prefs.drawerDataCached = it
+            if (isSelf) {
+                val drawerData = App.prefs.drawerData.toMutableMap()
+                drawerData[userAccount.type] = it
+                App.prefs.drawerData = drawerData
+            }
         }
 
         return drawerData
@@ -431,8 +439,8 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                     kotlin.runCatching {
                         val resp = getRecents(
                             username = username,
-                            from = (it.start / 1000).toInt(),
-                            to = (it.end / 1000).toInt(),
+                            from = it.start,
+                            to = it.end,
                             page = 1,
                             limit = 1
                         )
@@ -623,22 +631,22 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             ) {
                 setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
             }.map { it.session }
-            session.onSuccess { session ->
+            session.onSuccess {
                 // get user info
                 client.getResult<UserGetInfoResponse> {
                     url(userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT)
                     parameter("method", "user.getInfo")
                     parameter("format", "json")
                     parameter("api_key", apiKey)
-                    parameter("sk", session.key)
-                    parameter("user", session.name)
+                    parameter("sk", it.key)
+                    parameter("user", it.name)
                 }.map { it.user }
                     .onSuccess { user ->
                         // save account
                         val account = UserAccountSerializable(
                             userAccountTemp.type,
                             user.toUserCached(),
-                            session.key,
+                            it.key,
                             userAccountTemp.apiRoot,
                         )
 

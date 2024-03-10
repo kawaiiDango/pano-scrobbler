@@ -6,6 +6,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.ui.UiUtils.showWithIcons
@@ -34,7 +35,10 @@ class HomePagerFragment : BasePagerFragment() {
         if (savedInstanceState == null && findNavController().currentDestination?.id == R.id.myHomePagerFragment)
             arguments = bundleOf(Stuff.ARG_TAB to prefs.lastHomePagerTab)
 
-        adapter = HomePagerAdapter(this)
+        adapter = HomePagerAdapter(
+            this,
+            Scrobblables.current?.userAccount?.type ?: AccountType.LASTFM
+        )
 
         super.onViewCreated(view, savedInstanceState)
 

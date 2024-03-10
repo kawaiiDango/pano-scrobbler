@@ -13,7 +13,6 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.SearchResults
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.ui.ExpandableHeader
@@ -217,16 +216,14 @@ class SearchResultsAdapter(
             )
 
             if (entry is Album && searchType == SearchType.GLOBAL) {
-                binding.recentsImg.load(entry.webp300 ?: "") {
-                    placeholder(R.drawable.color_image_loading)
+                binding.recentsImg.load(entry) {
+                    placeholder(R.drawable.avd_loading)
                     error(errorDrawable)
-                    allowHardware(false)
                 }
             } else {
-                binding.recentsImg.load(MusicEntryImageReq(entry)) {
-                    placeholder(R.drawable.color_image_loading)
+                binding.recentsImg.load(MusicEntryImageReq(entry, fetchAlbumInfoIfMissing = true)) {
+                    placeholder(R.drawable.avd_loading)
                     error(errorDrawable)
-                    allowHardware(false) // crashes on back otherwise
                 }
             }
         }

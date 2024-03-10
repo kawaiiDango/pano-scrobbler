@@ -598,6 +598,9 @@
     <string name="api_url"
         comment="For Listenbrainz"
         >API URL</string>
+    <string name="server_url"
+        comment="For self hosted scrobbling services"
+        >Server URL</string>
     <string name="listenbrainz_info" formatted="true"
         comment="%1 = the link to page containing the token"
         >You can find your authentication token at: %1$s</string>
@@ -734,6 +737,21 @@
         >Open</string>
     <string name="delete_account">Delete your account</string>
     <string name="delete_account_custom_servers">For custom servers, check their respective documentations.</string>
+    <string name="add_photo"
+        comment="Add or change a photo for the artist or album"
+        >Add or change image</string>
+    <string name="from_gallery"
+        comment="Pick an image for the artist or album from the device gallery"
+        >From gallery</string>
+    <string name="square_photo_hint">Use a square image for best results</string>
+    <string name="scrobble_to_file">File</string>
+    <string name="password">Password</string>
+    <string name="open_existing"
+        comment="Append to an existing file"
+        >Append to existing</string>
+    <string name="create"
+        comment="Create a new file"
+        >Create</string>
 
 <!--  pro  -->
     <string name="get_pro">Support this app</string>

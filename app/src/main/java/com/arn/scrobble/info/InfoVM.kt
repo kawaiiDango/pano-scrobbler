@@ -39,6 +39,7 @@ class InfoVM : ViewModel() {
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
     private val initialEntryAndUsername = MutableStateFlow<Pair<MusicEntry, String>?>(null)
+    lateinit var originalEntriesMap: Map<String, MusicEntry>
 
     init {
         viewModelScope.launch {
@@ -118,6 +119,7 @@ class InfoVM : ViewModel() {
                 entriesMap[NLService.B_ARTIST] = entryp.copy(playcount = null, listeners = null)
             }
         }
+        originalEntriesMap = entriesMap
 
         return entriesMap
     }

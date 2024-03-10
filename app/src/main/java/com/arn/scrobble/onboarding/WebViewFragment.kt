@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -42,7 +44,7 @@ class WebViewFragment : Fragment() {
     private val binding
         get() = _binding!!
     private val url
-        get() = arguments?.getString(Stuff.ARG_URL) ?: "https://example.com"
+        get() = arguments?.getString(Stuff.ARG_URL) ?: "about:blank"
     private val saveCookies
         get() = arguments?.getBoolean(Stuff.ARG_SAVE_COOKIES) ?: false
     private val viewModel by viewModels<WebViewVM>()
@@ -118,9 +120,10 @@ class WebViewFragment : Fragment() {
         val path = uri.path ?: return false
         if (uri.scheme != Stuff.DEEPLINK_PROTOCOL_NAME)
             return false
-        val token = uri.getQueryParameter("token") ?: return false
         when (path) {
             "/lastfm" -> {
+                val token = uri.getQueryParameter("token") ?: return false
+
                 if (saveCookies) {
                     val httpUrlString = "https://www.last.fm/"
                     val httpUrl = Url(httpUrlString)
@@ -128,27 +131,6 @@ class WebViewFragment : Fragment() {
                     val cookieString =
                         CookieManager.getInstance().getCookie(httpUrlString) ?: ""
                     val cookies = stringToCookies(cookieString, httpUrl)
-
-//                    cookieString.split("; ")
-//                        .forEach {
-//                            val nvpair = it.split("=", limit = 2)
-//                            if (nvpair[0] == LastfmUnscrobbler.COOKIE_CSRFTOKEN ||
-//                                nvpair[0] == LastfmUnscrobbler.COOKIE_SESSIONID
-//                            ) {
-//                                val okCookie = Cookie.Builder()
-//                                    .domain("last.fm")
-//                                    .expiresAt(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 11)
-//                                    //somewhat less than 1y, similar to what lastfm does
-//                                    .name(nvpair[0])
-//                                    .value(nvpair[1])
-//                                    .path("/")
-//                                    .secure()
-//                                    //bad but this makes it https on SharedPrefsCookiePersistor
-//                                    .build()
-//
-//                                cookies.add(okCookie)
-//                            }
-//                        }
 
                     viewModel.viewModelScope.launch {
                         cookies.forEach {
@@ -162,8 +144,17 @@ class WebViewFragment : Fragment() {
                 )
             }
 
-            "/librefm",
-            "/gnufm" -> {
+            "/librefm" -> {
+                val token = uri.getQueryParameter("token") ?: return false
+
+                viewModel.doAuth(
+                    requireArguments().getSingle<UserAccountTemp>()!!.copy(authKey = token)
+                )
+            }
+
+            "/pleroma" -> {
+                val token = uri.getQueryParameter("code") ?: return false
+
                 viewModel.doAuth(
                     requireArguments().getSingle<UserAccountTemp>()!!.copy(authKey = token)
                 )
@@ -182,8 +173,11 @@ class WebViewFragment : Fragment() {
     }
 
     inner class MyWebViewClient : WebViewClient() {
-        @Deprecated("Deprecated in Java")
-        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+        override fun shouldOverrideUrlLoading(
+            view: WebView,
+            request: WebResourceRequest?
+        ): Boolean {
+            val url = request?.url?.toString() ?: return false
 
             if (
                 url.startsWith("https://www.last.fm/join") ||
@@ -208,15 +202,12 @@ class WebViewFragment : Fragment() {
             return callbackHandled
         }
 
-        @Deprecated("Deprecated in Java")
         override fun onReceivedError(
             view: WebView?,
-            errorCode: Int,
-            description: String?,
-            failingUrl: String?
+            request: WebResourceRequest?,
+            error: WebResourceError?
         ) {
-            //deprecated but required for lollipop
-            showErrorMessage(description ?: "null")
+            showErrorMessage(error?.description.toString())
         }
 
         override fun onPageFinished(view: WebView, url: String?) {

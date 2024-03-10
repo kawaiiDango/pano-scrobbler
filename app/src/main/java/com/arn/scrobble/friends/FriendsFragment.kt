@@ -307,7 +307,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
             contentBinding.friendsPic.layoutParams.width = 150.dp
             contentBinding.friendsPic.layoutParams.height = 150.dp
             val playCount = friendsItemHolder.playCount
-            if (playCount > 0 && (userCached.registeredTime / 1000) >= Stuff.TIME_2002) {
+            if (playCount > 0 && userCached.registeredTime >= Stuff.TIME_2002) {
                 val since =
                     DateFormat.getMediumDateFormat(context).format(userCached.registeredTime)
                 contentBinding.friendsScrobblesSince.text = getString(

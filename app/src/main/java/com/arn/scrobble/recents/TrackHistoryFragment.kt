@@ -88,8 +88,6 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-
         val prefs = App.prefs
         val isShowingPlayers =
             mainNotifierViewModel.currentUser.isSelf && prefs.proStatus && prefs.showScrobbleSources
@@ -128,17 +126,12 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
 //            if (oldList.isNotEmpty())
 //                adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
             adapter.submitList(it)
-
-//            (view.parent as? ViewGroup)?.doOnPreDraw {
-//                startPostponedEnterTransition()
-//            }
-            // todo transition
         }
 
 //        binding.firstScrobbledOn.visibility = View.GONE
 
         collectLatestLifecycleFlow(viewModel.firstScrobbledTime.filterNotNull()) {
-            val millis = it * 1000L
+            val millis = it
             val dateStr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 DateFormat.getDateTimeInstance(
                     DateFormat.MEDIUM,

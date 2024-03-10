@@ -19,6 +19,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.size.Precision
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
 import com.arn.scrobble.themes.ColorPatchUtils
@@ -38,6 +39,7 @@ import timber.log.Timber
 
 class App : Application(), ImageLoaderFactory, Configuration.Provider {
     private var connectivityCheckInited = false
+    private val musicEntryImageInterceptor = MusicEntryImageInterceptor()
 
     override val workManagerConfiguration =
         Configuration.Builder().apply {
@@ -142,7 +144,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         .components {
             add(AppIconKeyer())
             add(AppIconFetcher.Factory())
-            add(MusicEntryImageInterceptor())
+            add(musicEntryImageInterceptor)
             add(StarInterceptor())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 add(ImageDecoderDecoder.Factory())
@@ -158,15 +160,9 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         .allowHardware(false)
         .build()
 
-    @SuppressLint("StaticFieldLeak")
-    companion object {
-        // not a leak
-        lateinit var context: Context
-            private set
-        val prefs by lazy { MainPrefs() }
-        val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
+    fun clearMusicEntryImageCache(entry: MusicEntry) {
+        musicEntryImageInterceptor.clearCacheForEntry(entry)
     }
-
 
     private fun createChannels() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -220,5 +216,14 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
                 NotificationManager.IMPORTANCE_LOW
             )
         )
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    companion object {
+        // not a leak
+        lateinit var context: Context
+            private set
+        val prefs by lazy { MainPrefs() }
+        val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
     }
 }

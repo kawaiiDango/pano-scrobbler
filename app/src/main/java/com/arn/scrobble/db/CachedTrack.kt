@@ -48,10 +48,10 @@ data class CachedTrack(
                 mbid = artistMbid
             ),
             album = null,
-            duration = durationSecs,
+            duration = durationSecs.takeIf { it > 0 }?.toLong()?.times(1000),
             playcount = userPlayCount,
             userloved = isLoved,
-            date = lastPlayed.toInt()
+            date = lastPlayed
         )
 
         fun Track.toCachedTrack() = CachedTrack(
@@ -61,10 +61,10 @@ data class CachedTrack(
             artistName = artist.name,
             artistUrl = artist.url ?: "",
             artistMbid = artist.mbid ?: "",
-            durationSecs = duration ?: -1,
+            durationSecs = duration?.div(1000)?.toInt() ?: -1,
             userPlayCount = playcount ?: -1,
             isLoved = userloved ?: false,
-            lastPlayed = date?.toLong() ?: -1
+            lastPlayed = date ?: -1
         )
     }
 }

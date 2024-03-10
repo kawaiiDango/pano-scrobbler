@@ -25,7 +25,7 @@ which is a bug specific to WSA.
 ### Features:
 
 - No ads ever
-- Supports LastFM, LibreFM, GNU FM, and Listenbrainz
+- Scrobbles to LastFM, LibreFM, GNU FM, Listenbrainz, Maloja, Pleroma or to a file
 - Supports phones, TVs, tablets, and Android desktops, including Windows 11
 - Interactive notification: View song info, edit, love, cancel, or block songs directly from the
   notification

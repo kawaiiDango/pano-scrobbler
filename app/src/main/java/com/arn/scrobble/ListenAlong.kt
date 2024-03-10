@@ -5,19 +5,15 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 
 object ListenAlong {
 
@@ -39,19 +35,10 @@ object ListenAlong {
                 .getOrNull()
             if (track != null && (track.artist.name != currentTrack?.artist?.name || track.name != currentTrack?.name)) {
                 currentTrack = track
-
-                val spotifyId = withContext(Dispatchers.IO) {
-                    Requesters.spotifyRequester.getSpotifyTrack(track, 0.7f)?.id
-                } ?: continue
-
-                val spotifyLink = "https://open.spotify.com/track/$spotifyId"
-
-                Stuff.logD { "spotifyLink: $spotifyLink" }
-
-                val spotifyIntent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyLink))
-                    .setPackage(Stuff.PACKAGE_SPOTIFY)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                App.context.startActivity(spotifyIntent)
+                
+                Stuff.launchSearchIntent(track, Stuff.PACKAGE_SPOTIFY)
+                delay(1000)
+                Stuff.launchSearchIntent(track, Stuff.PACKAGE_SPOTIFY)
             }
             showNotification(username)
 

@@ -35,6 +35,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,6 +54,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp600
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
@@ -64,6 +66,7 @@ import com.arn.scrobble.databinding.ContentScrobblesBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
+import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.ItemLongClickListener
@@ -117,6 +120,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     private val billingViewModel by activityViewModels<BillingViewModel>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var animSet: AnimatorSet? = null
+    private val args by navArgs<ScrobblesFragmentArgs>()
 
     private val focusChangeListener by lazy {
         object : FocusChangeListener {
@@ -251,20 +255,40 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             listItemLayoutResId = R.layout.list_item_recents_skeleton,
         )
 
+        if (Scrobblables.current is FileScrobblable) {
+            val fabData = FabData(
+                viewLifecycleOwner,
+                R.string.fix_it_action,
+                R.drawable.vd_open_in_new,
+                {
+                    (Scrobblables.current as FileScrobblable).documentFile.uri.let { uri ->
+                        val intent = Intent(Intent.ACTION_VIEW)
+                            .setDataAndType(uri, "text/*")
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        startActivity(intent)
+                    }
+                })
+
+            activityViewModel.setFabData(fabData)
+        }
+
         collectLatestLifecycleFlow(viewModel.pendingScrobbles) {
             adapter.updatePendingScrobbles(it)
+            collectPendingScrobblesProgress()
         }
 
         collectLatestLifecycleFlow(viewModel.pendingLoves) {
             adapter.updatePendingLoves(it)
+            collectPendingScrobblesProgress()
         }
 
         collectLatestLifecycleFlow(viewModel.tracks.filterNotNull()) {
+            adapter.populate(it)
+
             if (it.isEmpty()) {
                 binding.empty.isVisible = true
             } else {
                 binding.empty.isVisible = false
-                adapter.populate(it)
 
                 loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
 
@@ -298,6 +322,26 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         collectLatestLifecycleFlow(activityViewModel.editData, Lifecycle.State.RESUMED) {
             viewModel.editTrack(it)
             ReviewPrompter(requireActivity()).showIfNeeded()
+        }
+
+        collectLatestLifecycleFlow(viewModel.fileException) {
+            if (it == null) {
+                binding.fileError.isVisible = false
+            } else {
+                binding.fileError.isVisible = true
+                val errText = it.message + "\n\n" +
+                        it.documentFile.lastModified()
+                            .takeIf { it > 0 }
+                            ?.let {
+                                getString(R.string.state_scrobbled) + ": " + Stuff.myRelativeTime(
+                                    requireContext(),
+                                    it,
+                                    true
+                                )
+                            }
+
+                binding.fileError.text = errText
+            }
         }
 
         binding.scrobblesChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
@@ -538,9 +582,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             }
         }
 
-        collectPendingScrobblesProgress()
-
-        binding.scrobblesChipGroup.visibility = View.VISIBLE
+        binding.scrobblesChipGroup.isVisible = args.showChips
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -557,12 +599,13 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     }
 
     private fun collectPendingScrobblesProgress() {
-        if (!viewModel.pendingSubmitAttempted &&
+        if (!activityViewModel.pendingSubmitAttempted &&
             (viewModel.pendingScrobbles.value.isNotEmpty() || viewModel.pendingLoves.value.isNotEmpty())
             && Stuff.isOnline
         ) {
-//            viewModel.pendingSubmitAttempted = true
-//            PendingScrobblesWorker.checkAndSchedule(requireContext(), true)
+            activityViewModel.pendingSubmitAttempted = true
+            PendingScrobblesWorker.checkAndSchedule(requireContext(), true)
+
             val wm = WorkManager.getInstance(requireContext())
             var lastSnackbar: Snackbar? = null
             collectLatestLifecycleFlow(
@@ -635,9 +678,8 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
 
         coordinatorBinding.heroImg.load(reqData) {
             placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
-            placeholder(R.drawable.color_image_loading)
+            placeholder(R.drawable.avd_loading)
             error(errDrawable)
-            allowHardware(false)
             transitionFactory(PaletteTransition.Factory { palette ->
                 viewModel.setPaletteColors(PaletteColors(context ?: return@Factory, palette))
             })
@@ -695,7 +737,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     private fun openTrackPopupMenu(anchor: View, track: Track) {
         val popup = PopupMenu(requireContext(), anchor)
 
-        if (activityViewModel.currentUser.isSelf) {
+        if (activityViewModel.currentUser.isSelf && args.showAllMenuItems) {
             popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
             val loveMenu = popup.menu.findItem(R.id.menu_love)
 

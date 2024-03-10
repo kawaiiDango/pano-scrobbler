@@ -10,8 +10,8 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonNames
 
 
-enum class ImageSize(val value: String) {
-    SMALL("small"), MEDIUM("medium"), LARGE("large"), EXTRALARGE("extralarge")
+enum class ImageSize {
+    small, medium, large, extralarge
 }
 
 sealed class MusicEntry : Parcelable {
@@ -36,7 +36,7 @@ interface IHasImage {
 
 val IHasImage.webp300
     get() = image
-        ?.find { it.size == ImageSize.EXTRALARGE.value.lowercase() }
+        ?.find { it.size == ImageSize.extralarge.name }
         ?.let {
             val url = it.url
             if (url.endsWith(".png") || url.endsWith(".jpg"))
@@ -166,14 +166,12 @@ data class Track(
     @Serializable(with = ArtistOrStringSerializer::class)
     val artist: Artist,
     override val url: String? = null,
-    @Serializable(with = StringOrIntSerializer::class)
-    val duration: Int? = null,
-    @Serializable(with = UnixTimestampSerializer::class)
-    val date: Int? = null,
+    @Serializable(with = StringSecsToMsSerializer::class)
+    val duration: Long? = null,
+    @Serializable(with = LastfmUnixTimestampSerializer::class)
+    val date: Long? = null,
     @SerialName("image")
     private val _image: List<LastFmImage>? = null,
-    @Transient
-    override val image: List<LastFmImage>? = _image ?: album?.image,
     @Transient
     override val mbid: String? = null, // lastfm sometimes provides invalid mbids, so we ignore them
     @Transient
@@ -204,6 +202,10 @@ data class Track(
 ) : MusicEntry(), IHasImage {
     @IgnoredOnParcel
     val feedbackScore = if (userloved == true) 1 else if (userHated == true) -1 else 0
+
+    // album?.image has more priority since _image can be a white star
+    @IgnoredOnParcel
+    override val image get() = album?.image ?: _image
 }
 
 @Parcelize
@@ -289,8 +291,8 @@ data class User(
     @Serializable(with = StringOrIntSerializer::class)
     val album_count: Int? = null,
     override val image: List<LastFmImage>? = null,
-    @Serializable(with = UnixTimestampSerializer::class)
-    val registered: Int? = null,
+    @Serializable(with = LastfmUnixTimestampSerializer::class)
+    val registered: Long? = null,
     val country: String? = null,
 ) : IHasImage
 
@@ -311,7 +313,7 @@ enum class Period(val value: String) {
 
 @Serializable
 data class Session(
-    val name: String,
+    val name: String?,
     val key: String
 )
 
@@ -486,15 +488,13 @@ data class ScrobbleResponse(
 ) {
     @Serializable
     data class Scrobbles(
-        @Serializable(with = ArrayOrObjectScrobbleDetailsSerializer::class)
-        val scrobble: List<ScrobbleDetails>,
         @SerialName("@attr")
         val attr: Attr,
     ) {
         @Serializable
         data class Attr(
             @Serializable(with = StringOrIntSerializer::class)
-            val accepted: Int,
+            val accepted: Int = 0,
             @Serializable(with = StringOrIntSerializer::class)
             val ignored: Int,
         )

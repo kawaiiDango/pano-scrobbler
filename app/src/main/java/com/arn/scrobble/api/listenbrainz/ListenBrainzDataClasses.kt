@@ -26,7 +26,8 @@ data class ListenBrainzListen(
 
 @Serializable
 data class ListenBrainzPayload(
-    val listened_at: Int?,
+    @Serializable(with = TimeNullableSerializer::class)
+    val listened_at: Long?,
     val track_metadata: ListenBrainzTrackMetadata
 )
 
@@ -41,7 +42,7 @@ data class ListenBrainzTrackMetadata(
 
 @Serializable
 data class ListenBrainzAdditionalInfo(
-    val duration_ms: Int?,
+    val duration_ms: Long?,
     val artist_msid: String? = null,
     val recording_msid: String? = null,
     val release_msid: String? = null,
@@ -70,7 +71,8 @@ data class ListenBrainzFeedback(
 
 @Serializable
 data class ListenBrainzDeleteRequest(
-    val listened_at: Int,
+    @Serializable(with = TimeSerializer::class)
+    val listened_at: Long,
     val recording_msid: String
 )
 
@@ -87,8 +89,10 @@ data class ListenBrainzListensPayload(
 
 @Serializable
 data class ListenBrainzListensListens(
-    val inserted_at: Int?,
-    val listened_at: Int?,
+    @Serializable(with = TimeNullableSerializer::class)
+    val inserted_at: Long?,
+    @Serializable(with = TimeNullableSerializer::class)
+    val listened_at: Long?,
     val recording_msid: String?,
     val playing_now: Boolean?,
     val track_metadata: ListenBrainzTrackMetadata,
@@ -110,7 +114,8 @@ data class ListenBrainzFeedbacks(
 
 @Serializable
 data class ListenBrainzFeedbackPayload(
-    val created: Int,
+    @Serializable(with = TimeSerializer::class)
+    val created: Long,
     val recording_mbid: String?,
     val recording_msid: String?,
     val score: Int,
@@ -134,11 +139,14 @@ data class ListenBrainzStatsEntriesPayload(
     val releases: List<ListenBrainzStatsEntry>?,
     val recordings: List<ListenBrainzStatsEntry>?,
     val count: Int,
-    val from_ts: Int,
-    val last_updated: Int,
+    @Serializable(with = TimeSerializer::class)
+    val from_ts: Long,
+    @Serializable(with = TimeSerializer::class)
+    val last_updated: Long,
     val offset: Int,
     val range: String,
-    val to_ts: Int,
+    @Serializable(with = TimeSerializer::class)
+    val to_ts: Long,
     val total_artist_count: Int?,
     val total_release_count: Int?,
     val total_recording_count: Int?,
@@ -157,16 +165,20 @@ data class ListenBrainzStatsEntry(
 
 @Serializable
 data class ListenBrainzActivityPayload(
-    val from_ts: Int,
+    @Serializable(with = TimeSerializer::class)
+    val from_ts: Long,
     val last_updated: Int,
     val listening_activity: List<ListeningActivity>,
-    val to_ts: Int
+    @Serializable(with = TimeSerializer::class)
+    val to_ts: Long
 )
 
 @Serializable
 data class ListeningActivity(
-    val from_ts: Int,
+    @Serializable(with = TimeSerializer::class)
+    val from_ts: Long,
     val listen_count: Int,
     val time_range: String,
-    val to_ts: Int
+    @Serializable(with = TimeSerializer::class)
+    val to_ts: Long
 )

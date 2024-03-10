@@ -221,7 +221,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
                     0
                 else
                     lastPlayedTracksMap[it.name]!!.date
-                        ?: (System.currentTimeMillis() / 1000).toInt()
+                        ?: System.currentTimeMillis()
             }
             sorted = true
 

@@ -1,6 +1,9 @@
 package com.arn.scrobble.api.lastfm
 
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.postResult
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
@@ -29,10 +32,28 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
         }
 
         // {"error":{"#text":"Invalid resource specified","code":"7"}}
-        return if (result.isSuccess || (result.exceptionOrNull() as? FmException)?.code == 7)
+        // {"error": 3, "message": "Invalid method"}
+        return if (result.isSuccess ||
+            (result.exceptionOrNull() as? ApiException)?.code in arrayOf(7, 3)
+        )
             Result.success(Unit)
         else
             Result.failure(result.exceptionOrNull()!!)
+    }
+
+    override suspend fun getCharts(
+        type: Int,
+        timePeriod: TimePeriod,
+        page: Int,
+        username: String,
+        cacheStrategy: CacheStrategy,
+        limit: Int
+    ): Result<PageResult<out MusicEntry>> {
+        if (type == Stuff.TYPE_ALBUMS || timePeriod.period == null) {
+            return Result.success(createEmptyPageResult())
+        }
+
+        return super.getCharts(type, timePeriod, page, username, cacheStrategy, limit)
     }
 
     override suspend fun getFriends(
@@ -41,12 +62,7 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
         cached: Boolean,
         limit: Int
     ): Result<PageResult<User>> {
-        val pr = PageResult(
-            PageAttr(1, 1, 0),
-            listOf<User>(),
-            false
-        )
-        return Result.success(pr)
+        return Result.success(createEmptyPageResult())
     }
 
     override suspend fun getListeningActivity(
@@ -55,5 +71,50 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
         cacheStrategy: CacheStrategy
     ): Map<TimePeriod, Int> {
         return emptyMap()
+    }
+
+    companion object {
+        suspend fun authAndGetSession(
+            apiRoot: String,
+            username: String,
+            password: String,
+        ): Result<Session> {
+            val apiKey = Stuff.LIBREFM_KEY
+            val apiSecret = Stuff.LIBREFM_KEY
+            val client = Requesters.genericKtorClient
+
+            val params = mutableMapOf<String, String?>(
+                "method" to "auth.getMobileSession",
+                "api_key" to apiKey,
+                "username" to username,
+                "password" to password,
+            )
+
+            val session = client.postResult<SessionResponse>(apiRoot) {
+                setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
+            }.map { it.session }
+            session.onSuccess {
+                val user = UserCached(
+                    username,
+                    "$apiRoot/user/$username",
+                    username,
+                    "",
+                    -1,
+                )
+
+                val account = UserAccountSerializable(
+                    AccountType.GNUFM,
+                    user,
+                    it.key,
+                    apiRoot,
+                )
+
+                Scrobblables.add(account)
+            }.onFailure {
+                it.printStackTrace()
+            }
+
+            return session
+        }
     }
 }

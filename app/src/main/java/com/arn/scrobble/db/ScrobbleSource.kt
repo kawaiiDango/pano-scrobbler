@@ -20,7 +20,4 @@ data class ScrobbleSource(
     val _id: Int = 0,
     val timeMillis: Long,
     val pkg: String,
-) {
-    val timeSecs
-        get() = (timeMillis / 1000).toInt()
-}
+)

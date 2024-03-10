@@ -1,5 +1,6 @@
 package com.arn.scrobble.pref
 
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -67,11 +68,7 @@ class AppListFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        postponeEnterTransition()
-
         binding.appList.setupInsets()
-
-
 
         viewModel.selectedPackages += allowedPackagesArg ?: prefs.allowedPackages
 
@@ -102,11 +99,6 @@ class AppListFragment : Fragment() {
                 override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
                     if (!viewModel.hasLoaded.value)
                         return
-
-//                    if (scrollState == 0) { //scrolling stopped
-//                        binding.appListDone.show()
-//                    } else //scrolling
-//                        binding.appListDone.hide()
                 }
             })
         }
@@ -114,9 +106,6 @@ class AppListFragment : Fragment() {
         collectLatestLifecycleFlow(viewModel.appList.filter { it.isNotEmpty() }) {
             adapter.submitList(it)
 
-//            (view.parent as? ViewGroup)?.doOnPreDraw {
-//                startPostponedEnterTransition()
-//            }
         }
 
         collectLatestLifecycleFlow(viewModel.hasLoaded) {
@@ -147,8 +136,6 @@ class AppListFragment : Fragment() {
 
         }
 
-//        if (viewModel.appList.value == null)
-//            viewModel.load(checkDefaultApps = allowedPackagesArg == null && !prefs.appListWasRun)
     }
 
     override fun onStop() {
@@ -165,8 +152,13 @@ class AppListFragment : Fragment() {
         if (allowedPackagesArg == null) {
             prefs.allowedPackages = viewModel.selectedPackages
             //BL = old WL - new WL
-            prefs.blockedPackages =
-                prefs.blockedPackages + prefs.allowedPackages - viewModel.selectedPackages
+//            prefs.blockedPackages =
+//                prefs.blockedPackages + prefs.allowedPackages - viewModel.selectedPackages
+            // behaviour change: all unselected apps on the list are blocklisted
+            prefs.blockedPackages = viewModel.appList.value
+                .filterIsInstance<ApplicationInfo>()
+                .map { it.packageName }
+                .toSet() - viewModel.selectedPackages
         } else {
             setFragmentResult(
                 Stuff.ARG_ALLOWED_PACKAGES,

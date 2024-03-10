@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.DrawerData
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
@@ -113,9 +114,8 @@ class MainPrefs : Krate {
     var scrobbleAccounts by kotlinxPref<List<UserAccountSerializable>>(PREF_SCROBBLE_ACCOUNTS).withDefault(
         listOf()
     )
-    var drawerDataCached by kotlinxPref<DrawerData>(PREF_ACTIVITY_DRAWER_DATA_CACHED).withDefault(
-        DrawerData(0)
-    )
+    var drawerData by kotlinxPref<Map<AccountType, DrawerData>>(PREF_ACTIVITY_DRAWER_DATA)
+        .withDefault(emptyMap())
     var lastRandomType by intPref(PREF_ACTIVITY_LAST_RANDOM_TYPE).withDefault(Stuff.TYPE_TRACKS)
     var lastKillCheckTime by longPref(PREF_ACTIVITY_LAST_KILL_CHECK_TIME).withDefault(-1)
     var userTopTagsFetched by booleanPref(PREF_ACTIVITY_USER_TAG_HISTORY_FETCHED).withDefault(
@@ -144,6 +144,8 @@ class MainPrefs : Krate {
     var regexEditsLearnt by booleanPref(PREF_ACTIVITY_REGEX_EDITS_LEARNT).withDefault(false)
     var reorderFriendsLearnt by booleanPref(PREF_ACTIVITY_REORDER_FRIENDS_LEARNT).withDefault(false)
     var gridPinchLearnt by booleanPref(PREF_ACTIVITY_GRID_PINCH_LEARNT).withDefault(false)
+    var squarePhotoLearnt by booleanPref(PREF_SQUARE_PHOTO_LEARNT).withDefault(false)
+    var changelogSeenHashcode by intPref(PREF_ACTIVITY_CHANGELOG_SEEN_HASHCODE).withDefault(0)
 
     var searchHistory by stringSetPref(PREF_ACTIVITY_SEARCH_HISTORY)
     var tagHistory by stringSetPref(PREF_ACTIVITY_TAG_HISTORY)
@@ -165,9 +167,9 @@ class MainPrefs : Krate {
     var digestSeconds by intPref(PREF_DIGEST_SECONDS)
     var lastReviewPromptTime by longPref(PREF_FIRST_LAUNCHED)
     var lastUpdateCheckTime by longPref(PREF_LAST_UPDATE_CHECK_TIME)
-    var checkForUpdates by booleanPref(PREF_CHECK_FOR_UPDATES)
+
+    //    var checkForUpdates by booleanPref(PREF_CHECK_FOR_UPDATES).withDefault()
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
-    var lastfmLinksEnabled by booleanPref(PREF_ENABLE_LASTFM_LINKS).withDefault(false)
     var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(setOf())
     var pinnedFriendsJson by kotlinxPref<List<UserCached>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
@@ -200,6 +202,8 @@ class MainPrefs : Krate {
         val showAlbumInRecents: Boolean = App.prefs.showAlbumInRecents,
         @SerialName(PREF_SHOW_SCROBBLE_SOURCES)
         val showScrobbleSources: Boolean = App.prefs.showScrobbleSources,
+        @SerialName(PREF_LINK_HEART_BUTTON_TO_RATING)
+        val linkHeartButtonToRating: Boolean = App.prefs.linkHeartButtonToRating,
         @SerialName(PREF_LOCKSCREEN_NOTI)
         val notificationsOnLockscreen: Boolean = App.prefs.notificationsOnLockscreen,
         @SerialName(PREF_THEME_PRIMARY)
@@ -224,8 +228,9 @@ class MainPrefs : Krate {
         val firstDayOfWeek: Int = App.prefs.firstDayOfWeek,
         @SerialName(PREF_ALLOWED_PACKAGES)
         val allowedPackages: Set<String> = App.prefs.allowedPackages,
-        @SerialName(PREF_BLOCKED_PACKAGES)
-        val blockedPackages: Set<String> = App.prefs.blockedPackages,
+//        @SerialName(PREF_BLOCKED_PACKAGES)
+//        val blockedPackages: Set<String> = App.prefs.blockedPackages,
+        // dont't expose their entire apps list to the public
     )
 
     fun fromMainPrefsPublic(settings: MainPrefsPublic) {
@@ -238,6 +243,7 @@ class MainPrefs : Krate {
         _autoDetectApps = settings.autoDetectApps
         showAlbumInRecents = settings.showAlbumInRecents
         showScrobbleSources = settings.showScrobbleSources
+        linkHeartButtonToRating = settings.linkHeartButtonToRating
         notificationsOnLockscreen = settings.notificationsOnLockscreen
         themePrimary = settings.themePrimary
         themeSecondary = settings.themeSecondary
@@ -250,7 +256,7 @@ class MainPrefs : Krate {
         preventDuplicateAmbientScrobbles = settings.preventDuplicateAmbientScrobbles
         firstDayOfWeek = settings.firstDayOfWeek
         allowedPackages = settings.allowedPackages
-        blockedPackages = settings.blockedPackages
+//        blockedPackages = settings.blockedPackages
 
     }
 
@@ -309,7 +315,6 @@ class MainPrefs : Krate {
         const val CHANNEL_NOTI_DIGEST_WEEKLY = "noti_digest_weekly"
         const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
         const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
-        const val CHANNEL_NOTI_UPDATE = "noti_update"
         const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
         const val PREF_ACTIVITY_APP_LIST_WAS_RUN = "app_list_run"
@@ -318,7 +323,7 @@ class MainPrefs : Krate {
         const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_TYPE = "charts_period_type"
         const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_SELECTED = "random_period_selected"
         const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_TYPE = "random_period_type"
-        const val PREF_ACTIVITY_DRAWER_DATA_CACHED = "drawer_data_cached"
+        const val PREF_ACTIVITY_DRAWER_DATA = "drawer_data"
         const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"
         const val PREF_ACTIVITY_SEARCH_HISTORY = "search_history"
         const val PREF_ACTIVITY_TAG_HISTORY = "tag_history"
@@ -339,7 +344,9 @@ class MainPrefs : Krate {
         const val PREF_ACTIVITY_GRID_PINCH_LEARNT = "grid_pinch_learnt"
         const val PREF_ACTIVITY_LAST_KILL_CHECK_TIME = "last_kill_checked"
         const val PREF_ACTIVITY_REGEX_LEARNT = "regex_learnt"
+        const val PREF_SQUARE_PHOTO_LEARNT = "square_photo_learnt"
         const val PREF_ACTIVITY_DEMO_MODE = "demo_mode"
+        const val PREF_ACTIVITY_CHANGELOG_SEEN_HASHCODE = "changelog_seen_hashcode"
 
         const val PREF_COLLAGE_SIZE = "collage_size"
         const val PREF_COLLAGE_CAPTIONS = "collage_captions"
@@ -350,7 +357,7 @@ class MainPrefs : Krate {
         const val PREF_FIRST_LAUNCHED = "date_firstlaunch"
         const val PREF_LAST_UPDATE_CHECK_TIME = "last_update_check_time"
         const val PREF_CHECK_FOR_UPDATES = "check_for_updates"
-        const val PREF_ENABLE_LASTFM_LINKS = "lastfm_links"
         const val PREF_VERSION = "version"
+        const val PREF_VERSION_INT = 4
     }
 }

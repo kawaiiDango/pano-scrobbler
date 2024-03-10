@@ -57,7 +57,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
 
         binding = ActivityAppwidgetChartsConfigBinding.inflate(layoutInflater)
         setContentView(binding.root)

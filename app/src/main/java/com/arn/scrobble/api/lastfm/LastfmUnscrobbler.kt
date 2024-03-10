@@ -37,9 +37,9 @@ object LastfmUnscrobbler {
                 append(FIELD_TRACK, track.name)
                 append(
                     FIELD_TIMESTAMP,
-                    track.date?.toString() ?: throw IllegalStateException("no date")
+                    track.date?.div(1000)?.toString() ?: throw IllegalStateException("no date")
                 )
-                append("ajax", "1")
+                append(FIELD_AJAX, "1")
             }
 
             val url = "$URL_USER$username/library/delete"
@@ -79,6 +79,7 @@ object LastfmUnscrobbler {
     private const val FIELD_ARTIST = "artist_name"
     private const val FIELD_TRACK = "track_name"
     private const val FIELD_TIMESTAMP = "timestamp"
+    private const val FIELD_AJAX = "ajax"
 
     private val lock by lazy { Mutex() }
 

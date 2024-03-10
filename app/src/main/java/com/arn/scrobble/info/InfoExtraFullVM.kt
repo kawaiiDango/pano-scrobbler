@@ -21,7 +21,7 @@ class InfoExtraFullVM : ViewModel() {
     private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
     val input = _input.asStateFlow()
     var reachedEnd = false
-    private val limit = 100
+    private val limit = 90
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
 

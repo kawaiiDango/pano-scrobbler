@@ -37,7 +37,6 @@ import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
@@ -141,14 +140,14 @@ class ScrobblesAdapter(
                 Section.NOTICE_SECTION.ordinal,
                 header = ExpandableHeader(
                     R.drawable.vd_error,
-                    if (viewModel.scrobblerEnabled && !viewModel.scrobblerServiceRunning)
+                    if (viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == false)
                         R.string.not_running
                     else
                         R.string.scrobbler_off,
                     R.string.enable,
                     R.string.enable,
                 ),
-                showHeaderWhenEmpty = !(viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning)
+                showHeaderWhenEmpty = !(viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == true) && userIsSelf
             )
         )
 
@@ -320,7 +319,6 @@ class ScrobblesAdapter(
             fun fetchIcon(pkgName: String) {
                 binding.playerIcon.load(PackageName(pkgName)) {
                     scale(Scale.FIT)
-                    allowHardware(false)
                     listener(onSuccess = { _, _ ->
                         binding.playerIcon.contentDescription = pkgName
                     })
@@ -376,7 +374,7 @@ class ScrobblesAdapter(
 
             if (track.isNowPlaying) {
                 binding.recentsDate.visibility = View.GONE
-                UiUtils.nowPlayingAnim(binding.recentsPlaying, true)
+                binding.recentsPlaying.load(R.drawable.avd_now_playing)
                 binding.root.updatePaddingRelative(top = 0)
                 binding.dividerCircle.isVisible = false
             } else {
@@ -394,8 +392,7 @@ class ScrobblesAdapter(
                     binding.dividerCircle.isVisible = false
                 }
 
-
-                UiUtils.nowPlayingAnim(binding.recentsPlaying, false)
+                binding.recentsPlaying.dispose()
             }
 
             if (track.userloved == true || track.userHated == true) {
@@ -423,15 +420,13 @@ class ScrobblesAdapter(
 
             if (!viewModel.isShowingLoves) {
                 binding.recentsImg.load(imgUrl ?: "") {
-                    allowHardware(false)
-                    placeholder(R.drawable.color_image_loading)
+                    placeholder(R.drawable.avd_loading)
                     error(errorDrawable)
                 }
             } else {
-                val musicEntryImageReq = MusicEntryImageReq(track)
+                val musicEntryImageReq = MusicEntryImageReq(track, fetchAlbumInfoIfMissing = true)
                 binding.recentsImg.load(musicEntryImageReq) {
-                    allowHardware(false)
-                    placeholder(R.drawable.color_image_loading)
+                    placeholder(R.drawable.avd_loading)
                     error(errorDrawable)
                     listener(onSuccess = { request, _ ->
                         (request.data as? String)?.let {
@@ -503,7 +498,7 @@ class ScrobblesAdapter(
                             binding.headerOverflowButton
                         )
 
-                        if (viewModel.scrobblerEnabled && !viewModel.scrobblerServiceRunning)
+                        if (viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == false)
                             popupMenu.inflate(R.menu.scrobbler_fix_it_menu)
                         else
                             popupMenu.inflate(R.menu.scrobbler_enable_menu)

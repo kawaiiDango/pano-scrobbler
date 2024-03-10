@@ -76,7 +76,7 @@ class RegexEditsAddFragment : Fragment() {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) // needs java 8
             binding.editExtract.isVisible = false
-        else if (billingViewModel.proStatus.value == false) {
+        else if (!billingViewModel.proStatus.value) {
             binding.editExtract.setOnClickListener {
                 findNavController().navigate(R.id.billingFragment)
             }
@@ -283,7 +283,6 @@ class RegexEditsAddFragment : Fragment() {
                 val request = ImageRequest.Builder(context)
                     .data(PackageName(pkgName))
                     .error(R.drawable.vd_apps)
-                    .allowHardware(false)
                     .target(
                         onSuccess = ::onResult,
                         onError = ::onResult
@@ -355,7 +354,7 @@ class RegexEditsAddFragment : Fragment() {
         }
 
         if (binding.editExtract.isChecked) {
-            if (billingViewModel.proStatus.value == false) {
+            if (!billingViewModel.proStatus.value) {
                 findNavController().navigate(R.id.billingFragment)
                 return false
             }

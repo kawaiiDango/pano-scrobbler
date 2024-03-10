@@ -14,7 +14,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp600
+import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.charts.ChartsPeriodFragment
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
@@ -89,7 +89,8 @@ class RandomFragment : ChartsPeriodFragment() {
         if (!activityViewModel.currentUser.isSelf) {
             UiUtils.loadSmallUserPic(
                 binding.randomizeText.context,
-                activityViewModel.currentUser
+                activityViewModel.currentUser,
+                activityViewModel.drawerData.value,
             ) {
                 binding.randomizeText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     it,
@@ -222,7 +223,7 @@ class RandomFragment : ChartsPeriodFragment() {
 
         binding.itemName.text = musicEntry.name
 
-        val imageReq: Any
+        val imageReq: MusicEntryImageReq
 
         when (musicEntry) {
             is Track -> {
@@ -237,7 +238,7 @@ class RandomFragment : ChartsPeriodFragment() {
                     binding.trackDate.visibility = View.GONE
                 }
 
-                imageReq = musicEntry.webp600 ?: ""
+                imageReq = MusicEntryImageReq(musicEntry, true)
             }
 
             is Album -> {
@@ -246,7 +247,11 @@ class RandomFragment : ChartsPeriodFragment() {
 
                 binding.trackDate.visibility = View.GONE
 
-                imageReq = musicEntry.webp600 ?: ""
+                imageReq = MusicEntryImageReq(
+                    musicEntry,
+                    true,
+                    fetchAlbumInfoIfMissing = musicEntry.webp300 == null
+                )
             }
 
             is Artist -> {
@@ -267,14 +272,20 @@ class RandomFragment : ChartsPeriodFragment() {
         val count = musicEntry.userplaycount ?: musicEntry.playcount ?: -1
 
         if (count > 0) {
-            binding.trackCount.visibility = View.VISIBLE
-            binding.trackCount.text = resources.getQuantityString(
+            binding.trackCount.isVisible = true
+
+            var scrobblesCount = resources.getQuantityString(
                 R.plurals.num_scrobbles_noti,
                 count,
                 count.format()
             )
+
+            if (musicEntry is Artist || musicEntry is Album)
+                scrobblesCount += " • " + viewModel.selectedPeriod.value.name
+
+            binding.trackCount.text = scrobblesCount
         } else {
-            binding.trackCount.visibility = View.GONE
+            binding.trackCount.isVisible = false
         }
 
         arrayOf(binding.randomPlay, binding.randomPlayFiller)
@@ -285,8 +296,7 @@ class RandomFragment : ChartsPeriodFragment() {
             }
 
         binding.randomBigImg.load(imageReq) {
-            allowHardware(false) // because crash on oreo
-            placeholder(R.drawable.color_image_loading)
+            placeholder(R.drawable.avd_loading)
             error(R.drawable.vd_wave_simple_filled)
         }
     }

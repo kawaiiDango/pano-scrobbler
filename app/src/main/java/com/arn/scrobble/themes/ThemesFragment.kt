@@ -133,7 +133,7 @@ class ThemesFragment : Fragment() {
             com.google.android.material.R.string.abc_action_mode_done,
             R.drawable.vd_check_simple,
             {
-                if (billingViewModel.proStatus.value == true) {
+                if (billingViewModel.proStatus.value) {
 
                     val prevDayNightId = prefs.themeDayNight
                     saveTheme()

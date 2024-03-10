@@ -10,10 +10,10 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.activityViewModels
-import com.arn.scrobble.utils.NavUtils.setupWithNavUi
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.NavUtils.setupWithNavUi
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlin.math.abs
 
@@ -22,7 +22,7 @@ open class BasePagerFragment : Fragment() {
 
     lateinit var adapter: BasePagerAdapter
     open val optionsMenuRes = 0
-    protected var _binding: ContentPagerBinding? = null
+    private var _binding: ContentPagerBinding? = null
     val binding
         get() = _binding!!
     val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
@@ -38,7 +38,7 @@ open class BasePagerFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = ContentPagerBinding.inflate(inflater, container, false)
         return binding.root
     }

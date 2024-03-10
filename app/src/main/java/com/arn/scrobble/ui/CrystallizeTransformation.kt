@@ -7,8 +7,8 @@ import android.graphics.Bitmap
 import coil.size.Size
 import coil.transform.Transformation
 import com.arn.scrobble.ui.UiUtils.dp
-import com.jabistudio.androidjhlabs.filter.CrystallizeFilter
-import com.jabistudio.androidjhlabs.filter.util.AndroidUtils
+import com.arn.scrobble.ui.UiUtils.toIntArray
+import com.jabistudio.androidjhlabs.filter.CellularCrystallizeFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -19,12 +19,12 @@ class CrystallizeTransformation(private val context: Context) : Transformation {
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap =
         withContext(Dispatchers.IO) {
-            val outArr = CrystallizeFilter().apply {
+            val outArr = CellularCrystallizeFilter().apply {
                 scale = 15.dp.toFloat()
                 randomness = 0.01f
                 edgeThickness = 0f
             }.filter(
-                AndroidUtils.bitmapToIntArray(input),
+                input.toIntArray(),
                 input.width,
                 input.height
             )

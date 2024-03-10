@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import android.app.Activity
 import android.app.LocaleManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,6 +11,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -76,9 +76,9 @@ import java.util.Locale
 
 class PrefFragment : PreferenceFragmentCompat() {
 
-    private lateinit var exportRequest: ActivityResultLauncher<Intent>
-    private lateinit var exportPrivateDataRequest: ActivityResultLauncher<Intent>
-    private lateinit var importRequest: ActivityResultLauncher<Intent>
+    private lateinit var exportRequest: ActivityResultLauncher<String>
+    private lateinit var exportPrivateDataRequest: ActivityResultLauncher<String>
+    private lateinit var importRequest: ActivityResultLauncher<Array<String>>
     private val prefs = App.prefs
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,21 +87,18 @@ class PrefFragment : PreferenceFragmentCompat() {
         setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
 
         exportRequest =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK && result.data != null)
-                    export(result.data!!)
+            registerForActivityResult(ActivityResultContracts.CreateDocument(Stuff.MIME_TYPE_JSON)) { uri ->
+                export(uri)
             }
 
         exportPrivateDataRequest =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK && result.data != null)
-                    export(result.data!!, privateData = true)
+            registerForActivityResult(ActivityResultContracts.CreateDocument(Stuff.MIME_TYPE_JSON)) { uri ->
+                export(uri, privateData = true)
             }
 
         importRequest =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK && result.data != null)
-                    import(result.data!!)
+            registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                import(uri)
             }
     }
 
@@ -411,40 +408,27 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         }
 
-        if (prefs.checkForUpdates == null) {
-            findPreference<SwitchPreference>("check_for_updates")!!
-                .isVisible = false
-        }
+//        if (prefs.checkForUpdates == null) {
+//            findPreference<SwitchPreference>("check_for_updates")!!
+//                .isVisible = false
+//        }
 
         findPreference<Preference>(MainPrefs.PREF_EXPORT)
             ?.setOnPreferenceClickListener {
                 if (prefs.proStatus && prefs.showScrobbleSources) {
-                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/json"
-                        putExtra(
-                            Intent.EXTRA_TITLE, getString(
-                                R.string.export_file_name,
-                                "private_" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE]
-                            )
-                        )
-                    }
-
-                    exportPrivateDataRequest.launch(intent)
-                }
-
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/json"
-                    putExtra(
-                        Intent.EXTRA_TITLE, getString(
-                            R.string.export_file_name,
-                            "" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE]
-                        )
+                    val privateFileName = getString(
+                        R.string.export_file_name,
+                        "private_" + Stuff.getFileNameDateSuffix()
                     )
+                    exportPrivateDataRequest.launch(privateFileName)
                 }
 
-                exportRequest.launch(intent)
+                val fileName = getString(
+                    R.string.export_file_name,
+                    Stuff.getFileNameDateSuffix()
+                )
+
+                exportRequest.launch(fileName)
                 true
             }
 
@@ -454,14 +438,12 @@ class PrefFragment : PreferenceFragmentCompat() {
                 // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
                 // from ProcessRecord{a608cee 5039:com.google.android.documentsui/u0a21}
                 // (pid=5039, uid=10021) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/*"
-                }
-                importRequest.launch(intent)
+                importRequest.launch(arrayOf(Stuff.MIME_TYPE_JSON))
                 true
             }
-        hideOnTV.add(findPreference("imexport")!!)
+
+        if (!BuildConfig.DEBUG)
+            hideOnTV.add(findPreference("imexport")!!)
 
         findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
             .setOnPreferenceClickListener {
@@ -593,6 +575,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             hideOnTV.forEach {
                 it.isVisible = false
             }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -607,6 +590,34 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         (view.parent as? ViewGroup)?.doOnPreDraw {
             startPostponedEnterTransition()
+        }
+
+        collectLatestLifecycleFlow(PanoDb.db.getSimpleEditsDao().count()) {
+            findPreference<Preference>("simple_edits")!!.title =
+                resources.getQuantityString(
+                    R.plurals.num_simple_edits,
+                    it,
+                    it.format()
+                )
+
+        }
+
+        collectLatestLifecycleFlow(PanoDb.db.getRegexEditsDao().count()) {
+            findPreference<Preference>("regex_edits")!!.title =
+                resources.getQuantityString(
+                    R.plurals.num_regex_edits,
+                    it,
+                    it.format()
+                )
+        }
+
+        collectLatestLifecycleFlow(PanoDb.db.getBlockedMetadataDao().count()) {
+            findPreference<Preference>("blocked_metadata")!!.title =
+                resources.getQuantityString(
+                    R.plurals.num_blocked_metadata,
+                    it,
+                    it.format()
+                )
         }
     }
 
@@ -688,8 +699,8 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
     }
 
-    private fun export(data: Intent, privateData: Boolean = false) {
-        val currentUri = data.data ?: return
+    private fun export(currentUri: Uri?, privateData: Boolean = false) {
+        currentUri ?: return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val exported = ImExporter().use {
                 it.setOutputUri(currentUri)
@@ -707,8 +718,8 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun import(data: Intent) {
-        val currentUri = data.data ?: return
+    private fun import(currentUri: Uri?) {
+        currentUri ?: return
         val binding = DialogImportBinding.inflate(layoutInflater)
         MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
@@ -755,43 +766,14 @@ class PrefFragment : PreferenceFragmentCompat() {
         setAuthLabel("listenbrainz", AccountType.LISTENBRAINZ)
         setAuthLabel("lb", AccountType.CUSTOM_LISTENBRAINZ)
 
-        collectLatestLifecycleFlow(PanoDb.db.getSimpleEditsDao().count()) {
-            findPreference<Preference>("simple_edits")!!.title =
-                resources.getQuantityString(
-                    R.plurals.num_simple_edits,
-                    it,
-                    it.format()
-                )
-
-        }
-
-        collectLatestLifecycleFlow(PanoDb.db.getRegexEditsDao().count()) {
-            findPreference<Preference>("regex_edits")!!.title =
-                resources.getQuantityString(
-                    R.plurals.num_regex_edits,
-                    it,
-                    it.format()
-                )
-        }
-
-        collectLatestLifecycleFlow(PanoDb.db.getBlockedMetadataDao().count()) {
-            findPreference<Preference>("blocked_metadata")!!.title =
-                resources.getQuantityString(
-                    R.plurals.num_blocked_metadata,
-                    it,
-                    it.format()
-                )
-        }
-
         initAuthConfirmation("lastfm", AccountType.LASTFM)
-
         initAuthConfirmation("librefm", AccountType.LIBREFM)
-
         initAuthConfirmation("gnufm", AccountType.GNUFM)
-
         initAuthConfirmation("listenbrainz", AccountType.LISTENBRAINZ)
-
         initAuthConfirmation("lb", AccountType.CUSTOM_LISTENBRAINZ)
+        initAuthConfirmation("maloja", AccountType.MALOJA)
+        initAuthConfirmation("pleroma", AccountType.PLEROMA)
+        initAuthConfirmation("file", AccountType.FILE)
     }
 
     companion object {

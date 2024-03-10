@@ -3,6 +3,7 @@ package com.arn.scrobble.api
 import com.arn.scrobble.App
 import com.arn.scrobble.DrawerData
 import com.arn.scrobble.R
+import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheStrategy
@@ -10,11 +11,14 @@ import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
+import com.arn.scrobble.api.maloja.Maloja
+import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
@@ -40,8 +44,8 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         page: Int,
         username: String = userAccount.user.name,
         cached: Boolean = false,
-        from: Int = -1,
-        to: Int = -1,
+        from: Long = -1,
+        to: Long = -1,
         includeNowPlaying: Boolean = false,
         limit: Int = 50,
     ): Result<PageResult<Track>>
@@ -160,6 +164,12 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
             }
         return currentCharts
     }
+
+    fun <T> createEmptyPageResult() = PageResult(
+        PageAttr(1, 1, 0),
+        listOf<T>(),
+        false
+    )
 }
 
 data class ScrobbleIgnored(val ignored: Boolean)
@@ -169,7 +179,10 @@ enum class AccountType {
     LIBREFM,
     GNUFM,
     LISTENBRAINZ,
-    CUSTOM_LISTENBRAINZ
+    CUSTOM_LISTENBRAINZ,
+    MALOJA,
+    PLEROMA,
+    FILE
 }
 
 object Scrobblables {
@@ -190,6 +203,12 @@ object Scrobblables {
 
                             AccountType.LISTENBRAINZ,
                             AccountType.CUSTOM_LISTENBRAINZ -> ListenBrainz(it)
+
+                            AccountType.MALOJA -> Maloja(it)
+
+                            AccountType.PLEROMA -> Pleroma(it)
+
+                            AccountType.FILE -> FileScrobblable(it)
                         }
                     }
             )
@@ -255,5 +274,8 @@ object Scrobblables {
         AccountType.GNUFM -> App.context.getString(R.string.gnufm)
         AccountType.LISTENBRAINZ -> App.context.getString(R.string.listenbrainz)
         AccountType.CUSTOM_LISTENBRAINZ -> App.context.getString(R.string.custom_listenbrainz)
+        AccountType.MALOJA -> App.context.getString(R.string.maloja)
+        AccountType.PLEROMA -> App.context.getString(R.string.pleroma)
+        AccountType.FILE -> App.context.getString(R.string.scrobble_to_file)
     }
 }

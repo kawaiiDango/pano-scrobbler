@@ -42,9 +42,10 @@ class LoginFlows(private val navController: NavController) {
     private fun gnufm() {
         val arguments = LoginFragmentArgs.Builder(
             App.context.getString(R.string.gnufm),
-            App.context.getString(R.string.api_url),
+            App.context.getString(R.string.password),
         ).apply {
-            textCheckbox = App.context.getString(R.string.disable_tls_verify)
+            textField1 = App.context.getString(R.string.api_url)
+            textField2 = App.context.getString(R.string.username)
         }
             .build()
             .toBundle()
@@ -72,7 +73,6 @@ class LoginFlows(private val navController: NavController) {
             App.context.getString(R.string.pref_token_label),
         ).apply {
             textField1 = App.context.getString(R.string.api_url)
-            textCheckbox = App.context.getString(R.string.disable_tls_verify)
             infoText = App.context.getString(
                 R.string.listenbrainz_info,
                 "[API_URL]/profile"
@@ -81,6 +81,32 @@ class LoginFlows(private val navController: NavController) {
             .build()
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
+    }
+
+    private fun maloja() {
+        val arguments = LoginFragmentArgs.Builder(
+            App.context.getString(R.string.maloja),
+            App.context.getString(R.string.pref_token_label),
+        ).apply {
+            textField1 = App.context.getString(R.string.server_url)
+        }
+            .build()
+            .toBundle()
+        navController.navigate(R.id.loginFragment, arguments)
+    }
+
+    private fun pleroma() {
+        val arguments = LoginFragmentArgs.Builder(
+            App.context.getString(R.string.pleroma),
+            App.context.getString(R.string.server_url),
+        )
+            .build()
+            .toBundle()
+        navController.navigate(R.id.loginFragment, arguments)
+    }
+
+    private fun scrobbleToFile() {
+        navController.navigate(R.id.loginScrobbleToFile)
     }
 
     fun acrCloud() {
@@ -105,6 +131,9 @@ class LoginFlows(private val navController: NavController) {
             AccountType.GNUFM -> gnufm()
             AccountType.LISTENBRAINZ -> listenbrainz()
             AccountType.CUSTOM_LISTENBRAINZ -> customListenbrainz()
+            AccountType.MALOJA -> maloja()
+            AccountType.PLEROMA -> pleroma()
+            AccountType.FILE -> scrobbleToFile()
         }
     }
 }

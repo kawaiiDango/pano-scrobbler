@@ -22,6 +22,21 @@
         app:layout_constraintVertical_bias="0.25"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/file_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:text="File too large"
+        android:textAppearance="?textAppearanceHeadlineSmall"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25"
+        tools:visibility="visible" />
+
     <HorizontalScrollView
         android:id="@+id/scrobbles_chip_hsv"
         android:layout_width="match_parent"

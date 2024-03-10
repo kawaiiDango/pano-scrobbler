@@ -55,7 +55,7 @@ class RegexEditsTestFragment : Fragment() {
     }
 
     private fun putScrobbleData() {
-        if ((viewModel.hasPkgName.value == true && viewModel.pkgNameSelected.value == null) ||
+        if ((viewModel.hasPkgName.value && viewModel.pkgNameSelected.value == null) ||
             (binding.regexTestTrack.text.isNullOrEmpty() &&
                     binding.regexTestAlbum.text.isNullOrEmpty() &&
                     binding.regexTestArtist.text.isNullOrEmpty() &&
@@ -232,7 +232,6 @@ class RegexEditsTestFragment : Fragment() {
                     val request = ImageRequest.Builder(requireContext())
                         .data(PackageName(it))
                         .error(R.drawable.vd_apps)
-                        .allowHardware(false)
                         .target(
                             onSuccess = ::onAppIconResult,
                             onError = ::onAppIconResult

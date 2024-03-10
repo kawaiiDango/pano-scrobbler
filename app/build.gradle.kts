@@ -3,6 +3,7 @@ import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Random
 
 plugins {
     alias(libs.plugins.android.application)
@@ -37,11 +38,13 @@ android {
     }
 
     compileSdk = 34
+//    compileSdkPreview = "VanillaIceCream"
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
         minSdk = 23
         targetSdk = 34
+//        targetSdkPreview = "VanillaIceCream"
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${
             SimpleDateFormat("YYYY, MMM dd").format(Date())
@@ -54,6 +57,16 @@ android {
             arg("room.generateKotlin", "true")
             arg("room.incremental", "true")
         }
+
+        val changelogFile = file("src/main/play/release-notes/en-US/default.txt")
+        if (changelogFile.canRead()) {
+            val changelog = changelogFile.readText()
+            resValue("string", "changelog_text", "\"$changelog\"")
+        } else {
+            resValue("string", "changelog_text", "changelog_placeholder")
+        }
+
+        buildConfigField("boolean", "IS_GITHUB_VARIANT", "false")
     }
     buildFeatures {
         viewBinding = true
@@ -120,7 +133,7 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
-    debugImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("androidjhlabs.jar"))))
+//    debugImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("androidjhlabs.jar"))))
 
     implementation(libs.profileinstaller)
     "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
@@ -142,6 +155,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.core.remoteviews)
     implementation(libs.androidx.transition)
+    implementation(libs.androidx.activity)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -150,6 +164,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.android.snowfall)
+    implementation(libs.kotlin.csv.jvm)
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation(libs.material)
@@ -186,6 +201,51 @@ dependencies {
     androidTestImplementation(libs.androidx.uiautomator)
     androidTestImplementation(libs.androidx.runner)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+// https://yrom.net/blog/2019/06/19/simple-codes-to-generate-obfuscation-dictionary/
+
+tasks.register("genDict") {
+    val dictFile = file("build/tmp/dict.txt")
+    outputs.file(dictFile)
+    doLast {
+        val r = Random()
+        val start = r.nextInt(1000) + 0x0100
+        val end = start + 0x4000
+        val chars = (start..end)
+            .filter { Character.isValidCodePoint(it) && Character.isJavaIdentifierPart(it) }
+            .map { it.toChar().toString() }
+            .toMutableList()
+        val max = chars.size
+        val startChars = mutableListOf<String>()
+        val dict = mutableListOf<String>()
+
+        for (i in 0 until max) {
+            val c = chars[i][0]
+            if (Character.isJavaIdentifierStart(c)) {
+                startChars.add(c.toString())
+            }
+        }
+        val startSize = startChars.size
+
+        chars.shuffle(r)
+        startChars.shuffle(r)
+
+        for (i in 0 until max) {
+            val m = r.nextInt(startSize - 2)
+            val n = m + 2
+            for (j in m..n) {
+                dict.add(startChars[j] + chars[i])
+            }
+        }
+
+        dictFile.parentFile.mkdirs()
+        dictFile.writeText(
+            startChars.joinToString(System.lineSeparator()) + dict.joinToString(
+                System.lineSeparator()
+            )
+        )
+    }
 }
 
 

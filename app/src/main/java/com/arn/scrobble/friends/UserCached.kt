@@ -33,7 +33,7 @@ data class UserCached(
             url = url,
             realname = realname ?: "",
             country = country ?: "None", // gnufm
-            registeredTime = (registered ?: Stuff.TIME_2002) * 1000L, // gnufm
+            registeredTime = registered ?: Stuff.TIME_2002, // gnufm
             largeImage = webp300 ?: ""
         )
     }

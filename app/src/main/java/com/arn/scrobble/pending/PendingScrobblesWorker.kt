@@ -17,8 +17,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.FmException
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
@@ -103,9 +103,8 @@ class PendingScrobblesWorker(
                 album = it.pendingScrobble.album,
                 track = it.pendingScrobble.track,
                 albumArtist = it.pendingScrobble.albumArtist,
-                timestamp = (it.pendingScrobble.timestamp / 1000).toInt(), // in secs
-                duration = if (it.pendingScrobble.duration > 10 * 1000)
-                    (it.pendingScrobble.duration / 1000).toInt() else null, // in secs
+                timestamp = it.pendingScrobble.timestamp,
+                duration = it.pendingScrobble.duration.takeIf { it > 30 * 1000 },
             )
             scrobbleDataToEntry[sd] = it.pendingScrobble
         }
@@ -121,7 +120,7 @@ class PendingScrobblesWorker(
 
                         if (result.isFailure) {
                             // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
-                            if ((result.exceptionOrNull() as? FmException)?.code == 29)
+                            if ((result.exceptionOrNull() as? ApiException)?.code == 29)
                                 return true
                         }
 
@@ -134,7 +133,7 @@ class PendingScrobblesWorker(
                     var state = pendingScrobble.state
 
                     scrobbleResults.forEach { (scrobblable, result) ->
-                        val err = result.exceptionOrNull() as? FmException
+                        val err = result.exceptionOrNull() as? ApiException
 
                         if (err?.code == 6 ||
                             err?.code == 7 ||

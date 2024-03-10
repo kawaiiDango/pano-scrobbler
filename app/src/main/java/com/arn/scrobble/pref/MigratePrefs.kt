@@ -1,6 +1,7 @@
 package com.arn.scrobble.pref
 
 import com.arn.scrobble.App
+import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.friends.UserAccountSerializable
@@ -13,6 +14,14 @@ import kotlinx.coroutines.runBlocking
 
 object MigratePrefs {
     fun migrate(prefs: MainPrefs) {
+        // fresh installation
+        if (prefs.prefVersion == 0) {
+            prefs.prefVersion = MainPrefs.PREF_VERSION_INT
+            // do not display changelog for fresh installations
+            prefs.changelogSeenHashcode = App.context.getString(R.string.changelog_text).hashCode()
+            return
+        }
+
         if (prefs.prefVersion < 3) {
             migrateV3(prefs)
             prefs.prefVersion = 3

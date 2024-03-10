@@ -7,14 +7,14 @@
                 android:radius="16dp"/>
         </shape>
     </item>
-<!--    <item>-->
-<!--        <shape>-->
-<!--            <solid android:color="@color/m3_popupmenu_overlay_color"/>-->
-<!--            <corners-->
-<!--                android:radius="16dp"/>-->
-<!--            <padding-->
-<!--                android:bottom="8dp"-->
-<!--                android:top="8dp"/>-->
-<!--        </shape>-->
-<!--    </item>-->
+    <item>
+        <shape>
+            <solid android:color="@color/m3_popupmenu_overlay_color"/>
+            <corners
+                android:radius="16dp"/>
+            <padding
+                android:bottom="8dp"
+                android:top="8dp"/>
+        </shape>
+    </item>
 </layer-list>

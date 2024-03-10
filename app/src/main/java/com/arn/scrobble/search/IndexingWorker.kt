@@ -13,8 +13,11 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arn.scrobble.App.Companion.prefs
 import com.arn.scrobble.R
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Period
@@ -30,9 +33,6 @@ import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTracksDao.Companion.deltaUpdate
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.lastfm.LastFm
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -163,7 +163,7 @@ class IndexingWorker(
                 timePeriod = TimePeriod(Period.OVERALL),
                 limit = limitPerPage,
                 page = i,
-                type = Stuff.TYPE_ARTISTS
+                type = Stuff.TYPE_TRACKS
             ).getOrThrow()
             postProgress()
             list.addAll(tracks.entries)
@@ -210,7 +210,7 @@ class IndexingWorker(
             insert(list.map { (it as Track).toCachedTrack() })
         }
 
-        prefs.lastFullIndexedScrobbleTime = lastScrobbledTrack.date!! * 1000L
+        prefs.lastFullIndexedScrobbleTime = lastScrobbledTrack.date!!
         prefs.lastFullIndexTime = System.currentTimeMillis()
 
         prefs.lastDeltaIndexedScrobbleTime = null
@@ -238,8 +238,8 @@ class IndexingWorker(
                 lastfmScrobblable!!
                     .getRecents(
                         currentPage,
-                        from = (from / 1000).toInt(),
-                        to = (to / 1000).toInt(),
+                        from = from,
+                        to = to,
                         limit = limitPerPage,
                     ).getOrThrow()
             }
@@ -260,13 +260,13 @@ class IndexingWorker(
             val lastTrack = prFromRecents.entries.lastOrNull()
 
             if (prFromRecents.attr.page == 1 && lastTrack != null) {
-                if (lastTrack.date != null && lastTrack.date > from / 1000)
+                if (lastTrack.date != null && lastTrack.date > from)
                     throw IllegalStateException("More than one page, run indexing manually")
 
                 // todo handle pending scrobbles submitted at an earlier time
 
                 for (track in prFromRecents.entries) {
-                    if (track.date != null && track.date > from / 1000)
+                    if (track.date != null && track.date > from)
                         tracks += track
                     else
                         break
@@ -311,7 +311,7 @@ class IndexingWorker(
         }
 
         tracks.firstOrNull()?.let {
-            prefs.lastDeltaIndexedScrobbleTime = it.date!! * 1000L
+            prefs.lastDeltaIndexedScrobbleTime = it.date!!
             prefs.lastDeltaIndexTime = System.currentTimeMillis()
         }
 
@@ -349,7 +349,6 @@ class IndexingWorker(
 
         fun flow(context: Context) =
             WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(NAME)
-
 
     }
 }

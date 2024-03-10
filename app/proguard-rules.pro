@@ -18,8 +18,11 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
 
+-obfuscationdictionary build/tmp/dict.txt
+-classobfuscationdictionary build/tmp/dict.txt
+-packageobfuscationdictionary build/tmp/dict.txt
 
 -dontwarn okhttp3.**
 -dontwarn okio.**

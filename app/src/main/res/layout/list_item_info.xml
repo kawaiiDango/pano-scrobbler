@@ -258,7 +258,19 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:iconTint="?colorSecondary"
-                tools:srcCompat="@drawable/vd_heart"
+                tools:icon="@drawable/vd_heart"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/info_add_photo"
+                style="?materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/add_photo"
+                android:tooltipText="@string/add_photo"
+                android:visibility="gone"
+                app:iconTint="?colorSecondary"
+                app:icon="@drawable/vd_add_photo"
                 tools:visibility="visible" />
 
             <View

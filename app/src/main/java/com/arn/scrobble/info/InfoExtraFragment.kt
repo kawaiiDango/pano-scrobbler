@@ -151,10 +151,11 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             is Track -> {
                 // spotify info
 
-                collectLatestLifecycleFlow(trackFeaturesVM.spotifyTrackWithFeatures.filterNotNull()) { spotifyTrack ->
+                collectLatestLifecycleFlow(trackFeaturesVM.spotifyTrackWithFeatures.filterNotNull()) { spotifyTrackWithFeatures ->
 
-                    spotifyTrack.features ?: return@collectLatestLifecycleFlow
-                    val features = spotifyTrack.features
+                    val spotifyTrack = spotifyTrackWithFeatures.track
+                    val features =
+                        spotifyTrackWithFeatures.features ?: return@collectLatestLifecycleFlow
 
                     this@InfoExtraFragment.scheduleTransition()
                     val spotifyFeaturesBinding = LayoutSpotifyTrackFeaturesBinding.bind(

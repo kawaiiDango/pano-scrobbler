@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.App
 import com.arn.scrobble.api.Requesters.toFlow
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import java.util.Calendar
 import kotlin.math.max
 
@@ -29,7 +31,7 @@ import kotlin.math.max
 class TracksVM : ViewModel() {
     private val _tracks = MutableStateFlow<List<Track>?>(null)
     val tracks = _tracks.asStateFlow()
-    private val _firstScrobbledTime = MutableStateFlow<Int?>(null)
+    private val _firstScrobbledTime = MutableStateFlow<Long?>(null)
     val firstScrobbledTime = _firstScrobbledTime.asStateFlow()
     val virtualList = SectionedVirtualList()
     val pendingScrobbles = PanoDb.db.getPendingScrobblesDao().allFlow(10000)
@@ -38,19 +40,20 @@ class TracksVM : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var scrobblerEnabled = true
         private set
-    var scrobblerServiceRunning = true
+    var scrobblerServiceRunning: Boolean? = null
         private set
-    var pendingSubmitAttempted = false
 
     private val deletedTracksSet = mutableSetOf<Track>()
-    val pkgMap = mutableMapOf<Int, String>() // play time -> pkg
-    val lastScrobbleOfTheDaySet = mutableSetOf<Int>() // set of play times
+    val pkgMap = mutableMapOf<Long, String>() // play time -> pkg
+    val lastScrobbleOfTheDaySet = mutableSetOf<Long>() // set of play times
     private val _paletteColors = MutableStateFlow<PaletteColors?>(null)
     val paletteColors = _paletteColors.asStateFlow()
     private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
     val input = _input.asStateFlow()
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
+    private val _fileException = MutableStateFlow<FileScrobblable.FException?>(null)
+    val fileException = _fileException.asStateFlow()
     val isShowingLoves get() = input.value?.type == Stuff.TYPE_LOVES
     private val cal by lazy { Calendar.getInstance() }
 
@@ -69,7 +72,7 @@ class TracksVM : ViewModel() {
                 .collectLatest {
                     if (it.user.isSelf)
                         updateScrobblerServiceStatus()
-                    
+
                     when (it.type) {
                         Stuff.TYPE_TRACKS -> {
                             if (it.entry is Track) {
@@ -95,10 +98,9 @@ class TracksVM : ViewModel() {
 
     fun updateScrobblerServiceStatus() {
         scrobblerEnabled = Stuff.isNotificationListenerEnabled() && App.prefs.scrobblerEnabled
-        scrobblerServiceRunning = if (scrobblerEnabled)
-            Stuff.isNotificationListenerEnabled()
-        else
-            false
+
+        if (scrobblerEnabled && scrobblerServiceRunning == null) // do only once
+            scrobblerServiceRunning = Stuff.isScrobblerRunning()
     }
 
     fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {
@@ -120,12 +122,14 @@ class TracksVM : ViewModel() {
     ) {
         val isListenbrainz = Scrobblables.current is ListenBrainz
         val _to = if (isListenbrainz && page > 1)
-            tracks.value?.lastOrNull()?.date ?: -1
+            tracks.value?.lastOrNull()?.date ?: -1L
         else
-            timePeriod?.end?.div(1000)?.toInt() ?: -1
+            timePeriod?.end ?: -1L
 
         if (setLoading)
             _hasLoaded.emit(false)
+
+        val includeNowPlaying = _input.value?.timePeriod == null && page == 1
 
         val pr = Scrobblables.current!!.getRecents(
             page,
@@ -133,7 +137,7 @@ class TracksVM : ViewModel() {
             cached = !loadedInitialCachedVersion,
             to = _to,
             limit = limit,
-            includeNowPlaying = _input.value?.timePeriod == null,
+            includeNowPlaying = includeNowPlaying,
         )
 
         if (!loadedInitialCachedVersion) {
@@ -146,17 +150,25 @@ class TracksVM : ViewModel() {
         }
 
         // time jump pg 1 always resets selection
-        if (_to != -1 && page == 1)
+        if (_to != -1L && page == 1)
             selectedPos = 0
 
         pr.onSuccess {
             totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0
+            _fileException.emit(null)
+        }
+
+        pr.onFailure {
+            if (it is FileScrobblable.FException)
+                _fileException.emit(it)
         }
 
         emitTracks(pr, page > 1)
 
-        if (setLoading)
+        if (setLoading) {
+            yield()
             _hasLoaded.emit(true)
+        }
     }
 
     private suspend fun loadLoves(page: Int, username: String) {
@@ -189,7 +201,7 @@ class TracksVM : ViewModel() {
                 else -> null
             }
 
-            cal.timeInMillis = t?.date?.let { it * 1000L } ?: System.currentTimeMillis()
+            cal.timeInMillis = t?.date ?: System.currentTimeMillis()
 
             // mark first scrobble of the day
 
@@ -199,7 +211,7 @@ class TracksVM : ViewModel() {
                     return@forEach
 
 
-                cal.timeInMillis = track.date * 1000L
+                cal.timeInMillis = track.date
                 val currentDate = cal[Calendar.DAY_OF_YEAR]
                 if (prevDate != currentDate)
                     lastScrobbleOfTheDaySet += track.date

@@ -169,6 +169,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
 
                     val trackInfo = PlayingTrackInfo(
                         App.context.packageName,
+                        "acr",
                         playStartTime = System.currentTimeMillis()
                     )
 

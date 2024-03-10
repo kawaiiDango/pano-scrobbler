@@ -14,11 +14,11 @@ import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheInterceptor
 import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.ExpirationPolicy
-import com.arn.scrobble.api.lastfm.FmException
 import com.arn.scrobble.api.lastfm.ImageSize
 import com.arn.scrobble.api.lastfm.LastFmImage
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -77,8 +77,12 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             install(HttpCallValidator) {
                 validateResponse { response ->
                     if (response.status.isSuccess()) return@validateResponse
-                    val errorResponse = response.body<ListenBrainzResponse>()
-                    throw FmException(errorResponse.code ?: -1, errorResponse.error.toString())
+                    try {
+                        val errorResponse = response.body<ListenBrainzResponse>()
+                        throw ApiException(errorResponse.code ?: -1, errorResponse.error.toString())
+                    } catch (e: Exception) {
+                        throw ApiException(response.status.value, response.status.description, e)
+                    }
                 }
             }
 
@@ -118,10 +122,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         release_name = if (!scrobbleData.album.isNullOrEmpty()) scrobbleData.album else null,
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
-                            duration_ms = if (scrobbleData.duration != null && scrobbleData.duration!! > 30)
-                                scrobbleData.duration!! * 1000
-                            else
-                                null,
+                            duration_ms = scrobbleData.duration?.takeIf { it > 30000 },
 //                            media_player = pkgName.englishLabel,
 //                            media_player_version = pkgName.version,
                             submission_client = App.context.getString(R.string.app_name),
@@ -158,15 +159,15 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     private fun createImageMap(releaseMbid: String?): List<LastFmImage>? {
         return if (releaseMbid != null) listOf(
             LastFmImage(
-                ImageSize.MEDIUM.value,
+                ImageSize.medium.name,
                 "https://coverartarchive.org/release/$releaseMbid/front-250"
             ),
             LastFmImage(
-                ImageSize.LARGE.value,
+                ImageSize.large.name,
                 "https://coverartarchive.org/release/$releaseMbid/front-500"
             ),
             LastFmImage(
-                ImageSize.EXTRALARGE.value,
+                ImageSize.extralarge.name,
                 "https://coverartarchive.org/release/$releaseMbid/front-500"
             ),
         )
@@ -210,8 +211,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         page: Int,
         username: String,
         cached: Boolean,
-        from: Int,
-        to: Int,
+        from: Long,
+        to: Long,
         includeNowPlaying: Boolean,
         limit: Int,
     ): Result<PageResult<Track>> {
@@ -286,8 +287,9 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             }.map { it.payload.listens.firstOrNull()?.let { trackMap(it) } }
                 .getOrNull()
                 ?.let { npTrack ->
-                    return listens.map { it.copy(entries = listOf(npTrack) + it.entries) }
-
+                    return listens.map {
+                        it.copy(entries = listOf(npTrack) + it.entries)
+                    }
                 }
         }
 
@@ -300,13 +302,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
         return client.postResult<ListenBrainzResponse>("delete-listen") {
             contentType(ContentType.Application.Json)
-            setBody(
-                ListenBrainzDeleteRequest(track.date, msid)
-            )
+            setBody(ListenBrainzDeleteRequest(track.date, msid))
         }.map { }
-
-//            if (response.error == INVALID_METHOD) // todo maloja
-//                return true
     }
 
     override suspend fun getLoves(
@@ -410,8 +407,11 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 .getOrDefault(0)
 
         val dd = DrawerData(totalCount)
-        if (isSelf)
-            App.prefs.drawerDataCached = dd
+        if (isSelf) {
+            val drawerData = App.prefs.drawerData.toMutableMap()
+            drawerData[userAccount.type] = dd
+            App.prefs.drawerData = drawerData
+        }
 
         return dd
     }
@@ -455,12 +455,14 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         mbid = it.artist_mbids?.firstOrNull(),
                     )
 
-                    val album = Album(
-                        name = it.release_name!!,
-                        artist = artist,
-                        mbid = it.release_mbid,
-                        image = createImageMap(it.release_mbid),
-                    )
+                    val album = it.release_name?.let { albumName ->
+                        Album(
+                            name = albumName,
+                            artist = artist,
+                            mbid = it.release_mbid,
+                            image = createImageMap(it.release_mbid),
+                        )
+                    }
 
                     Track(
                         name = it.track_name!!,
@@ -503,7 +505,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             {
                 val total = it.payload.total_artist_count ?: it.payload.total_release_count
                 ?: it.payload.total_recording_count ?: 0
-                val totalPages = ceil(min(total, 1000).toFloat() / actualLimit).toInt()
+                val totalPages = ceil(min(total, 1000).toFloat() / it.payload.count).toInt()
 
                 PageAttr(page, totalPages, total)
             }
@@ -567,7 +569,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 }
 
             result.onSuccess { validateToken ->
-                validateToken.user_name ?: return Result.failure(FmException(-1, "Invalid token"))
+                validateToken.user_name ?: return Result.failure(ApiException(-1, "Invalid token"))
                 val isCustom = userAccountTemp.apiRoot != Stuff.LISTENBRAINZ_API_ROOT
                 val profileUrl = if (isCustom)
                     userAccountTemp.apiRoot + validateToken.user_name
@@ -590,7 +592,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 Scrobblables.add(account)
             }
 
-            return result.map { Session(it.user_name!!, userAccountTemp.authKey) }
+            return result.map { Session(it.user_name, userAccountTemp.authKey) }
         }
     }
 }

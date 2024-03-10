@@ -4,13 +4,13 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.github.Updater
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.ui.FabData
-import com.arn.scrobble.ui.SnackbarData
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Semaphore
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -30,7 +29,7 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     private var lastDrawerDataRefreshTime = 0L
 
     private val _drawerData by lazy {
-        MutableStateFlow<DrawerData?>(prefs.drawerDataCached)
+        MutableStateFlow(Scrobblables.current?.userAccount?.type?.let { prefs.drawerData[it] })
     }
 
     val drawerData = _drawerData.asStateFlow()
@@ -44,12 +43,15 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     private val _editData = MutableSharedFlow<Track>()
     val editData = _editData.asSharedFlow()
 
-    private val _actionNeededSnackbar = MutableSharedFlow<SnackbarData>()
-    val actionNeededSnackbar = _actionNeededSnackbar.asSharedFlow()
+    private val _updateAvailablity = MutableSharedFlow<GithubReleases>()
+    val updateAvailability = _updateAvailablity.asSharedFlow()
 
     lateinit var currentUser: UserCached
+        private set
 
     private var prevDrawerUser: UserCached? = null
+
+    var pendingSubmitAttempted = false
 
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
@@ -59,7 +61,8 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     }
 
     init {
-        checkForUpdates()
+        if (BuildConfig.IS_GITHUB_VARIANT)
+            checkForUpdates()
     }
 
     fun updateCanIndex() {
@@ -73,12 +76,19 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
             currentUser = user
     }
 
+    fun setCurrentUser(user: UserCached) {
+        currentUser = user
+    }
+
     fun loadCurrentUserDrawerData() {
         if (
             prevDrawerUser != currentUser ||
             System.currentTimeMillis() - lastDrawerDataRefreshTime > Stuff.RECENTS_REFRESH_INTERVAL
-        )
+        ) {
+
             viewModelScope.launch {
+                if (currentUser.isSelf)
+                    loadDrawerDataCached()
                 Scrobblables.current
                     ?.loadDrawerData(currentUser.name)
                     ?.let {
@@ -86,13 +96,12 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
                     }
                 lastDrawerDataRefreshTime = System.currentTimeMillis()
             }
+        }
     }
 
     override fun onCleared() {
         PanoDb.destroyInstance()
     }
-
-    val destroyEventPending = Semaphore(1)
 
     fun setFabData(fabData: FabData?) {
         viewModelScope.launch {
@@ -100,10 +109,8 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun clearDrawerData() {
-        viewModelScope.launch {
-            _drawerData.emit(null)
-        }
+    fun loadDrawerDataCached() {
+        _drawerData.value = Scrobblables.current?.userAccount?.type?.let { prefs.drawerData[it] }
     }
 
     fun notifyEdit(track: Track) {
@@ -119,30 +126,8 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
 
         viewModelScope.launch(Dispatchers.IO) {
             delay(3000)
-
-            // check if play store exists
-            val hasPlayStore = getApplication<App>()
-                .packageManager
-                .getLaunchIntentForPackage("com.android.vending") != null
-
-            if (hasPlayStore) {
-                prefs.checkForUpdates = null
-            } else if (prefs.checkForUpdates == null) {
-                prefs.checkForUpdates = true
-                val releases = Updater().checkGithubForUpdates() ?: return@launch
-                _actionNeededSnackbar.emit(
-                    SnackbarData(
-                        message = getApplication<App>().getString(
-                            R.string.update_available,
-                            releases.tag_name
-                        ),
-                        actionText = getApplication<App>().getString(R.string.changelog),
-                        destinationId = 0,
-                        updateData = releases
-                    )
-                )
-                return@launch
-            }
+            val releases = Updater().checkGithubForUpdates() ?: return@launch
+            _updateAvailablity.emit(releases)
         }
     }
 }

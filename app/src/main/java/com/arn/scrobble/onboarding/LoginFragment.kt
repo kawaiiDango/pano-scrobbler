@@ -14,10 +14,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.App
 import com.arn.scrobble.R
+import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
+import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.recents.PopupMenuUtils
@@ -34,6 +37,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
 
 
 /**
@@ -118,7 +122,7 @@ open class LoginFragment : DialogFragment() {
 
             if (showsDialog)
                 dismiss()
-            else
+            else if (args.loginTitle != getString(R.string.pleroma))
                 findNavController().popBackStack()
         }
     }
@@ -139,7 +143,7 @@ open class LoginFragment : DialogFragment() {
                 }
 
                 is ScrobbleIgnoredException -> {
-                    if (System.currentTimeMillis() - exception.scrobbleTimeSecs < Stuff.LASTFM_MAX_PAST_SCROBBLE)
+                    if (System.currentTimeMillis() - exception.scrobbleTime < Stuff.LASTFM_MAX_PAST_SCROBBLE)
                         requireContext().toast(getString(R.string.lastfm) + ": " + getString(R.string.scrobble_ignored))
                     else {
                         withContext(Dispatchers.Main) {
@@ -149,6 +153,7 @@ open class LoginFragment : DialogFragment() {
                                     lifecycleScope.launch(Dispatchers.IO) {
                                         exception.altAction()
                                     }
+                                    dismiss()
                                 }
                                 .setNegativeButton(R.string.no, null)
                                 .show()
@@ -206,6 +211,7 @@ open class LoginFragment : DialogFragment() {
                     )
                     ListenBrainz.authAndGetSession(userAccount)
                         .map { Unit }
+                        .onFailure { it.printStackTrace() }
                 } else {
                     Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
                 }
@@ -235,23 +241,73 @@ open class LoginFragment : DialogFragment() {
             }
 
             getString(R.string.gnufm) -> {
+                var url = t1
+                val username = t2
+                val password = tlast
+
+                if (url.isNotBlank() && username.isNotBlank() && password.isNotBlank()) {
+                    if (URLUtil.isValidUrl(url)) {
+                        if (!url.endsWith('/'))
+                            url += '/'
+                        if (!url.endsWith("2.0/"))
+                            url += "2.0/"
+
+                        GnuFm.authAndGetSession(url, username, password)
+                            .map { }
+                    } else {
+                        Result.failure(IllegalArgumentException(getString(R.string.failed_encode_url)))
+                    }
+                } else {
+                    Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
+                }
+            }
+
+            getString(R.string.pleroma) -> {
                 var url = tlast
+
                 if (url.isNotBlank()) {
                     if (URLUtil.isValidUrl(url)) {
                         if (!url.endsWith('/'))
                             url += '/'
+
                         val arguments = Bundle().apply {
                             putString(
                                 Stuff.ARG_URL,
-                                url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/gnufm"
+                                "${url}oauth/authorize?client_id=${Tokens.PLEROMA_CLIENT_ID}&redirect_uri=${
+                                    URLEncoder.encode(Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma")
+                                }&response_type=code&scope=${URLEncoder.encode("read write")}"
                             )
-                            putSingle(UserAccountTemp(AccountType.GNUFM, "", url))
+                            putSingle(UserAccountTemp(AccountType.PLEROMA, "", url))
                         }
                         withContext(Dispatchers.Main) {
                             findNavController().popBackStack()
                             findNavController().navigate(R.id.webViewFragment, arguments)
                         }
                         Result.success(Unit)
+                    } else {
+                        Result.failure(IllegalArgumentException(getString(R.string.failed_encode_url)))
+                    }
+                } else {
+                    Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
+                }
+            }
+
+            getString(R.string.maloja) -> {
+                var url = t1
+                val token = tlast
+
+                if (url.isNotBlank() && token.isNotBlank()) {
+                    if (URLUtil.isValidUrl(url)) {
+                        if (!url.endsWith('/'))
+                            url += '/'
+
+                        val userAccount = UserAccountTemp(
+                            AccountType.MALOJA,
+                            tlast,
+                            url,
+                        )
+                        Maloja.authAndGetSession(userAccount)
+                            .map { }
                     } else {
                         Result.failure(IllegalArgumentException(getString(R.string.failed_encode_url)))
                     }

@@ -22,13 +22,15 @@ import com.arn.scrobble.App
         CachedTrack::class,
         CachedAlbum::class,
         CachedArtist::class,
+        CustomSpotifyMapping::class,
     ],
-    version = 13,
+    version = 14,
     autoMigrations = [
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11, spec = Spec_10_11::class),
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
+        AutoMigration(from = 13, to = 14),
     ],
 )
 abstract class PanoDb : RoomDatabase() {
@@ -41,6 +43,7 @@ abstract class PanoDb : RoomDatabase() {
     abstract fun getCachedTracksDao(): CachedTracksDao
     abstract fun getCachedAlbumsDao(): CachedAlbumsDao
     abstract fun getCachedArtistsDao(): CachedArtistsDao
+    abstract fun getCustomSpotifyMappingsDao(): CustomSpotifyMappingsDao
 
     companion object {
         const val fileName = "pendingScrobbles"

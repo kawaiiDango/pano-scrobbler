@@ -141,8 +141,7 @@ class TrackHistoryAdapter(
 
             if (!imgUrl.isNullOrEmpty()) {
                 binding.recentsImg.load(imgUrl) {
-                    allowHardware(false)
-                    placeholder(R.drawable.color_image_loading)
+                    placeholder(R.drawable.avd_loading)
                     error(errorDrawable)
                 }
             } else {
@@ -151,32 +150,31 @@ class TrackHistoryAdapter(
         }
 
         private fun setPlayerIcon(track: Track) {
-            val timeSecs = track.date
+            val timeMillis = track.date
             binding.playerIcon.visibility = View.VISIBLE
 
             fun fetchIcon(pkgName: String) {
                 binding.playerIcon.load(PackageName(pkgName)) {
                     scale(Scale.FIT)
-                    allowHardware(false)
                     listener(onSuccess = { _, _ ->
                         binding.playerIcon.contentDescription = pkgName
                     })
                 }
             }
 
-            if (timeSecs != null && viewModel.pkgMap[timeSecs] != null) {
-                fetchIcon(viewModel.pkgMap[timeSecs]!!)
+            if (timeMillis != null && viewModel.pkgMap[timeMillis] != null) {
+                fetchIcon(viewModel.pkgMap[timeMillis]!!)
             } else {
                 binding.playerIcon.dispose()
                 binding.playerIcon.load(null)
                 binding.playerIcon.contentDescription = null
                 job?.cancel()
 
-                if (timeSecs != null) {
+                if (timeMillis != null) {
                     job = viewModel.viewModelScope.launch(Dispatchers.IO) {
                         delay(100)
-                        scrobbleSourcesDao.findPlayer(timeSecs)?.pkg?.let { pkgName ->
-                            viewModel.pkgMap[timeSecs] = pkgName
+                        scrobbleSourcesDao.findPlayer(timeMillis)?.pkg?.let { pkgName ->
+                            viewModel.pkgMap[timeMillis] = pkgName
                             fetchIcon(pkgName)
                         }
                     }

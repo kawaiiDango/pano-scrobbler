@@ -11,8 +11,9 @@ object Tokens {
     const val ACR_SECRET = ""
     // https://developer.spotify.com/dashboard/
     const val SPOTIFY_REFRESH_TOKEN = "<base64 of spotify client id>:<base64 of spotify client secret>"
-    const val SPOTIFY_ARTIST_INFO_SERVER = "" // deprecated, leave it empty [self hosted server](https://github.com/kawaiidango/spotify-artist-search-server)
-    const val SPOTIFY_ARTIST_INFO_KEY = "" // deprecated, leave it empty
+    // https://docs-develop.pleroma.social/backend/administration/CLI_tasks/oauth_app/
+    const val PLEROMA_CLIENT_ID = "(with read,write scopes)"
+    const val PLEROMA_CLIENT_SECRET = "(with read,write scopes)"
     const val PRO_PRODUCT_ID = "" // play store product ID for IAP
     const val SIGNATURE = "" // apk signature
     const val BASE_64_ENCODED_PUBLIC_KEY = "" // (of the signing key)

@@ -33,8 +33,7 @@ class LastfmExpirationPolicy : ExpirationPolicy {
             "user.getfriends",
             "track.getsimilar",
             "artist.gettopalbums",
-            "artist.gettoptracks",
-            "artist.getinfo.spotify" -> ONE_WEEK
+            "artist.gettoptracks" -> ONE_WEEK
 
             "track.getinfo",
             "album.getinfo",

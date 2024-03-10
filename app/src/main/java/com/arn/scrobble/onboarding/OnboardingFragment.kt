@@ -72,7 +72,7 @@ class OnboardingFragment : Fragment() {
             viewModel = viewModel,
             loginStepView = ::createLoginStepView,
             onCompleted = {
-                mainNotifierViewModel.currentUser = Scrobblables.currentScrobblableUser!!
+                mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
                 val navigated = findNavController().navigateUp()
                 if (!navigated)
                     findNavController().navigate(R.id.action_onboardingFragment_to_myHomePagerFragment)
@@ -266,6 +266,9 @@ class OnboardingFragment : Fragment() {
         if (Stuff.isTv)
             binding.testingPass.isFocusable = false
         binding.testingPass.showSoftInputOnFocus = false
+
+        if (Stuff.isTestLab)
+            binding.testingPass.isVisible = true
 
         binding.testingPass.addTextChangedListener(object : TextWatcher {
 

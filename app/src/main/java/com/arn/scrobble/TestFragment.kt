@@ -7,11 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.databinding.ContentAvdTestBinding
-import com.arn.scrobble.recents.TracksVM
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -21,7 +19,6 @@ import kotlinx.coroutines.launch
  */
 class TestFragment : Fragment() {
 
-    private val viewModel by viewModels<TracksVM>()
     private var _binding: ContentAvdTestBinding? = null
     private val binding get() = _binding!!
 

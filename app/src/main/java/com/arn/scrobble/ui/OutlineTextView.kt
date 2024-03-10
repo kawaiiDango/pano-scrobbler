@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.TypedValue
 import com.arn.scrobble.R
 import com.google.android.material.textview.MaterialTextView
 
@@ -12,7 +11,7 @@ class OutlineTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0,
-): MaterialTextView(context, attrs, defStyle) {
+) : MaterialTextView(context, attrs, defStyle) {
 
     private val defaultStrokeWidth = 0f
     private var isDrawing = false

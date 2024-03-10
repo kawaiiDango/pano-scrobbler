@@ -22,11 +22,9 @@ import java.util.Objects
 /**
  * Created by arn on 04/07/2017.
  */
-
 class SessListener(
     private val scrobbleHandler: NLService.ScrobbleHandler,
     private val audioManager: AudioManager,
-    private val browserPackages: Set<String>
 ) : OnActiveSessionsChangedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -39,7 +37,7 @@ class SessListener(
     private val allowedPackages = mutableSetOf<String>()
     private val loggedIn
         get() = Stuff.isLoggedIn()
-    val packageTrackMap = mutableMapOf<String, PlayingTrackInfo>()
+    val packageTagTrackMap = mutableMapOf<String, PlayingTrackInfo>()
     private var mutedHash: Int? = null
 
     init {
@@ -48,8 +46,6 @@ class SessListener(
         blockedPackages.addAll(prefs.blockedPackages)
     }
 
-    // this list of controllers is unreliable esp. with yt and yt music
-    // it may be empty even if there are active sessions
     @Synchronized
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         this.platformControllers = controllers
@@ -69,22 +65,12 @@ class SessListener(
 //            if (shouldScrobble(controller.packageName)) {
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
 //                if (controller.sessionToken !in controllersMap) {
-            var numControllersForPackage = 0
-            var hasOtherTokensForPackage = false
-            controllersMap.forEach { (token, pair) ->
-                if (pair.first.packageName == controller.packageName) {
-                    numControllersForPackage++
-                    if (token != controller.sessionToken)
-                        hasOtherTokensForPackage = true
+
+            val playingTrackInfo = packageTagTrackMap[controller.packageName + "|" + controller.tag]
+                ?: PlayingTrackInfo(controller.packageName, controller.tag).also {
+                    packageTagTrackMap[controller.packageName + "|" + controller.tag] = it
                 }
-            }
-            val hasMultipleSessions =
-                numControllersForPackage > 1 || hasOtherTokensForPackage
-            var playingTrackInfo = packageTrackMap[controller.packageName]
-            if (playingTrackInfo == null || hasMultipleSessions) {
-                playingTrackInfo = PlayingTrackInfo(controller.packageName)
-                packageTrackMap[controller.packageName] = playingTrackInfo
-            }
+
             val cb = ControllerCallback(playingTrackInfo, controller.sessionToken)
 
             controller.registerCallback(cb)
@@ -104,12 +90,7 @@ class SessListener(
     }
 
     fun isMediaPlaying() =
-        platformControllers?.any {
-            it.playbackState?.state == PlaybackState.STATE_PLAYING &&
-                    !it.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
-                        .isNullOrEmpty() &&
-                    !it.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
-        } ?: false
+        platformControllers?.any { it.isMediaPlaying() } ?: false
 
     fun findControllersByPackage(packageName: String) =
         controllersMap.values.filter { it.first.packageName == packageName }.map { it.first }
@@ -122,7 +103,7 @@ class SessListener(
             .map { it.first }
 
     fun findTrackInfoByHash(hash: Int) =
-        packageTrackMap.values.find { it.hash == hash }
+        packageTagTrackMap.values.find { it.hash == hash }
 
     fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later
@@ -164,6 +145,81 @@ class SessListener(
         prefs.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
+    //        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+    // MediaController.getTag() exists on Android 10 and lower but is marked as @hide
+
+    private fun MediaController.isMediaPlaying() =
+        playbackState?.state in arrayOf(
+            PlaybackState.STATE_PLAYING,
+            PlaybackState.STATE_BUFFERING
+        ) &&
+                !metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST).isNullOrEmpty() &&
+                !metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
+
+
+    fun hasOtherPlayingControllers(thisTrackInfo: PlayingTrackInfo): Boolean {
+        return controllersMap.values.any { (controller, cb) ->
+            controller.packageName == thisTrackInfo.packageName
+                    && controller.tag != thisTrackInfo.sessionTag &&
+                    controller.isMediaPlaying()
+//                        && !cb.trackInfo.hasBlockedTag
+        }
+    }
+
+    private fun shouldScrobble(platformController: MediaController): Boolean {
+        val should = prefs.scrobblerEnabled && loggedIn &&
+                (platformController.packageName in allowedPackages ||
+                        (prefs.autoDetectApps && platformController.packageName !in blockedPackages))
+
+        return should
+    }
+
+    private fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {
+        return if (
+            trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && trackInfo.album.isNotEmpty() ||
+            trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_TV && trackInfo.album.isNotEmpty() ||
+            trackInfo.packageName == Stuff.PACKAGE_YMUSIC &&
+            trackInfo.album.replace("YMusic", "").isNotEmpty()
+        )
+            false
+        else (trackInfo.packageName in Stuff.IGNORE_ARTIST_META &&
+                !trackInfo.artist.endsWith("- Topic")) ||
+                (trackInfo.packageName in Stuff.browserPackages &&
+                        trackInfo.artist.isUrlOrDomain())
+    }
+
+    override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String?) {
+        when (key) {
+            MainPrefs.PREF_ALLOWED_PACKAGES -> synchronized(allowedPackages) {
+                allowedPackages.clear()
+                allowedPackages.addAll(pref.getStringSet(key, setOf())!!)
+            }
+
+            MainPrefs.PREF_BLOCKED_PACKAGES -> synchronized(blockedPackages) {
+                blockedPackages.clear()
+                blockedPackages.addAll(pref.getStringSet(key, setOf())!!)
+            }
+
+            MainPrefs.PREF_SCROBBLE_ACCOUNTS -> {
+                Scrobblables.updateScrobblables()
+            }
+        }
+        if (key == MainPrefs.PREF_ALLOWED_PACKAGES ||
+            key == MainPrefs.PREF_BLOCKED_PACKAGES ||
+            key == MainPrefs.PREF_AUTO_DETECT ||
+            key == MainPrefs.PREF_MASTER
+        ) {
+
+            onActiveSessionsChanged(platformControllers)
+            val pkgsToKeep = controllersMap.values
+                .map { it.first }
+                .filter { shouldScrobble(it) }
+                .map { it.packageName }
+                .toSet()
+            removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
+        }
+    }
+
     inner class ControllerCallback(
         val trackInfo: PlayingTrackInfo,
         private val token: MediaSession.Token
@@ -175,6 +231,12 @@ class SessListener(
         var isMuted = false
 
         private fun scrobble() {
+            if (hasOtherPlayingControllers(trackInfo) && trackInfo.hasBlockedTag) {
+                Stuff.logD { "multiple scrobblable controllers for ${trackInfo.packageName}, ignoring ${trackInfo.sessionTag}" }
+                pause()
+                return
+            }
+
             Stuff.logD { "playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}" }
 
             trackInfo.playStartTime = System.currentTimeMillis()
@@ -290,6 +352,9 @@ class SessListener(
                 }
             }
 
+            if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META)
+                trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
+
             val sameAsOld =
                 artist == trackInfo.origArtist && title == trackInfo.origTitle && album == trackInfo.origAlbum
                         && albumArtist == trackInfo.origAlbumArtist
@@ -316,9 +381,6 @@ class SessListener(
 
                 trackInfo.durationMillis = durationMillis
                 trackInfo.hash = Objects.hash(artist, album, title, trackInfo.packageName)
-
-                if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META)
-                    trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
 
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlayingState == PlaybackState.STATE_PLAYING)
                     unmute(clearMutedHash = isMuted)
@@ -366,7 +428,10 @@ class SessListener(
             }
 
             // do not scrobble youtube music ads (they are not seekable)
-            if (trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_MUSIC &&
+            if (trackInfo.packageName in arrayOf(
+                    Stuff.PACKAGE_YOUTUBE_MUSIC,
+                    Stuff.PACKAGE_YOUTUBE_TV
+                ) &&
                 trackInfo.durationMillis > 0 &&
                 state.actions and PlaybackState.ACTION_SEEK_TO == 0L
             ) {
@@ -444,7 +509,13 @@ class SessListener(
                     trackInfo.timePlayed = 0
             }
 
-            scrobbleHandler.remove(trackInfo.lastScrobbleHash, trackInfo.packageName)
+            scrobbleHandler.remove(
+                trackInfo.lastScrobbleHash,
+                if (hasOtherPlayingControllers(trackInfo))
+                    null
+                else
+                    trackInfo.packageName
+            )
             if (isMuted)
                 unmute(clearMutedHash = false)
         }
@@ -486,68 +557,6 @@ class SessListener(
                 albumArtist = ""
                 durationMillis = 0L
             }
-        }
-    }
-
-    private fun shouldScrobble(platformController: MediaController): Boolean {
-        val should = prefs.scrobblerEnabled && loggedIn &&
-                (platformController.packageName in allowedPackages ||
-                        (prefs.autoDetectApps && platformController.packageName !in blockedPackages))
-
-        if (should && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-            (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(platformController.tag) == true ||
-                    Stuff.BLOCKED_MEDIA_SESSION_TAGS[platformController.packageName]?.contains(
-                        platformController.tag
-                    ) == true)
-        )
-            return false
-
-        return should
-    }
-
-    private fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {
-        return if (
-            trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && trackInfo.album.isNotEmpty() ||
-            trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_TV && trackInfo.album.isNotEmpty() ||
-            trackInfo.packageName == Stuff.PACKAGE_YMUSIC &&
-            trackInfo.album.replace("YMusic", "").isNotEmpty()
-        )
-            false
-        else (trackInfo.packageName in Stuff.IGNORE_ARTIST_META &&
-                !trackInfo.artist.endsWith("- Topic")) ||
-                (trackInfo.packageName in browserPackages &&
-                        trackInfo.artist.isUrlOrDomain())
-    }
-
-    override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String?) {
-        when (key) {
-            MainPrefs.PREF_ALLOWED_PACKAGES -> synchronized(allowedPackages) {
-                allowedPackages.clear()
-                allowedPackages.addAll(pref.getStringSet(key, setOf())!!)
-            }
-
-            MainPrefs.PREF_BLOCKED_PACKAGES -> synchronized(blockedPackages) {
-                blockedPackages.clear()
-                blockedPackages.addAll(pref.getStringSet(key, setOf())!!)
-            }
-
-            MainPrefs.PREF_SCROBBLE_ACCOUNTS -> {
-                Scrobblables.updateScrobblables()
-            }
-        }
-        if (key == MainPrefs.PREF_ALLOWED_PACKAGES ||
-            key == MainPrefs.PREF_BLOCKED_PACKAGES ||
-            key == MainPrefs.PREF_AUTO_DETECT ||
-            key == MainPrefs.PREF_MASTER
-        ) {
-
-            onActiveSessionsChanged(platformControllers)
-            val pkgsToKeep = controllersMap.values
-                .map { it.first }
-                .filter { shouldScrobble(it) }
-                .map { it.packageName }
-                .toSet()
-            removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
         }
     }
 }

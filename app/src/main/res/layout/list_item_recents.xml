@@ -144,11 +144,11 @@
 
                 <ImageView
                     android:id="@+id/recents_playing"
-                    android:layout_width="wrap_content"
-                    android:layout_height="14sp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="end"
                     android:contentDescription="@string/state_scrobbling"
-                    tools:srcCompat="@drawable/avd_eq" />
+                    tools:srcCompat="@drawable/avd_now_playing" />
             </FrameLayout>
 
             <LinearLayout

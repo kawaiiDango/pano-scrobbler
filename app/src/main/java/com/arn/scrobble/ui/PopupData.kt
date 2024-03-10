@@ -1,12 +1,11 @@
 package com.arn.scrobble.ui
 
 import com.arn.scrobble.api.github.GithubReleases
-import com.google.android.material.snackbar.Snackbar
 
-data class SnackbarData(
+data class PopupData(
     val message: String,
     val actionText: String,
     val destinationId: Int,
+    val forceNavigate: Boolean,
     val updateData: GithubReleases? = null,
-    val duration: Int = Snackbar.LENGTH_INDEFINITE,
 )

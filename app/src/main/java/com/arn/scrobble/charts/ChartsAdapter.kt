@@ -25,6 +25,7 @@ import com.arn.scrobble.databinding.GridItemChartBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
+import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.createSkeletonWithFade
@@ -199,15 +200,17 @@ open class ChartsAdapter(
             }
 
             entryData = entry
-            var imgUrl: String? = null
+            val imgReq = MusicEntryImageReq(
+                entry,
+                fetchAlbumInfoIfMissing = (entry is Album && entry.webp300 == null) || (entry is Track && entry.album == null)
+            )
             when (entry) {
                 is Artist -> {
-                    binding.chartInfoSubtitle.visibility = View.GONE
+                    binding.chartInfoSubtitle.isVisible = false
                 }
 
                 is Album -> {
                     binding.chartInfoSubtitle.text = entry.artist!!.name
-                    imgUrl = entry.webp300
                 }
 
                 is Track -> binding.chartInfoSubtitle.text = entry.artist.name
@@ -266,8 +269,8 @@ open class ChartsAdapter(
                 entry.name.hashCode()
             )
 
-            binding.chartImg.load(imgUrl ?: entry) {
-                placeholder(R.drawable.color_image_loading)
+            binding.chartImg.load(imgReq) {
+                placeholder(R.drawable.avd_loading)
                 error(errorDrawable)
             }
         }

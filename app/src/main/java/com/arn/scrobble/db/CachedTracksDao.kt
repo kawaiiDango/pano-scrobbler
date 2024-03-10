@@ -103,7 +103,7 @@ interface CachedTracksDao {
 
             val maxIndexedScrobbleTime = prefs.lastMaxIndexedScrobbleTime ?: -1
             val wasIndexed =
-                track.date != null && track.date < maxIndexedScrobbleTime / 1000
+                track.date != null && track.date < maxIndexedScrobbleTime
 
             val mode = if (mode == DirtyUpdate.BOTH && !wasIndexed)
                 DirtyUpdate.DIRTY

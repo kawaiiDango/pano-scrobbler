@@ -25,7 +25,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Parcelable
-import android.os.Process
 import android.provider.MediaStore
 import android.provider.Settings
 import android.support.v4.media.session.PlaybackStateCompat
@@ -88,7 +87,7 @@ object Stuff {
     const val DEEPLINK_PROTOCOL_NAME = "pano-scrobbler"
     const val ARG_URL = "url"
     const val ARG_SAVE_COOKIES = "cookies"
-    const val ARG_NOPASS = "nopass"
+    const val ARG_ORIGINAL = "original"
     const val ARG_TYPE = "type"
     const val ARG_TAB = "tab"
     const val ARG_TITLE = "title"
@@ -102,6 +101,7 @@ object Stuff {
     const val ARG_SELECTED_MONTH = "selected_month"
     const val ARG_HIDDEN_TAGS_CHANGED = "hidden_tags_changed"
     const val ARG_EDIT = "edit"
+    const val MIME_TYPE_JSON = "application/json"
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
@@ -114,7 +114,6 @@ object Stuff {
     const val TAG = "scrobbler"
     const val FRIENDS_RECENTS_DELAY = 800L
     const val CROSSFADE_DURATION = 200
-    const val LOADING_DEBOUNCE_TIME = 200L
     const val MAX_PATTERNS = 30
     const val MAX_PINNED_FRIENDS = 10
     const val MAX_INDEXED_ITEMS = 10000
@@ -122,7 +121,7 @@ object Stuff {
     const val MIN_CHARTS_NUM_COLUMNS = 1
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
-    const val TIME_2002 = 1009823400 // Jan 1 2002
+    const val TIME_2002 = 1009823400000L // Jan 1 2002
 
     const val EXTRA_PINNED = "pinned"
 
@@ -154,7 +153,6 @@ object Stuff {
     const val MANUFACTURER_HUAWEI = "huawei"
     const val MANUFACTURER_XIAOMI = "xiaomi"
     const val MANUFACTURER_SAMSUNG = "samsung"
-    const val MANUFACTURER_GOOGLE = "google"
 
     const val CHANNEL_PIXEL_NP =
         "com.google.intelligence.sense.ambientmusic.MusicNotificationChannel"
@@ -222,6 +220,8 @@ object Stuff {
     val BLOCKED_MEDIA_SESSION_TAGS = mapOf(
         "*" to listOf("CastMediaSession"),
         PACKAGE_YAMAHA_MUSIC_CAST to listOf("NotificationService"),
+        // my test app
+        "com.example.myapplication.sessiontest" to listOf("androidx.media3.session.id.demo_session_id 124"),
     )
 
     val PACKAGES_PIXEL_NP = setOf(
@@ -299,7 +299,9 @@ object Stuff {
         NumberFormat.getInstance()
     }
 
-    fun Number.format() = numberFormat.format(this)
+    val browserPackages = mutableSetOf<String>()
+
+    fun Number.format() = numberFormat.format(this)!!
 
     fun log(s: String) {
         Timber.tag(TAG).i(s)
@@ -428,40 +430,47 @@ object Stuff {
         return decimal + unit
     }
 
-    fun humanReadableDuration(secs: Int): String {
+    fun humanReadableDuration(millis: Long): String {
+        val secs = millis / 1000
         val s = secs % 60
         val m = (secs / 60) % 60
         val h = secs / 3600
-        val str = StringBuilder()
-        val nf = NumberFormat.getInstance()
-        nf.minimumIntegerDigits = 2
-        if (h > 0)
-            str.append(nf.format(h))
-                .append(':')
-        str.append(nf.format(m))
-            .append(':')
-            .append(nf.format(s))
-        return str.toString()
+        return if (h > 0) {
+            String.format(Locale.getDefault(), "%02d:%02d:%02d", h, m, s)
+        } else {
+            String.format(Locale.getDefault(), "%02d:%02d", m, s)
+        }
     }
 
-    fun myRelativeTime(context: Context, secs: Int?, longFormat: Boolean = false): CharSequence {
-        val diff = System.currentTimeMillis() / 1000 - (secs
-            ?: return context.getString(R.string.time_just_now))
+    fun myRelativeTime(
+        context: Context,
+        millis: Long?,
+        withPreposition: Boolean = false
+    ): CharSequence {
+        val millis = millis ?: 0
+        val diff = System.currentTimeMillis() - millis
         return when {
-            diff <= 60 -> context.getString(R.string.time_just_now)
-            longFormat && diff >= 24 * 60 * 60 -> DateUtils.getRelativeTimeSpanString(
-                context,
-                secs * 1000L,
-                true
-            )
+            diff <= DateUtils.MINUTE_IN_MILLIS -> {
+                context.getString(R.string.time_just_now)
+            }
 
-            else -> DateUtils.getRelativeDateTimeString(
-                context,
-                secs * 1000L,
-                System.currentTimeMillis(),
-                DateUtils.MINUTE_IN_MILLIS,
-                DateUtils.FORMAT_ABBREV_ALL
-            )
+            withPreposition -> {
+                DateUtils.getRelativeTimeSpanString(
+                    context,
+                    millis,
+                    true
+                )
+            }
+
+            else -> {
+                DateUtils.getRelativeDateTimeString(
+                    context,
+                    millis,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    DateUtils.DAY_IN_MILLIS * 2,
+                    DateUtils.FORMAT_ABBREV_ALL or DateUtils.FORMAT_SHOW_TIME
+                )
+            }
         }
     }
 
@@ -518,15 +527,21 @@ object Stuff {
         }
     }
 
-    fun getBrowsers(pm: PackageManager): List<ResolveInfo> {
+    private fun getBrowsers(pm: PackageManager): List<ResolveInfo> {
         val browsersIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
         return pm.queryIntentActivities(browsersIntent, PackageManager.MATCH_ALL)
     }
 
-    fun getBrowsersAsStrings(pm: PackageManager) =
-        getBrowsers(pm)
+    fun updateBrowserPackages() {
+        browserPackages += getBrowsers(App.context.packageManager)
             .map { it.activityInfo.applicationInfo.packageName }
             .toSet()
+    }
+
+    fun getFileNameDateSuffix(): String {
+        val cal = Calendar.getInstance()
+        return "" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE] + "_" + cal[Calendar.HOUR_OF_DAY] + "_" + cal[Calendar.MINUTE]
+    }
 
     fun getMusicEntryQString(
         @StringRes zeroStrRes: Int,
@@ -618,11 +633,6 @@ object Stuff {
         try {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            // prevent infinite loop
-            if (App.prefs.lastfmLinksEnabled) {
-                browserIntent.`package` = getDefaultBrowserPackage(App.context.packageManager)
-            }
 
             App.context.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
@@ -759,37 +769,20 @@ object Stuff {
 
     fun isScrobblerRunning(): Boolean {
         val serviceComponent = ComponentName(App.context, NLService::class.java)
-        val manager = ContextCompat.getSystemService(
-            App.context,
-            ActivityManager::class.java
-        ) as ActivityManager
-        var serviceRunning = false
-        val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
-        if (runningServices == null) {
-            log("${this::isScrobblerRunning.name} runningServices is NULL")
-            return true //just assume true for now. this throws SecurityException, might not work in future
+        val manager = ContextCompat.getSystemService(App.context, ActivityManager::class.java)!!
+        val nlsService = try {
+            manager.getRunningServices(Integer.MAX_VALUE)?.find { it.service == serviceComponent }
+        } catch (e: SecurityException) {
+            return true // just assume true to suppress the error message, if we don't have permission
         }
-        for (service in runningServices) {
-            if (service.service == serviceComponent) {
-                log(
-                    "${this::isScrobblerRunning.name}  service - pid: " + service.pid + ", currentPID: " +
-                            Process.myPid() + ", clientCount: " +
-                            service.clientCount + " process:" +
-                            service.process + ", clientLabel: " +
-                            if (service.clientLabel == 0) "null" else "(" +
-                                    App.context.resources.getString(service.clientLabel) + ")"
-                )
-                if (service.process == BuildConfig.APPLICATION_ID + ":$SCROBBLER_PROCESS_NAME" /*&& service.clientCount > 0 */) {
-                    serviceRunning = true
-                    break
-                }
-            }
-        }
-        if (serviceRunning)
-            return true
 
-        logW("${this::isScrobblerRunning.name} : service not running")
-        return false
+        nlsService ?: return false
+
+        log(
+            "${NLService::class.java.name} - clientCount: ${nlsService.clientCount} process:${nlsService.process}"
+        )
+
+        return nlsService.clientCount > 0
     }
 
     fun MediaMetadata.dump() {

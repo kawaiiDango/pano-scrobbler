@@ -65,7 +65,6 @@ class AppIconsPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defSty
                 .map {
                     ImageRequest.Builder(context)
                         .data(PackageName(it))
-                        .allowHardware(false)
                         .scale(Scale.FIT)
                         .target(
                             onSuccess = { drawable ->

@@ -28,7 +28,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.media.app.MediaStyleMod
+import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.navigation.NavDeepLinkBuilder
 import com.arn.scrobble.PlayerActions.love
 import com.arn.scrobble.PlayerActions.skip
@@ -75,11 +75,10 @@ class NLService : NotificationListenerService() {
     private lateinit var scrobbleHandler: ScrobbleHandler
     private var lastNpTask: Job? = null
     private lateinit var coroutineScope: CoroutineScope
-    private lateinit var packageTrackMap: MutableMap<String, PlayingTrackInfo> // package name to track info
+    private lateinit var packageTagTrackMap: MutableMap<String, PlayingTrackInfo> // package name to track info
     private var notiColor: Int? = Color.MAGENTA
     private var job: Job? = null
     private var listenAlongJob: Job? = null
-    private val browserPackages = mutableSetOf<String>()
     private val audioManager by lazy {
         ContextCompat.getSystemService(
             this,
@@ -179,9 +178,9 @@ class NLService : NotificationListenerService() {
         scrobbleHandler = ScrobbleHandler(mainLooper)
         val sessManager = ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
 
-        sessListener = SessListener(scrobbleHandler, audioManager, browserPackages)
-        packageTrackMap = sessListener!!.packageTrackMap
-        browserPackages += Stuff.getBrowsersAsStrings(packageManager)
+        sessListener = SessListener(scrobbleHandler, audioManager)
+        packageTagTrackMap = sessListener!!.packageTagTrackMap
+        Stuff.updateBrowserPackages()
         try {
             sessManager.addOnActiveSessionsChangedListener(
                 sessListener!!,
@@ -349,7 +348,7 @@ class NLService : NotificationListenerService() {
             val n = sbn.notification
             if (n.channelId == channelName) {
                 val notiText = n.extras.getString(notiField) ?: return
-                val trackInfo = packageTrackMap[sbn.packageName]
+                val trackInfo = packageTagTrackMap[sbn.packageName + "|$TAG_NOTI"]
 
                 Stuff.logD { "${this::scrobbleFromNoti.name} $notiText removed=$removed" }
 
@@ -381,10 +380,11 @@ class NLService : NotificationListenerService() {
                             playStartTime = System.currentTimeMillis(),
                             hash = hash,
                             packageName = sbn.packageName,
+                            sessionTag = TAG_NOTI
                         )
                         newTrackInfo.putOriginals(artist, title)
 
-                        packageTrackMap[sbn.packageName] = newTrackInfo
+                        packageTagTrackMap[sbn.packageName + "|$TAG_NOTI"] = newTrackInfo
                         scrobbleHandler.nowPlaying(
                             newTrackInfo,
                             prefs.delaySecs.coerceAtMost(3 * 60) * 1000L
@@ -405,7 +405,11 @@ class NLService : NotificationListenerService() {
             NotificationCompat.VISIBILITY_SECRET
         return NotificationCompat.Builder(applicationContext)
             .setShowWhen(false)
-            .apply { color = (notiColor ?: return@apply) }
+            .apply {
+                // coloring on android 6 looks very ugly
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                    color = (notiColor ?: return@apply)
+            }
             .setAutoCancel(true)
             .setCustomBigContentView(null)
             .setVisibility(visibility)
@@ -501,7 +505,7 @@ class NLService : NotificationListenerService() {
             else
                 "✓ "
 
-        val style = MediaStyleMod()
+        val style = MediaStyle()
         val nb = buildNotification()
             .setAutoCancel(false)
             .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
@@ -706,9 +710,9 @@ class NLService : NotificationListenerService() {
             )
             .setStyleCompat(
                 if (resources.getBoolean(R.bool.is_rtl))
-                    MediaStyleMod().setShowActionsInCompactView(1, 0)
+                    MediaStyle().setShowActionsInCompactView(1, 0)
                 else
-                    MediaStyleMod().setShowActionsInCompactView(0, 1)
+                    MediaStyle().setShowActionsInCompactView(0, 1)
             )
             .buildMediaStyleMod()
         nm.notify(MainPrefs.CHANNEL_NOTI_NEW_APP, 0, n)
@@ -717,7 +721,7 @@ class NLService : NotificationListenerService() {
     private var notiIconBitmap: Bitmap? = null
 
     private fun NotificationCompat.Builder.setStyleCompat(style: NotificationCompat.Style): NotificationCompat.Builder {
-        if (!(Stuff.isWindows11 && style is MediaStyleMod))
+        if (!(Stuff.isWindows11 && style is MediaStyle))
             setStyle(style)
 
         return this
@@ -745,7 +749,7 @@ class NLService : NotificationListenerService() {
                 iCANCEL -> {
                     val hash: Int
                     if (!intent.hasExtra(B_HASH)) {
-                        val trackInfo = packageTrackMap.values.find { it.isPlaying } ?: return
+                        val trackInfo = packageTagTrackMap.values.find { it.isPlaying } ?: return
                         hash = trackInfo.hash
                         if (!scrobbleHandler.has(hash))
                             return
@@ -766,7 +770,7 @@ class NLService : NotificationListenerService() {
                                 trackInfo.title,
                                 null,
                                 Artist(trackInfo.artist),
-                                date = (trackInfo.playStartTime / 1000).toInt()
+                                date = trackInfo.playStartTime
                             )
                             coroutineScope.launch(Dispatchers.IO) {
                                 ScrobbleEverywhere.delete(track)
@@ -782,7 +786,7 @@ class NLService : NotificationListenerService() {
                     val loved = intent.action == iLOVE
                     val hash = intent.getIntExtra(B_HASH, 0)
                     val trackInfo = if (!intent.hasExtra(B_HASH)) {
-                        packageTrackMap.values.find { it.isPlaying } ?: return
+                        packageTagTrackMap.values.find { it.isPlaying } ?: return
                     } else {
                         sessListener?.findTrackInfoByHash(hash) ?: return
                     }
@@ -940,7 +944,7 @@ class NLService : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_PACKAGE_ADDED) {
                 if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false))
-                    browserPackages += Stuff.getBrowsersAsStrings(packageManager)
+                    Stuff.updateBrowserPackages()
             }
         }
     }
@@ -1032,6 +1036,10 @@ class NLService : NotificationListenerService() {
         }
 
         private fun submitScrobble(trackInfoCopy: PlayingTrackInfo) {
+            // if it somehow reached here, don't scrobble
+            if (sessListener?.hasOtherPlayingControllers(trackInfoCopy) == true && trackInfoCopy.hasBlockedTag)
+                return
+
             coroutineScope.launch {
                 ScrobbleEverywhere.scrobble(false, trackInfoCopy)
             }
@@ -1085,5 +1093,6 @@ class NLService : NotificationListenerService() {
         const val B_IGNORED_ARTIST = "ignored_artist"
         const val B_LOCKED = "locked"
 
+        const val TAG_NOTI = "noti"
     }
 }

@@ -1,6 +1,5 @@
 package com.arn.scrobble.charts
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
@@ -61,7 +60,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private val timePeriod get() = requireArguments().getSingle<TimePeriod>()!!
     private val prefs = App.prefs
-    private lateinit var saveBySafRequest: ActivityResultLauncher<Intent>
+    private lateinit var saveBySafRequest: ActivityResultLauncher<String>
     private val minSize = 3
     private val maxSize = 6
     private var lastUri: Uri? = null
@@ -69,9 +68,9 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         saveBySafRequest =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                    requireContext().contentResolver.openOutputStream(result.data!!.data!!)
+            registerForActivityResult(ActivityResultContracts.CreateDocument("image/jpeg")) { uri ->
+                if (uri != null) {
+                    requireContext().contentResolver.openOutputStream(uri)
                         ?.use { ostream ->
                             requireContext().contentResolver.openInputStream(lastUri!!)
                                 ?.use { istream ->
@@ -189,12 +188,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
                         ReviewPrompter(requireActivity()).showIfNeeded()
                     } else {
-                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = mimeType
-                            putExtra(Intent.EXTRA_TITLE, fileName)
-                        }
-                        saveBySafRequest.launch(intent)
+                        saveBySafRequest.launch(fileName)
                     }
                 } else
                     shareImageUri(uri, text)
@@ -394,13 +388,12 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
             // load profile pic
             val profilePicUrl = if (activityViewModel.currentUser.isSelf)
-                prefs.drawerDataCached.profilePicUrl
+                activityViewModel.drawerData.value?.profilePicUrl
             else
                 activityViewModel.currentUser.largeImage
 
             val profilePicRequest = ImageRequest.Builder(requireContext()).apply {
                 data(profilePicUrl ?: R.drawable.vd_user)
-                allowHardware(false)
                 crossfade(false)
                 error(R.drawable.vd_user)
                 placeholder(null)
@@ -481,7 +474,6 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             var error = false
             val request = ImageRequest.Builder(requireContext()).apply {
                 data(entry)
-                allowHardware(false)
                 crossfade(false)
                 if (prefs.collageSkipMissing)
                     listener(

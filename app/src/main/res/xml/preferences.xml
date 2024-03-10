@@ -210,11 +210,11 @@
             android:defaultValue="true"
             android:persistent="true"/>
 
-        <SwitchPreference
-            android:title="@string/pref_check_updates"
-            android:key="check_for_updates"
-            android:persistent="true"
-            />
+<!--        <SwitchPreference-->
+<!--            android:title="@string/pref_check_updates"-->
+<!--            android:key="check_for_updates"-->
+<!--            android:persistent="true"-->
+<!--            />-->
     </PreferenceCategory>
     <PreferenceCategory
         app:icon="@drawable/vd_swap"
@@ -252,6 +252,18 @@
         <Preference
             android:title="@string/custom_listenbrainz"
             android:key="lb"
+            />
+        <Preference
+            android:title="@string/maloja"
+            android:key="maloja"
+            />
+        <Preference
+            android:title="@string/pleroma"
+            android:key="pleroma"
+            />
+        <Preference
+            android:title="@string/scrobble_to_file"
+            android:key="file"
             />
         <Preference
             android:title="@string/delete_account"

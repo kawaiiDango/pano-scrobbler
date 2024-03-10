@@ -3,5 +3,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/scrobbler_fix_it"
-        android:title="@string/fix_it_action" />
+        android:title="@string/not_running_fix_action" />
 </menu>

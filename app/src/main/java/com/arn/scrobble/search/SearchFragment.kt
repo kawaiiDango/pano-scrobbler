@@ -86,10 +86,11 @@ class SearchFragment : Fragment() {
         if (savedInstanceState == null) {
             binding.searchEdittext.requestFocus()
             viewLifecycleOwner.lifecycleScope.launch {
-                delay(100)
-                showKeyboard(binding.searchTerm.editText!!)
                 delay(400)
-                binding.searchEdittext.showDropDown()
+                if (historyPref.history.isEmpty())
+                    showKeyboard(binding.searchTerm.editText!!)
+                else
+                    binding.searchEdittext.showDropDown()
             }
         }
 
@@ -100,9 +101,8 @@ class SearchFragment : Fragment() {
                 doSearch(textView.text.toString())
                 hideKeyboard()
                 textView.clearFocus()
-                true
-            } else
-                false
+            }
+            true
         }
 
         binding.searchTerm.editText!!.addTextChangedListener(object : TextWatcher {
@@ -116,12 +116,7 @@ class SearchFragment : Fragment() {
             override fun afterTextChanged(editable: Editable) {
                 val term = editable.trim().toString()
                 if (term.isNotEmpty()) {
-                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
-                    binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
-
                     viewModel.search(term, prefs.searchType)
-                } else {
-                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
                 }
             }
 
@@ -237,6 +232,11 @@ class SearchFragment : Fragment() {
         else {
             skeleton.showSkeleton()
             viewModel.search(term, prefs.searchType)
+
+            if (binding.searchTerm.endIconMode != TextInputLayout.END_ICON_CLEAR_TEXT) {
+                binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
+                binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
+            }
         }
     }
 }

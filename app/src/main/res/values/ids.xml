@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item type="id" name="main_fab" />
-    <item type="id" name="main_extended_fab" />
-    <item type="id" name="time" />
-    <item type="id" name="should_show_user" />
-    <item type="id" name="more_menu" />
-    <item type="id" name="app_bar_can_change_size" />
-    <item type="id" name="img_url" />
-    <item type="id" name="inited" />
-    <item type="id" name="raw_text" />
+    <item name="main_fab" type="id" />
+    <item name="main_extended_fab" type="id" />
+    <item name="time" type="id" />
+    <item name="should_show_user" type="id" />
+    <item name="more_menu" type="id" />
+    <item name="app_bar_can_change_size" type="id" />
+    <item name="img_url" type="id" />
+    <item name="inited" type="id" />
+    <item name="raw_text" type="id" />
+    <item name="destroyed_early" type="id" />
 </resources>

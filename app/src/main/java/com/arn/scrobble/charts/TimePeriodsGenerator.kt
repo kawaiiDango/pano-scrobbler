@@ -426,9 +426,6 @@ data class TimePeriod(
     var tag: String? = null
 ) : Parcelable {
 
-    val startSecs get() = (start / 1000).toInt()
-    val endSecs get() = (end / 1000).toInt()
-
     constructor(period: Period) : this(
         -1,
         -1,

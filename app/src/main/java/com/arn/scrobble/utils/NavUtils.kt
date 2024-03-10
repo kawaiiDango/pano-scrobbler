@@ -1,6 +1,5 @@
 package com.arn.scrobble.utils
 
-import android.animation.ObjectAnimator
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.PorterDuff
@@ -8,21 +7,14 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.MenuItemCompat
-import androidx.core.view.children
-import androidx.core.view.get
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import coil.load
 import com.arn.scrobble.App
@@ -42,7 +34,6 @@ import com.arn.scrobble.ui.UiUtils.slide
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.putSingle
-import kotlinx.coroutines.launch
 
 
 object NavUtils {
@@ -58,6 +49,10 @@ object NavUtils {
             return
         } else {
             headerNavBinding.root.visibility = View.VISIBLE
+        }
+
+        Scrobblables.currentScrobblableUser?.let {
+            mainNotifierViewModel.initializeCurrentUser(it)
         }
 
         val currentUser = mainNotifierViewModel.currentUser
@@ -112,7 +107,6 @@ object NavUtils {
                 currentUser.largeImage
         if (headerNavBinding.navProfilePic.getTag(R.id.img_url) != profilePicUrl + username) // todo prevent flash
             headerNavBinding.navProfilePic.load(profilePicUrl) {
-                allowHardware(false)
                 error(
                     InitialsDrawable(
                         headerNavBinding.root.context,
@@ -180,6 +174,9 @@ object NavUtils {
                             AccountType.GNUFM -> Stuff.openInBrowser("${currentAccount.apiRoot}/stats")
                             AccountType.LISTENBRAINZ -> Stuff.openInBrowser("https://listenbrainz.org/user/${currentUser.name}/reports")
                             AccountType.CUSTOM_LISTENBRAINZ -> Stuff.openInBrowser("${currentAccount.apiRoot}user/${currentUser.name}/reports")
+                            AccountType.PLEROMA -> Stuff.openInBrowser("${currentAccount.apiRoot}/users/${currentUser.name}")
+                            AccountType.MALOJA,
+                            AccountType.FILE -> Stuff.openInBrowser(currentAccount.apiRoot!!)
                         }
                     }
 
@@ -193,7 +190,7 @@ object NavUtils {
                                 mainNotifierViewModel
                             )
 
-                            mainNotifierViewModel.clearDrawerData()
+                            mainNotifierViewModel.loadDrawerDataCached()
                             navController.popBackStack(R.id.myHomePagerFragment, true)
                             navController.navigate(R.id.myHomePagerFragment)
 
@@ -207,23 +204,23 @@ object NavUtils {
         }
     }
 
-    fun BasePagerFragment.scrollToTop() {
-        val currentFragment = adapter.instantiateItem(
-            binding.pager,
-            binding.pager.currentItem
-        ) as Fragment
-        val scrollableView = currentFragment.view
-            ?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
-            ?.get(0)
-
-        if (scrollableView is RecyclerView)
-            scrollableView.smoothScrollToPosition(0)
-        else if (scrollableView is ConstraintLayout) // for frame_charts_list
-            (scrollableView.children.find { it is RecyclerView } as? RecyclerView)
-                ?.smoothScrollToPosition(0)
-        else if (scrollableView != null)
-            ObjectAnimator.ofInt(scrollableView, "scrollY", 0).start()
-    }
+//    fun BasePagerFragment.scrollToTop() {
+//        val currentFragment = adapter.instantiateItem(
+//            binding.pager,
+//            binding.pager.currentItem
+//        ) as Fragment
+//        val scrollableView = currentFragment.view
+//            ?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+//            ?.get(0)
+//
+//        if (scrollableView is RecyclerView)
+//            scrollableView.smoothScrollToPosition(0)
+//        else if (scrollableView is ConstraintLayout) // for frame_charts_list
+//            (scrollableView.children.find { it is RecyclerView } as? RecyclerView)
+//                ?.smoothScrollToPosition(0)
+//        else if (scrollableView != null)
+//            ObjectAnimator.ofInt(scrollableView, "scrollY", 0).start()
+//    }
 
     fun BasePagerFragment.setupWithNavUi() {
         val activityBinding = (activity as? MainActivity)?.binding ?: return
@@ -238,77 +235,96 @@ object NavUtils {
         val activityViewModel by activityViewModels<MainNotifierViewModel>()
 
         if (this is HomePagerFragment) {
-            activityViewModel.currentUser =
+            activityViewModel.setCurrentUser(
                 arguments?.getSingle() ?: Scrobblables.currentScrobblableUser!!
+            )
+        }
+
+        fun clearMenus() {
+            menus.forEach { it.clear() }
+            activityBinding.bottomNav.setOnItemSelectedListener(null)
+            activityBinding.sidebarNav.setNavigationItemSelectedListener(null)
+            activityBinding.bottomNav.slide(false)
+            activityBinding.bottomNav.visibility = View.GONE
+//            source.lifecycle.removeObserver(this)
         }
 
         viewLifecycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        source.lifecycleScope.launch {
-                            activityViewModel.destroyEventPending.acquire()
-                            val shouldShowUser = this@setupWithNavUi is HomePagerFragment
+                        // clear previous menus if any
 
-                            adapter.tabMetadata.forEachIndexed { index, metadata ->
-                                menus.forEach {
-                                    it.add(0, index + idOffset, 0, metadata.titleRes).apply {
-                                        setIcon(metadata.iconRes)
-                                        isCheckable = true
-                                    }
+                        if (activityBinding.bottomNav.menu.size() > 0) {
+                            activityBinding.bottomNav.setTag(R.id.destroyed_early, true)
+                            clearMenus()
+                        }
+//                            activityViewModel.destroyEventPending.acquire()
+                        val shouldShowUser = this@setupWithNavUi is HomePagerFragment
+
+                        adapter.tabMetadata.forEachIndexed { index, metadata ->
+                            menus.forEach {
+                                it.add(0, index + idOffset, 0, metadata.titleRes).apply {
+                                    setIcon(metadata.iconRes)
+                                    isCheckable = true
                                 }
                             }
+                        }
 
-                            if (optionsMenuRes != 0) {
-                                activityBinding.bottomNav.setTag(
-                                    R.id.should_show_user,
-                                    shouldShowUser
-                                )
+                        if (optionsMenuRes != 0) {
+                            activityBinding.bottomNav.setTag(
+                                R.id.should_show_user,
+                                shouldShowUser
+                            )
 
-                                val moreMenu = activityBinding.bottomNav.menu.add(
-                                    0,
-                                    R.id.more_menu + idOffset,
-                                    0,
-                                    R.string.more
-                                )
-                                moreMenu.isCheckable = false
-                                if (shouldShowUser) {
-                                    if (App.prefs.demoMode) {
-                                        moreMenu.setIcon(R.drawable.vd_user)
-                                    } else {
-                                        UiUtils.loadSmallUserPic(
-                                            activityBinding.bottomNav.context,
-                                            mainNotifierViewModel.currentUser,
-                                        ) {
-                                            it.colorFilter =
-                                                ColorMatrixColorFilter(ColorMatrix().apply {
-                                                    setSaturation(0f)
-                                                })
-                                            MenuItemCompat.setIconTintMode(
-                                                moreMenu,
-                                                PorterDuff.Mode.DST
-                                            )
-                                            moreMenu.icon = it
-                                        }
-                                    }
+                            val moreMenu = activityBinding.bottomNav.menu.add(
+                                0,
+                                R.id.more_menu + idOffset,
+                                0,
+                                R.string.more
+                            )
+                            moreMenu.isCheckable = false
+                            if (shouldShowUser) {
+                                if (App.prefs.demoMode) {
+                                    moreMenu.setIcon(R.drawable.vd_user)
                                 } else {
-                                    moreMenu.setIcon(R.drawable.vd_more_horiz)
+                                    UiUtils.loadSmallUserPic(
+                                        activityBinding.bottomNav.context,
+                                        mainNotifierViewModel.currentUser,
+                                        activityViewModel.drawerData.value,
+                                    ) {
+                                        it.colorFilter =
+                                            ColorMatrixColorFilter(ColorMatrix().apply {
+                                                setSaturation(0f)
+                                            })
+                                        MenuItemCompat.setIconTintMode(
+                                            moreMenu,
+                                            PorterDuff.Mode.DST
+                                        )
+                                        moreMenu.icon = it
+                                    }
                                 }
-                                activityBinding.sidebarNav.inflateMenu(optionsMenuRes)
+                            } else {
+                                moreMenu.setIcon(R.drawable.vd_more_horiz)
                             }
+                            activityBinding.sidebarNav.inflateMenu(optionsMenuRes)
+                        }
 
-                            activityBinding.bottomNav.setOnItemSelectedListener { menuItem ->
+                        activityBinding.bottomNav.setOnItemSelectedListener { menuItem ->
 
-                                activityBinding.appBar.setTag(
-                                    R.id.app_bar_can_change_size,
-                                    true
-                                )
+                            activityBinding.appBar.setTag(
+                                R.id.app_bar_can_change_size,
+                                true
+                            )
 
-                                val itemId = menuItem.itemId - idOffset
-                                if (itemId in adapter.tabMetadata.indices) {
+                            val itemId = menuItem.itemId - idOffset
+                            when (itemId) {
+                                in adapter.tabMetadata.indices -> {
                                     binding.pager.setCurrentItem(itemId, true)
                                     true
-                                } else if (itemId == R.id.more_menu) {
+                                }
+
+                                R.id.more_menu -> {
 
                                     val args = Bundle().putSingle(
                                         OptionsMenuMetadata(
@@ -322,94 +338,98 @@ object NavUtils {
                                         args
                                     )
                                     false
-                                } else
-                                    false
-                            }
-
-                            activityBinding.bottomNav.setOnItemReselectedListener {
-                                scrollToTop()
-                            }
-
-                            activityBinding.sidebarNav.setNavigationItemSelectedListener { menuItem ->
-                                val page = menuItem.itemId - idOffset
-
-                                if (page in adapter.tabMetadata.indices) {
-                                    menuItem.isChecked = true
-                                    val reselected = page == binding.pager.currentItem
-                                    if (reselected)
-                                        scrollToTop()
-                                    else
-                                        binding.pager.setCurrentItem(page, true)
-                                    true
-                                } else {
-                                    optionsMenuViewModel.onMenuItemSelected(
-                                        activityBinding.sidebarNav,
-                                        menuItem.itemId
-                                    )
-                                    false
-                                }
-                            }
-
-                            val onPageChangeListener = object : OnPageChangeListener {
-
-                                override fun onPageScrolled(
-                                    position: Int,
-                                    positionOffset: Float,
-                                    positionOffsetPixels: Int
-                                ) {
                                 }
 
-                                override fun onPageSelected(position: Int) {
-                                    if (position in adapter.tabMetadata.indices) {
-                                        activityBinding.bottomNav.selectedItemId =
-                                            idOffset + position
-                                        activityBinding.sidebarNav.setCheckedItem(idOffset + position)
-
-                                        if (this@setupWithNavUi is HomePagerFragment) {
-                                            if (findNavController().currentDestination?.id == R.id.myHomePagerFragment)
-                                                prefs.lastHomePagerTab = position
-                                        }
-                                    }
-                                }
-
-                                override fun onPageScrollStateChanged(state: Int) {}
+                                else -> false
                             }
-
-                            binding.pager.addOnPageChangeListener(onPageChangeListener)
-                            onPageChangeListener.onPageSelected(binding.pager.currentItem)
-
-                            activityBinding.appBar.setTag(
-                                R.id.app_bar_can_change_size,
-                                true
-                            )
-
-                            arguments?.getInt(Stuff.ARG_TAB, -1)
-                                ?.coerceAtMost(adapter.count - 1)
-                                ?.let {
-                                    if (it >= 0) {
-                                        binding.pager.setCurrentItem(it, false)
-                                        arguments?.remove(Stuff.ARG_TAB)
-                                    }
-                                }
-
-                            if (!UiUtils.isTabletUi) {
-                                activityBinding.bottomNav.visibility = View.VISIBLE
-                                activityBinding.bottomNav.slide()
-                            } else
-                                mainNotifierViewModel.loadCurrentUserDrawerData()
                         }
+
+//                        activityBinding.bottomNav.setOnItemReselectedListener {
+//                            scrollToTop()
+//                        }
+
+                        activityBinding.sidebarNav.setNavigationItemSelectedListener { menuItem ->
+                            val page = menuItem.itemId - idOffset
+
+                            if (page in adapter.tabMetadata.indices) {
+                                menuItem.isChecked = true
+                                val reselected = page == binding.pager.currentItem
+                                if (!reselected)
+//                                    scrollToTop()
+//                                else
+                                    binding.pager.setCurrentItem(page, true)
+                                true
+                            } else {
+                                optionsMenuViewModel.onMenuItemSelected(
+                                    activityBinding.sidebarNav,
+                                    menuItem.itemId
+                                )
+                                false
+                            }
+                        }
+
+                        val onPageChangeListener = object : OnPageChangeListener {
+
+                            override fun onPageScrolled(
+                                position: Int,
+                                positionOffset: Float,
+                                positionOffsetPixels: Int
+                            ) {
+                            }
+
+                            override fun onPageSelected(position: Int) {
+                                if (position in adapter.tabMetadata.indices) {
+                                    activityBinding.bottomNav.selectedItemId =
+                                        idOffset + position
+                                    activityBinding.sidebarNav.setCheckedItem(idOffset + position)
+
+                                    if (this@setupWithNavUi is HomePagerFragment) {
+                                        if (findNavController().currentDestination?.id == R.id.myHomePagerFragment)
+                                            prefs.lastHomePagerTab = position
+                                    }
+                                }
+                            }
+
+                            override fun onPageScrollStateChanged(state: Int) {}
+                        }
+
+                        binding.pager.addOnPageChangeListener(onPageChangeListener)
+                        onPageChangeListener.onPageSelected(binding.pager.currentItem)
+
+                        activityBinding.appBar.setTag(
+                            R.id.app_bar_can_change_size,
+                            true
+                        )
+
+                        arguments?.getInt(Stuff.ARG_TAB, -1)
+                            ?.coerceAtMost(adapter.count - 1)
+                            ?.let {
+                                if (it >= 0) {
+                                    binding.pager.setCurrentItem(it, false)
+                                    arguments?.remove(Stuff.ARG_TAB)
+                                }
+                            }
+
+                        if (!UiUtils.isTabletUi) {
+                            activityBinding.bottomNav.visibility = View.VISIBLE
+                            activityBinding.bottomNav.slide()
+                        } else
+                            mainNotifierViewModel.loadCurrentUserDrawerData()
                     }
 
                     Lifecycle.Event.ON_DESTROY -> {
-                        menus.forEach { it.clear() }
-                        activityBinding.bottomNav.setOnItemSelectedListener(null)
-                        activityBinding.sidebarNav.setNavigationItemSelectedListener(null)
-                        activityBinding.bottomNav.slide(false)
-                        activityBinding.bottomNav.visibility = View.GONE
+                        if (activityBinding.bottomNav.getTag(R.id.destroyed_early) != true &&
+                            activityBinding.bottomNav.menu.size() > 0
+                        ) {
+                            clearMenus()
+                        }
+
+                        activityBinding.bottomNav.setTag(R.id.destroyed_early, false)
+
                         source.lifecycle.removeObserver(this)
 
-                        if (activityViewModel.destroyEventPending.availablePermits == 0)
-                            activityViewModel.destroyEventPending.release()
+//                        if (activityViewModel.destroyEventPending.availablePermits == 0)
+//                            activityViewModel.destroyEventPending.release()
                     }
 
                     else -> {}

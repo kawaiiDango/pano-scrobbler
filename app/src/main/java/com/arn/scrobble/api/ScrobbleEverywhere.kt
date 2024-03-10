@@ -27,6 +27,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.putSingle
 import kotlinx.coroutines.delay
+import java.io.IOException
 
 
 /**
@@ -174,7 +175,7 @@ object ScrobbleEverywhere {
                 // cancellable
                 delay(10)
                 if (track != null) {
-                    if (scrobbleData.duration == -1)
+                    if (scrobbleData.duration == -1L)
                         scrobbleData.duration = track.duration
 
                     if (scrobbleData.album == "") {
@@ -219,7 +220,7 @@ object ScrobbleEverywhere {
                 if (regexEdits.values.any { it.isNotEmpty() })
                     edit = editsDao.performEdit(scrobbleData, false)
             }
-            
+
             if (scrobbleDataOrig != scrobbleData && shouldBlockScrobble())
                 return
 
@@ -277,11 +278,12 @@ object ScrobbleEverywhere {
                 .getScrobbleSourcesDao()
                 .insert(scrobbleSource)
 
-            if (Stuff.isOnline) {
-                scrobbleResults = Scrobblables.all.mapConcurrently(5) {
+            scrobbleResults = Scrobblables.all.mapConcurrently(5) {
+                if (Stuff.isOnline || it.userAccount.type == AccountType.FILE)
                     it to it.scrobble(scrobbleData)
-                }.toMap()
-            }
+                else
+                    it to Result.failure(IOException("Offline"))
+            }.toMap()
 
             if (scrobbleResults.isEmpty() ||
                 scrobbleResults.values.any { !it.isSuccess }
@@ -294,8 +296,8 @@ object ScrobbleEverywhere {
                     track = scrobbleData.track
                     if (scrobbleData.albumArtist != null)
                         albumArtist = scrobbleData.albumArtist ?: ""
-                    timestamp = scrobbleData.timestamp.toLong() * 1000
-                    duration = scrobbleData.duration?.times(1000L) ?: -1
+                    timestamp = scrobbleData.timestamp
+                    duration = scrobbleData.duration ?: -1
                 }
 
                 if (scrobbleResults.isEmpty())
@@ -353,8 +355,8 @@ object ScrobbleEverywhere {
         if (failedTextLines.isNotEmpty()) {
             val failedText = failedTextLines.joinToString("<br>\n")
             Stuff.logW("failedText= $failedText")
-            val i = if (ignored) {
-                Intent(NLService.iBAD_META_S)
+            if (ignored) {
+                val i = Intent(NLService.iBAD_META_S)
                     .setPackage(context.packageName)
                     .putSingle(trackInfo.updateMetaFrom(scrobbleData))
                     .putSingle(
@@ -364,8 +366,9 @@ object ScrobbleEverywhere {
                             trackInfo.packageName,
                         )
                     )
-            } else {
-                Intent(NLService.iOTHER_ERR_S)
+                context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+            } else if (!nowPlaying) { // suppress now non-critical now playing errors to not scare users
+                val i = Intent(NLService.iOTHER_ERR_S)
                     .setPackage(context.packageName)
                     .putSingle(
                         ScrobbleError(
@@ -377,8 +380,9 @@ object ScrobbleEverywhere {
                             trackInfo.packageName,
                         )
                     )
+                context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+
             }
-            context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
         }
     }
 
@@ -432,6 +436,7 @@ object ScrobbleEverywhere {
     suspend fun delete(track: Track): List<Result<Unit>> {
         val results = Scrobblables.all.mapConcurrently(5) {
             it.delete(track)
+                .onFailure { it.printStackTrace() }
         }
 
         val success = results.all { it.isSuccess }

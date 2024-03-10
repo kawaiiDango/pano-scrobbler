@@ -1,12 +1,13 @@
 package com.arn.scrobble.api.lastfm
 
-class FmException(
+open class ApiException(
     val code: Int,
-    override val message: String
-) : Exception(message)
+    val description: String,
+    override val cause: Throwable? = null
+) : Exception("$description ($code)", cause)
 
 class ScrobbleIgnoredException(
-    val scrobbleTimeSecs: Int,
+    val scrobbleTime: Long,
     val altAction: () -> Unit
-) : Exception("Scrobble ignored")
+) : ApiException(-1, "Scrobble ignored")
 

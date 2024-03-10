@@ -40,7 +40,7 @@ class VHPendingScrobble(
         binding.recentsSubtitle.text = ps.artist
         binding.recentsDate.text = Stuff.myRelativeTime(
             itemView.context,
-            (ps.timestamp / 1000).toInt()
+            ps.timestamp
         )
 
         if (isShowingAlbums) {

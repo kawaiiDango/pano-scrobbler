@@ -13,13 +13,13 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.utils.Stuff.getSingle
-import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.databinding.DialogBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.UiUtils.trimmedText
+import com.arn.scrobble.utils.Stuff.getSingle
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +58,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                 it.setEndIconDrawable(R.drawable.vd_cancel)
             }
 
-            if (ignoredArtist != null) {
+            if (ignoredArtist != blockedMetadata.artist) {
                 useChannel.visibility = View.VISIBLE
                 useChannel.setOnCheckedChangeListener { _, checked ->
                     blockArtistEdittext.setText(

@@ -11,9 +11,7 @@ class Updater {
 
     suspend fun checkGithubForUpdates(): GithubReleases? {
         val now = System.currentTimeMillis()
-        if (prefs.checkForUpdates != true
-            || (now - (prefs.lastUpdateCheckTime ?: -1)) <= UPDATE_CHECK_INTERVAL
-        )
+        if ((now - (prefs.lastUpdateCheckTime ?: -1)) <= UPDATE_CHECK_INTERVAL)
             return null
 
         Requesters.genericKtorClient.getResult<GithubReleases>(githubApiUrl)
@@ -40,7 +38,7 @@ data class GithubReleases(
     val assets: List<GithubReleaseAsset>
 ) {
     val versionCode
-        get() = Integer.parseInt(tag_name.replace(".", ""))
+        get() = tag_name.replace(".", "").toInt()
 
     val downloadUrl
         get() = assets.find { it.name.endsWith(".apk") }?.browser_download_url

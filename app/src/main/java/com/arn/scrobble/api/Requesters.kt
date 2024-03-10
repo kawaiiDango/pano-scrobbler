@@ -2,9 +2,9 @@ package com.arn.scrobble.api
 
 import com.arn.scrobble.App
 import com.arn.scrobble.api.CacheMarkerInterceptor.Companion.isFromCache
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.CacheInterceptor
 import com.arn.scrobble.api.lastfm.FmErrorResponse
-import com.arn.scrobble.api.lastfm.FmException
 import com.arn.scrobble.api.lastfm.LastFmUnauthedRequester
 import com.arn.scrobble.api.lastfm.LastfmExpirationPolicy
 import com.arn.scrobble.api.lastfm.PageAttr
@@ -30,6 +30,7 @@ import okhttp3.Cache
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
+
 
 object Requesters {
     val spotifyRequester by lazy { SpotifyRequester() }
@@ -63,8 +64,12 @@ object Requesters {
             install(HttpCallValidator) {
                 validateResponse { response ->
                     if (response.status.isSuccess()) return@validateResponse
-                    val errorResponse = response.body<FmErrorResponse>()
-                    throw FmException(errorResponse.code, errorResponse.message)
+                    try {
+                        val errorResponse = response.body<FmErrorResponse>()
+                        throw ApiException(errorResponse.code, errorResponse.message)
+                    } catch (e: Exception) {
+                        throw ApiException(response.status.value, response.status.description, e)
+                    }
                 }
             }
 
@@ -85,7 +90,7 @@ object Requesters {
                 Result.success(body)
             } catch (e: JsonConvertException) {
                 val errorResponse = resp.body<FmErrorResponse>()
-                Result.failure(FmException(errorResponse.code, errorResponse.message))
+                Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
     } catch (e: CancellationException) {
@@ -105,7 +110,7 @@ object Requesters {
                 Result.success(body)
             } catch (e: JsonConvertException) {
                 val errorResponse = resp.body<FmErrorResponse>()
-                Result.failure(FmException(errorResponse.code, errorResponse.message))
+                Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
     } catch (e: CancellationException) {
@@ -153,7 +158,7 @@ object Requesters {
                 Result.success(pr)
             } catch (e: JsonConvertException) {
                 val errorResponse = resp.body<FmErrorResponse>()
-                Result.failure(FmException(errorResponse.code, errorResponse.message))
+                Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
     } catch (e: CancellationException) {

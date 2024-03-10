@@ -1,7 +1,6 @@
 package com.arn.scrobble.charts
 
 import android.os.Bundle
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +14,8 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
+import com.arn.scrobble.databinding.DialogLegendBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.HtmlImageResGetter
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.ScalableGrid
@@ -63,10 +62,13 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         super.onDestroyView()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        postInit()
+    }
+
     override fun onResume() {
         super.onResume()
-        if (chartsBinding.frameChartsList.chartsList.adapter == null)
-            postInit()
         updateTitle()
     }
 
@@ -74,41 +76,29 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         when (menuItemId) {
             R.id.menu_collage -> {
                 val arguments = Bundle().apply {
-                    putSingle(viewModel.selectedPeriod.value ?: return)
+                    putSingle(viewModel.selectedPeriod.value)
                     putInt(Stuff.ARG_TYPE, chartsType)
                 }
                 findNavController().navigate(R.id.collageGeneratorFragment, arguments)
             }
 
             R.id.menu_legend -> {
-
-                var text = ""
-                text += "<img src='vd_stonks_up_double' /> " + getString(
-                    R.string.rank_change,
-                    "> +5"
-                ) + "<br>"
-                text += "<img src='vd_stonks_up' /> " + getString(
-                    R.string.rank_change,
-                    "+1 — +5"
-                ) + "<br>"
-                text += "<img src='vd_stonks_no_change' /> " + getString(
-                    R.string.rank_change,
-                    "0"
-                ) + "<br>"
-                text += "<img src='vd_stonks_down' /> " + getString(
-                    R.string.rank_change,
-                    "-1 — -5"
-                ) + "<br>"
-                text += "<img src='vd_stonks_down_double' /> " + getString(
-                    R.string.rank_change,
-                    "< -5"
-                ) + "<br>"
-                text += "<img src='vd_stonks_new' /> " + getString(R.string.rank_change_new)
-
-                val spanned = Html.fromHtml(text, HtmlImageResGetter(requireContext()), null)
+                val legendBinding = DialogLegendBinding.inflate(layoutInflater)
+                legendBinding.legendUpDouble.text =
+                    getString(R.string.rank_change, "> +5")
+                legendBinding.legendUp.text =
+                    getString(R.string.rank_change, "+1 — +5")
+                legendBinding.legendNoChange.text =
+                    getString(R.string.rank_change, "0")
+                legendBinding.legendDown.text =
+                    getString(R.string.rank_change, "-1 — -5")
+                legendBinding.legendDownDouble.text =
+                    getString(R.string.rank_change, "< -5")
+                legendBinding.legendNew.text =
+                    getString(R.string.rank_change_new)
 
                 MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(spanned)
+                    .setView(legendBinding.root)
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
             }

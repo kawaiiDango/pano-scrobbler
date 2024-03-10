@@ -33,10 +33,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.lastfm.FmException
+import com.arn.scrobble.api.github.GithubReleases
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
+import com.arn.scrobble.onboarding.ChangelogDialogFragmentArgs
 import com.arn.scrobble.search.IndexingWorker
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils
@@ -49,7 +51,6 @@ import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.NavUtils
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -224,25 +225,17 @@ class MainActivity : AppCompatActivity(),
         billingViewModel.queryPurchases()
 
         if (canShowNotices) {
-            collectLatestLifecycleFlow(mainNotifierViewModel.actionNeededSnackbar) { snackbarData ->
+            showChangelogIfNeeded(null)
+            
+            collectLatestLifecycleFlow(mainNotifierViewModel.updateAvailability) { releases ->
                 Snackbar.make(
                     binding.coordinator,
-                    snackbarData.message,
-                    snackbarData.duration
-                ).setAction(snackbarData.actionText) {
-                    if (snackbarData.updateData != null) {
-                        MaterialAlertDialogBuilder(this)
-                            .setTitle(snackbarData.message)
-                            .setMessage(snackbarData.updateData.body)
-                            .setPositiveButton(R.string.download) { _, _ ->
-                                snackbarData.updateData.downloadUrl?.let {
-                                    Stuff.openInBrowser(it)
-                                }
-                            }
-                            .show()
-                    } else if (snackbarData.destinationId != 0)
-                        navController.navigate(snackbarData.destinationId)
-                }
+                    getString(R.string.update_available, releases.name),
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction(R.string.download) {
+                        showChangelogIfNeeded(releases)
+                    }
                     .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
                     .focusOnTv()
                     .show()
@@ -260,21 +253,38 @@ class MainActivity : AppCompatActivity(),
             if (BuildConfig.DEBUG)
                 e.printStackTrace()
 
-            if (e is FmException) {
+            if (e is ApiException) {
                 Snackbar.make(
                     binding.root,
-                    e.localizedMessage ?: e.message,
+                    e.localizedMessage ?: e.message ?: "Error",
                     Snackbar.LENGTH_SHORT
                 ).apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
                     .show()
             }
         }
-//        navController.navigate(R.id.fixItFragment)
     }
 
     override fun onDestroy() {
         mainNotifierViewModel.prevDestinationId = null
         super.onDestroy()
+    }
+
+    private fun showChangelogIfNeeded(releases: GithubReleases?) {
+        val changelogHashcode = getString(R.string.changelog_text).hashCode()
+
+        if (prefs.changelogSeenHashcode != changelogHashcode || releases != null) {
+            val args = ChangelogDialogFragmentArgs.Builder(
+                releases?.body ?: getString(R.string.changelog_text),
+                releases?.downloadUrl
+            )
+                .build()
+                .toBundle()
+
+            navController.navigate(R.id.changelogDialogFragment, args)
+
+            if (releases == null)
+                prefs.changelogSeenHashcode = changelogHashcode
+        }
     }
 
     fun hideFab(removeListeners: Boolean = true) {
@@ -331,10 +341,10 @@ class MainActivity : AppCompatActivity(),
         mainNotifierViewModel.prevDestinationId = destination.id
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         navController.handleDeepLink(intent)
-        if (Stuff.isLoggedIn() && intent?.categories?.contains(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true) {
+        if (Stuff.isLoggedIn() && intent.categories?.contains(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true) {
             navController.navigate(R.id.prefFragment)
         }
     }

@@ -53,8 +53,8 @@ jobs:
       - name: Run update script
         run: cd fdroid-repo/fdroid && bash update.sh 2>&1
 
-      - name: Remove repo secrets
-        run: rm -r fdroid-repo/fdroid/keystore.p12 fdroid-repo/fdroid/config.yml fdroid-repo/fdroid/tmp fdroid-repo/fdroid/srclibs fdroid-repo/fdroid/update.sh
+      - name: Remove unneded files and secrets
+        run: rm -r fdroid-repo/fdroid/keystore.p12 fdroid-repo/fdroid/config.yml fdroid-repo/fdroid/tmp fdroid-repo/fdroid/srclibs fdroid-repo/fdroid/update.sh fdroid-repo/fdroid/metadata
 
       - name: Fix permissions
         run: |

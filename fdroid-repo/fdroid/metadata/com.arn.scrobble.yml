@@ -1,0 +1,41 @@
+AuthorName: 'kawaiiDango'
+Categories:
+- Multimedia
+IssueTracker: 'https://github.com/kawaiiDango/pano-scrobbler/issues'
+Name: Pano Scrobbler
+SourceCode: 'https://github.com/kawaiiDango/pano-scrobbler'
+Summary: 'A last.fm, ListenBrainz, libre.fm and GNU FM client for Android'
+Description: |
+  - No ads ever
+  - Scrobbles to LastFM, LibreFM, GNU FM, Listenbrainz, Maloja, Pleroma or to a file
+  - Supports phones, TVs, tablets, and Android desktops, including Windows 11
+  - Interactive notification: View song info, edit, love, cancel, or block songs directly from the
+    notification
+  - View song, album, artist, album artist, and tag details
+  - View scrobbles from a specific time, such as last year or last month
+  - Edit or delete existing scrobbles. Remembers edits
+  - Extract or Fix metadata such as "Remastered" with regex pattern edits
+  - Block artists, songs, etc., and automatically skip or mute when they play
+  - Check what your followed users are listening to and view their stats
+  - Identify and scrobble a song from the microphone
+  - Scrobble from the S app and Pixel Now Playing
+  - Import and export settings, edits, and blocklists
+  - View charts for a specific week, month, year, or custom range, with change indicators
+  - Charts are also available as a customizable home-screen widget
+  - Collage generator
+  - View scrobble count graphs for specific time periods
+  - Get a random songs, album, or artist from your listening history
+  - Search for a songs, artist, or album
+  - Fetch albums and album artists from LastFM, if missing, before scrobbling
+  - Get your top scrobble digests as a notification at the end of every week and month
+  - Add or remove personal tags
+  - Mix and match themes, supports Material You
+  - Broadcast Intents for automation apps like Tasker
+  - Remember and see apps you scrobbled from and search directly within them
+AntiFeatures:
+  - UpstreamNonFree
+  - NonFreeNet
+WebSite: 'https://github.com/kawaiiDango/pano-scrobbler'
+Translation: https://crowdin.com/project/pscrobbler
+Donate: https://ko-fi.com/kawaiiDango
+License: GPL-3.0

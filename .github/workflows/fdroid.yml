@@ -1,0 +1,66 @@
+name: Generate F-Droid repo on GitHub Pages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+#  schedule:
+#  - cron: "45 2 * * *"
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: "Generate repo"
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create basic directory structure
+        run: mkdir -p fdroid/repo
+
+      - name: Restore correct mtime
+        run: |
+          sudo apt install git-restore-mtime 
+          git restore-mtime
+
+      - name: Install F-Droid server software
+        run: |
+         sudo add-apt-repository ppa:fdroid/fdroidserver
+         sudo apt-get update
+         sudo apt-get install fdroidserver
+
+      - name: Set up repo secrets
+        run: |
+          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > fdroid/keystore.p12
+          echo "${{ secrets.CONFIG_YML }}" | base64 -d - > fdroid/config.yml
+        
+      - name: Run update script
+        run: cd fdroid-repo/fdroid && bash update.sh 2>&1
+
+#      - name: Setup Pages
+#        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './fdroid-repo'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

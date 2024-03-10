@@ -1,4 +1,4 @@
-## Pano Scrobbler
+## <img src="app/src/main/play/listings/en-US/icon/icon.png" alt="app icon" width="32"/> Pano Scrobbler
 
 [play-store]: shields/play-store.svg
 
@@ -55,9 +55,8 @@ which is a bug specific to WSA.
 
 
 - Inspiration from Musixmatch's FloatingLyrics
-- Lastfm API wrapper: Based on https://github.com/jkovacs/lastfm-java
 - YouTube title parser from (Web Scrobbler)[https://github.com/web-scrobbler/web-scrobbler] and (Metadata Filter)[https://github.com/web-scrobbler/metadata-filter]
-- Icons from https://materialdesignicons.com and https://material.io
+- Icons from https://pictogrammers.com and https://material.io
 - Genres filter from https://everynoise.com
 
 Thanks to the amazing [translators](https://crowdin.com/project/pscrobbler/members) and everyone who

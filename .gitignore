@@ -10,7 +10,6 @@
 /app/src/main/java/com/arn/scrobble/Tokens.kt
 /baselineProfile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt
 /psd/renders
-/app/src/main/play
 /app/keys.gradle
 /app/version.txt
 /app/*.json

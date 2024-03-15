@@ -16,24 +16,25 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.MusicEntryItemClickListener
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.mySmoothScrollToPosition
-import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.firstOrNull
 import com.arn.scrobble.utils.Stuff.lastOrNull
 import com.arn.scrobble.utils.Stuff.putData
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.mySmoothScrollToPosition
+import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.Calendar
 
 
@@ -216,7 +217,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                 Stuff.timeToLocal(it.first),
                 Stuff.timeToLocal(it.second + 24 * 60 * 60 * 1000),
             ).let { viewModel.setSelectedPeriod(it) }
-            Stuff.log("selectedPeriod: ${viewModel.selectedPeriod.value}")
+            Timber.i("selectedPeriod: ${viewModel.selectedPeriod.value}")
         }
 
         dpd.show(parentFragmentManager, null)

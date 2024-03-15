@@ -11,20 +11,21 @@ import androidx.core.view.updatePaddingRelative
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
-import coil.dispose
-import coil.load
-import coil.memory.MemoryCache
-import coil.size.Scale
-import com.arn.scrobble.App
+import coil3.dispose
+import coil3.load
+import coil3.memory.MemoryCache
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.ContentScrobblesBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.main.App
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
@@ -37,12 +38,12 @@ import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
-import com.arn.scrobble.ui.UiUtils.autoNotify
-import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.getTintedDrawable
-import com.arn.scrobble.ui.UiUtils.memoryCacheKey
-import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.autoNotify
+import com.arn.scrobble.utils.UiUtils.dp
+import com.arn.scrobble.utils.UiUtils.getTintedDrawable
+import com.arn.scrobble.utils.UiUtils.memoryCacheKey
+import com.arn.scrobble.utils.UiUtils.showWithIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -374,7 +375,10 @@ class ScrobblesAdapter(
 
             if (track.isNowPlaying) {
                 binding.recentsDate.visibility = View.GONE
-                binding.recentsPlaying.load(R.drawable.avd_now_playing)
+                if (!binding.recentsPlaying.isVisible) {
+                    binding.recentsPlaying.isVisible = true
+                    binding.recentsPlaying.load(R.drawable.avd_now_playing)
+                }
                 binding.root.updatePaddingRelative(top = 0)
                 binding.dividerCircle.isVisible = false
             } else {
@@ -391,8 +395,10 @@ class ScrobblesAdapter(
                     binding.root.updatePaddingRelative(top = 0)
                     binding.dividerCircle.isVisible = false
                 }
-
-                binding.recentsPlaying.dispose()
+                if (binding.recentsPlaying.isVisible) {
+                    binding.recentsPlaying.isVisible = false
+                    binding.recentsPlaying.load(null)
+                }
             }
 
             if (track.userloved == true || track.userHated == true) {
@@ -412,40 +418,22 @@ class ScrobblesAdapter(
                 setPlayerIcon(track)
             }
 
-            val imgUrl = track.webp300
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
                 Objects.hash(track.artist.name, track.name)
             )
 
-            if (!viewModel.isShowingLoves) {
-                binding.recentsImg.load(imgUrl ?: "") {
-                    placeholder(R.drawable.avd_loading)
-                    error(errorDrawable)
-                }
-            } else {
-                val musicEntryImageReq = MusicEntryImageReq(track, fetchAlbumInfoIfMissing = true)
-                binding.recentsImg.load(musicEntryImageReq) {
-                    placeholder(R.drawable.avd_loading)
-                    error(errorDrawable)
-                    listener(onSuccess = { request, _ ->
-                        (request.data as? String)?.let {
-                            if (bindingAdapterPosition == viewModel.selectedPos) {
-                                val idx = bindingAdapterPosition
-                                setHeroListener.onSetHero(
-                                    viewModel.virtualList[idx] as Track,
-                                    binding.recentsImg.memoryCacheKey
-                                )
-                            }
-                        }
-                    })
-                }
+            val musicEntryImageReq =
+                MusicEntryImageReq(track, fetchAlbumInfoIfMissing = viewModel.isShowingLoves)
+            binding.recentsImg.load(musicEntryImageReq) {
+                placeholder(R.drawable.avd_loading)
+                error(errorDrawable)
             }
 
             if (prefs.themeTintBackground)
                 viewModel.paletteColors.value?.foreground?.let {
                     // todo this still does not fix the colors bug
-//                Stuff.log("Color for ${track.name} is $it")
+//                Timber.i("Color for ${track.name} is $it")
                     binding.recentsTitle.setTextColor(it)
                 }
 

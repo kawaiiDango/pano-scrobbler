@@ -24,6 +24,7 @@ tasks.register<Delete>("clean").configure {
 tasks.register<GradleBuild>("cleanBuildDraft") {
     tasks = listOf(
         "clean",
+        "genDict",
         "publishReleaseBundle",
         "assembleRelease",
     )

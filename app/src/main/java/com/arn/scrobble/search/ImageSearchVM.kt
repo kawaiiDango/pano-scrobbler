@@ -3,17 +3,16 @@ package com.arn.scrobble.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.api.Requesters.toFlow
 import com.arn.scrobble.api.spotify.SpotifySearchResponse
 import com.arn.scrobble.api.spotify.SpotifySearchType
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 
 class ImageSearchVM : ViewModel() {
@@ -39,7 +38,9 @@ class ImageSearchVM : ViewModel() {
 
                         else -> throw IllegalArgumentException("Invalid search type: $searchType")
                     }
-                    _searchResults.emitAll(results.toFlow())
+                    results.doOnSuccessLoggingFaliure {
+                        _searchResults.emit(it)
+                    }
                 }
         }
     }

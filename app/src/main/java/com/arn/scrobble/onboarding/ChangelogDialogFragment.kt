@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogChangelogBinding
-import com.arn.scrobble.ui.UiUtils.expandIfNeeded
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
@@ -41,15 +39,6 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         binding.changelogText.text = args.changelogText ?: getString(R.string.changelog_text)
-
-        if (args.downloadUrl != null) {
-            binding.downloadButton.isVisible = true
-            binding.changelogText.setOnClickListener {
-                Stuff.openInBrowser(args.downloadUrl!!)
-            }
-        }
     }
 }

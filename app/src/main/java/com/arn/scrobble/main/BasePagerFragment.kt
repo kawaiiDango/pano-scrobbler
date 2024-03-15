@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,8 +12,8 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.activityViewModels
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.ui.OptionsMenuVM
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.NavUtils.setupWithNavUi
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlin.math.abs
 

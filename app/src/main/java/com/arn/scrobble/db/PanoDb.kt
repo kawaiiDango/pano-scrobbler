@@ -4,7 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 
 
 /**

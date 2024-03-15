@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.palette.graphics.Palette
 import com.arn.scrobble.R
-import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.utils.UiUtils
 import com.google.android.material.color.MaterialColors
 
 class PaletteColors {

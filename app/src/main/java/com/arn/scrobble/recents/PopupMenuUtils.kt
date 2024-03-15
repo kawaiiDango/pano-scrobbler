@@ -17,8 +17,8 @@ import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.edits.EditDialogFragmentArgs
 import com.arn.scrobble.onboarding.LoginFlows
-import com.arn.scrobble.ui.UiUtils.showWithIcons
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.UiUtils.showWithIcons
+import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope

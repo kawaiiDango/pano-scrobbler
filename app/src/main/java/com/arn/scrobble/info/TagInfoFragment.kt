@@ -14,10 +14,10 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.databinding.ContentTagInfoBinding
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.expandIfNeeded
-import com.arn.scrobble.ui.UiUtils.scheduleTransition
-import com.arn.scrobble.ui.UiUtils.startFadeLoop
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.UiUtils.scheduleTransition
+import com.arn.scrobble.utils.UiUtils.startFadeLoop
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.copyToClipboard
 import com.arn.scrobble.utils.Stuff.format

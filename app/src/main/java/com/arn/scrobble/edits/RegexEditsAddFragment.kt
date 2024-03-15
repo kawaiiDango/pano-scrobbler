@@ -1,7 +1,6 @@
 package com.arn.scrobble.edits
 
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,9 +16,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import coil.imageLoader
-import coil.request.ImageRequest
-import com.arn.scrobble.MainNotifierViewModel
+import coil3.Image
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.error
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.billing.BillingViewModel
@@ -28,14 +28,15 @@ import com.arn.scrobble.db.ExtractionPatterns
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.RegexEditsDao.Companion.countNamedCaptureGroups
-import com.arn.scrobble.ui.FabData
+import com.arn.scrobble.main.FabData
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.PackageName
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
-import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
@@ -276,8 +277,8 @@ class RegexEditsAddFragment : Fragment() {
                     showOrHideAllPackagesChip()
                 }
 
-                fun onResult(drawable: Drawable?) {
-                    chipIcon = drawable
+                fun onResult(image: Image?) {
+                    chipIcon = image?.asDrawable(resources)
                 }
 
                 val request = ImageRequest.Builder(context)

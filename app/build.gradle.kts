@@ -66,7 +66,6 @@ android {
             resValue("string", "changelog_text", "changelog_placeholder")
         }
 
-        buildConfigField("boolean", "IS_GITHUB_VARIANT", "false")
     }
     buildFeatures {
         viewBinding = true
@@ -165,6 +164,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.android.snowfall)
     implementation(libs.kotlin.csv.jvm)
+    implementation(libs.androidx.viewpager)
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation(libs.material)
@@ -185,6 +185,7 @@ dependencies {
     implementation(libs.skeletonlayout)
     implementation(libs.coil)
     implementation(libs.coil.gif)
+    implementation(libs.coil.network.okhttp)
 
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.core)
@@ -210,8 +211,10 @@ tasks.register("genDict") {
     outputs.file(dictFile)
     doLast {
         val r = Random()
-        val start = r.nextInt(1000) + 0x0100
-        val end = start + 0x4000
+//        val start = r.nextInt(1000) + 0x0100
+//        val end = start + 0x4000
+        val start = 'A'.code
+        val end = 'z'.code
         val chars = (start..end)
             .filter { Character.isValidCodePoint(it) && Character.isJavaIdentifierPart(it) }
             .map { it.toChar().toString() }

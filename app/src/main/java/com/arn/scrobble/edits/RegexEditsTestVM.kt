@@ -2,7 +2,7 @@ package com.arn.scrobble.edits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace

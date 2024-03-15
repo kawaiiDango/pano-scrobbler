@@ -25,6 +25,7 @@ import androidx.annotation.IntRange
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -44,12 +45,11 @@ import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import coil.dispose
-import coil.load
-import coil.memory.MemoryCache
-import com.arn.scrobble.App
-import com.arn.scrobble.MainActivity
-import com.arn.scrobble.MainNotifierViewModel
+import coil3.dispose
+import coil3.load
+import coil3.memory.MemoryCache
+import coil3.request.error
+import coil3.request.placeholder
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
@@ -64,30 +64,32 @@ import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.FabData
+import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.ItemLongClickListener
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
-import com.arn.scrobble.ui.PaletteTransition
 import com.arn.scrobble.ui.SimpleHeaderDecoration
-import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.expandToHeroIfNeeded
-import com.arn.scrobble.ui.UiUtils.memoryCacheKey
-import com.arn.scrobble.ui.UiUtils.scrollToTopOnInsertToTop
-import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
-import com.arn.scrobble.ui.UiUtils.setTitle
-import com.arn.scrobble.ui.UiUtils.setupInsets
-import com.arn.scrobble.ui.UiUtils.showWithIcons
-import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.UiUtils
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.expandToHeroIfNeeded
+import com.arn.scrobble.utils.UiUtils.memoryCacheKey
+import com.arn.scrobble.utils.UiUtils.scrollToTopOnInsertToTop
+import com.arn.scrobble.utils.UiUtils.setProgressCircleColors
+import com.arn.scrobble.utils.UiUtils.setTitle
+import com.arn.scrobble.utils.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.showWithIcons
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
@@ -680,10 +682,19 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
             placeholder(R.drawable.avd_loading)
             error(errDrawable)
-            transitionFactory(PaletteTransition.Factory { palette ->
-                viewModel.setPaletteColors(PaletteColors(context ?: return@Factory, palette))
-            })
             listener(
+                onSuccess = { _, result ->
+                    // Create the palette on a background thread.
+                    Palette.Builder(result.image.asDrawable(resources).toBitmap())
+                        .generate { palette ->
+                            viewModel.setPaletteColors(
+                                PaletteColors(
+                                    context ?: return@generate,
+                                    palette ?: return@generate
+                                )
+                            )
+                        }
+                },
                 onError = { imageRequest, errorResult ->
                     val swatch = Palette.Swatch(errColor, 1)
                     val palette = Palette.from(listOf(swatch))
@@ -869,7 +880,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             .build()
         dpd.addOnPositiveButtonClickListener {
             val toTime = Stuff.timeToLocal(it) + (24 * 60 * 60 - 1) * 1000
-//                Stuff.log("time=" + Date(viewModel.toTime))
+//                Timber.i("time=" + Date(viewModel.toTime))
 
             binding.timeJumpChip.isCheckable = true
             binding.timeJumpChip.isChecked = true

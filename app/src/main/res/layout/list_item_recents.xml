@@ -148,7 +148,9 @@
                     android:layout_height="20dp"
                     android:layout_gravity="end"
                     android:contentDescription="@string/state_scrobbling"
-                    tools:srcCompat="@drawable/avd_now_playing" />
+                    android:visibility="gone"
+                    tools:srcCompat="@drawable/avd_now_playing"
+                    tools:visibility="visible" />
             </FrameLayout>
 
             <LinearLayout

@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import android.os.Bundle
 import android.view.View
@@ -6,12 +6,13 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.utils.BugReportUtils
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 

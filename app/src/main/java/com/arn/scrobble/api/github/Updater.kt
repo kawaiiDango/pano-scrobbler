@@ -1,6 +1,6 @@
 package com.arn.scrobble.api.github
 
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult

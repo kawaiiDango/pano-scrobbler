@@ -16,22 +16,26 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.Period
+import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
+import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainDialogActivity
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
-import com.arn.scrobble.api.lastfm.Period
-import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
-import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -243,7 +247,7 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
             enqueue(WEEKLY)
             enqueue(MONTHLY)
 
-            Stuff.log("scheduling ${DigestWorker::class.java.simpleName}")
+            Timber.i("scheduling ${DigestWorker::class.java.simpleName}")
         }
 
         private fun getScheduleTimes(): Map<String, Long> {

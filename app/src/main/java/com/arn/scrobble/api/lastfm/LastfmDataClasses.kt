@@ -266,7 +266,6 @@ data class PageAttr(
 data class PageResult<T>(
     val attr: PageAttr,
     val entries: List<T>,
-    val fromCache: Boolean,
 )
 
 
@@ -385,8 +384,8 @@ data class LovedTracksResponse(
 )
 
 
-@Serializable(with = FmErrorDeserializer::class)
-data class FmErrorResponse(
+@Serializable(with = ApiErrorDeserializer::class)
+data class ApiErrorResponse(
     val code: Int,
     val message: String
 )

@@ -2,12 +2,13 @@ package com.arn.scrobble.charts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
+import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryLoaderInput
+import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import com.arn.scrobble.utils.Stuff.firstOrNull
 import com.arn.scrobble.utils.Stuff.toBimap
 import io.michaelrocks.bimap.HashBiMap
@@ -149,11 +150,7 @@ open class ChartsPeriodVM : ViewModel() {
         result: Result<PageResult<out MusicEntry>>,
         concat: Boolean
     ) {
-        result.onFailure {
-            App.globalExceptionFlow.emit(it)
-        }
-
-        result.onSuccess {
+        result.doOnSuccessLoggingFaliure {
             if (concat)
                 flow.emit((flow.value ?: emptyList()) + it.entries)
             else

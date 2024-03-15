@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.utils.Stuff.getOrDefaultKey

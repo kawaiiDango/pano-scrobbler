@@ -15,8 +15,8 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
-import com.arn.scrobble.ui.UiUtils.toast
-import com.arn.scrobble.ui.UiUtils.trimmedText
+import com.arn.scrobble.utils.UiUtils.toast
+import com.arn.scrobble.utils.UiUtils.trimmedText
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SimpleEditsEditFragment : DialogFragment(), DialogInterface.OnShowListener {

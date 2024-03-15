@@ -13,9 +13,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogMonthPickerBinding
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.NoOpFilter
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.firstOrNull

@@ -4,6 +4,7 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
+import com.arn.scrobble.main.App
 
 @RequiresApi(Build.VERSION_CODES.N)
 class MasterSwitchQS : TileService() {

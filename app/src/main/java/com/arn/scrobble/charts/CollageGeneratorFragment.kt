@@ -20,10 +20,10 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import coil.imageLoader
-import coil.request.ImageRequest
-import com.arn.scrobble.App
-import com.arn.scrobble.MainNotifierViewModel
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.request.error
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
@@ -35,13 +35,15 @@ import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
 import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
-import com.arn.scrobble.ui.UiUtils.expandIfNeeded
-import com.arn.scrobble.ui.UiUtils.getSelectedItemPosition
-import com.arn.scrobble.ui.UiUtils.getTintedDrawable
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.UiUtils.getSelectedItemPosition
+import com.arn.scrobble.utils.UiUtils.getTintedDrawable
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.ChipGroup
 import kotlinx.coroutines.Dispatchers
@@ -400,7 +402,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             }.build()
 
             withContext(Dispatchers.IO) {
-                requireContext().imageLoader.execute(profilePicRequest).drawable
+                requireContext().imageLoader.execute(profilePicRequest).image?.asDrawable(resources)
             }.let { collageFooter.collageUsernameImage.setImageDrawable(it) }
 
         } else {
@@ -489,7 +491,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             }.build()
 
             val artworkDrawable = withContext(Dispatchers.IO) {
-                requireContext().imageLoader.execute(request).drawable
+                requireContext().imageLoader.execute(request).image?.asDrawable(resources)
             }
             if (prefs.collageSkipMissing && (error || artworkDrawable == null))
                 continue

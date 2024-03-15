@@ -2,20 +2,20 @@ package com.arn.scrobble.pref
 
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.Converters
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.main.App
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
+import timber.log.Timber
 import java.io.Closeable
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -39,7 +39,7 @@ class ImExporter : Closeable {
     fun setOutputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "w")
         if (pfd == null) {
-            Stuff.logW("pfd was null")
+            Timber.w("pfd was null")
             return
         }
         writer = FileOutputStream(pfd!!.fileDescriptor)
@@ -48,7 +48,7 @@ class ImExporter : Closeable {
     fun setInputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "r")
         if (pfd == null) {
-            Stuff.logW("pfd was null")
+            Timber.w("pfd was null")
             return
         }
         reader = FileInputStream(pfd!!.fileDescriptor)

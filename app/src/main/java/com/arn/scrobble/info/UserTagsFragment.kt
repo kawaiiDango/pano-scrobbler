@@ -19,9 +19,9 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.DialogUserTagsBinding
-import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.utils.UiUtils
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.hideKeyboard
 import com.arn.scrobble.utils.Stuff.getData
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

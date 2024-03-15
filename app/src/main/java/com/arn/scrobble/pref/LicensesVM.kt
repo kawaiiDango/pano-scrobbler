@@ -1,7 +1,7 @@
 package com.arn.scrobble.pref
 
 import androidx.lifecycle.ViewModel
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
 

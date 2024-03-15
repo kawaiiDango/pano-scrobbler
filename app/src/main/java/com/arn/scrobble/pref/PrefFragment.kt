@@ -34,7 +34,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
-import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.NLService
@@ -43,11 +42,8 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.main.App
 import com.arn.scrobble.onboarding.LoginFlows
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
-import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.utils.ForceLogException
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
@@ -55,6 +51,10 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.copyToClipboard
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
@@ -714,7 +714,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                     requireContext().toast(R.string.export_failed, Toast.LENGTH_LONG)
                 }
             else
-                Stuff.log("Exported")
+                Timber.i("Exported")
         }
     }
 

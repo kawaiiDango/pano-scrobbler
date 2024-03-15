@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.RectF
 import android.graphics.Shader
-import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.utils.UiUtils.dp
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider

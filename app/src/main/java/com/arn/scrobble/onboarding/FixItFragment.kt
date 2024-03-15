@@ -10,11 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.PersistentNotificationService
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogFixItBinding
-import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 

@@ -12,6 +12,7 @@ import com.acrcloud.rec.ACRCloudConfig
 import com.acrcloud.rec.ACRCloudResult
 import com.acrcloud.rec.IACRCloudListener
 import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -194,7 +195,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             2001 -> statusText.value = App.context.getString(R.string.recording_failed)
             3003, 3015 -> _rateLimitedEvent.tryEmit(Unit)
             else -> {
-                Stuff.logW("rec error: $statusCode - $statusMsg")
+                Timber.w("rec error: $statusCode - $statusMsg")
                 statusText.value = App.context.getString(R.string.network_error)
             }
         }

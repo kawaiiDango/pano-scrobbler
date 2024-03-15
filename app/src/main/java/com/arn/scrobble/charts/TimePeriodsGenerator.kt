@@ -5,7 +5,7 @@ import android.os.Parcelable
 import android.text.format.DateUtils
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges

@@ -1,9 +1,8 @@
 package com.arn.scrobble.ui
 
 import android.util.LruCache
-import coil.intercept.Interceptor
-import coil.request.ImageRequest
-import coil.request.ImageResult
+import coil3.intercept.Interceptor
+import coil3.request.ImageResult
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
@@ -28,13 +27,9 @@ class MusicEntryImageInterceptor : Interceptor {
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
-        val musicEntryImageReq = when (val data = chain.request.data) {
-            is MusicEntryImageReq -> data
-            is MusicEntry -> MusicEntryImageReq(data) // defaults
-            else -> return chain.proceed(chain.request)
-        }
+        val musicEntryImageReq = chain.request.data as? MusicEntryImageReq ?: return chain.proceed()
         val entry = musicEntryImageReq.musicEntry
-        val key = genKey(entry)
+        val key = MusicEntryReqKeyer.genKey(entry)
         val cachedOptional = musicEntryCache[key]
         var fetchedImageUrl = cachedOptional?.value
 
@@ -51,7 +46,8 @@ class MusicEntryImageInterceptor : Interceptor {
                                     Requesters.spotifyRequester.artist(
                                         customMapping.spotifyId
                                     ).getOrNull()?.mediumImageUrl
-                                } else customMapping.fileUri
+                                } else
+                                    customMapping.fileUri
                             } else {
                                 Requesters.spotifyRequester.search(
                                     entry.name,
@@ -70,7 +66,8 @@ class MusicEntryImageInterceptor : Interceptor {
                             customSpotifyMappingsDao.searchAlbum(
                                 entry.artist!!.name,
                                 entry.name
-                            ) else null
+                            ) else
+                            null
 
                         if (customMapping != null) {
                             if (customMapping.spotifyId != null) {
@@ -85,7 +82,7 @@ class MusicEntryImageInterceptor : Interceptor {
                         } else {
                             val webp300 = entry.webp300
                             val needImage = webp300 == null ||
-                                    StarInterceptor.STAR_PATTERN in webp300
+                                    StarMapper.STAR_PATTERN in webp300
 
                             if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing)
                                 semaphore.withPermit {
@@ -101,7 +98,7 @@ class MusicEntryImageInterceptor : Interceptor {
                     is Track -> {
                         val webp300 = entry.webp300
                         val needImage = webp300 == null ||
-                                StarInterceptor.STAR_PATTERN in webp300
+                                StarMapper.STAR_PATTERN in webp300
 
                         if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing)
                             semaphore.withPermit {
@@ -120,28 +117,16 @@ class MusicEntryImageInterceptor : Interceptor {
         if (musicEntryImageReq.isHeroImage && (entry is Album || entry is Track))
             fetchedImageUrl = fetchedImageUrl?.replace("300x300", "600x600")
 
-        val request = ImageRequest.Builder(chain.request)
+        val request = chain.request.newBuilder()
             .data(fetchedImageUrl ?: "")
             .build()
 
-        return chain.proceed(request)
-    }
-
-    private fun genKey(entry: MusicEntry) = when (entry) {
-        is Artist -> Artist::class.java.name + entry.name
-        is Album -> entry.artist!!.name + Album::class.java.name + entry.name
-        is Track -> entry.artist.name + Track::class.java.name + entry.name
+        return chain.withRequest(request).proceed()
     }
 
     fun clearCacheForEntry(entry: MusicEntry) {
-        musicEntryCache.remove(genKey(entry))
+        musicEntryCache.remove(MusicEntryReqKeyer.genKey(entry))
     }
+
+    private class Optional<T>(val value: T?)
 }
-
-class MusicEntryImageReq(
-    val musicEntry: MusicEntry,
-    val isHeroImage: Boolean = false,
-    val fetchAlbumInfoIfMissing: Boolean = false
-)
-
-private class Optional<T>(val value: T?)

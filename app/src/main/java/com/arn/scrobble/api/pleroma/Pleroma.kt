@@ -1,10 +1,10 @@
 package com.arn.scrobble.api.pleroma
 
 import androidx.core.text.HtmlCompat
-import com.arn.scrobble.App
-import com.arn.scrobble.DrawerData
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.CustomCachePlugin
+import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
@@ -12,7 +12,6 @@ import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Album
-import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -25,63 +24,36 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.HttpCallValidator
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.Url
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
 import io.ktor.http.parameters
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
-import okhttp3.Cache
-import java.io.File
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     private val client: HttpClient by lazy {
-        HttpClient(OkHttp) {
-            engine {
-                config {
-                    followRedirects(true)
-                    cache(Cache(File(App.context.cacheDir, "ktor"), 10 * 1024 * 1024))
-                    readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
-                }
-            }
-
-            install(HttpCallValidator) {
-                validateResponse { response ->
-                    if (response.status.isSuccess()) return@validateResponse
-                    try {
-                        val errorResponse = response.body<PleromaErrorResponse>()
-                        throw ApiException(response.status.value, errorResponse.error)
-                    } catch (e: Exception) {
-                        throw ApiException(response.status.value, response.status.description, e)
-                    }
-                }
-            }
-
-            install(ContentNegotiation) {
-                json(Stuff.myJson)
+        Requesters.genericKtorClient.config {
+            install(CustomCachePlugin) {
+                policy = PleromaExpirationPolicy()
             }
 
             defaultRequest {
                 url(userAccount.apiRoot!!)
                 bearerAuth(userAccount.authKey)
             }
-
-//            expectSuccess = true
-            // https://youtrack.jetbrains.com/issue/KTOR-4225
         }
     }
 
@@ -136,7 +108,14 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         includeNowPlaying: Boolean,
         limit: Int
     ): Result<PageResult<Track>> {
-        return client.getResult<List<PleromaTrack>>("api/v1/pleroma/accounts/${userAccount.user.name}/scrobbles")
+        val cacheStrategy = if (cached)
+            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        else
+            CacheStrategy.NETWORK_ONLY
+
+        return client.getResult<List<PleromaTrack>>("api/v1/pleroma/accounts/${userAccount.user.name}/scrobbles") {
+            cacheStrategy(cacheStrategy)
+        }
             .map {
                 val tracks = it.map { track ->
                     Track(
@@ -154,7 +133,6 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
                         total = tracks.size,
                     ),
                     tracks,
-                    false
                 )
             }
     }
@@ -179,7 +157,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         return Result.success(createEmptyPageResult())
     }
 
-    override suspend fun loadDrawerData(username: String): DrawerData? {
+    override suspend fun loadDrawerData(username: String): DrawerData {
         val isSelf = username == userAccount.user.name
 
         val dd = DrawerData(0)
@@ -255,10 +233,18 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     }
 }
 
-@Serializable
-private data class PleromaErrorResponse(
-    val error: String,
-)
+
+class PleromaExpirationPolicy : ExpirationPolicy {
+    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
+
+    override fun getExpirationTime(url: Url) =
+        when (url.pathSegments.lastOrNull()) {
+            "scrobbles",
+            -> ONE_WEEK
+
+            else -> -1
+        }
+}
 
 @Serializable
 private data class PleromaTrack(

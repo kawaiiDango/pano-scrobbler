@@ -20,7 +20,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -30,10 +30,10 @@ import com.arn.scrobble.databinding.ContentImageSearchBinding
 import com.arn.scrobble.db.CustomSpotifyMapping
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.hideKeyboard
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getData

@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import android.app.PendingIntent
 import android.content.Context
@@ -9,6 +9,7 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
+import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.themes.ColorPatchUtils

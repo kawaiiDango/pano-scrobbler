@@ -1,6 +1,5 @@
 package com.arn.scrobble.edits
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -14,16 +13,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import coil.imageLoader
-import coil.request.ImageRequest
+import coil3.Image
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.error
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.databinding.ContentRegexTestBinding
 import com.arn.scrobble.ui.PackageName
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.chip.Chip
@@ -111,8 +112,8 @@ class RegexEditsTestFragment : Fragment() {
             viewModel.setPkgName(null)
         }
 
-        fun onAppIconResult(drawable: Drawable?) {
-            binding.regexTestPackage.chipIcon = drawable
+        fun onAppIconResult(image: Image?) {
+            binding.regexTestPackage.chipIcon = image?.asDrawable(resources)
         }
 
         setFragmentResultListener(Stuff.ARG_ALLOWED_PACKAGES) { key, bundle ->

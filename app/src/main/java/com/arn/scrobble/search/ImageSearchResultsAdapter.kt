@@ -7,7 +7,9 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
 import com.arn.scrobble.R
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
@@ -15,7 +17,7 @@ import com.arn.scrobble.api.spotify.SpotifyMusicItem
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils.getTintedDrawable
+import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 
 
 class ImageSearchResultsAdapter(

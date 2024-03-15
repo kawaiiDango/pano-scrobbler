@@ -1,7 +1,7 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.App
 import com.arn.scrobble.api.lastfm.CookieSerializable.Companion.toCookieSerializable
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import com.frybits.harmony.getHarmonySharedPreferences
 import io.ktor.client.plugins.cookies.CookiesStorage
@@ -43,7 +43,7 @@ data class CookieSerializable(
             name,
             value,
             encoding,
-            maxAge,
+            maxAge ?: 0,
             expires?.timestamp,
             domain,
             path,

@@ -1,14 +1,15 @@
-package com.arn.scrobble
+package com.arn.scrobble.charts
 
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.charts.ChartsPeriodVM
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableStateFlow

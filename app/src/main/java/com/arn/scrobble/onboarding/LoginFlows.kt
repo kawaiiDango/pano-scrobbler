@@ -2,7 +2,7 @@ package com.arn.scrobble.onboarding
 
 import android.os.Bundle
 import androidx.navigation.NavController
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.friends.UserAccountTemp

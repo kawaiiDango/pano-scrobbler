@@ -1,18 +1,20 @@
 package com.arn.scrobble.api.lastfm
 
-import okhttp3.HttpUrl
+import com.arn.scrobble.api.ExpirationPolicy
+import io.ktor.http.Url
 import java.util.concurrent.TimeUnit
 
 class LastfmExpirationPolicy : ExpirationPolicy {
 
-    private val ONE_WEEK = TimeUnit.DAYS.toSeconds(7).toInt()
-    private val FIVE_MINUTES = TimeUnit.MINUTES.toSeconds(5).toInt()
-    private val ONE_MONTH = TimeUnit.DAYS.toSeconds(30).toInt()
+    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
+    private val FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5)
+    private val ONE_MONTH = TimeUnit.DAYS.toMillis(30)
 
-    override fun getExpirationTimeSecs(url: HttpUrl): Int {
-        val method = url.queryParameter("method")?.lowercase()
-        val username = url.queryParameter("username")
-        val page = url.queryParameter("page")
+    override fun getExpirationTime(url: Url): Long {
+
+        val method = url.parameters["method"]?.lowercase()
+        val username = url.parameters["username"]
+        val page = url.parameters["page"]
         if (method == null || page != null && page != "1") {
             // cache only the first page
             return -1

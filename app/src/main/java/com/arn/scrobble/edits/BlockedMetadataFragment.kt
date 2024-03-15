@@ -13,18 +13,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.ui.FabData
+import com.arn.scrobble.main.FabData
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.hideKeyboard
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.flow.filterNotNull
 

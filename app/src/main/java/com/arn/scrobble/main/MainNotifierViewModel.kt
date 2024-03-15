@@ -1,8 +1,9 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.github.Updater
@@ -10,7 +11,6 @@ import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -58,11 +58,6 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
 //        BuildConfig.DEBUG ||
         (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
                 (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
-    }
-
-    init {
-        if (BuildConfig.IS_GITHUB_VARIANT)
-            checkForUpdates()
     }
 
     fun updateCanIndex() {

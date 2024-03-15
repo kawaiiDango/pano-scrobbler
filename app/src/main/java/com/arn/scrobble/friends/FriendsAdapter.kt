@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.arn.scrobble.App
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
@@ -22,7 +26,6 @@ import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
-import com.arn.scrobble.ui.PaletteTransition
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -176,22 +179,39 @@ class FriendsAdapter(
                     .load(userImgUrl) {
                         placeholder(R.drawable.avd_loading)
                         error(InitialsDrawable(itemView.context, item.user))
-                        if (!wasCached)
-                            transitionFactory(PaletteTransition.Factory { palette ->
-                                val paletteColors = PaletteColors(itemView.context, palette)
-                                val anim = ValueAnimator.ofArgb(bgGray, paletteColors.background)
-                                anim.addUpdateListener {
-                                    val bg = itemView.background
-                                    if (bg is MaterialShapeDrawable) {
-                                        bg.setTint(it.animatedValue as Int)
-                                    }
-                                }
+                        if (!wasCached) {
+                            listener(
+                                onSuccess = { _, result ->
+                                    // Create the palette on a background thread.
+                                    Palette.Builder(
+                                        result.image
+                                            .asDrawable(itemView.context.resources)
+                                            .toBitmap()
+                                    )
+                                        .generate { palette ->
+                                            palette ?: return@generate
 
-                                anim.duration = 350
-                                anim.interpolator = AccelerateInterpolator()
-                                anim.start()
-                                viewModel.urlToPaletteMap[userImgUrl] = paletteColors
-                            })
+                                            val paletteColors =
+                                                PaletteColors(itemView.context, palette)
+                                            val anim = ValueAnimator.ofArgb(
+                                                bgGray,
+                                                paletteColors.background
+                                            )
+                                            anim.addUpdateListener {
+                                                val bg = itemView.background
+                                                if (bg is MaterialShapeDrawable) {
+                                                    bg.setTint(it.animatedValue as Int)
+                                                }
+                                            }
+
+                                            anim.duration = 350
+                                            anim.interpolator = AccelerateInterpolator()
+                                            anim.start()
+                                            viewModel.urlToPaletteMap[userImgUrl] = paletteColors
+                                        }
+                                }
+                            )
+                        }
                     }
             }
         }

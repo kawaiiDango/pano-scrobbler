@@ -6,12 +6,13 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.edits.RegexPresets
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 
 @Dao
 interface RegexEditsDao {
@@ -190,7 +191,7 @@ interface RegexEditsDao {
                 if (App.prefs.proStatus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     extract()
             } catch (e: IllegalArgumentException) {
-                Stuff.logW("regex error: ${e.message}")
+                Timber.w("regex error: ${e.message}")
             }
 
             return numMatches

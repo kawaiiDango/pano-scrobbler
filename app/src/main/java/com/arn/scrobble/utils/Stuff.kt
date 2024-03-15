@@ -37,7 +37,6 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -49,8 +48,9 @@ import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriodType
+import com.arn.scrobble.main.App
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.UiUtils.toast
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -74,7 +74,6 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 import kotlin.math.ln
-import kotlin.math.min
 import kotlin.math.pow
 
 
@@ -125,7 +124,6 @@ object Stuff {
 
     const val EXTRA_PINNED = "pinned"
 
-    const val READ_TIMEOUT_SECS = 20L
     const val RECENTS_REFRESH_INTERVAL = 60 * 1000L
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
@@ -303,17 +301,9 @@ object Stuff {
 
     fun Number.format() = numberFormat.format(this)!!
 
-    fun log(s: String) {
-        Timber.tag(TAG).i(s)
-    }
-
-    fun logD(s: () -> String) {
+    fun Timber.Tree.dLazy(s: () -> String) {
         if (BuildConfig.DEBUG)
             Timber.tag(TAG).d(s())
-    }
-
-    fun logW(s: String) {
-        Timber.tag(TAG).w(s)
     }
 
     fun timeIt(s: () -> String) {
@@ -450,7 +440,7 @@ object Stuff {
         val millis = millis ?: 0
         val diff = System.currentTimeMillis() - millis
         return when {
-            diff <= DateUtils.MINUTE_IN_MILLIS -> {
+            millis == 0L || diff <= DateUtils.MINUTE_IN_MILLIS -> {
                 context.getString(R.string.time_just_now)
             }
 
@@ -505,25 +495,6 @@ object Stuff {
             App.context.packageManager.getPackageInfo(packageName, 0) != null
         } catch (e: PackageManager.NameNotFoundException) {
             false
-        }
-    }
-
-    fun getDefaultBrowserPackage(packageManager: PackageManager): String? {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://example.com"))
-        return try {
-            val pkgName = packageManager.resolveActivity(
-                browserIntent,
-                PackageManager.MATCH_DEFAULT_ONLY
-            )!!
-                .activityInfo.packageName
-
-            // returns "android" if no default browser is set
-            if ("." in pkgName)
-                pkgName
-            else
-                null
-        } catch (e: ActivityNotFoundException) {
-            null
         }
     }
 
@@ -778,7 +749,7 @@ object Stuff {
 
         nlsService ?: return false
 
-        log(
+        Timber.i(
             "${NLService::class.java.name} - clientCount: ${nlsService.clientCount} process:${nlsService.process}"
         )
 
@@ -796,7 +767,7 @@ object Stuff {
                 value = getRating(it)?.toString()
             "$it: $value"
         }
-        logD { "MediaMetadata\n$data" }
+        Timber.dLazy { "MediaMetadata\n$data" }
     }
 
     fun Intent.putSingle(parcelable: Parcelable): Intent {
@@ -859,47 +830,14 @@ object Stuff {
             toast(R.string.copied)
     }
 
-    fun String.similarity(s: String): Double {
-        var longer = this
-        var shorter = s
-        if (this.length < s.length) { // longer should always have greater length
-            longer = s
-            shorter = this
+    suspend fun <T> Result<T>.doOnSuccessLoggingFaliure(block: suspend (T) -> Unit) {
+        onFailure {
+            App.globalExceptionFlow.emit(it)
         }
-        val longerLength = longer.length
-        return if (longerLength == 0) {
-            1.0 /* both strings are zero length */
-        } else (longerLength - editDistance(longer, shorter)) / longerLength.toDouble()
-    }
 
-    // Example implementation of the Levenshtein Edit Distance
-// See http://rosettacode.org/wiki/Levenshtein_distance#Java
-    private fun editDistance(s1: String, s2: String): Int {
-        val s1 = s1.lowercase(Locale.getDefault())
-        val s2 = s2.lowercase(Locale.getDefault())
-        val costs = IntArray(s2.length + 1)
-        for (i in 0..s1.length) {
-            var lastValue = i
-            for (j in 0..s2.length) {
-                if (i == 0) {
-                    costs[j] = j
-                } else {
-                    if (j > 0) {
-                        var newValue = costs[j - 1]
-                        if (s1[i - 1] != s2[j - 1])
-                            newValue = min(
-                                min(newValue, lastValue),
-                                costs[j]
-                            ) + 1
-                        costs[j - 1] = lastValue
-                        lastValue = newValue
-                    }
-                }
-            }
-            if (i > 0)
-                costs[s2.length] = lastValue
+        onSuccess {
+            block(it)
         }
-        return costs[s2.length]
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

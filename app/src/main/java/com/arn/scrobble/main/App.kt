@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -13,11 +13,15 @@ import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.ContextCompat
 import androidx.work.Configuration
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.size.Precision
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.networkObserverEnabled
+import coil3.request.allowHardware
+import coil3.request.crossfade
+import coil3.size.Precision
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.pref.MainPrefs
@@ -27,7 +31,8 @@ import com.arn.scrobble.ui.AppIconFetcher
 import com.arn.scrobble.ui.AppIconKeyer
 import com.arn.scrobble.ui.DemoInterceptor
 import com.arn.scrobble.ui.MusicEntryImageInterceptor
-import com.arn.scrobble.ui.StarInterceptor
+import com.arn.scrobble.ui.MusicEntryMapper
+import com.arn.scrobble.ui.StarMapper
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
@@ -37,7 +42,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import timber.log.Timber
 
 
-class App : Application(), ImageLoaderFactory, Configuration.Provider {
+class App : Application(), SingletonImageLoader.Factory, Configuration.Provider {
     private var connectivityCheckInited = false
     private val musicEntryImageInterceptor = MusicEntryImageInterceptor()
 
@@ -56,7 +61,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         context = applicationContext
         super.onCreate()
 
-        Timber.plant(Timber.DebugTree())
+        Timber.plant(LogcatTree())
 
         // migrate prefs
         MigratePrefs.migrate(prefs)
@@ -140,17 +145,13 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         connectivityCheckInited = true
     }
 
-    override fun newImageLoader() = ImageLoader.Builder(this)
+    override fun newImageLoader(context: PlatformContext) = ImageLoader.Builder(this)
         .components {
             add(AppIconKeyer())
             add(AppIconFetcher.Factory())
+            add(MusicEntryMapper())
             add(musicEntryImageInterceptor)
-            add(StarInterceptor())
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
-            }
+            add(StarMapper())
 
             if (prefs.demoMode)
                 add(DemoInterceptor())
@@ -158,6 +159,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         .crossfade(Stuff.CROSSFADE_DURATION)
         .precision(Precision.INEXACT)
         .allowHardware(false)
+        .networkObserverEnabled(true)
         .build()
 
     fun clearMusicEntryImageCache(entry: MusicEntry) {

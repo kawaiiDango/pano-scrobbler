@@ -11,7 +11,6 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.arn.scrobble.App.Companion.prefs
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
@@ -33,12 +32,14 @@ import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTracksDao.Companion.deltaUpdate
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.main.App.Companion.prefs
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class IndexingWorker(
     context: Context,
@@ -93,7 +94,7 @@ class IndexingWorker(
 
 
     private suspend fun runFullIndex() {
-        Stuff.log(this::runFullIndex.name)
+        Timber.i(this::runFullIndex.name)
 
         val limitPerPage = 1000
         val numPages = Stuff.MAX_INDEXED_ITEMS / limitPerPage
@@ -221,7 +222,7 @@ class IndexingWorker(
 
     private suspend fun runDeltaIndex(prFromRecents: PageResult<Track>? = null) {
 
-        Stuff.log(this::runDeltaIndex.name)
+        Timber.i(this::runDeltaIndex.name)
 
         val from = prefs.lastMaxIndexedScrobbleTime
             ?: throw IllegalStateException("Full index never run")

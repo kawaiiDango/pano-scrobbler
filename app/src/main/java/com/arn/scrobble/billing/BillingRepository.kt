@@ -8,10 +8,10 @@ import android.os.Looper
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
-import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Tokens
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -80,7 +80,7 @@ class BillingRepository private constructor(private val application: Application
             }
 
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Stuff.logW("BILLING_UNAVAILABLE")
+                Timber.w("BILLING_UNAVAILABLE")
                 //Some apps may choose to make decisions based on this knowledge.
             }
 

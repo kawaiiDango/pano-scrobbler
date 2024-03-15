@@ -5,12 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
-import com.arn.scrobble.App
-import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format

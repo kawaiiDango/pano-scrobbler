@@ -12,7 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.AccountType
@@ -24,10 +24,10 @@ import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.recents.PopupMenuUtils
-import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.UiUtils.hideKeyboard
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/myHomePagerFragment"
-        android:name="com.arn.scrobble.HomePagerFragment"
+        android:name="com.arn.scrobble.main.HomePagerFragment"
         android:label=" ">
         <action
             android:id="@+id/action_homePagerFragment_to_prefFragment"
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/othersHomePagerFragment"
-        android:name="com.arn.scrobble.HomePagerFragment"
+        android:name="com.arn.scrobble.main.HomePagerFragment"
         android:label=" ">
         <action
             android:id="@+id/action_homePagerFragment_to_chartsPagerFragment"
@@ -251,7 +251,7 @@
     </fragment>
     <fragment
         android:id="@+id/randomFragment"
-        android:name="com.arn.scrobble.RandomFragment"
+        android:name="com.arn.scrobble.charts.RandomFragment"
         android:label="@string/random"
         tools:layout="@layout/content_random" />
     <fragment
@@ -319,7 +319,7 @@
         tools:layout="@layout/content_info_track" />
     <dialog
         android:id="@+id/optionsMenuDialogFragment"
-        android:name="com.arn.scrobble.OptionsMenuDialogFragment"
+        android:name="com.arn.scrobble.main.OptionsMenuDialogFragment"
         android:label="OptionsMenuDialogFragment"
         tools:layout="@layout/content_options_menu" />
     <dialog
@@ -390,10 +390,6 @@
         tools:layout="@layout/dialog_changelog" >
         <argument
             android:name="changelog_text"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="download_url"
             app:argType="string"
             app:nullable="true" />
     </dialog>

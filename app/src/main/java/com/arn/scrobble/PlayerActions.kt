@@ -3,6 +3,7 @@ package com.arn.scrobble
 import android.media.Rating
 import android.media.session.MediaController
 import com.arn.scrobble.utils.Stuff
+import timber.log.Timber
 
 object PlayerActions {
 
@@ -106,7 +107,7 @@ object PlayerActions {
             if (rating != null)
                 it.transportControls.setRating(rating)
 
-            Stuff.log("Rating type: ${it.ratingType}")
+            Timber.i("Rating type: ${it.ratingType}")
         }
     }
 

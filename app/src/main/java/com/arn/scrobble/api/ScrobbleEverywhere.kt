@@ -2,7 +2,6 @@ package com.arn.scrobble.api
 
 import android.content.Intent
 import android.util.LruCache
-import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.PlayingTrackInfo
 import com.arn.scrobble.R
@@ -21,12 +20,14 @@ import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
+import com.arn.scrobble.main.App
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.putSingle
 import kotlinx.coroutines.delay
+import timber.log.Timber
 import java.io.IOException
 
 
@@ -41,7 +42,7 @@ object ScrobbleEverywhere {
         trackInfo: PlayingTrackInfo,
         parseTitle: Boolean = trackInfo.ignoreOrigArtist
     ) {
-        Stuff.log(
+        Timber.i(
             this::scrobble.name + " " +
                     (if (nowPlaying) "np" else "submit")
                     + " " + trackInfo.artist + " - " + trackInfo.title
@@ -354,7 +355,7 @@ object ScrobbleEverywhere {
         }
         if (failedTextLines.isNotEmpty()) {
             val failedText = failedTextLines.joinToString("<br>\n")
-            Stuff.logW("failedText= $failedText")
+            Timber.w("failedText= $failedText")
             if (ignored) {
                 val i = Intent(NLService.iBAD_META_S)
                     .setPackage(context.packageName)
@@ -387,7 +388,7 @@ object ScrobbleEverywhere {
     }
 
     suspend fun loveOrUnlove(track: Track, love: Boolean) {
-        Stuff.log(this::loveOrUnlove.name + " " + love)
+        Timber.i(this::loveOrUnlove.name + " " + love)
 
         if (track.artist.name.isEmpty() || track.name.isEmpty())
             return

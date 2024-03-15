@@ -11,7 +11,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import java.lang.ref.WeakReference
 import java.util.Locale
 

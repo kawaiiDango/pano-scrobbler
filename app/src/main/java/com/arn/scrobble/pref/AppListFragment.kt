@@ -13,18 +13,18 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.App
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentAppListBinding
-import com.arn.scrobble.ui.FabData
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.setTitle
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.FabData
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.setTitle
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.flow.filter
 

@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate

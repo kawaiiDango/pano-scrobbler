@@ -15,7 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.R
-import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.utils.UiUtils.dp
 import com.faltenreich.skeletonlayout.Skeleton
 import com.faltenreich.skeletonlayout.SkeletonConfig
 import com.faltenreich.skeletonlayout.SkeletonLayout

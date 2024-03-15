@@ -1,21 +1,25 @@
 package com.arn.scrobble.api
 
-import com.arn.scrobble.App
-import com.arn.scrobble.api.CacheMarkerInterceptor.Companion.isFromCache
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.R
+import com.arn.scrobble.api.lastfm.ApiErrorResponse
 import com.arn.scrobble.api.lastfm.ApiException
-import com.arn.scrobble.api.lastfm.CacheInterceptor
-import com.arn.scrobble.api.lastfm.FmErrorResponse
 import com.arn.scrobble.api.lastfm.LastFmUnauthedRequester
 import com.arn.scrobble.api.lastfm.LastfmExpirationPolicy
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageEntries
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.spotify.SpotifyRequester
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.UserAgent
+import io.ktor.client.plugins.cache.HttpCache
+import io.ktor.client.plugins.cache.storage.FileStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
@@ -24,11 +28,8 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.JsonConvertException
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import okhttp3.Cache
 import java.io.File
-import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
 
 
@@ -39,33 +40,38 @@ object Requesters {
 
     val genericKtorClient by lazy {
         HttpClient(OkHttp) {
-            engine {
-                config {
-                    followRedirects(true)
-                    if (!Stuff.isRunningInTest)
-                        cache(Cache(File(App.context.cacheDir, "ktor"), 10 * 1024 * 1024))
-                    readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
-                }
-                addNetworkInterceptor(CacheInterceptor(LastfmExpirationPolicy()))
-                addInterceptor(CacheMarkerInterceptor())
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = 20 * 1000L
             }
 
             install(ContentNegotiation) {
                 json(Stuff.myJson)
             }
 
-//            if (BuildConfig.DEBUG) {
-//                install(Logging) {
-//                    logger = Logger.ANDROID
-//                    level = LogLevel.ALL
-//                }
-//            }
+            if (!Stuff.isRunningInTest) {
+
+                install(UserAgent) {
+                    agent =
+                        App.context.getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME
+                }
+
+                install(HttpCache) {
+                    val cacheFile = File(App.context.cacheDir, "ktor")
+                    cacheFile.mkdirs()
+                    publicStorage(FileStorage(cacheFile))
+                }
+            }
+
+            install(CustomCachePlugin) {
+                policy = LastfmExpirationPolicy()
+            }
 
             install(HttpCallValidator) {
                 validateResponse { response ->
                     if (response.status.isSuccess()) return@validateResponse
                     try {
-                        val errorResponse = response.body<FmErrorResponse>()
+                        val errorResponse = response.body<ApiErrorResponse>()
                         throw ApiException(errorResponse.code, errorResponse.message)
                     } catch (e: Exception) {
                         throw ApiException(response.status.value, response.status.description, e)
@@ -89,7 +95,7 @@ object Requesters {
                 val body = resp.body<T>()
                 Result.success(body)
             } catch (e: JsonConvertException) {
-                val errorResponse = resp.body<FmErrorResponse>()
+                val errorResponse = resp.body<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
@@ -109,7 +115,7 @@ object Requesters {
                 val body = resp.body<T>()
                 Result.success(body)
             } catch (e: JsonConvertException) {
-                val errorResponse = resp.body<FmErrorResponse>()
+                val errorResponse = resp.body<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
@@ -128,14 +134,12 @@ object Requesters {
         withContext(Dispatchers.IO) {
             val resp = get(urlString, block)
             try {
-                val fromCache = resp.isFromCache
                 // listenbrainz empty charts
                 if (resp.status.value == 204) {
                     return@withContext Result.success(
                         PageResult(
                             PageAttr(1, 1, 0),
                             emptyList(),
-                            fromCache
                         )
                     )
                 }
@@ -153,11 +157,10 @@ object Requesters {
                             total = pageEntries.entries.size,
                         ),
                     pageEntries.entries,
-                    fromCache
                 )
                 Result.success(pr)
             } catch (e: JsonConvertException) {
-                val errorResponse = resp.body<FmErrorResponse>()
+                val errorResponse = resp.body<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
@@ -166,12 +169,4 @@ object Requesters {
     } catch (e: Exception) {
         Result.failure(e)
     }
-
-    fun <T> Result<T>.toFlow() = flow {
-        when {
-            isSuccess -> emit(getOrThrow())
-            isFailure -> App.globalExceptionFlow.emit(exceptionOrNull()!!)
-        }
-    }
-
 }

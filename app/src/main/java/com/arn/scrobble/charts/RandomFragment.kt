@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.charts
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,22 +9,24 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
-import coil.load
+import coil3.load
+import coil3.request.placeholder
+import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
-import com.arn.scrobble.charts.ChartsPeriodFragment
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
+import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
-import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.dp
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format

@@ -3,15 +3,15 @@ package com.arn.scrobble.pref
 import android.app.NotificationManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.DrawerData
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff

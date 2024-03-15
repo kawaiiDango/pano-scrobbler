@@ -1,7 +1,8 @@
 package com.arn.scrobble
 
 import android.app.Activity
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.main.App
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.review.testing.FakeReviewManager
 

@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import kotlinx.serialization.Serializable
 

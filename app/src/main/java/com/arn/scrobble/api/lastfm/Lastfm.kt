@@ -1,9 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.App
-import com.arn.scrobble.DrawerData
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.CacheMarkerInterceptor
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
@@ -17,15 +14,13 @@ import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.friends.UserCached.Companion.toUserCached
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.setMidnight
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.HttpCallValidator
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
@@ -33,18 +28,14 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.Parameters
-import io.ktor.http.isSuccess
 import io.ktor.http.parametersOf
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
-import okhttp3.Cache
-import java.io.File
+import timber.log.Timber
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Calendar
 import java.util.TreeMap
-import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -60,48 +51,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     }
 
     val client: HttpClient by lazy {
-        HttpClient(OkHttp) {
-            engine {
-                config {
-                    followRedirects(true)
-                    if (!Stuff.isRunningInTest)
-                        cache(Cache(File(App.context.cacheDir, "ktor"), 10 * 1024 * 1024))
-                    readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
-                }
-                addNetworkInterceptor(CacheInterceptor(LastfmExpirationPolicy()))
-                addInterceptor(CacheMarkerInterceptor())
-            }
-
-            install(ContentNegotiation) {
-                json(Stuff.myJson)
-            }
-
-//            if (BuildConfig.DEBUG) {
-//                install(Logging) {
-//                    logger = Logger.ANDROID
-//                    level = LogLevel.ALL
-//                }
-//            }
-
+        Requesters.genericKtorClient.config {
             defaultRequest {
                 url(apiRoot)
             }
-
-            install(HttpCallValidator) {
-                validateResponse { response ->
-                    if (response.status.isSuccess()) return@validateResponse
-
-                    try {
-                        val errorResponse = response.body<FmErrorResponse>()
-                        throw ApiException(errorResponse.code, errorResponse.message)
-                    } catch (e: Exception) {
-                        throw ApiException(response.status.value, response.status.description, e)
-                    }
-                }
-            }
-
-//            expectSuccess = true
-            // https://youtrack.jetbrains.com/issue/KTOR-4225
         }
     }
 
@@ -201,10 +154,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         limit: Int,
     ): Result<PageResult<Track>> {
         return coroutineScope {
-            val cacheStrategy =
-                if (!Stuff.isOnline && cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-                else if (cached) CacheStrategy.CACHE_FIRST
-                else CacheStrategy.NETWORK_ONLY
+            val cacheStrategy = if (cached)
+                CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+            else
+                CacheStrategy.NETWORK_ONLY
 
             val _from = if (to > 0 && from <= 0) 1 else (from / 1000)
             val _to =
@@ -243,11 +196,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         cached: Boolean,
         limit: Int,
     ): Result<PageResult<Track>> {
-        val cacheStrategy = if (!Stuff.isOnline && cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-        else if (cached) CacheStrategy.CACHE_FIRST
+        val cacheStrategy = if (cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
         else CacheStrategy.NETWORK_ONLY
 
-        Stuff.log(this::getLoves.name + " " + page)
+        Timber.i(this::getLoves.name + " " + page)
 
         return client.getPageResult<LovedTracksResponse, Track>(transform = { it.lovedtracks }) {
             parameter("method", "user.getLovedTracks")
@@ -270,8 +222,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         cached: Boolean,
         limit: Int
     ): Result<PageResult<User>> {
-        val cacheStrategy = if (!Stuff.isOnline && cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-        else if (cached) CacheStrategy.CACHE_FIRST
+        val cacheStrategy = if (cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
         else CacheStrategy.NETWORK_ONLY
 
         return client.getPageResult<FriendsResponse, User>(transform = { it.friends }) {
@@ -293,18 +244,16 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                         total = 0,
                     ),
                     emptyList(),
-                    false
                 )
             } else throw it
         }
     }
 
     override suspend fun loadDrawerData(username: String): DrawerData? {
-        Stuff.log(this::loadDrawerData.name)
+        Timber.i(this::loadDrawerData.name)
 
         val user = userGetInfo(username).getOrNull()
         val isSelf = username == userAccount.user.name
-        val prefs = App.prefs
 
         val cal = Calendar.getInstance()
         cal.setMidnight()
@@ -412,7 +361,6 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                         total = it.size,
                     ),
                     it,
-                    false
                 )
             }
         }

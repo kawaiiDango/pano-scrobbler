@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.arn.scrobble.App
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -15,15 +16,16 @@ import com.arn.scrobble.api.lastfm.SearchResults
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
+import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
-import com.arn.scrobble.ui.UiUtils.autoNotify
-import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.UiUtils.autoNotify
+import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import java.text.DateFormat
 
 

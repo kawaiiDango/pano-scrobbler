@@ -2,7 +2,7 @@ package com.arn.scrobble.info
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry

@@ -12,8 +12,8 @@ import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.databinding.ContentLoginFileScrobblableBinding
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.transition.MaterialSharedAxis
 

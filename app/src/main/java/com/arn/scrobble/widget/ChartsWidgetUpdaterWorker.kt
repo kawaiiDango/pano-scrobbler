@@ -14,9 +14,9 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.lastfm.Track
@@ -25,16 +25,17 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.arn.scrobble.main.App
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
+import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.text.DateFormat
 import java.util.Calendar
@@ -246,12 +247,12 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 periodicWork
             )
 
-            Stuff.log("scheduling ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
+            Timber.i("scheduling ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
         }
 
         fun cancel(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(NAME_PERIODIC)
-            Stuff.log("cancelled ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
+            Timber.i("cancelled ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
         }
     }
 }

@@ -17,10 +17,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
-import com.arn.scrobble.App
-import com.arn.scrobble.MainActivity
-import com.arn.scrobble.MainDialogActivity
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
@@ -42,6 +38,10 @@ import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainDialogActivity
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.onboarding.LoginFragment
 import com.arn.scrobble.onboarding.LoginFragmentArgs
 import com.arn.scrobble.utils.Stuff

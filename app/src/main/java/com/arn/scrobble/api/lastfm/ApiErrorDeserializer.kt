@@ -18,14 +18,14 @@ import kotlinx.serialization.json.jsonPrimitive
 //    val message: String
 //)
 
-object FmErrorDeserializer : KSerializer<FmErrorResponse> {
+object ApiErrorDeserializer : KSerializer<ApiErrorResponse> {
 
     override val descriptor = buildClassSerialDescriptor("LastFmErrorResponse") {
         element<Int>("code")
         element<String>("message")
     }
 
-    override fun serialize(encoder: Encoder, value: FmErrorResponse) {
+    override fun serialize(encoder: Encoder, value: ApiErrorResponse) {
         val composite = encoder.beginStructure(descriptor)
         composite.encodeIntElement(descriptor, 0, value.code)
         composite.encodeStringElement(descriptor, 1, value.message)
@@ -36,26 +36,27 @@ object FmErrorDeserializer : KSerializer<FmErrorResponse> {
 //    val variant2 =
 //        "{\"message\":\"Invalid API key - You must be granted a valid key by last.fm\",\"error\":10}" // lastfm
 //    val variant3 = "{\"code\": 200, \"error\": \"Invalid Method\"}" // listenbrainz
+//    val variant4 = "{\"error\": \"Invalid token\"}" // maloja
 
-    override fun deserialize(decoder: Decoder): FmErrorResponse {
+    override fun deserialize(decoder: Decoder): ApiErrorResponse {
         val input = decoder as? JsonDecoder
             ?: error("Can be deserialized only by JSON")
         return when (val jsonElement = input.decodeJsonElement()) {
             is JsonObject -> {
                 when (val errorObject = jsonElement["error"]) {
-                    is JsonObject -> FmErrorResponse(
+                    is JsonObject -> ApiErrorResponse(
                         code = errorObject["code"]?.jsonPrimitive?.int ?: 0,
                         message = errorObject["#text"]?.jsonPrimitive?.content ?: ""
                     )
 
                     is JsonPrimitive -> {
                         if (errorObject.jsonPrimitive.isString)
-                            FmErrorResponse(
+                            ApiErrorResponse(
                                 code = jsonElement["code"]?.jsonPrimitive?.int ?: 0,
                                 message = errorObject.jsonPrimitive.content
                             )
                         else
-                            FmErrorResponse(
+                            ApiErrorResponse(
                                 code = errorObject.jsonPrimitive.int,
                                 message = jsonElement["message"]?.jsonPrimitive?.content ?: ""
                             )

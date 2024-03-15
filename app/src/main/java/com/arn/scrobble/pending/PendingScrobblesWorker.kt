@@ -24,8 +24,8 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -156,7 +156,7 @@ class PendingScrobblesWorker(
 
                 scrobbleResults.forEach { (scrobblable, result) ->
                     if (result.isFailure) {
-                        Stuff.logW(
+                        Timber.w(
                             "PendingScrobblesWorker: err for " + scrobblable.userAccount.type.ordinal +
                                     ": " + result
                         )
@@ -165,7 +165,7 @@ class PendingScrobblesWorker(
                 }
 
             } catch (e: SAXException) {
-                Stuff.logW("PendingScrobblesWorker: SAXException " + e.message)
+                Timber.w("PendingScrobblesWorker: SAXException " + e.message)
                 if (BATCH_SIZE != 1) {
                     BATCH_SIZE = 1
                     done = true //try again
@@ -175,7 +175,7 @@ class PendingScrobblesWorker(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Stuff.logW("PendingScrobblesWorker: n/w err - ")
+                Timber.w("PendingScrobblesWorker: n/w err - ")
                 Timber.tag(Stuff.TAG).w(e)
                 done = false
                 return done
@@ -224,7 +224,7 @@ class PendingScrobblesWorker(
             }
             return true
         } catch (e: Exception) {
-            Stuff.logW("OfflineScrobble: n/w err submitLoves - " + e.message)
+            Timber.w("OfflineScrobble: n/w err submitLoves - " + e.message)
             return false
         }
     }

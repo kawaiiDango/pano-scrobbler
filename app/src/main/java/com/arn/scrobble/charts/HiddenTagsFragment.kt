@@ -11,11 +11,11 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogUserTagsBinding
-import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout

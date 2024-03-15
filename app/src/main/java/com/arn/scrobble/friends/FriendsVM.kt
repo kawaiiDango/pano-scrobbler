@@ -3,18 +3,18 @@ package com.arn.scrobble.friends
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Requesters.toFlow
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.friends.UserCached.Companion.toUserCached
+import com.arn.scrobble.main.App
 import com.arn.scrobble.recents.PaletteColors
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -163,10 +162,9 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
 
         if (!loadedInitialCachedVersion) {
             loadedInitialCachedVersion = true
-            if (pr.getOrNull()?.fromCache == true)
-                viewModelScope.launch {
-                    loadFriends(page, username, setLoading = false)
-                }
+            viewModelScope.launch {
+                loadFriends(page, username, setLoading = false)
+            }
         }
 
         if (setLoading)
@@ -175,13 +173,14 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
 
 
     private suspend fun emitUsers(result: Result<PageResult<User>>, concat: Boolean) {
-        if (concat)
-            _friends.emitAll(result.map {
+        result.map {
+            if (concat)
                 (_friends.value ?: emptyList()) + it.entries.map { it.toUserCached() }
-            }
-                .toFlow())
-        else
-            _friends.emitAll(result.map { it.entries.map { it.toUserCached() } }.toFlow())
+            else
+                it.entries.map { it.toUserCached() }
+        }.doOnSuccessLoggingFaliure {
+            _friends.emit(it)
+        }
     }
 
     suspend fun addPinAndSave(user: UserCached): Boolean {

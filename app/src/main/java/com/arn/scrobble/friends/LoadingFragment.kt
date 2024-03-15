@@ -11,8 +11,8 @@ import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentLoadingBinding
 import com.arn.scrobble.friends.UserCached.Companion.toUserCached
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.transition.MaterialSharedAxis
 

@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import android.app.Notification
 import android.content.Context
@@ -32,8 +32,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentMainBinding
@@ -41,19 +42,20 @@ import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.onboarding.ChangelogDialogFragmentArgs
 import com.arn.scrobble.search.IndexingWorker
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.fadeToolbarTitle
-import com.arn.scrobble.ui.UiUtils.focusOnTv
-import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.NavUtils
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.dp
+import com.arn.scrobble.utils.UiUtils.fadeToolbarTitle
+import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.serialization.SerializationException
+import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity(),
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity(),
     private val billingViewModel by viewModels<BillingViewModel>()
     private val mainNotifierViewModel by viewModels<MainNotifierViewModel>()
     private lateinit var navController: NavController
-    private var navHeaderbinding: HeaderNavBinding? = null
+    private var navHeaderBinding: HeaderNavBinding? = null
     private lateinit var mainFab: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,12 +80,12 @@ class MainActivity : AppCompatActivity(),
         binding = ContentMainBinding.inflate(layoutInflater)
 
         if (UiUtils.isTabletUi) {
-            navHeaderbinding = HeaderNavBinding.inflate(layoutInflater, binding.sidebarNav, false)
+            navHeaderBinding = HeaderNavBinding.inflate(layoutInflater, binding.sidebarNav, false)
 
             if (mainNotifierViewModel.isItChristmas)
                 UiUtils.applySnowfall(
-                    navHeaderbinding!!.navProfilePic,
-                    navHeaderbinding!!.root,
+                    navHeaderBinding!!.navProfilePic,
+                    navHeaderBinding!!.root,
                     layoutInflater,
                     lifecycleScope
                 )
@@ -103,7 +105,7 @@ class MainActivity : AppCompatActivity(),
                 visibility = View.GONE
                 binding.root.addView(this)
             }
-            binding.sidebarNav.addHeaderView(navHeaderbinding!!.root)
+            binding.sidebarNav.addHeaderView(navHeaderBinding!!.root)
             binding.sidebarNav.visibility = View.VISIBLE
         } else {
             mainFab = FloatingActionButton(this).apply {
@@ -163,7 +165,7 @@ class MainActivity : AppCompatActivity(),
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         binding.ctl.setupWithNavController(binding.toolbar, navController, appBarConfiguration)
 
-        navHeaderbinding?.let {
+        navHeaderBinding?.let {
             NavUtils.setProfileSwitcher(it, navController, mainNotifierViewModel)
         }
 
@@ -225,26 +227,12 @@ class MainActivity : AppCompatActivity(),
         billingViewModel.queryPurchases()
 
         if (canShowNotices) {
-            showChangelogIfNeeded(null)
-            
-            collectLatestLifecycleFlow(mainNotifierViewModel.updateAvailability) { releases ->
-                Snackbar.make(
-                    binding.coordinator,
-                    getString(R.string.update_available, releases.name),
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                    .setAction(R.string.download) {
-                        showChangelogIfNeeded(releases)
-                    }
-                    .apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
-                    .focusOnTv()
-                    .show()
-            }
+            showChangelogIfNeeded()
         }
 
         collectLatestLifecycleFlow(mainNotifierViewModel.drawerData) {
             NavUtils.updateHeaderWithDrawerData(
-                navHeaderbinding ?: return@collectLatestLifecycleFlow,
+                navHeaderBinding ?: return@collectLatestLifecycleFlow,
                 mainNotifierViewModel
             )
         }
@@ -253,13 +241,17 @@ class MainActivity : AppCompatActivity(),
             if (BuildConfig.DEBUG)
                 e.printStackTrace()
 
-            if (e is ApiException) {
+            if (e is ApiException && e.code != 504) { // suppress cache not found exceptions
                 Snackbar.make(
                     binding.root,
                     e.localizedMessage ?: e.message ?: "Error",
                     Snackbar.LENGTH_SHORT
                 ).apply { if (!UiUtils.isTabletUi) anchorView = binding.bottomNav }
                     .show()
+            }
+
+            if (e is SerializationException) {
+                Timber.w(e.cause)
             }
         }
     }
@@ -269,21 +261,19 @@ class MainActivity : AppCompatActivity(),
         super.onDestroy()
     }
 
-    private fun showChangelogIfNeeded(releases: GithubReleases?) {
+    private fun showChangelogIfNeeded() {
         val changelogHashcode = getString(R.string.changelog_text).hashCode()
 
-        if (prefs.changelogSeenHashcode != changelogHashcode || releases != null) {
+        if (prefs.changelogSeenHashcode != changelogHashcode) {
             val args = ChangelogDialogFragmentArgs.Builder(
-                releases?.body ?: getString(R.string.changelog_text),
-                releases?.downloadUrl
+                getString(R.string.changelog_text),
             )
                 .build()
                 .toBundle()
 
             navController.navigate(R.id.changelogDialogFragment, args)
 
-            if (releases == null)
-                prefs.changelogSeenHashcode = changelogHashcode
+            prefs.changelogSeenHashcode = changelogHashcode
         }
     }
 
@@ -355,7 +345,7 @@ class MainActivity : AppCompatActivity(),
     }
 
 //    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-//        Stuff.log("focus: $currentFocus")
+//        Timber.i("focus: $currentFocus")
 //        return super.onKeyUp(keyCode, event)
 //    }
 

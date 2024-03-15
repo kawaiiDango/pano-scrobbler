@@ -1,4 +1,4 @@
-package com.arn.scrobble.ui
+package com.arn.scrobble.main
 
 import android.view.View
 import androidx.annotation.DrawableRes

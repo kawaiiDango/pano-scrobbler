@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.view.ScaleGestureDetector
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.wrappedGet
 import kotlin.math.roundToInt

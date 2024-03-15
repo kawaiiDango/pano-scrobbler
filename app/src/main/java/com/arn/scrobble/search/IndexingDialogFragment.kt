@@ -11,13 +11,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.work.WorkInfo
-import com.arn.scrobble.App
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogIndexingBinding
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 

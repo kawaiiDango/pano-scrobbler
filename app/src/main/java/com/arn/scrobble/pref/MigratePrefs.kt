@@ -1,10 +1,10 @@
 package com.arn.scrobble.pref
 
-import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import com.franmontiel.persistentcookiejar.persistence.SerializableCookie
 import com.frybits.harmony.getHarmonySharedPreferences

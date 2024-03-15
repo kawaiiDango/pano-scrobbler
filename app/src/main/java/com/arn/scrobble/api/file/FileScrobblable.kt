@@ -7,8 +7,6 @@ import android.text.format.Formatter
 import androidx.collection.CircularArray
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
-import com.arn.scrobble.App
-import com.arn.scrobble.DrawerData
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
@@ -26,6 +24,8 @@ import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import kotlinx.coroutines.Dispatchers
@@ -140,7 +140,11 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         includeNowPlaying: Boolean,
         limit: Int
     ): Result<PageResult<Track>> {
+
         return kotlin.runCatching {
+            if (cached)
+                throw FException(documentFile, "Cache not supported")
+
             if (!isFileOk())
                 throw FException(documentFile, "File not writable")
 
@@ -205,7 +209,6 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                     total = entries.size
                 ),
                 entries = entries,
-                fromCache = false
             )
         }
     }

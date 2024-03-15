@@ -51,7 +51,10 @@ which is a bug specific to WSA.
 - Broadcast Intents for automation apps like Tasker
 - Remember and see apps you scrobbled from and search directly within them
 
-*Compiling*: See [instructions.md](instructions.md)
+
+### Compiling
+
+See [instructions.md](instructions.md)
 
 ### F-droid repo?
 [https://kawaiidango.github.io/pano-scrobbler/fdroid/repo/

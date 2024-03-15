@@ -1,11 +1,10 @@
 package com.arn.scrobble.api.listenbrainz
 
 import androidx.annotation.IntRange
-import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.DrawerData
 import com.arn.scrobble.R
-import com.arn.scrobble.api.CacheMarkerInterceptor
+import com.arn.scrobble.api.CustomCachePlugin
+import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
@@ -16,9 +15,7 @@ import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.CacheInterceptor
 import com.arn.scrobble.api.lastfm.CacheStrategy
-import com.arn.scrobble.api.lastfm.ExpirationPolicy
 import com.arn.scrobble.api.lastfm.ImageSize
 import com.arn.scrobble.api.lastfm.LastFmImage
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -34,13 +31,12 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
+import com.arn.scrobble.utils.Stuff.dLazy
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.HttpCallValidator
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.header
@@ -48,13 +44,10 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
-import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
-import okhttp3.Cache
-import okhttp3.HttpUrl
-import java.io.File
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
@@ -63,31 +56,10 @@ import kotlin.math.min
 class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
 
     private val client: HttpClient by lazy {
-        HttpClient(OkHttp) {
-            engine {
-                config {
-                    followRedirects(true)
-                    cache(Cache(File(App.context.cacheDir, "ktor"), 10 * 1024 * 1024))
-                    readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
-                }
-                addNetworkInterceptor(CacheInterceptor(ListenbrainzExpirationPolicy()))
-                addInterceptor(CacheMarkerInterceptor())
-            }
+        Requesters.genericKtorClient.config {
 
-            install(HttpCallValidator) {
-                validateResponse { response ->
-                    if (response.status.isSuccess()) return@validateResponse
-                    try {
-                        val errorResponse = response.body<ListenBrainzResponse>()
-                        throw ApiException(errorResponse.code ?: -1, errorResponse.error.toString())
-                    } catch (e: Exception) {
-                        throw ApiException(response.status.value, response.status.description, e)
-                    }
-                }
-            }
-
-            install(ContentNegotiation) {
-                json(Stuff.myJson)
+            install(CustomCachePlugin) {
+                policy = ListenbrainzExpirationPolicy()
             }
 
             defaultRequest {
@@ -190,10 +162,10 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         else
             null
 
-        Stuff.logD { "msid: $msid mbid: $mbid" }
+        Timber.dLazy { "msid: $msid mbid: $mbid" }
 
         if (msid == null && mbid == null) {
-            Stuff.logW("Track mbid not found, skipping feedback")
+            Timber.w("Track mbid not found, skipping feedback")
             return Result.success(ScrobbleIgnored(true)) // ignore
         }
 
@@ -245,13 +217,10 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             )
         }
 
-        val cacheStrategy =
-            if (!Stuff.isOnline && cached)
-                CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-            else if (cached)
-                CacheStrategy.CACHE_FIRST
-            else
-                CacheStrategy.NETWORK_ONLY
+        val cacheStrategy = if (cached)
+            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        else
+            CacheStrategy.NETWORK_ONLY
 
         val actualLimit = if (limit > 0) limit else 25
 
@@ -344,17 +313,14 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             )
         }
 
-        val cacheStrategy =
-            if (!Stuff.isOnline && cached)
-                CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-            else if (cached)
-                CacheStrategy.CACHE_FIRST
-            else
-                CacheStrategy.NETWORK_ONLY
+        val cacheStrategy = if (cached)
+            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        else
+            CacheStrategy.NETWORK_ONLY
 
         val actualLimit = if (limit > 0) limit else 25
 
-        Stuff.log(this::getLoves.name + " " + page)
+        Timber.i(this::getLoves.name + " " + page)
 
 
         return client.getPageResult<ListenBrainzFeedbacks, Track>(
@@ -382,8 +348,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         cached: Boolean,
         limit: Int
     ): Result<PageResult<User>> {
-        val cacheStrategy = if (!Stuff.isOnline && cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-        else if (cached) CacheStrategy.CACHE_FIRST
+        val cacheStrategy = if (cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
         else CacheStrategy.NETWORK_ONLY
 
         return client.getPageResult<ListenBrainzFollowing, User>("user/$username/following",
@@ -598,11 +563,11 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 }
 
 class ListenbrainzExpirationPolicy : ExpirationPolicy {
-    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7).toInt()
-    private val FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5).toInt()
+    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
+    private val FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5)
 
-    override fun getExpirationTimeSecs(url: HttpUrl): Int {
-        return when (url.pathSegments.lastOrNull()) {
+    override fun getExpirationTime(url: Url) =
+        when (url.pathSegments.lastOrNull()) {
             "playing-now",
             "listens",
             "following",
@@ -616,7 +581,6 @@ class ListenbrainzExpirationPolicy : ExpirationPolicy {
 
             else -> -1
         }
-    }
 }
 
 enum class ListenbrainzRanges {

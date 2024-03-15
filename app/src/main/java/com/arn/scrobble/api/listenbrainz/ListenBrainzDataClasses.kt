@@ -26,7 +26,7 @@ data class ListenBrainzListen(
 
 @Serializable
 data class ListenBrainzPayload(
-    @Serializable(with = TimeNullableSerializer::class)
+    @Serializable(with = TimeSerializer::class)
     val listened_at: Long?,
     val track_metadata: ListenBrainzTrackMetadata
 )
@@ -89,9 +89,9 @@ data class ListenBrainzListensPayload(
 
 @Serializable
 data class ListenBrainzListensListens(
-    @Serializable(with = TimeNullableSerializer::class)
+    @Serializable(with = TimeSerializer::class)
     val inserted_at: Long?,
-    @Serializable(with = TimeNullableSerializer::class)
+    @Serializable(with = TimeSerializer::class)
     val listened_at: Long?,
     val recording_msid: String?,
     val playing_now: Boolean?,

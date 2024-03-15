@@ -10,6 +10,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
@@ -35,7 +37,7 @@ object ListenAlong {
                 .getOrNull()
             if (track != null && (track.artist.name != currentTrack?.artist?.name || track.name != currentTrack?.name)) {
                 currentTrack = track
-                
+
                 Stuff.launchSearchIntent(track, Stuff.PACKAGE_SPOTIFY)
                 delay(1000)
                 Stuff.launchSearchIntent(track, Stuff.PACKAGE_SPOTIFY)

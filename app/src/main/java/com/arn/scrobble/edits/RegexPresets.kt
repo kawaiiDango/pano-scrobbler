@@ -1,6 +1,6 @@
 package com.arn.scrobble.edits
 
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.db.RegexEdit

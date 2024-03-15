@@ -3,7 +3,7 @@ aboutlibraries = "11.1.0"
 activity = "1.9.0-alpha03"
 androidSnowfall = "1.2.1"
 bimap = "1.1.0"
-coil = "2.6.0"
+coil = "3.0.0-alpha06"
 constraintlayout = "2.2.0-alpha13"
 billing = "6.2.0"
 core-ktx = "1.13.0-alpha05"
@@ -19,7 +19,7 @@ junit = "4.13.2"
 kotlin = "1.9.23"
 kotlinCsvJvm = "1.9.3"
 kotlinx-serialization-json = "1.6.3"
-ktorBom = "2.3.9"
+ktorBom = "3.0.0-beta-1"
 kumo-core = "1.28.1"
 krate = "2.0.0"
 lifecycle = "2.7.0"
@@ -32,8 +32,8 @@ okhttp = "5.0.0-alpha.12"
 palette-ktx = "1.0.0"
 play-publisher = "3.8.6"
 preference-ktx = "1.2.1"
-profileinstaller = "1.3.1"
-recyclerview = "1.3.2"
+profileinstaller = "1.4.0-alpha01"
+recyclerview = "1.4.0-alpha01"
 runner = "1.6.0-alpha06"
 skeletonlayout = "5.0.0"
 timber = "5.0.1"
@@ -41,19 +41,21 @@ swiperefreshlayout = "1.2.0-alpha01"
 room = "2.6.1"
 review-ktx = "2.0.1"
 uiautomator = "2.3.0"
-work-runtime-ktx = "2.9.0"
+viewpager = "1.1.0-alpha01"
+work-runtime-ktx = "2.10.0-alpha01"
 google-services = "4.4.1"
 android-application = "8.4.0-alpha13"
 benchmark-macro-junit4 = "1.2.3"
-ksp = "1.9.22-1.0.17"
+ksp = "1.9.23-1.0.19"
 github-release = "2.4.1"
-baselineprofile = "1.2.3"
+baselineprofile = "1.3.0-alpha01"
 androidx-test-ext-junit = "1.1.5"
 transition = "1.5.0-alpha06"
 
 [libraries]
 android-snowfall = { module = "com.github.jetradarmobile:android-snowfall", version.ref = "androidSnowfall" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
+androidx-viewpager = { module = "androidx.viewpager:viewpager", version.ref = "viewpager" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 kotlin-csv-jvm = { module = "com.github.doyaaaaaken:kotlin-csv-jvm", version.ref = "kotlinCsvJvm" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
@@ -79,8 +81,9 @@ androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", versi
 billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work-runtime-ktx" }
 bimap = { module = "io.michaelrocks.bimap:bimap", version.ref = "bimap" }
-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
-coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }

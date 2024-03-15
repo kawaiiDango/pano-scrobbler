@@ -1,4 +1,4 @@
-package com.arn.scrobble.ui
+package com.arn.scrobble.utils
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
@@ -62,20 +62,23 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
-import coil.result
-import coil.transform.CircleCropTransformation
-import com.arn.scrobble.App
-import com.arn.scrobble.DrawerData
-import com.arn.scrobble.MainActivity
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.error
+import coil3.request.transformations
+import coil3.result
+import coil3.transform.CircleCropTransformation
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.LayoutSnowfallBinding
 import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
+import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.ui.InitialsDrawable
+import com.arn.scrobble.ui.StatefulAppBar
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -396,9 +399,9 @@ object UiUtils {
             .error(initialsDrawable) // does not apply transformation to error drawable
             .transformations(CircleCropTransformation())
             .target(
-                onSuccess = onResult,
+                onSuccess = { onResult(it!!.asDrawable(context.resources)) },
                 onStart = { onResult(ContextCompat.getDrawable(context, R.drawable.vd_user)!!) },
-                onError = { onResult(it!!) }
+                onError = { onResult(it!!.asDrawable(context.resources)) }
             )
             .build()
         context.imageLoader.enqueue(request)

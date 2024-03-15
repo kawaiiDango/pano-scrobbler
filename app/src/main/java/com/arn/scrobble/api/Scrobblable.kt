@@ -1,7 +1,5 @@
 package com.arn.scrobble.api
 
-import com.arn.scrobble.App
-import com.arn.scrobble.DrawerData
 import com.arn.scrobble.R
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Album
@@ -25,7 +23,10 @@ import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
+import timber.log.Timber
 
 
 abstract class Scrobblable(val userAccount: UserAccountSerializable) {
@@ -91,7 +92,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         networkOnly: Boolean = false,
         limit: Int = if (timePeriod.period != null) 50 else -1
     ): Result<PageResult<out MusicEntry>> {
-        Stuff.log(this::getChartsWithStonks.name + " $type timePeriod: $timePeriod prevTimePeriod: $prevTimePeriod")
+        Timber.i(this::getChartsWithStonks.name + " $type timePeriod: $timePeriod prevTimePeriod: $prevTimePeriod")
 
         fun toHashableEntry(entry: MusicEntry): Any = when (type) {
             Stuff.TYPE_ARTISTS -> {
@@ -168,7 +169,6 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
     fun <T> createEmptyPageResult() = PageResult(
         PageAttr(1, 1, 0),
         listOf<T>(),
-        false
     )
 }
 

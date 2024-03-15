@@ -2,7 +2,7 @@ package com.arn.scrobble.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import kotlin.math.min
 

@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media.MediaBrowserServiceCompat
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.ui.ExpandableHeader

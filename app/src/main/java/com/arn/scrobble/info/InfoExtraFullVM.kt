@@ -2,13 +2,13 @@ package com.arn.scrobble.info
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -76,11 +76,7 @@ class InfoExtraFullVM : ViewModel() {
 
         _hasLoaded.emit(true)
 
-        result.onFailure {
-            App.globalExceptionFlow.emit(it)
-        }
-
-        result.onSuccess {
+        result.doOnSuccessLoggingFaliure {
             if (page > 1)
                 _entries.emit((_entries.value ?: emptyList()) + it)
             else

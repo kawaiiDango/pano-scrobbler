@@ -5,7 +5,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.ui.UiUtils.setDragAlpha
+import com.arn.scrobble.utils.UiUtils.setDragAlpha
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch

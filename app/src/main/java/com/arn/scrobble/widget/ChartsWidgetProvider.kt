@@ -8,8 +8,8 @@ import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
-import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.R
+import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.utils.Stuff

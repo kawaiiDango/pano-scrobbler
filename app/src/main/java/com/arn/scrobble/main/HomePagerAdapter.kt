@@ -1,6 +1,7 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 
+import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.friends.FriendsFragment

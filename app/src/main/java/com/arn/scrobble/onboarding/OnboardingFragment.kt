@@ -23,8 +23,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.App
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
@@ -32,11 +30,13 @@ import com.arn.scrobble.databinding.ButtonStepperForLoginBinding
 import com.arn.scrobble.databinding.ContentOnboardingStepperBinding
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
-import com.arn.scrobble.ui.UiUtils.setupInsets
-import com.arn.scrobble.ui.UiUtils.toast
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.hideKeyboard
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 

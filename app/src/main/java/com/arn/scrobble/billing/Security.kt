@@ -22,10 +22,8 @@ package com.arn.scrobble.billing
 import android.content.pm.PackageManager
 import android.util.Base64
 import com.android.billingclient.api.Purchase
-import com.arn.scrobble.App
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.Tokens
-import timber.log.Timber
+import com.arn.scrobble.main.App
 import java.io.IOException
 import java.security.*
 import java.security.spec.InvalidKeySpecException
@@ -36,7 +34,6 @@ import java.security.spec.X509EncodedKeySpec
  * a server that communicates with the application on the device.
  */
 object Security {
-    private const val TAG = Stuff.TAG
     private const val KEY_FACTORY_ALGORITHM = "RSA"
     private const val SIGNATURE_ALGORITHM = "SHA1withRSA"
 
@@ -54,7 +51,6 @@ object Security {
         if (purchase.originalJson.isEmpty() || Tokens.BASE_64_ENCODED_PUBLIC_KEY.isEmpty() ||
             purchase.signature.isEmpty() || signature() == null
         ) {
-            Timber.tag(TAG).w("Purchase verification failed: missing data.")
             return false
         }
         val key = generatePublicKey(Tokens.BASE_64_ENCODED_PUBLIC_KEY)
@@ -78,9 +74,7 @@ object Security {
             // "RSA" is guaranteed to be available.
             throw RuntimeException(e)
         } catch (e: InvalidKeySpecException) {
-            val msg = "Invalid key specification: $e"
-            Timber.tag(TAG).w(msg)
-            throw IOException(msg)
+            throw IOException(e)
         }
     }
 
@@ -98,7 +92,6 @@ object Security {
         try {
             signatureBytes = Base64.decode(signature, Base64.DEFAULT)
         } catch (e: IllegalArgumentException) {
-            Timber.tag(TAG).w("Base64 decoding failed.")
             return false
         }
         try {

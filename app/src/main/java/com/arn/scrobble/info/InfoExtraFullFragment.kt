@@ -11,25 +11,25 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.ChartsAdapter
 import com.arn.scrobble.databinding.FrameChartsListBinding
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.setTitle
-import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.Stuff.putData
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.setTitle
+import com.arn.scrobble.utils.UiUtils.setupInsets
 import kotlinx.coroutines.flow.filterNotNull
 
 

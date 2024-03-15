@@ -2,7 +2,7 @@
 - Can now scrobble to Maloja (native), Pleroma, a local CSV or a JSONL file
 - You can now choose artist pictures or use a custom one.
 - Will no longer prompt to automatically scrobble from apps that are not selected
-- Dropped support for Android 5.0 and 5.1
 - The heart button in the notification can now be used to heart the current track in the music player or streaming service.
+- New loading indicators
 - Bug fixes
 - Translation updates by the translators on Crowdin

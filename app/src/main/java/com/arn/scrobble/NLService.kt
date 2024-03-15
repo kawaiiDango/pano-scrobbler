@@ -39,19 +39,23 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.edits.EditDialogFragmentArgs
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.utils.LocaleUtils.getStringInDeviceLocale
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.dLazy
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.UiUtils.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -196,7 +200,7 @@ class NLService : NotificationListenerService() {
                 )
             )
         } catch (exception: SecurityException) {
-            Stuff.logW("Failed to start media controller: " + exception.message)
+            Timber.w("Failed to start media controller: " + exception.message)
             // Try to unregister it, just in case.
             try {
                 sessManager.removeOnActiveSessionsChangedListener(sessListener!!)
@@ -219,15 +223,15 @@ class NLService : NotificationListenerService() {
             getScrobblerExitReasons(printAll = true)
         }
 
-        Stuff.log("init")
+        Timber.i("init")
     }
 
     private fun destroy() {
-        Stuff.log("destroy")
+        Timber.i("destroy")
         try {
             applicationContext.unregisterReceiver(nlserviceReciver)
         } catch (e: IllegalArgumentException) {
-            Stuff.logW("nlservicereciver wasn't registered")
+            Timber.w("nlservicereciver wasn't registered")
         }
         try {
             applicationContext.unregisterReceiver(pkgInstallReceiver)
@@ -350,7 +354,7 @@ class NLService : NotificationListenerService() {
                 val notiText = n.extras.getString(notiField) ?: return
                 val trackInfo = packageTagTrackMap[sbn.packageName + "|$TAG_NOTI"]
 
-                Stuff.logD { "${this::scrobbleFromNoti.name} $notiText removed=$removed" }
+                Timber.dLazy { "${this::scrobbleFromNoti.name} $notiText removed=$removed" }
 
                 if (removed) {
                     scrobbleHandler.remove(trackInfo?.hash ?: return, trackInfo.packageName)
@@ -369,9 +373,9 @@ class NLService : NotificationListenerService() {
                         if (!scrobbleTimeReached && !scrobbleHandler.has(hash)) { //"resume" scrobbling
                             scrobbleHandler.addScrobble(trackInfo.copy())
                             notifyScrobble(trackInfo)
-                            Stuff.log("${this::scrobbleFromNoti.name} rescheduling")
+                            Timber.i("${this::scrobbleFromNoti.name} rescheduling")
                         } else if (System.currentTimeMillis() - trackInfo.playStartTime < Stuff.NOTI_SCROBBLE_INTERVAL) {
-                            Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
+                            Timber.i("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                         }
                     } else {
                         // different song, scrobble it
@@ -391,7 +395,7 @@ class NLService : NotificationListenerService() {
                         )
                     }
                 } else {
-                    Stuff.logW("${this::scrobbleFromNoti.name} parse failed")
+                    Timber.w("${this::scrobbleFromNoti.name} parse failed")
                 }
             }
         }
@@ -1056,7 +1060,7 @@ class NLService : NotificationListenerService() {
         fun remove(hash: Int, notificationPackageNameToRemove: String? = null) {
             if (hash == lockedHash) return
 
-            Stuff.logD { "$hash from $notificationPackageNameToRemove cancelled" }
+            Timber.dLazy { "$hash from $notificationPackageNameToRemove cancelled" }
             tracksCopyPQ.removeAll { it.hash == hash }
             sessListener?.findTrackInfoByHash(hash)?.isPlaying = false
             if (notificationPackageNameToRemove != null)

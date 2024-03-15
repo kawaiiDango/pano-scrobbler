@@ -3,13 +3,13 @@ package com.arn.scrobble.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.api.Requesters.toFlow
 import com.arn.scrobble.api.lastfm.SearchResults
 import com.arn.scrobble.db.CachedAlbum.Companion.toAlbum
 import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.SectionedVirtualList
+import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
@@ -44,7 +43,9 @@ class SearchVM : ViewModel() {
                             getLocalSearches(term)
                         }
                     }
-                    _searchResults.emitAll(results.toFlow())
+                    results.doOnSuccessLoggingFaliure {
+                        _searchResults.emit(it)
+                    }
                 }
         }
     }

@@ -1,6 +1,6 @@
 package com.arn.scrobble.utils
 
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 
 object AcceptableTags {

@@ -1,11 +1,8 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.utils.Stuff
-import io.ktor.client.HttpClient
+import com.arn.scrobble.api.Requesters
 import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.ResponseException
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.header
@@ -13,10 +10,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.Url
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 
 
 object LastfmUnscrobbler {
@@ -52,7 +49,7 @@ object LastfmUnscrobbler {
                 val success = response.body<DeleteScrobbleResponse>().result
 
                 if (success)
-                    Stuff.log("LastfmUnscrobbler unscrobbled")
+                    Timber.i("LastfmUnscrobbler unscrobbled")
                 else
                     throw IllegalStateException("LastfmUnscrobbler: error unscrobbling")
             } else if (response.status == HttpStatusCode.Forbidden) {
@@ -85,13 +82,9 @@ object LastfmUnscrobbler {
 
     val cookieStorage by lazy { SharedPreferencesCookiesStorage(SharedPreferencesCookiesStorage.LASTFM_COOKIES) }
     private val client by lazy {
-        HttpClient(OkHttp) {
+        Requesters.genericKtorClient.config {
             install(HttpCookies) {
                 storage = cookieStorage
-            }
-
-            install(ContentNegotiation) {
-                json(Stuff.myJson)
             }
         }
     }

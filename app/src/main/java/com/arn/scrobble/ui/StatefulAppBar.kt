@@ -8,7 +8,8 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import com.arn.scrobble.R
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.ui.UiUtils.getDimenFromAttr
+import com.arn.scrobble.utils.UiUtils
+import com.arn.scrobble.utils.UiUtils.getDimenFromAttr
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import kotlin.math.abs

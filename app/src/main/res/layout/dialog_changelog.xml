@@ -11,23 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/changelog"
-        android:textAppearance="?textAppearanceTitleLarge" />
+        android:textAppearance="?textAppearanceTitleLarge"
+        android:textColor="?colorPrimary" />
 
     <TextView
         android:id="@+id/changelog_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="8dp"
+        android:layout_marginVertical="16dp"
         android:maxLines="50"
+        android:textAppearance="?textAppearanceBodyLarge"
         tools:text="@string/changelog_text" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/download_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="@string/download"
-        android:visibility="gone"
-        tools:visibility="visible" />
 
 </LinearLayout>

@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.utils.UiUtils
 import com.google.android.material.color.MaterialColors
 import kotlin.math.min
 

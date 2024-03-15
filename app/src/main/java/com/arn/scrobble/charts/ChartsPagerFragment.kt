@@ -2,8 +2,8 @@ package com.arn.scrobble.charts
 
 import android.os.Bundle
 import android.view.View
-import com.arn.scrobble.BasePagerFragment
 import com.arn.scrobble.R
+import com.arn.scrobble.main.BasePagerFragment
 
 
 class ChartsPagerFragment : BasePagerFragment() {

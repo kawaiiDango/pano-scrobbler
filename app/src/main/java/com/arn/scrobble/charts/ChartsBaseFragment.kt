@@ -20,10 +20,10 @@ import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
-import com.arn.scrobble.ui.UiUtils.setTitle
-import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.setProgressCircleColors
+import com.arn.scrobble.utils.UiUtils.setTitle
+import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.main
 
 import android.app.Dialog
 import android.os.Bundle
@@ -11,15 +11,17 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.R
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentOptionsMenuBinding
 import com.arn.scrobble.ui.OptionsMenuVM
-import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.ui.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.ui.UiUtils.expandIfNeeded
-import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.arn.scrobble.utils.NavUtils
 import com.arn.scrobble.utils.Stuff.getSingle
+import com.arn.scrobble.utils.UiUtils
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.UiUtils.scheduleTransition
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.parcelize.Parcelize
 

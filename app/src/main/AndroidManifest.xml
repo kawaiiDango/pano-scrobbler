@@ -36,7 +36,7 @@
         android:required="false" />
 
     <application
-        android:name=".App"
+        android:name=".main.App"
         android:allowBackup="true"
         android:appCategory="audio"
         android:banner="@mipmap/ic_banner"
@@ -89,7 +89,7 @@
             android:process=":bgScrobbler" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".main.MainActivity"
             android:configChanges="keyboard|keyboardHidden|navigation"
             android:exported="true"
             android:launchMode="singleTop"
@@ -120,7 +120,7 @@
         </activity>
 
         <activity
-            android:name=".MainDialogActivity"
+            android:name=".main.MainDialogActivity"
             android:configChanges="keyboard|keyboardHidden|navigation"
             android:excludeFromRecents="true"
             android:exported="false"

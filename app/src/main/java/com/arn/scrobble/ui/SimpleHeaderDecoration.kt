@@ -8,7 +8,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.utils.UiUtils.dp
 import com.google.android.material.color.MaterialColors
 
 

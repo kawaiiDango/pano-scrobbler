@@ -2,7 +2,7 @@ package com.arn.scrobble.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
+import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

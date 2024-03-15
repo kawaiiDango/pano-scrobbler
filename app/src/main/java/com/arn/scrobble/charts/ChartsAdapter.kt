@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
-import coil.load
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
@@ -27,7 +29,7 @@ import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryItemClickListener
-import com.arn.scrobble.ui.UiUtils.getTintedDrawable
+import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format

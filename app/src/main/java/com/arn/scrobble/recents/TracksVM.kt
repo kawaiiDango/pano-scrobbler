@@ -2,8 +2,6 @@ package com.arn.scrobble.recents
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
-import com.arn.scrobble.api.Requesters.toFlow
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.LastFm
@@ -12,14 +10,15 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -143,10 +142,9 @@ class TracksVM : ViewModel() {
         if (!loadedInitialCachedVersion) {
             selectedPos = 0
             loadedInitialCachedVersion = true
-            if (pr.getOrNull()?.fromCache == true)
-                viewModelScope.launch {
-                    loadRecents(page, username, timePeriod, setLoading = false)
-                }
+            viewModelScope.launch {
+                loadRecents(page, username, timePeriod, setLoading = false)
+            }
         }
 
         // time jump pg 1 always resets selection
@@ -184,10 +182,9 @@ class TracksVM : ViewModel() {
             selectedPos = 0
             loadedInitialCachedVersion = true
 
-            if (pr.getOrNull()?.fromCache == true)
-                viewModelScope.launch {
-                    loadLoves(page, username)
-                }
+            viewModelScope.launch {
+                loadLoves(page, username)
+            }
         }
 
         pr.onSuccess {
@@ -243,10 +240,14 @@ class TracksVM : ViewModel() {
     }
 
     private suspend fun emitTracks(result: Result<PageResult<Track>>, concat: Boolean) {
-        if (concat)
-            _tracks.emitAll(result.map { (_tracks.value ?: emptyList()) + it.entries }.toFlow())
-        else
-            _tracks.emitAll(result.map { it.entries }.toFlow())
+        result.map {
+            if (concat)
+                (_tracks.value ?: emptyList()) + it.entries
+            else
+                it.entries
+        }.doOnSuccessLoggingFaliure {
+            _tracks.emit(it)
+        }
     }
 
     private suspend fun loadFirstScrobbleDate(pr: PageResult<Track>, username: String) {

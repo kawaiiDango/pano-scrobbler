@@ -1,9 +1,9 @@
 package com.arn.scrobble.api.maloja
 
-import com.arn.scrobble.App
-import com.arn.scrobble.DrawerData
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.CustomCachePlugin
+import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
@@ -11,7 +11,6 @@ import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Album
-import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -20,65 +19,36 @@ import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
-import com.arn.scrobble.api.listenbrainz.TimeNullableSerializer
 import com.arn.scrobble.api.listenbrainz.TimeSerializer
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.DrawerData
+import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.HttpCallValidator
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.Url
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
-import okhttp3.Cache
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 class Maloja(userAccount: UserAccountSerializable) :
     Scrobblable(userAccount) {
     private val client: HttpClient by lazy {
-        HttpClient(OkHttp) {
-            engine {
-                config {
-                    followRedirects(true)
-                    cache(Cache(File(App.context.cacheDir, "ktor"), 10 * 1024 * 1024))
-                    readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
-                }
-            }
-
-            install(HttpCallValidator) {
-                validateResponse { response ->
-                    if (response.status.isSuccess()) return@validateResponse
-                    try {
-                        val errorResponse = response.body<MalojaErrorResponse>()
-                        throw ApiException(response.status.value, errorResponse.error)
-                    } catch (e: Exception) {
-                        throw ApiException(response.status.value, response.status.description, e)
-                    }
-                }
-            }
-
-            install(ContentNegotiation) {
-                json(Stuff.myJson)
+        Requesters.genericKtorClient.config {
+            install(CustomCachePlugin) {
+                policy = MalojaExpirationPolicy()
             }
 
             defaultRequest {
-                url(this@Maloja.userAccount.apiRoot!! + "apis/mlj_1/")
+                url(userAccount.apiRoot!! + "apis/mlj_1/")
             }
-
-//            expectSuccess = true
-            // https://youtrack.jetbrains.com/issue/KTOR-4225
         }
     }
 
@@ -135,9 +105,15 @@ class Maloja(userAccount: UserAccountSerializable) :
         includeNowPlaying: Boolean,
         limit: Int
     ): Result<PageResult<Track>> {
+        val cacheStrategy = if (cached)
+            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        else
+            CacheStrategy.NETWORK_ONLY
+
         return client.getResult<MalojaTracksResponse>("scrobbles") {
             parameter("page", page)
             parameter("perpagge", limit)
+            cacheStrategy(cacheStrategy)
         }
             .map {
                 val tracks = it.list.map { trackItem ->
@@ -145,7 +121,10 @@ class Maloja(userAccount: UserAccountSerializable) :
                         artist = Artist(trackItem.track.artists.joinToString()),
                         name = trackItem.track.title,
                         album = trackItem.track.album?.let {
-                            Album(it.albumtitle, Artist(it.artists.joinToString()))
+                            if (it.artists != null)
+                                Album(it.albumtitle, Artist(it.artists.joinToString()))
+                            else
+                                Album(it.albumtitle)
                         },
                         duration = trackItem.duration ?: 0,
                         date = trackItem.time
@@ -154,11 +133,13 @@ class Maloja(userAccount: UserAccountSerializable) :
                 PageResult(
                     PageAttr(
                         page = it.pagination.page,
-                        totalPages = if (it.pagination.next_page == null) it.pagination.page else it.pagination.page + 2,
+                        totalPages = if (it.pagination.next_page == null)
+                            it.pagination.page
+                        else
+                            it.pagination.page + 2,
                         total = tracks.size,
                     ),
                     tracks,
-                    false
                 )
             }
     }
@@ -183,7 +164,7 @@ class Maloja(userAccount: UserAccountSerializable) :
         return Result.success(createEmptyPageResult())
     }
 
-    override suspend fun loadDrawerData(username: String): DrawerData? {
+    override suspend fun loadDrawerData(username: String): DrawerData {
         val isSelf = username == userAccount.user.name
 
         val dd = DrawerData(0)
@@ -248,10 +229,17 @@ class Maloja(userAccount: UserAccountSerializable) :
     }
 }
 
-@Serializable
-private data class MalojaErrorResponse(
-    val error: String
-)
+class MalojaExpirationPolicy : ExpirationPolicy {
+    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
+
+    override fun getExpirationTime(url: Url) =
+        when (url.pathSegments.lastOrNull()) {
+            "scrobbles",
+            -> ONE_WEEK
+
+            else -> -1
+        }
+}
 
 @Serializable
 private data class MalojaTracksResponse(
@@ -277,7 +265,7 @@ private data class MalojaTrack(
 
 @Serializable
 private data class MalojaAlbum(
-    val artists: List<String>,
+    val artists: List<String>?,
     val albumtitle: String
 )
 
@@ -293,10 +281,10 @@ private data class MalojaScrobbleData(
     val title: String,
     val album: String?,
     val albumartists: List<String>?,
-    @Serializable(with = TimeNullableSerializer::class)
+    @Serializable(with = TimeSerializer::class)
     val duration: Long?,
     val length: Int? = null,
-    @Serializable(with = TimeNullableSerializer::class)
+    @Serializable(with = TimeSerializer::class)
     val time: Long?,
     val nofix: Boolean? = null,
     val key: String,

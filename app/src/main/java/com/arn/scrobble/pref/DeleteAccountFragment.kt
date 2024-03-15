@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.databinding.ContentDeleteAccountBinding
-import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.google.android.material.transition.MaterialSharedAxis
 
 class DeleteAccountFragment : Fragment() {

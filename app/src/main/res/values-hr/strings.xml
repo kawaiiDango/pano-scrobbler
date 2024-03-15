@@ -415,6 +415,10 @@
     <string name="fix_it_action" comment="(To open an app)">Otvori</string>
     <string name="delete_account">Izbriši svoj račun</string>
     <string name="delete_account_custom_servers">Za prilagođene poslužitelje, provjerite njihovu dokumentaciju.</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Iz galerije</string>
+    <string name="scrobble_to_file">Datoteka</string>
+    <string name="password">Lozinka</string>
+    <string name="create" comment="Create a new file">Kreiraj</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="help">Pomoć</string>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="other">%1$s mga scrobble</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s ngayon</item>
+        <item quantity="other">%1$s ngayon</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s tagapakinig</item>
+        <item quantity="other">%1$s mga tagapakinig</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s araw</item>
+        <item quantity="other">%1$s na araw</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s linggo</item>
+        <item quantity="other">%1$s na linggo</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s buwan</item>
+        <item quantity="other">%1$s na buwan</item>
+    </plurals>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
+    <!--  pro  -->
+</resources>

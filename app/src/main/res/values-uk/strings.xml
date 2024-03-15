@@ -234,9 +234,9 @@
     <string name="save" comment="saves a file">Зберегти</string>
     <string name="saved_to_gallery">Збережено до галереї</string>
     <string name="reports" comment="Like last.week reports and stuff">Звіти</string>
-    <string name="weekly">Щотижня</string>
+    <string name="weekly">За тиждень</string>
     <string name="weeks">Тижні</string>
-    <string name="monthly">Щомісяця</string>
+    <string name="monthly">За місяць</string>
     <string name="months">Місяці</string>
     <string name="years" comment="For the charts menu which displays year by year">Роки</string>
     <string name="charts_overall">Всього</string>
@@ -252,8 +252,8 @@
     <string name="randomize" comment="(To randomize or fetch a new random item)">Перемішати</string>
     <string name="random_text">Випадково</string>
     <string name="graph_daily">Щоденні скробли</string>
-    <string name="graph_weekly">Щотижневі скробли</string>
-    <string name="graph_monthly">Щомісячні скробли</string>
+    <string name="graph_weekly">Кількість скроблів за тиждень</string>
+    <string name="graph_monthly">Кількість скроблів за місяць</string>
     <string name="graph_yearly">Щорічні скробли</string>
     <string name="original" comment="Original metadata before editing">Оригінал</string>
     <string name="corrected" comment="Corrected metadata after editing">Виправлено</string>
@@ -262,7 +262,7 @@
     <string name="taggings" comment="(total count of) a particular tag">Мітки</string>
     <string name="digest_weekly">Топ минулого тижня</string>
     <string name="digest_monthly">Топ минулого місяця</string>
-    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s найкращих скроблів</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Найкращі скробли %1$s</string>
     <string name="my_tags" comment="Tags, the user has added">Мої мітки</string>
     <string name="close" comment="To close a dialog or something">Закрити</string>
     <string name="user_tags_hint" comment="To add a new tag">Новий тег</string>
@@ -348,12 +348,13 @@
     <string name="pref_noti_categories">Категорії сповіщення</string>
     <string name="pref_scrobble_noti">Сповіщення скроблінгу</string>
     <string name="pref_lockscreen_noti">Сповіщення на екрані блокування</string>
-    <string name="pref_offline_info">ℹ️ Онлайн-скробли &amp;amp та уподобайки, будуть збережені пізніше.</string>
+    <string name="pref_offline_info">ℹ️ Офлайн-скробли та вподобайки будуть збережені, щоб бути відправленими пізніше.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скроблінг з</string>
     <string name="pref_enabled_apps_summary">ℹ️ Підтримує додатки, відображаючі музикальні метаданні. Щоб уникнути подвійного скроблінгу з Spotify, увімкніть його тільки в одному місті.</string>
     <string name="pref_enabled_apps_title">Виберіть додатки</string>
     <string name="pref_auto_detect">Автоматично скробблити з нових додатків</string>
     <string name="pref_spotify_remote">Скробблити Spotify, коли він грає на інших пристроях</string>
+    <string name="pref_link_heart_button_rating">Використовувати кнопку «Сердечко» у сповіщенні, щоб також додати його до улюблених у медіапрогравачі</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Вимкнути безперервний скроблінг з мікрофона, коли пристрій відтворює музику</string>
     <string name="pref_delay">Затримка скроблінгу (яка є раніше)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Хвилини</string>

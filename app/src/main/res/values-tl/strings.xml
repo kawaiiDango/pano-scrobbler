@@ -36,6 +36,43 @@
         <item quantity="one">%1$s album</item>
         <item quantity="other">%1$s na mga album</item>
     </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s kanta</item>
+        <item quantity="other">%1$s na mga kanta</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d tugma</item>
+        <item quantity="other">%1$d na mga tugma</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s edit</item>
+        <item quantity="other">%1$s na mga edit</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s pattern edit</item>
+        <item quantity="other">%1$s na mga pattern edit</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s blocked metadata</item>
+        <item quantity="other">%1$s blocked metadata</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d na mga minuto</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s kaibigan</item>
+        <item quantity="other">%1$s na mga kaibigan</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s pending</item>
+        <item quantity="other">%1$s pending</item>
+    </plurals>
+    <string name="yes">Oo</string>
+    <string name="no">Hindi</string>
+    <string name="reset">I-reset</string>
+    <string name="settings">I-configure</string>
+    <string name="bug_report">Bug report</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
     <!--  pro  -->
 </resources>

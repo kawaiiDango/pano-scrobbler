@@ -368,6 +368,7 @@
     <string name="pref_user_label" comment="(Like username)">Користувач</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентифікації</string>
     <string name="api_url" comment="For Listenbrainz">URL-адреса API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL-адреса сервера</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Ви можете знайти ваш токен автентифікації на: %1$s</string>
     <string name="pref_now_playing">Показати, що зараз грає</string>
     <string name="pref_fetch_album">Отримати відсутні дані альбомів з lastFM</string>
@@ -448,6 +449,13 @@
     <string name="fix_it_action" comment="(To open an app)">Відкрити</string>
     <string name="delete_account">Видалити обліковий запис</string>
     <string name="delete_account_custom_servers">Для користувацьких серверів перевірте їх відповідні документи.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Додати або змінити зображення</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">З галереї</string>
+    <string name="square_photo_hint">Використовуйте квадратне зображення для кращого результату</string>
+    <string name="scrobble_to_file">Файл</string>
+    <string name="password">Пароль</string>
+    <string name="open_existing" comment="Append to an existing file">Додати до існуючого</string>
+    <string name="create" comment="Create a new file">Створити</string>
     <!--  pro  -->
     <string name="get_pro">Підтримати проєкт</string>
     <string name="help">Допомога</string>

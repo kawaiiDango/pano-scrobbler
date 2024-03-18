@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
         <item quantity="one">%1$s scrobble</item>
-        <item quantity="other">%1$s mga scrobble</item>
+        <item quantity="other">%1$s na mga scrobble</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
         <item quantity="one">%1$s ngayon</item>
@@ -10,7 +10,7 @@
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s tagapakinig</item>
-        <item quantity="other">%1$s mga tagapakinig</item>
+        <item quantity="other">%1$s na mga tagapakinig</item>
     </plurals>
     <plurals name="num_days">
         <item quantity="one">%1$s araw</item>
@@ -23,6 +23,18 @@
     <plurals name="num_months">
         <item quantity="one">%1$s buwan</item>
         <item quantity="other">%1$s na buwan</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s taon</item>
+        <item quantity="other">%1$s na taon</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s artista</item>
+        <item quantity="other">%1$s na mga artista</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s album</item>
+        <item quantity="other">%1$s na mga album</item>
     </plurals>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
     <!--  pro  -->

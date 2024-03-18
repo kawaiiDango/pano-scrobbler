@@ -25,7 +25,7 @@
         <item quantity="other">%1$s тижнів</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$s на місяць</item>
+        <item quantity="one">%1$s місяць</item>
         <item quantity="few">%1$s місяців</item>
         <item quantity="many">%1$s місяців</item>
         <item quantity="other">%1$s місяців</item>
@@ -61,21 +61,21 @@
         <item quantity="other">%1$d збігів</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$s Редагувати</item>
-        <item quantity="few">%1$s Редагувати</item>
-        <item quantity="many">%1$s змін</item>
-        <item quantity="other">%1$s зміни</item>
+        <item quantity="one">%1$s редагування</item>
+        <item quantity="few">%1$s редагування</item>
+        <item quantity="many">%1$s редагувань</item>
+        <item quantity="other">%1$s редагувань</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$s редагувати шаблон</item>
-        <item quantity="few">%1$s редагувати шаблони</item>
-        <item quantity="many">%1$s редагувати шаблони</item>
-        <item quantity="other">%1$s редагування шаблонів</item>
+        <item quantity="one">%1$s шаблон редагування</item>
+        <item quantity="few">%1$s шаблони редагування</item>
+        <item quantity="many">%1$s шаблони редагування</item>
+        <item quantity="other">%1$s шаблони редагування</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$s заблокованих метаданих</item>
-        <item quantity="few">%1$s заблокованих метаданних</item>
-        <item quantity="many">%1$s заблокованих метаданних</item>
+        <item quantity="one">%1$s заблоковані метадані</item>
+        <item quantity="few">%1$s заблокованих метаданих</item>
+        <item quantity="many">%1$s заблокованих метаданих</item>
         <item quantity="other">%1$s заблокованих метаданих</item>
     </plurals>
     <plurals name="num_minutes">
@@ -350,7 +350,7 @@
     <string name="pref_lockscreen_noti">Сповіщення на екрані блокування</string>
     <string name="pref_offline_info">ℹ️ Офлайн-скробли та вподобайки будуть збережені, щоб бути відправленими пізніше.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скроблінг з</string>
-    <string name="pref_enabled_apps_summary">ℹ️ Підтримує додатки, відображаючі музикальні метаданні. Щоб уникнути подвійного скроблінгу з Spotify, увімкніть його тільки в одному місті.</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Підтримує застосунки, що показують музикальні метадані. Щоб уникнути подвійного скроблінгу зі Spotify, увімкніть його тільки в одному місті.</string>
     <string name="pref_enabled_apps_title">Виберіть додатки</string>
     <string name="pref_auto_detect">Автоматично скробблити з нових додатків</string>
     <string name="pref_spotify_remote">Скробблити Spotify, коли він грає на інших пристроях</string>

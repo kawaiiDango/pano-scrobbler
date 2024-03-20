@@ -332,6 +332,7 @@
     <string name="pref_enabled_apps_title">Escolher aplicativos</string>
     <string name="pref_auto_detect">Fazer scrobble automaticamente de novos aplicativos</string>
     <string name="pref_spotify_remote">Scrobble do Spotify tocando em outros dispositivos</string>
+    <string name="pref_link_heart_button_rating">Use o botão de coração na notificação para também favoritá-lo no reprodutor de mídia</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Desativar scrobbling contínuo pelo microfone quando o dispositivo estiver tocando música</string>
     <string name="pref_delay">Atraso de scrobble (o que for mais cedo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
@@ -345,6 +346,7 @@
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
     <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
     <string name="api_url" comment="For Listenbrainz">URL da API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL do Servidor</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Você pode encontrar seu token de autenticação em: %1$s</string>
     <string name="pref_now_playing">Enviar em reprodução</string>
     <string name="pref_fetch_album">Busque dados de álbuns em falta do lastFM</string>
@@ -425,6 +427,13 @@
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
     <string name="delete_account">Excluir sua conta</string>
     <string name="delete_account_custom_servers">Para servidores personalizados, verifique suas respectivas documentações.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Adicionar ou mudar imagem</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Da galeria</string>
+    <string name="square_photo_hint">Use uma imagem quadrada para melhores resultados</string>
+    <string name="scrobble_to_file">Arquivo</string>
+    <string name="password">Senha</string>
+    <string name="open_existing" comment="Append to an existing file">Anexar à existente</string>
+    <string name="create" comment="Create a new file">Criar</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar este aplicativo</string>
     <string name="help">Ajuda</string>

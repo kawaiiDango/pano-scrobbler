@@ -53,16 +53,18 @@ class VerticalStepperAdapter(
 
     fun checkIfStepsCompleted() {
         var pos = selectedPos
-        while (getItem(pos).isCompleted() || pos in viewModel.skippedPositions) {
-            if (pos < itemCount - 1) {
+        while (pos < itemCount) {
+            if (getItem(pos).isCompleted() || pos in viewModel.skippedPositions) {
                 pos += 1
             } else {
-                onCompleted()
-                return
+                break
             }
         }
-
-        selectedPos = pos
+        if (pos == itemCount) {
+            onCompleted()
+        } else {
+            selectedPos = pos
+        }
     }
 
     inner class OnboardingStepVH(private val binding: ListItemVerticalStepperBinding) :

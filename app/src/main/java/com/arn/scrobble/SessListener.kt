@@ -69,10 +69,11 @@ class SessListener(
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
 //                if (controller.sessionToken !in controllersMap) {
 
-            val playingTrackInfo = packageTagTrackMap[controller.packageName + "|" + controller.tag]
-                ?: PlayingTrackInfo(controller.packageName, controller.tag).also {
-                    packageTagTrackMap[controller.packageName + "|" + controller.tag] = it
-                }
+            val playingTrackInfo =
+                packageTagTrackMap[controller.packageName + "|" + controller.tagCompat]
+                    ?: PlayingTrackInfo(controller.packageName, controller.tagCompat).also {
+                        packageTagTrackMap[controller.packageName + "|" + controller.tagCompat] = it
+                    }
 
             val cb = ControllerCallback(playingTrackInfo, controller.sessionToken)
 
@@ -107,6 +108,13 @@ class SessListener(
 
     fun findTrackInfoByHash(hash: Int) =
         packageTagTrackMap.values.find { it.hash == hash }
+
+    private val MediaController.tagCompat
+        get() = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> tag
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1 -> tag
+            else -> "greylist-max-o"
+        }
 
     fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later
@@ -163,7 +171,7 @@ class SessListener(
     fun hasOtherPlayingControllers(thisTrackInfo: PlayingTrackInfo): Boolean {
         return controllersMap.values.any { (controller, cb) ->
             controller.packageName == thisTrackInfo.packageName
-                    && controller.tag != thisTrackInfo.sessionTag &&
+                    && controller.tagCompat != thisTrackInfo.sessionTag &&
                     controller.isMediaPlaying()
 //                        && !cb.trackInfo.hasBlockedTag
         }

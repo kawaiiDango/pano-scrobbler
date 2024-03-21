@@ -69,8 +69,8 @@
     <plurals name="num_regex_edits">
         <item quantity="one">%1$s шаблон редагування</item>
         <item quantity="few">%1$s шаблони редагування</item>
-        <item quantity="many">%1$s шаблони редагування</item>
-        <item quantity="other">%1$s шаблони редагування</item>
+        <item quantity="many">%1$s шаблонів редагування</item>
+        <item quantity="other">%1$s шаблонів редагування</item>
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s заблоковані метадані</item>
@@ -350,7 +350,7 @@
     <string name="pref_lockscreen_noti">Сповіщення на екрані блокування</string>
     <string name="pref_offline_info">ℹ️ Офлайн-скробли та вподобайки будуть збережені, щоб бути відправленими пізніше.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скроблінг з</string>
-    <string name="pref_enabled_apps_summary">ℹ️ Підтримує застосунки, що показують музикальні метадані. Щоб уникнути подвійного скроблінгу зі Spotify, увімкніть його тільки в одному місті.</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Підтримує застосунки, що показують музикальні метадані. Щоб уникнути подвійного скроблінгу зі Spotify, увімкніть його тільки в одному місці.</string>
     <string name="pref_enabled_apps_title">Виберіть додатки</string>
     <string name="pref_auto_detect">Автоматично скробблити з нових додатків</string>
     <string name="pref_spotify_remote">Скробблити Spotify, коли він грає на інших пристроях</string>
@@ -389,7 +389,7 @@
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">для скроблів</string>
     <string name="pref_show_scrobble_sources">Показувати значки зі сканованих додатків</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…поруч з кожним скроблом. Ці дані залишаються на вашому пристрої</string>
-    <string name="pref_search_in_source">Пошук &amp; та програвати в додатку з якого ви скроблили</string>
+    <string name="pref_search_in_source">Шукати та програвати в застосунку, з якого ви скроблили</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Лише для підтримуваних додатків</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Редагування шаблонів</string>

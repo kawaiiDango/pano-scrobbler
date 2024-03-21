@@ -1,4 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s आज</item>
+        <item quantity="other">%1$s आज</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s श्रोता</item>
+        <item quantity="other">%1$s श्रोताहरू</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s दिन</item>
+        <item quantity="other">%1$s दिन</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s हप्ता</item>
+        <item quantity="other">%1$s हप्ता</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s महिना</item>
+        <item quantity="other">%1$s महिना</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s वर्ष</item>
+        <item quantity="other">%1$s वर्ष</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s कलाकार</item>
+        <item quantity="other">%1$s कलाकार</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s एल्बम</item>
+        <item quantity="other">%1$s एल्बमहरू</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s ट्र्याक</item>
+        <item quantity="other">%1$s ट्र्याकहरू</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d मिल्यो</item>
+        <item quantity="other">%1$d मिल्यो</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s एडिट</item>
+        <item quantity="other">%1$s एडिट</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s प्याटर्न एडिट</item>
+        <item quantity="other">%1$s प्याटर्न एडिट</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s अवरुद्ध मेटाडेटा</item>
+        <item quantity="other">%1$s अवरुद्ध मेटाडेटा</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d मिनेट</item>
+        <item quantity="other">%1$d मिनेट</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s साथी</item>
+        <item quantity="other">%1$s साथीहरू</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s विचाराधीन</item>
+        <item quantity="other">%1$s विचाराधीन</item>
+    </plurals>
+    <string name="yes">हो</string>
     <!--  pro  -->
 </resources>

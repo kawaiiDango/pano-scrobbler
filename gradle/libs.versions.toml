@@ -1,19 +1,19 @@
 [versions]
 aboutlibraries = "11.1.0"
-activity = "1.9.0-alpha03"
+activity = "1.9.0-beta01"
 androidSnowfall = "1.2.1"
 bimap = "1.1.0"
 coil = "3.0.0-alpha06"
 constraintlayout = "2.2.0-alpha13"
 billing = "6.2.0"
-core-ktx = "1.13.0-alpha05"
+core-ktx = "1.13.0-beta01"
 appcompat = "1.7.0-alpha03"
 core-remoteviews = "1.1.0-alpha01"
 desugar_jdk_libs = "2.0.4"
 espresso-core = "3.6.0-alpha03"
 firebase-bom = "32.7.4"
 crashlytics = "2.9.9"
-fragment-ktx = "1.7.0-alpha10"
+fragment-ktx = "1.7.0-beta01"
 harmony = "1.2.6"
 junit = "4.13.2"
 kotlin = "1.9.23"
@@ -22,11 +22,11 @@ kotlinx-serialization-json = "1.6.3"
 ktorBom = "3.0.0-beta-1"
 kumo-core = "1.28.1"
 krate = "2.0.0"
-lifecycle = "2.8.0-alpha02"
+lifecycle = "2.8.0-alpha03"
 material = "1.12.0-alpha03"
 media = "1.7.0"
 mpAndroidChart = "v3.1.0"
-navigation = "2.8.0-alpha04"
+navigation = "2.8.0-alpha05"
 nestedscrollwebview = "0.1.6"
 okhttp = "5.0.0-alpha.12"
 palette-ktx = "1.0.0"
@@ -48,9 +48,9 @@ android-application = "8.5.0-alpha01"
 benchmark-macro-junit4 = "1.2.3"
 ksp = "1.9.23-1.0.19"
 github-release = "2.4.1"
-baselineprofile = "1.3.0-alpha01"
+baselineprofile = "1.3.0-alpha02"
 androidx-test-ext-junit = "1.1.5"
-transition = "1.5.0-alpha06"
+transition = "1.5.0-beta01"
 
 [libraries]
 android-snowfall = { module = "com.github.jetradarmobile:android-snowfall", version.ref = "androidSnowfall" }
@@ -119,7 +119,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
-navigation-safeargs = { id = "androidx.navigation.safeargs", version.ref = "navigation" }
+navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 test = { id = "com.android.test", version.ref = "android-application" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }

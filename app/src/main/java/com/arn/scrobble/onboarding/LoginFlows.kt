@@ -2,10 +2,12 @@ package com.arn.scrobble.onboarding
 
 import android.os.Bundle
 import androidx.navigation.NavController
-import com.arn.scrobble.main.App
+import androidx.navigation.NavDeepLinkBuilder
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.friends.UserAccountTemp
+import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 
@@ -22,7 +24,18 @@ class LoginFlows(private val navController: NavController) {
                 )
             )
         }
-        navController.navigate(R.id.webViewFragment, arguments)
+
+        if (navController.graph.findNode(R.id.webViewFragment) != null)
+            navController.navigate(R.id.webViewFragment, arguments)
+        else // invoked from EditDialog, launch deep link
+            NavDeepLinkBuilder(navController.context)
+                .setGraph(R.navigation.nav_graph)
+                .setComponentName(MainActivity::class.java)
+                .setDestination(R.id.webViewFragment)
+                .setArguments(arguments)
+                .createPendingIntent()
+                .send()
+
     }
 
     private fun librefm() {
@@ -40,67 +53,58 @@ class LoginFlows(private val navController: NavController) {
     }
 
     private fun gnufm() {
-        val arguments = LoginFragmentArgs.Builder(
-            App.context.getString(R.string.gnufm),
-            App.context.getString(R.string.password),
-        ).apply {
-            textField1 = App.context.getString(R.string.api_url)
+        val arguments = LoginFragmentArgs(
+            loginTitle = App.context.getString(R.string.gnufm),
+            textFieldLast = App.context.getString(R.string.password),
+            textField1 = App.context.getString(R.string.api_url),
             textField2 = App.context.getString(R.string.username)
-        }
-            .build()
+        )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
 
     private fun listenbrainz() {
-        val arguments = LoginFragmentArgs.Builder(
-            App.context.getString(R.string.listenbrainz),
-            App.context.getString(R.string.pref_token_label),
-        ).apply {
+        val arguments = LoginFragmentArgs(
+            loginTitle = App.context.getString(R.string.listenbrainz),
+            textFieldLast = App.context.getString(R.string.pref_token_label),
             infoText = App.context.getString(
                 R.string.listenbrainz_info,
                 "https://listenbrainz.org/profile"
             )
-        }
-            .build()
+        )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
 
     private fun customListenbrainz() {
-        val arguments = LoginFragmentArgs.Builder(
-            App.context.getString(R.string.custom_listenbrainz),
-            App.context.getString(R.string.pref_token_label),
-        ).apply {
-            textField1 = App.context.getString(R.string.api_url)
+        val arguments = LoginFragmentArgs(
+            loginTitle = App.context.getString(R.string.custom_listenbrainz),
+            textFieldLast = App.context.getString(R.string.pref_token_label),
+            textField1 = App.context.getString(R.string.api_url),
             infoText = App.context.getString(
                 R.string.listenbrainz_info,
                 "[API_URL]/profile"
             )
-        }
-            .build()
+        )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
 
     private fun maloja() {
-        val arguments = LoginFragmentArgs.Builder(
-            App.context.getString(R.string.maloja),
-            App.context.getString(R.string.pref_token_label),
-        ).apply {
+        val arguments = LoginFragmentArgs(
+            loginTitle = App.context.getString(R.string.maloja),
+            textFieldLast = App.context.getString(R.string.pref_token_label),
             textField1 = App.context.getString(R.string.server_url)
-        }
-            .build()
+        )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
 
     private fun pleroma() {
-        val arguments = LoginFragmentArgs.Builder(
-            App.context.getString(R.string.pleroma),
-            App.context.getString(R.string.server_url),
+        val arguments = LoginFragmentArgs(
+            loginTitle = App.context.getString(R.string.pleroma),
+            textFieldLast = App.context.getString(R.string.server_url),
         )
-            .build()
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
@@ -110,15 +114,13 @@ class LoginFlows(private val navController: NavController) {
     }
 
     fun acrCloud() {
-        val arguments = LoginFragmentArgs.Builder(
+        val arguments = LoginFragmentArgs(
             App.context.getString(R.string.add_acr_key),
-            App.context.getString(R.string.acr_secret)
-        ).apply {
-            infoText = App.context.getString(R.string.add_acr_key_info)
-            textField1 = App.context.getString(R.string.acr_host)
-            textField2 = App.context.getString(R.string.acr_key)
-        }
-            .build()
+            App.context.getString(R.string.acr_secret),
+            infoText = App.context.getString(R.string.add_acr_key_info),
+            textField1 = App.context.getString(R.string.acr_host),
+            textField2 = App.context.getString(R.string.acr_key),
+        )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }

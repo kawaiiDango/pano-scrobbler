@@ -348,6 +348,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
 
         binding.scrobblesChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val checkedId = checkedIds.firstOrNull() ?: return@setOnCheckedStateChangeListener
+            viewModel.input.value ?: return@setOnCheckedStateChangeListener
 
             when (checkedId) {
                 R.id.recents_chip -> viewModel.setInput(

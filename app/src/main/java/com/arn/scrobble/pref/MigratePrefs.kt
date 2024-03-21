@@ -83,9 +83,6 @@ object MigratePrefs {
                     }
             }
         }
-
-        // clear old cookies
-        prefs.edit().clear().apply()
     }
 
 }

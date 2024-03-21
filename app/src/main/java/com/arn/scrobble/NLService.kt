@@ -478,11 +478,10 @@ class NLService : NotificationListenerService() {
             Stuff.updateCurrentOrImmutable
         )
 
-        val editArgs = EditDialogFragmentArgs.Builder(
-            trackInfo.toScrobbleData()
+        val editArgs = EditDialogFragmentArgs(
+            data = trackInfo.toScrobbleData(),
+            hash = trackInfo.hash
         )
-            .setHash(trackInfo.hash)
-            .build()
             .toBundle()
 
         val editPi =
@@ -560,11 +559,10 @@ class NLService : NotificationListenerService() {
     }
 
     private fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val editArgs = EditDialogFragmentArgs.Builder(
-            trackInfo.toScrobbleData()
+        val editArgs = EditDialogFragmentArgs(
+            data = trackInfo.toScrobbleData(),
+            hash = trackInfo.hash
         )
-            .setHash(trackInfo.hash)
-            .build()
             .toBundle()
 
         val editPi =

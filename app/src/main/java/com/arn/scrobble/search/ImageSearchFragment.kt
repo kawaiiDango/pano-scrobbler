@@ -20,7 +20,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -29,14 +28,15 @@ import com.arn.scrobble.api.spotify.SpotifyMusicItem
 import com.arn.scrobble.databinding.ContentImageSearchBinding
 import com.arn.scrobble.db.CustomSpotifyMapping
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.createSkeletonWithFade
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.toast
-import com.arn.scrobble.ui.createSkeletonWithFade
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.getData
 import com.faltenreich.skeletonlayout.Skeleton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
@@ -44,7 +44,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
     private var _binding: ContentImageSearchBinding? = null
@@ -297,7 +296,6 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
             } catch (e: SecurityException) {
-                Timber.tag(Stuff.TAG).e(e)
             }
         }
     }
@@ -323,7 +321,6 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
             insertCustomMappings(null, uri)
         } catch (e: SecurityException) {
             requireContext().toast(e.localizedMessage ?: e.toString())
-            Timber.tag(Stuff.TAG).e(e)
         }
     }
 

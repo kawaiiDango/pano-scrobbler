@@ -17,9 +17,9 @@ import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.edits.EditDialogFragmentArgs
 import com.arn.scrobble.onboarding.LoginFlows
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.toast
-import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,9 +51,10 @@ object PopupMenuUtils {
                 duration = null,
             )
 
-            val args = EditDialogFragmentArgs.Builder(sd)
-                .setMsid(track.msid)
-                .build()
+            val args = EditDialogFragmentArgs(
+                data = sd,
+                msid = track.msid,
+            )
                 .toBundle()
 
             navController.navigate(R.id.editDialogFragment, args)

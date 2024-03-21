@@ -68,14 +68,12 @@ class EditDialogFragment : LoginFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         lockScrobble(true)
 
-        val placeholderTextArgs = LoginFragmentArgs.Builder(
-            App.context.getString(R.string.edit),
-            App.context.getString(R.string.artist)
-        ).apply {
-            textField1 = App.context.getString(R.string.track)
+        val placeholderTextArgs = LoginFragmentArgs(
+            loginTitle = App.context.getString(R.string.edit),
+            textFieldLast = App.context.getString(R.string.artist),
+            textField1 = App.context.getString(R.string.track),
             textField2 = App.context.getString(R.string.album_optional)
-        }
-            .build()
+        )
             .toBundle()
 
         requireArguments().putAll(placeholderTextArgs)

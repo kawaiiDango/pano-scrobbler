@@ -17,7 +17,7 @@ class HomePagerAdapter(fragment: BasePagerFragment, accountType: AccountType) :
             listOf(
                 TabMetadata(R.string.scrobbles, R.drawable.vd_history) {
                     ScrobblesFragment()
-                        .apply { arguments = ScrobblesFragmentArgs.Builder().build().toBundle() }
+                        .apply { arguments = ScrobblesFragmentArgs().toBundle() }
                 },
                 TabMetadata(R.string.friends, R.drawable.vd_friends) { FriendsFragment() },
                 TabMetadata(R.string.charts, R.drawable.vd_charts) { ChartsOverviewFragment() },
@@ -27,7 +27,7 @@ class HomePagerAdapter(fragment: BasePagerFragment, accountType: AccountType) :
         AccountType.GNUFM -> listOf(
             TabMetadata(R.string.scrobbles, R.drawable.vd_history) {
                 ScrobblesFragment()
-                    .apply { arguments = ScrobblesFragmentArgs.Builder().build().toBundle() }
+                    .apply { arguments = ScrobblesFragmentArgs().toBundle() }
             },
             TabMetadata(R.string.charts, R.drawable.vd_charts) { ChartsOverviewFragment() },
         )
@@ -36,11 +36,10 @@ class HomePagerAdapter(fragment: BasePagerFragment, accountType: AccountType) :
         AccountType.PLEROMA,
         AccountType.FILE -> listOf(
             TabMetadata(R.string.scrobbles, R.drawable.vd_history) {
-                val args = ScrobblesFragmentArgs.Builder()
-                    .setShowChips(false)
-                    .setShowAllMenuItems(false)
-                    .build()
-                    .toBundle()
+                val args = ScrobblesFragmentArgs(
+                    showChips = false,
+                    showAllMenuItems = false
+                ).toBundle()
                 ScrobblesFragment().apply { arguments = args }
             },
         )

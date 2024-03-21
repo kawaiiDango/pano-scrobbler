@@ -265,10 +265,9 @@ class MainActivity : AppCompatActivity(),
         val changelogHashcode = getString(R.string.changelog_text).hashCode()
 
         if (prefs.changelogSeenHashcode != changelogHashcode) {
-            val args = ChangelogDialogFragmentArgs.Builder(
+            val args = ChangelogDialogFragmentArgs(
                 getString(R.string.changelog_text),
             )
-                .build()
                 .toBundle()
 
             navController.navigate(R.id.changelogDialogFragment, args)

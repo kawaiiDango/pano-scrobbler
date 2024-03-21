@@ -346,6 +346,7 @@
     <string name="pref_user_label" comment="(Like username)">Benutzer</string>
     <string name="pref_token_label" comment="For Listenbrainz">Authentifizierungstoken</string>
     <string name="api_url" comment="For Listenbrainz">API-URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">Server URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Du findest deinen Authentifizierungs-Token unter: %1$s</string>
     <string name="pref_now_playing">\"Scrobbelt gerade\" senden</string>
     <string name="pref_fetch_album">Fehlende Albumdaten von lastFM abrufen</string>
@@ -426,6 +427,13 @@
     <string name="fix_it_action" comment="(To open an app)">Öffnen</string>
     <string name="delete_account">Dein Konto Löschen</string>
     <string name="delete_account_custom_servers">Für benutzerdefinierte Server lesen Sie bitte die entsprechenden Dokumentationen.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Bild hinzufügen oder ändern</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Aus der Galerie</string>
+    <string name="square_photo_hint">Benutze ein quadratisches Bild für beste Ergebnisse</string>
+    <string name="scrobble_to_file">Datei</string>
+    <string name="password">Kennwort</string>
+    <string name="open_existing" comment="Append to an existing file">An vorhandene anhängen</string>
+    <string name="create" comment="Create a new file">Erstelle</string>
     <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
     <string name="help">Hilfe</string>

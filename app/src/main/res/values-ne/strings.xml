@@ -109,6 +109,33 @@
     <string name="choose_apps">एपहरू चयन गर्नुहोस्</string>
     <string name="choose_an_app">एप चयन गर्नुहोस्</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">एपहरू</string>
+    <string name="offline">अफलाइन। देखाइएको डाटा ताजा छैन</string>
+    <string name="unavailable_offline">अफलाइन हुँदा उपलब्ध छैन</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">सेवाहरू</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">म \n%1$s %2$s सुन्दै थिएँ</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s ले \n%1$s %2$s सुन्दै थिए</string>
+    <string name="share_sig">(Pano Scrobbler मार्फत)</string>
+    <string name="share">शेयर</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">लेजेण्ड</string>
+    <string name="grid_size">ग्रिड आकार परिवर्तन गर्नुहोस्</string>
+    <string name="pinch_to_zoom">जुम गर्न पिन्च गर्नुहोस्</string>
+    <string name="more_info">थप जानकारी</string>
+    <string name="more" comment="More options menu in short">अरू</string>
+    <string name="learn" comment="(Learn java regex syntax)">सिक्नुहोस्</string>
+    <string name="hide">लुकाउनुहोस्</string>
+    <string name="rank_change" comment="%1= delta change">श्रेणी परिवर्तन: %s</string>
+    <string name="rank_change_no_change">परिवर्तन छैन</string>
+    <string name="rank_change_new">अघिल्लो अवधि भित्र स्क्रबल गरिएको छैन</string>
+    <string name="search">खोज्नुहोस्</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">सबै इतिहास मेटाउनुहोस्</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">इतिहासबाट यो आइटम हटाउने हो?</string>
+    <string name="library" comment="search within the library">संग्रह</string>
+    <string name="global" comment="search globally across lastfm">ग्लोबल</string>
+    <string name="reindex">द्रुत इन्डेक्स</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">आफ्नो स्क्रबल इन्डेक्स गर्नुहोस्</string>
+    <string name="full_index">पूर्ण इन्डेक्स</string>
+    <string name="take_long_time">यसले लामो समय लिन सक्छ</string>
+    <string name="full_index_desc">यदि तपाईंले वेबसाइटबाट स्क्रबल सम्पादन वा मेटाउनुभएको छ भने मात्र यसलाई प्रयोग गर्नुहोस्।</string>
     <string name="pending_scrobbles_noti">विचाराधीन स्क्रबल प्रशोधन गर्दै</string>
     <string name="friends">साथीहरू</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s देखि %1$s स्क्रबल</string>

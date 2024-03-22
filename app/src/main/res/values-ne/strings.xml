@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s आज</item>
+        <item quantity="other">%1$s आज</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s श्रोता</item>
+        <item quantity="other">%1$s श्रोताहरू</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s दिन</item>
+        <item quantity="other">%1$s दिन</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s हप्ता</item>
+        <item quantity="other">%1$s हप्ता</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s महिना</item>
+        <item quantity="other">%1$s महिना</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s वर्ष</item>
+        <item quantity="other">%1$s वर्ष</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s कलाकार</item>
+        <item quantity="other">%1$s कलाकार</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s एल्बम</item>
+        <item quantity="other">%1$s एल्बमहरू</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s ट्र्याक</item>
+        <item quantity="other">%1$s ट्र्याकहरू</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d मिल्यो</item>
+        <item quantity="other">%1$d मिल्यो</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s सम्पादन</item>
+        <item quantity="other">%1$s सम्पादन</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s प्याटर्न एडिट</item>
+        <item quantity="other">%1$s प्याटर्न एडिट</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s अवरुद्ध मेटाडेटा</item>
+        <item quantity="other">%1$s अवरुद्ध मेटाडेटा</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d मिनेट</item>
+        <item quantity="other">%1$d मिनेट</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s साथी</item>
+        <item quantity="other">%1$s साथीहरू</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s विचाराधीन</item>
+        <item quantity="other">%1$s विचाराधीन</item>
+    </plurals>
+    <string name="yes">हो</string>
+    <string name="no">होइन</string>
+    <string name="reset">रिसेट</string>
+    <string name="settings">कन्फिगर</string>
+    <string name="bug_report">बग रिपोर्ट</string>
+    <string name="faq">FAQ</string>
+    <string name="album_art">एल्बम आर्ट</string>
+    <string name="artist_image">एल्बम छवि</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक पार्स गर्न सकेन</string>
+    <string name="network_error">नेटवर्क त्रुटि</string>
+    <string name="disable_tls_verify">TLS त्रुटिहरू बेवास्ता गर्नुहोस्</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रबल बेवास्ता गरियो</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ले सम्पादनलाई बेवास्ता गरेको छ किनभने स्क्रबल धेरै पुरानो छ। के तपाईं यस सम्पादनलाई भविष्यमा स्क्रबहरूका लागि सेभ गर्न चाहनुहुन्छ?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्रहरू खाली छन्</string>
+    <string name="artist">कलाकार</string>
+    <string name="artists">कलाकारहरू</string>
+    <string name="top_artists" comment="Top artists the user has listened to">शीर्ष कलाकारहरू</string>
+    <string name="album_artist">एल्बम कलाकार</string>
+    <string name="artist_channel" comment="Artist or youtube channel">कलाकार / च्यानल</string>
+    <string name="similar_artists">समान कलाकारहरू</string>
+    <string name="album_optional">एल्बम (वैकल्पिक)</string>
+    <string name="album">एल्बम</string>
+    <string name="albums">एलबमहरू</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">शीर्ष एल्बमहरू</string>
+    <string name="track">ट्र्याक</string>
+    <string name="tracks">ट्र्याकहरू</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">शीर्ष ट्र्याकहरू</string>
+    <string name="similar_tracks">समान ट्र्याकहरू</string>
+    <string name="similar" comment="Similar tracks but in short">उस्तै</string>
+    <string name="state_scrobbling">स्क्रबल गर्दै…</string>
+    <string name="state_scrobbled">स्क्रबल गरियो</string>
+    <string name="unscrobble">स्क्रबल गर्न सकिएन</string>
+    <string name="state_unscrobbled">स्क्रबल हटाइयो</string>
+    <string name="state_unrecognised_artist">अपरिचित कलाकार</string>
+    <string name="tap_to_edit">(सम्पादन गर्नको लागि थिच्नुहोस्)</string>
+    <string name="recently_scrobbled">हालै स्क्रबल गरिएको</string>
+    <string name="recents" comment="Short for recently scrobbled">हालैका</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">पहिलो पटक %1$s मा स्क्रबल गरिएको</string>
+    <string name="auto" comment="automatic or default setting">स्वतः</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">लगभग त्यहाँ…</string>
+    <string name="music_players">संगीत प्लेयरहरू</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">अन्य एपहरू</string>
+    <string name="choose_apps">एपहरू चयन गर्नुहोस्</string>
+    <string name="choose_an_app">एप चयन गर्नुहोस्</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">एपहरू</string>
+    <string name="offline">अफलाइन। देखाइएको डाटा ताजा छैन</string>
+    <string name="unavailable_offline">अफलाइन हुँदा उपलब्ध छैन</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">सेवाहरू</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">म \n%1$s %2$s सुन्दै थिएँ</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s ले \n%1$s %2$s सुन्दै थिए</string>
+    <string name="share_sig">(Pano Scrobbler मार्फत)</string>
+    <string name="share">शेयर</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">लेजेण्ड</string>
+    <string name="grid_size">ग्रिड आकार परिवर्तन गर्नुहोस्</string>
+    <string name="pinch_to_zoom">जुम गर्न पिन्च गर्नुहोस्</string>
+    <string name="more_info">थप जानकारी</string>
+    <string name="more" comment="More options menu in short">अरू</string>
+    <string name="learn" comment="(Learn java regex syntax)">सिक्नुहोस्</string>
+    <string name="hide">लुकाउनुहोस्</string>
+    <string name="rank_change" comment="%1= delta change">श्रेणी परिवर्तन: %s</string>
+    <string name="rank_change_no_change">परिवर्तन छैन</string>
+    <string name="rank_change_new">अघिल्लो अवधि भित्र स्क्रबल गरिएको छैन</string>
+    <string name="search">खोज्नुहोस्</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">सबै इतिहास मेटाउनुहोस्</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">इतिहासबाट यो आइटम हटाउने हो?</string>
+    <string name="library" comment="search within the library">संग्रह</string>
+    <string name="global" comment="search globally across lastfm">ग्लोबल</string>
+    <string name="reindex">द्रुत इन्डेक्स</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">आफ्नो स्क्रबल इन्डेक्स गर्नुहोस्</string>
+    <string name="full_index">पूर्ण इन्डेक्स</string>
+    <string name="take_long_time">यसले लामो समय लिन सक्छ</string>
+    <string name="full_index_desc">यदि तपाईंले वेबसाइटबाट स्क्रबल सम्पादन वा मेटाउनुभएको छ भने मात्र यसलाई प्रयोग गर्नुहोस्।</string>
+    <string name="pending_scrobbles_noti">विचाराधीन स्क्रबल प्रशोधन गर्दै</string>
+    <string name="friends">साथीहरू</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s देखि %1$s स्क्रबल</string>
+    <string name="allow_background">ब्याकग्राउण्डमा स्क्रबल गर्ने अनुमति दिनुहोस्</string>
+    <string name="grant_notification_access">सूचना पठाउने अनुमति प्रदान गर्नुहोस्</string>
+    <string name="grant_notification_access_desc">संगीत मेटाडेटा प्राप्त गर्न आवश्यक छ। अन्य कुनै पनि गैर-संगीत सूचनाहरू पढिने छैनन्</string>
+    <string name="send_notifications">सूचनाहरूलाई अनुमति दिनुहोस्</string>
+    <string name="notification_channel_blocked">यसका लागि सूचनाहरू सक्षम गर्न आवश्यक छ</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- स्क्रबल स्थिति र गणनाहरू जाँच गर्न 
+- सूचनाबाट सीधा माया वा रोक्नु लगाउनुहोस्
+- स्क्रबल त्रुटिहरू र तपाईंले गर्न सक्ने कार्यहरूको बारेमा सूचना प्राप्त गर्नुहोस् 
+- प्रत्येक हप्ता तपाईंको शीर्ष स्क्रबलहरू प्राप्त गर्नुहोस् 
+- र थप 
+- सूचनाहरूले आवाज जनाउँदैन\"\""</string>
+    <string name="will_not_scrobble">यो चरण छोड्दा स्क्रबल असक्षम हुनेछ</string>
+    <string name="swap" comment="(Swap title and artist)">स्वाप</string>
+    <string name="rate_msg">एपलाई मन पराउँदै हो?</string>
+    <string name="time_just_now">भर्खरै</string>
+    <string name="no_mail_apps">कुनै इमेल क्लाइन्ट स्थापना गरिएको छैन</string>
+    <string name="loved" comment="Its a noun">माया गरेको</string>
+    <string name="unloved" comment="Its a noun">माया हटाइएको</string>
+    <string name="simple_edits">सम्पादनहरू</string>
+    <string name="grant_rec_perm">कृपया माइक्रोफोन प्रयोग गर्न अनुमति दिनुहोस्</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्टहरू</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">ट्याग क्लाउड</string>
+    <string name="scrobble_from_mic" comment="Its a verb">माइकबाट स्क्रबल गर्नुहोस्</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">माइकबाट</string>
+    <string name="add_to_hs">होमस्क्रिनमा थप्नुहोस्</string>
+    <string name="listening">आफ्नो वरिपरि बजिरहेको संगीत सुन्दै…</string>
+    <string name="uploading">अपलोड गर्दै…</string>
+    <string name="recording_failed">रेकर्डिङ सुरु गर्न असफल भयो। यस यन्त्रमा माइक व्यस्त वा अनुपलब्ध हुन सक्छ</string>
+    <string name="press_back">सकिएपछि ब्याक थिच्नुहोस्</string>
+    <string name="powered_acr"><i><b>ACR</b>Cloud</i> द्वारा संचालित</string>
+    <string name="details">विवरणहरू</string>
+    <string name="saved_as_pending">विचाराधीन स्क्रबलको रूपमा सेभ गरियो</string>
+    <string name="sort">क्रमबद्ध</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">समय जम्प</string>
+    <string name="my_scrobbles">मेरो स्क्रबल</string>
+    <string name="their_scrobbles">उनीहरूको स्क्रबल</string>
+    <string name="listeners">श्रोताहरू</string>
+    <string name="scrobbles">स्क्रबल</string>
+    <string name="collapse" comment="(view only a few items)">संक्षिप्त पार्नुहोस्</string>
+    <string name="expand" comment="(view all items)">विस्तृत गर्नुहोस्</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s ले यो मनपराउनु भयो</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s बाट</string>
+    <string name="not_found" comment="Shown in search">फेला परेन</string>
+    <string name="save" comment="saves a file">सेभ</string>
+    <string name="saved_to_gallery">ग्यालरीमा सेभ गरियो</string>
+    <string name="reports" comment="Like last.week reports and stuff">रिपोर्टहरू</string>
+    <string name="weekly">साप्ताहिक</string>
+    <string name="weeks">हप्ता</string>
+    <string name="monthly">मासिक</string>
+    <string name="months">महिना</string>
+    <string name="years" comment="For the charts menu which displays year by year">वर्ष</string>
+    <string name="charts_overall">समग्र</string>
+    <!--  pro  -->
+</resources>

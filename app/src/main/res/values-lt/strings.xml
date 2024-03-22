@@ -104,7 +104,7 @@
     </plurals>
     <string name="yes">Taip</string>
     <string name="no">Ne</string>
-    <string name="reset">Atstatyti</string>
+    <string name="reset">Atkurti</string>
     <string name="settings">Konfigūracija</string>
     <string name="bug_report">Pranešimas apie riktą</string>
     <string name="faq">DUK</string>
@@ -122,7 +122,7 @@
     <string name="album_artist">Albumo atlikėjas</string>
     <string name="artist_channel" comment="Artist or youtube channel">Atlikėjas / kanalas</string>
     <string name="similar_artists">Panašūs atlikėjai</string>
-    <string name="album_optional">Albumas (pasirinktinai)</string>
+    <string name="album_optional">Albumas (pasirinktinis)</string>
     <string name="album">Albumas</string>
     <string name="albums">Albumai</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Geriausi albumai</string>
@@ -140,7 +140,7 @@
     <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
-    <string name="auto" comment="automatic or default setting">Automatiškai</string>
+    <string name="auto" comment="automatic or default setting">Automatinis</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Beveik ten…</string>
     <string name="music_players">Muzikos leistuvai</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Kitos programėlės</string>
@@ -192,14 +192,14 @@
     <string name="delete">Ištrinti</string>
     <string name="delete_all">Ištrinti viską</string>
     <string name="love" comment="Love/like a song">Pamėgti</string>
-    <string name="hate" comment="Hate or dislike a song">Nemėgsti</string>
+    <string name="hate" comment="Hate or dislike a song">Nemėgti</string>
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Panaikinti nemėgstą</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Panaikinti pamėgtą</string>
     <string name="pending_scrobbles">Laukiami skroblai</string>
-    <string name="pending_scrobble">Laukiama skroblas</string>
+    <string name="pending_scrobble">Laukiamas skroblas</string>
     <string name="pending_scrobbles_noti">Apdorojama laukiančių skroblų</string>
     <string name="friends">Draugai</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblų, nuo %2$s</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblai (-ų), nuo %2$s</string>
     <string name="allow_background">Leisti skrobalinimą fone</string>
     <string name="grant_notification_access">Suteikti prieigą prie pranešimų</string>
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
@@ -211,8 +211,8 @@
 - Kiekvieną savaitę gauti geriausius skroblus.
 - Ir daugiau.
 - Pranešimai nedaro garso.\"\""</string>
-    <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobavimas</string>
-    <string name="swap" comment="(Swap title and artist)">Sukeisti</string>
+    <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobalinimas</string>
+    <string name="swap" comment="(Swap title and artist)">Apkeisti</string>
     <string name="rate_msg">Patinka ši programėlė?</string>
     <string name="time_just_now">ką tik</string>
     <string name="no_mail_apps">Nėra įdiegta el. pašto kliento programėlė</string>

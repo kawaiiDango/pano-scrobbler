@@ -2,10 +2,10 @@ package com.arn.scrobble.info
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.main.App
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.main.App
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.Stuff
@@ -70,7 +70,7 @@ class UserTagsVM : ViewModel() {
 
     fun addTag(newTags: String) {
         viewModelScope.launch {
-            _tags.emit(tags.value?.also { it + splitTags(newTags) })
+            _tags.emit(tags.value?.plus(splitTags(newTags)))
 
             if (Stuff.isTestLab)
                 return@launch

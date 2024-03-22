@@ -37,6 +37,7 @@ import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.mapConcurrently
@@ -297,9 +298,6 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                         headerIconRes = R.drawable.vd_note
                     }
 
-                    else -> {
-                        throw IllegalArgumentException("Unknown type: $type")
-                    }
                 }
 
                 createAddHeader(headerTextRes, headerIconRes)
@@ -475,7 +473,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
             var error = false
             val request = ImageRequest.Builder(requireContext()).apply {
-                data(entry)
+                data(MusicEntryImageReq(entry))
                 crossfade(false)
                 if (prefs.collageSkipMissing)
                     listener(

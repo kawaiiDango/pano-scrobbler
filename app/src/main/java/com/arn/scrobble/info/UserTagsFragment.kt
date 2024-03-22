@@ -11,6 +11,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.arn.scrobble.R
@@ -19,10 +21,10 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.DialogUserTagsBinding
+import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
-import com.arn.scrobble.utils.Stuff.getData
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.filterNotNull
@@ -80,14 +82,9 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onShow(p0: DialogInterface?) {
-        collectLatestLifecycleFlow(viewModel.tags.filterNotNull()) { value ->
+        collectLatestLifecycleFlow(viewModel.tags.filterNotNull()) {
             binding.userTagsProgress.hide()
-            if (value.isEmpty())
-                binding.userTagsStatus.visibility = View.VISIBLE
-            value.forEach {
-                addChip(it)
-            }
-            // todo fix viewModel.tags.removeObserver(this)
+            updateChips(it)
         }
 
         val addButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
@@ -105,8 +102,6 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
             val tags = binding.userTagsInputEdittext.text.toString().trim()
             if (tags.isNotEmpty()) {
                 viewModel.splitTags(tags).forEach {
-                    if (viewModel.tags.value?.contains(it) != true)
-                        addChip(it.trim())
                     viewModel.historyPref.add(it.trim())
                 }
                 viewModel.addTag(tags)
@@ -145,18 +140,27 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         super.onDestroyView()
     }
 
-    private fun addChip(tag: String) {
-        val chip = Chip(requireContext()).apply {
-            text = tag
-            isCloseIconVisible = true
-            setOnCloseIconClickListener {
-                viewModel.deleteTag(tag)
+    private fun updateChips(tags: Set<String>) {
+        val existingChipTags =
+            binding.userTagsChipGroup.children.map { (it as Chip).text.toString() }.toSet()
+        val tagsToAdd = tags - existingChipTags
+
+        binding.userTagsChipGroup.children.forEach {
+            if ((it as Chip).text.toString() !in tags)
                 binding.userTagsChipGroup.removeView(it)
-                if (binding.userTagsChipGroup.childCount == 0)
-                    binding.userTagsStatus.visibility = View.VISIBLE
-            }
         }
-        binding.userTagsChipGroup.addView(chip)
-        binding.userTagsStatus.visibility = View.GONE
+
+        tagsToAdd.forEach {
+            val chip = Chip(requireContext()).apply {
+                text = it
+                isCloseIconVisible = true
+                setOnCloseIconClickListener { _ ->
+                    viewModel.deleteTag(it)
+                }
+            }
+            binding.userTagsChipGroup.addView(chip)
+        }
+
+        binding.userTagsStatus.isVisible = binding.userTagsChipGroup.childCount == 0
     }
 }

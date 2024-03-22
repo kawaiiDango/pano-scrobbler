@@ -320,7 +320,8 @@ object NavUtils {
                             val itemId = menuItem.itemId - idOffset
                             when (itemId) {
                                 in adapter.tabMetadata.indices -> {
-                                    binding.pager.setCurrentItem(itemId, true)
+                                    if (isReady)
+                                        binding.pager.setCurrentItem(itemId, true)
                                     true
                                 }
 
@@ -354,7 +355,7 @@ object NavUtils {
                             if (page in adapter.tabMetadata.indices) {
                                 menuItem.isChecked = true
                                 val reselected = page == binding.pager.currentItem
-                                if (!reselected)
+                                if (!reselected && isReady)
 //                                    scrollToTop()
 //                                else
                                     binding.pager.setCurrentItem(page, true)

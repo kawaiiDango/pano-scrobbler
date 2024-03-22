@@ -27,6 +27,8 @@ open class BasePagerFragment : Fragment() {
         get() = _binding!!
     val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
     val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    var isReady = false
+        private set
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,11 +42,13 @@ open class BasePagerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentPagerBinding.inflate(inflater, container, false)
+        isReady = true
         return binding.root
     }
 
     override fun onDestroyView() {
         _binding = null
+        isReady = false
         super.onDestroyView()
     }
 

@@ -408,10 +408,10 @@ class EditDialogFragment : LoginFragment() {
         // do not scrobble until the dialog is dismissed
 
         val intent = Intent(NLService.iSCROBBLE_SUBMIT_LOCK_S)
-            .setPackage(requireContext().packageName)
+            .setPackage(App.context.packageName)
             .putExtra(NLService.B_LOCKED, lock)
             .putExtra(NLService.B_HASH, args.hash)
 
-        requireContext().sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
+        App.context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
     }
 }

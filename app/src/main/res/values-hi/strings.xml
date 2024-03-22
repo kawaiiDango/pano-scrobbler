@@ -48,5 +48,33 @@
         <item quantity="one">%1$s एडिट</item>
         <item quantity="other">%1$s एडिट</item>
     </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s पैटर्न एडिट</item>
+        <item quantity="other">%1$s पैटर्न एडिटस</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d मिनट</item>
+        <item quantity="other">%1$d मिनट</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s मित्र</item>
+        <item quantity="other">%1$s मित्रों</item>
+    </plurals>
+    <string name="yes">हां</string>
+    <string name="no">नहीं</string>
+    <string name="reset">रीसेट</string>
+    <string name="settings">स्वानुसार करें</string>
+    <string name="bug_report">समस्या रिपोर्ट करें</string>
+    <string name="faq">अधिकतर पूछे जाने वाले प्रश्न</string>
+    <string name="album_art">एल्बम चित्र</string>
+    <string name="artist_image">कलाकार का चित्र</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक नही मिला</string>
+    <string name="network_error">नेटवर्क में समस्या</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रोबल अनदेखा करें</string>
+    <string name="scrobble_ignored_save_edit">लास्ट एफएम ने इस बदलाव को अनदेखा लिया है, क्योंकि शम्भवता यह स्क्रॉबल बोहोत पुराना है। क्या आप इस बदलाव को भविष्य के स्क्रॉबल्स के लिए रखना चाहेंगे?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्र खाली हैं</string>
+    <string name="artist">कलाकार</string>
+    <string name="artists">कलाकार</string>
+    <string name="top_artists" comment="Top artists the user has listened to">शीर्ष कलाकार</string>
     <!--  pro  -->
 </resources>

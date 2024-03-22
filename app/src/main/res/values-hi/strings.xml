@@ -45,12 +45,12 @@
         <item quantity="other">%1$d मैच</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$s एडिट</item>
-        <item quantity="other">%1$s एडिट</item>
+        <item quantity="one">%1$s सुधार</item>
+        <item quantity="other">%1$s सुधार</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$s पैटर्न एडिट</item>
-        <item quantity="other">%1$s पैटर्न एडिटस</item>
+        <item quantity="one">%1$s पैटर्न सुधार</item>
+        <item quantity="other">%1$s पैटर्न सुधार</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d मिनट</item>
@@ -70,11 +70,57 @@
     <string name="artist_image">कलाकार का चित्र</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक नही मिला</string>
     <string name="network_error">नेटवर्क में समस्या</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रोबल अनदेखा करें</string>
-    <string name="scrobble_ignored_save_edit">लास्ट एफएम ने इस बदलाव को अनदेखा लिया है, क्योंकि शम्भवता यह स्क्रॉबल बोहोत पुराना है। क्या आप इस बदलाव को भविष्य के स्क्रॉबल्स के लिए रखना चाहेंगे?</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रॉबल अनदेखा करें</string>
+    <string name="scrobble_ignored_save_edit">लास्ट एफएम ने इस सुधार को अनदेखा लिया है, क्योंकि शम्भवता यह स्क्रॉबल बोहोत पुराना है। क्या आप इस सुधार को भविष्य के स्क्रॉबल्स के लिए रखना चाहेंगे?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्र खाली हैं</string>
     <string name="artist">कलाकार</string>
     <string name="artists">कलाकार</string>
-    <string name="top_artists" comment="Top artists the user has listened to">शीर्ष कलाकार</string>
+    <string name="top_artists" comment="Top artists the user has listened to">अधिकतर सुनें गए कलाकार</string>
+    <string name="album_artist">एल्बम के कलाकार</string>
+    <string name="artist_channel" comment="Artist or youtube channel">कलाकार/चैनल</string>
+    <string name="similar_artists">समान कलाकार</string>
+    <string name="album_optional">एल्बम (वैकल्पिक)</string>
+    <string name="album">एल्बम</string>
+    <string name="albums">एल्बम</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">अधिकतर सुनें गए एल्बम</string>
+    <string name="track">गीत</string>
+    <string name="tracks">गीत</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">अधिकतर सुनें गए गीत</string>
+    <string name="similar_tracks">समान गीत</string>
+    <string name="similar" comment="Similar tracks but in short">समान</string>
+    <string name="state_scrobbling">अभी स्क्रॉबल हो रहा है…</string>
+    <string name="state_scrobbled">स्क्रॉबल हो गया</string>
+    <string name="unscrobble">स्क्रॉबल निकालें</string>
+    <string name="state_unscrobbled">स्क्रॉबल निकाल दिया</string>
+    <string name="state_unrecognised_artist">कलाकार को पहचान नहीं सकें</string>
+    <string name="tap_to_edit">(सुधार करने के लिए यहां दबाएं)</string>
+    <string name="recently_scrobbled">अभी स्क्रॉबल किए गए</string>
+    <string name="recents" comment="Short for recently scrobbled">अभी के</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">प्रथम स्क्रॉबल %1$s को किया था</string>
+    <string name="auto" comment="automatic or default setting">स्वतः</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">बस हो ही गया…</string>
+    <string name="music_players">गीत प्लेयर</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">अन्य एप्लिकेशन</string>
+    <string name="choose_apps">एप्लिकेशन चुने</string>
+    <string name="choose_an_app">एक एप्लिकेशन चुनें</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">एप्लिकेशन</string>
+    <string name="offline">नेट बांध है। दिखाया गया डेटा नया नहीं है</string>
+    <string name="unavailable_offline">नेट बंध होने पर यह उपलब्द नहीं है</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">सेवाएं</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\n %2$s को सुन रहा था</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s, %1$s\n %2$s को सुन रहा था</string>
+    <string name="share_sig">(Pano Scrobbler के मध्यम से)</string>
+    <string name="share">भेजें</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">विवयण</string>
+    <string name="grid_size">ग्रिड का आकार बदलें</string>
+    <string name="pinch_to_zoom">बड़ा/छोटा करने के लिए दो अँगुलियों का उपयोग करें</string>
+    <string name="more_info">अधिक जानकारी</string>
+    <string name="more" comment="More options menu in short">अधिक</string>
+    <string name="learn" comment="(Learn java regex syntax)">सीखें</string>
+    <string name="hide">छिपाएं</string>
+    <string name="rank_change" comment="%1= delta change">पद में बदलाव: %s</string>
+    <string name="loved" comment="Its a noun">प्रिय</string>
+    <string name="unloved" comment="Its a noun">अप्रिय</string>
+    <string name="simple_edits">सुधार</string>
     <!--  pro  -->
 </resources>

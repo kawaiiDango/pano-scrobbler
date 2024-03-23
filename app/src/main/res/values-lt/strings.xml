@@ -318,7 +318,7 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono riba (%1$d).</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Vilkimo rankenėlė</string>
     <string name="text" comment="text to test regex rules with">Tekstas</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudodamas (-a) įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
     <string name="blocked_metadata_info">ℹ️ Užpildžius daugiau nei vieną iš šių laukų, tarp jų bus taikomas AND operatorius</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Paliesk, kad blokuoti ir praleisti</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
@@ -341,7 +341,7 @@
     <string name="acoustic" comment="(Acoustic music)">Akustika</string>
     <string name="instrumental">Instrumentinė</string>
     <string name="energetic" comment="(Energetic music)">Energinga</string>
-    <string name="danceable">Šokių tinkamumas</string>
+    <string name="danceable">Šokių tinkamas</string>
     <string name="valence" comment="(Musical positivity)">Pozityvumas</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analizė</string>
@@ -366,6 +366,7 @@
     <string name="pref_enabled_apps_title">Pasirinkti programėles</string>
     <string name="pref_auto_detect">Automatiškai skrobuolinti iš naujų programėlių</string>
     <string name="pref_spotify_remote">Skrobuolinti Spotify grojant kituose įrenginiuose</string>
+    <string name="pref_link_heart_button_rating">Naudoti širdelės mygtuką pranešime, kad jį taip pat pamėgti medijos leistuve</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobalinimą, kai įrenginys groja muziką</string>
     <string name="pref_delay">Skroblo delsa (priklausomai nuo to, kuri ankstesnė)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutės</string>
@@ -379,6 +380,7 @@
     <string name="pref_user_label" comment="(Like username)">Naudotojas</string>
     <string name="pref_token_label" comment="For Listenbrainz">Tapatybės nustatymo raktas</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">Serverio URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Tapatybės nustatymo raktą galima rasti adresu: %1$s</string>
     <string name="pref_now_playing">Pateikti dabar grojama</string>
     <string name="pref_fetch_album">Gauti trūkstamus albumo duomenis iš lastFM</string>
@@ -391,20 +393,20 @@
     <string name="pref_export">Eksportuoti</string>
     <string name="pref_export_desc">Padaro atsarginę nustatymų, redagavimų ir blokavimo sąrašo kopiją. Saugumo sumetimais neišsaugo prisijungimų. Naudinga perkeliant iš vieno įrenginio į kitą arba bendrinti su draugais.</string>
     <string name="pref_import">Importuoti</string>
-    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizavimas</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Suasmeninimas</string>
     <string name="pref_themes" comment="Color themes">Temos</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Maišyti ir derinti\nTaip pat keičia pranešimo spalvą</string>
     <string name="pref_widget_charts">Pradžios ekrano valdiklis – Diagramos</string>
     <string name="pref_show_albums">Rodyti albumų pavadinimus</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…skroblams.</string>
-    <string name="pref_show_scrobble_sources">Rodyti programėlių, iš kurių nuskrobuoliniai, piktogramas</string>
-    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…prie kiekvieno skroblo. Šie duomenys lieka tavo įrenginyje.</string>
-    <string name="pref_search_in_source">Ieškok ir leisk programėlėje, iš kurios nuskrobuoliniai</string>
-    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Palaikomoms programėlėms.</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…skroblams</string>
+    <string name="pref_show_scrobble_sources">Rodyti programėlių piktogramas, iš kurių nuskrobuoliniai</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…prie kiekvieno skroblo. Šie duomenys lieka tavo įrenginyje</string>
+    <string name="pref_search_in_source">Ieškoti ir leisti programėlėje, iš kurios nuskrobuoliniai</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Palaikomoms programėlėms</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Sąrašai</string>
     <string name="pref_regex_edits">Šablonų redagavimai</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Užblokuoti metaduomenys</string>
-    <string name="pref_translate">Išversti šia programėlę</string>
+    <string name="pref_translate">Versti šia programėlę</string>
     <string name="pref_translate_credits">Vertimo kūrėjai</string>
     <string name="pref_oss_credits">Atvirojo kodo kūrėjai</string>
     <string name="pref_check_updates">Tikrinti naujinimus</string>
@@ -459,6 +461,13 @@
     <string name="fix_it_action" comment="(To open an app)">Atidaryti</string>
     <string name="delete_account">Ištrinti paskyrą</string>
     <string name="delete_account_custom_servers">Apie pasirinktinius serverius žiūrėk atitinkamus jų dokumentus.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Pridėti arba keisti vaizdą</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Iš galerijos</string>
+    <string name="square_photo_hint">Naudok kvadratinį vaizdą, kad pasiektum geriausių rezultatų</string>
+    <string name="scrobble_to_file">Failas</string>
+    <string name="password">Slaptažodis</string>
+    <string name="open_existing" comment="Append to an existing file">Pridėti prie esamo</string>
+    <string name="create" comment="Create a new file">Kurti</string>
     <!--  pro  -->
     <string name="get_pro">Palaikyti šią programėlę</string>
     <string name="help">Pagalba</string>

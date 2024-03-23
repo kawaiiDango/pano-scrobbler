@@ -425,6 +425,10 @@
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
     <string name="delete_account">Eliminar a conta</string>
     <string name="delete_account_custom_servers">Para servidores personalizados, consulte as respetivas documentações.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Adicionar ou alterar imagem</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Da Galeria</string>
+    <string name="scrobble_to_file">Ficheiro</string>
+    <string name="password">Palavra-passe</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar a aplicação</string>
     <string name="help">Ajuda</string>

@@ -332,6 +332,7 @@
     <string name="pref_enabled_apps_title">Selecionar aplicações</string>
     <string name="pref_auto_detect">Fazer scrobble automaticamente de novas aplicações</string>
     <string name="pref_spotify_remote">Fazer scrobble do Spotify enquanto reproduz noutros dispositivos</string>
+    <string name="pref_link_heart_button_rating">Utilize o botão de coração na notificação para também favoritar no reprodutor multimédia</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Desativar scrobbling contínuo a partir do microfone quando o dispositivo estiver a reproduzir música</string>
     <string name="pref_delay">Intervalo de tempo para o scrobble (o que ocorrer primeiro)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
@@ -345,6 +346,7 @@
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
     <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
     <string name="api_url" comment="For Listenbrainz">URL da API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL do servidor</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Pode obter a sua chave de autenticação em: %1$s</string>
     <string name="pref_now_playing">Submeter em reprodução</string>
     <string name="pref_fetch_album">Obter dados em falta do álbum a partir da lastFM</string>
@@ -427,8 +429,11 @@
     <string name="delete_account_custom_servers">Para servidores personalizados, consulte as respetivas documentações.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Adicionar ou alterar imagem</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Da Galeria</string>
+    <string name="square_photo_hint">Escolha uma imagem quadrada para melhores resultados</string>
     <string name="scrobble_to_file">Ficheiro</string>
     <string name="password">Palavra-passe</string>
+    <string name="open_existing" comment="Append to an existing file">Anexar à existente</string>
+    <string name="create" comment="Create a new file">Adicionar</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar a aplicação</string>
     <string name="help">Ajuda</string>

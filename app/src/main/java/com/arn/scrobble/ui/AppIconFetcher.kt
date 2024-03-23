@@ -7,7 +7,6 @@ import coil3.fetch.FetchResult
 import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
 import coil3.request.Options
-import com.arn.scrobble.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -59,16 +58,6 @@ class AppIconFetcher(
             return AppIconFetcher(data, options)
         }
 
-    }
-}
-
-
-data class PackageName(val packageName: String) {
-    override fun toString(): String {
-        return if (BuildConfig.DEBUG)
-            super.toString()
-        else
-            "PackageName(packageName=redacted)"
     }
 }
 

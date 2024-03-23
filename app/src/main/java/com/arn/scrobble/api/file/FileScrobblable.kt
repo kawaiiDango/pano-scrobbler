@@ -26,6 +26,9 @@ import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
+import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.ui.PackageNameMetadata.englishLabel
+import com.arn.scrobble.ui.PackageNameMetadata.version
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import kotlinx.coroutines.Dispatchers
@@ -113,7 +116,8 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 album = track.album?.name,
                 timestamp = System.currentTimeMillis(),
                 albumArtist = track.album?.artist?.name,
-                duration = track.duration
+                duration = track.duration,
+                packageName = null
             )
 
             val action = if (love) Event.love else Event.unlove
@@ -143,7 +147,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
         return kotlin.runCatching {
             if (cached)
-                throw FException(documentFile, "Cache not supported")
+                throw IllegalStateException("Cache not supported")
 
             if (!isFileOk())
                 throw FException(documentFile, "File not writable")
@@ -165,7 +169,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 sequence.forEach { line ->
                     if (!readFirstLine) {
                         readFirstLine = true
-                        if (fileType == FileFormat.csv && line == CSV_HEADER)
+                        if (fileType == FileFormat.csv && line.startsWith(Entry::timeHuman.name))
                             return@forEach
                     }
 
@@ -276,6 +280,9 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         val album: String?,
         val albumArtist: String?,
         val durationMs: Long?,
+        val mediaPlayerPackage: String? = null,
+        val mediaPlayerName: String? = null,
+        val mediaPlayerVersion: String? = null,
         val event: Event,
     ) {
         fun toJson() = Json.encodeToString(this)
@@ -288,6 +295,9 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
             album,
             albumArtist,
             durationMs.toString(),
+            mediaPlayerPackage,
+            mediaPlayerName,
+            mediaPlayerVersion,
             event.name
         )
 
@@ -302,7 +312,10 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 album = row[4],
                 albumArtist = row[5],
                 durationMs = row[6].toLong(),
-                event = FileScrobblable.Event.valueOf(row[7])
+                mediaPlayerPackage = row[7],
+                mediaPlayerName = row.getOrNull(8),
+                mediaPlayerVersion = row.getOrNull(9),
+                event = FileScrobblable.Event.valueOf(row.getOrNull(10) ?: Event.scrobble.name)
             )
 
             fun fromScrobbleData(scrobbleData: ScrobbleData, event: Event) = Entry(
@@ -319,6 +332,9 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 album = scrobbleData.album,
                 albumArtist = scrobbleData.albumArtist,
                 durationMs = scrobbleData.duration,
+                mediaPlayerPackage = scrobbleData.packageName,
+                mediaPlayerName = scrobbleData.packageName?.let { PackageName(it).englishLabel },
+                mediaPlayerVersion = scrobbleData.packageName?.let { PackageName(it).version },
                 event = event
             )
         }
@@ -339,7 +355,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         private const val MAX_SIZE = 10 * 1024 * 1024L // 10MB
 
         private val CSV_HEADER =
-            "${Entry::timeHuman.name},${Entry::timeMs.name},${Entry::artist.name},${Entry::track.name},${Entry::album.name},${Entry::albumArtist.name},${Entry::durationMs.name},${Entry::event.name}"
+            "${Entry::timeHuman.name},${Entry::timeMs.name},${Entry::artist.name},${Entry::track.name},${Entry::album.name},${Entry::albumArtist.name},${Entry::durationMs.name},${Entry::mediaPlayerPackage.name},${Entry::mediaPlayerName.name},${Entry::mediaPlayerVersion.name},${Entry::event.name}"
 
         fun authAndGetSession(fileUri: Uri, format: FileFormat): Result<Session> {
             return kotlin.runCatching {

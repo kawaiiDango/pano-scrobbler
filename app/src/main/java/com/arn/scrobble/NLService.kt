@@ -812,11 +812,7 @@ class NLService : NotificationListenerService() {
                     }
 
                     coroutineScope.launch {
-                        ScrobbleEverywhere
-                            .loveOrUnlove(
-                                Track(trackInfo.title, null, Artist(trackInfo.artist)),
-                                loved
-                            )
+                        ScrobbleEverywhere.loveOrUnlove(trackInfo.toTrack(), loved)
                     }
 
                     trackInfo.userLoved = loved

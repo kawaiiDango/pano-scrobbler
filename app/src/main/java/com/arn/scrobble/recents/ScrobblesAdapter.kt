@@ -24,7 +24,7 @@ import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
-import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobbleWithSource
 import com.arn.scrobble.main.App
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
@@ -107,7 +107,7 @@ class ScrobblesAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is VHScrobble -> holder.setItemData(viewModel.virtualList[position] as Track)
-            is VHPendingScrobble -> holder.setItemData(viewModel.virtualList[position] as PendingScrobble)
+            is VHPendingScrobble -> holder.setItemData(viewModel.virtualList[position] as PendingScrobbleWithSource)
             is VHPendingLove -> holder.setItemData(viewModel.virtualList[position] as PendingLove)
             is VHHeader -> holder.setItemData(viewModel.virtualList[position] as ExpandableHeader)
             else -> throw ClassCastException("Invalid view type $holder")
@@ -156,7 +156,10 @@ class ScrobblesAdapter(
             notify(oldVirtualList)
     }
 
-    fun updatePendingScrobbles(pendingScrobbles: List<PendingScrobble>, notify: Boolean = true) {
+    fun updatePendingScrobbles(
+        pendingScrobbles: List<PendingScrobbleWithSource>,
+        notify: Boolean = true
+    ) {
         val list = if (!viewModel.isShowingLoves && userIsSelf)
             pendingScrobbles
         else
@@ -252,7 +255,7 @@ class ScrobblesAdapter(
             compare = { oldItem, newItem ->
                 when {
                     oldItem is ExpandableHeader && newItem is ExpandableHeader -> oldItem.title == newItem.title
-                    oldItem is PendingScrobble && newItem is PendingScrobble -> oldItem._id == newItem._id
+                    oldItem is PendingScrobbleWithSource && newItem is PendingScrobbleWithSource -> oldItem.pendingScrobble._id == newItem.pendingScrobble._id
                     oldItem is PendingLove && newItem is PendingLove -> oldItem._id == newItem._id
                     oldItem is Track && newItem is Track -> oldItem.date == newItem.date
                     else -> false
@@ -264,7 +267,7 @@ class ScrobblesAdapter(
                     oldItem === prevSelectedItem -> false // clears the previous selection
                     System.currentTimeMillis() - lastPopulateTime > 60 * 60 * 1000 -> false
                     oldItem is ExpandableHeader && newItem is ExpandableHeader -> oldItem == newItem
-                    oldItem is PendingScrobble && newItem is PendingScrobble -> oldItem == newItem
+                    oldItem is PendingScrobbleWithSource && newItem is PendingScrobbleWithSource -> oldItem == newItem
                     oldItem is PendingLove && newItem is PendingLove -> oldItem == newItem
                     oldItem is Track && newItem is Track -> oldItem == newItem
                     else -> false

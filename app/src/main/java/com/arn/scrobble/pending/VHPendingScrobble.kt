@@ -5,7 +5,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ListItemRecentsBinding
-import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobbleWithSource
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.utils.Stuff
 
@@ -14,7 +14,7 @@ class VHPendingScrobble(
     private val isShowingAlbums: Boolean,
     itemClickListener: ItemClickListener<Any>,
 ) : RecyclerView.ViewHolder(binding.root) {
-    lateinit var ps: PendingScrobble
+    private lateinit var ps: PendingScrobbleWithSource
 
     init {
         binding.recentsPlaying.visibility = View.GONE
@@ -33,19 +33,19 @@ class VHPendingScrobble(
         }
     }
 
-    fun setItemData(ps: PendingScrobble) {
+    fun setItemData(ps: PendingScrobbleWithSource) {
         this.ps = ps
 
-        binding.recentsTitle.text = ps.track
-        binding.recentsSubtitle.text = ps.artist
+        binding.recentsTitle.text = ps.pendingScrobble.track
+        binding.recentsSubtitle.text = ps.pendingScrobble.artist
         binding.recentsDate.text = Stuff.myRelativeTime(
             itemView.context,
-            ps.timestamp
+            ps.pendingScrobble.timestamp
         )
 
         if (isShowingAlbums) {
-            if (ps.album.isNotEmpty()) {
-                binding.recentsAlbum.text = ps.album
+            if (ps.pendingScrobble.album.isNotEmpty()) {
+                binding.recentsAlbum.text = ps.pendingScrobble.album
                 binding.recentsAlbum.visibility = View.VISIBLE
                 binding.recentsTrackLl.setPaddingRelative(
                     0,

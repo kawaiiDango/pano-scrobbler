@@ -67,13 +67,15 @@ data class PlayingTrackInfo(
         album = album,
         albumArtist = albumArtist,
         timestamp = playStartTime,
-        duration = durationMillis.takeIf { it >= 30000L }
+        duration = durationMillis.takeIf { it >= 30000L },
+        packageName = packageName,
     )
 
     fun toTrack() = Track(
         name = title,
         artist = Artist(artist),
-        album = if (album.isNotEmpty()) Album(album, Artist(albumArtist)) else null,
+        album = album.ifEmpty { null }
+            ?.let { Album(album, albumArtist.ifEmpty { null }?.let { Artist(it) }) },
         userplaycount = userPlayCount,
         userloved = userLoved,
         duration = durationMillis,

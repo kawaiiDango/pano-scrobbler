@@ -8,13 +8,14 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
-import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobbleWithSource
 import com.arn.scrobble.edits.EditDialogFragmentArgs
 import com.arn.scrobble.onboarding.LoginFlows
 import com.arn.scrobble.utils.Stuff
@@ -49,6 +50,7 @@ object PopupMenuUtils {
                 timestamp = track.date ?: 0,
                 albumArtist = null,
                 duration = null,
+                packageName = null
             )
 
             val args = EditDialogFragmentArgs(
@@ -97,7 +99,7 @@ object PopupMenuUtils {
 
         @StringRes
         val state = when (p) {
-            is PendingScrobble -> p.state
+            is PendingScrobbleWithSource -> p.pendingScrobble.state
             is PendingLove -> p.state
             else -> throw RuntimeException("Not a Pending Item")
         }
@@ -128,8 +130,8 @@ object PopupMenuUtils {
                 R.id.menu_delete -> {
                     scope.launch(Dispatchers.IO) {
                         try {
-                            if (p is PendingScrobble)
-                                PanoDb.db.getPendingScrobblesDao().delete(p)
+                            if (p is PendingScrobbleWithSource)
+                                PanoDb.db.getPendingScrobblesDao().delete(p.pendingScrobble)
                             else if (p is PendingLove)
                                 PanoDb.db.getPendingLovesDao().delete(p)
                         } catch (e: Exception) {
@@ -138,13 +140,18 @@ object PopupMenuUtils {
                 }
 
                 R.id.menu_love -> {
-                    if (p is PendingScrobble) {
+                    if (p is PendingScrobbleWithSource) {
                         scope.launch(Dispatchers.IO) {
                             ScrobbleEverywhere.loveOrUnlove(
                                 Track(
-                                    p.track,
-                                    null,
-                                    Artist(p.artist)
+                                    p.pendingScrobble.track,
+                                    p.pendingScrobble.album.ifEmpty { null }?.let {
+                                        Album(
+                                            it,
+                                            p.pendingScrobble.albumArtist.ifEmpty { null }
+                                                ?.let { Artist(it) })
+                                    },
+                                    Artist(p.pendingScrobble.artist)
                                 ),
                                 true
                             )

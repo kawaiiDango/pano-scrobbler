@@ -22,11 +22,11 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.databinding.ContentRegexTestBinding
 import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.chip.Chip
 import com.google.android.material.transition.MaterialSharedAxis
 
@@ -73,6 +73,7 @@ class RegexEditsTestFragment : Fragment() {
             albumArtist = binding.regexTestAlbumArtist.text.toString(),
             timestamp = 0,
             duration = null,
+            packageName = viewModel.pkgNameSelected.value
         )
 
         viewModel.setScrobbleData(sd)

@@ -15,4 +15,8 @@ data class ScrobbleData(
     var mbid: String? = null,
     var albumArtist: String?,
     var duration: Long?,
-) : Parcelable
+    var packageName: String?
+) : Parcelable {
+    override fun toString() =
+        "ScrobbleData(artist='$artist', track='$track', album=$album, timestamp=$timestamp, trackNumber=$trackNumber, mbid=$mbid, albumArtist=$albumArtist, duration=$duration, packageName=redacted)"
+}

@@ -30,6 +30,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.xml.sax.SAXException
 import timber.log.Timber
@@ -87,7 +88,7 @@ class PendingScrobblesWorker(
 
     private suspend fun submitScrobbleBatch(): Boolean {
         var done = true
-        val entries = scrobblesDao.all(BATCH_SIZE)
+        val entries = scrobblesDao.allFlow(BATCH_SIZE).first()
 
         setProgress(
             workDataOf(
@@ -105,6 +106,7 @@ class PendingScrobblesWorker(
                 albumArtist = it.pendingScrobble.albumArtist,
                 timestamp = it.pendingScrobble.timestamp,
                 duration = it.pendingScrobble.duration.takeIf { it > 30 * 1000 },
+                packageName = it.pkg
             )
             scrobbleDataToEntry[sd] = it.pendingScrobble
         }
@@ -200,10 +202,13 @@ class PendingScrobblesWorker(
                 Scrobblables.all.forEach {
                     val shouldSubmit by lazy { filterOneForService(it, entry) }
                     if (shouldSubmit) {
-                        results[it] = it.loveOrUnlove(
-                            Track(entry.track, null, Artist(entry.artist)),
-                            entry.shouldLove
-                        ).isSuccess
+                        val track = Track(
+                            name = entry.track,
+                            artist = Artist(entry.artist),
+                            album = null // todo fix
+//                            album = entry.album?.let { Album(it) }
+                        )
+                        results[it] = it.loveOrUnlove(track, entry.shouldLove).isSuccess
                     }
                 }
 

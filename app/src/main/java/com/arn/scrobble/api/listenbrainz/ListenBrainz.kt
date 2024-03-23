@@ -95,8 +95,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = scrobbleData.duration?.takeIf { it > 30000 },
-//                            media_player = pkgName.englishLabel,
-//                            media_player_version = pkgName.version,
                             submission_client = App.context.getString(R.string.app_name),
                             submission_client_version = BuildConfig.VERSION_NAME,
                         )

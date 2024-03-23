@@ -22,14 +22,14 @@ import kotlinx.coroutines.withContext
 class MusicEntryImageInterceptor : Interceptor {
 
     private val delayMs = 200L
-    private val musicEntryCache by lazy { LruCache<String, Optional<String>>(500) }
+    private val musicEntryCache by lazy { LruCache<String, OptionalString>(500) }
     private val semaphore = Semaphore(3)
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val musicEntryImageReq = chain.request.data as? MusicEntryImageReq ?: return chain.proceed()
         val entry = musicEntryImageReq.musicEntry
-        val key = MusicEntryReqKeyer.genKey(entry)
+        val key = MusicEntryReqKeyer.genKey(musicEntryImageReq)
         val cachedOptional = musicEntryCache[key]
         var fetchedImageUrl = cachedOptional?.value
 
@@ -110,7 +110,7 @@ class MusicEntryImageInterceptor : Interceptor {
                             webp300
                     }
                 }
-                musicEntryCache.put(key, Optional(fetchedImageUrl))
+                musicEntryCache.put(key, OptionalString(fetchedImageUrl))
             }
         }
 
@@ -125,8 +125,8 @@ class MusicEntryImageInterceptor : Interceptor {
     }
 
     fun clearCacheForEntry(entry: MusicEntry) {
-        musicEntryCache.remove(MusicEntryReqKeyer.genKey(entry))
+        musicEntryCache.remove(MusicEntryReqKeyer.genKey(MusicEntryImageReq(entry)))
     }
 
-    private class Optional<T>(val value: T?)
+    private data class OptionalString(val value: String?)
 }

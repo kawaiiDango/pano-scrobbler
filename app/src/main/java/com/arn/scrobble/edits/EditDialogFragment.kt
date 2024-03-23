@@ -213,6 +213,7 @@ class EditDialogFragment : LoginFragment() {
             album = album,
             albumArtist = albumArtist,
             duration = args.data.duration,
+            packageName = args.packageName,
         )
         val lastfmScrobblable = Scrobblables.byType(AccountType.LASTFM)
         val lastfmScrobbleResult: Result<ScrobbleIgnored>

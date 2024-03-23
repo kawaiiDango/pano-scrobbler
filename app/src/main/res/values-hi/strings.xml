@@ -135,6 +135,31 @@
     <string name="last_indexed" formatted="true" comment="%1= date">%1$s को अंतिम बार अनुक्रमित किया गया।</string>
     <string name="profile">प्रोफ़ाइल</string>
     <string name="profile_pic">प्रोफ़ाइल चित्र</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">यह वस्तु के लिए विकल्प</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s मिला</string>
+    <string name="new_player_prompt">इस एप्लिकेशन को स्क्रॉबल करना जारी रखे?</string>
+    <string name="no_scrobbles">अभी तक यहां कोई गीत नहीं है…</string>
+    <string name="no_friends">अभी तक किसी को फॉलो नहीं किया…</string>
+    <string name="channel_err" comment="Its a noun">स्क्रॉबल समस्या</string>
+    <string name="new_app">नया एप्लिकेशन</string>
+    <string name="no_apps_enabled">कोई भी एप्लिकेशन सक्रिय नहीं किया है</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d और</string>
+    <string name="show_all">सब दिखाए</string>
+    <string name="edit">सुधार</string>
+    <string name="delete">नष्ट करे</string>
+    <string name="delete_all">सब नष्ट करे</string>
+    <string name="love" comment="Love/like a song">प्रिय</string>
+    <string name="hate" comment="Hate or dislike a song">घृणा</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">घृणा नही</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">अप्रिय</string>
+    <string name="pending_scrobbles">बाकी स्क्रॉबल्स</string>
+    <string name="pending_scrobble">बाकी स्क्रॉबल</string>
+    <string name="pending_scrobbles_noti">बाकी स्क्रॉबल्स को प्रोसेस किया जा रहा है</string>
+    <string name="friends">मित्रों</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रॉबल्स, %2$s से</string>
+    <string name="allow_background">बैकग्राउंड में स्क्रॉबल करे</string>
+    <string name="grant_notification_access">सूचनाएं के लिए अनुमति प्रदान करें</string>
+    <string name="grant_notification_access_desc">गीत का मेटाडेटा प्राप्त करने के लिए आवश्यक है। अन्य कोई सुचनाएं नहीं पढ़ी जाती</string>
     <string name="loved" comment="Its a noun">प्रिय</string>
     <string name="unloved" comment="Its a noun">अप्रिय</string>
     <string name="simple_edits">सुधार</string>

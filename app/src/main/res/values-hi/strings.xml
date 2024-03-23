@@ -121,6 +121,20 @@
     <string name="rank_change" comment="%1= delta change">पद में बदलाव: %s</string>
     <string name="rank_change_no_change">कोई परिवर्तन नहीं</string>
     <string name="rank_change_new">पिछली अवधि के भीतर स्क्रॉबल नहीं किया गया</string>
+    <string name="search">ढुंढे</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">सारा इतिहास मिटा दे</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">इस वस्तु को इतिहास में से निकाल दें?</string>
+    <string name="library" comment="search within the library">लाइब्रेरी</string>
+    <string name="global" comment="search globally across lastfm">वैश्विक</string>
+    <string name="reindex">तीव्र अनुक्रम</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">आपके स्क्रॉबल्स को अनुक्रम करें</string>
+    <string name="full_index">पूर्ण अनुक्रमणिका</string>
+    <string name="take_long_time">इस्को बोहोत समय लग सकता है</string>
+    <string name="full_index_desc">यदि आपने स्क्रॉबल्स को वेबसाइट से मिटा दिया है या सुधार किया है तो ही ईसका उपयोग करें।</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">प्रत्येक वर्ग में से सर्वोच %1$s वस्तु ढूंढे गए</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">%1$s को अंतिम बार अनुक्रमित किया गया।</string>
+    <string name="profile">प्रोफ़ाइल</string>
+    <string name="profile_pic">प्रोफ़ाइल चित्र</string>
     <string name="loved" comment="Its a noun">प्रिय</string>
     <string name="unloved" comment="Its a noun">अप्रिय</string>
     <string name="simple_edits">सुधार</string>

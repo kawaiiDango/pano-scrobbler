@@ -269,7 +269,9 @@
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Çıkart</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Yakalama gruplarınızı diğer alanlardan çıkarabilmek için yakalama gruplarınızı <i>track, album, artist</i> veya <i>albumArtist</i> olarak adlandırın</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Örneğin sanatçıyı ve başlığı değiştirmek için, sanatçı düzenli ifadesini (?&lt;artist&gt;.*) ve parça düzenli ifadesini (?&lt;track&gt;.*) olarak değiştirirsiniz.</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz en azından şu adlandırılmış yakalama gruplarına sahip olmalıdır: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz birden fazla \"%1$s\" yakalama grubu içeriyor ve buna izin verilmiyor</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Geçersiz düzenli ifade: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Kullanılan desenler:</string>
     <string name="edit_continue">Mevcutsa, diğer düzenli ifadeleri de eşleştirmeye devam et</string>

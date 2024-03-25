@@ -110,6 +110,8 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Neredeyse tamam…</string>
     <string name="music_players">Müzik Oynatıcılar</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Diğer Uygulamalar</string>
+    <string name="choose_apps">Uygulama seçin</string>
+    <string name="choose_an_app">Bir uygulama seçin</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Uygulamalar</string>
     <string name="offline">Çevrimdışı. Güncel veriler gösterilemiyor</string>
     <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
@@ -119,7 +121,7 @@
     <string name="share_sig">(Pano Scrobbler tarafından)</string>
     <string name="share">Paylaş</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Göstergeler</string>
-    <string name="grid_size">Görünümü değiştirin</string>
+    <string name="grid_size">Izgara boyutunu değiştir</string>
     <string name="pinch_to_zoom">İki parmakla yakınlaştırın</string>
     <string name="more_info">Daha fazla bilgi</string>
     <string name="more" comment="More options menu in short">Dahası</string>
@@ -133,13 +135,13 @@
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Bu öge geçmişten silinsin mi?</string>
     <string name="library" comment="search within the library">Kitaplık</string>
     <string name="global" comment="search globally across lastfm">Genel</string>
-    <string name="reindex">Hızlı endeksleme</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Skroplarını endeksle</string>
-    <string name="full_index">Kapsamlı endeksleme</string>
+    <string name="reindex">Hızlı dizinleme</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Skroplarınızı dizinleyin</string>
+    <string name="full_index">Tam dizinleme</string>
     <string name="take_long_time">Bu işlem uzun sürebilir</string>
     <string name="full_index_desc">Bu özelliği yalnızca site üzerinden bir skropu düzenlediyseniz veya sildiyseniz kullanın.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Her kategorideki ilk %1$s ögeyi arandı.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Son endeksleme %1$s tarihinde yapıldı.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">En son %1$s tarihinde dizinlendi.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profil fotoğrafı</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Bu öge için seçenekler</string>
@@ -159,23 +161,23 @@
     <string name="hate" comment="Hate or dislike a song">Nefret et</string>
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Nefreti kaldır</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Beğeniyi kaldır</string>
-    <string name="pending_scrobbles">Askıdaki Skroplar</string>
-    <string name="pending_scrobble">Askıda skrop</string>
-    <string name="pending_scrobbles_noti">Askıdaki skroplar işleniyor</string>
+    <string name="pending_scrobbles">Bekleyen Skroplar</string>
+    <string name="pending_scrobble">Skroplama bekleniyor</string>
+    <string name="pending_scrobbles_noti">Bekleyen skroplar işleniyor</string>
     <string name="friends">Arkadaşlar</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s itibariyle %1$s skrop</string>
     <string name="allow_background">Arkaplanda skroplamaya izin ver</string>
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
-    <string name="grant_notification_access_desc">Müzik metaverisi almak için gerekli. Müzik harici veriler okunmaz</string>
+    <string name="grant_notification_access_desc">Müzik meta verilerini almak için gerekli. Müzik dışı bildirimler okunmaz</string>
     <string name="send_notifications">Bildirimlere izin ver</string>
     <string name="notification_channel_blocked">Bildirimlerin etkinleştirilmesi gerekiyor</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Skrop durumu ve sayısına bakma
-- Bildirim üzerinden beğenme veya engelleme
-- Skroplama hataları ve olası çözümler konusunda bilgilendirilme
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Skrop durumunu ve sayılarını kontrol edin
+- Doğrudan bildirimden beğenin veya engelleyin
+- Skroplama hataları ve olası çözümler konusunda bilgilendirilirsiniz
 - En çok dinlenenleri haftalık olarak gösterme
 - Ve dahası
 - Bildirimler sesli değildir\"\""</string>
-    <string name="will_not_scrobble">Bu adımı atlarsan skroplama devre dışı bırakılacak</string>
+    <string name="will_not_scrobble">Bu adımı atlamak skroplamayı devre dışı bırakacaktır</string>
     <string name="swap" comment="(Swap title and artist)">Değiştir</string>
     <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
     <string name="time_just_now">şimdi</string>
@@ -195,7 +197,7 @@
     <string name="press_back">Bittiğinde geri tuşuna basın</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Ayrıntılar</string>
-    <string name="saved_as_pending">Askıda skrop olarak kaydedildi</string>
+    <string name="saved_as_pending">Bekleyen skrop olarak kaydedildi</string>
     <string name="sort">Tür</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Geçmiş skroplar</string>
     <string name="my_scrobbles">Skroplarım</string>
@@ -267,6 +269,11 @@
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Çıkart</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Yakalama gruplarınızı diğer alanlardan çıkarabilmek için yakalama gruplarınızı <i>track, album, artist</i> veya <i>albumArtist</i> olarak adlandırın</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Örneğin sanatçıyı ve başlığı değiştirmek için, sanatçı düzenli ifadesini (?&lt;artist&gt;.*) ve parça düzenli ifadesini (?&lt;track&gt;.*) olarak değiştirirsiniz.</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz en azından şu adlandırılmış yakalama gruplarına sahip olmalıdır: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz birden fazla \"%1$s\" yakalama grubu içeriyor ve buna izin verilmiyor</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Geçersiz düzenli ifade: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Kullanılan desenler:</string>
     <string name="edit_continue">Mevcutsa, diğer düzenli ifadeleri de eşleştirmeye devam et</string>
     <string name="edit_case_sensitive">Büyük küçük harfe duyarlı</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Dene</string>
@@ -305,7 +312,7 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popülarite: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiz</string>
     <string name="enable" comment="To enable the scrobbler">Etkinleştir</string>
-    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Ebat</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Boyut</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Eksik resimleri atla</string>
     <string name="create_collage">Kolaj oluştur</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Görsele gömülü yazılar</string>
@@ -325,6 +332,8 @@
     <string name="pref_enabled_apps_title">Uygulamaları seçin</string>
     <string name="pref_auto_detect">Yeni uygulamalardan otomatik olarak skropla</string>
     <string name="pref_spotify_remote">Başka cihazlarda çalan Spotify şarkılarını skropla</string>
+    <string name="pref_link_heart_button_rating">Medya oynatıcıda da favorilere eklemek için bildirimdeki kalp düğmesini kullanın</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Cihaz müzik çalarken mikrofondan sürekli skroplamayı devre dışı bırakın</string>
     <string name="pref_delay">Skrop gecikmesi (hangisi daha önceyse)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Dakika</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Yüzde</string>
@@ -336,7 +345,8 @@
     <string name="pref_scrobble_only">(Sadece skrop)</string>
     <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
-    <string name="api_url" comment="For Listenbrainz">API Adresi</string>
+    <string name="api_url" comment="For Listenbrainz">API adresi</string>
+    <string name="server_url" comment="For self hosted scrobbling services">Sunucu adresi</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Kimlik doğrulama tokeninizi şu adreste bulabilirsiniz: %1$s</string>
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_album">Eksik albüm verilerini last.fm\'den al</string>
@@ -353,7 +363,7 @@
     <string name="pref_themes" comment="Color themes">Temalar</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Karıştır ve eşle\nAyrıca bildirim rengini de değiştirir</string>
     <string name="pref_widget_charts">Ana ekran widget\'ı - Listeler</string>
-    <string name="pref_show_albums">Albüm isimlerini göster</string>
+    <string name="pref_show_albums">Albüm adlarını göster</string>
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">(skroplar için)</string>
     <string name="pref_show_scrobble_sources">Skroplanan uygulamanın simgesini göster</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">Bu veri kimseyle paylaşılmaz</string>
@@ -361,7 +371,7 @@
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Desteklenen uygulamalar içindir</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listeler</string>
     <string name="pref_regex_edits">Kalıp düzenlemeleri</string>
-    <string name="pref_blocked_metadata" comment="Block things from scrobbling">Engellenmiş metaveri</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">Engellenmiş meta veri</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
     <string name="pref_translate_credits">Çeviri ekibi</string>
     <string name="pref_oss_credits">Açık kaynak lisansları</string>
@@ -417,6 +427,13 @@
     <string name="fix_it_action" comment="(To open an app)">Aç</string>
     <string name="delete_account">Hesabınızı silin</string>
     <string name="delete_account_custom_servers">Özel sunucularda hesap silme işlemi için sunucunun dokümanlarını inceleyin.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Görüntü ekle veya değiştir</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Galeriden seç</string>
+    <string name="square_photo_hint">En iyi sonuçlar için kare şeklinde görüntü kullanın</string>
+    <string name="scrobble_to_file">Dosya</string>
+    <string name="password">Şifre</string>
+    <string name="open_existing" comment="Append to an existing file">Var olana ekle</string>
+    <string name="create" comment="Create a new file">Oluştur</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="help">Yardım</string>
@@ -438,4 +455,5 @@ Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı g
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Arkadaşlarınızı sabitleyip yeniden sıralayın (en fazla %1$d)</string>
     <string name="billing_sharing">Paylaşımlarda uygulama ismini kaldır</string>
     <string name="billing_scrobble_source">Skropladığın uygulamları hatırla, göster ve doğrudan onlarda arama yap</string>
+    <string name="billing_regex_extract">Düzenli ifade kullanarak özel meta veri çıkarma kuralları yazma</string>
 </resources>

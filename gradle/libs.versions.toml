@@ -1,8 +1,7 @@
 [versions]
-aboutlibraries = "11.1.0"
+aboutlibraries = "11.1.1"
 activity = "1.9.0-beta01"
 androidSnowfall = "1.2.1"
-bimap = "1.1.0"
 coil = "3.0.0-alpha06"
 constraintlayout = "2.2.0-alpha13"
 billing = "6.2.0"
@@ -44,7 +43,7 @@ uiautomator = "2.3.0"
 viewpager = "1.1.0-alpha01"
 work-runtime-ktx = "2.10.0-alpha01"
 google-services = "4.4.1"
-android-application = "8.5.0-alpha01"
+android-application = "8.5.0-alpha02"
 benchmark-macro-junit4 = "1.2.3"
 ksp = "1.9.23-1.0.19"
 github-release = "2.4.1"
@@ -80,7 +79,6 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work-runtime-ktx" }
-bimap = { module = "io.michaelrocks.bimap:bimap", version.ref = "bimap" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }

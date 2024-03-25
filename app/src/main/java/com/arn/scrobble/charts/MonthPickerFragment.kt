@@ -18,10 +18,8 @@ import com.arn.scrobble.databinding.DialogMonthPickerBinding
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.NoOpFilter
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.firstOrNull
-import com.arn.scrobble.utils.Stuff.lastOrNull
 import com.arn.scrobble.utils.Stuff.setMidnight
-import com.arn.scrobble.utils.Stuff.toBimap
+import com.arn.scrobble.utils.Stuff.toInverseMap
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import java.text.DateFormat
@@ -67,7 +65,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             activityViewModel.currentUser.registeredTime,
             System.currentTimeMillis(),
             context
-        ).months.toBimap()
+        ).months.toInverseMap()
     }
 
     private val yearFormatter by lazy { SimpleDateFormat("yyyy", Locale.getDefault()) }
@@ -120,10 +118,10 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
                 )
             )
 
-            val idx = timePeriods.inverse[timePeriod]
+//            val timePeriod = timePeriods[timePeriod]
             requireActivity().supportFragmentManager.setFragmentResult(
                 Stuff.ARG_MONTH_PICKER_PERIOD,
-                bundleOf(Stuff.ARG_MONTH_PICKER_PERIOD to timePeriods[idx]!!)
+                bundleOf(Stuff.ARG_MONTH_PICKER_PERIOD to timePeriod)
             )
             dismiss()
         }
@@ -228,9 +226,9 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val years
         get(): List<MonthPickerItem> {
             val years = mutableListOf<MonthPickerItem>()
-            cal.timeInMillis = timePeriods.firstOrNull()!!.end
+            cal.timeInMillis = timePeriods.keys.first().end
             val startYear = cal[Calendar.YEAR]
-            cal.timeInMillis = timePeriods.lastOrNull()!!.start
+            cal.timeInMillis = timePeriods.keys.last().start
             val endYear = cal[Calendar.YEAR]
 
             for (year in startYear downTo endYear) {
@@ -244,9 +242,9 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             val months = mutableListOf<MonthPickerItem>()
             cal[Calendar.YEAR] = selectedYear
             cal[Calendar.MONTH] = cal.getActualMinimum(Calendar.MONTH)
-            val startMonthTime = max(cal.timeInMillis, timePeriods.lastOrNull()!!.start)
+            val startMonthTime = max(cal.timeInMillis, timePeriods.keys.last().start)
             cal[Calendar.MONTH] = cal.getActualMaximum(Calendar.MONTH)
-            val endMonthTime = min(cal.timeInMillis, timePeriods.firstOrNull()!!.end - 1)
+            val endMonthTime = min(cal.timeInMillis, timePeriods.keys.first().end - 1)
             cal.timeInMillis = startMonthTime
             val startMonth = cal[Calendar.MONTH]
             cal.timeInMillis = endMonthTime

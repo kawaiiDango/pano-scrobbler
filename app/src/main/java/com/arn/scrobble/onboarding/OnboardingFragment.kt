@@ -67,7 +67,15 @@ class OnboardingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentOnboardingStepperBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = VerticalStepperAdapter(
             viewModel = viewModel,
             loginStepView = ::createLoginStepView,
@@ -78,15 +86,7 @@ class OnboardingFragment : Fragment() {
                     findNavController().navigate(R.id.action_onboardingFragment_to_myHomePagerFragment)
             }
         )
-        return binding.root
-    }
 
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.onboardingStepperList.setupInsets()
 
         binding.onboardingStepperList.adapter = adapter

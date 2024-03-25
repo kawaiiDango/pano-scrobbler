@@ -21,6 +21,7 @@ import java.util.Objects
 class MainDialogActivity : AppCompatActivity() {
     private val billingViewModel by viewModels<BillingViewModel>()
     private val activityViewModel by viewModels<MainNotifierViewModel>()
+    private lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -30,7 +31,7 @@ class MainDialogActivity : AppCompatActivity() {
         setContentView(R.layout.content_main_dialog)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val navHostFragment =
+        navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
         activityViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser ?: return)
@@ -43,13 +44,27 @@ class MainDialogActivity : AppCompatActivity() {
 
         // navigate
         if (savedInstanceState == null) {
-            val destinationId = intent.getIntExtra(ARG_DESTINATION, 0)
-            if (destinationId != 0) {
-                navHostFragment.navController.navigate(
-                    destinationId,
-                    intent.getBundleExtra(ARG_NAV_ARGS)
-                )
-            }
+            navigate(intent)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        activityViewModel.prevDestinationId = null
+        navHostFragment.navController.popBackStack(
+            navHostFragment.navController.graph.startDestinationId,
+            false
+        )
+        navigate(intent)
+    }
+
+    private fun navigate(intent: Intent) {
+        val destinationId = intent.getIntExtra(ARG_DESTINATION, 0)
+        if (destinationId != 0) {
+            navHostFragment.navController.navigate(
+                destinationId,
+                intent.getBundleExtra(ARG_NAV_ARGS),
+            )
         }
     }
 

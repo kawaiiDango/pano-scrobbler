@@ -23,18 +23,17 @@ import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
+import com.arn.scrobble.ui.createSkeletonWithFade
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.dp
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
-import com.arn.scrobble.ui.createSkeletonWithFade
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.Stuff.putData
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.MaterialSharedAxis
-import io.michaelrocks.bimap.HashBiMap
 import kotlinx.coroutines.flow.filterNotNull
 import kotlin.random.Random
 
@@ -53,13 +52,11 @@ class RandomFragment : ChartsPeriodFragment() {
     private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
 
     private val buttonToTypeBimap by lazy {
-        HashBiMap.create(
-            hashMapOf(
-                R.id.get_track to Stuff.TYPE_TRACKS,
-                R.id.get_loved to Stuff.TYPE_LOVES,
-                R.id.get_album to Stuff.TYPE_ALBUMS,
-                R.id.get_artist to Stuff.TYPE_ARTISTS
-            )
+        mapOf(
+            R.id.get_track to Stuff.TYPE_TRACKS,
+            R.id.get_loved to Stuff.TYPE_LOVES,
+            R.id.get_album to Stuff.TYPE_ALBUMS,
+            R.id.get_artist to Stuff.TYPE_ARTISTS
         )
     }
 
@@ -162,7 +159,9 @@ class RandomFragment : ChartsPeriodFragment() {
 
         val type = arguments?.getInt(Stuff.ARG_TYPE) ?: App.prefs.lastRandomType
 
-        buttonToTypeBimap.inverse[type]?.let { id ->
+        buttonToTypeBimap.firstNotNullOfOrNull { (id, v) ->
+            if (v == type) id else null
+        }?.let { id ->
             binding.randomScrobbleTypeGroup.check(id)
         }
     }

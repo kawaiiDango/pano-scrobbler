@@ -56,14 +56,19 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
     private val trackFeaturesVM by viewModels<TrackFeaturesVM>()
     private val infoExtraVM by viewModels<InfoExtraVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
-
+    private var _binding: ContentInfoExtraBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = ContentInfoExtraBinding.inflate(inflater, container, false)
+        _binding = ContentInfoExtraBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val musicEntry = requireArguments().getData<MusicEntry>()!!
 
         binding.infoExtraTitle.setOnLongClickListener {
@@ -223,8 +228,6 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                 throw IllegalArgumentException("MusicEntry must be either Artist or Track")
             }
         }
-
-        return binding.root
     }
 
     private fun initSection(

@@ -25,8 +25,6 @@ import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.firstOrNull
-import com.arn.scrobble.utils.Stuff.lastOrNull
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.mySmoothScrollToPosition
@@ -76,19 +74,18 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         periodChipsBinding.root.visibility = View.VISIBLE
 
-        periodChipsAdapter = PeriodChipsAdapter(viewModel) { pos ->
+        periodChipsAdapter = PeriodChipsAdapter(viewModel) { pos, timePeriod ->
             periodChipsBinding.chartsPeriodsList.mySmoothScrollToPosition(pos)
-            viewModel.setSelectedPeriod(viewModel.timePeriods.value[pos]!!)
+            viewModel.setSelectedPeriod(timePeriod)
             if (viewModel.periodType.value == TimePeriodType.CUSTOM)
                 showDateRangePicker()
         }
 
         collectLatestLifecycleFlow(viewModel.timePeriods) {
             periodChipsAdapter.resetSelection()
-            periodChipsAdapter.notifyDataSetChanged()
+            periodChipsAdapter.submitList(it.keys.toList())
             periodChipsBinding.chartsPeriodsList.scheduleLayoutAnimation()
             findSelectedAndScroll(false)
-
         }
 
         collectLatestLifecycleFlow(viewModel.periodType) { periodType ->
@@ -130,7 +127,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
     private fun findSelectedAndScroll(animate: Boolean) {
         val selectedIdx =
-            viewModel.timePeriods.value.inverse[viewModel.selectedPeriod.value] ?: -1
+            viewModel.timePeriods.value[viewModel.selectedPeriod.value] ?: -1
         if (selectedIdx != -1) {
             periodChipsBinding.chartsPeriodsList.mySmoothScrollToPosition(
                 selectedIdx,
@@ -141,18 +138,21 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun showWeekPicker() {
-        val startTime =
-            Stuff.timeToUTC(viewModel.timePeriods.value.lastOrNull()?.start ?: return)
-        val endTime = Stuff.timeToUTC(viewModel.timePeriods.value.firstOrNull()?.end ?: return)
+        if (viewModel.timePeriods.value.isEmpty())
+            return
+
+        val timePeriods = viewModel.timePeriods.value.keys
+
+        val startTime = Stuff.timeToUTC(timePeriods.first().start)
+        val endTime = Stuff.timeToUTC(timePeriods.last().end)
         var openAtTime = Stuff.timeToUTC(
             viewModel.selectedPeriod.value.start
         )
         if (openAtTime !in startTime..endTime)
             openAtTime = System.currentTimeMillis()
 
-        val validTimesUTC = viewModel.timePeriods.value
-            .map { (i, it) -> Stuff.timeToUTC(it.start) }
-            .toSet()
+        val validTimesUTC = viewModel.timePeriods.value.keys
+            .associateBy { Stuff.timeToUTC(it.start) }
 
         val dpd = MaterialDatePicker.Builder.datePicker()
             .setTitleText(periodChipsBinding.chartsPeriodType.text)
@@ -177,11 +177,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
             .build()
 
         dpd.addOnPositiveButtonClickListener {
-            val idx = validTimesUTC.indexOf(it)
-            viewModel.timePeriods.value[idx]?.let {
-                viewModel.setSelectedPeriod(it)
-                findSelectedAndScroll(true)
-            }
+            viewModel.setSelectedPeriod(validTimesUTC[it]!!)
+            findSelectedAndScroll(true)
         }
 
         dpd.show(parentFragmentManager, null)
@@ -216,7 +213,10 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
             TimePeriod(
                 Stuff.timeToLocal(it.first),
                 Stuff.timeToLocal(it.second + 24 * 60 * 60 * 1000),
-            ).let { viewModel.setSelectedPeriod(it) }
+            ).let {
+                viewModel.setSelectedPeriod(it)
+                viewModel.setPeriodType(TimePeriodType.CUSTOM) // re emit to fire the flow
+            }
             Timber.i("selectedPeriod: ${viewModel.selectedPeriod.value}")
         }
 

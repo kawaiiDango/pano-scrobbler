@@ -122,8 +122,8 @@ class ChartsOverviewVM : ChartsPeriodVM() {
         var prevPeriod: TimePeriod? = null
 
         if (periodType.value != TimePeriodType.CONTINUOUS) {
-            timePeriods.value.inverse[timePeriod]?.let { idx ->
-                prevPeriod = timePeriods.value[idx + 1]
+            timePeriods.value[timePeriod]?.let { idx ->
+                prevPeriod = timePeriods.value.keys.elementAtOrNull(idx + 1)
             }
         } else {
             if (timePeriod.period != null && timePeriod.period != Period.OVERALL) {

@@ -9,9 +9,8 @@ import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
-import com.arn.scrobble.utils.Stuff.firstOrNull
-import com.arn.scrobble.utils.Stuff.toBimap
-import io.michaelrocks.bimap.HashBiMap
+import com.arn.scrobble.utils.Stuff.toInverseMap
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,14 +29,20 @@ open class ChartsPeriodVM : ViewModel() {
 
     val prefs = App.prefs
 
-    private val _periodType = MutableStateFlow(
+    private val initialPeriodType by lazy {
         if (Scrobblables.current is ListenBrainz)
             TimePeriodType.LISTENBRAINZ
         else runCatching {
             TimePeriodType.valueOf(prefs.lastChartsPeriodType)
         }.getOrDefault(TimePeriodType.CONTINUOUS)
+    }
+
+    private val _periodType = MutableSharedFlow<TimePeriodType>()
+    val periodType = _periodType.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        initialPeriodType
     )
-    val periodType = _periodType.asStateFlow()
     private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
     val input = _input.asStateFlow()
     val timePeriods = _periodType.combine(
@@ -56,20 +61,22 @@ open class ChartsPeriodVM : ViewModel() {
 
         val timePeriods = when (periodType) {
             TimePeriodType.CONTINUOUS -> TimePeriodsGenerator.getContinuousPeriods()
-                .toBimap()
+                .toInverseMap()
 
             TimePeriodType.CUSTOM -> {
                 val selPeriod = _selectedPeriod.value
                 val start =
                     max(selPeriod.start, input.user.registeredTime)
                 val end = selPeriod.end
-                listOf(TimePeriod(start, end)).toBimap()
+                listOf(TimePeriod(start, end)).toInverseMap()
             }
 
-            TimePeriodType.WEEK -> timePeriodsGenerator.weeks.toBimap()
-            TimePeriodType.MONTH -> timePeriodsGenerator.months.toBimap()
-            TimePeriodType.YEAR -> timePeriodsGenerator.years.toBimap()
-            TimePeriodType.LISTENBRAINZ -> timePeriodsGenerator.listenBrainzPeriods.toBimap()
+            TimePeriodType.WEEK -> timePeriodsGenerator.weeks.toInverseMap()
+
+            TimePeriodType.MONTH -> timePeriodsGenerator.months.toInverseMap()
+
+            TimePeriodType.YEAR -> timePeriodsGenerator.years.toInverseMap()
+            TimePeriodType.LISTENBRAINZ -> timePeriodsGenerator.listenBrainzPeriods.toInverseMap()
             else -> throw IllegalArgumentException("Unknown period type: $periodType")
         }
 
@@ -79,15 +86,15 @@ open class ChartsPeriodVM : ViewModel() {
         .stateIn(
             viewModelScope,
             SharingStarted.Lazily,
-            HashBiMap.create<Int, TimePeriod>(emptyMap())
+            emptyMap()
         )
 
 
     private val _selectedPeriod = MutableStateFlow(prefs.lastChartsPeriodSelectedJson)
     val selectedPeriod = _selectedPeriod
         .combine(timePeriods.filterNot { it.isEmpty() }) { selectedPeriod, timePeriods ->
-            if (selectedPeriod !in timePeriods.inverse) {
-                timePeriods.firstOrNull()!! // just select the first
+            if (selectedPeriod !in timePeriods) {
+                timePeriods.firstNotNullOf { (k, v) -> k } // just select the first
 
 //                val firstPeriod = timePeriods.firstOrNull()!!
 //                val lastPeriod = timePeriods.lastOrNull()!!
@@ -117,6 +124,11 @@ open class ChartsPeriodVM : ViewModel() {
                     username = input.user.name,
                 )
             }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            _periodType.emit(initialPeriodType)
+        }
+
     }
 
     fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {
@@ -140,9 +152,7 @@ open class ChartsPeriodVM : ViewModel() {
     }
 
     fun setSelectedPeriod(period: TimePeriod) {
-        viewModelScope.launch {
-            _selectedPeriod.emit(period)
-        }
+        _selectedPeriod.value = period
     }
 
     protected suspend fun emitEntries(

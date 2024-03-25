@@ -28,7 +28,6 @@ import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
-import com.arn.scrobble.utils.Stuff.firstOrNull
 import com.arn.scrobble.utils.UiUtils.dp
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
@@ -37,7 +36,6 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialSharedAxis
-import io.michaelrocks.bimap.HashBiMap
 
 class ThemesFragment : Fragment() {
 
@@ -49,12 +47,10 @@ class ThemesFragment : Fragment() {
     private lateinit var secondarySwatchIds: List<Int>
     private val prefs = App.prefs
     private val dayNightIdsMap by lazy {
-        HashBiMap.create(
-            mapOf(
-                R.id.chip_dark to AppCompatDelegate.MODE_NIGHT_YES,
-                R.id.chip_light to AppCompatDelegate.MODE_NIGHT_NO,
-                R.id.chip_auto to AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            )
+        mapOf(
+            R.id.chip_dark to AppCompatDelegate.MODE_NIGHT_YES,
+            R.id.chip_light to AppCompatDelegate.MODE_NIGHT_NO,
+            R.id.chip_auto to AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         )
     }
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
@@ -93,8 +89,10 @@ class ThemesFragment : Fragment() {
         binding.themeTintBg.isChecked = prefs.themeTintBackground
         binding.themeDynamic.isChecked = prefs.themeDynamic
 
-        val dayNightSelectedId =
-            dayNightIdsMap.inverse[prefs.themeDayNight] ?: dayNightIdsMap.firstOrNull()!!
+        val dayNightSelectedId = dayNightIdsMap
+            .firstNotNullOfOrNull { (id, v) ->
+                if (v == prefs.themeDayNight) id else null
+            } ?: dayNightIdsMap.keys.first()
 
         binding.themeDayNight.check(dayNightSelectedId)
 

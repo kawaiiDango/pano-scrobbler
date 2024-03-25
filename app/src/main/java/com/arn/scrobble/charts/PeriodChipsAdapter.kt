@@ -3,14 +3,18 @@ package com.arn.scrobble.charts
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.databinding.ListItemChipPeriodBinding
+import com.arn.scrobble.ui.GenericDiffCallback
 import com.google.android.material.chip.Chip
 
 class PeriodChipsAdapter(
     private val viewModel: ChartsPeriodVM,
-    private val onClick: (Int) -> Unit
-) : RecyclerView.Adapter<PeriodChipsAdapter.PeriodChipVH>() {
+    private val onClick: (Int, TimePeriod) -> Unit
+) : ListAdapter<TimePeriod, PeriodChipsAdapter.PeriodChipVH>(
+    GenericDiffCallback { old, new -> old.start == new.start && old.end == new.end }
+) {
 
     var periodSelectedIdx = -1
 
@@ -23,10 +27,8 @@ class PeriodChipsAdapter(
     }
 
     override fun onBindViewHolder(holder: PeriodChipVH, position: Int) {
-        holder.setData(viewModel.timePeriods.value[position]!!)
+        holder.setData(getItem(position))
     }
-
-    override fun getItemCount() = viewModel.timePeriods.value.size
 
     fun resetSelection() {
         periodSelectedIdx = -1
@@ -45,10 +47,8 @@ class PeriodChipsAdapter(
         init {
             chip.setOnClickListener {
                 refreshSelection(absoluteAdapterPosition)
-                onClick(absoluteAdapterPosition)
-                viewModel.timePeriods.value[absoluteAdapterPosition]?.let {
-                    viewModel.setSelectedPeriod(it)
-                }
+                onClick(absoluteAdapterPosition, getItem(absoluteAdapterPosition))
+                viewModel.setSelectedPeriod(getItem(absoluteAdapterPosition))
             }
         }
 

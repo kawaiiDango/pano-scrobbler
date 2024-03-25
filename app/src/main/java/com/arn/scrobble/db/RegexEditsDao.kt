@@ -102,10 +102,13 @@ interface RegexEditsDao {
                     if (regex.containsMatchIn(text)) {
                         numMatches[field]?.add(regexEdit)
 
-                        text = if (regexEdit.replaceAll)
-                            text.replace(regex, regexEdit.replacement).trim()
-                        else
-                            text.replaceFirst(regex, regexEdit.replacement).trim()
+                        kotlin.runCatching {
+                            text = if (regexEdit.replaceAll)
+                                text.replace(regex, regexEdit.replacement).trim()
+                            else
+                                text.replaceFirst(regex, regexEdit.replacement).trim()
+                        }
+                        
                         if (!regexEdit.continueMatching)
                             return text
                     }

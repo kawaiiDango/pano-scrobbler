@@ -31,6 +31,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
 import com.arn.scrobble.databinding.LayoutCollageFooterBinding
@@ -473,7 +474,12 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
             var error = false
             val request = ImageRequest.Builder(requireContext()).apply {
-                data(MusicEntryImageReq(entry))
+                data(
+                    MusicEntryImageReq(
+                        entry,
+                        fetchAlbumInfoIfMissing = (entry is Album && entry.webp300 == null) || (entry is Track && entry.album == null)
+                    )
+                )
                 crossfade(false)
                 if (prefs.collageSkipMissing)
                     listener(
@@ -513,12 +519,12 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
                     is Album -> {
                         gridItemBinding.collageCaption.text = " " + entry.name
-                        gridItemBinding.collageSubcaption.text = " " + entry.artist
+                        gridItemBinding.collageSubcaption.text = " " + entry.artist!!.name
                     }
 
                     is Track -> {
                         gridItemBinding.collageCaption.text = " " + entry.name
-                        gridItemBinding.collageSubcaption.text = " " + entry.artist
+                        gridItemBinding.collageSubcaption.text = " " + entry.artist.name
                     }
                 }
                 gridItemBinding.collagePlayCount.text = resources.getQuantityString(
@@ -537,13 +543,13 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 is Track -> getString(
                     R.string.charts_num_text,
                     pos++,
-                    getString(R.string.artist_title, it.artist, it.name)
+                    getString(R.string.artist_title, it.artist.name, it.name)
                 )
 
                 is Album -> getString(
                     R.string.charts_num_text,
                     pos++,
-                    getString(R.string.artist_title, it.artist, it.name)
+                    getString(R.string.artist_title, it.artist!!.name, it.name)
                 )
 
                 else -> getString(R.string.charts_num_text, pos++, it.name)

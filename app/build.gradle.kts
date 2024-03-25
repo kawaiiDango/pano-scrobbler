@@ -179,7 +179,6 @@ dependencies {
     implementation(libs.krate.kotlinx)
     implementation(libs.harmony)
     implementation(libs.kumo.core)
-    implementation(libs.bimap)
     implementation(libs.mpAndroidChart)
     implementation(libs.nestedscrollwebview)
     implementation(libs.skeletonlayout)

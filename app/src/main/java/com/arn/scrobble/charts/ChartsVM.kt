@@ -35,8 +35,8 @@ class ChartsVM : ChartsPeriodVM() {
             if (Scrobblables.current !is ListenBrainz) {
                 reachedEnd = true
             }
-            timePeriods.value.inverse[timePeriod]?.let { idx ->
-                prevPeriod = timePeriods.value[idx + 1]
+            timePeriods.value[timePeriod]?.let { idx ->
+                prevPeriod = timePeriods.value.keys.elementAtOrNull(idx + 1)
             }
         } else {
             if (timePeriod.period != null && timePeriod.period != Period.OVERALL) {

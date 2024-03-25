@@ -37,6 +37,8 @@ import java.io.IOException
 
 object ScrobbleEverywhere {
 
+    private class IsOfflineException : IOException("Offline")
+
     suspend fun scrobble(
         nowPlaying: Boolean,
         trackInfo: PlayingTrackInfo,
@@ -283,7 +285,7 @@ object ScrobbleEverywhere {
                 if (Stuff.isOnline || it.userAccount.type == AccountType.FILE)
                     it to it.scrobble(scrobbleData)
                 else
-                    it to Result.failure(IOException("Offline"))
+                    it to Result.failure(IsOfflineException())
             }.toMap()
 
             if (scrobbleResults.isEmpty() ||
@@ -341,8 +343,12 @@ object ScrobbleEverywhere {
         var ignored = false
         scrobbleResults.forEach { (scrobblable, result) ->
             if (result.isFailure) {
-                val errMsg = scrobbleResults[scrobblable]
-                    ?.exceptionOrNull()
+                val exception = scrobbleResults[scrobblable]?.exceptionOrNull()
+
+                if (exception is IsOfflineException)
+                    return
+
+                val errMsg = exception
                     ?.also { it.printStackTrace() }
                     ?.message
                     ?: context.getString(R.string.network_error)

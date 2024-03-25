@@ -55,8 +55,6 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.http.maxAge
-import io.michaelrocks.bimap.BiMap
-import io.michaelrocks.bimap.HashBiMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -670,14 +668,7 @@ object Stuff {
         return flagEmoji.toString()
     }
 
-    fun <T : Any> List<T>.toBimap(): BiMap<Int, T> {
-        val map = mapIndexed { i, it -> i to it }.toMap()
-        return HashBiMap.create(map)
-    }
-
-    fun <T : Any> BiMap<Int, T>.firstOrNull() = get(0)
-
-    fun <T : Any> BiMap<Int, T>.lastOrNull() = get(size - 1)
+    fun <T : Any> List<T>.toInverseMap() = mapIndexed { i, it -> it to i }.toMap()
 
     fun getNotificationAction(
         icon: Int,

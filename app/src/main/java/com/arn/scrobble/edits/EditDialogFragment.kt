@@ -13,7 +13,6 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavDeepLinkBuilder
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
@@ -40,7 +39,6 @@ import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.onboarding.LoginFragment
 import com.arn.scrobble.onboarding.LoginFragmentArgs
@@ -158,7 +156,6 @@ class EditDialogFragment : LoginFragment() {
 
     private fun showRegexRecommendation(regexRecommendation: RegexEdit) {
         val presetName = RegexPresets.getString(regexRecommendation.preset!!)
-        val navController = findNavController()
         val activity = activity ?: return
 
         MaterialAlertDialogBuilder(activity)
@@ -171,17 +168,14 @@ class EditDialogFragment : LoginFragment() {
             .setPositiveButton(R.string.yes) { _, _ ->
                 val args = bundleOf(Stuff.ARG_SHOW_DIALOG to true)
 
-                if (activity is MainActivity)
-                    navController.navigate(R.id.regexEditsFragment, args)
-                else if (activity is MainDialogActivity) {
-                    NavDeepLinkBuilder(activity)
-                        .setComponentName(MainActivity::class.java)
-                        .setGraph(R.navigation.nav_graph)
-                        .setDestination(R.id.regexEditsFragment)
-                        .setArguments(args)
-                        .createPendingIntent()
-                        .send()
-                }
+                NavDeepLinkBuilder(activity)
+                    .setComponentName(MainActivity::class.java)
+                    .setGraph(R.navigation.nav_graph)
+                    .setDestination(R.id.regexEditsFragment)
+                    .setArguments(args)
+                    .createPendingIntent()
+                    .send()
+
             }
             .setNegativeButton(R.string.no) { _, _ ->
                 prefs.regexEditsLearnt = true

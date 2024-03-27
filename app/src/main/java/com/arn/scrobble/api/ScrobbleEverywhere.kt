@@ -274,7 +274,7 @@ object ScrobbleEverywhere {
 
             // track player
             val scrobbleSource = ScrobbleSource(
-                timeMillis = scrobbleData.timestamp * 1000L,
+                timeMillis = scrobbleData.timestamp,
                 pkg = trackInfo.packageName
             )
             PanoDb.db

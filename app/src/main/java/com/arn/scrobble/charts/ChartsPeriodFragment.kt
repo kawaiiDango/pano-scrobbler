@@ -143,8 +143,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         val timePeriods = viewModel.timePeriods.value.keys
 
-        val startTime = Stuff.timeToUTC(timePeriods.first().start)
-        val endTime = Stuff.timeToUTC(timePeriods.last().end)
+        val startTime = Stuff.timeToUTC(timePeriods.last().start)
+        val endTime = Stuff.timeToUTC(timePeriods.first().end)
         var openAtTime = Stuff.timeToUTC(
             viewModel.selectedPeriod.value.start
         )

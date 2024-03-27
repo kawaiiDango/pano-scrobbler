@@ -317,7 +317,7 @@ class ScrobblesAdapter(
         }
 
         private fun setPlayerIcon(track: Track) {
-            val timeSecs = track.date
+            val time = track.date
             binding.playerIcon.visibility = View.VISIBLE
 
             fun fetchIcon(pkgName: String) {
@@ -329,19 +329,19 @@ class ScrobblesAdapter(
                 }
             }
 
-            if (timeSecs != null && viewModel.pkgMap[timeSecs] != null) {
-                fetchIcon(viewModel.pkgMap[timeSecs]!!)
+            if (time != null && viewModel.pkgMap[time] != null) {
+                fetchIcon(viewModel.pkgMap[time]!!)
             } else {
                 binding.playerIcon.dispose()
                 binding.playerIcon.load(null)
                 binding.playerIcon.contentDescription = null
                 job?.cancel()
 
-                if (timeSecs != null) {
+                if (time != null) {
                     job = viewModel.viewModelScope.launch(Dispatchers.IO) {
                         delay(100)
-                        playerDao.findPlayer(timeSecs)?.pkg?.let { pkgName ->
-                            viewModel.pkgMap[timeSecs] = pkgName
+                        playerDao.findPlayer(time)?.pkg?.let { pkgName ->
+                            viewModel.pkgMap[time] = pkgName
                             fetchIcon(pkgName)
                         }
                     }

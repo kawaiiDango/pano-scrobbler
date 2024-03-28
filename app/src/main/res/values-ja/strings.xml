@@ -56,6 +56,7 @@
     <string name="reset">リセット</string>
     <string name="settings">設定</string>
     <string name="bug_report">バグ報告</string>
+    <string name="faq">FAQ (よくある質問)</string>
     <string name="album_art">アルバムアート</string>
     <string name="artist_image">アーティスト画像</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
@@ -92,6 +93,8 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">もう少しで完了です…</string>
     <string name="music_players">音楽プレーヤー</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">他のアプリ</string>
+    <string name="choose_apps">アプリを選択</string>
+    <string name="choose_an_app">アプリを選択</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">アプリ</string>
     <string name="offline">現在オフラインです。表示中のデータは最新ではありません</string>
     <string name="unavailable_offline">オフライン時は利用できません</string>
@@ -116,6 +119,7 @@
     <string name="library" comment="search within the library">ライブラリ</string>
     <string name="global" comment="search globally across lastfm">全体</string>
     <string name="reindex">簡易インデックス化</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Scrobblesをインデックス</string>
     <string name="full_index">フルインデックス化</string>
     <string name="take_long_time">これには時間がかかる場合があります</string>
     <string name="full_index_desc">ウェブサイトからScrobbleを編集や削除した際にのみこれを使用してください。</string>
@@ -135,7 +139,10 @@
     <string name="show_all">すべて表示</string>
     <string name="edit">訂正</string>
     <string name="delete">削除</string>
+    <string name="delete_all">全て削除</string>
     <string name="love" comment="Love/like a song">Love</string>
+    <string name="hate" comment="Hate or dislike a song">キライ</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">キライを解除</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Love解除</string>
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="pending_scrobble">保留中のScrobble</string>
@@ -198,6 +205,7 @@
     <string name="charts_no_data">この期間のデータはありません</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">カスタム</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">時系列</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s に基づく</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">データが足りません</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">幸運の一時</string>
     <string name="random_not_found">トラックが見つかりませんでした</string>
@@ -235,12 +243,20 @@
     <string name="secondary_color">サブカラー</string>
     <string name="tint_background" comment="Tint the background with the primary color">背景を明るくする</string>
     <string name="random_theme">起動するたびにランダム化する</string>
+    <string name="edit_name" comment="name for regex pattern">フレンドリーネーム</string>
     <string name="edit_regex">正規表現パターン</string>
     <string name="edit_regex_replacement">正規表現の置換</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">対象</string>
     <string name="edit_replace">置換対象:</string>
     <string name="edit_first" comment="First occurrence of a pattern">初回一致分のみ</string>
     <string name="edit_all" comment="All occurrences of a pattern">すべて</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">抽出</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">キャプチャグループ <i>track, album, artist</i> もしくは <i>albumArtist</i> を他のフィールドから抽出して利用します。</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">例: アーティストとタイトルを入れ替えるには、アーティストの正規表現を (?&lt;track&gt;.*) 、トラックの正規表現を (?&lt;artist&gt;.*) として入力します。</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">正規表現は、少なくともこれらのキャプチャグループを持っている必要があります: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">複数の \"%1$s\" キャプチャグループが含まれる正規表現は許可されていません</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">無効な正規表現: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">使用されるパターン:</string>
     <string name="edit_continue">これに一致した場合でも、他の正規表現を実行する</string>
     <string name="edit_case_sensitive">大文字と小文字を区別する</string>
     <string name="edit_regex_test" comment="(Test regex rules)">テスト</string>
@@ -257,6 +273,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">プレーヤー操作</string>
     <string name="skip" comment="skip to next track">スキップ</string>
     <string name="mute" comment="mute the music">ミュート</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">無視</string>
     <string name="block" comment="block the track from scrobbling">ブロック</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">非表示のタグ</string>
     <string name="pin" comment="pin a friend to the top">ピン留め</string>
@@ -298,10 +315,13 @@
     <string name="pref_enabled_apps_title">アプリを選択</string>
     <string name="pref_auto_detect">新規アプリから自動的にScrobbleする</string>
     <string name="pref_spotify_remote">他のデバイスで再生中のSpotifyをScrobbleする</string>
+    <string name="pref_link_heart_button_rating">通知のハートボタンを使用し、メディアプレーヤーでもお気に入りにする</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">端末の音楽再生中はマイクからの連続的なscrobbleを無効にする</string>
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">パーセント</string>
     <string name="pref_logout">ログアウト</string>
+    <string name="sure_tap_again">よろしいですか? もう一度タップしてください</string>
     <string name="pref_login">ログイン</string>
     <string name="pref_about" comment="Info about this app">アプリ情報</string>
     <string name="pref_privacy_policy">プライバシーポリシー</string>
@@ -309,12 +329,15 @@
     <string name="pref_user_label" comment="(Like username)">ユーザー</string>
     <string name="pref_token_label" comment="For Listenbrainz">認証トークン</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">サーバー URL</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">認証トークンは %1$s で確認できます。</string>
     <string name="pref_now_playing">再生中の状態情報を送信する</string>
     <string name="pref_fetch_album">不足しているアルバムデータをLastFMから取得する</string>
     <string name="pref_locale">言語</string>
     <string name="pref_change_locale">言語を変更</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
     <string name="pref_misc">その他</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">週の開始日</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">インポート &amp; エクスポート</string>
     <string name="pref_export">エクスポート</string>
     <string name="pref_export_desc">設定や訂正内容、ブロックリストをバックアップします。ログイン情報は、セキュリティ上の観点から保存されません。デバイス間や友人との共有にご利用ください。</string>
@@ -379,6 +402,7 @@
     <string name="submitting_loves" formatted="true">Loveを送信中、残り%1$d件</string>
     <string name="pending_batch" comment="For pending scrobbles">バッチを送信中</string>
     <string name="webview_error">ページの読み込みに失敗しました (インターネットに接続されているか確認してください)</string>
+    <string name="bar_chart">棒グラフ</string>
     <string name="cleared_disabled_apps">無効化されたアプリを消去しました</string>
     <string name="fix_it_title">修正可能な項目</string>
     <string name="fix_it_startup_title">パワーセーバー / スタートアップマネージャー</string>
@@ -386,6 +410,13 @@
     <string name="fix_it_action" comment="(To open an app)">開く</string>
     <string name="delete_account">アカウントの削除</string>
     <string name="delete_account_custom_servers">上記以外については、各々の手順を確認してください。</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">画像の追加または変更</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">ギャラリーから選択</string>
+    <string name="square_photo_hint">最良の結果を得るために正方形の画像を使用</string>
+    <string name="scrobble_to_file">ファイル</string>
+    <string name="password">パスワード</string>
+    <string name="open_existing" comment="Append to an existing file">既存に追加</string>
+    <string name="create" comment="Create a new file">作成</string>
     <!--  pro  -->
     <string name="get_pro">このアプリを支援</string>
     <string name="help">ヘルプ</string>
@@ -406,4 +437,5 @@
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最大%1$d人のフレンドのピン留めおよび並び替え</string>
     <string name="billing_sharing">共有時にアプリ名を含めない</string>
     <string name="billing_scrobble_source">Scrobble元のアプリの記録やそのアプリでの楽曲検索</string>
+    <string name="billing_regex_extract">正規表現を使用してカスタムメタデータ抽出ルールを記述</string>
 </resources>

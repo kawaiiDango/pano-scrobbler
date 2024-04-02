@@ -414,7 +414,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
     <string name="submitting_loves" formatted="true">Envoi de soutien, %1$d restant</string>
     <string name="pending_batch" comment="For pending scrobbles">Soumission d\'un lot</string>
-    <string name="webview_error">La page n\'a pas pu être chargée (votre connexion fonctionne-t-elle ?)</string>
     <string name="bar_chart">Histogramme</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>

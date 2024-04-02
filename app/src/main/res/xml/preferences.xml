@@ -151,6 +151,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="noti"
         app:icon="@drawable/vd_bell"
         android:title="@string/pref_noti">
         <SwitchPreference

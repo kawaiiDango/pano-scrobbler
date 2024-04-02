@@ -70,7 +70,6 @@ import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.ItemLongClickListener
 import com.arn.scrobble.ui.MusicEntryImageReq
@@ -124,20 +123,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     private var animSet: AnimatorSet? = null
     private val args by navArgs<ScrobblesFragmentArgs>()
 
-    private val focusChangeListener by lazy {
-        object : FocusChangeListener {
-            //only called when !view.isInTouchMode
-            override fun onFocus(view: View, position: Int) {
-                if (!view.isInTouchMode) {
-                    val pos = IntArray(2)
-                    view.getLocationInWindow(pos)
-
-                    if (pos[1] + view.height > coordinatorBinding.coordinator.height && coordinatorBinding.appBar.isExpanded)
-                        coordinatorBinding.appBar.setExpanded(false, true)
-                }
-            }
-        }
-    }
     private val itemLongClickListener = object : ItemLongClickListener<Any> {
         override fun onItemLongClick(view: View, position: Int, item: Any) {
             val track = item as? Track ?: return
@@ -186,7 +171,10 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         activity ?: return
         viewModel.reEmitColors()
 
-        coordinatorBinding.appBar.expandToHeroIfNeeded(true)
+        if (Stuff.isTv)
+            coordinatorBinding.appBar.expandToHeroIfNeeded(false)
+        else
+            coordinatorBinding.appBar.expandToHeroIfNeeded(true)
     }
 
     override fun onPause() {
@@ -217,7 +205,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             findNavController(),
             itemClickListener = this,
             itemLongClickListener = itemLongClickListener,
-            focusChangeListener = focusChangeListener,
             setHeroListener = this,
             viewModel = viewModel,
             userIsSelf = activityViewModel.currentUser.isSelf,
@@ -291,7 +278,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 binding.empty.isVisible = true
             } else {
                 binding.empty.isVisible = false
-
+                binding.scrobblesList.isVisible = true
                 loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
 
                 activityViewModel.updateCanIndex()
@@ -737,7 +724,8 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                         }
                     smoothScroller.targetPosition = position
                     binding.scrobblesList.layoutManager?.startSmoothScroll(smoothScroller)
-                    coordinatorBinding.appBar.setExpanded(true, true)
+                    if (!Stuff.isTv)
+                        coordinatorBinding.appBar.setExpanded(true, true)
                 }
 
                 if (!view.isInTouchMode)

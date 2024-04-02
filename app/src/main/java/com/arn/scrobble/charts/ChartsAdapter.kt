@@ -29,10 +29,10 @@ import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryItemClickListener
-import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import java.util.Objects
 
@@ -123,10 +123,13 @@ open class ChartsAdapter(
         }
     }
 
-    open fun populate(newList: List<MusicEntry>, scrollToFirst: Boolean) {
+    open fun populate(newList: List<MusicEntry>) {
+        val oldCount = itemCount
         submitList(newList) {
-            if (scrollToFirst)
+            if (oldCount != 0)
                 binding.chartsList.scrollToPosition(0)
+            if (newList.isNotEmpty())
+                binding.chartsList.isVisible = true
         }
         binding.chartsList.layoutAnimation = null
         if (newList.isEmpty()) {

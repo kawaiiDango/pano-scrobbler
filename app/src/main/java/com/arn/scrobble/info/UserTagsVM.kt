@@ -76,7 +76,7 @@ class UserTagsVM : ViewModel() {
                 return@launch
 
             (Scrobblables.current as? LastFm)
-                ?.addUserTagsFor(entry.value!!, newTags)
+                ?.addUserTagsFor(entry.value!!, splitTags(newTags).joinToString(","))
         }
     }
 

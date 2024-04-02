@@ -1,7 +1,5 @@
 package com.arn.scrobble.pref
 
-import android.net.Uri
-import android.os.ParcelFileDescriptor
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.Converters
@@ -15,16 +13,10 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
-import timber.log.Timber
-import java.io.Closeable
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
-class ImExporter : Closeable {
-    private var writer: FileOutputStream? = null
-    private var reader: FileInputStream? = null
-    private var pfd: ParcelFileDescriptor? = null
-    private val context = App.context
+class ImExporter {
     private val db = PanoDb.db
     private val prefs = App.prefs
     private val json by lazy {
@@ -36,26 +28,7 @@ class ImExporter : Closeable {
         }
     }
 
-    fun setOutputUri(uri: Uri) {
-        pfd = context.contentResolver.openFileDescriptor(uri, "w")
-        if (pfd == null) {
-            Timber.w("pfd was null")
-            return
-        }
-        writer = FileOutputStream(pfd!!.fileDescriptor)
-    }
-
-    fun setInputUri(uri: Uri) {
-        pfd = context.contentResolver.openFileDescriptor(uri, "r")
-        if (pfd == null) {
-            Timber.w("pfd was null")
-            return
-        }
-        reader = FileInputStream(pfd!!.fileDescriptor)
-    }
-
-    fun export(): Boolean {
-        writer ?: throw IllegalArgumentException("ImExporter not inited")
+    fun export(writer: OutputStream): Boolean {
 
         val appPrefs = AppPrefs(
             pano_version = BuildConfig.VERSION_CODE,
@@ -68,16 +41,19 @@ class ImExporter : Closeable {
 
         // write to file
         return try {
-            json.encodeToStream(appPrefs, writer!!)
+            json.encodeToStream(appPrefs, writer)
             true
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        } finally {
+            writer.close()
         }
+
+
     }
 
-    fun exportPrivateData(): Boolean {
-        writer ?: throw NullPointerException("ImExporter not inited")
+    fun exportPrivateData(writer: OutputStream): Boolean {
         val appPrefsPrivate = AppPrefs(
             pano_version = BuildConfig.VERSION_CODE,
             scrobble_sources = db.getScrobbleSourcesDao().all().asReversed(),
@@ -89,19 +65,20 @@ class ImExporter : Closeable {
 
         // write to file
         return try {
-            json.encodeToStream(appPrefsPrivate, writer!!)
+            json.encodeToStream(appPrefsPrivate, writer)
             true
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        } finally {
+            writer.close()
         }
     }
 
-    fun import(editsMode: EditsMode, settings: Boolean): Boolean {
-        reader ?: throw NullPointerException("ImExporter not inited")
+    fun import(reader: InputStream, editsMode: EditsMode, settings: Boolean): Boolean {
         val appPrefs: AppPrefs
         try {
-            appPrefs = json.decodeFromStream<AppPrefs>(reader!!)
+            appPrefs = json.decodeFromStream<AppPrefs>(reader)
         } catch (e: Exception) {
             e.printStackTrace()
             return false
@@ -142,40 +119,27 @@ class ImExporter : Closeable {
         }
         appPrefs.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }
 
+        reader.close()
+
         return true
     }
+}
 
-    override fun close() {
-        try {
-            writer?.close()
-        } catch (e: Exception) {
-        }
-        try {
-            reader?.close()
-        } catch (e: Exception) {
-        }
-        try {
-            pfd?.close()
-        } catch (e: Exception) {
-        }
-    }
+@Serializable
+private data class AppPrefs(
+    val pano_version: Int,
 
-    @Serializable
-    data class AppPrefs(
-        val pano_version: Int,
+    @JsonNames("edits")
+    val simple_edits: List<SimpleEdit>?,
+    val regex_edits: List<RegexEdit>?,
+    val blocked_metadata: List<BlockedMetadata>?,
+    val scrobble_sources: List<ScrobbleSource>?,
+    val settings: MainPrefs.MainPrefsPublic?,
+)
 
-        @JsonNames("edits")
-        val simple_edits: List<SimpleEdit>?,
-        val regex_edits: List<RegexEdit>?,
-        val blocked_metadata: List<BlockedMetadata>?,
-        val scrobble_sources: List<ScrobbleSource>?,
-        val settings: MainPrefs.MainPrefsPublic?,
-    )
-
-    enum class EditsMode {
-        EDITS_NOPE,
-        EDITS_REPLACE_ALL,
-        EDITS_REPLACE_EXISTING,
-        EDITS_KEEP_EXISTING,
-    }
+enum class EditsMode {
+    EDITS_NOPE,
+    EDITS_REPLACE_ALL,
+    EDITS_REPLACE_EXISTING,
+    EDITS_KEEP_EXISTING,
 }

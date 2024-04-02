@@ -147,6 +147,7 @@
         >Apps</string>
     <string name="offline">Offline. Data shown isn\'t fresh</string>
     <string name="unavailable_offline">Not available when offline</string>
+    <string name="unavailable_tv">Not available on TV</string>
     <string name="scrobble_services"
         comment="Services like lastfm, librefm, listenbrainz etc"
         >Services</string>
@@ -620,6 +621,13 @@
     <string name="pref_export">Export</string>
     <string name="pref_export_desc">Backs up settings, edits and blocklist. Does not save logins for security reasons. Useful for moving between devices or sharing with friends.</string>
     <string name="pref_import">Import</string>
+    <string name="pref_imexport_network"
+        comment="As in backup or restore the settings over local network"
+        >Network</string>
+    <string name="pref_imexport_code"
+        comment="A code shown on the screen to be entered on the other device"
+        >Code</string>
+    <string name="pref_imexport_network_notice">For network mode, both the devices must be connected to the same network.</string>
     <string name="pref_personalization"
         comment="Such as themes, widgets and some appearance settings"
         >Personalization</string>
@@ -725,7 +733,6 @@
     <string name="pending_batch"
         comment="For pending scrobbles"
         >Submitting a batch</string>
-    <string name="webview_error">The page failed to load (is your internet working?)</string>
     <string name="bar_chart">Bar chart</string>
     <string name="cleared_disabled_apps">Cleared disabled apps</string>
 

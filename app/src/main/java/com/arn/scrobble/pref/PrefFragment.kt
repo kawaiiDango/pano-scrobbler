@@ -11,7 +11,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.Icon
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -21,9 +20,6 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
@@ -40,7 +36,6 @@ import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.main.App
 import com.arn.scrobble.onboarding.LoginFlows
@@ -61,10 +56,8 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.Calendar
 import java.util.Locale
@@ -75,31 +68,12 @@ import java.util.Locale
  */
 
 class PrefFragment : PreferenceFragmentCompat() {
-
-    private lateinit var exportRequest: ActivityResultLauncher<String>
-    private lateinit var exportPrivateDataRequest: ActivityResultLauncher<String>
-    private lateinit var importRequest: ActivityResultLauncher<Array<String>>
     private val prefs = App.prefs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
-
-        exportRequest =
-            registerForActivityResult(ActivityResultContracts.CreateDocument(Stuff.MIME_TYPE_JSON)) { uri ->
-                export(uri)
-            }
-
-        exportPrivateDataRequest =
-            registerForActivityResult(ActivityResultContracts.CreateDocument(Stuff.MIME_TYPE_JSON)) { uri ->
-                export(uri, privateData = true)
-            }
-
-        importRequest =
-            registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-                import(uri)
-            }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -304,6 +278,10 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
         }
 
+        val noti = findPreference<Preference>("noti")!!
+
+        hideOnTV.add(noti)
+
         findPreference<Preference>(MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY)!!
             .title = getString(R.string.s_top_scrobbles, getString(R.string.weekly))
 
@@ -415,35 +393,15 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>(MainPrefs.PREF_EXPORT)
             ?.setOnPreferenceClickListener {
-                if (prefs.proStatus && prefs.showScrobbleSources) {
-                    val privateFileName = getString(
-                        R.string.export_file_name,
-                        "private_" + Stuff.getFileNameDateSuffix()
-                    )
-                    exportPrivateDataRequest.launch(privateFileName)
-                }
-
-                val fileName = getString(
-                    R.string.export_file_name,
-                    Stuff.getFileNameDateSuffix()
-                )
-
-                exportRequest.launch(fileName)
+                findNavController().navigate(R.id.exportFragment)
                 true
             }
 
         findPreference<Preference>(MainPrefs.PREF_IMPORT)
             ?.setOnPreferenceClickListener {
-                // On Android 11 TV:
-                // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
-                // from ProcessRecord{a608cee 5039:com.google.android.documentsui/u0a21}
-                // (pid=5039, uid=10021) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs
-                importRequest.launch(arrayOf(Stuff.MIME_TYPE_JSON))
+                findNavController().navigate(R.id.importFragment)
                 true
             }
-
-        if (!BuildConfig.DEBUG)
-            hideOnTV.add(findPreference("imexport")!!)
 
         findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
             .setOnPreferenceClickListener {
@@ -498,7 +456,10 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("privacy")!!
             .setOnPreferenceClickListener {
-                Stuff.openInBrowser(getString(R.string.privacy_policy_link))
+                val args = Bundle().apply {
+                    putString(Stuff.ARG_URL, getString(R.string.privacy_policy_link))
+                }
+                findNavController().navigate(R.id.webViewFragment, args)
                 true
             }
 
@@ -570,6 +531,12 @@ class PrefFragment : PreferenceFragmentCompat() {
             findNavController().navigate(R.id.licensesFragment)
             true
         }
+
+        val fileScrobblablePref = findPreference<Preference>("file")!!
+        hideOnTV.add(fileScrobblablePref)
+
+        val notiCategory = findPreference<Preference>("noti")!!
+        hideOnTV.add(notiCategory)
 
         if (Stuff.isTv)
             hideOnTV.forEach {
@@ -697,67 +664,6 @@ class PrefFragment : PreferenceFragmentCompat() {
                 }
                 true
             }
-    }
-
-    private fun export(currentUri: Uri?, privateData: Boolean = false) {
-        currentUri ?: return
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            val exported = ImExporter().use {
-                it.setOutputUri(currentUri)
-                if (privateData)
-                    it.exportPrivateData()
-                else
-                    it.export()
-            }
-            if (!exported)
-                withContext(Dispatchers.Main) {
-                    requireContext().toast(R.string.export_failed, Toast.LENGTH_LONG)
-                }
-            else
-                Timber.i("Exported")
-        }
-    }
-
-    private fun import(currentUri: Uri?) {
-        currentUri ?: return
-        val binding = DialogImportBinding.inflate(layoutInflater)
-        MaterialAlertDialogBuilder(requireContext())
-            .setView(binding.root)
-            .setTitle(R.string.import_options)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                val editsModeMap = mapOf(
-                    R.id.import_edits_nope to ImExporter.EditsMode.EDITS_NOPE,
-                    R.id.import_edits_replace_all to ImExporter.EditsMode.EDITS_REPLACE_ALL,
-                    R.id.import_edits_replace_existing to ImExporter.EditsMode.EDITS_REPLACE_EXISTING,
-                    R.id.import_edits_keep to ImExporter.EditsMode.EDITS_KEEP_EXISTING
-                )
-                val editsMode = editsModeMap[binding.importRadioGroup.checkedRadioButtonId]!!
-                val settingsMode = binding.importSettings.isChecked
-                if (editsMode == ImExporter.EditsMode.EDITS_NOPE && !settingsMode)
-                    return@setPositiveButton
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    val imported = ImExporter().use {
-                        it.setInputUri(currentUri)
-                        it.import(editsMode, settingsMode)
-                    }
-                    withContext(Dispatchers.Main) {
-                        if (!imported)
-                            requireContext().toast(R.string.import_hey_wtf, Toast.LENGTH_LONG)
-                        else {
-                            requireContext().toast(R.string.imported)
-                            parentFragmentManager
-                                .beginTransaction()
-                                .detach(this@PrefFragment)
-                                .commit()
-                            parentFragmentManager
-                                .beginTransaction()
-                                .attach(this@PrefFragment)
-                                .commit()
-                        }
-                    }
-                }
-            }
-            .show()
     }
 
     override fun onStart() {

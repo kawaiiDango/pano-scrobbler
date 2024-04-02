@@ -4,6 +4,7 @@ import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -22,6 +23,7 @@ import com.google.android.material.color.MaterialColors
 
 class RegexEditsAdapter(
     private val itemClickListener: ItemClickListener<RegexEdit>,
+    private val viewModel: RegexEditsVM
 ) : ListAdapter<RegexEdit, RegexEditsAdapter.VHRegexEdit>(
     GenericDiffCallback { old, new -> old._id == new._id }
 ) {
@@ -59,11 +61,44 @@ class RegexEditsAdapter(
         private val itemClickListener: ItemClickListener<RegexEdit>
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener {
+            binding.editContent.setOnClickListener {
                 itemClickListener.call(
                     it,
                     bindingAdapterPosition
                 ) { getItem(bindingAdapterPosition) }
+            }
+
+            binding.editHandle.setOnKeyListener { v, keyCode, event ->
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    val fromPosition = bindingAdapterPosition
+                    var toPosition = fromPosition
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_UP && bindingAdapterPosition > 0) {
+                        toPosition -= 1
+
+                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && bindingAdapterPosition < itemCount - 1) {
+                        toPosition += 1
+                    }
+
+                    if (fromPosition != toPosition) {
+                        val cachedList = currentList.toMutableList()
+                        val movedItem = cachedList.removeAt(fromPosition)
+                        cachedList.add(toPosition, movedItem)
+
+                        val regexes = cachedList.mapIndexed { index, regex ->
+                            regex.copy(order = index)
+                        }
+                        viewModel.upsertAll(regexes)
+
+//                        submitList(cachedList)
+//                        viewModel.upsertAll(cachedList)
+
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
             }
         }
 
@@ -105,19 +140,6 @@ class RegexEditsAdapter(
                 modifiersSet.add(RegexEdit::continueMatching.name)
 
             binding.editModifiers.text = createImageSpans(modifiersSet.joinToString())
-
-            binding.editHandle.setOnClickListener {
-                itemClickListener.call(
-                    it,
-                    bindingAdapterPosition
-                ) { getItem(bindingAdapterPosition) }
-            }
-            itemView.setOnClickListener {
-                itemClickListener.call(
-                    it,
-                    bindingAdapterPosition
-                ) { getItem(bindingAdapterPosition) }
-            }
         }
 
         private fun createImageSpans(text: String): SpannableString {

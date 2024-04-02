@@ -30,7 +30,6 @@ import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ExpandableHeader
-import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.ItemLongClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
@@ -41,6 +40,7 @@ import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.autoNotify
 import com.arn.scrobble.utils.UiUtils.dp
+import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.arn.scrobble.utils.UiUtils.memoryCacheKey
 import com.arn.scrobble.utils.UiUtils.showWithIcons
@@ -60,7 +60,6 @@ class ScrobblesAdapter(
     private val navController: NavController,
     private val itemClickListener: ItemClickListener<Any>,
     private val itemLongClickListener: ItemLongClickListener<Any>,
-    private val focusChangeListener: FocusChangeListener,
     private val setHeroListener: SetHeroTrigger,
     private val viewModel: TracksVM,
     private val userIsSelf: Boolean,
@@ -148,7 +147,8 @@ class ScrobblesAdapter(
                     R.string.enable,
                     R.string.enable,
                 ),
-                showHeaderWhenEmpty = !(viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == true) && userIsSelf
+                showHeaderWhenEmpty = !(viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == true) &&
+                        userIsSelf && Stuff.isTv
             )
         )
 
@@ -277,7 +277,7 @@ class ScrobblesAdapter(
     }
 
     inner class VHScrobble(private val binding: ListItemRecentsBinding) :
-        RecyclerView.ViewHolder(binding.root), View.OnFocusChangeListener {
+        RecyclerView.ViewHolder(binding.root) {
         private var job: Job? = null
 
         init {
@@ -292,17 +292,11 @@ class ScrobblesAdapter(
                 }
                 true
             }
-            binding.root.onFocusChangeListener = this
             binding.recentsMenu.setOnClickListener {
                 itemClickListener.call(it, bindingAdapterPosition) {
                     getItem(bindingAdapterPosition)
                 }
             }
-        }
-
-        override fun onFocusChange(view: View?, focused: Boolean) {
-            if (view != null && !view.isInTouchMode && focused)
-                focusChangeListener.call(itemView, bindingAdapterPosition)
         }
 
         private fun setSelected(
@@ -446,6 +440,10 @@ class ScrobblesAdapter(
 
     inner class VHHeader(private val binding: HeaderWithActionBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.fixFocusabilityOnTv()
+        }
 
         fun setItemData(headerData: ExpandableHeader) {
             when (headerData.section.itemType) {

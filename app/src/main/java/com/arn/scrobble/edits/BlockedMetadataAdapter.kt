@@ -46,7 +46,7 @@ class BlockedMetadataAdapter(
         private val itemClickListener: ItemClickListener<BlockedMetadata>
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener {
+            binding.blockedMetadataListContent.setOnClickListener {
                 itemClickListener.call(
                     it,
                     bindingAdapterPosition

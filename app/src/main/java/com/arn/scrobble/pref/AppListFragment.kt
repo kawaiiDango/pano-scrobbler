@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -105,7 +106,7 @@ class AppListFragment : Fragment() {
 
         collectLatestLifecycleFlow(viewModel.appList.filter { it.isNotEmpty() }) {
             adapter.submitList(it)
-
+            binding.appList.isVisible = true
         }
 
         collectLatestLifecycleFlow(viewModel.hasLoaded) {

@@ -6,18 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="40dp"
-    android:background="?selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
-    android:nextFocusRight="@id/delete"
     android:orientation="horizontal"
-    android:paddingStart="16dp"
-    android:paddingVertical="8dp">
+    android:paddingVertical="8dp"
+    android:paddingStart="16dp">
 
     <LinearLayout
+        android:id="@+id/blocked_metadata_list_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical">
 
         <TextView
@@ -89,12 +89,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:contentDescription="@string/delete"
-        android:focusable="true"
         android:gravity="top|end"
-        android:nextFocusLeft="@id/blocked_metadata_list_item"
-        android:nextFocusRight="@id/blocked_metadata_list_item"
-        app:iconSize="28dp"
-        app:icon="@drawable/vd_delete" />
+        app:icon="@drawable/vd_delete"
+        app:iconSize="28dp" />
 
 </LinearLayout>
 

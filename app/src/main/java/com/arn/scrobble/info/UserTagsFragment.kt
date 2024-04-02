@@ -21,10 +21,12 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.DialogUserTagsBinding
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
+import com.arn.scrobble.utils.UiUtils.showKeyboard
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.filterNotNull
@@ -88,6 +90,12 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         }
 
         val addButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+
+
+        binding.userTagsInputEdittext.setOnClickListener { v ->
+            if (Stuff.isTv)
+                showKeyboard(v)
+        }
 
         binding.userTagsInputEdittext.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||

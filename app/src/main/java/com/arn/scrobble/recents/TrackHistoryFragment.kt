@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -126,6 +127,10 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
 //            if (oldList.isNotEmpty())
 //                adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
             adapter.submitList(it)
+
+            if (it.isNotEmpty())
+                binding.tracksList.isVisible = true
+
         }
 
 //        binding.firstScrobbledOn.visibility = View.GONE

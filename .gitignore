@@ -18,9 +18,9 @@
 /app/src/release/generated
 /app/src/main/res/**/strings-sz.xml
 /app/src/main/res/**/strings-np.xml
+/app/src/main/res/raw/embedded_server_bks.bks
 /buildSrc/build/tmp
 /misc/profilerDumps
 stylegen/Tonal Palettes.svg
 .privado
 crowdin.properties
-/lastfm

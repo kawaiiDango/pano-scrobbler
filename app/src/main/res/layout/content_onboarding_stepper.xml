@@ -5,17 +5,15 @@
     android:layout_margin="16dp"
     android:orientation="vertical">
 
-    <TextView
+    <Button
         android:id="@+id/onboarding_privacy_policy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginBottom="16dp"
         android:alpha="0.75"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/pref_privacy_policy"
-        android:textColor="?colorSecondary" />
+        style="@style/Widget.Material3.Button.TextButton"
+        android:text="@string/pref_privacy_policy"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/onboarding_stepper_list"

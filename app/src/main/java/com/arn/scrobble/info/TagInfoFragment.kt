@@ -7,21 +7,23 @@ import android.text.Html
 import android.text.Layout
 import android.text.Spanned
 import android.text.style.URLSpan
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.databinding.ContentTagInfoBinding
-import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.utils.UiUtils.expandIfNeeded
-import com.arn.scrobble.utils.UiUtils.scheduleTransition
-import com.arn.scrobble.utils.UiUtils.startFadeLoop
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.copyToClipboard
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getData
+import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.UiUtils.scheduleTransition
+import com.arn.scrobble.utils.UiUtils.startFadeLoop
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.flow.filterNotNull
 import java.net.URLEncoder
@@ -53,6 +55,12 @@ class TagInfoFragment : BottomSheetDialogFragment() {
 
         val tag = requireArguments().getData<Tag>()!!
         binding.tagInfoTitle.text = tag.name
+
+        if (!Stuff.isTv)
+            binding.tagInfoWiki.autoLinkMask = Linkify.WEB_URLS
+
+        if (Stuff.isTv)
+            binding.tagInfoLink.isVisible = false
 
         binding.tagInfoTitle.setOnLongClickListener {
             requireContext().copyToClipboard(binding.tagInfoTitle.text.toString())

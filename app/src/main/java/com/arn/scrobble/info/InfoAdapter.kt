@@ -8,6 +8,7 @@ import android.text.Html
 import android.text.Layout
 import android.text.Spanned
 import android.text.style.URLSpan
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,13 +86,9 @@ class InfoAdapter(
                 binding.infoTags.addView(chip)
             }
 
-            binding.infoName.setOnLongClickListener {
+            binding.infoTitleBar.setOnLongClickListener {
                 itemView.context.copyToClipboard(binding.infoName.text.toString())
                 true
-            }
-
-            binding.infoName.setOnClickListener {
-                binding.infoTitleBar.performClick()
             }
 
             binding.infoPlay.setOnClickListener {
@@ -158,6 +155,9 @@ class InfoAdapter(
                 }
             }
 
+            if (Stuff.isTv)
+                binding.infoLink.isVisible = false
+
             binding.infoTitleBar.setOnClickListener {
                 if (info.hasImage)
                     viewModel.updateInfo(
@@ -173,6 +173,10 @@ class InfoAdapter(
                         wikiExpanded = !info.wikiExpanded
                     )
                 )
+            }
+
+            if (!Stuff.isTv) {
+                binding.infoWiki.autoLinkMask = Linkify.WEB_URLS
             }
 
             binding.infoWiki.setOnClickListener(wikiClickListener)
@@ -502,7 +506,11 @@ class InfoAdapter(
                 binding.infoUserScrobblesLabel.setTextColor(secondaryColor)
 
                 binding.infoUserScrobblesContainer.setBackgroundResource(R.drawable.selector_border_gentle)
+                binding.infoUserScrobblesContainer.isClickable = true
                 binding.infoUserScrobblesContainer.isFocusable = true
+            } else {
+                binding.infoUserScrobblesContainer.isClickable = false
+                binding.infoUserScrobblesContainer.isFocusable = false
             }
 
             var lastI = 0

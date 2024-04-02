@@ -43,7 +43,7 @@ class SimpleEditsAdapter(
         private val itemClickListener: ItemClickListener<SimpleEdit>
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener {
+            binding.editsContent.setOnClickListener {
                 itemClickListener.call(
                     it,
                     bindingAdapterPosition

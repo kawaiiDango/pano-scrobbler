@@ -126,9 +126,9 @@ class OnboardingFragment : Fragment() {
             canSkip = true,
             isCompleted = { Stuff.isNotificationListenerEnabled() },
             openAction = {
-                val intent = if (Stuff.isTv &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                    Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+                val intent = if (Stuff.isTv
+//                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+//                    && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
                 )
                     Intent().setComponent(
                         ComponentName(
@@ -138,6 +138,8 @@ class OnboardingFragment : Fragment() {
                     )
                 else
                     Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS)
+
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
                 if (requireContext().packageManager.resolveActivity(
                         intent,
@@ -244,8 +246,9 @@ class OnboardingFragment : Fragment() {
         binding.buttonServiceChooser.setOnClickListener { v ->
             val popup = PopupMenu(binding.root.context, v)
             serviceEnums.forEachIndexed { idx, it ->
-                if (it != AccountType.LASTFM)
+                if (it != AccountType.LASTFM && !(Stuff.isTv && it == AccountType.FILE)) {
                     popup.menu.add(0, idx, 0, Scrobblables.getString(it))
+                }
             }
 
             popup.setOnMenuItemClickListener { menuItem ->

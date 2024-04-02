@@ -45,10 +45,7 @@ object NavUtils {
         val accountType = Scrobblables.current?.userAccount?.type
 
         if (accountType == null || mainNotifierViewModel.drawerData.value == null) {
-            headerNavBinding.root.visibility = View.INVISIBLE
             return
-        } else {
-            headerNavBinding.root.visibility = View.VISIBLE
         }
 
         Scrobblables.currentScrobblableUser?.let {
@@ -137,7 +134,32 @@ object NavUtils {
         mainNotifierViewModel: MainNotifierViewModel
     ) {
         headerNavBinding.navProfileLinks.setOnClickListener { anchor ->
-            val currentAccount = Scrobblables.current?.userAccount ?: return@setOnClickListener
+            val currentAccount = Scrobblables.current?.userAccount
+
+            // show FAQ in the dropdown as a way to prevent a focus bug on TV
+            if (currentAccount == null) {
+                val popup = PopupMenu(headerNavBinding.root.context, anchor)
+                popup.inflate(R.menu.faq_menu)
+                popup.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.nav_faq -> {
+                            val args = Bundle().apply {
+                                putString(
+                                    Stuff.ARG_URL,
+                                    headerNavBinding.root.context.getString(R.string.faq_link)
+                                )
+                            }
+                            navController.navigate(R.id.webViewFragment, args)
+                        }
+                    }
+                    true
+                }
+                popup.showWithIcons()
+
+                return@setOnClickListener
+            }
+
+
             val currentUser = mainNotifierViewModel.currentUser
 
             val prefs = App.prefs
@@ -307,7 +329,13 @@ object NavUtils {
                             } else {
                                 moreMenu.setIcon(R.drawable.vd_more_horiz)
                             }
+
                             activityBinding.sidebarNav.inflateMenu(optionsMenuRes)
+
+                            if (!App.prefs.proStatus)
+                                activityBinding.sidebarNav.menu.findItem(R.id.nav_pro)?.isVisible =
+                                    true
+
                         }
 
                         activityBinding.bottomNav.setOnItemSelectedListener { menuItem ->

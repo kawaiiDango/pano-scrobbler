@@ -66,10 +66,8 @@
                 android:layout_height="wrap_content"
                 android:checkable="true"
                 android:text="@string/recents"
-                app:chipBackgroundColor="@color/csl_translucent_chip"
                 app:chipIcon="@drawable/vd_history"
-                app:chipIconTint="?colorControlNormal"
-                app:chipSurfaceColor="@android:color/transparent" />
+                app:chipIconTint="?colorControlNormal" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/loves_chip"
@@ -77,10 +75,8 @@
                 android:layout_height="wrap_content"
                 android:checkable="true"
                 android:text="@string/loved"
-                app:chipBackgroundColor="@color/csl_translucent_chip"
                 app:chipIcon="@drawable/vd_heart"
-                app:chipIconTint="?colorControlNormal"
-                app:chipSurfaceColor="@android:color/transparent" />
+                app:chipIconTint="?colorControlNormal" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/time_jump_chip"
@@ -88,10 +84,8 @@
                 android:layout_height="wrap_content"
                 android:checkable="false"
                 android:text="@string/time_jump"
-                app:chipBackgroundColor="@color/csl_translucent_chip"
                 app:chipIcon="@drawable/vd_calendar"
                 app:chipIconTint="?colorControlNormal"
-                app:chipSurfaceColor="@android:color/transparent"
                 app:closeIcon="@drawable/vd_arrow_down"
                 app:closeIconVisible="true" />
 
@@ -101,10 +95,8 @@
                 android:layout_height="wrap_content"
                 android:checkable="false"
                 android:text="@string/random_text"
-                app:chipBackgroundColor="@color/csl_translucent_chip"
                 app:chipIcon="@drawable/vd_die"
-                app:chipIconTint="?colorControlNormal"
-                app:chipSurfaceColor="@android:color/transparent" />
+                app:chipIconTint="?colorControlNormal" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 

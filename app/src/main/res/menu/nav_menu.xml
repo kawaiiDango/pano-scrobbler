@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:showIn="navigation_view">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
     <group android:id="@+id/nav_group_3">
         <item
             android:id="@+id/nav_rec"
             android:icon="@drawable/vd_mic"
-            android:title="@string/from_mic"/>
+            android:title="@string/from_mic" />
         <item
             android:id="@+id/nav_search"
             android:icon="@drawable/vd_search"
-            android:title="@string/search"/>
+            android:title="@string/search" />
         <item
             android:id="@+id/nav_do_index"
             android:icon="@drawable/vd_arrow_downward"
-            android:title="@string/do_index"/>
+            android:title="@string/do_index"
+            android:visible="false" />
     </group>
     <group android:id="@+id/nav_group_4">
         <item
             android:id="@+id/nav_pro"
             android:icon="@drawable/vd_medal"
-            android:title="@string/get_pro"/>
+            android:title="@string/get_pro"
+            android:visible="false" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/vd_settings"
-            android:title="@string/settings"/>
+            android:title="@string/settings" />
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/vd_help"
-            android:title="@string/help"/>
+            android:title="@string/help" />
     </group>
 
 </menu>

@@ -181,6 +181,8 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                 binding.friendsGrid.scheduleLayoutAnimation()
             }
             binding.empty.isVisible = it.isEmpty()
+            if (it.isNotEmpty())
+                binding.friendsGrid.isVisible = true
 
             adapter.submitList(it)
 

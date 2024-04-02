@@ -1,5 +1,7 @@
 package com.arn.scrobble.ui
 
+import android.graphics.drawable.BitmapDrawable
+import androidx.core.graphics.drawable.toBitmap
 import coil3.ImageLoader
 import coil3.asCoilImage
 import coil3.decode.DataSource
@@ -23,7 +25,7 @@ class AppIconFetcher(
     // causes a huge delay (5+ secs) on oxygenos
 
     override suspend fun fetch(): FetchResult {
-        val icon = withContext(Dispatchers.IO) {
+        var icon = withContext(Dispatchers.IO) {
             if (!firstRequestReturned)
                 lock.withLock {
                     options.context.packageManager.getApplicationIcon(data.packageName) // is BitmapDrawable
@@ -34,11 +36,11 @@ class AppIconFetcher(
 
         firstRequestReturned = true
 
-//        if (icon !is BitmapDrawable) // just in case
-//            icon = BitmapDrawable(
-//                options.context.resources,
-//                icon.toBitmap()
-//            )
+        if (icon !is BitmapDrawable) // just in case
+            icon = BitmapDrawable(
+                options.context.resources,
+                icon.toBitmap()
+            )
 
 
         return ImageFetchResult(

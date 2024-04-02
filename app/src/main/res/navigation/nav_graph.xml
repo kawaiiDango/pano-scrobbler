@@ -387,10 +387,20 @@
         android:id="@+id/changelogDialogFragment"
         android:name="com.arn.scrobble.onboarding.ChangelogDialogFragment"
         android:label="ChangelogDialogFragment"
-        tools:layout="@layout/dialog_changelog" >
+        tools:layout="@layout/dialog_changelog">
         <argument
             android:name="changelog_text"
             app:argType="string"
             app:nullable="true" />
     </dialog>
+    <fragment
+        android:id="@+id/importFragment"
+        android:name="com.arn.scrobble.pref.ImportFragment"
+        android:label="@string/pref_import"
+        tools:layout="@layout/content_imexport" />
+    <fragment
+        android:id="@+id/exportFragment"
+        android:name="com.arn.scrobble.pref.ExportFragment"
+        android:label="@string/pref_export"
+        tools:layout="@layout/content_imexport" />
 </navigation>

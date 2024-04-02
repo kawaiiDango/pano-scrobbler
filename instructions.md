@@ -17,6 +17,7 @@ object Tokens {
     const val PRO_PRODUCT_ID = "" // play store product ID for IAP
     const val SIGNATURE = "" // apk signature
     const val BASE_64_ENCODED_PUBLIC_KEY = "" // (of the signing key)
+    const val EMBEDDED_SERVER_KEYSTORE_PASSWORD = "" // password for the embedded https server BKS keystore, used for importing settings over local network
 }
 ```
 - Remove or comment out the lines below `// remove if not needed` in app/build.gradle.kts and /build.gradle.kts
@@ -26,6 +27,9 @@ The version name will be derived from this.
 
 - Create a Firebase project for Crashlytics and add google-services.json.
 See https://firebase.google.com/docs/android/setup
+
+- Create a BKS keystore for the embedded https server with the password EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
+Put it in /app/src/main/res/raw/embedded_server_bks.bks
 
 - Obtain now playing notification strings and their translations by decompiling the resources of
 the Android System Intelligence and Shazam apks respectively with ApkTool and then running [py-scripts/np-strings-extract.py](py-scripts/np-strings-extract.py) on them.

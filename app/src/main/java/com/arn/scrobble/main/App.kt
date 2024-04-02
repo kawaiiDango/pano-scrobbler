@@ -156,7 +156,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             if (prefs.demoMode)
                 add(DemoInterceptor())
         }
-        .crossfade(Stuff.CROSSFADE_DURATION)
+        .crossfade(true)
         .precision(Precision.INEXACT)
         .allowHardware(false)
         .networkObserverEnabled(true)

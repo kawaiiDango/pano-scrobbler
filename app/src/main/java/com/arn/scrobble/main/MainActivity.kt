@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
@@ -45,6 +46,7 @@ import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.NavUtils
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.dLazy
 import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.dp
@@ -219,11 +221,6 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        collectLatestLifecycleFlow(billingViewModel.proStatus) {
-            if (it) {
-                binding.sidebarNav.menu.removeItem(R.id.nav_pro)
-            }
-        }
         billingViewModel.queryPurchases()
 
         if (canShowNotices) {
@@ -343,10 +340,11 @@ class MainActivity : AppCompatActivity(),
         setLocaleCompat()
     }
 
-//    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-//        Timber.i("focus: $currentFocus")
-//        return super.onKeyUp(keyCode, event)
-//    }
+    // todo remove
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        Timber.dLazy { "focus: $currentFocus" }
+        return super.onKeyUp(keyCode, event)
+    }
 
     // https://stackoverflow.com/a/28939113/1067596
 // EditText, clear focus on touch outside

@@ -214,9 +214,15 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
 
         collectLatestLifecycleFlow(viewModel.searchResults.filterNotNull()) {
             skeleton.showOriginal()
+
+            val list = it.artists?.items ?: it.albums?.items ?: emptyList()
+
             if (isResumed)
                 binding.searchResultsList.scheduleLayoutAnimation()
-            adapter.submitList(it.artists?.items ?: it.albums?.items ?: emptyList())
+            adapter.submitList(list)
+
+            if (list.isNotEmpty())
+                binding.searchResultsList.isVisible = true
         }
     }
 

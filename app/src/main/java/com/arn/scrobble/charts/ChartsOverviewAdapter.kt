@@ -1,6 +1,7 @@
 package com.arn.scrobble.charts
 
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.R
@@ -14,12 +15,14 @@ class ChartsOverviewAdapter(rootViewBinding: FrameChartsListBinding) :
 
     override val isHorizontalList = true
 
-    override fun populate(newList: List<MusicEntry>, scrollToFirst: Boolean) {
+    override fun populate(newList: List<MusicEntry>) {
         progressVisible(false)
-
+        val oldCount = itemCount
         submitList(newList) {
-            if (scrollToFirst)
+            if (oldCount != 0)
                 binding.chartsList.scrollToPosition(0)
+            if (newList.isNotEmpty())
+                binding.chartsList.isVisible = true
         }
 
         if (newList.isEmpty()) {

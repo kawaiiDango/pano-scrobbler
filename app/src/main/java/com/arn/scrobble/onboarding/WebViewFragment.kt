@@ -204,10 +204,13 @@ class WebViewFragment : Fragment() {
 
         override fun onReceivedError(
             view: WebView?,
-            request: WebResourceRequest?,
+            request: WebResourceRequest,
             error: WebResourceError?
         ) {
-            showErrorMessage(error?.description.toString())
+            if (request.isForMainFrame)
+                showErrorMessage(error?.description.toString())
+
+            super.onReceivedError(view, request, error)
         }
 
         override fun onPageFinished(view: WebView, url: String?) {
@@ -218,8 +221,7 @@ class WebViewFragment : Fragment() {
             _binding ?: return
 
             val htmlData =
-                "<html><body><div align=\"center\" >" + getString(R.string.webview_error) + "<br>" +
-                        text + "</div></body></html>"
+                "<html><body><div align=\"center\">$text</div></body></html>"
             binding.webview.loadUrl("about:blank")
             binding.webview.loadDataWithBaseURL(null, htmlData, "text/html", "UTF-8", null)
 

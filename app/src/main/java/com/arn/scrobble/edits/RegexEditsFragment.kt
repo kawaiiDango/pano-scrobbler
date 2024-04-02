@@ -84,7 +84,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
 
         binding.editsList.setupInsets()
 
-        adapter = RegexEditsAdapter(this)
+        adapter = RegexEditsAdapter(this, viewModel)
         RegexItemTouchHelper(adapter, viewModel, viewLifecycleOwner).apply {
             attachToRecyclerView(binding.editsList)
             adapter.itemTouchHelper = this

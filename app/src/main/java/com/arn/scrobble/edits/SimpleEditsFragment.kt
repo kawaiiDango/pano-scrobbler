@@ -115,14 +115,11 @@ class SimpleEditsFragment : Fragment(), ItemClickListener<SimpleEdit> {
 
         binding.empty.text = resources.getQuantityString(R.plurals.num_simple_edits, 0, 0)
 
-        if (!binding.root.isInTouchMode)
-            binding.searchTerm.requestFocus()
-
         collectLatestLifecycleFlow(viewModel.count) {
             binding.searchTerm.isVisible = it > Stuff.MIN_ITEMS_TO_SHOW_SEARCH
 
             binding.empty.isVisible = it == 0
-
+            binding.editsList.isVisible = it > 0
         }
 
         collectLatestLifecycleFlow(viewModel.simpleEditsFiltered.filterNotNull()) {

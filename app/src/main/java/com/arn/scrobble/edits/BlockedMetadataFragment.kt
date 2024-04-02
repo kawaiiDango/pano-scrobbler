@@ -79,6 +79,7 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener<BlockedMetadata> {
 
         collectLatestLifecycleFlow(viewModel.count) {
             binding.empty.isVisible = it == 0
+            binding.blockList.isVisible = it > 0
             binding.searchTerm.isVisible = it > Stuff.MIN_ITEMS_TO_SHOW_SEARCH
         }
 

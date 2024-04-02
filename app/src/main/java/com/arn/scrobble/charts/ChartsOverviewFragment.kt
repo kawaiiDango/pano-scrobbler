@@ -43,6 +43,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.expandToHeroIfNeeded
+import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.setProgressCircleColors
 import com.arn.scrobble.utils.UiUtils.setTitle
 import com.arn.scrobble.utils.UiUtils.setupInsets
@@ -263,6 +264,13 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             500
         )
 
+        arrayOf(
+            binding.chartsArtistsHeader,
+            binding.chartsAlbumsHeader,
+            binding.chartsTracksHeader,
+            binding.chartsTagCloudHeader,
+        ).forEach { it.fixFocusabilityOnTv() }
+
         collectLatestLifecycleFlow(
             viewModel.listeningActivity.filterNotNull(),
         ) {
@@ -408,7 +416,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             sectionFlow,
         ) {
             setHeader(type)
-            adapter.populate(it, true)
+            adapter.populate(it)
         }
 
         collectLatestLifecycleFlow(

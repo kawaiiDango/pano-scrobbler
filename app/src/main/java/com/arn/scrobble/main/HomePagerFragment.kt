@@ -62,8 +62,16 @@ class HomePagerFragment : BasePagerFragment() {
                     inflate(R.menu.help_menu)
                     setOnMenuItemClickListener { menuItem ->
                         when (menuItem.itemId) {
-                            R.id.nav_faq -> Stuff.openInBrowser(getString(R.string.faq_link))
-                            R.id.nav_bug_report -> BugReportUtils.mailLogs()
+                            R.id.nav_faq -> {
+                                val args = Bundle().apply {
+                                    putString(Stuff.ARG_URL, getString(R.string.faq_link))
+                                }
+                                findNavController().navigate(R.id.webViewFragment, args)
+                            }
+
+                            R.id.nav_bug_report -> {
+                                BugReportUtils.mailLogs()
+                            }
                         }
                         false
                     }

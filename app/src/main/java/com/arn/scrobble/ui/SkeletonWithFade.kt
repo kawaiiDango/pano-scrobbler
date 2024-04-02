@@ -53,7 +53,9 @@ class SkeletonRecyclerViewFade(
             }
             TransitionManager.beginDelayedTransition(skeleton.parent as ViewGroup, skeletonOut)
             skeleton.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
+
+            if ((recyclerView.adapter?.itemCount ?: 0) > 0 && !recyclerView.isVisible)
+                recyclerView.visibility = View.VISIBLE
         }
     }
 
@@ -115,7 +117,7 @@ fun RecyclerView.createSkeletonWithFade(
     val index = parent.indexOfChild(this).coerceAtLeast(0)
 
     val skeleton = RecyclerView(context).also {
-        id = View.generateViewId()
+//        id = View.generateViewId() // this makes the contents jump to the top
         it.clipToPadding = clipToPadding
         it.isNestedScrollingEnabled = isNestedScrollingEnabled
         val layoutManager = layoutManager

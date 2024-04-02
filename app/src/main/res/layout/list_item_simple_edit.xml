@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/edits_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_list_rounded"
-    android:clickable="true"
-    android:focusable="true"
-    android:nextFocusRight="@id/edits_delete"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:paddingVertical="6dp"
     android:paddingLeft="1dp"
     android:paddingRight="1dp">
@@ -18,87 +14,82 @@
         android:id="@+id/edits_img"
         android:layout_width="70dp"
         android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
         android:alpha="0.7"
         android:importantForAccessibility="no"
         android:paddingHorizontal="20dp"
         app:srcCompat="@drawable/vd_edit"
         app:tint="?colorTertiary" />
 
-    <TextView
-        android:id="@+id/edits_track"
+    <LinearLayout
+        android:id="@+id/edits_content"
         android:layout_width="0dp"
-        android:layout_height="23dp"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/edits_delete"
-        android:layout_toEndOf="@+id/edits_img"
-        android:ellipsize="end"
-        android:gravity="start"
-        android:maxLines="1"
-        android:scrollbars="none"
-        android:textAppearance="?textAppearanceTitleLarge"
-        android:textColor="?colorTertiary"
-        android:textStyle="bold"
-        app:autoSizeMaxTextSize="22sp"
-        app:autoSizeMinTextSize="14sp"
-        app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="uniform"
-        tools:text="Title title" />
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/edits_artist"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_below="@+id/edits_track"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_toStartOf="@+id/edits_delete"
-        android:layout_toEndOf="@+id/edits_img"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:scrollbars="none"
-        android:textAppearance="?textAppearanceBodyLarge"
-        app:autoSizeMaxTextSize="20sp"
-        app:autoSizeMinTextSize="12sp"
-        app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="uniform"
-        tools:text="subtit subtit" />
+        <TextView
+            android:id="@+id/edits_track"
+            android:layout_width="match_parent"
+            android:layout_height="23dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="1"
+            android:scrollbars="none"
+            android:textAppearance="?textAppearanceTitleLarge"
+            android:textColor="?colorTertiary"
+            android:textStyle="bold"
+            app:autoSizeMaxTextSize="22sp"
+            app:autoSizeMinTextSize="14sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+            tools:text="Title title" />
 
-    <TextView
-        android:id="@+id/edits_album"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_below="@+id/edits_artist"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_toStartOf="@+id/edits_delete"
-        android:layout_toEndOf="@+id/edits_img"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:scrollbars="none"
-        app:autoSizeMaxTextSize="20sp"
-        app:autoSizeMinTextSize="12sp"
-        app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="uniform"
-        tools:text="album album" />
+        <TextView
+            android:id="@+id/edits_artist"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollbars="none"
+            android:textAppearance="?textAppearanceBodyLarge"
+            app:autoSizeMaxTextSize="20sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+            tools:text="subtit subtit" />
+
+        <TextView
+            android:id="@+id/edits_album"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollbars="none"
+            app:autoSizeMaxTextSize="20sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+            tools:text="album album" />
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/edits_delete"
         style="?materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:contentDescription="@string/delete"
         android:focusable="true"
         android:gravity="top|end"
-        android:nextFocusLeft="@id/edits_layout"
-        android:nextFocusRight="@id/edits_layout"
         app:icon="@drawable/vd_delete"
         app:iconSize="28dp" />
 
-</RelativeLayout>
+</LinearLayout>
 
 

@@ -20,12 +20,12 @@ import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.setProgressCircleColors
 import com.arn.scrobble.utils.UiUtils.setTitle
 import com.arn.scrobble.utils.UiUtils.setupInsets
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.filterNotNull
 
@@ -175,7 +175,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
             viewModel.entries.filterNotNull(),
         ) {
             loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
-            adapter.populate(it, false)
+            adapter.populate(it)
             // sometimes does somersaults
             updateTitle()
         }

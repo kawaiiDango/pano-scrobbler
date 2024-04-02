@@ -110,7 +110,6 @@ object Stuff {
     val LAST_SECRET = Tokens.LAST_SECRET
     const val TAG = "scrobbler"
     const val FRIENDS_RECENTS_DELAY = 800L
-    const val CROSSFADE_DURATION = 200
     const val MAX_PATTERNS = 30
     const val MAX_PINNED_FRIENDS = 10
     const val MAX_INDEXED_ITEMS = 10000
@@ -477,6 +476,9 @@ object Stuff {
     }
 
     fun isDkmaNeeded(): Boolean {
+        if (isTv)
+            return false
+
         val packages = STARTUPMGR_INTENTS.map { it.first }.toSet()
         return packages.any {
             try {
@@ -599,6 +601,11 @@ object Stuff {
     }
 
     fun openInBrowser(url: String) {
+        if (isTv) {
+            App.context.toast(R.string.unavailable_tv)
+            return
+        }
+
         try {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

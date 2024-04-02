@@ -25,6 +25,7 @@ import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.UiUtils.autoNotify
+import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import java.text.DateFormat
 
@@ -233,6 +234,10 @@ class SearchResultsAdapter(
 
     inner class VHSearchHeader(private val binding: HeaderWithActionBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.fixFocusabilityOnTv()
+        }
 
         fun setData(headerData: ExpandableHeader) {
             if (headerData.section.listSize > 3 || headerData.section.sectionId == Section.REINDEX) {

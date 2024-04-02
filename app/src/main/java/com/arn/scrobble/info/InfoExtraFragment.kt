@@ -263,7 +263,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
         collectLatestLifecycleFlow(sectionVM.entries.filterNotNull()) {
             sectionVM.reachedEnd = true
-            adapter.populate(it, true)
+            adapter.populate(it)
         }
 
         collectLatestLifecycleFlow(sectionVM.hasLoaded) {

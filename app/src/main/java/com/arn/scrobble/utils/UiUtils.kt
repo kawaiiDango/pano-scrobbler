@@ -44,6 +44,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
@@ -69,7 +70,9 @@ import coil3.request.error
 import coil3.request.transformations
 import coil3.result
 import coil3.transform.CircleCropTransformation
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
+import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.LayoutSnowfallBinding
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.App
@@ -79,6 +82,7 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.StatefulAppBar
+import com.arn.scrobble.utils.Stuff.dLazy
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -96,6 +100,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -521,6 +526,36 @@ object UiUtils {
                 BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
             }
             WindowCompat.setDecorFitsSystemWindows(bottomSheetDialog.window!!, false)
+
+            // todo remove
+            if (BuildConfig.DEBUG) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    var prevFocus: View? = null
+                    while (isActive) {
+                        delay(1000)
+                        val currentFocus =
+                            bottomSheetDialog.window!!.currentFocus
+                        if (currentFocus != prevFocus) {
+                            prevFocus = currentFocus
+                            Timber.dLazy { "focus: $currentFocus" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun HeaderWithActionBinding.fixFocusabilityOnTv() {
+        if (root.isInTouchMode)
+            return
+
+        root.isFocusable = true
+        root.isClickable = true
+        root.setOnClickListener {
+            if (headerAction.isVisible)
+                headerAction.performClick()
+            else if (headerOverflowButton.isVisible)
+                headerOverflowButton.performClick()
         }
     }
 
@@ -684,4 +719,5 @@ object UiUtils {
             }
         }
     }
+
 }

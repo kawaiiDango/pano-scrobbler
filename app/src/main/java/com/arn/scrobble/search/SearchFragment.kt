@@ -10,26 +10,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.main.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.databinding.ContentSearchBinding
+import com.arn.scrobble.main.App
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.createSkeletonWithFade
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.showKeyboard
-import com.arn.scrobble.ui.createSkeletonWithFade
-import com.arn.scrobble.utils.Stuff.putData
 import com.faltenreich.skeletonlayout.Skeleton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -92,6 +94,11 @@ class SearchFragment : Fragment() {
                 else
                     binding.searchEdittext.showDropDown()
             }
+        }
+
+        binding.searchEdittext.setOnClickListener { v ->
+            if (Stuff.isTv)
+                showKeyboard(v)
         }
 
         binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
@@ -207,6 +214,7 @@ class SearchFragment : Fragment() {
 
         collectLatestLifecycleFlow(viewModel.searchResults.filterNotNull()) {
             skeleton.showOriginal()
+            binding.searchResultsList.isVisible = true
             if (isResumed)
                 binding.searchResultsList.scheduleLayoutAnimation()
             resultsAdapter.populate(it)

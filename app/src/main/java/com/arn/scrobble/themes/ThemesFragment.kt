@@ -250,18 +250,6 @@ class ThemesFragment : Fragment() {
         val styleId = ColorPatchMap.primaryStyles[name]!!
         val colorPrimary =
             themedContext.getStyledColor(styleId, com.google.android.material.R.attr.colorPrimary)
-        val colorPrimaryContainer =
-            themedContext.getStyledColor(
-                styleId,
-                com.google.android.material.R.attr.colorPrimaryContainer
-            )
-        val colorOnPrimaryContainer =
-            themedContext.getStyledColor(
-                styleId,
-                com.google.android.material.R.attr.colorOnPrimaryContainer
-            )
-//        binding.themeDone.backgroundTintList = ColorStateList.valueOf(colorPrimaryContainer)
-//        binding.themeDone.supportImageTintList = ColorStateList.valueOf(colorOnPrimaryContainer)
         val act = activity as MainActivity
         act.binding.ctl.setExpandedTitleColor(colorPrimary)
         act.binding.ctl.setCollapsedTitleTextColor(colorPrimary)
@@ -376,15 +364,33 @@ class ThemesFragment : Fragment() {
     }
 
     private fun previewSwatchesColors() {
-        val strokeColor = ContextCompat.getColor(themedContext, R.color.foreground_pure)
+        // Define the states
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_focused), // State when the item is focused
+            intArrayOf(-android.R.attr.state_focused) // State when the item is not focused
+        )
+
+        // Define the colors for each state
+        val colors = intArrayOf(
+            MaterialColors.getColor(
+                themedContext,
+                com.google.android.material.R.attr.colorSecondaryContainer,
+                null
+            ),
+            ContextCompat.getColor(themedContext, R.color.foreground_pure)
+        )
+
+        // Create the ColorStateList
+        val strokeColor = ColorStateList(states, colors)
         val checkColor = ContextCompat.getColor(themedContext, R.color.background_pure)
+
         arrayOf(
             binding.themePrimarySwatches,
             binding.themeSecondarySwatches
         ).forEach { vg ->
             vg.children.forEach {
                 it as Chip
-                it.chipStrokeColor = ColorStateList.valueOf(strokeColor)
+                it.chipStrokeColor = strokeColor
                 it.checkedIconTint = ColorStateList.valueOf(checkColor)
                 it.chipBackgroundColor = ColorStateList.valueOf(
                     themedContext.getStyledColor(

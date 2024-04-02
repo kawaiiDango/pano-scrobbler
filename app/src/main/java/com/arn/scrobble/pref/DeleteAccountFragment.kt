@@ -1,12 +1,12 @@
 package com.arn.scrobble.pref
 
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.databinding.ContentDeleteAccountBinding
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.google.android.material.transition.MaterialSharedAxis
 
@@ -37,7 +37,9 @@ class DeleteAccountFragment : Fragment() {
         arrayOf(
             binding.link1, binding.link2, binding.link3
         ).forEach {
-            it.movementMethod = LinkMovementMethod.getInstance()
+            it.setOnClickListener { _ ->
+                Stuff.openInBrowser("https://" + it.text)
+            }
         }
     }
 }

@@ -369,7 +369,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Απομένουν %1$d</string>
     <string name="submitting_loves" formatted="true">Υποβολή loves, %1$d απομένουν</string>
     <string name="pending_batch" comment="For pending scrobbles">Υποβολή μιας παρτίδας</string>
-    <string name="webview_error">Η σελίδα απέτυχε να φορτώσει (δουλεύει η σύνδεσή σας;)</string>
     <string name="cleared_disabled_apps">Εκκαθάριση απενεργοποιημένων εφαρμογών</string>
     <string name="fix_it_title">Πιθανές διορθώσεις</string>
     <string name="fix_it_startup_title">Εξοικονομητές ενέργειας / διαχειριστές εκκίνησης</string>

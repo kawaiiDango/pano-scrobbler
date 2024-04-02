@@ -440,7 +440,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">залишилось %1$d</string>
     <string name="submitting_loves" formatted="true">Відправка вподобайок, %1$d залишилось</string>
     <string name="pending_batch" comment="For pending scrobbles">Відправка пакета</string>
-    <string name="webview_error">Не вдалося завантажити сторінку (ваш інтернет працює?)</string>
     <string name="bar_chart">Гістограма</string>
     <string name="cleared_disabled_apps">Видалені вимкнені програми</string>
     <string name="fix_it_title">Можливі виправлення</string>

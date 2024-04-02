@@ -67,7 +67,7 @@
     <string name="yes">हो</string>
     <string name="no">होइन</string>
     <string name="reset">रिसेट</string>
-    <string name="settings">कन्फिगर</string>
+    <string name="settings">सेटिङ</string>
     <string name="bug_report">बग रिपोर्ट</string>
     <string name="faq">FAQ</string>
     <string name="album_art">एल्बम आर्ट</string>
@@ -136,6 +136,10 @@
     <string name="full_index">पूर्ण इन्डेक्स</string>
     <string name="take_long_time">यसले लामो समय लिन सक्छ</string>
     <string name="full_index_desc">यदि तपाईंले वेबसाइटबाट स्क्रबल सम्पादन वा मेटाउनुभएको छ भने मात्र यसलाई प्रयोग गर्नुहोस्।</string>
+    <string name="profile">प्रोफाइल</string>
+    <string name="profile_pic">प्रोफाइल छवि</string>
+    <string name="edit">सम्पादन</string>
+    <string name="delete">हटाउनुहोस्</string>
     <string name="pending_scrobbles_noti">विचाराधीन स्क्रबल प्रशोधन गर्दै</string>
     <string name="friends">साथीहरू</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s देखि %1$s स्क्रबल</string>
@@ -155,8 +159,8 @@
     <string name="rate_msg">एपलाई मन पराउँदै हो?</string>
     <string name="time_just_now">भर्खरै</string>
     <string name="no_mail_apps">कुनै इमेल क्लाइन्ट स्थापना गरिएको छैन</string>
-    <string name="loved" comment="Its a noun">माया गरेको</string>
-    <string name="unloved" comment="Its a noun">माया हटाइएको</string>
+    <string name="loved" comment="Its a noun">मन पराएको</string>
+    <string name="unloved" comment="Its a noun">मन नपरेको</string>
     <string name="simple_edits">सम्पादनहरू</string>
     <string name="grant_rec_perm">कृपया माइक्रोफोन प्रयोग गर्न अनुमति दिनुहोस्</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्टहरू</string>
@@ -191,5 +195,11 @@
     <string name="months">महिना</string>
     <string name="years" comment="For the charts menu which displays year by year">वर्ष</string>
     <string name="charts_overall">समग्र</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">म भाग्यशाली महसुस गर्दैछु</string>
+    <string name="random_not_found">कुनै ट्र्याक फेला परेन</string>
+    <string name="random_text">जुनसुकै</string>
+    <string name="block" comment="block the track from scrobbling">ब्लक</string>
     <!--  pro  -->
+    <string name="get_pro">एपलाई समर्थन गर्नुहोस्</string>
+    <string name="help">मद्दत</string>
 </resources>

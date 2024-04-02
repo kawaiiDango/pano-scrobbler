@@ -409,7 +409,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Pozostało %1$d</string>
     <string name="submitting_loves" formatted="true">Przesyłanie polubionych, pozostało %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Przesyłanie pakietu</string>
-    <string name="webview_error">Nie udało się załadować strony (czy Twój internet działa?)</string>
     <string name="cleared_disabled_apps">Wyczyszczono wyłączone aplikacje</string>
     <string name="fix_it_title">Możliwe poprawki</string>
     <string name="fix_it_startup_title">Oszczędzanie energii / menedżery uruchamiania</string>

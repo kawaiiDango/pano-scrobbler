@@ -400,7 +400,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">剩余 %1$d 条</string>
     <string name="submitting_loves" formatted="true">正在提交喜爱曲目，还剩 %1$d 条</string>
     <string name="pending_batch" comment="For pending scrobbles">正在提交批量记录</string>
-    <string name="webview_error">页面加载失败（您的网络是否正常？）</string>
     <string name="bar_chart">柱状图表</string>
     <string name="cleared_disabled_apps">已清除禁用应用</string>
     <string name="fix_it_title">可能的解决方案</string>

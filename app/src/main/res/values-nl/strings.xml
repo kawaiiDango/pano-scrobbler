@@ -383,7 +383,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d resterend</string>
     <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
     <string name="pending_batch" comment="For pending scrobbles">Een batch indienen</string>
-    <string name="webview_error">De pagina kon niet worden geladen (werkt je internet?)</string>
     <string name="cleared_disabled_apps">Uitgeschakelde apps gewist</string>
     <string name="fix_it_title">Mogelijke oplossingen</string>
     <string name="fix_it_startup_title">Energiespaarders / opstartmanagers</string>

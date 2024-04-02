@@ -36,16 +36,13 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener<BlockedMetadata> {
     private lateinit var adapter: BlockedMetadataAdapter
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentBlockedMetadataBinding.inflate(inflater, container, false)
         return binding.root
     }

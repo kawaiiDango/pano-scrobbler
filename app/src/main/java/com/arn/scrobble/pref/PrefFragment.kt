@@ -18,6 +18,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.NotificationCompat
@@ -70,10 +71,13 @@ import java.util.Locale
 class PrefFragment : PreferenceFragmentCompat() {
     private val prefs = App.prefs
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

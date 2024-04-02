@@ -43,8 +43,6 @@ class ExportFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupAxisTransitions(MaterialSharedAxis.X, MaterialSharedAxis.X)
-
         exportRequest =
             registerForActivityResult(ActivityResultContracts.CreateDocument(Stuff.MIME_TYPE_JSON)) { uri ->
                 export(uri)
@@ -62,6 +60,8 @@ class ExportFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X, MaterialSharedAxis.X)
+
         _binding = ContentImexportBinding.inflate(inflater, container, false)
         return binding.root
     }

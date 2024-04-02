@@ -41,8 +41,6 @@ class RecFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupAxisTransitions(MaterialSharedAxis.Y)
-
         micPermRequest =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -58,6 +56,8 @@ class RecFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.Y)
+
         _binding = ContentRecBinding.inflate(inflater, container, false)
         binding.root.setupInsets()
 //        if (!Stuff.isTv)

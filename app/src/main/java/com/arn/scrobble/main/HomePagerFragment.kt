@@ -1,7 +1,9 @@
 package com.arn.scrobble.main
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
@@ -12,9 +14,11 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.utils.BugReportUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
+import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.transition.MaterialSharedAxis
 
 
 class HomePagerFragment : BasePagerFragment() {
@@ -30,6 +34,16 @@ class HomePagerFragment : BasePagerFragment() {
             })
             return
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        setupAxisTransitions(MaterialSharedAxis.Z)
+
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

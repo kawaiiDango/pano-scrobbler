@@ -23,6 +23,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -75,6 +76,9 @@ class MainActivity : AppCompatActivity(),
         var canShowNotices = false
 
         super.onCreate(savedInstanceState)
+
+        // until they fix IllegalStateException: setCurrentPlayTimeMillis() called after animation has been started
+        FragmentManager.enablePredictiveBack(false)
 
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)

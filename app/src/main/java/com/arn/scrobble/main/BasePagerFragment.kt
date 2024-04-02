@@ -13,8 +13,6 @@ import androidx.fragment.app.activityViewModels
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.utils.NavUtils.setupWithNavUi
-import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
-import com.google.android.material.transition.MaterialSharedAxis
 import kotlin.math.abs
 
 
@@ -29,12 +27,6 @@ open class BasePagerFragment : Fragment() {
     val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     var isReady = false
         private set
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.Z)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

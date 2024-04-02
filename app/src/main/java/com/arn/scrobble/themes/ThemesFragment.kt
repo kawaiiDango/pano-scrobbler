@@ -58,17 +58,13 @@ class ThemesFragment : Fragment() {
 
     private lateinit var themedContext: ContextThemeWrapper
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentThemesBinding.inflate(inflater, container, false)
         return binding.root
     }

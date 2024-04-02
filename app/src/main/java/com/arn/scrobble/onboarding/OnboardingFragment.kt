@@ -57,8 +57,6 @@ class OnboardingFragment : Fragment() {
                 if (isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     adapter.checkIfStepsCompleted()
             }
-
-        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
     }
 
     override fun onCreateView(
@@ -66,6 +64,8 @@ class OnboardingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
+
         _binding = ContentOnboardingStepperBinding.inflate(inflater, container, false)
         return binding.root
     }

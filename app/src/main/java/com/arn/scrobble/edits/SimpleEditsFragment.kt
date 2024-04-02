@@ -52,8 +52,6 @@ class SimpleEditsFragment : Fragment(), ItemClickListener<SimpleEdit> {
                 bundle.getParcelable<SimpleEdit>(Stuff.ARG_EDIT) ?: return@setFragmentResultListener
             viewModel.upsert(edit)
         }
-
-        setupAxisTransitions(MaterialSharedAxis.X)
     }
 
     override fun onCreateView(
@@ -61,6 +59,8 @@ class SimpleEditsFragment : Fragment(), ItemClickListener<SimpleEdit> {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentSimpleEditsBinding.inflate(inflater, container, false)
         return binding.root
     }

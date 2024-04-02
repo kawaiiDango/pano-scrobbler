@@ -14,15 +14,11 @@ class DeleteAccountFragment : Fragment() {
     private var _binding: ContentDeleteAccountBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentDeleteAccountBinding.inflate(inflater, container, false)
         return binding.root
     }

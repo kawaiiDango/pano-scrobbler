@@ -49,16 +49,13 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     private lateinit var adapter: TrackHistoryAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
+
         _binding = ContentTrackHistoryBinding.inflate(inflater, container, false)
         binding.tracksList.setupInsets()
         return binding.root

@@ -57,16 +57,13 @@ class RegexEditsAddFragment : Fragment() {
         get() = requireArguments().getBoolean(ARG_CHANGED, false)
         set(value) = requireArguments().putBoolean(ARG_CHANGED, value)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentRegexEditAddBinding.inflate(layoutInflater)
         return binding.root
     }

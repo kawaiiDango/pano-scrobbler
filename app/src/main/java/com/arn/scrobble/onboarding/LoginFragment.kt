@@ -51,16 +51,13 @@ open class LoginFragment : DialogFragment() {
         get() = _binding!!
     private val args by navArgs<LoginFragmentArgs>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         showsDialog = false
         _binding = ContentLoginBinding.inflate(inflater, container, false)
         args.infoText?.let {

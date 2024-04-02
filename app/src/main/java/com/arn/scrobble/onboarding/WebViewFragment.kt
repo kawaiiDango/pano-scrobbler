@@ -49,16 +49,13 @@ class WebViewFragment : Fragment() {
         get() = arguments?.getBoolean(Stuff.ARG_SAVE_COOKIES) ?: false
     private val viewModel by viewModels<WebViewVM>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentWebviewBinding.inflate(inflater, container, false)
         return binding.root
     }

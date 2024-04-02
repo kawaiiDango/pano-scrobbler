@@ -60,8 +60,6 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupAxisTransitions(MaterialSharedAxis.X)
-
         imagePickerRequest =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 setImage(uri)
@@ -78,6 +76,8 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentImageSearchBinding.inflate(inflater, container, false)
         return binding.root
     }

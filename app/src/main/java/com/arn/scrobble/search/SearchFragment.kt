@@ -56,16 +56,13 @@ class SearchFragment : Fragment() {
         get() = _binding!!
     private lateinit var skeleton: Skeleton
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.Y)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.Y)
+
         _binding = ContentSearchBinding.inflate(inflater, container, false)
         binding.searchResultsList.setupInsets()
         return binding.root

@@ -48,16 +48,13 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
     private val prefs = App.prefs
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentRegexEditBinding.inflate(inflater, container, false)
         return binding.root
     }

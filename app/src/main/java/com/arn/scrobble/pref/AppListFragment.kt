@@ -47,17 +47,13 @@ class AppListFragment : Fragment() {
     private val singleChoiceArg
         get() = arguments?.getBoolean(Stuff.ARG_SINGLE_CHOICE, false) ?: false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentAppListBinding.inflate(inflater, container, false)
         return binding.root
     }

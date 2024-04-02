@@ -23,16 +23,13 @@ class LoadingFragment : Fragment() {
     private val viewModel by viewModels<UserLoaderVM>()
     private val args by navArgs<LoadingFragmentArgs>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.Z)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.Z)
+
         _binding = ContentLoadingBinding.inflate(inflater, container, false)
         return binding.root
     }

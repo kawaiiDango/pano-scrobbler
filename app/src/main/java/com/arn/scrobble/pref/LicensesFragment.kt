@@ -18,16 +18,13 @@ class LicensesFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel by viewModels<LicensesVM>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentLicensesBinding.inflate(inflater, container, false)
         binding.list.setupInsets()
         return binding.root

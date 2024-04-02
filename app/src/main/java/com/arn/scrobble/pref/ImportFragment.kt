@@ -38,8 +38,6 @@ class ImportFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X, MaterialSharedAxis.X)
-
         importRequest =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
                 uri ?: return@registerForActivityResult
@@ -55,6 +53,8 @@ class ImportFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentImexportBinding.inflate(inflater, container, false)
         return binding.root
     }

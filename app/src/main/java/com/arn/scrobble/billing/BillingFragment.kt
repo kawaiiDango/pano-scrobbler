@@ -37,16 +37,13 @@ class BillingFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
+
         _binding = ContentBillingBinding.inflate(inflater, container, false)
         return binding.root
     }

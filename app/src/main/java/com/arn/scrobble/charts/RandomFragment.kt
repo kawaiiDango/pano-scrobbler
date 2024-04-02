@@ -58,16 +58,13 @@ class RandomFragment : ChartsPeriodFragment() {
         )
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setupAxisTransitions(MaterialSharedAxis.X)
+
         _binding = ContentRandomBinding.inflate(inflater, container, false)
         _periodChipsBinding = binding.chipsChartsPeriod
         return binding.root

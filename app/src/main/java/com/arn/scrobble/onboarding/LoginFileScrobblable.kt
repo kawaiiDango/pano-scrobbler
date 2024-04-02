@@ -12,9 +12,9 @@ import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.databinding.ContentLoginFileScrobblableBinding
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.toast
-import com.arn.scrobble.utils.Stuff
 import com.google.android.material.transition.MaterialSharedAxis
 
 class LoginFileScrobblable : Fragment() {
@@ -25,7 +25,6 @@ class LoginFileScrobblable : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupAxisTransitions(MaterialSharedAxis.X)
 
         fileScrobblableCreate =
             registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
@@ -46,6 +45,7 @@ class LoginFileScrobblable : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentLoginFileScrobblableBinding.inflate(inflater, container, false)
+        setupAxisTransitions(MaterialSharedAxis.X)
         return binding.root
     }
 

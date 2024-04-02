@@ -1,8 +1,8 @@
 package com.arn.scrobble.ui
 
 import android.util.LruCache
-import coil3.intercept.Interceptor
-import coil3.request.ImageResult
+import coil.intercept.Interceptor
+import coil.request.ImageResult
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
@@ -27,7 +27,8 @@ class MusicEntryImageInterceptor : Interceptor {
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
-        val musicEntryImageReq = chain.request.data as? MusicEntryImageReq ?: return chain.proceed()
+        val musicEntryImageReq =
+            chain.request.data as? MusicEntryImageReq ?: return chain.proceed(chain.request)
         val entry = musicEntryImageReq.musicEntry
         val key = MusicEntryReqKeyer.genKey(musicEntryImageReq)
         val cachedOptional = musicEntryCache[key]
@@ -121,7 +122,7 @@ class MusicEntryImageInterceptor : Interceptor {
             .data(fetchedImageUrl ?: "")
             .build()
 
-        return chain.withRequest(request).proceed()
+        return chain.proceed(request)
     }
 
     fun clearCacheForEntry(entry: MusicEntry) {

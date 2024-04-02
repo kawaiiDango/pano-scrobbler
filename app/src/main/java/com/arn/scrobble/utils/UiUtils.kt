@@ -63,13 +63,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
-import coil3.imageLoader
-import coil3.request.ImageRequest
-import coil3.request.SuccessResult
-import coil3.request.error
-import coil3.request.transformations
-import coil3.result
-import coil3.transform.CircleCropTransformation
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import coil.result
+import coil.transform.CircleCropTransformation
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.HeaderWithActionBinding
@@ -404,9 +402,9 @@ object UiUtils {
             .error(initialsDrawable) // does not apply transformation to error drawable
             .transformations(CircleCropTransformation())
             .target(
-                onSuccess = { onResult(it!!.asDrawable(context.resources)) },
+                onSuccess = onResult,
                 onStart = { onResult(ContextCompat.getDrawable(context, R.drawable.vd_user)!!) },
-                onError = { onResult(it!!.asDrawable(context.resources)) }
+                onError = { onResult(it!!) }
             )
             .build()
         context.imageLoader.enqueue(request)

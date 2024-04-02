@@ -13,13 +13,9 @@ import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.ContextCompat
 import androidx.work.Configuration
-import coil3.ImageLoader
-import coil3.PlatformContext
-import coil3.SingletonImageLoader
-import coil3.networkObserverEnabled
-import coil3.request.allowHardware
-import coil3.request.crossfade
-import coil3.size.Precision
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.size.Precision
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
@@ -42,7 +38,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import timber.log.Timber
 
 
-class App : Application(), SingletonImageLoader.Factory, Configuration.Provider {
+class App : Application(), ImageLoaderFactory, Configuration.Provider {
     private var connectivityCheckInited = false
     private val musicEntryImageInterceptor = MusicEntryImageInterceptor()
 
@@ -145,7 +141,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
         connectivityCheckInited = true
     }
 
-    override fun newImageLoader(context: PlatformContext) = ImageLoader.Builder(this)
+    override fun newImageLoader() = ImageLoader.Builder(this)
         .components {
             add(AppIconKeyer())
             add(AppIconFetcher.Factory())

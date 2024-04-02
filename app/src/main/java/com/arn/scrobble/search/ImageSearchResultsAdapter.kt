@@ -7,9 +7,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil3.load
-import coil3.request.error
-import coil3.request.placeholder
+import coil.load
 import com.arn.scrobble.R
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem

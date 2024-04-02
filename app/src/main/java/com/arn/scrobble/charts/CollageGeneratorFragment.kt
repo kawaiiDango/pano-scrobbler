@@ -20,10 +20,8 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import coil3.imageLoader
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import coil3.request.error
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
@@ -401,7 +399,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             }.build()
 
             withContext(Dispatchers.IO) {
-                requireContext().imageLoader.execute(profilePicRequest).image?.asDrawable(resources)
+                requireContext().imageLoader.execute(profilePicRequest).drawable
             }.let { collageFooter.collageUsernameImage.setImageDrawable(it) }
 
         } else {
@@ -495,7 +493,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             }.build()
 
             val artworkDrawable = withContext(Dispatchers.IO) {
-                requireContext().imageLoader.execute(request).image?.asDrawable(resources)
+                requireContext().imageLoader.execute(request).drawable
             }
             if (prefs.collageSkipMissing && (error || artworkDrawable == null))
                 continue

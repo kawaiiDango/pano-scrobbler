@@ -16,8 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
-import coil3.load
-import coil3.request.error
+import coil.load
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables

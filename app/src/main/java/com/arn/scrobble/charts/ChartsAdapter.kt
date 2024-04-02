@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
-import coil3.load
-import coil3.request.error
-import coil3.request.placeholder
+import coil.load
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album

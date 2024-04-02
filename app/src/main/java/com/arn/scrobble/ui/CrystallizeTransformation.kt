@@ -4,8 +4,8 @@ package com.arn.scrobble.ui
 
 import android.content.Context
 import android.graphics.Bitmap
-import coil3.size.Size
-import coil3.transform.Transformation
+import coil.size.Size
+import coil.transform.Transformation
 import com.arn.scrobble.utils.UiUtils.dp
 import com.arn.scrobble.utils.UiUtils.toIntArray
 import com.jabistudio.androidjhlabs.filter.CellularCrystallizeFilter
@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-class CrystallizeTransformation(private val context: Context) : Transformation() {
+class CrystallizeTransformation(private val context: Context) : Transformation {
 
     override val cacheKey = "${CrystallizeTransformation::class.java.name}-a"
 

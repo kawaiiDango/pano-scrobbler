@@ -7,11 +7,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil3.dispose
-import coil3.load
-import coil3.request.error
-import coil3.request.placeholder
-import coil3.size.Scale
+import coil.dispose
+import coil.load
+import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
@@ -22,8 +20,8 @@ import com.arn.scrobble.ui.GenericDiffCallback
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.PackageName
-import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

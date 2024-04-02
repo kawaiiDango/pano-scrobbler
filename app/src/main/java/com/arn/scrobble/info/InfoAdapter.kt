@@ -23,7 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil3.load
+import coil.load
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R

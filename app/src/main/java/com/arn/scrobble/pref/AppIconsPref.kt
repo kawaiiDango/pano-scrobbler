@@ -7,9 +7,9 @@ import android.widget.LinearLayout
 import androidx.core.content.res.TypedArrayUtils
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
-import coil3.imageLoader
-import coil3.request.ImageRequest
-import coil3.size.Scale
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.PrefAppIconsBinding
 import com.arn.scrobble.ui.PackageName
@@ -67,13 +67,13 @@ class AppIconsPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defSty
                         .data(PackageName(it))
                         .scale(Scale.FIT)
                         .target(
-                            onSuccess = { image ->
+                            onSuccess = { drawable ->
                                 ShapeableImageView(context).apply {
                                     scaleType = ImageView.ScaleType.FIT_CENTER
                                     layoutParams = LinearLayout.LayoutParams(wPx, wPx)
                                     val padding = wPx / 8
                                     setPadding(padding, padding, padding, padding)
-                                    setImageDrawable(image.asDrawable(resources))
+                                    setImageDrawable(drawable)
                                     binding.appIconsContainer.addView(this)
                                 }
                             },

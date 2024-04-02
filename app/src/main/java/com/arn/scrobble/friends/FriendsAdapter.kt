@@ -13,13 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil3.load
-import coil3.request.error
-import coil3.request.placeholder
-import com.arn.scrobble.main.App
+import coil.load
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
+import com.arn.scrobble.main.App
 import com.arn.scrobble.recents.PaletteColors
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.GenericDiffCallback
@@ -184,9 +182,7 @@ class FriendsAdapter(
                                 onSuccess = { _, result ->
                                     // Create the palette on a background thread.
                                     Palette.Builder(
-                                        result.image
-                                            .asDrawable(itemView.context.resources)
-                                            .toBitmap()
+                                        result.drawable.toBitmap()
                                     )
                                         .generate { palette ->
                                             palette ?: return@generate

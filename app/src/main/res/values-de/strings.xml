@@ -418,7 +418,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d verbleibend</string>
     <string name="submitting_loves" formatted="true">Sende Favoriten, %1$d verbleibend</string>
     <string name="pending_batch" comment="For pending scrobbles">Übermittlung mehrerer</string>
-    <string name="webview_error">Die Seite konnte nicht geladen werden (funktioniert Ihre Internetverbindung?)</string>
     <string name="bar_chart">Säulendiagramm</string>
     <string name="cleared_disabled_apps">Deaktivierte Apps entfernt</string>
     <string name="fix_it_title">Mögliche Korrekturen</string>

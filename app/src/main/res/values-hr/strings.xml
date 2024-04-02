@@ -407,7 +407,6 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Preostalo %1$d</string>
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Prenošenje više scrobbleova</string>
-    <string name="webview_error">Učitavanje stranice nije uspjelo (radi li Vaš internet?)</string>
     <string name="cleared_disabled_apps">Očišćene onemogućene aplikacije</string>
     <string name="fix_it_title">Mogući ispravci</string>
     <string name="fix_it_startup_title">Štednja baterije / upravitelji pokretanja</string>

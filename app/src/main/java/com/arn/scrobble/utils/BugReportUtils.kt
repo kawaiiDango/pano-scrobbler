@@ -8,9 +8,9 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.arn.scrobble.main.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.UiUtils.toast
 import java.io.File
 
@@ -54,7 +54,7 @@ object BugReportUtils {
         text += "\n\n[Describe the issue]\n[If it is related to scrobbling, mention the media player name]\n"
         //keep the email in english
 
-        val log = Stuff.exec("logcat -d")
+        val log = Stuff.exec("logcat -i")
         val logFile = File(App.context.cacheDir, "share/log.txt")
         logFile.parentFile!!.mkdirs()
         logFile.writeText(log)

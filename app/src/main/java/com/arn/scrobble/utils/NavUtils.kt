@@ -44,6 +44,8 @@ object NavUtils {
         val accountType = Scrobblables.current?.userAccount?.type
 
         if (accountType == null || mainNotifierViewModel.drawerData.value == null) {
+            headerNavBinding.navName.text =
+                headerNavBinding.root.context.getString(R.string.app_name)
             return
         }
 
@@ -158,6 +160,9 @@ object NavUtils {
                 return@setOnClickListener
             }
 
+            Scrobblables.currentScrobblableUser?.let {
+                mainNotifierViewModel.initializeCurrentUser(it)
+            }
 
             val currentUser = mainNotifierViewModel.currentUser
 

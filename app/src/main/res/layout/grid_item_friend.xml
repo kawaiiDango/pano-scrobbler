@@ -112,11 +112,9 @@
         android:layout_marginVertical="4dp"
         android:animateLayoutChanges="true"
         android:background="?selectableItemBackground"
-        android:focusable="true"
         android:padding="8dp">
 
         <LinearLayout
-            android:id="@+id/friends_track_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

@@ -21,8 +21,7 @@ class ChartsOverviewAdapter(rootViewBinding: FrameChartsListBinding) :
         submitList(newList) {
             if (oldCount != 0)
                 binding.chartsList.scrollToPosition(0)
-            if (newList.isNotEmpty())
-                binding.chartsList.isVisible = true
+            binding.chartsList.isVisible = newList.isNotEmpty()
         }
 
         if (newList.isEmpty()) {

@@ -276,7 +276,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     override suspend fun getLoves(
         page: Int,
         username: String,
-        cached: Boolean,
+        cacheStrategy: CacheStrategy,
         limit: Int,
     ): Result<PageResult<Track>> {
         fun mapTrack(it: ListenBrainzFeedbackPayload): Track {
@@ -310,11 +310,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 userHated = it.score == -1,
             )
         }
-
-        val cacheStrategy = if (cached)
-            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-        else
-            CacheStrategy.NETWORK_ONLY
 
         val actualLimit = if (limit > 0) limit else 25
 

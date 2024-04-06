@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.FileProvider
 import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
@@ -41,7 +42,6 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.UiUtils.expandIfNeeded
-import com.arn.scrobble.utils.UiUtils.getSelectedItemPosition
 import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -97,20 +97,49 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val sizes = (minSize..maxSize).map { "$it" }.toTypedArray()
-        val types = arrayOf(
-            getString(R.string.edit_all),
-            getString(R.string.top_artists),
-            getString(R.string.top_albums),
-            getString(R.string.top_tracks),
+        val typesMap = mapOf(
+            Stuff.TYPE_ALL to getString(R.string.edit_all),
+            Stuff.TYPE_ARTISTS to getString(R.string.top_artists),
+            Stuff.TYPE_ALBUMS to getString(R.string.top_albums),
+            Stuff.TYPE_TRACKS to getString(R.string.top_tracks),
         )
 
-        binding.collageTypeText.setSimpleItems(types)
-        binding.collageTypeText.setText(types[requireArguments().getInt(Stuff.ARG_TYPE)], false)
+        val savedSize = prefs.collageSize
 
-        binding.collageSizeText.setSimpleItems(sizes)
-        val savedIndex = prefs.collageSize - minSize
-        binding.collageSizeText.setText(sizes[savedIndex], false)
+        binding.collageSize.text = getString(R.string.size) + ": " + savedSize
+        binding.collageSize.setTag(R.id.value, savedSize)
+
+        binding.collageType.text = typesMap[requireArguments().getInt(Stuff.ARG_TYPE)]
+        binding.collageType.setTag(R.id.value, requireArguments().getInt(Stuff.ARG_TYPE))
+
+        binding.collageType.setOnClickListener { v ->
+            PopupMenu(requireContext(), v).apply {
+                typesMap.forEach { (key, value) ->
+                    val mi = menu.add(0, key, key, value)
+                    mi.isEnabled = key != binding.collageType.getTag(R.id.value)
+                }
+                setOnMenuItemClickListener {
+                    binding.collageType.text = it.title
+                    binding.collageType.setTag(R.id.value, it.itemId)
+                    true
+                }
+            }.show()
+        }
+
+        binding.collageSize.setOnClickListener { v ->
+            PopupMenu(requireContext(), v).apply {
+                (minSize..maxSize).forEach {
+                    val mi = menu.add(0, it, it, it.toString())
+                    mi.isEnabled = it != binding.collageSize.getTag(R.id.value)
+                }
+
+                setOnMenuItemClickListener {
+                    binding.collageSize.text = getString(R.string.size) + ": " + it.title
+                    binding.collageSize.setTag(R.id.value, it.itemId)
+                    true
+                }
+            }.show()
+        }
 
         binding.collageIncludeCaptions.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -145,9 +174,9 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         prefs.collageCaptions = binding.collageIncludeCaptions.isChecked
         prefs.collageUsername = binding.collageIncludeUsername.isChecked
         prefs.collageText = binding.collageIncludeText.isChecked
-        prefs.collageSize = binding.collageSizeText.getSelectedItemPosition() + minSize
+        prefs.collageSize = binding.collageSize.getTag(R.id.value) as Int
 
-        val collageType = binding.collageTypeText.getSelectedItemPosition()
+        val collageType = binding.collageType.getTag(R.id.value) as Int
         val cal = Calendar.getInstance()
 
         viewLifecycleOwner.lifecycleScope.launch {

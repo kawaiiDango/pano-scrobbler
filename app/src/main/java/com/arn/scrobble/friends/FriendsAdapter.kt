@@ -8,13 +8,17 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.isInvisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import coil.load
 import com.arn.scrobble.R
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.main.App
@@ -75,6 +79,7 @@ class FriendsAdapter(
 
         val holder = VHUser(binding, false)
         holder.setItemData(item)
+
         if (!App.prefs.demoMode)
             binding.friendsName.text = (item.user.realname.ifEmpty { item.user.name })
         return binding
@@ -97,6 +102,7 @@ class FriendsAdapter(
                 itemView.setOnClickListener(this)
                 binding.friendsPic.setOnClickListener(this)
                 binding.friendsPic.isFocusable = true
+                binding.friendsPic.isClickable = true
             }
         }
 
@@ -119,28 +125,8 @@ class FriendsAdapter(
             if (App.prefs.demoMode)
                 binding.friendsName.text = "User ${bindingAdapterPosition + 1}"
 
-            val track = item.track
-            if (track?.name != null && track.name != "") {
-                binding.friendsTrackLl.visibility = View.VISIBLE
-                binding.friendsTitle.text = track.name
-                binding.friendsSubtitle.text = track.artist.name
-                binding.friendsDate.text = Stuff.myRelativeTime(itemView.context, track.date)
-
-                binding.friendsMusicIcon.load(
-                    if (track.isNowPlaying)
-                        R.drawable.avd_now_playing
-                    else
-                        R.drawable.vd_music_circle
-                )
-
-                binding.friendsTrackFrame.setOnClickListener {
-                    Stuff.launchSearchIntent(track, null)
-                }
-            } else {
-                binding.friendsTrackLl.visibility = View.INVISIBLE
-                binding.friendsTrackFrame.setOnClickListener(null)
-
-                binding.friendsMusicIcon.load(R.drawable.vd_music_circle)
+            if (item.trackResult == null) {
+                binding.friendsTrackFrame.isInvisible = true
 
                 if (bindingAdapterPosition > -1) {
                     friendsRecentsJob?.cancel()
@@ -148,6 +134,50 @@ class FriendsAdapter(
                         delay(Stuff.FRIENDS_RECENTS_DELAY)
                         viewModel.loadFriendsRecents(item.user.name)
                     }
+                }
+            } else {
+                item.trackResult
+                    .onFailure { error ->
+                        if (clickable) {
+                            binding.friendsTrackFrame.setOnClickListener {
+                                itemView.callOnClick()
+                            }
+                        }
+
+                        binding.friendsSubtitle.text = if (error is ApiException)
+                            error.description
+                        else
+                            error.localizedMessage
+
+                        binding.friendsTitle.text = null
+                        binding.friendsDate.text = null
+
+                        binding.friendsMusicIcon.load(R.drawable.vd_error)
+                    }
+                    .onSuccess { track ->
+                        binding.friendsTitle.text = track.name
+                        binding.friendsSubtitle.text = track.artist.name
+                        binding.friendsDate.text =
+                            Stuff.myRelativeTime(itemView.context, track.date)
+
+                        binding.friendsMusicIcon.load(
+                            if (track.isNowPlaying)
+                                R.drawable.avd_now_playing
+                            else
+                                R.drawable.vd_music_circle
+                        )
+
+                        binding.friendsTrackFrame.setOnClickListener {
+                            Stuff.launchSearchIntent(track, null)
+                        }
+                    }
+
+                if (binding.friendsTrackFrame.isInvisible) {
+                    val transition = AutoTransition().apply {
+                        addTarget(binding.friendsTrackFrame)
+                    }
+                    TransitionManager.beginDelayedTransition(binding.root, transition)
+                    binding.friendsTrackFrame.isInvisible = false
                 }
             }
 

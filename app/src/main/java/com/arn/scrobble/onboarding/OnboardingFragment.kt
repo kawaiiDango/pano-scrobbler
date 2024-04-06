@@ -171,7 +171,7 @@ class OnboardingFragment : Fragment() {
             skipAction = {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.will_not_scrobble)
-                    .setIcon(R.drawable.vd_error_circle)
+                    .setIcon(R.drawable.vd_error)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
                         adapter.skipToNextStep()
                     }

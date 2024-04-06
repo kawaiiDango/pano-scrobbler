@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="false"
     android:transitionGroup="true">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -44,16 +45,27 @@
         app:layout_constraintTop_toBottomOf="@id/rec_progress"
         tools:text="status" />
 
+    <Button
+        android:id="@+id/rec_cancel_scrobble"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/cancel"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rec_status"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/rec_powered_by"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:alpha="0.5"
         android:text="@string/powered_acr"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rec_status" />
+        app:layout_constraintTop_toBottomOf="@+id/rec_cancel_scrobble" />
 
     <ImageView
         android:id="@+id/rec_img"

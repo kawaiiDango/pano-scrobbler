@@ -37,8 +37,12 @@ class RandomVM : ChartsPeriodVM() {
     init {
         viewModelScope.launch {
             input.filterNotNull()
-                .combine(selectedPeriod) { input, period ->
-                    input.copy(timePeriod = period)
+                .combine(selectedPeriod) { inp, period ->
+                    if (inp.timePeriod != period) {
+                        resetTotals()
+                    }
+
+                    inp.copy(timePeriod = period)
                 }
                 .mapLatest {
                     _hasLoaded.emit(false)

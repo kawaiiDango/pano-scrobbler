@@ -184,16 +184,16 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         )
 
         binding.chartsTagCloudHeader.headerText.text = getString(R.string.tag_cloud)
-        binding.chartsTagCloudHeader.headerAction.text = ""
-        binding.chartsTagCloudHeader.headerAction.setCompoundDrawablesRelativeWithIntrinsicBounds(
-            0,
-            0,
-            R.drawable.vd_more_horiz,
-            0
-        )
-        binding.chartsTagCloudHeader.headerAction.setOnClickListener {
-            val popup = PopupMenu(requireContext(), binding.chartsTagCloudHeader.headerAction)
+        binding.chartsTagCloudHeader.headerAction.isVisible = false
+        binding.chartsTagCloudHeader.headerOverflowButton.isVisible = true
+
+        binding.chartsTagCloudHeader.headerOverflowButton.setOnClickListener { v ->
+            val popup = PopupMenu(requireContext(), v)
             popup.inflate(R.menu.tag_cloud_menu)
+
+            if (viewModel.tagCloudBitmap == null)
+                popup.menu.findItem(R.id.menu_share).isVisible = false
+
             popup.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_hidden_tags -> {
@@ -246,6 +246,11 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         // todo: actually fix this not loading the network version
 
         binding.chartsCreateCollage.setOnClickListener {
+            if (viewModel.getTotal(Stuff.TYPE_ARTISTS) == 0) {
+                requireContext().toast(R.string.charts_no_data)
+                return@setOnClickListener
+            }
+
             val arguments = Bundle().apply {
                 putSingle(viewModel.selectedPeriod.value)
                 putInt(Stuff.ARG_TYPE, Stuff.TYPE_ALL)
@@ -326,7 +331,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         ) { tagWeights ->
             lastTagCloudJob?.cancel()
             binding.chartsTagCloudStatus.visibility = View.GONE
-
             // this fixes java.lang.IllegalArgumentException: width and height must be > 0
             //            at android.graphics.Bitmap.createBitmap(Bitmap.java:1120)
             binding.chartsTagCloud.post {
@@ -472,7 +476,12 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
         header.headerText.text = text
-        header.headerAction.isVisible = count != 0
+
+//        val headerActionVisibility = count != 0
+//        header.headerAction.isVisible = headerActionVisibility
+
+//        if (headerActionVisibility)
+//            header.fixFocusabilityOnTv()
     }
 
     private fun setSectionVisibilities() {

@@ -1,42 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:baselineAligned="false"
     android:orientation="horizontal"
+    android:gravity="center_horizontal"
     android:paddingHorizontal="@dimen/dialog_padding"
-    android:paddingTop="@dimen/dialog_padding"
-    android:baselineAligned="false">
+    android:paddingTop="@dimen/dialog_padding">
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="?textInputOutlinedExposedDropdownMenuStyle"
-        android:layout_width="0dp"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/picker_first"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginEnd="8dp">
+        android:layout_marginEnd="16dp"
+        app:icon="@drawable/vd_drop_down"
+        app:iconGravity="textEnd"
+        app:layout_constraintEnd_toStartOf="@+id/collage_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/collage_size"
+        tools:text="Jan" />
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/picker_first"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="?textInputOutlinedExposedDropdownMenuStyle"
-        android:layout_width="0dp"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/picker_second"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/picker_second"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:layout_marginEnd="16dp"
+        app:icon="@drawable/vd_drop_down"
+        app:iconGravity="textEnd"
+        app:layout_constraintEnd_toStartOf="@+id/collage_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/collage_size"
+        tools:text="2024" />
 </LinearLayout>

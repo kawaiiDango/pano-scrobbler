@@ -87,6 +87,7 @@ class ImportFragment : Fragment() {
 
         if (Stuff.isTv) {
             binding.methodFile.isVisible = false
+            binding.methodGroup.check(R.id.method_network)
             binding.methodNetwork.callOnClick()
         }
 

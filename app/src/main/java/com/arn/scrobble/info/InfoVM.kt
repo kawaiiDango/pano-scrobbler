@@ -209,9 +209,9 @@ class InfoVM : ViewModel() {
 
         val albumArtistDef = async {
             if (albumArtist != null && albumArtist.name.lowercase() != artist?.name?.lowercase())
-                artist?.let {
+                albumArtist.let {
                     Requesters.lastfmUnauthedRequester.getInfo(it, username)
-                }?.getOrNull()
+                }.getOrNull()
             else
                 null
         }

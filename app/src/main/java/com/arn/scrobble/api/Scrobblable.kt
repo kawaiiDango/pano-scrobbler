@@ -54,7 +54,10 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
     abstract suspend fun getLoves(
         page: Int,
         username: String = userAccount.user.name,
-        cached: Boolean = false,
+        cacheStrategy: CacheStrategy = if (Stuff.isOnline)
+            CacheStrategy.NETWORK_ONLY
+        else
+            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED,
         limit: Int = 50,
     ): Result<PageResult<Track>>
 

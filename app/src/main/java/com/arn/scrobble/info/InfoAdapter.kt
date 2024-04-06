@@ -86,10 +86,11 @@ class InfoAdapter(
                 binding.infoTags.addView(chip)
             }
 
-            binding.infoTitleBar.setOnLongClickListener {
-                itemView.context.copyToClipboard(binding.infoName.text.toString())
-                true
-            }
+            if (!Stuff.isTv)
+                binding.infoTitleBar.setOnLongClickListener {
+                    itemView.context.copyToClipboard(binding.infoName.text.toString())
+                    true
+                }
 
             binding.infoPlay.setOnClickListener {
                 Stuff.launchSearchIntent(info.entry, pkgName)
@@ -157,15 +158,6 @@ class InfoAdapter(
 
             if (Stuff.isTv)
                 binding.infoLink.isVisible = false
-
-            binding.infoTitleBar.setOnClickListener {
-                if (info.hasImage)
-                    viewModel.updateInfo(
-                        info.copy(
-                            headerExpanded = !info.headerExpanded
-                        )
-                    )
-            }
 
             val wikiClickListener = { view: View ->
                 viewModel.updateInfo(
@@ -449,15 +441,29 @@ class InfoAdapter(
                             viewModel.updateInfo(
                                 info.apply { hasImage = true }
                             )
+
+                            binding.infoTitleBar.isClickable = true
+                            binding.infoTitleBar.isFocusable = true
+                            binding.infoTitleBar.setOnClickListener {
+                                viewModel.updateInfo(info.copy(headerExpanded = !info.headerExpanded))
+                            }
                         },
                         onError = { _, _ ->
                             binding.infoPic.isVisible = false
+
+                            binding.infoTitleBar.setOnClickListener(null)
+                            binding.infoTitleBar.isClickable = false
+                            binding.infoTitleBar.isFocusable = false
                         }
                     )
                 }
             } else {
                 binding.infoPic.isVisible = false
                 binding.infoPicExpandedFrame.isVisible = false
+
+                binding.infoTitleBar.setOnClickListener(null)
+                binding.infoTitleBar.isClickable = false
+                binding.infoTitleBar.isFocusable = false
             }
 
             if (info.headerExpanded) {

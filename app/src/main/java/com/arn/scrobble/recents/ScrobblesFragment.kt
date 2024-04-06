@@ -274,6 +274,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
 
             if (it.isEmpty()) {
                 binding.empty.isVisible = true
+                binding.scrobblesList.isVisible = false
             } else {
                 binding.empty.isVisible = false
                 binding.scrobblesList.isVisible = true
@@ -354,72 +355,9 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             }
         }
 
-        coordinatorBinding.heroShare.setOnClickListener {
-            val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
-            if (track is Track) {
-                val heart = when {
-                    track.userloved == true -> "♥️"
-                    track.userHated == true -> "💔"
-                    else -> ""
-                }
+        coordinatorBinding.heroShare.setOnClickListener { showShareSheet() }
 
-                var shareText = if (activityViewModel.currentUser.isSelf)
-                    getString(
-                        R.string.recents_share,
-                        heart + getString(R.string.artist_title, track.artist.name, track.name),
-                        Stuff.myRelativeTime(requireContext(), track.date, true)
-                    )
-                else
-                    getString(
-                        R.string.recents_share_username,
-                        heart + getString(R.string.artist_title, track.artist.name, track.name),
-                        Stuff.myRelativeTime(requireContext(), track.date, true),
-                        activityViewModel.currentUser.name
-                    )
-
-                if (!billingViewModel.proStatus.value)
-                    shareText += "\n\n" + getString(R.string.share_sig)
-
-                val i = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, shareText)
-                    putExtra(Intent.EXTRA_TEXT, shareText)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-
-                val shareAlbumArt = coordinatorBinding.heroImg.drawable as? BitmapDrawable
-                if (shareAlbumArt != null) {
-                    val albumArtFile = File(requireContext().cacheDir, "share/album_art.jpg")
-                    albumArtFile.parentFile!!.mkdirs()
-                    FileOutputStream(albumArtFile).use { fos ->
-                        shareAlbumArt.bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
-                    }
-
-                    val albumArtUri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "com.arn.scrobble.fileprovider",
-                        albumArtFile
-                    )
-
-                    i.putExtra(Intent.EXTRA_STREAM, albumArtUri)
-                    i.type = "image/jpeg"
-
-                }
-
-                startActivity(Intent.createChooser(i, getString(R.string.share)))
-            }
-        }
-
-        coordinatorBinding.heroInfo.setOnClickListener {
-            val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
-            if (track is Track) {
-                showTrackInfo(track)
-                if (!prefs.longPressLearnt) {
-                    requireContext().toast(R.string.info_long_press_hint, Toast.LENGTH_LONG)
-                    prefs.longPressLearnt = true
-                }
-            }
-        }
+        coordinatorBinding.heroInfo.setOnClickListener { showInfoSheetFromHero() }
 
         binding.randomChip.setOnClickListener {
             val arguments = Bundle().apply {
@@ -585,6 +523,74 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             }
         }
     }
+
+    private fun showInfoSheetFromHero() {
+        val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
+        if (track is Track) {
+            showTrackInfo(track)
+            if (!prefs.longPressLearnt) {
+                requireContext().toast(R.string.info_long_press_hint, Toast.LENGTH_LONG)
+                prefs.longPressLearnt = true
+            }
+        }
+    }
+
+    private fun showShareSheet() {
+        val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
+        if (track is Track) {
+            val heart = when {
+                track.userloved == true -> "♥️"
+                track.userHated == true -> "💔"
+                else -> ""
+            }
+
+            var shareText = if (activityViewModel.currentUser.isSelf)
+                getString(
+                    R.string.recents_share,
+                    heart + getString(R.string.artist_title, track.artist.name, track.name),
+                    Stuff.myRelativeTime(requireContext(), track.date, true)
+                )
+            else
+                getString(
+                    R.string.recents_share_username,
+                    heart + getString(R.string.artist_title, track.artist.name, track.name),
+                    Stuff.myRelativeTime(requireContext(), track.date, true),
+                    activityViewModel.currentUser.name
+                )
+
+            if (!billingViewModel.proStatus.value)
+                shareText += "\n\n" + getString(R.string.share_sig)
+
+            val i = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, shareText)
+                putExtra(Intent.EXTRA_TEXT, shareText)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            val shareAlbumArt = coordinatorBinding.heroImg.drawable as? BitmapDrawable
+            if (shareAlbumArt != null) {
+                val albumArtFile = File(requireContext().cacheDir, "share/album_art.jpg")
+                albumArtFile.parentFile!!.mkdirs()
+                FileOutputStream(albumArtFile).use { fos ->
+                    shareAlbumArt.bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
+                }
+
+                val albumArtUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.arn.scrobble.fileprovider",
+                    albumArtFile
+                )
+
+                i.putExtra(Intent.EXTRA_STREAM, albumArtUri)
+                i.type = "image/jpeg"
+
+            }
+
+            startActivity(Intent.createChooser(i, getString(R.string.share)))
+        }
+    }
+
 
     private fun collectPendingScrobblesProgress() {
         if (!activityViewModel.pendingSubmitAttempted &&
@@ -833,8 +839,8 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     Stuff.launchSearchIntent(track, pkgName)
                 }
 
-                R.id.menu_info -> coordinatorBinding.heroInfo.callOnClick()
-                R.id.menu_share -> coordinatorBinding.heroShare.callOnClick()
+                R.id.menu_info -> showInfoSheetFromHero()
+                R.id.menu_share -> showShareSheet()
             }
             true
         }

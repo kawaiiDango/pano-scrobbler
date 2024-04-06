@@ -407,38 +407,40 @@ class PrefFragment : PreferenceFragmentCompat() {
                 true
             }
 
-        findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
-            .setOnPreferenceClickListener {
+        val intentsPref = findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
+        intentsPref.setOnPreferenceClickListener {
 
-                val itemsRaw = listOf(
-                    NLService.iSCROBBLER_ON,
-                    NLService.iSCROBBLER_OFF,
-                    null,
-                    NLService.iLOVE,
-                    NLService.iUNLOVE,
-                    NLService.iCANCEL,
-                )
+            val itemsRaw = listOf(
+                NLService.iSCROBBLER_ON,
+                NLService.iSCROBBLER_OFF,
+                null,
+                NLService.iLOVE,
+                NLService.iUNLOVE,
+                NLService.iCANCEL,
+            )
 
-                val itemsDisplay = itemsRaw.map {
-                    if (it == null)
-                        getString(R.string.current_track)
-                    else
-                        "\t\t$it"
-                }.toTypedArray()
+            val itemsDisplay = itemsRaw.map {
+                if (it == null)
+                    getString(R.string.current_track)
+                else
+                    "\t\t$it"
+            }.toTypedArray()
 
-                val dialog = MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.pref_intents_dialog_title)
-                    .setItems(itemsDisplay, null)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.pref_intents_dialog_title)
+                .setItems(itemsDisplay, null)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
 
-                dialog.listView.setOnItemClickListener { _, _, selectedIdx, _ ->
-                    val item = itemsRaw[selectedIdx]
-                    requireContext().copyToClipboard(item ?: return@setOnItemClickListener)
-                }
-
-                true
+            dialog.listView.setOnItemClickListener { _, _, selectedIdx, _ ->
+                val item = itemsRaw[selectedIdx]
+                requireContext().copyToClipboard(item ?: return@setOnItemClickListener)
             }
+
+            true
+        }
+
+        hideOnTV.add(intentsPref)
 
         findPreference<Preference>("delete_account")!!
             .setOnPreferenceClickListener {
@@ -446,11 +448,14 @@ class PrefFragment : PreferenceFragmentCompat() {
                 true
             }
 
-        findPreference<Preference>("translate")!!
-            .setOnPreferenceClickListener {
-                Stuff.openInBrowser(getString(R.string.crowdin_link))
-                true
-            }
+        val translatePref = findPreference<Preference>("translate")!!
+        translatePref.setOnPreferenceClickListener {
+            Stuff.openInBrowser(getString(R.string.crowdin_link))
+            true
+        }
+
+        hideOnTV.add(translatePref)
+
 
         findPreference<Preference>("translate_credits")!!
             .setOnPreferenceClickListener {

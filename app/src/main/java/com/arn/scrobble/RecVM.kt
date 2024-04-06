@@ -48,6 +48,9 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             host = prefs.acrcloudHost ?: Tokens.ACR_HOST
             accessKey = prefs.acrcloudKey ?: Tokens.ACR_KEY
             accessSecret = prefs.acrcloudSecret ?: Tokens.ACR_SECRET
+
+            if (Stuff.isTv) // tested on firestick and chromecast
+                recorderConfig.source = MediaRecorder.AudioSource.VOICE_RECOGNITION
         }
     }
 
@@ -163,7 +166,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             0 -> {
                 viewModelScope.launch {
                     statusText.emit(
-                        "✅ " + App.context.getString(R.string.artist_title, artist, title)
+                        "⌛ " + App.context.getString(R.string.artist_title, artist, title)
                     )
 
                     _scrobbleEvent.emit(Unit)
@@ -177,8 +180,12 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
                     trackInfo.putOriginals(artist, title, album, "")
 
                     scrobbleJob = launch(Dispatchers.IO) {
-                        delay(Stuff.SCROBBLE_FROM_MIC_DELAY.toLong())
+                        delay(Stuff.SCROBBLE_FROM_MIC_DELAY)
                         ScrobbleEverywhere.scrobble(false, trackInfo)
+
+                        statusText.emit(
+                            "✅ " + App.context.getString(R.string.artist_title, artist, title)
+                        )
                     }
                 }
             }

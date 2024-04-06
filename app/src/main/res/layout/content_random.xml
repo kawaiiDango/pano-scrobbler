@@ -1,65 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:clipToPadding="false"
+    android:nestedScrollingEnabled="true"
+    android:padding="8dp"
     android:transitionGroup="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/random_constraint_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--        android:id="@+id/random_constraint_layout"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent">-->
 
-        <include
-            android:id="@+id/chips_charts_period"
-            layout="@layout/chips_charts_period"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <include
+        android:id="@+id/chips_charts_period"
+        layout="@layout/chips_charts_period"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/random_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceHeadlineSmall"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/random_not_found"
-            tools:visibility="visible" />
+    <TextView
+        android:id="@+id/random_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceHeadlineSmall"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/random_not_found"
+        tools:visibility="visible" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/random_big_img"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@string/album_art"
-            android:scaleType="centerCrop"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_max="@dimen/random_image_max_width"
-            app:layout_constraintWidth_max="@dimen/random_image_max_width"
-            app:layout_constraintWidth_min="60dp"
-            app:shapeAppearance="@style/topRoundedCorners"
-            tools:srcCompat="@tools:sample/avatars" />
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/random_big_img"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/album_art"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@id/random_item_group"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="@dimen/random_image_max_width"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chips_charts_period"
+        app:layout_constraintWidth_max="@dimen/random_image_max_width"
+        app:layout_constraintWidth_min="60dp"
+        app:shapeAppearance="@style/roundedCornersBig"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <LinearLayout
+        android:id="@+id/random_item_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/randomize_text"
+        app:layout_constraintEnd_toEndOf="@id/random_big_img"
+        app:layout_constraintStart_toStartOf="@id/random_big_img"
+        app:layout_constraintTop_toBottomOf="@id/random_big_img"
+        app:layout_constraintWidth_max="@dimen/random_image_max_width"
+        app:layout_constraintWidth_min="300dp">
 
         <LinearLayout
             android:id="@+id/random_item"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/selector_border_gentle_bottom_rounded"
-            android:nextFocusRight="@id/random_play"
+            android:layout_weight="1"
+            android:background="@drawable/selector_border_gentle"
             android:orientation="vertical"
-            android:paddingVertical="4dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="64dp"
-            app:layout_constraintWidth_max="@dimen/random_image_max_width"
-            app:layout_constraintWidth_min="300dp">
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="4dp">
 
             <TextView
                 android:id="@+id/item_name"
@@ -93,148 +108,89 @@
                 android:textAppearance="?textAppearanceBodySmall"
                 tools:text="6969 scrobbles" />
 
-            <TextView
-                android:id="@+id/track_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:maxLines="1"
-                tools:text="date date" />
         </LinearLayout>
-
-        <androidx.constraintlayout.helper.widget.Flow
-            android:id="@+id/random_flow"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_margin="16dp"
-            android:orientation="vertical"
-            android:visibility="invisible"
-            app:constraint_referenced_ids="random_big_img, random_item"
-            app:flow_horizontalGap="16dp"
-            app:flow_horizontalStyle="packed"
-            app:flow_verticalStyle="packed"
-            app:flow_wrapMode="none"
-            app:layout_constraintBottom_toTopOf="@id/randomize_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chips_charts_period" />
-
-        <View
-            android:id="@+id/random_play_filler"
-            android:layout_width="64dp"
-            android:layout_height="0dp"
-            android:clickable="true"
-            android:focusable="false"
-            app:layout_constraintBottom_toBottomOf="@id/random_item"
-            app:layout_constraintEnd_toEndOf="@id/random_item"
-            app:layout_constraintTop_toTopOf="@id/random_item" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/random_play"
             style="?materialIconButtonOutlinedStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
             android:contentDescription="@string/search"
-            android:nextFocusLeft="@id/random_item"
             android:textColor="?colorSecondary"
             android:tooltipText="@string/search"
             app:icon="@drawable/vd_search_play"
             app:iconSize="24dp"
-            app:iconTint="?colorSecondary"
-            app:layout_constraintBottom_toBottomOf="@id/random_item"
-            app:layout_constraintEnd_toEndOf="@id/random_item"
-            app:layout_constraintTop_toTopOf="@id/random_item" />
+            app:iconTint="?colorSecondary" />
+    </LinearLayout>
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/random_content_group"
+    <com.arn.scrobble.ui.ScalableDrawableTextView
+        android:id="@+id/randomize_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:drawablePadding="6dp"
+        android:text="@string/random_text"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        app:compoundDrawableHeight="22dp"
+        app:compoundDrawableWidth="22dp"
+        app:layout_constraintBottom_toTopOf="@id/random_scrobble_type_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/random_scrobble_type_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/get_track"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:constraint_referenced_ids="random_big_img, random_item, random_play"
-            tools:visibility="visible" />
+            android:contentDescription="@string/track"
+            android:minWidth="@dimen/m3_btn_icon_only_min_width"
+            android:tooltipText="@string/track"
+            app:icon="@drawable/vd_note" />
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/random_big_img"
-            app:layout_constraintEnd_toEndOf="@+id/random_big_img"
-            app:layout_constraintStart_toStartOf="@+id/random_big_img"
-            app:layout_constraintTop_toTopOf="@+id/random_big_img">
-
-            <View
-                android:id="@+id/random_skeleton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
-
-        <com.arn.scrobble.ui.ScalableDrawableTextView
-            android:id="@+id/randomize_text"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/get_loved"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:drawablePadding="6dp"
-            android:text="@string/random_text"
-            android:textAllCaps="true"
-            android:textSize="18sp"
-            app:compoundDrawableHeight="22dp"
-            app:compoundDrawableWidth="22dp"
-            app:layout_constraintBottom_toTopOf="@id/random_scrobble_type_group"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:contentDescription="@string/loved_track"
+            android:minWidth="@dimen/m3_btn_icon_only_min_width"
+            android:tooltipText="@string/loved_track"
+            app:icon="@drawable/vd_heart" />
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/random_scrobble_type_group"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/get_album"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:selectionRequired="true"
-            app:singleSelection="true">
+            android:contentDescription="@string/album"
+            android:minWidth="@dimen/m3_btn_icon_only_min_width"
+            android:tooltipText="@string/album"
+            app:icon="@drawable/vd_album" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/get_track"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/track"
-                android:minWidth="@dimen/m3_btn_icon_only_min_width"
-                android:tooltipText="@string/track"
-                app:icon="@drawable/vd_note" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/get_artist"
+            style="?materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/artist"
+            android:minWidth="@dimen/m3_btn_icon_only_min_width"
+            android:tooltipText="@string/artist"
+            app:icon="@drawable/vd_mic" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/get_loved"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/loved_track"
-                android:minWidth="@dimen/m3_btn_icon_only_min_width"
-                android:tooltipText="@string/loved_track"
-                app:icon="@drawable/vd_heart" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/get_album"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/album"
-                android:minWidth="@dimen/m3_btn_icon_only_min_width"
-                android:tooltipText="@string/album"
-                app:icon="@drawable/vd_album" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/get_artist"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/artist"
-                android:minWidth="@dimen/m3_btn_icon_only_min_width"
-                android:tooltipText="@string/artist"
-                app:icon="@drawable/vd_mic" />
-
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout><!--</androidx.core.widget.NestedScrollView>-->

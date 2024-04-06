@@ -74,7 +74,8 @@ class InfoFragment : BottomSheetDialogFragment() {
 
         collectLatestLifecycleFlow(viewModel.infoList.filterNotNull()) {
             adapter.submitList(it) {
-                scheduleTransition()
+                if (!Stuff.isTv) // prevents glitches when the list changes fast
+                    scheduleTransition()
             }
         }
 

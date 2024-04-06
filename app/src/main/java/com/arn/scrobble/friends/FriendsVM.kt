@@ -3,8 +3,10 @@ package com.arn.scrobble.friends
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
@@ -34,16 +36,15 @@ import kotlin.math.max
 
 class FriendsVM(app: Application) : AndroidViewModel(app) {
     private val prefs = App.prefs
-    private val lastPlayedTracksMap = mutableMapOf<String, Track?>()
+    private val lastPlayedTracksMap = mutableMapOf<String, Result<Track>>()
     private val playCountsMap = mutableMapOf<String, Int>()
     val urlToPaletteMap = mutableMapOf<String, PaletteColors>()
     private val _pinnedFriends = MutableStateFlow<List<UserCached>>(emptyList()) // from json
     private val _pinnedUsernamesSet = _pinnedFriends
         .map { it.map { it.name }.toSet() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
-    val pinnedFriends = _pinnedFriends.asStateFlow()
     private val _friends = MutableStateFlow<List<UserCached>?>(null) // from network
-    private val _tracksReceiver = MutableStateFlow<Pair<String, PageResult<Track>>?>(null)
+    private val _tracksReceiver = MutableStateFlow<Pair<String, Result<PageResult<Track>>>?>(null)
     val friendsCombined = combine(
         _friends.filterNotNull(),
         _pinnedFriends,
@@ -51,9 +52,10 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     ) { friends, pinnedFriends, tracksReceiver ->
 
         if (tracksReceiver != null) {
-            val (usernameForTrack, trackPage) = tracksReceiver
-            lastPlayedTracksMap[usernameForTrack] = trackPage.entries.firstOrNull()
-            playCountsMap[usernameForTrack] = trackPage.attr.total ?: 0
+            val (usernameForTrack, trackPageResult) = tracksReceiver
+
+            lastPlayedTracksMap[usernameForTrack] = trackPageResult.map { it.entries.first() }
+            playCountsMap[usernameForTrack] = trackPageResult.getOrNull()?.attr?.total ?: 0
 
             delay(100)
         }
@@ -69,7 +71,6 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     }
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    private val privateUsers = mutableSetOf<String>() // todo this is a hack
     private val friendsRecentsSemaphore = Semaphore(2)
     private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
     val input = _input.asStateFlow()
@@ -122,7 +123,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     }
 
     suspend fun loadFriendsRecents(username: String) {
-        if (privateUsers.contains(username)) return
+        if (lastPlayedTracksMap[username]?.isFailure == true) return
 
         friendsRecentsSemaphore.withPermit {
             Scrobblables.current!!.getRecents(
@@ -130,13 +131,17 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
                 username,
                 limit = 1,
                 includeNowPlaying = true,
+                cached = !Stuff.isOnline
             )
-        }.onSuccess { pr ->
-            if (pr.entries.isNotEmpty())
-                _tracksReceiver.emit(username to pr)
-        }.onFailure {
-            privateUsers += username
+        }.mapCatching { pr ->
+            if (pr.entries.isEmpty())
+                throw ApiException(-1, App.context.getString(R.string.no_scrobbles))
+
+            pr
         }
+            .let { result ->
+                _tracksReceiver.emit(username to result)
+            }
     }
 
 
@@ -151,14 +156,6 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         val pr = Scrobblables.current!!.getFriends(
             page, username, cached = !loadedInitialCachedVersion
         )
-            .onSuccess {
-                totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0
-                _total.emit(it.attr.total!!)
-                sorted = false
-                lastFriendsLoadTime = System.currentTimeMillis()
-            }
-
-        emitUsers(pr, page > 1)
 
         if (!loadedInitialCachedVersion) {
             loadedInitialCachedVersion = true
@@ -167,8 +164,20 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
             }
         }
 
-        if (setLoading)
-            _hasLoaded.emit(true)
+        pr.onSuccess {
+            totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0
+            _total.emit(it.attr.total!!)
+            sorted = false
+            lastFriendsLoadTime = System.currentTimeMillis()
+        }.onFailure {
+            if ((it as? ApiException)?.code == 504)
+                return
+        }
+
+        emitUsers(pr, page > 1)
+
+//        if (setLoading)
+        _hasLoaded.emit(true)
     }
 
 
@@ -216,11 +225,11 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     fun sortByTime() {
         viewModelScope.launch {
             val newList = _friends.value!!.sortedByDescending {
-                if (lastPlayedTracksMap[it.name] == null) //put users with no tracks at the end
-                    0
-                else
-                    lastPlayedTracksMap[it.name]!!.date
+                if (lastPlayedTracksMap[it.name]?.isSuccess == true) //put users with no tracks at the end
+                    lastPlayedTracksMap[it.name]!!.getOrNull()?.date
                         ?: System.currentTimeMillis()
+                else
+                    0
             }
             sorted = true
 
@@ -254,7 +263,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
 
     data class FriendsItemHolder(
         val user: UserCached,
-        val track: Track?,
+        val trackResult: Result<Track>?,
         val playCount: Int,
         val isPinned: Boolean
     )

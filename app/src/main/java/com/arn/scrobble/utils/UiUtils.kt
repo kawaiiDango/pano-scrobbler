@@ -24,7 +24,6 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
-import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ScrollView
@@ -88,7 +87,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -226,21 +224,6 @@ object UiUtils {
         val dimen = ta.getDimensionPixelSize(0, -1)
         ta.recycle()
         return dimen
-    }
-
-    fun Snackbar.focusOnTv(): Snackbar {
-        if (Stuff.isTv) {
-            addCallback(object : Snackbar.Callback() {
-                override fun onShown(sb: Snackbar?) {
-                    view.postDelayed({
-                        view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                            .requestFocus()
-                    }, 200)
-                }
-            })
-        }
-        setAnchorView(R.id.bottom_nav)
-        return this
     }
 
     fun RecyclerView.mySmoothScrollToPosition(
@@ -549,25 +532,16 @@ object UiUtils {
 
         root.isFocusable = true
         root.isClickable = true
+
+        headerAction.isFocusable = false
+        headerOverflowButton.isFocusable = false
+
         root.setOnClickListener {
-            if (headerAction.isVisible)
-                headerAction.performClick()
-            else if (headerOverflowButton.isVisible)
+            if (headerOverflowButton.isVisible)
                 headerOverflowButton.performClick()
+            else if (headerAction.isVisible)
+                headerAction.performClick()
         }
-    }
-
-    fun AutoCompleteTextView.getSelectedItemPosition(): Int {
-        var pos = -1
-        val displayedText = text.toString()
-        for (i in 0 until adapter.count) {
-            if ((adapter.getItem(i) as? String) == displayedText) {
-                pos = i
-                break
-            }
-        }
-
-        return pos
     }
 
     fun RecyclerView.scrollToTopOnInsertToTop() {

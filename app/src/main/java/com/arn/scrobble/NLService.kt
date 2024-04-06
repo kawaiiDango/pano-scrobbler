@@ -217,8 +217,6 @@ class NLService : NotificationListenerService() {
                 Intent(this, PersistentNotificationService::class.java)
             )
 
-        (application as App).initConnectivityCheck()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getScrobblerExitReasons(printAll = true)
         }

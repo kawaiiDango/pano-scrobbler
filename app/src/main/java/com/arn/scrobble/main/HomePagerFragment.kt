@@ -74,6 +74,11 @@ class HomePagerFragment : BasePagerFragment() {
                     navView.findViewById(R.id.nav_help)
                 ).apply {
                     inflate(R.menu.help_menu)
+
+                    if (Stuff.isTv) {
+                        menu.removeItem(R.id.nav_bug_report)
+                    }
+
                     setOnMenuItemClickListener { menuItem ->
                         when (menuItem.itemId) {
                             R.id.nav_faq -> {

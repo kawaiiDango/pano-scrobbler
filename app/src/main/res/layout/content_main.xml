@@ -23,8 +23,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/sidebar_width"
-        app:layout_behavior=".ui.DisableableAppBarLayoutBehavior">
+        android:layout_marginStart="@dimen/sidebar_width">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/ctl"

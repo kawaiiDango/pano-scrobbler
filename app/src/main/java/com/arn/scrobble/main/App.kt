@@ -39,7 +39,6 @@ import timber.log.Timber
 
 
 class App : Application(), ImageLoaderFactory, Configuration.Provider {
-    private var connectivityCheckInited = false
     private val musicEntryImageInterceptor = MusicEntryImageInterceptor()
 
     override val workManagerConfiguration =
@@ -85,6 +84,8 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         }
 
         createChannels()
+
+        initConnectivityCheck()
     }
 
     private fun enableStrictMode() {
@@ -110,10 +111,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         )
     }
 
-    // will be called multiple times
-    fun initConnectivityCheck() {
-        if (connectivityCheckInited) return
-
+    private fun initConnectivityCheck() {
         val cm = ContextCompat.getSystemService(this, ConnectivityManager::class.java)!!
         val nr = NetworkRequest.Builder().apply {
             addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -137,8 +135,6 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
                 Stuff.isOnline = availableNetworks.isNotEmpty()
             }
         })
-
-        connectivityCheckInited = true
     }
 
     override fun newImageLoader() = ImageLoader.Builder(this)

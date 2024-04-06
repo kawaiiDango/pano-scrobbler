@@ -75,10 +75,10 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         var canShowNotices = false
 
-        super.onCreate(savedInstanceState)
-
         // until they fix IllegalStateException: setCurrentPlayTimeMillis() called after animation has been started
         FragmentManager.enablePredictiveBack(false)
+
+        super.onCreate(savedInstanceState)
 
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)

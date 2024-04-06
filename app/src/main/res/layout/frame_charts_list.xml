@@ -29,6 +29,7 @@
         android:layoutAnimation="@anim/layout_animation_slide_left"
         android:nestedScrollingEnabled="false"
         android:paddingStart="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,8 +41,8 @@
         layout="@layout/grid_item_chart"
         android:layout_width="@dimen/charts_horizontal_list_width"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         android:layout_marginVertical="4dp"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

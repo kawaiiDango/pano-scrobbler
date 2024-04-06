@@ -7,21 +7,18 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogMonthPickerBinding
 import com.arn.scrobble.main.MainNotifierViewModel
-import com.arn.scrobble.ui.NoOpFilter
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.toInverseMap
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -35,30 +32,6 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val binding
         get() = _binding!!
     private val cal by lazy { Calendar.getInstance() }
-
-    private val monthAdapter by lazy {
-        object : ArrayAdapter<MonthPickerItem>(
-            requireContext(),
-            R.layout.list_item_month,
-            R.id.text_item,
-            months
-        ) {
-            val noOpFilter = NoOpFilter()
-            override fun getFilter() = noOpFilter
-        }
-    }
-
-    private val yearAdapter by lazy {
-        object : ArrayAdapter<MonthPickerItem>(
-            requireContext(),
-            R.layout.list_item_month,
-            R.id.text_item,
-            years
-        ) {
-            val noOpFilter = NoOpFilter()
-            override fun getFilter() = noOpFilter
-        }
-    }
 
     private val timePeriods by lazy {
         TimePeriodsGenerator(
@@ -83,8 +56,8 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             requireArguments().putInt(Stuff.ARG_SELECTED_MONTH, value)
         }
 
-    private lateinit var monthsEditText: MaterialAutoCompleteTextView
-    private lateinit var yearsEditText: MaterialAutoCompleteTextView
+    private lateinit var monthsButton: MaterialButton
+    private lateinit var yearsButton: MaterialButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,8 +68,8 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onShow(p0: DialogInterface?) {
-        yearsEditText.setText(formattedYear(selectedYear), false)
-        monthsEditText.setText(formattedMonth(selectedMonth), false)
+        yearsButton.text = formattedYear(selectedYear)
+        monthsButton.text = formattedMonth(selectedMonth)
 
         val okButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
         okButton.setOnClickListener {
@@ -138,38 +111,53 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
         val yearIdx = format.indexOf('y', ignoreCase = true)
 
         if (monthIdx > yearIdx) {
-            yearsEditText = binding.pickerFirst
-            monthsEditText = binding.pickerSecond
+            yearsButton = binding.pickerFirst
+            monthsButton = binding.pickerSecond
         } else {
-            yearsEditText = binding.pickerSecond
-            monthsEditText = binding.pickerFirst
+            yearsButton = binding.pickerSecond
+            monthsButton = binding.pickerFirst
         }
 
-        monthsEditText.setAdapter(monthAdapter)
-        monthsEditText.setOnItemClickListener { adapterView, view, pos, l ->
-            selectedMonth = monthAdapter.getItem(pos)!!.id
-        }
+        monthsButton.setOnClickListener { v ->
+            PopupMenu(requireContext(), v).apply {
+                months.forEach {
+                    val mi = menu.add(0, it.id, 0, it.text)
+                    mi.isEnabled = it.id != selectedMonth
+                }
 
-        yearsEditText.setAdapter(yearAdapter)
-        yearsEditText.setOnItemClickListener { adapterView, view, pos, l ->
-            selectedYear = yearAdapter.getItem(pos)!!.id
-
-            months.let {
-                val firstMonth = it.first().id
-                val lastMonth = it.last().id
-                selectedMonth = selectedMonth.coerceIn(firstMonth, lastMonth)
-
-                monthsEditText.setText(formattedMonth(selectedMonth), false)
-
-                monthAdapter.clear()
-                monthAdapter.addAll(it)
+                setOnMenuItemClickListener { item ->
+                    selectedMonth = item.itemId
+                    monthsButton.text = item.title
+                    true
+                }
+                show()
             }
-
-            monthAdapter.notifyDataSetChanged()
         }
 
-        scrollToSelected(monthsEditText, monthAdapter, selectedMonth)
-        scrollToSelected(yearsEditText, yearAdapter, selectedYear)
+        yearsButton.setOnClickListener { v ->
+            PopupMenu(requireContext(), v).apply {
+                years.forEach {
+                    val mi = menu.add(0, it.id, 0, it.text)
+                    mi.isEnabled = it.id != selectedYear
+                }
+
+                setOnMenuItemClickListener {
+                    selectedYear = it.itemId
+                    yearsButton.text = it.title
+
+                    months.let {
+                        val firstMonth = it.first().id
+                        val lastMonth = it.last().id
+                        selectedMonth = selectedMonth.coerceIn(firstMonth, lastMonth)
+
+                        monthsButton.text = formattedMonth(selectedMonth)
+                    }
+                    true
+
+                }
+                show()
+            }
+        }
 
         return MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
@@ -184,28 +172,6 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    // hack to scroll to selected month
-    // doesn't work in all circumstances
-    private fun scrollToSelected(
-        editText: AutoCompleteTextView,
-        adapter: ArrayAdapter<MonthPickerItem>,
-        selectedId: Int
-    ) {
-        var selectedPos = -1
-        for (i in 0 until adapter.count) {
-            if (adapter.getItem(i)!!.id == selectedId) {
-                selectedPos = i
-                break
-            }
-        }
-
-        if (selectedPos != -1) {
-            editText.setOnClickListener {
-                editText.postDelayed({ editText.listSelection = selectedPos }, 100)
-            }
-        }
     }
 
     private fun formattedMonth(month: Int): String {

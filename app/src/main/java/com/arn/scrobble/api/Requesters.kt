@@ -13,6 +13,7 @@ import com.arn.scrobble.api.spotify.SpotifyRequester
 import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.HttpClient
+import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
@@ -73,7 +74,7 @@ object Requesters {
                     try {
                         val errorResponse = response.body<ApiErrorResponse>()
                         throw ApiException(errorResponse.code, errorResponse.message)
-                    } catch (e: Exception) {
+                    } catch (e: NoTransformationFoundException) {
                         throw ApiException(response.status.value, response.status.description, e)
                     }
                 }

@@ -44,12 +44,6 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
         super.setExpanded(expanded, animate)
     }
 
-    private fun setScrollEnabled(enabled: Boolean) {
-        val behaviour = (layoutParams as CoordinatorLayout.LayoutParams)
-            .behavior as? DisableableAppBarLayoutBehavior
-        behaviour?.isEnabled = enabled
-    }
-
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         addOnOffsetChangedListener(this)

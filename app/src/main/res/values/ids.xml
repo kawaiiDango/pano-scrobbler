@@ -10,4 +10,5 @@
     <item name="inited" type="id" />
     <item name="raw_text" type="id" />
     <item name="destroyed_early" type="id" />
+    <item name="value" type="id" />
 </resources>

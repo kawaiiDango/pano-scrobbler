@@ -7,42 +7,31 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/collage_type_text_input_layout"
-        style="?textInputOutlinedExposedDropdownMenuStyle"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/collage_type"
+        style="?materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/collage_size_text_input_layout"
+        app:icon="@drawable/vd_drop_down"
+        app:iconGravity="textEnd"
+        app:layout_constraintEnd_toStartOf="@+id/collage_size"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/collage_size_text_input_layout">
+        app:layout_constraintTop_toTopOf="@id/collage_size"
+        tools:text="Type: All" />
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/collage_type_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:text="@string/top_albums" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/collage_size_text_input_layout"
-        style="?textInputOutlinedExposedDropdownMenuStyle"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/collage_size"
+        style="?materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:hint="@string/size"
+        app:icon="@drawable/vd_drop_down"
+        app:iconGravity="textEnd"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/collage_type_text_input_layout"
-        app:layout_constraintTop_toBottomOf="@id/collage_preview">
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/collage_size_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:text="3x3" />
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintStart_toEndOf="@+id/collage_type"
+        app:layout_constraintTop_toBottomOf="@id/collage_preview"
+        tools:text="Size: 3" />
 
 
     <com.google.android.material.chip.Chip
@@ -84,7 +73,7 @@
         app:constraint_referenced_ids="collage_include_captions,collage_include_text, collage_skip_missing_images, collage_include_username"
         app:flow_horizontalGap="16dp"
         app:flow_wrapMode="aligned"
-        app:layout_constraintTop_toBottomOf="@id/collage_type_text_input_layout"
+        app:layout_constraintTop_toBottomOf="@id/collage_type"
         tools:layout_editor_absoluteX="16dp" />
 
     <com.google.android.material.button.MaterialButton
@@ -123,14 +112,14 @@
         android:id="@+id/collage_preview"
         android:layout_width="240dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
         android:background="#000"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/collage_type_text_input_layout"
+        app:layout_constraintBottom_toTopOf="@+id/collage_type"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_goneMarginBottom="16dp"
-        android:layout_marginBottom="16dp"
         app:shapeAppearance="@style/roundedCorners"
         tools:srcCompat="@drawable/widget_charts_preview"
         tools:visibility="visible" />

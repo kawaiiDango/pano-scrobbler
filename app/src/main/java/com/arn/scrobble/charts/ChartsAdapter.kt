@@ -126,8 +126,7 @@ open class ChartsAdapter(
         submitList(newList) {
             if (oldCount != 0)
                 binding.chartsList.scrollToPosition(0)
-            if (newList.isNotEmpty())
-                binding.chartsList.isVisible = true
+            binding.chartsList.isVisible = newList.isNotEmpty()
         }
         binding.chartsList.layoutAnimation = null
         if (newList.isEmpty()) {

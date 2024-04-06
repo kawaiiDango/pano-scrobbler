@@ -13,9 +13,9 @@ class MusicEntryReqKeyer : Keyer<MusicEntryImageReq> {
         fun genKey(data: MusicEntryImageReq): String {
             val prefix = "MusicEntryReqKeyer|${data.accountType}|"
             return when (data.musicEntry) {
-                is Artist -> prefix + Artist::class.java.name + data.musicEntry.name
-                is Album -> prefix + data.musicEntry.artist!!.name + Album::class.java.name + data.musicEntry.name
-                is Track -> prefix + data.musicEntry.artist.name + Track::class.java.name + data.musicEntry.name
+                is Artist -> prefix + Artist::class.qualifiedName + "|" + data.musicEntry.name
+                is Album -> prefix + Album::class.qualifiedName + "|" + data.musicEntry.artist!!.name + "|" + data.musicEntry.name
+                is Track -> prefix + Track::class.qualifiedName + data.musicEntry.artist.name + "|" + data.musicEntry.album?.name + "|" + data.musicEntry.name
             }
         }
     }

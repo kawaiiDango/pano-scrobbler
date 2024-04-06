@@ -234,7 +234,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
         if (binding.friendsGrid.adapter != null && !Stuff.isTv && !viewModel.sorted &&
             adapter.loadMoreListener.isAllPagesLoaded &&
             adapter.itemCount > 1 &&
-            viewModel.friendsCombined.value!!.count { it.track != null } == adapter.itemCount
+            viewModel.friendsCombined.value!!.count { it.trackResult != null } == adapter.itemCount
         ) {
             val fabData = FabData(
                 viewLifecycleOwner,
@@ -371,7 +371,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                     }
                     if (succ) {
                         updatePinIndicator(!wasPinned)
-                        if (!prefs.reorderFriendsLearnt && !wasPinned) {
+                        if (!prefs.reorderFriendsLearnt && !wasPinned && !Stuff.isTv) {
                             requireContext().toast(R.string.pin_help, Toast.LENGTH_LONG)
                             prefs.reorderFriendsLearnt = true
                         }
@@ -398,8 +398,13 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                     Bundle().putSingle(userCached)
                 )
             }
-            contentBinding.friendsProfile.setOnClickListener {
-                Stuff.openInBrowser(userCached.url)
+
+            if (Stuff.isTv) {
+                contentBinding.friendsProfile.isVisible = false
+            } else {
+                contentBinding.friendsProfile.setOnClickListener {
+                    Stuff.openInBrowser(userCached.url)
+                }
             }
 
             if (BuildConfig.DEBUG) {

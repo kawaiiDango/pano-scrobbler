@@ -11,20 +11,17 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.main.App
-import com.arn.scrobble.onboarding.LoginFlows
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
-import com.arn.scrobble.utils.UiUtils.focusOnTv
 import com.arn.scrobble.utils.UiUtils.setTextAndAnimate
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
-import com.arn.scrobble.utils.Stuff
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,8 +57,6 @@ class RecFragment : Fragment() {
 
         _binding = ContentRecBinding.inflate(inflater, container, false)
         binding.root.setupInsets()
-//        if (!Stuff.isTv)
-//            setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -75,6 +70,12 @@ class RecFragment : Fragment() {
             binding.recShazam.visibility = View.GONE
         else
             binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
+
+        binding.recCancelScrobble.setOnClickListener {
+            viewModel.scrobbleJob?.cancel()
+            it.isInvisible = true
+            viewModel.statusText.value = ""
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             delay(300)
@@ -104,17 +105,10 @@ class RecFragment : Fragment() {
             binding.recStatus.setTextAndAnimate(it)
         }
 
-        collectLatestLifecycleFlow(viewModel.rateLimitedEvent) {
-            showAddApiKey()
-        }
-
         collectLatestLifecycleFlow(viewModel.scrobbleEvent) {
-            Snackbar.make(requireView(), R.string.state_scrobbled, Stuff.SCROBBLE_FROM_MIC_DELAY)
-                .setAction(android.R.string.cancel) {
-                    viewModel.scrobbleJob?.cancel()
-                }
-                .focusOnTv()
-                .show()
+            binding.recCancelScrobble.isInvisible = false
+            delay(Stuff.SCROBBLE_FROM_MIC_DELAY)
+            binding.recCancelScrobble.isInvisible = true
         }
     }
 
@@ -130,61 +124,5 @@ class RecFragment : Fragment() {
             micPermRequest.launch(RECORD_AUDIO)
         else if (!viewModel.started)
             viewModel.start()
-    }
-    /*
-        override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-            inflater.inflate(R.menu.rec_menu, menu)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                menu.findItem(R.id.menu_add_to_hs).isVisible = false
-            if (prefs.acrcloudHost != null)
-                menu.findItem(R.id.menu_add_acr_key).title = getString(R.string.remove_acr_key)
-        }
-
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            if (item.itemId == R.id.menu_add_to_hs && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val shortcutManager = requireActivity().getSystemService(ShortcutManager::class.java)
-                if (shortcutManager!!.isRequestPinShortcutSupported) {
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        val pinShortcutInfo = ShortcutInfo.Builder(context, "rec").build()
-                        val pinnedShortcutCallbackIntent =
-                            shortcutManager.createShortcutResultIntent(pinShortcutInfo)
-                        val successCallback = PendingIntent.getBroadcast(
-                            context, 0,
-                            pinnedShortcutCallbackIntent, Stuff.updateCurrentOrImmutable
-                        )
-
-                        shortcutManager.requestPinShortcut(
-                            pinShortcutInfo,
-                            successCallback.intentSender
-                        )
-                    }
-                }
-                return true
-            } else if (item.itemId == R.id.menu_add_acr_key) {
-                if (item.title == getString(R.string.remove_acr_key)) {
-                    item.title = getString(R.string.add_acr_key)
-                    removeKey()
-                } else
-                    openAddKey()
-                return true
-            }
-            return super.onOptionsItemSelected(item)
-        }
-
-
-    private fun removeApiKey() {
-        prefs.acrcloudHost = null
-        prefs.acrcloudKey = null
-        prefs.acrcloudSecret = null
-    }
-    */
-
-    private fun showAddApiKey() {
-        Snackbar.make(requireView(), R.string.add_acr_consider, 8 * 1000)
-            .setAction(R.string.add) {
-                LoginFlows(findNavController()).acrCloud()
-            }
-            .focusOnTv()
-            .show()
     }
 }

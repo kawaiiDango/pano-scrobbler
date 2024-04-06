@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.file.FileScrobblable
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
@@ -159,33 +160,22 @@ class TracksVM : ViewModel() {
         pr.onFailure {
             if (it is FileScrobblable.FException)
                 _fileException.emit(it)
+            else if ((it as? ApiException)?.code == 504)
+                return
         }
 
         emitTracks(pr, page > 1)
 
-        if (setLoading) {
-            yield()
-            _hasLoaded.emit(true)
-        }
+//        if (setLoading) {
+        yield()
+        _hasLoaded.emit(true)
+//        }
     }
 
     private suspend fun loadLoves(page: Int, username: String) {
         _hasLoaded.emit(false)
 
-        val pr = Scrobblables.current!!.getLoves(
-            page,
-            username,
-            cached = !loadedInitialCachedVersion,
-        )
-
-        if (!loadedInitialCachedVersion) {
-            selectedPos = 0
-            loadedInitialCachedVersion = true
-
-            viewModelScope.launch {
-                loadLoves(page, username)
-            }
-        }
+        val pr = Scrobblables.current!!.getLoves(page, username)
 
         pr.onSuccess {
             totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0

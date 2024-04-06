@@ -220,7 +220,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
     override suspend fun getLoves(
         page: Int,
         username: String,
-        cached: Boolean,
+        cacheStrategy: CacheStrategy,
         limit: Int
     ): Result<PageResult<Track>> {
         // no op

@@ -172,9 +172,9 @@ class WebViewFragment : Fragment() {
     inner class MyWebViewClient : WebViewClient() {
         override fun shouldOverrideUrlLoading(
             view: WebView,
-            request: WebResourceRequest?
+            url: String?
         ): Boolean {
-            val url = request?.url?.toString() ?: return false
+            val url = url ?: return false
 
             if (
                 url.startsWith("https://www.last.fm/join") ||

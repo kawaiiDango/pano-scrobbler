@@ -29,7 +29,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.Parameters
 import io.ktor.http.parametersOf
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
 import timber.log.Timber
 import java.math.BigInteger
@@ -153,39 +152,49 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         includeNowPlaying: Boolean,
         limit: Int,
     ): Result<PageResult<Track>> {
-        return coroutineScope {
-            val cacheStrategy = if (cached)
-                CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-            else
-                CacheStrategy.NETWORK_ONLY
+        val cacheStrategy = if (cached)
+            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+        else
+            CacheStrategy.NETWORK_ONLY
+        val _from = if (to > 0 && from <= 0) 1 else (from / 1000)
+        val _to =
+            if (from > 0 && to <= 0) (System.currentTimeMillis() / 1000) else (to / 1000)
 
-            val _from = if (to > 0 && from <= 0) 1 else (from / 1000)
-            val _to =
-                if (from > 0 && to <= 0) (System.currentTimeMillis() / 1000) else (to / 1000)
+        return client.getPageResult<RecentTracksResponse, Track>(
+            transform = { it.recenttracks },
+        ) {
+            parameter("method", "user.getRecentTracks")
+            parameter("user", username)
+            parameter("limit", limit)
+            parameter("page", page)
 
-            client.getPageResult<RecentTracksResponse, Track>(
-                transform = { it.recenttracks },
-            ) {
-                parameter("method", "user.getRecentTracks")
-                parameter("user", username)
-                parameter("limit", limit)
-                parameter("page", page)
+            if (_from > 0 && _to > 0) {
+                parameter("from", _from)
+                parameter("to", _to)
+            }
 
-                if (_from > 0 && _to > 0) {
-                    parameter("from", _from)
-                    parameter("to", _to)
-                }
+            parameter("extended", 1)
+            parameter("format", "json")
+            parameter("api_key", apiKey)
+            parameter("sk", userAccount.authKey)
+            cacheStrategy(cacheStrategy)
+        }.map {
+            var entries = it.entries
+            if (!includeNowPlaying)
+                entries = entries.filterNot { it.isNowPlaying }
 
-                parameter("extended", 1)
-                parameter("format", "json")
-                parameter("api_key", apiKey)
-                parameter("sk", userAccount.authKey)
-                cacheStrategy(cacheStrategy)
-            }.map {
-                if (!includeNowPlaying) it.copy(entries = it.entries.filterNot { it.isNowPlaying })
+            // fix blank album
+            entries = entries.map {
+                if (it.album?.name == "")
+                    it.copy(album = null)
                 else it
             }
 
+            it.copy(entries = entries)
+        }.recoverCatching {
+            if (it is ApiException && it.code == 17) {
+                throw ApiException(it.code, "This profile is private", it)
+            } else throw it
         }
     }
 
@@ -193,12 +202,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     override suspend fun getLoves(
         page: Int,
         username: String,
-        cached: Boolean,
+        cacheStrategy: CacheStrategy,
         limit: Int,
     ): Result<PageResult<Track>> {
-        val cacheStrategy = if (cached) CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-        else CacheStrategy.NETWORK_ONLY
-
         Timber.i(this::getLoves.name + " " + page)
 
         return client.getPageResult<LovedTracksResponse, Track>(transform = { it.lovedtracks }) {

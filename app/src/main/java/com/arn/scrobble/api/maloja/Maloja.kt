@@ -147,7 +147,7 @@ class Maloja(userAccount: UserAccountSerializable) :
     override suspend fun getLoves(
         page: Int,
         username: String,
-        cached: Boolean,
+        cacheStrategy: CacheStrategy,
         limit: Int
     ): Result<PageResult<Track>> {
         // no op

@@ -56,17 +56,19 @@ class TagInfoFragment : BottomSheetDialogFragment() {
         val tag = requireArguments().getData<Tag>()!!
         binding.tagInfoTitle.text = tag.name
 
-        if (!Stuff.isTv)
-            binding.tagInfoWiki.autoLinkMask = Linkify.WEB_URLS
-
         if (Stuff.isTv)
             binding.tagInfoLink.isVisible = false
 
-        binding.tagInfoTitle.setOnLongClickListener {
-            requireContext().copyToClipboard(binding.tagInfoTitle.text.toString())
-            true
-        }
 
+        if (!Stuff.isTv) {
+            binding.tagInfoWiki.autoLinkMask = Linkify.WEB_URLS
+
+            binding.tagInfoTitle.setOnLongClickListener {
+                requireContext().copyToClipboard(binding.tagInfoTitle.text.toString())
+                true
+            }
+        }
+        
         binding.tagInfoLink.setOnClickListener {
             Stuff.openInBrowser(
                 "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8")

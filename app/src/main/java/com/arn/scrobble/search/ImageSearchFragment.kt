@@ -24,6 +24,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.spotify.AlbumItem
+import com.arn.scrobble.api.spotify.ArtistItem
 import com.arn.scrobble.api.spotify.SpotifyMusicItem
 import com.arn.scrobble.databinding.ContentImageSearchBinding
 import com.arn.scrobble.db.CustomSpotifyMapping
@@ -215,7 +217,11 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
         collectLatestLifecycleFlow(viewModel.searchResults.filterNotNull()) {
             skeleton.showOriginal()
 
-            val list = it.artists?.items ?: it.albums?.items ?: emptyList()
+            val list = (it.artists?.items ?: it.albums?.items ?: emptyList())
+                .filter { item ->
+                    (item is AlbumItem && !item.images.isNullOrEmpty()) ||
+                            (item is ArtistItem && !item.images.isNullOrEmpty())
+                }
 
             if (isResumed)
                 binding.searchResultsList.scheduleLayoutAnimation()

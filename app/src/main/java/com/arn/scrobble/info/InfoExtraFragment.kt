@@ -71,9 +71,11 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val musicEntry = requireArguments().getData<MusicEntry>()!!
 
-        binding.infoExtraTitle.setOnLongClickListener {
-            requireContext().copyToClipboard(binding.infoExtraTitle.text.toString())
-            true
+        if (!Stuff.isTv) {
+            binding.infoExtraTitle.setOnLongClickListener {
+                requireContext().copyToClipboard(binding.infoExtraTitle.text.toString())
+                true
+            }
         }
 
         val musicEntryLoaderInput = MusicEntryLoaderInput(

@@ -21,7 +21,6 @@ import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
-import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.putData
@@ -32,6 +31,7 @@ import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
 import kotlin.random.Random
 
@@ -117,8 +117,6 @@ class RandomFragment : ChartsPeriodFragment() {
             }
         }
 
-        val skeleton = binding.randomContentGroup.createSkeletonWithFade(binding.randomSkeleton)
-
         collectLatestLifecycleFlow(viewModel.musicEntry.filterNotNull()) {
             setData(it)
         }
@@ -131,24 +129,30 @@ class RandomFragment : ChartsPeriodFragment() {
 
             if (it == null) {
                 binding.randomStatus.isVisible = false
-                binding.randomContentGroup.visibility = View.VISIBLE
+                binding.randomItemGroup.visibility = View.VISIBLE
                 return@collectLatestLifecycleFlow
             } else {
                 binding.randomStatus.text = getString(R.string.charts_no_data)
-                binding.randomContentGroup.visibility = View.INVISIBLE
+                binding.randomItemGroup.visibility = View.INVISIBLE
                 binding.randomStatus.isVisible = true
+                delay(10)
+                binding.randomBigImg.load(null)
             }
         }
 
         collectLatestLifecycleFlow(viewModel.hasLoaded) {
             if (it) {
-                skeleton.showOriginal()
-                if (viewModel.error.value == null)
-                    binding.randomContentGroup.visibility = View.VISIBLE
+                if (viewModel.error.value == null) {
+                    TransitionManager.beginDelayedTransition(
+                        binding.root,
+                        MaterialSharedAxis(MaterialSharedAxis.Z, false)
+                    )
+                    binding.randomItemGroup.visibility = View.VISIBLE
+                }
             } else {
                 binding.randomStatus.isVisible = false
-                binding.randomContentGroup.visibility = View.INVISIBLE
-                skeleton.showSkeleton()
+                binding.randomItemGroup.visibility = View.INVISIBLE
+                binding.randomBigImg.load(R.drawable.avd_loading)
             }
         }
 
@@ -190,15 +194,9 @@ class RandomFragment : ChartsPeriodFragment() {
                 )
             )
         }
-
-        TransitionManager.beginDelayedTransition(
-            binding.root,
-            MaterialSharedAxis(MaterialSharedAxis.Z, false)
-        )
     }
 
     private fun setData(musicEntry: MusicEntry) {
-
         val iconRes = when (musicEntry) {
             is Track -> {
                 if (musicEntry.userloved == true)
@@ -227,22 +225,12 @@ class RandomFragment : ChartsPeriodFragment() {
                 binding.itemArtist.visibility = View.VISIBLE
                 binding.itemArtist.text = musicEntry.artist.name
 
-                val playedWhenTime = musicEntry.date
-                if (playedWhenTime != null && playedWhenTime > 0) {
-                    binding.trackDate.visibility = View.VISIBLE
-                    binding.trackDate.text = Stuff.myRelativeTime(requireContext(), playedWhenTime)
-                } else {
-                    binding.trackDate.visibility = View.GONE
-                }
-
                 imageReq = MusicEntryImageReq(musicEntry, true)
             }
 
             is Album -> {
                 binding.itemArtist.visibility = View.VISIBLE
                 binding.itemArtist.text = musicEntry.artist!!.name
-
-                binding.trackDate.visibility = View.GONE
 
                 imageReq = MusicEntryImageReq(
                     musicEntry,
@@ -253,7 +241,6 @@ class RandomFragment : ChartsPeriodFragment() {
 
             is Artist -> {
                 binding.itemArtist.visibility = View.GONE
-                binding.trackDate.visibility = View.GONE
 
                 imageReq = MusicEntryImageReq(musicEntry)
             }
@@ -279,18 +266,17 @@ class RandomFragment : ChartsPeriodFragment() {
 
             if (musicEntry is Artist || musicEntry is Album)
                 scrobblesCount += " • " + viewModel.selectedPeriod.value.name
+            else if (musicEntry is Track && musicEntry.date?.takeIf { it > 0 } != null)
+                scrobblesCount += " • " + Stuff.myRelativeTime(requireContext(), musicEntry.date)
 
             binding.trackCount.text = scrobblesCount
         } else {
             binding.trackCount.isVisible = false
         }
 
-        arrayOf(binding.randomPlay, binding.randomPlayFiller)
-            .forEach {
-                it.setOnClickListener {
-                    Stuff.launchSearchIntent(musicEntry, null)
-                }
-            }
+        binding.randomPlay.setOnClickListener {
+            Stuff.launchSearchIntent(musicEntry, null)
+        }
 
         binding.randomBigImg.load(imageReq) {
             placeholder(R.drawable.avd_loading)

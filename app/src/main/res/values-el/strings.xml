@@ -56,10 +56,6 @@
         <item quantity="one">%1$d λεπτό</item>
         <item quantity="other">%1$d λεπτά</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s φίλος</item>
-        <item quantity="other">%1$s φίλοι</item>
-    </plurals>
     <string name="yes">Ναι</string>
     <string name="no">Όχι</string>
     <string name="reset">Επαναφορά</string>
@@ -144,7 +140,6 @@
     <string name="pending_scrobbles">Εκκρεμούν Scrobbles</string>
     <string name="pending_scrobble">Εκκρεμεί Scrobble</string>
     <string name="pending_scrobbles_noti">Επεξεργασία εκκρεμών scrobbles</string>
-    <string name="friends">Φίλοι</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, από %2$s</string>
     <string name="allow_background">Να επιτρέπεται το scrobbling στο παρασκήνιο</string>
     <string name="grant_notification_access">Πρόσβαση ειδοποιήσεων</string>
@@ -222,7 +217,6 @@
     <string name="close" comment="To close a dialog or something">Κλείσιμο</string>
     <string name="user_tags_hint" comment="To add a new tag">Νέα ετικέτα</string>
     <string name="user_tags_empty">Δεν έχετε προσθέσει καμία ετικέτα</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Πατήστε παρατεταμένα σε ένα κομμάτι για να ανοίξετε αυτό</string>
     <string name="appwidget_loading">Φόρτωση…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Περίοδος</string>
     <string name="appwidget_theme">Θέμα</string>
@@ -347,7 +341,6 @@
     <string name="lastfm_reauth">Πρέπει να επαληθεύσετε ξανά τον έλεγχο ταυτότητας για να επεξεργαστείτε ή να διαγράψετε scrobbles</string>
     <string name="failed_encode_url">Αποτυχία κωδικοποίησης URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Έλεγχος %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Ειδική πρόσβαση στην εφαρμογή &gt; Πρόσβαση στις ειδοποιήσεις &gt; %1$s</string>
     <string name="artist_extra">Κομμάτια, άλμπουμ &amp; παρόμοια</string>
     <string name="no_browser">Δεν υπάρχει εγκατεστημένος φυλλομετρητής</string>
     <string name="no_player">Δεν υπάρχει εγκατεστημένη εφαρμογή αναπαραγωγής μουσικής</string>

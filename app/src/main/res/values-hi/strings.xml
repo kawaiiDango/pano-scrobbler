@@ -56,10 +56,6 @@
         <item quantity="one">%1$d मिनट</item>
         <item quantity="other">%1$d मिनट</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s मित्र</item>
-        <item quantity="other">%1$s मित्रों</item>
-    </plurals>
     <string name="yes">हां</string>
     <string name="no">नहीं</string>
     <string name="reset">रीसेट</string>
@@ -155,7 +151,6 @@
     <string name="pending_scrobbles">बाकी स्क्रॉबल्स</string>
     <string name="pending_scrobble">बाकी स्क्रॉबल</string>
     <string name="pending_scrobbles_noti">बाकी स्क्रॉबल्स को प्रोसेस किया जा रहा है</string>
-    <string name="friends">मित्रों</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रॉबल्स, %2$s से</string>
     <string name="allow_background">बैकग्राउंड में स्क्रॉबल करे</string>
     <string name="grant_notification_access">सूचनाएं के लिए अनुमति प्रदान करें</string>

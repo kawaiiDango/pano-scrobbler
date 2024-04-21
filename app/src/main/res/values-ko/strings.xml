@@ -45,9 +45,6 @@
     <plurals name="num_minutes">
         <item quantity="other">%1$d 분</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="other">%1$s 친구</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="other">%1$s 대기중</item>
     </plurals>
@@ -147,7 +144,6 @@
     <string name="pending_scrobbles">스크로블 보류 중</string>
     <string name="pending_scrobble">스크로블 보류 중</string>
     <string name="pending_scrobbles_noti">보류 중인 스크로블 처리 중</string>
-    <string name="friends">친구</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s부터, %1$s 스크로블</string>
     <string name="allow_background">백그라운드 스크로블링 허용</string>
     <string name="grant_notification_access">알림 접근 권한 부여</string>
@@ -227,7 +223,6 @@
     <string name="close" comment="To close a dialog or something">닫기</string>
     <string name="user_tags_hint" comment="To add a new tag">새로운 태그</string>
     <string name="user_tags_empty">태그를 추가하지 않았습니다</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">트랙을 길게 눌러 열기</string>
     <string name="appwidget_loading">로딩 중...</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">기간</string>
     <string name="appwidget_theme">테마</string>

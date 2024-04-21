@@ -29,7 +29,6 @@
     <string name="csv" translatable="false">CSV</string>
     <string name="jsonl" translatable="false">JSONL</string>
     <string name="special_app_access" translatable="false">Special app access</string>
-    <string name="tv_url_notice" translatable="false">Open this URL in a browser on another device:</string>
     <string name="duration" translatable="false">Duration</string>
     <string name="unknown" translatable="false">Unknown</string>
     <string name="total_listen_time" translatable="false">Total listen time</string>

@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
@@ -40,7 +39,6 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.main.App
-import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.onboarding.LoginFlows
 import com.arn.scrobble.utils.ForceLogException
 import com.arn.scrobble.utils.LocaleUtils
@@ -73,7 +71,6 @@ import java.util.Locale
 
 class PrefFragment : PreferenceFragmentCompat() {
     private val prefs = App.prefs
-    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -455,7 +452,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val translatePref = findPreference<Preference>("translate")!!
         translatePref.setOnPreferenceClickListener {
-            Stuff.openInBrowser(getString(R.string.crowdin_link))
+            Stuff.openInBrowser(requireContext(), getString(R.string.crowdin_link))
             true
         }
 
@@ -465,14 +462,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("translate_credits")!!
             .setOnPreferenceClickListener {
                 val url = getString(R.string.crowdin_link) + "/members"
-                if (Stuff.isTv) {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(getString(R.string.tv_url_notice) + "\n\n$url")
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
-                } else {
-                    Stuff.openInBrowser(url)
-                }
+                Stuff.openInBrowser(requireContext(), url)
                 true
             }
 
@@ -490,14 +480,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             about.title = "v " + BuildConfig.VERSION_NAME
 
             about.setOnPreferenceClickListener {
-                if (!Stuff.isTv) {
-                    Stuff.openInBrowser(about.summary.toString())
-                } else {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(getString(R.string.tv_url_notice) + "\n\n" + about.summary)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
-                }
+                Stuff.openInBrowser(requireContext(), about.summary.toString())
                 true
             }
         } catch (e: PackageManager.NameNotFoundException) {

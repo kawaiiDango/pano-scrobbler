@@ -180,6 +180,7 @@ class OnboardingFragment : Fragment() {
                 isCompleted = { dkmaClicked },
                 openAction = {
                     Stuff.openInBrowser(
+                        requireContext(),
                         "https://dontkillmyapp.com/" + Build.MANUFACTURER.lowercase()
                     )
                     dkmaClicked = true

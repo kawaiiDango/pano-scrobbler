@@ -71,6 +71,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
 
         binding.tagInfoLink.setOnClickListener {
             Stuff.openInBrowser(
+                requireContext(),
                 "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8")
             )
         }

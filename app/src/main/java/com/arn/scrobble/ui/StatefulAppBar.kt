@@ -85,7 +85,8 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
 
         if (prevHeight != ctlHeight) {
             if (ctl.getTag(R.id.inited) == null) { // prevent visual jerk
-                ctl.scrimVisibleHeightTrigger = ctlHeight
+                if (Stuff.isTv)
+                    ctl.scrimVisibleHeightTrigger = ctlHeight
                 ctl.updateLayoutParams {
                     height = ctlHeight
                 }

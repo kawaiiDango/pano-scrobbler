@@ -36,7 +36,7 @@ class LicensesAdapter : ListAdapter<Library, LicensesAdapter.LicensesVH>(
                 binding.root.setOnClickListener {
                     if (url.isNullOrEmpty())
                         return@setOnClickListener
-                    Stuff.openInBrowser(url!!)
+                    Stuff.openInBrowser(itemView.context, url!!)
                 }
             }
         }

@@ -33,7 +33,6 @@ import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.slide
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 object NavUtils {
@@ -207,27 +206,22 @@ object NavUtils {
                     }
 
                     -2 -> {
-                        if (Stuff.isTv) {
-                            MaterialAlertDialogBuilder(headerNavBinding.root.context)
-                                .setMessage(App.context.getString(R.string.tv_url_notice) + "\n\n " + currentUser.url)
-                                .setPositiveButton(android.R.string.ok, null)
-                                .show()
-                        } else {
-                            Stuff.openInBrowser(currentUser.url)
-                        }
+                        Stuff.openInBrowser(headerNavBinding.root.context, currentUser.url)
                     }
 
                     -1 -> {
-                        when (currentAccount.type) {
-                            AccountType.LASTFM -> Stuff.openInBrowser("https://www.last.fm/user/${currentUser.name}/listening-report/week")
-                            AccountType.LIBREFM -> Stuff.openInBrowser("https://libre.fm/user/${currentUser.name}/stats")
-                            AccountType.GNUFM -> Stuff.openInBrowser("${currentAccount.apiRoot}/stats")
-                            AccountType.LISTENBRAINZ -> Stuff.openInBrowser("https://listenbrainz.org/user/${currentUser.name}/reports")
-                            AccountType.CUSTOM_LISTENBRAINZ -> Stuff.openInBrowser("${currentAccount.apiRoot}user/${currentUser.name}/reports")
-                            AccountType.PLEROMA -> Stuff.openInBrowser("${currentAccount.apiRoot}/users/${currentUser.name}")
+                        val url = when (currentAccount.type) {
+                            AccountType.LASTFM -> "https://www.last.fm/user/${currentUser.name}/listening-report/week"
+                            AccountType.LIBREFM -> "https://libre.fm/user/${currentUser.name}/stats"
+                            AccountType.GNUFM -> "${currentAccount.apiRoot}/stats"
+                            AccountType.LISTENBRAINZ -> "https://listenbrainz.org/user/${currentUser.name}/reports"
+                            AccountType.CUSTOM_LISTENBRAINZ -> "${currentAccount.apiRoot}user/${currentUser.name}/reports"
+                            AccountType.PLEROMA -> "${currentAccount.apiRoot}/users/${currentUser.name}"
                             AccountType.MALOJA,
-                            AccountType.FILE -> Stuff.openInBrowser(currentAccount.apiRoot!!)
+                            AccountType.FILE -> currentAccount.apiRoot!!
                         }
+
+                        Stuff.openInBrowser(headerNavBinding.root.context, url)
                     }
 
                     else -> {

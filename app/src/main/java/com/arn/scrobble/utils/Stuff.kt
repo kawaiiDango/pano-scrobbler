@@ -51,6 +51,7 @@ import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.main.App
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.UiUtils.toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -603,9 +604,14 @@ object Stuff {
         }
     }
 
-    fun openInBrowser(url: String) {
+    fun openInBrowser(activityContext: Context, url: String) {
         if (isTv) {
-            App.context.toast(R.string.unavailable_tv)
+            MaterialAlertDialogBuilder(activityContext)
+                .setTitle(R.string.tv_url_notice)
+                .setMessage(url)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+
             return
         }
 
@@ -613,9 +619,9 @@ object Stuff {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            App.context.startActivity(browserIntent)
+            activityContext.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
-            App.context.toast(R.string.no_browser)
+            activityContext.toast(R.string.no_browser)
         }
     }
 

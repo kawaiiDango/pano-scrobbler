@@ -48,18 +48,14 @@
             android:text="@string/get_pro"
             app:icon="@drawable/vd_heart" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/billing_troubleshoot"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            style="?materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:contentDescription="@string/help"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:text="\?"
-            android:textAppearance="?textAppearanceHeadlineSmall"
-            android:textColor="?colorPrimary"
-            android:textStyle="bold" />
+            app:icon="@drawable/vd_help"
+            app:iconSize="24dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

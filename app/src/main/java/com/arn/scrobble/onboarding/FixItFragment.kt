@@ -55,7 +55,7 @@ class FixItFragment : BottomSheetDialogFragment() {
             binding.fixItDkmaLayout.isVisible = true
 
             binding.fixItDkmaAction.setOnClickListener {
-                Stuff.openInBrowser("https://dontkillmyapp.com")
+                Stuff.openInBrowser(requireContext(), "https://dontkillmyapp.com")
             }
 
             optionsShown++

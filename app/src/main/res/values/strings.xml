@@ -143,7 +143,7 @@
         >Apps</string>
     <string name="offline">Offline. Data shown isn\'t fresh</string>
     <string name="unavailable_offline">Not available when offline</string>
-    <string name="unavailable_tv">Not available on TV</string>
+    <string name="tv_url_notice">Open this URL in a browser on another device</string>
     <string name="scrobble_services"
         comment="Services like lastfm, librefm, listenbrainz etc"
         >Services</string>

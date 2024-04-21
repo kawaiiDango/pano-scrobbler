@@ -140,7 +140,7 @@ class InfoAdapter(
                         info.entry.url
                             ?.replace("/music/", "/user/$_username/library/music/")
                             ?.let {
-                                Stuff.openInBrowser(it)
+                                Stuff.openInBrowser(itemView.context, it)
                             }
                     }
                 }
@@ -148,7 +148,7 @@ class InfoAdapter(
 
             binding.infoLink.setOnClickListener {
                 info.entry.url?.let {
-                    Stuff.openInBrowser(it)
+                    Stuff.openInBrowser(itemView.context, it)
                 }
             }
 

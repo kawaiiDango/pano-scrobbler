@@ -51,7 +51,6 @@ import com.arn.scrobble.utils.UiUtils.setProgressCircleColors
 import com.arn.scrobble.utils.UiUtils.setTitle
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.toast
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialElevationScale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -116,14 +115,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.followersLink.setOnClickListener {
             val url = activityViewModel.currentUser.url + "/followers"
-            if (Stuff.isTv) {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(getString(R.string.tv_url_notice) + "\n\n " + url)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
-            } else {
-                Stuff.openInBrowser(url)
-            }
+            Stuff.openInBrowser(requireContext(), url)
         }
         binding.followersLink.isVisible =
             Scrobblables.current?.userAccount?.type == AccountType.LASTFM
@@ -418,7 +410,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                 contentBinding.friendsScrobbles.requestFocus()
             } else {
                 contentBinding.friendsProfile.setOnClickListener {
-                    Stuff.openInBrowser(userCached.url)
+                    Stuff.openInBrowser(requireContext(), userCached.url)
                 }
             }
 

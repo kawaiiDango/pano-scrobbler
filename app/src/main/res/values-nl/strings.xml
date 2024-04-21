@@ -144,7 +144,6 @@
     <string name="pending_scrobbles">Wachtende scrobbels</string>
     <string name="pending_scrobble">Wachtende scrobbel</string>
     <string name="pending_scrobbles_noti">Wachtende scrobbels verwerken</string>
-    <string name="friends">Vrienden</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbels sinds %2$s</string>
     <string name="allow_background">Scrobbelen in de achtergrond toestaan</string>
     <string name="grant_notification_access">Toegang tot meldingen geven</string>
@@ -225,7 +224,6 @@
     <string name="close" comment="To close a dialog or something">Sluiten</string>
     <string name="user_tags_hint" comment="To add a new tag">Nieuwe tag</string>
     <string name="user_tags_empty">Je hebt nog geen tags toegevoegd</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Lang drukken op een nummer om te openen</string>
     <string name="appwidget_loading">Laden…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Periode</string>
     <string name="appwidget_theme">Thema</string>
@@ -361,7 +359,6 @@
     <string name="custom_listenbrainz">Aangepaste Listenbrainz</string>
     <string name="failed_encode_url">Kan URL niet coderen</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Controleer %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Speciale app-toegang voor &gt; Notificatie toegang voor &gt; %1$s</string>
     <string name="artist_extra">Tracks, albums &amp; vergelijkbaar</string>
     <string name="no_browser">Er is geen browser geïnstalleerd</string>
     <string name="no_player">Er is geen muziekspeler geïnstalleerd</string>

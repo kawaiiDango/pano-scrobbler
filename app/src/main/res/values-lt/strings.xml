@@ -90,12 +90,6 @@
         <item quantity="many">%1$d minutės</item>
         <item quantity="other">%1$d minučių</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s draugas</item>
-        <item quantity="few">%1$s draugai</item>
-        <item quantity="many">%1$s draugo</item>
-        <item quantity="other">%1$s draugų</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s laukiama</item>
         <item quantity="few">%1$s laukiama</item>
@@ -149,6 +143,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programėlės</string>
     <string name="offline">Atsijungę. Rodomi duomenys nėra nauji.</string>
     <string name="unavailable_offline">Nepasiekiama neprisijungus.</string>
+    <string name="unavailable_tv">Nepasiekiama TV</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Klausiausi\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s klausėsi\n%1$s %2$s</string>
@@ -198,7 +193,6 @@
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string name="pending_scrobble">Laukiamas skroblas</string>
     <string name="pending_scrobbles_noti">Apdorojama laukiančių skroblų</string>
-    <string name="friends">Draugai</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblai (-ų), nuo %2$s</string>
     <string name="allow_background">Leisti skrobalinimą fone</string>
     <string name="grant_notification_access">Suteikti prieigą prie pranešimų</string>
@@ -279,7 +273,6 @@
     <string name="close" comment="To close a dialog or something">Uždaryti</string>
     <string name="user_tags_hint" comment="To add a new tag">Nauja žymė</string>
     <string name="user_tags_empty">Nepridėjai jokių žymių</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Ilgai prispausk ant takelio, kad atidarytum</string>
     <string name="appwidget_loading">Kraunama…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Laikotarpis</string>
     <string name="appwidget_theme">Tema</string>
@@ -393,6 +386,9 @@
     <string name="pref_export">Eksportuoti</string>
     <string name="pref_export_desc">Padaro atsarginę nustatymų, redagavimų ir blokavimo sąrašo kopiją. Saugumo sumetimais neišsaugo prisijungimų. Naudinga perkeliant iš vieno įrenginio į kitą arba bendrinti su draugais.</string>
     <string name="pref_import">Importuoti</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Tinklas</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Kodas</string>
+    <string name="pref_imexport_network_notice">Tinklo režimu abu įrenginiai turi būti prijungti prie to paties tinklo.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Suasmeninimas</string>
     <string name="pref_themes" comment="Color themes">Temos</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Maišyti ir derinti\nTaip pat keičia pranešimo spalvą</string>
@@ -430,7 +426,6 @@
     <string name="custom_listenbrainz">Pasirinktinis Listenbrainz</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrink %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Speciali prieiga prie programėlės &gt; Prieiga prie pranešimų &gt; %1$s</string>
     <string name="artist_extra">Takeliai, albumai ir panašumai</string>
     <string name="no_browser">Neįdiegta jokia naršyklė</string>
     <string name="no_player">Nėra įdiegtas joks muzikos leistuvas</string>

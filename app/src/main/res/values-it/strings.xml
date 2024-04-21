@@ -60,10 +60,6 @@
         <item quantity="one">%1$d minuto</item>
         <item quantity="other">%1$d minuti</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s amico</item>
-        <item quantity="other">%1$s amici</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s in attesa</item>
         <item quantity="other">%1$s in attesa</item>
@@ -164,7 +160,6 @@
     <string name="pending_scrobbles">Scrobbling in attesa</string>
     <string name="pending_scrobble">Scrobbling in attesa</string>
     <string name="pending_scrobbles_noti">Elaborando gli scrobbling in attesa</string>
-    <string name="friends">Amici</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbling eseguiti, dal %2$s</string>
     <string name="allow_background">Consenti lo scrobbling in background</string>
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
@@ -245,7 +240,6 @@
     <string name="close" comment="To close a dialog or something">Chiudi</string>
     <string name="user_tags_hint" comment="To add a new tag">Nuova tag</string>
     <string name="user_tags_empty">Non hai aggiunto alcuna tag</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Tieni premuto su un brano per aprire</string>
     <string name="appwidget_loading">Caricamento…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Periodo</string>
     <string name="appwidget_theme">Tema</string>
@@ -394,7 +388,6 @@
     <string name="custom_listenbrainz">Server Listenbrainz personale</string>
     <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
     <string name="artist_extra">Brani, album &amp; simili</string>
     <string name="no_browser">Nessun browser installato</string>
     <string name="no_player">Nessun lettore musicale installato</string>

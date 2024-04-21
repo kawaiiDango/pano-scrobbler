@@ -90,12 +90,6 @@
         <item quantity="many">%1$d минут</item>
         <item quantity="other">%1$d минут</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s друг</item>
-        <item quantity="few">%1$s друга</item>
-        <item quantity="many">%1$s друзей</item>
-        <item quantity="other">%1$s друзей</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s ожидает</item>
         <item quantity="few">%1$s ожидают</item>
@@ -198,7 +192,6 @@
     <string name="pending_scrobbles">Отложенные скробблы</string>
     <string name="pending_scrobble">Отложенный скроббл</string>
     <string name="pending_scrobbles_noti">Обработка отложенных скробблов</string>
-    <string name="friends">Друзья</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скробблов с %2$s</string>
     <string name="allow_background">Разрешить скробблинг в фоновом режиме</string>
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
@@ -279,7 +272,6 @@
     <string name="close" comment="To close a dialog or something">Закрыть</string>
     <string name="user_tags_hint" comment="To add a new tag">Новый тег</string>
     <string name="user_tags_empty">Вы не добавили ни одного тега</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Нажмите и удерживайте трек, чтобы открыть его</string>
     <string name="appwidget_loading">Загрузка…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Период</string>
     <string name="appwidget_theme">Тема</string>
@@ -428,7 +420,6 @@
     <string name="custom_listenbrainz">Персонализация Listenbrainz</string>
     <string name="failed_encode_url">Не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Проверьте %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Доступ к специальному приложению&gt; Доступ к уведомлениям&gt; %1$s</string>
     <string name="artist_extra">Треки, альбомы и похожие исполнители</string>
     <string name="no_browser">Браузер не установлен</string>
     <string name="no_player">Музыкальный плеер не установлен</string>

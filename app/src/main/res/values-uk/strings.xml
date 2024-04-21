@@ -84,12 +84,6 @@
         <item quantity="many">%1$d хвилин</item>
         <item quantity="other">%1$d хвилин</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s друг</item>
-        <item quantity="few">%1$s друзів</item>
-        <item quantity="many">%1$s друзів</item>
-        <item quantity="other">%1$s друзів</item>
-    </plurals>
     <string name="yes">Так</string>
     <string name="no">Ні</string>
     <string name="reset">Скинути</string>
@@ -186,7 +180,6 @@
     <string name="pending_scrobbles">Очікуючі Скробли</string>
     <string name="pending_scrobble">Очікуючі Скробли</string>
     <string name="pending_scrobbles_noti">Обробка очікуючих скроблів</string>
-    <string name="friends">Друзі</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скроблів, з %2$s</string>
     <string name="allow_background">Дозволити скробблінг у фоновому режимі</string>
     <string name="grant_notification_access">Надайте доступ до сповіщень</string>
@@ -267,7 +260,6 @@
     <string name="close" comment="To close a dialog or something">Закрити</string>
     <string name="user_tags_hint" comment="To add a new tag">Новий тег</string>
     <string name="user_tags_empty">Ви не додали жодних тегів</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Натисніть та утримуйте для відкриття треку</string>
     <string name="appwidget_loading">Завантаження…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Період</string>
     <string name="appwidget_theme">Тема</string>
@@ -418,7 +410,6 @@
     <string name="custom_listenbrainz">Власний Listenbrainz</string>
     <string name="failed_encode_url">Не вдалося застосувати URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Перевірити %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Спеціальний доступ до програми &gt; Повідомлень &gt; %1$s</string>
     <string name="artist_extra">Популярні пісні, альбоми &amp; і схожі виконавці</string>
     <string name="no_browser">Браузер не встановлено</string>
     <string name="no_player">Не встановлено жодного музичного плеєра</string>

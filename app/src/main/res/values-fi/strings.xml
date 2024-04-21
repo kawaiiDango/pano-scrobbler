@@ -56,10 +56,6 @@
         <item quantity="one">%1$d minuutti</item>
         <item quantity="other">%1$d minuuttia</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s ystävä</item>
-        <item quantity="other">%1$s ystävää</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s odottaa</item>
         <item quantity="other">%1$s odottaa</item>
@@ -160,7 +156,6 @@
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
     <string name="pending_scrobble">Odottava scrobblaus</string>
     <string name="pending_scrobbles_noti">Käsitellään odottavia scrobblauksia</string>
-    <string name="friends">Ystävät</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblausta %2$s lähtien</string>
     <string name="allow_background">Salli scrobblaaminen taustalla</string>
     <string name="grant_notification_access">Myönnä ilmoitusten käyttöoikeus</string>
@@ -240,7 +235,6 @@
     <string name="close" comment="To close a dialog or something">Sulje</string>
     <string name="user_tags_hint" comment="To add a new tag">Uusi tunniste</string>
     <string name="user_tags_empty">Et ole lisännyt tunnisteita</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Paina kappaletta pitkään avataksesi tämän</string>
     <string name="appwidget_loading">Ladataan…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Jakso</string>
     <string name="appwidget_theme">Teema</string>
@@ -372,7 +366,6 @@
     <string name="custom_listenbrainz">Mukautettu Listenbrainz</string>
     <string name="failed_encode_url">URL-osoitteen koodaus epäonnistui</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Tarkista %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Erikoiskäyttö &gt; Ilmoitusten käyttö &gt; %1$s</string>
     <string name="artist_extra">Kappaleet, albumit &amp; samankaltaiset</string>
     <string name="no_browser">Ei asennettua selainta</string>
     <string name="no_player">Ei asennettua musiikkisoitinta</string>

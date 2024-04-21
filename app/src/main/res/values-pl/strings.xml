@@ -84,12 +84,6 @@
         <item quantity="many">%1$d minut</item>
         <item quantity="other">%1$d minut(y)</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s znajomy</item>
-        <item quantity="few">%1$s znajomych</item>
-        <item quantity="many">%1$s znajomych</item>
-        <item quantity="other">%1$s znajomych</item>
-    </plurals>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
     <string name="reset">Resetuj</string>
@@ -184,7 +178,6 @@
     <string name="pending_scrobbles">Oczekujące Scrobble</string>
     <string name="pending_scrobble">Oczekujące scrobble</string>
     <string name="pending_scrobbles_noti">Przetwarzanie oczekujących scrobbli</string>
-    <string name="friends">Znajomi</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbli, od %2$s</string>
     <string name="allow_background">Pozwól na scrobblowanie w tle</string>
     <string name="grant_notification_access">Zezwól na dostęp do powiadomień</string>
@@ -262,7 +255,6 @@
     <string name="close" comment="To close a dialog or something">Zamknij</string>
     <string name="user_tags_hint" comment="To add a new tag">Nowy znacznik</string>
     <string name="user_tags_empty">Nie dodano jeszcze żadnych tagów</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Przytrzymaj utwór aby otworzyć</string>
     <string name="appwidget_loading">Wczytywanie…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Okres</string>
     <string name="appwidget_theme">Motyw</string>
@@ -387,7 +379,6 @@
     <string name="lastfm_reauth">Uwierzytelnii ponownie, aby edytować lub usunąć scrobble</string>
     <string name="failed_encode_url">Nie udało się wprowadzić adresu URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Sprawdź %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Specjalny dostęp do aplikacji &gt; Dostęp do powiadomień &gt; %1$s</string>
     <string name="artist_extra">Ścieżki, albumy &amp; podobne</string>
     <string name="no_browser">Brak zainstalowanej przeglądarki</string>
     <string name="no_player">Brak zainstalowanego odtwarzacza muzyki</string>

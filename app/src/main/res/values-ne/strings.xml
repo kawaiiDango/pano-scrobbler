@@ -56,10 +56,6 @@
         <item quantity="one">%1$d मिनेट</item>
         <item quantity="other">%1$d मिनेट</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s साथी</item>
-        <item quantity="other">%1$s साथीहरू</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s विचाराधीन</item>
         <item quantity="other">%1$s विचाराधीन</item>
@@ -141,7 +137,6 @@
     <string name="edit">सम्पादन</string>
     <string name="delete">हटाउनुहोस्</string>
     <string name="pending_scrobbles_noti">विचाराधीन स्क्रबल प्रशोधन गर्दै</string>
-    <string name="friends">साथीहरू</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s देखि %1$s स्क्रबल</string>
     <string name="allow_background">ब्याकग्राउण्डमा स्क्रबल गर्ने अनुमति दिनुहोस्</string>
     <string name="grant_notification_access">सूचना पठाउने अनुमति प्रदान गर्नुहोस्</string>

@@ -60,10 +60,6 @@
         <item quantity="one">%1$d minuto</item>
         <item quantity="other">%1$d minutos</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s amigo</item>
-        <item quantity="other">%1$s amigos</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s pendente</item>
         <item quantity="other">%1$s pendentes</item>
@@ -115,6 +111,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicações</string>
     <string name="offline">Offline. Os dados mostrados não são recentes</string>
     <string name="unavailable_offline">Não disponível quando offline</string>
+    <string name="unavailable_tv">Não disponível na TV</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava a ouvir \n%1$s, a %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava a ouvir \n%1$s, a %2$s</string>
@@ -164,7 +161,6 @@
     <string name="pending_scrobbles">Scrobbles Pendentes</string>
     <string name="pending_scrobble">Scrobble pendente</string>
     <string name="pending_scrobbles_noti">A processar scrobbles pendentes</string>
-    <string name="friends">Amigos</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
     <string name="allow_background">Permitir scrobbles em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
@@ -245,7 +241,6 @@
     <string name="close" comment="To close a dialog or something">Fechar</string>
     <string name="user_tags_hint" comment="To add a new tag">Nova etiqueta</string>
     <string name="user_tags_empty">Ainda não adicionou nenhuma etiqueta</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Pressione e segure numa faixa para abrir isto</string>
     <string name="appwidget_loading">A carregar…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Período</string>
     <string name="appwidget_theme">Tema</string>
@@ -359,6 +354,9 @@
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
     <string name="pref_import">Importar</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Rede</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Código</string>
+    <string name="pref_imexport_network_notice">Para o modo de rede, ambos os dispositivos devem estar ligados à mesma rede.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalização</string>
     <string name="pref_themes" comment="Color themes">Temas</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Misturar e combinar\nTambém altera a cor das notificações</string>
@@ -396,7 +394,6 @@
     <string name="custom_listenbrainz">Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Selecione %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Acesso especial à aplicação &gt; Acesso às Notificações &gt; %1$s</string>
     <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
     <string name="no_browser">Nenhum navegador instalado</string>
     <string name="no_player">Nenhum reprodutor de música instalado</string>

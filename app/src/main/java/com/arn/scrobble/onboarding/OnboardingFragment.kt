@@ -64,7 +64,7 @@ class OnboardingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
+        setupAxisTransitions(MaterialSharedAxis.X)
 
         _binding = ContentOnboardingStepperBinding.inflate(inflater, container, false)
         return binding.root
@@ -126,41 +126,29 @@ class OnboardingFragment : Fragment() {
             canSkip = true,
             isCompleted = { Stuff.isNotificationListenerEnabled() },
             openAction = {
-                val intent = if (Stuff.isTv
-//                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-//                    && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
-                )
-                    Intent().setComponent(
-                        ComponentName(
-                            "com.android.tv.settings",
-                            "com.android.tv.settings.device.apps.AppsActivity"
-                        )
-                    )
-                else
-                    Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS)
-
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-                if (requireContext().packageManager.resolveActivity(
-                        intent,
-                        PackageManager.MATCH_DEFAULT_ONLY
-                    ) != null
-                ) {
-                    requireContext().startActivity(intent)
-                    if (intent.action == ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                        requireContext().toast(
-                            getString(
-                                R.string.check_nls,
-                                getString(R.string.app_name)
-                            )
+                val intent = if (Stuff.isTv) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                        Intent().setComponent(
+                            ComponentName(Stuff.PACKAGE_TV_SETTINGS, Stuff.ACTIVITY_TV_SETTINGS)
                         )
                     else
-                        requireContext().toast(
-                            getString(
-                                R.string.check_nls_tv,
+                        null
+                } else
+                    Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS)
+
+                intent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                if (intent != null) {
+                    requireContext().startActivity(intent)
+                    requireContext().toast(
+                        getString(
+                            R.string.check_nls,
+                            if (intent.action == ACTION_NOTIFICATION_LISTENER_SETTINGS)
                                 getString(R.string.app_name)
-                            )
+                            else
+                                getString(R.string.special_app_access)
                         )
+                    )
                 } else {
                     val args = Bundle().apply {
                         putString(Stuff.ARG_URL, getString(R.string.tv_link))

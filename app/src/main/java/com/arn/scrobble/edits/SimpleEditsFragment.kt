@@ -22,7 +22,6 @@ import com.arn.scrobble.databinding.ContentSimpleEditsBinding
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainNotifierViewModel
-import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
@@ -32,13 +31,21 @@ import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.flow.filterNotNull
 
 
-class SimpleEditsFragment : Fragment(), ItemClickListener<SimpleEdit> {
+class SimpleEditsFragment : Fragment() {
 
     private var _binding: ContentSimpleEditsBinding? = null
     private val binding
         get() = _binding!!
 
-    private val adapter by lazy { SimpleEditsAdapter(this) }
+    private val adapter by lazy {
+        SimpleEditsAdapter(
+            onItemClick = {
+                if (it.legacyHash == null) {
+                    showEditDialog(it)
+                }
+            },
+            onDelete = { viewModel.delete(it) })
+    }
     private val viewModel by viewModels<SimpleEditsVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
@@ -133,13 +140,5 @@ class SimpleEditsFragment : Fragment(), ItemClickListener<SimpleEdit> {
 
     private fun showEditDialog(edit: SimpleEdit?) {
         findNavController().navigate(R.id.simpleEditsEditFragment, bundleOf(Stuff.ARG_EDIT to edit))
-    }
-
-    override fun onItemClick(view: View, position: Int, item: SimpleEdit) {
-        if (view.id == R.id.edits_delete) {
-            viewModel.delete(item)
-        } else if (item.legacyHash == null) {
-            showEditDialog(item)
-        }
     }
 }

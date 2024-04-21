@@ -146,23 +146,26 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
         if (prefs.regexLearnt) {
             findNavController().navigate(R.id.regexEditsAddFragment, args)
         } else {
-            MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.edit_regex_warning)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
+            MaterialAlertDialogBuilder(requireContext()).apply {
+                setMessage(R.string.edit_regex_warning)
+                setPositiveButton(android.R.string.ok) { _, _ ->
                     findNavController().navigate(R.id.regexEditsAddFragment, args)
                 }
-                .setNeutralButton(R.string.learn) { _, _ ->
-                    runCatching {
-                        startActivity(
-                            Intent(Intent.ACTION_WEB_SEARCH)
-                                .putExtra(SearchManager.QUERY, "regex tutorial")
-                        )
+
+                if (!Stuff.isTv)
+                    setNeutralButton(R.string.learn) { _, _ ->
+                        runCatching {
+                            startActivity(
+                                Intent(Intent.ACTION_WEB_SEARCH)
+                                    .putExtra(SearchManager.QUERY, "regex tutorial")
+                            )
+                        }
                     }
-                }
-                .setNegativeButton(R.string.hide) { _, _ ->
+                setNegativeButton(R.string.hide) { _, _ ->
                     prefs.regexLearnt = true
                     findNavController().navigate(R.id.regexEditsAddFragment, args)
                 }
+            }
                 .show()
         }
     }

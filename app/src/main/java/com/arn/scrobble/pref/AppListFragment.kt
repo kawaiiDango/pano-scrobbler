@@ -72,10 +72,6 @@ class AppListFragment : Fragment() {
         if (!binding.appList.isInTouchMode)
             binding.appList.requestFocus()
 
-        if (Stuff.isTv) {
-            requireContext().toast(R.string.press_back)
-        }
-
         if (singleChoiceArg)
             setTitle(R.string.choose_an_app)
 

@@ -62,10 +62,6 @@
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s friend</item>
-        <item quantity="other">%1$s friends</item>
-    </plurals>
     <plurals name="num_pending"
         comment="Used for pending loves, pending scrobbles"
         >
@@ -242,7 +238,12 @@
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobble">Pending scrobble</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
-    <string name="friends">Friends</string>
+    <string name="following"
+        comment="accounts you are following on lastfm"
+        >Following</string>
+    <string name="followers"
+        comment="your lastfm followers"
+        >Followers</string>
     <string name="num_scrobbles_since" formatted="true"
         comment="%1= number, %2= date of joining lastfm"
         >%1$s scrobbles, since %2$s</string>
@@ -392,9 +393,6 @@
         comment="To add a new tag"
         >New tag</string>
     <string name="user_tags_empty">You haven\'t added any tags</string>
-    <string name="info_long_press_hint"
-        comment="'This' is a dialog"
-        >Long press on a track to open this</string>
 
     <string name="appwidget_loading">Loading…</string>
     <string name="appwidget_period"
@@ -691,9 +689,6 @@
     <string name="check_nls" formatted="true"
         comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings"
         >Check %1$s</string>
-    <string name="check_nls_tv" formatted="true"
-        comment="%1= the name Pano Scrobbler"
-        >Special app access > Notification Access > %1$s</string>
     <string name="artist_extra">Tracks, albums &amp; similar</string>
     <string name="no_browser">No browser is installed</string>
     <string name="no_player">No music player is installed</string>
@@ -739,6 +734,7 @@
     <string name="fix_it_title">Possible fixes</string>
     <string name="fix_it_startup_title">Power savers / startup managers</string>
     <string name="fix_it_battery_title">Disable battery optimizations</string>
+    <string name="fix_it_energy_title">Disable energy optimizations</string>
     <string name="fix_it_action"
         comment="(To open an app)"
         >Open</string>

@@ -35,6 +35,7 @@ import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.scheduleTransition
 import com.arn.scrobble.utils.UiUtils.startFadeLoop
 import com.github.mikephil.charting.charts.RadarChart
@@ -122,6 +123,12 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                     0,
                     0
                 )
+
+                arrayOf(
+                    binding.infoExtraHeader1,
+                    binding.infoExtraHeader2,
+                    binding.infoExtraHeader3
+                ).forEach { it.fixFocusabilityOnTv() }
 
                 binding.infoExtraTitle.text = musicEntry.name
 

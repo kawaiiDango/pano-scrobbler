@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:isScrollContainer="true"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="@dimen/overscan_padding_horiz">
 
         <TextView
             android:id="@+id/login_info"

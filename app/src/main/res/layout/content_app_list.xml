@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:nestedScrollingEnabled="true"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         android:transitionGroup="true"
         tools:listitem="@layout/list_item_app" />
-    </FrameLayout>
+</FrameLayout>

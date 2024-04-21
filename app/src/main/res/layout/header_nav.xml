@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/overscan_padding_vert">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/nav_profile_pic"
@@ -114,8 +115,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:contentDescription="@string/profile"
-        android:tooltipText="@string/profile"
+        android:contentDescription="@string/scrobble_services"
+        android:tooltipText="@string/scrobble_services"
         app:backgroundTint="?android:colorBackground"
         app:elevation="4dp"
         app:icon="@drawable/vd_arrow_down"

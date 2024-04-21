@@ -57,11 +57,6 @@
                 </menu>
             </item>
             <item
-                android:id="@+id/menu_info"
-                android:icon="@drawable/vd_info"
-                android:title="@string/details"
-                app:iconTint="?android:colorForeground" />
-            <item
                 android:id="@+id/menu_share"
                 android:icon="@drawable/vd_share"
                 android:title="@string/share"

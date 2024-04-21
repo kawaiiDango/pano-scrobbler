@@ -3,9 +3,7 @@ package com.arn.scrobble.recents
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
@@ -17,11 +15,7 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.OvershootInterpolator
-import android.widget.FrameLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.IntRange
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -69,7 +63,6 @@ import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.ItemLongClickListener
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SimpleHeaderDecoration
@@ -87,7 +80,6 @@ import com.arn.scrobble.utils.UiUtils.setTitle
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.toast
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -95,6 +87,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -120,14 +113,9 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var animSet: AnimatorSet? = null
     private val args by navArgs<ScrobblesFragmentArgs>()
+    private var lastSetHeroJob: Job? = null
 
-    private val itemLongClickListener = object : ItemLongClickListener<Any> {
-        override fun onItemLongClick(view: View, position: Int, item: Any) {
-            val track = item as? Track ?: return
-            showTrackInfo(track)
-        }
-    }
-    lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
+    private lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -141,7 +129,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     }
 
     override fun onDestroyView() {
-        coordinatorBinding.heroButtonsGroup.children.forEach { it.setOnClickListener(null) }
         coordinatorBinding.heroImg.dispose()
         coordinatorBinding.heroImg.setImageBitmap(null)
         _binding = null
@@ -189,7 +176,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             android.R.attr.colorBackground,
             null
         )
-        coordinatorBinding.sidebarNav.setBackgroundColor(bgColor)
+//        coordinatorBinding.sidebarNav.setBackgroundColor(bgColor)
         coordinatorBinding.ctl.setStatusBarScrimColor(bgColor)
     }
 
@@ -202,8 +189,13 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             fragmentBinding = binding,
             findNavController(),
             itemClickListener = this,
-            itemLongClickListener = itemLongClickListener,
             setHeroListener = this,
+            onFocusChange = { pos ->
+                val lastClickedPos = viewModel.selectedPos
+                viewModel.selectedPos = pos
+                adapter.notifyItemChanged(lastClickedPos)
+                adapter.notifyItemChanged(pos)
+            },
             viewModel = viewModel,
             userIsSelf = activityViewModel.currentUser.isSelf,
         )
@@ -355,21 +347,8 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             }
         }
 
-        coordinatorBinding.heroShare.setOnClickListener { showShareSheet() }
-
-        coordinatorBinding.heroInfo.setOnClickListener { showInfoSheetFromHero() }
-
         binding.randomChip.setOnClickListener {
-            val arguments = Bundle().apply {
-                putInt(
-                    Stuff.ARG_TYPE,
-                    if (viewModel.isShowingLoves)
-                        Stuff.TYPE_LOVES
-                    else
-                        Stuff.TYPE_TRACKS
-                )
-            }
-            findNavController().navigate(R.id.randomFragment, arguments)
+            findNavController().navigate(R.id.randomFragment)
         }
 
         binding.timeJumpChip.setOnClickListener { v ->
@@ -432,9 +411,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             )
         }
 
-        if (!Stuff.isTv)
-            coordinatorBinding.heroButtonsGroup.isVisible = true
-
         // old value found, could be a uiMode change
         viewModel.paletteColors.value?.setDarkModeFrom(requireContext())
 
@@ -446,33 +422,17 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             if (skeleton.isSkeleton())
                 return@collectLatestLifecycleFlow
 
-            val contentBgFrom = (binding.root.background as ColorDrawable).color
-            val tintButtonsFrom =
-                (coordinatorBinding.heroButtonsGroup.children.first() as MaterialButton)
-                    .iconTint.defaultColor
 
-            val animSetList = mutableListOf<Animator>()
-
-            coordinatorBinding.heroButtonsGroup.children.forEach { button ->
-                button as MaterialButton
-                animSetList += ValueAnimator.ofArgb(
-                    tintButtonsFrom,
-                    colors.foreground
-                ).apply {
-                    addUpdateListener {
-                        button.iconTint = ColorStateList.valueOf(it.animatedValue as Int)
-                    }
-                }
-            }
-
-            if (!billingViewModel.proStatus.value || prefs.themeTintBackground) {
-                if (UiUtils.isTabletUi)
-                    animSetList += ObjectAnimator.ofArgb(
-                        activity.binding.sidebarNav,
-                        "backgroundColor",
-                        contentBgFrom,
-                        colors.background
-                    )
+            if ((!billingViewModel.proStatus.value || prefs.themeTintBackground) && !UiUtils.isTabletUi) {
+                val animSetList = mutableListOf<Animator>()
+                val contentBgFrom = (binding.root.background as ColorDrawable).color
+//                if (UiUtils.isTabletUi)
+//                    animSetList += ObjectAnimator.ofArgb(
+//                        activity.binding.sidebarNav,
+//                        "backgroundColor",
+//                        contentBgFrom,
+//                        colors.background
+//                    )
                 animSetList += ObjectAnimator.ofArgb(
                     binding.root,
                     "backgroundColor",
@@ -481,31 +441,28 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 )
 
                 binding.scrobblesList.children.forEach {
-                    val titleTextView = it.findViewById<TextView>(R.id.recents_title)
-                    if (titleTextView != null)
-                        animSetList += ObjectAnimator.ofArgb(
-                            titleTextView,
-                            "textColor",
-                            tintButtonsFrom,
-                            colors.foreground
-                        )
+                    it.findViewById<TextView>(R.id.recents_title)?.setTextColor(colors.foreground)
                 }
 
                 activity.binding.ctl.setStatusBarScrimColor(colors.background)
-            } else {
-                animSetList += ObjectAnimator.ofArgb(
-                    binding.root, "backgroundColor", contentBgFrom,
-                    MaterialColors.getColor(context, android.R.attr.colorBackground, null)
-                )
+                animSet?.apply {
+                    cancel()
+                    playTogether(animSetList)
+                    interpolator = AccelerateDecelerateInterpolator()
+                    duration = 1000
+                    start()
+                }
             }
 
-            animSet?.apply {
-                cancel()
-                playTogether(animSetList)
-                interpolator = AccelerateDecelerateInterpolator()
-                duration = 1000
-                start()
-            }
+        }
+
+        collectLatestLifecycleFlow(
+            viewModel.scrobblerEnabled.filterNotNull()
+                .combine(viewModel.scrobblerServiceRunning) { enabled, running ->
+                    enabled to running
+                },
+        ) { (enabled, running) ->
+            adapter.updateScrobblerDisabledNotice(enabled, running)
         }
 
         binding.scrobblesChipGroup.isVisible = args.showChips
@@ -520,17 +477,8 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                         timePeriod = null,
                     ), true
                 )
-            }
-        }
-    }
 
-    private fun showInfoSheetFromHero() {
-        val track = viewModel.tracks.value?.getOrNull(viewModel.selectedPos)
-        if (track is Track) {
-            showTrackInfo(track)
-            if (!prefs.longPressLearnt) {
-                requireContext().toast(R.string.info_long_press_hint, Toast.LENGTH_LONG)
-                prefs.longPressLearnt = true
+                viewModel.updateScrobblerServiceStatus()
             }
         }
     }
@@ -657,60 +605,68 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     override fun onSetHero(track: Track, cacheKey: MemoryCache.Key?) {
         _binding ?: return
 
-        val reqData: Any = if (viewModel.isShowingLoves)
-            MusicEntryImageReq(track, true)
-        else
-            (track.webp600 ?: "")
+        lastSetHeroJob?.cancel()
+        lastSetHeroJob = viewLifecycleOwner.lifecycleScope.launch {
+            delay(200)
 
-        val errColor = UiUtils.getMatColor(
-            coordinatorBinding.heroImg.context,
-            Objects.hash(track.artist.name, track.name)
-        )
-        val errDrawable =
-            ContextCompat.getDrawable(requireContext(), R.drawable.vd_wave_simple_filled)!!
-                .apply { setTint(errColor) }
+            val reqData: Any = if (viewModel.isShowingLoves)
+                MusicEntryImageReq(track, true)
+            else
+                (track.webp600 ?: "")
 
-        coordinatorBinding.heroImg.load(reqData) {
-            placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
-            placeholder(R.drawable.avd_loading)
-            error(errDrawable)
-            listener(
-                onSuccess = { _, result ->
-                    // Create the palette on a background thread.
-                    Palette.Builder(result.drawable.toBitmap())
-                        .generate { palette ->
-                            viewModel.setPaletteColors(
-                                PaletteColors(
-                                    context ?: return@generate,
-                                    palette ?: return@generate
-                                )
-                            )
-                        }
-                },
-                onError = { imageRequest, errorResult ->
-                    val swatch = Palette.Swatch(errColor, 1)
-                    val palette = Palette.from(listOf(swatch))
-                    viewModel.setPaletteColors(PaletteColors(requireContext(), palette))
-                }
+            val errColor = UiUtils.getMatColor(
+                coordinatorBinding.heroImg.context,
+                Objects.hash(track.artist.name, track.name)
             )
+            val errDrawable =
+                ContextCompat.getDrawable(requireContext(), R.drawable.vd_wave_simple_filled)!!
+                    .apply { setTint(errColor) }
+
+            coordinatorBinding.heroImg.load(reqData) {
+                placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
+                placeholder(R.drawable.avd_loading)
+                error(errDrawable)
+                listener(
+                    onSuccess = { _, result ->
+                        // Create the palette on a background thread.
+                        Palette.Builder(result.drawable.toBitmap())
+                            .generate { palette ->
+                                viewModel.setPaletteColors(
+                                    PaletteColors(
+                                        context ?: return@generate,
+                                        palette ?: return@generate
+                                    )
+                                )
+                            }
+                    },
+                    onError = { imageRequest, errorResult ->
+                        val swatch = Palette.Swatch(errColor, 1)
+                        val palette = Palette.from(listOf(swatch))
+                        viewModel.setPaletteColors(PaletteColors(requireContext(), palette))
+                    }
+                )
+            }
         }
     }
 
     override fun onItemClick(view: View, position: Int, item: Any) {
-        val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         if (item !is Track) {
             if (view.id == R.id.recents_menu)
                 PopupMenuUtils.openPendingPopupMenu(
-                    dateFrame,
+                    view,
                     viewLifecycleOwner.lifecycleScope,
                     item
                 )
             return
         }
         when (view.id) {
-            R.id.recents_menu -> openTrackPopupMenu(dateFrame, item)
+            R.id.recents_menu -> openTrackPopupMenu(view, item)
 
-            else -> {
+            R.id.recents_img_frame, R.id.recents_track_ll -> {
+
+                if (view.id == R.id.recents_track_ll)
+                    showTrackInfo(item)
+
                 val lastClickedPos = viewModel.selectedPos
                 viewModel.selectedPos = position
                 adapter.notifyItemChanged(lastClickedPos)
@@ -731,9 +687,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     if (!Stuff.isTv)
                         coordinatorBinding.appBar.setExpanded(true, true)
                 }
-
-                if (!view.isInTouchMode)
-                    openTrackPopupMenu(dateFrame, item)
             }
         }
     }
@@ -771,24 +724,28 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         if (Scrobblables.current !is ListenBrainz)
             moreMenu.removeItem(R.id.menu_hate)
 
-        if (anchor.isInTouchMode) {
-            moreMenu.removeItem(R.id.menu_info)
-            moreMenu.removeItem(R.id.menu_share)
-        }
-
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.menu_love -> loveUnloveHate(
-                    (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
-                    track,
-                    if (track.userloved == true) 0 else 1
-                )
+                R.id.menu_love -> {
+                    val newLoved = track.userloved != true
+                    viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        ScrobbleEverywhere.loveOrUnlove(track, newLoved)
+                    }
 
-                R.id.menu_hate -> loveUnloveHate(
-                    (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
-                    track,
-                    if (track.userHated == true) 0 else -1
-                )
+                    viewModel.editTrack(track.copy(userloved = newLoved, userHated = false))
+                }
+
+                R.id.menu_hate -> {
+                    val newHated = track.userHated != true
+                    viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        if (newHated)
+                            (Scrobblables.current as? ListenBrainz)?.hate(track)
+                        else
+                            ScrobbleEverywhere.loveOrUnlove(track, false)
+                    }
+
+                    viewModel.editTrack(track.copy(userloved = false, userHated = newHated))
+                }
 
                 R.id.menu_edit -> PopupMenuUtils.editScrobble(findNavController(), track)
                 R.id.menu_delete -> PopupMenuUtils.deleteScrobble(
@@ -839,7 +796,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     Stuff.launchSearchIntent(track, pkgName)
                 }
 
-                R.id.menu_info -> showInfoSheetFromHero()
                 R.id.menu_share -> showShareSheet()
             }
             true
@@ -889,61 +845,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         }
 
         dpd.show(parentFragmentManager, null)
-    }
-
-    private fun loveUnloveHate(loveIcon: View, track: Track, @IntRange(-1, 1) score: Int) {
-        val alphaAnimator = ObjectAnimator.ofFloat(loveIcon, "alpha", 0f)
-        val scalexAnimator = ObjectAnimator.ofFloat(loveIcon, "scaleX", 0f)
-        val scaleyAnimator = ObjectAnimator.ofFloat(loveIcon, "scaleY", 0f)
-        val rotAnimator = ObjectAnimator.ofFloat(loveIcon, "rotation", 0f)
-
-        val isRtl = resources.getBoolean(R.bool.is_rtl)
-
-        if (score == 0) { // was loved or hated
-            viewModel.viewModelScope.launch(Dispatchers.IO) {
-                ScrobbleEverywhere.loveOrUnlove(track, false)
-            }
-
-            alphaAnimator.setFloatValues(0f)
-            scalexAnimator.setFloatValues(1f, 2f)
-            scaleyAnimator.setFloatValues(1f, 2f)
-            val startRot = if (isRtl) -10f else 10f
-            val toRot = if (isRtl) 50f else -50f
-            rotAnimator.setFloatValues(startRot, toRot)
-        } else {
-            loveIcon.background = ContextCompat.getDrawable(
-                requireContext(),
-                if (score == 1)
-                    R.drawable.vd_heart_stroked
-                else
-                    R.drawable.vd_heart_break_stroked
-            )
-
-            if (score == 1)
-                viewModel.viewModelScope.launch(Dispatchers.IO) {
-                    ScrobbleEverywhere.loveOrUnlove(track, true)
-                }
-            else
-                viewModel.viewModelScope.launch {
-                    (Scrobblables.current as? ListenBrainz)?.hate(track)
-                }
-
-            loveIcon.alpha = 0f
-            loveIcon.visibility = View.VISIBLE
-            alphaAnimator.setFloatValues(0.9f)
-            scalexAnimator.setFloatValues(2f, 1f)
-            scaleyAnimator.setFloatValues(2f, 1f)
-            val startRot = if (isRtl) 50f else -50f
-            val toRot = if (isRtl) -10f else 10f
-            rotAnimator.setFloatValues(startRot, toRot)
-        }
-        val aSet = AnimatorSet()
-        aSet.playTogether(alphaAnimator, scalexAnimator, scaleyAnimator, rotAnimator)
-        aSet.interpolator = OvershootInterpolator()
-        aSet.duration = 800
-        aSet.start()
-
-        viewModel.editTrack(track.copy(userloved = score == 1, userHated = score == -1))
     }
 
     private fun showTrackInfo(track: Track) {

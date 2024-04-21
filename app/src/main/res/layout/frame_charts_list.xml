@@ -28,7 +28,7 @@
         android:clipToPadding="false"
         android:layoutAnimation="@anim/layout_animation_slide_left"
         android:nestedScrollingEnabled="false"
-        android:paddingStart="8dp"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,6 +1,6 @@
 <resources>
     <dimen name="app_bar_height">350dp</dimen>
-    <dimen name="fab_margin">24dp</dimen>
+    <dimen name="fab_margin">48dp</dimen>
     <dimen name="elevation_appbar">10dp</dimen>
     <dimen name="list_item_padding">8dp</dimen>
     <dimen name="compound_drawable_padding">8dp</dimen>
@@ -8,7 +8,7 @@
     <dimen name="sidebar_width">0dp</dimen>
     <dimen name="grid_size">200dp</dimen>
     <dimen name="max_grid_size">350dp</dimen>
-    <dimen name="min_grid_size">100dp</dimen>
+    <dimen name="min_grid_size">150dp</dimen>
     <dimen name="recents_overlay_rotate">10</dimen>
     <dimen name="corner_radius">12dp</dimen>
     <dimen name="corner_radius_big">16dp</dimen>
@@ -24,5 +24,7 @@
     <dimen name="charts_horizontal_list_width">150dp</dimen>
     <dimen name="regex_test_chip_max_width">200dp</dimen>
     <dimen name="bottom_nav_height">60dp</dimen>
+    <dimen name="overscan_padding_horiz">24dp</dimen>
+    <dimen name="overscan_padding_vert">0dp</dimen>
     <integer name="splash_screen_duration">600</integer>
 </resources>

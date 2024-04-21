@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -52,6 +53,9 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FrameChartsListBinding.inflate(inflater, container, false)
+        binding.frameLayout.updateLayoutParams {
+            height = ViewGroup.LayoutParams.MATCH_PARENT
+        }
         binding.chartsList.isNestedScrollingEnabled = true
         binding.chartsList.setupInsets()
         return binding.root

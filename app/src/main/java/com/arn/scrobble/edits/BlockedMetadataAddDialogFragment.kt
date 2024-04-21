@@ -58,7 +58,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                 it.setEndIconDrawable(R.drawable.vd_cancel)
             }
 
-            if (ignoredArtist != blockedMetadata.artist) {
+            if (ignoredArtist != blockedMetadata.artist && !ignoredArtist.isNullOrEmpty()) {
                 useChannel.visibility = View.VISIBLE
                 useChannel.setOnCheckedChangeListener { _, checked ->
                     blockArtistEdittext.setText(

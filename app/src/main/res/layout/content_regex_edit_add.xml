@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/dialog_padding"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         android:paddingTop="@dimen/dialog_padding">
 
         <com.google.android.material.textfield.TextInputLayout

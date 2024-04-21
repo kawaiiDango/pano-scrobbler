@@ -24,6 +24,7 @@ import android.view.ViewGroup
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
@@ -39,6 +40,7 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.main.App
+import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.onboarding.LoginFlows
 import com.arn.scrobble.utils.ForceLogException
 import com.arn.scrobble.utils.LocaleUtils
@@ -47,6 +49,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.copyToClipboard
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
+import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
@@ -70,6 +73,7 @@ import java.util.Locale
 
 class PrefFragment : PreferenceFragmentCompat() {
     private val prefs = App.prefs
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -387,8 +391,9 @@ class PrefFragment : PreferenceFragmentCompat() {
                 findNavController().navigate(R.id.billingFragment)
                 true
             }
-
         }
+
+        hideOnTV.add(linkHeartButtonToRating)
 
 //        if (prefs.checkForUpdates == null) {
 //            findPreference<SwitchPreference>("check_for_updates")!!
@@ -459,7 +464,15 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("translate_credits")!!
             .setOnPreferenceClickListener {
-                Stuff.openInBrowser(getString(R.string.crowdin_link) + "/members")
+                val url = getString(R.string.crowdin_link) + "/members"
+                if (Stuff.isTv) {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(getString(R.string.tv_url_notice) + "\n\n$url")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                } else {
+                    Stuff.openInBrowser(url)
+                }
                 true
             }
 
@@ -475,8 +488,16 @@ class PrefFragment : PreferenceFragmentCompat() {
         val about = findPreference<Preference>("about")!!
         try {
             about.title = "v " + BuildConfig.VERSION_NAME
+
             about.setOnPreferenceClickListener {
-                Stuff.openInBrowser(about.summary.toString())
+                if (!Stuff.isTv) {
+                    Stuff.openInBrowser(about.summary.toString())
+                } else {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(getString(R.string.tv_url_notice) + "\n\n" + about.summary)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
                 true
             }
         } catch (e: PackageManager.NameNotFoundException) {
@@ -558,7 +579,9 @@ class PrefFragment : PreferenceFragmentCompat() {
         postponeEnterTransition()
 
         listView.clipToPadding = false
-        listView.setupInsets()
+        listView.setupInsets(
+            additionalSpaceSides = if (UiUtils.isTabletUi) resources.getDimensionPixelSize(R.dimen.overscan_padding_horiz) else 0
+        )
 
         super.onViewCreated(view, savedInstanceState)
 
@@ -594,6 +617,10 @@ class PrefFragment : PreferenceFragmentCompat() {
                     it,
                     it.format()
                 )
+        }
+
+        if (arguments?.getBoolean(Stuff.ARG_SCROLL_TO_ACCOUNTS, false) == true) {
+            scrollToPreference("accounts")
         }
     }
 

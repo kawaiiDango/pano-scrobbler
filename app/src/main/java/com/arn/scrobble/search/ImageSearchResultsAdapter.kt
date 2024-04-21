@@ -1,6 +1,5 @@
 package com.arn.scrobble.search
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
@@ -19,7 +18,6 @@ import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 
 
 class ImageSearchResultsAdapter(
-    private val context: Context,
     private val clickListener: ItemClickListener<SpotifyMusicItem>
 ) :
     ListAdapter<SpotifyMusicItem, ImageSearchResultsAdapter.VHImageSearchResult>(
@@ -58,10 +56,11 @@ class ImageSearchResultsAdapter(
         private lateinit var musicItem: SpotifyMusicItem
 
         init {
-            binding.recentsMenuText.isVisible = false
             binding.recentsMenu.isInvisible = true
             binding.recentsImgOverlay.isVisible = false
-            itemView.setOnClickListener {
+
+            binding.root.isFocusable = true
+            binding.root.setOnClickListener {
                 itemClickListener.call(
                     itemView,
                     bindingAdapterPosition

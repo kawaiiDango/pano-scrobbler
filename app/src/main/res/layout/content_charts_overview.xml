@@ -71,7 +71,7 @@
                     android:id="@+id/charts_listening_activity_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="8dp">
+                    android:paddingHorizontal="16dp">
 
                     <View
                         android:id="@+id/charts_listening_activity_skeleton"

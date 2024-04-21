@@ -19,7 +19,7 @@ class HomePagerAdapter(fragment: BasePagerFragment, accountType: AccountType) :
                     ScrobblesFragment()
                         .apply { arguments = ScrobblesFragmentArgs().toBundle() }
                 },
-                TabMetadata(R.string.friends, R.drawable.vd_friends) { FriendsFragment() },
+                TabMetadata(R.string.following, R.drawable.vd_friends) { FriendsFragment() },
                 TabMetadata(R.string.charts, R.drawable.vd_charts) { ChartsOverviewFragment() },
             )
 

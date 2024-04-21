@@ -12,7 +12,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.arn.scrobble.main.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.AccountType
@@ -23,13 +22,14 @@ import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.friends.UserAccountTemp
+import com.arn.scrobble.main.App
 import com.arn.scrobble.recents.PopupMenuUtils
+import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.toast
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +61,8 @@ open class LoginFragment : DialogFragment() {
         showsDialog = false
         _binding = ContentLoginBinding.inflate(inflater, container, false)
         args.infoText?.let {
-            binding.loginInfo.autoLinkMask = Linkify.WEB_URLS
+            if (!Stuff.isTv)
+                binding.loginInfo.autoLinkMask = Linkify.WEB_URLS
             binding.loginInfo.text = it
             binding.loginInfo.visibility = View.VISIBLE
         }

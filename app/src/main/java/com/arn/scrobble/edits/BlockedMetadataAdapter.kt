@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,11 +13,12 @@ import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ListItemBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.GenericDiffCallback
-import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.utils.UiUtils.showWithIcons
 
 
 class BlockedMetadataAdapter(
-    private val itemClickListener: ItemClickListener<BlockedMetadata>
+    private val onItemClick: (BlockedMetadata) -> Unit,
+    private val onDelete: (BlockedMetadata) -> Unit
 ) : ListAdapter<BlockedMetadata, BlockedMetadataAdapter.VHBlockedMetadata>(
     GenericDiffCallback { o, n -> o._id == n._id }
 ) {
@@ -30,7 +32,8 @@ class BlockedMetadataAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return VHBlockedMetadata(
             ListItemBlockedMetadataBinding.inflate(inflater, parent, false),
-            itemClickListener
+            onItemClick,
+            onDelete
         )
     }
 
@@ -43,19 +46,27 @@ class BlockedMetadataAdapter(
 
     inner class VHBlockedMetadata(
         private val binding: ListItemBlockedMetadataBinding,
-        private val itemClickListener: ItemClickListener<BlockedMetadata>
+        private val onItemClick: (BlockedMetadata) -> Unit,
+        private val onDelete: (BlockedMetadata) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.blockedMetadataListContent.setOnClickListener {
-                itemClickListener.call(
-                    it,
-                    bindingAdapterPosition
-                ) { getItem(bindingAdapterPosition) }
+                onItemClick(getItem(bindingAdapterPosition))
             }
-            binding.delete.setOnClickListener {
-                itemClickListener.call(
-                    it, bindingAdapterPosition
-                ) { getItem(bindingAdapterPosition) }
+
+            binding.deleteMenu.setOnClickListener { v ->
+                PopupMenu(v.context, v).apply {
+                    inflate(R.menu.delete_menu)
+                    setOnMenuItemClickListener { item ->
+                        if (item.itemId == R.id.delete) {
+                            onDelete(getItem(bindingAdapterPosition))
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                    showWithIcons()
+                }
             }
 
             fun setScaledDrawable(textView: TextView, @DrawableRes drawableRes: Int) {

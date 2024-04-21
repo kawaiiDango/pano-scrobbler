@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/type_track"
+        android:icon="@drawable/vd_note"
+        android:title="@string/track"
+        app:iconTint="?colorControlNormal" />
+
+    <item
+        android:id="@+id/type_loved"
+        android:icon="@drawable/vd_heart"
+        android:title="@string/loved_track"
+        app:iconTint="?colorControlNormal" />
+
+    <item
+        android:id="@+id/type_album"
+        android:icon="@drawable/vd_album"
+        android:title="@string/album"
+        app:iconTint="?colorControlNormal" />
+    <item
+        android:id="@+id/type_artist"
+        android:icon="@drawable/vd_mic"
+        android:title="@string/artist"
+        app:iconTint="?colorControlNormal" />
+
+</menu>

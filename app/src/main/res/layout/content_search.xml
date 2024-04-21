@@ -11,7 +11,7 @@
         style="?textInputOutlinedExposedDropdownMenuStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         app:endIconMode="dropdown_menu"
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,6 +63,19 @@
         android:layoutAnimation="@anim/layout_animation_slide_up"
         android:scrollbars="vertical"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_term"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_found"
+        android:textAppearance="?textAppearanceHeadlineSmall"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

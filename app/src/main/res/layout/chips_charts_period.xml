@@ -44,9 +44,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:fadingEdge="horizontal"
+        android:clipToPadding="false"
         android:layoutAnimation="@anim/layout_animation_slide_left"
         android:orientation="horizontal"
-        android:requiresFadingEdge="horizontal"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         android:scrollbars="none" />
 </LinearLayout>

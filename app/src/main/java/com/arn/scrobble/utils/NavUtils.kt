@@ -33,6 +33,7 @@ import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.slide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 object NavUtils {
@@ -171,8 +172,16 @@ object NavUtils {
 
             popup.menu.add(1, -2, 0, R.string.profile)
                 .apply { setIcon(R.drawable.vd_open_in_new) }
-            popup.menu.add(1, -1, 0, R.string.reports)
-                .apply { setIcon(R.drawable.vd_open_in_new) }
+
+            if (!Stuff.isTv) {
+                popup.menu.add(1, -1, 0, R.string.reports)
+                    .apply { setIcon(R.drawable.vd_open_in_new) }
+            }
+
+//            if (currentUser.isSelf || Stuff.isTv) {
+//                popup.menu.add(1, -3, 0, R.string.scrobble_services)
+//                    .apply { setIcon(R.drawable.vd_accounts) }
+//            }
 
             if (mainNotifierViewModel.currentUser.isSelf) {
                 Scrobblables.all.forEachIndexed { idx, it ->
@@ -192,7 +201,22 @@ object NavUtils {
 
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    -2 -> Stuff.openInBrowser(currentUser.url)
+                    -3 -> {
+                        val args = Bundle().apply { putBoolean(Stuff.ARG_SCROLL_TO_ACCOUNTS, true) }
+                        navController.navigate(R.id.prefFragment, args)
+                    }
+
+                    -2 -> {
+                        if (Stuff.isTv) {
+                            MaterialAlertDialogBuilder(headerNavBinding.root.context)
+                                .setMessage(App.context.getString(R.string.tv_url_notice) + "\n\n " + currentUser.url)
+                                .setPositiveButton(android.R.string.ok, null)
+                                .show()
+                        } else {
+                            Stuff.openInBrowser(currentUser.url)
+                        }
+                    }
+
                     -1 -> {
                         when (currentAccount.type) {
                             AccountType.LASTFM -> Stuff.openInBrowser("https://www.last.fm/user/${currentUser.name}/listening-report/week")
@@ -229,24 +253,6 @@ object NavUtils {
             popup.showWithIcons()
         }
     }
-
-//    fun BasePagerFragment.scrollToTop() {
-//        val currentFragment = adapter.instantiateItem(
-//            binding.pager,
-//            binding.pager.currentItem
-//        ) as Fragment
-//        val scrollableView = currentFragment.view
-//            ?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
-//            ?.get(0)
-//
-//        if (scrollableView is RecyclerView)
-//            scrollableView.smoothScrollToPosition(0)
-//        else if (scrollableView is ConstraintLayout) // for frame_charts_list
-//            (scrollableView.children.find { it is RecyclerView } as? RecyclerView)
-//                ?.smoothScrollToPosition(0)
-//        else if (scrollableView != null)
-//            ObjectAnimator.ofInt(scrollableView, "scrollY", 0).start()
-//    }
 
     fun BasePagerFragment.setupWithNavUi() {
         val activityBinding = (activity as? MainActivity)?.binding ?: return
@@ -334,7 +340,8 @@ object NavUtils {
                                 moreMenu.setIcon(R.drawable.vd_more_horiz)
                             }
 
-                            activityBinding.sidebarNav.inflateMenu(optionsMenuRes)
+                            if (optionsMenuRes != 0)
+                                activityBinding.sidebarNav.inflateMenu(optionsMenuRes)
 
                             if (!App.prefs.proStatus)
                                 activityBinding.sidebarNav.menu.findItem(R.id.nav_pro)?.isVisible =

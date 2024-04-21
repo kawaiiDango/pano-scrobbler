@@ -2,8 +2,6 @@ package com.arn.scrobble.search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -86,10 +85,7 @@ class SearchFragment : Fragment() {
             binding.searchEdittext.requestFocus()
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(400)
-                if (historyPref.history.isEmpty())
-                    showKeyboard(binding.searchTerm.editText!!)
-                else
-                    binding.searchEdittext.showDropDown()
+                showKeyboard(binding.searchTerm.editText!!)
             }
         }
 
@@ -102,29 +98,19 @@ class SearchFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
             ) {
-                doSearch(textView.text.toString())
+                viewModel.search(textView.text.toString(), prefs.searchType)
                 hideKeyboard()
                 textView.clearFocus()
             }
             true
         }
 
-        binding.searchTerm.editText!!.addTextChangedListener(object : TextWatcher {
-
-            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+        binding.searchTerm.editText!!.doAfterTextChanged { editable ->
+            val term = editable?.trim()?.toString()
+            if (!term.isNullOrEmpty()) {
+                viewModel.search(term, prefs.searchType)
             }
-
-            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
-            }
-
-            override fun afterTextChanged(editable: Editable) {
-                val term = editable.trim().toString()
-                if (term.isNotEmpty()) {
-                    viewModel.search(term, prefs.searchType)
-                }
-            }
-
-        })
+        }
 
         historyPref.load()
 
@@ -138,7 +124,7 @@ class SearchFragment : Fragment() {
                             hideKeyboard()
                             binding.searchEdittext.setText(term, false)
                             binding.searchTerm.clearFocus()
-                            doSearch(term)
+                            viewModel.search(term, prefs.searchType)
                         }
                         historyTextView.setOnLongClickListener {
                             MaterialAlertDialogBuilder(context)
@@ -203,18 +189,48 @@ class SearchFragment : Fragment() {
                     SearchResultsAdapter.SearchType.GLOBAL
             }
 
+            if (prefs.searchType == SearchResultsAdapter.SearchType.LOCAL && prefs.lastMaxIndexTime == null) {
+                findNavController().navigate(R.id.indexingDialogFragment)
+                return@setOnCheckedStateChangeListener
+            }
+
             val searchTerm = binding.searchTerm.editText?.text?.toString()
             if (checkedChipId != null && !searchTerm.isNullOrBlank()) {
-                doSearch(searchTerm)
+                viewModel.search(searchTerm, prefs.searchType)
             }
         }
 
         collectLatestLifecycleFlow(viewModel.searchResults.filterNotNull()) {
-            skeleton.showOriginal()
-            binding.searchResultsList.isVisible = true
-            if (isResumed)
-                binding.searchResultsList.scheduleLayoutAnimation()
-            resultsAdapter.populate(it)
+            if (it.isEmpty) {
+                binding.searchResultsList.isVisible = false
+                binding.empty.isVisible = true
+            } else {
+                if (isResumed)
+                    binding.searchResultsList.scheduleLayoutAnimation()
+
+                binding.searchResultsList.isVisible = true
+                binding.empty.isVisible = false
+
+                resultsAdapter.populate(it)
+            }
+        }
+
+        collectLatestLifecycleFlow(viewModel.hasLoaded) {
+            if (binding.searchEdittext.text.isEmpty())
+                return@collectLatestLifecycleFlow
+
+            if (it) {
+                skeleton.showOriginal()
+
+                if (binding.searchTerm.endIconMode != TextInputLayout.END_ICON_CLEAR_TEXT) {
+                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
+                    binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
+                }
+            } else {
+                binding.empty.isVisible = false
+                skeleton.showSkeleton()
+            }
+            binding.searchResultsList.isVisible = it
         }
     }
 
@@ -229,19 +245,5 @@ class SearchFragment : Fragment() {
         updateSearchHistory()
         historyPref.save()
         super.onStop()
-    }
-
-    private fun doSearch(term: String) {
-        if (prefs.searchType == SearchResultsAdapter.SearchType.LOCAL && prefs.lastMaxIndexTime == null)
-            findNavController().navigate(R.id.indexingDialogFragment)
-        else {
-            skeleton.showSkeleton()
-            viewModel.search(term, prefs.searchType)
-
-            if (binding.searchTerm.endIconMode != TextInputLayout.END_ICON_CLEAR_TEXT) {
-                binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
-                binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
-            }
-        }
     }
 }

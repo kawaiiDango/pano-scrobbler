@@ -12,15 +12,15 @@ import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.doOnNextLayout
-import androidx.core.view.get
 import androidx.core.view.isEmpty
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkBuilder
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.contains
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -30,13 +30,11 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.databinding.ContentAlbumTracksBinding
+import com.arn.scrobble.databinding.ListItemAlbumTracksBinding
 import com.arn.scrobble.databinding.ListItemInfoBinding
 import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.GenericDiffCallback
-import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.copyToClipboard
@@ -48,12 +46,13 @@ import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import kotlin.math.max
+import kotlin.math.min
 
 
 class InfoAdapter(
     private val viewModel: InfoVM,
     private val activityViewModel: MainNotifierViewModel,
-    private val fragment: InfoFragment,
+    private val navController: NavController,
     private val pkgName: String?,
 ) : ListAdapter<InfoVM.InfoHolder, InfoAdapter.VHInfo>(
     GenericDiffCallback { o, n -> o.type == n.type }
@@ -97,16 +96,14 @@ class InfoAdapter(
             }
 
             binding.infoUserTags.setOnClickListener {
-                fragment.findNavController()
-                    .navigate(R.id.userTagsFragment, Bundle().putData(info.entry))
+                navController.navigate(R.id.userTagsFragment, Bundle().putData(info.entry))
             }
 
             binding.infoExtraButton.setOnClickListener {
 
                 when (info.entry) {
                     is Track, is Artist ->
-                        fragment.findNavController()
-                            .navigate(R.id.infoExtraFragment, Bundle().putData(info.entry))
+                        navController.navigate(R.id.infoExtraFragment, Bundle().putData(info.entry))
 
                     is Album ->
                         viewModel.updateInfo(
@@ -125,7 +122,7 @@ class InfoAdapter(
                     is Track -> {
                         val entryBundle = Bundle().putData(info.entry)
 
-                        if (fragment.requireActivity() is MainDialogActivity) {
+                        if (!navController.graph.contains(R.id.trackHistoryFragment)) {
                             NavDeepLinkBuilder(itemView.context)
                                 .setComponentName(MainActivity::class.java)
                                 .setGraph(R.navigation.nav_graph)
@@ -134,8 +131,7 @@ class InfoAdapter(
                                 .createPendingIntent()
                                 .send()
                         } else {
-                            fragment.findNavController()
-                                .navigate(R.id.trackHistoryFragment, entryBundle)
+                            navController.navigate(R.id.trackHistoryFragment, entryBundle)
                         }
                     }
 
@@ -159,20 +155,9 @@ class InfoAdapter(
             if (Stuff.isTv)
                 binding.infoLink.isVisible = false
 
-            val wikiClickListener = { view: View ->
-                viewModel.updateInfo(
-                    info.copy(
-                        wikiExpanded = !info.wikiExpanded
-                    )
-                )
-            }
-
             if (!Stuff.isTv) {
                 binding.infoWiki.autoLinkMask = Linkify.WEB_URLS
             }
-
-            binding.infoWiki.setOnClickListener(wikiClickListener)
-            binding.infoWikiExpand.setOnClickListener(wikiClickListener)
 
             binding.infoAddPhoto.setOnClickListener {
                 val originalEntry = when (info.entry) {
@@ -184,7 +169,7 @@ class InfoAdapter(
                 val args = Bundle().putData(info.entry)
                     .putData(originalEntry, Stuff.ARG_ORIGINAL)
 
-                if (fragment.requireActivity() is MainDialogActivity) {
+                if (!navController.graph.contains(R.id.imageSearchFragment)) {
                     NavDeepLinkBuilder(itemView.context)
                         .setComponentName(MainActivity::class.java)
                         .setGraph(R.navigation.nav_graph)
@@ -193,8 +178,7 @@ class InfoAdapter(
                         .createPendingIntent()
                         .send()
                 } else {
-                    fragment.findNavController()
-                        .navigate(R.id.imageSearchFragment, args)
+                    navController.navigate(R.id.imageSearchFragment, args)
                 }
             }
         }
@@ -218,40 +202,44 @@ class InfoAdapter(
         private fun toggleAlbumTracks(
             album: Album,
             expanded: Boolean,
-            container: FrameLayout,
+            container: LinearLayout,
             button: TextView
         ) {
             val tracks = album.tracks?.track?.toList() ?: return
-            val wasPopulated: Boolean
-            val localBinding: ContentAlbumTracksBinding
-
-            if (container.isEmpty()) {
-                localBinding = ContentAlbumTracksBinding.inflate(
-                    LayoutInflater.from(binding.root.context),
-                    container,
-                    false
+            val wasPopulated = !container.isEmpty()
+            val scrollFn = {
+                val parentRv = (binding.root.parent as? RecyclerView)
+                parentRv?.smoothScrollBy(
+                    0,
+                    max(parentRv.height - 300.dp, 300.dp)
                 )
-                container.addView(localBinding.root)
-                wasPopulated = false
-            } else {
-                localBinding = ContentAlbumTracksBinding.bind(container[0])
-                wasPopulated = true
             }
-            if (!wasPopulated) {
-                val albumTracksAdapter = AlbumTracksAdapter(tracks)
 
-                albumTracksAdapter.itemClickListener = object : ItemClickListener<Track> {
-                    override fun onItemClick(view: View, position: Int, item: Track) {
-                        fragment.findNavController().navigate(
-                            R.id.infoFragment,
-                            Bundle().putData(item)
-                        )
+            if (!wasPopulated) {
+                tracks.take(30).forEachIndexed { idx, track ->
+                    val localBinding = ListItemAlbumTracksBinding.inflate(
+                        LayoutInflater.from(itemView.context),
+                        container,
+                        false
+                    )
+
+                    localBinding.trackItem.apply {
+                        val trackPos = (idx + 1).format()
+                        val trackName = track.name
+                        val trackDuration =
+                            track.duration?.let { "\t(" + Stuff.humanReadableDuration(it) + ")" }
+                                ?: ""
+
+                        text = "$trackPos.\t$trackName$trackDuration"
+                        setOnClickListener {
+                            navController.navigate(
+                                R.id.infoFragment,
+                                Bundle().putData(track)
+                            )
+                        }
+                        container.addView(this)
                     }
                 }
-
-                localBinding.tracksList.layoutManager =
-                    LinearLayoutManager(localBinding.root.context)
-                localBinding.tracksList.adapter = albumTracksAdapter
             }
 
 
@@ -262,15 +250,7 @@ class InfoAdapter(
                     R.drawable.vd_arrow_down,
                     0
                 )
-                val scrollFn = {
-                    val parentRv = (itemView.parent as RecyclerView)
-                    parentRv.smoothScrollBy(
-                        0,
-                        max(parentRv.height - 300.dp, 300.dp)
-                    )
-                }
 
-                container.doOnNextLayout { scrollFn() }
             } else {
                 button.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     0,
@@ -278,6 +258,8 @@ class InfoAdapter(
                     R.drawable.vd_arrow_up,
                     0
                 )
+
+                container.doOnNextLayout { scrollFn() }
             }
             container.isVisible = expanded
         }
@@ -295,10 +277,38 @@ class InfoAdapter(
                 if (info.wikiExpanded) {
                     binding.infoWiki.maxLines = 1000
                     binding.infoWikiExpand.rotation = 180f
+
+                    binding.infoWiki.doOnNextLayout {
+                        val parentRv = binding.root.parent as? RecyclerView
+
+                        if (parentRv != null) {
+                            val scrollAmount =
+                                min(itemView.top + 300.dp, itemView.bottom) - parentRv.bottom
+                            if (scrollAmount > 0) {
+                                parentRv.smoothScrollBy(0, scrollAmount)
+                            }
+                        }
+                    }
                 } else {
                     binding.infoWiki.maxLines = 2
                     binding.infoWikiExpand.rotation = 0f
                 }
+
+                binding.infoWikiContainer.setOnClickListener {
+                    viewModel.updateInfo(
+                        info.copy(
+                            wikiExpanded = !info.wikiExpanded
+                        )
+                    )
+                }
+                binding.infoWikiContainer.isClickable = true
+                binding.infoWikiContainer.isFocusable = true
+
+            } else {
+                binding.infoWikiExpand.visibility = View.GONE
+                binding.infoWikiContainer.setOnClickListener(null)
+                binding.infoWikiContainer.isClickable = false
+                binding.infoWikiContainer.isFocusable = false
             }
         }
 
@@ -430,17 +440,18 @@ class InfoAdapter(
             binding.infoAddPhoto.isVisible =
                 (entry is Artist || BuildConfig.DEBUG && entry is Album)
 
+            binding.infoPicExpandedFrame.isVisible = info.headerExpanded
+
             if (imgData != null) {
-                binding.infoPicExpandedFrame.isVisible = info.headerExpanded
                 binding.infoPic.isVisible = !info.headerExpanded && info.hasImage
 
                 binding.infoPic.load(imgData) {
                     listener(
                         onSuccess = { _, _ ->
                             binding.infoPic.isVisible = !info.headerExpanded
-                            viewModel.updateInfo(
-                                info.apply { hasImage = true }
-                            )
+
+                            if (!info.hasImage)
+                                info.hasImage = true
 
                             binding.infoTitleBar.isClickable = true
                             binding.infoTitleBar.isFocusable = true
@@ -459,15 +470,48 @@ class InfoAdapter(
                 }
             } else {
                 binding.infoPic.isVisible = false
-                binding.infoPicExpandedFrame.isVisible = false
 
-                binding.infoTitleBar.setOnClickListener(null)
-                binding.infoTitleBar.isClickable = false
-                binding.infoTitleBar.isFocusable = false
+                if (entry is Track) {
+                    binding.infoTitleBar.setOnClickListener {
+                        viewModel.updateInfo(info.copy(headerExpanded = !info.headerExpanded))
+                    }
+                    binding.infoTitleBar.isClickable = true
+                    binding.infoTitleBar.isFocusable = true
+                }
             }
 
             if (info.headerExpanded) {
-                binding.infoPicExpanded.load(imgData)
+                if (entry is Track) {
+                    binding.infoPicExpanded.isVisible = false
+                    binding.infoTrackDuration.isVisible = true
+
+                    var durationText = itemView.context.getString(R.string.duration) + ": "
+
+                    durationText += if ((entry.duration ?: 0) > 0)
+                        Stuff.humanReadableDuration(entry.duration!!)
+                    else
+                        itemView.context.getString(R.string.unknown)
+
+                    if ((entry.userplaycount ?: 0) > 1 && (entry.duration ?: 0) > 0)
+                        durationText += "\n\n" + itemView.context.getString(R.string.total_listen_time) + ": " +
+                                Stuff.humanReadableDuration(entry.duration!! * entry.userplaycount!!)
+
+                    binding.infoTrackDuration.text = durationText
+
+                    binding.infoPicExpandedFrame.updateLayoutParams {
+                        height = 200.dp
+                        width = 200.dp
+                    }
+                } else {
+                    binding.infoPicExpanded.isVisible = true
+                    binding.infoTrackDuration.isVisible = false
+                    binding.infoPicExpanded.load(imgData)
+
+                    binding.infoPicExpandedFrame.updateLayoutParams {
+                        height = 300.dp
+                        width = 300.dp
+                    }
+                }
             }
 
             if (entry.userplaycount != null) {
@@ -507,7 +551,7 @@ class InfoAdapter(
                     com.google.android.material.R.attr.colorSecondary,
                     null
                 )
-            if (entry.userplaycount != null && entry.userplaycount!! > 0) {
+            if (entry.userplaycount != null && entry.userplaycount!! > 0 && (entry is Track || !Stuff.isTv)) {
                 binding.infoUserScrobbles.setTextColor(secondaryColor)
                 binding.infoUserScrobblesLabel.setTextColor(secondaryColor)
 
@@ -527,7 +571,7 @@ class InfoAdapter(
 
                     setOnClickListener {
                         val args = Bundle().putData(tag)
-                        fragment.findNavController().navigate(R.id.tagInfoFragment, args)
+                        navController.navigate(R.id.tagInfoFragment, args)
                     }
                 }
                 lastI = i

@@ -28,6 +28,8 @@ import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ListenAlong
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.main.App
@@ -49,6 +51,7 @@ import com.arn.scrobble.utils.UiUtils.setProgressCircleColors
 import com.arn.scrobble.utils.UiUtils.setTitle
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialElevationScale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -111,16 +114,27 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.followersLink.setOnClickListener {
+            val url = activityViewModel.currentUser.url + "/followers"
+            if (Stuff.isTv) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(getString(R.string.tv_url_notice) + "\n\n " + url)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            } else {
+                Stuff.openInBrowser(url)
+            }
+        }
+        binding.followersLink.isVisible =
+            Scrobblables.current?.userAccount?.type == AccountType.LASTFM
+
         collectLatestLifecycleFlow(viewModel.total, Lifecycle.State.RESUMED) { total ->
             if (total == 0)
-                setTitle(R.string.friends)
+                setTitle(R.string.following)
             else
                 setTitle(
-                    resources.getQuantityString(
-                        R.plurals.num_friends,
-                        viewModel.total.value,
-                        viewModel.total.value.format()
-                    )
+                    getString(R.string.following) + ": " +
+                            viewModel.total.value.format()
                 )
         }
 
@@ -401,6 +415,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
 
             if (Stuff.isTv) {
                 contentBinding.friendsProfile.isVisible = false
+                contentBinding.friendsScrobbles.requestFocus()
             } else {
                 contentBinding.friendsProfile.setOnClickListener {
                     Stuff.openInBrowser(userCached.url)

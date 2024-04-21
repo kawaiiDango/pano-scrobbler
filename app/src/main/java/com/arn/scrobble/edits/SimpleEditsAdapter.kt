@@ -3,16 +3,19 @@ package com.arn.scrobble.edits
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ListItemSimpleEditBinding
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.ui.GenericDiffCallback
-import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.utils.UiUtils.showWithIcons
 
 
 class SimpleEditsAdapter(
-    private val itemClickListener: ItemClickListener<SimpleEdit>,
+    private val onItemClick: (SimpleEdit) -> Unit,
+    private val onDelete: (SimpleEdit) -> Unit
 ) : ListAdapter<SimpleEdit, SimpleEditsAdapter.VHSimpleEdit>(
     GenericDiffCallback { oldItem, newItem -> oldItem._id == newItem._id }
 ) {
@@ -26,7 +29,8 @@ class SimpleEditsAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return VHSimpleEdit(
             ListItemSimpleEditBinding.inflate(inflater, parent, false),
-            itemClickListener
+            onItemClick,
+            onDelete
         )
     }
 
@@ -40,19 +44,26 @@ class SimpleEditsAdapter(
 
     inner class VHSimpleEdit(
         private val binding: ListItemSimpleEditBinding,
-        private val itemClickListener: ItemClickListener<SimpleEdit>
+        private val onItemClick: (SimpleEdit) -> Unit,
+        private val onDelete: (SimpleEdit) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.editsContent.setOnClickListener {
-                itemClickListener.call(
-                    it,
-                    bindingAdapterPosition
-                ) { getItem(bindingAdapterPosition) }
+                onItemClick(getItem(bindingAdapterPosition))
             }
-            binding.editsDelete.setOnClickListener {
-                itemClickListener.call(
-                    it, bindingAdapterPosition
-                ) { getItem(bindingAdapterPosition) }
+            binding.deleteMenu.setOnClickListener { v ->
+                PopupMenu(v.context, v).apply {
+                    inflate(R.menu.delete_menu)
+                    setOnMenuItemClickListener { item ->
+                        if (item.itemId == R.id.delete) {
+                            onDelete(getItem(bindingAdapterPosition))
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                    showWithIcons()
+                }
             }
         }
 

@@ -38,6 +38,7 @@ import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.toast
 import com.faltenreich.skeletonlayout.Skeleton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -109,6 +110,8 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
 
         binding.searchEdittext.setText(searchTerm)
 
+        binding.searchResultsList.setupInsets()
+
         binding.imageFromFile.setOnClickListener {
             if (!prefs.squarePhotoLearnt) {
                 MaterialAlertDialogBuilder(requireContext())
@@ -123,7 +126,7 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
             }
         }
 
-        val adapter = ImageSearchResultsAdapter(requireContext(), this)
+        val adapter = ImageSearchResultsAdapter(this)
 
         binding.searchResultsList.adapter = adapter
         binding.searchResultsList.layoutManager = LinearLayoutManager(context)

@@ -32,10 +32,12 @@ class LicensesAdapter : ListAdapter<Library, LicensesAdapter.LicensesVH>(
         private var url: String? = null
 
         init {
-            binding.root.setOnClickListener {
-                if (url.isNullOrEmpty())
-                    return@setOnClickListener
-                Stuff.openInBrowser(url!!)
+            if (!Stuff.isTv) {
+                binding.root.setOnClickListener {
+                    if (url.isNullOrEmpty())
+                        return@setOnClickListener
+                    Stuff.openInBrowser(url!!)
+                }
             }
         }
 

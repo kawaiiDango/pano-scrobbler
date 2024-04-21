@@ -115,7 +115,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:addStatesFromChildren="true"
                 android:background="@drawable/selector_border_gentle"
                 android:orientation="horizontal"
                 android:padding="@dimen/list_item_padding"

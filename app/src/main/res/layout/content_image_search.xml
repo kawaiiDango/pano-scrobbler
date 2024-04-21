@@ -10,7 +10,7 @@
         android:id="@+id/search_term"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         app:endIconDrawable="@drawable/vd_cancel"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,9 +34,10 @@
         android:id="@+id/search_extra_options_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:gravity="end"
         android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
+        android:paddingVertical="8dp"
         app:layout_constraintBottom_toTopOf="@id/search_results_list"
         app:layout_constraintTop_toBottomOf="@+id/search_term">
 

@@ -97,6 +97,7 @@ object Stuff {
     const val ARG_SELECTED_YEAR = "selected_year"
     const val ARG_SELECTED_MONTH = "selected_month"
     const val ARG_HIDDEN_TAGS_CHANGED = "hidden_tags_changed"
+    const val ARG_SCROLL_TO_ACCOUNTS = "scroll_to_accounts"
     const val ARG_EDIT = "edit"
     const val MIME_TYPE_JSON = "application/json"
     const val TYPE_ALL = 0
@@ -149,6 +150,8 @@ object Stuff {
     const val MANUFACTURER_XIAOMI = "xiaomi"
     const val MANUFACTURER_SAMSUNG = "samsung"
 
+    const val PACKAGE_TV_SETTINGS = "com.android.tv.settings"
+    const val ACTIVITY_TV_SETTINGS = "com.android.tv.settings.device.apps.AppsActivity"
     const val CHANNEL_PIXEL_NP =
         "com.google.intelligence.sense.ambientmusic.MusicNotificationChannel"
     const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"

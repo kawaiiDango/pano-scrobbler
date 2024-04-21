@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePaddingRelative
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +28,6 @@ import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.ItemLongClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.PackageName
@@ -37,7 +35,6 @@ import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.autoNotify
-import com.arn.scrobble.utils.UiUtils.dp
 import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.arn.scrobble.utils.UiUtils.memoryCacheKey
@@ -57,7 +54,7 @@ class ScrobblesAdapter(
     private val fragmentBinding: ContentScrobblesBinding,
     private val navController: NavController,
     private val itemClickListener: ItemClickListener<Any>,
-    private val itemLongClickListener: ItemLongClickListener<Any>,
+    private val onFocusChange: (Int) -> Unit,
     private val setHeroListener: SetHeroTrigger,
     private val viewModel: TracksVM,
     private val userIsSelf: Boolean,
@@ -128,8 +125,14 @@ class ScrobblesAdapter(
         )
     }
 
-    private fun updateScrobblerDisabledNotice(notify: Boolean = true) {
+    fun updateScrobblerDisabledNotice(
+        scrobblerEnabled: Boolean?,
+        scrobblerServiceRunning: Boolean?,
+        notify: Boolean = true
+    ) {
         val oldVirtualList = viewModel.virtualList.copy()
+        val showFixit = scrobblerEnabled == true && scrobblerServiceRunning == false
+        val showEnable = scrobblerEnabled == false
 
         viewModel.virtualList.addSection(
             SectionWithHeader(
@@ -138,15 +141,14 @@ class ScrobblesAdapter(
                 Section.NOTICE_SECTION.ordinal,
                 header = ExpandableHeader(
                     R.drawable.vd_error,
-                    if (viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == false)
+                    if (showFixit)
                         R.string.not_running
                     else
                         R.string.scrobbler_off,
                     R.string.enable,
                     R.string.enable,
                 ),
-                showHeaderWhenEmpty = !(viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == true) &&
-                        userIsSelf && Stuff.isTv
+                showHeaderWhenEmpty = showFixit || showEnable
             )
         )
 
@@ -218,7 +220,11 @@ class ScrobblesAdapter(
         val firstTrack = viewModel.virtualList[Section.SCROBBLES]?.items?.firstOrNull()
         val firstTrackSelected = prevSelectedItem === firstTrack
 
-        updateScrobblerDisabledNotice(false)
+        updateScrobblerDisabledNotice(
+            viewModel.scrobblerEnabled.value,
+            viewModel.scrobblerServiceRunning.value,
+            false
+        )
         updatePendingScrobbles(viewModel.pendingScrobbles.value, false)
         updatePendingLoves(viewModel.pendingLoves.value, false)
         updateTracks(tracks)
@@ -279,20 +285,38 @@ class ScrobblesAdapter(
         private var job: Job? = null
 
         init {
-            binding.root.setOnClickListener {
-                itemClickListener.call(itemView, bindingAdapterPosition) {
-                    getItem(bindingAdapterPosition)
+
+            if (itemView.isInTouchMode) {
+                binding.recentsImgFrame.isFocusable = true
+                binding.recentsImgFrame.setOnClickListener {
+                    itemClickListener.call(it, bindingAdapterPosition) {
+                        getItem(bindingAdapterPosition)
+                    }
                 }
             }
-            binding.root.setOnLongClickListener {
-                itemLongClickListener.call(itemView, bindingAdapterPosition) {
-                    getItem(bindingAdapterPosition)
-                }
-                true
-            }
+
             binding.recentsMenu.setOnClickListener {
                 itemClickListener.call(it, bindingAdapterPosition) {
                     getItem(bindingAdapterPosition)
+                }
+            }
+
+            binding.recentsTrackLl.isFocusable = true
+            binding.recentsTrackLl.setOnClickListener {
+                itemClickListener.call(it, bindingAdapterPosition) {
+                    getItem(bindingAdapterPosition)
+                }
+            }
+
+            if (!itemView.isInTouchMode) {
+                binding.recentsTrackLl.setOnFocusChangeListener { v, hasFocus ->
+                    if (hasFocus)
+                        onFocusChange(bindingAdapterPosition)
+                }
+
+                binding.recentsMenu.setOnFocusChangeListener { v, hasFocus ->
+                    if (hasFocus)
+                        onFocusChange(bindingAdapterPosition)
                 }
             }
         }
@@ -349,22 +373,8 @@ class ScrobblesAdapter(
                 if (track.album != null) {
                     binding.recentsAlbum.text = track.album.name
                     binding.recentsAlbum.visibility = View.VISIBLE
-                    binding.recentsTrackLl.setPaddingRelative(
-                        0,
-                        0,
-                        0,
-                        0
-                    )
                 } else {
-                    val albumHeight =
-                        itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
                     binding.recentsAlbum.visibility = View.GONE
-                    binding.recentsTrackLl.setPaddingRelative(
-                        0,
-                        albumHeight / 2,
-                        0,
-                        albumHeight / 2
-                    )
                 }
             }
 
@@ -374,7 +384,6 @@ class ScrobblesAdapter(
                     binding.recentsPlaying.isVisible = true
                     binding.recentsPlaying.load(R.drawable.avd_now_playing)
                 }
-                binding.root.updatePaddingRelative(top = 0)
                 binding.dividerCircle.isVisible = false
             } else {
                 binding.recentsDate.visibility = View.VISIBLE
@@ -382,12 +391,10 @@ class ScrobblesAdapter(
                     Stuff.myRelativeTime(itemView.context, track.date ?: 0)
 
                 if (track.date in viewModel.lastScrobbleOfTheDaySet) {
-                    binding.root.updatePaddingRelative(top = 16.dp)
                     binding.recentsDate.typeface = Typeface.DEFAULT_BOLD
                     binding.dividerCircle.isVisible = true
                 } else {
                     binding.recentsDate.typeface = Typeface.DEFAULT
-                    binding.root.updatePaddingRelative(top = 0)
                     binding.dividerCircle.isVisible = false
                 }
                 if (binding.recentsPlaying.isVisible) {
@@ -485,7 +492,7 @@ class ScrobblesAdapter(
                             binding.headerOverflowButton
                         )
 
-                        if (viewModel.scrobblerEnabled && viewModel.scrobblerServiceRunning == false)
+                        if (viewModel.scrobblerEnabled.value == true && viewModel.scrobblerServiceRunning.value == false)
                             popupMenu.inflate(R.menu.scrobbler_fix_it_menu)
                         else
                             popupMenu.inflate(R.menu.scrobbler_enable_menu)
@@ -493,13 +500,16 @@ class ScrobblesAdapter(
                         popupMenu.setOnMenuItemClickListener {
                             when (it.itemId) {
                                 R.id.scrobbler_enable -> {
-                                    if (!prefs.scrobblerEnabled) {
-                                        prefs.scrobblerEnabled = true
-                                        updateScrobblerDisabledNotice(true)
-                                    } else {
+                                    val hasNotificationListenerPerms =
+                                        Stuff.isNotificationListenerEnabled()
+
+                                    prefs.scrobblerEnabled = true
+
+                                    if (!hasNotificationListenerPerms) {
                                         navController.navigate(R.id.onboardingFragment)
+                                    } else {
+                                        viewModel.updateScrobblerServiceStatus()
                                     }
-                                    viewModel.updateScrobblerServiceStatus()
                                     true
                                 }
 

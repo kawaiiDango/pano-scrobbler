@@ -15,6 +15,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -27,6 +28,8 @@ class SearchVM : ViewModel() {
     private val _searchTerm = MutableSharedFlow<Pair<String, SearchResultsAdapter.SearchType>>()
     private val _searchResults = MutableStateFlow<SearchResults?>(null)
     val searchResults = _searchResults.asSharedFlow()
+    private val _hasLoaded = MutableStateFlow(false)
+    val hasLoaded = _hasLoaded.asStateFlow()
     val virtualList = SectionedVirtualList()
 
     init {
@@ -35,9 +38,16 @@ class SearchVM : ViewModel() {
                 .distinctUntilChanged()
                 .debounce(500)
                 .collectLatest { (term, searchType) ->
+                    if (term.length < 3)
+                        return@collectLatest
+
                     val results = when (searchType) {
-                        SearchResultsAdapter.SearchType.GLOBAL ->
-                            Requesters.lastfmUnauthedRequester.search(term)
+                        SearchResultsAdapter.SearchType.GLOBAL -> {
+                            _hasLoaded.value = false
+                            val r = Requesters.lastfmUnauthedRequester.search(term)
+                            _hasLoaded.value = true
+                            r
+                        }
 
                         SearchResultsAdapter.SearchType.LOCAL -> withContext(Dispatchers.IO) {
                             getLocalSearches(term)

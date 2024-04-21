@@ -49,7 +49,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             accessKey = prefs.acrcloudKey ?: Tokens.ACR_KEY
             accessSecret = prefs.acrcloudSecret ?: Tokens.ACR_SECRET
 
-            if (Stuff.isTv) // tested on firestick and chromecast
+            if (Stuff.isTv) // this intermittently works on TV
                 recorderConfig.source = MediaRecorder.AudioSource.VOICE_RECOGNITION
         }
     }

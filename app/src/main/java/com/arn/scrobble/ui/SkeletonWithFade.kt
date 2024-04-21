@@ -8,6 +8,7 @@ import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.postDelayed
+import androidx.core.view.updatePaddingRelative
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -120,6 +121,7 @@ fun RecyclerView.createSkeletonWithFade(
 //        id = View.generateViewId() // this makes the contents jump to the top
         it.clipToPadding = clipToPadding
         it.isNestedScrollingEnabled = isNestedScrollingEnabled
+        it.updatePaddingRelative(paddingStart, paddingTop, paddingEnd, paddingBottom)
         val layoutManager = layoutManager
 
         it.layoutManager = when (layoutManager) {

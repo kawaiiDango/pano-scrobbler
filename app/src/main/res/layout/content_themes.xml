@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp">
+        android:paddingHorizontal="@dimen/overscan_padding_horiz">
 
         <TextView
             android:id="@+id/theme_primary_header"
@@ -95,7 +95,7 @@
                 app:checkedIconEnabled="false" />
         </com.google.android.material.chip.ChipGroup>
 
-        <CheckBox
+        <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/theme_dynamic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -103,14 +103,14 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <CheckBox
+        <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/theme_tint_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="64dp"
             android:text="@string/tint_background" />
 
-        <CheckBox
+        <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/theme_random"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

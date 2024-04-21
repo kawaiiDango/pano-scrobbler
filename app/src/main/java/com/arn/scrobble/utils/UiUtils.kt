@@ -501,10 +501,11 @@ object UiUtils {
     fun BottomSheetDialogFragment.expandIfNeeded(dialog: Dialog, force: Boolean = false) {
         dialog.setOnShowListener {
             val bottomSheetDialog = it as BottomSheetDialog
-            if (view?.isInTouchMode == false || Stuff.hasMouse || force) {
+            if (view?.isInTouchMode == false || Stuff.hasMouse || isTabletUi || force) {
                 val bottomSheetView =
                     bottomSheetDialog.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-                BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
+                val behavior = BottomSheetBehavior.from(bottomSheetView)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
             WindowCompat.setDecorFitsSystemWindows(bottomSheetDialog.window!!, false)
 

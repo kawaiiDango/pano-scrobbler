@@ -47,7 +47,7 @@
         <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
     </style>
 
-    <style name="WebViewTheme" parent="Theme.MaterialComponents.Light">
+    <style name="WebViewTheme" parent="Theme.Material3.Light">
         <item name="android:forceDarkAllowed">true</item>
     </style>
 

@@ -4,7 +4,6 @@ import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.KeyEvent
@@ -13,17 +12,14 @@ import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -74,9 +70,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         var canShowNotices = false
-
-        // until they fix IllegalStateException: setCurrentPlayTimeMillis() called after animation has been started
-        FragmentManager.enablePredictiveBack(false)
 
         super.onCreate(savedInstanceState)
 
@@ -135,13 +128,6 @@ class MainActivity : AppCompatActivity(),
             binding.sidebarNav.visibility = View.GONE
         }
 
-        if (Stuff.isTv) {
-            binding.ctl.updateLayoutParams<AppBarLayout.LayoutParams> {
-                scrollFlags =
-                    scrollFlags or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-            }
-        }
-
         if (Stuff.isEdgeToEdge) {
             binding.root.fitsSystemWindows = true
             binding.appBar.fitsSystemWindows = true
@@ -149,14 +135,6 @@ class MainActivity : AppCompatActivity(),
             WindowCompat.setDecorFitsSystemWindows(window, false)
         }
         setContentView(binding.root)
-
-        // make back button unfocusable on tv
-        if (Stuff.isTv) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                binding.toolbar.children
-                    .find { it is ImageButton }
-                    ?.isFocusable = false
-        }
 
         navController = binding.navHostFragment.getFragment<NavHostFragment>().navController
 
@@ -176,6 +154,15 @@ class MainActivity : AppCompatActivity(),
         }
 
         navController.addOnDestinationChangedListener(this)
+
+
+        // hide back button on tv
+        if (Stuff.isTv) {
+            binding.ctl.updateLayoutParams<AppBarLayout.LayoutParams> {
+                scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+            }
+            binding.toolbar.isVisible = false
+        }
 
         collectLatestLifecycleFlow(mainNotifierViewModel.fabData) {
             // onDestroy of previous fragment gets called AFTER on create of the current fragment

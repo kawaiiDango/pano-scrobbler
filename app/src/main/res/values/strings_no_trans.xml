@@ -25,10 +25,14 @@
     <string name="preset_single" translatable="false">Single</string>
     <string name="preset_ep" translatable="false">EP</string>
     <string name="artist_title" formatted="true" translatable="false">%1$s — %2$s</string>
-    <string name="sidebar_visibility" translatable="false">gone</string>
     <string name="charts_num_text" formatted="true" translatable="false" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="csv" translatable="false">CSV</string>
     <string name="jsonl" translatable="false">JSONL</string>
+    <string name="special_app_access" translatable="false">Special app access</string>
+    <string name="tv_url_notice" translatable="false">Open this URL in a browser on another device:</string>
+    <string name="duration" translatable="false">Duration</string>
+    <string name="unknown" translatable="false">Unknown</string>
+    <string name="total_listen_time" translatable="false">Total listen time</string>
 
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>

@@ -1,8 +1,8 @@
 package com.arn.scrobble.onboarding
 
 import android.app.Dialog
+import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -10,12 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.arn.scrobble.main.App
+import androidx.core.view.isVisible
 import com.arn.scrobble.PersistentNotificationService
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogFixItBinding
-import com.arn.scrobble.utils.UiUtils.expandIfNeeded
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.UiUtils.expandIfNeeded
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
@@ -47,10 +49,19 @@ class FixItFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.fixItDkmaAction.setOnClickListener {
-            Stuff.openInBrowser("https://dontkillmyapp.com")
+        var optionsShown = 0
+
+        if (!Stuff.isTv) {
+            binding.fixItDkmaLayout.isVisible = true
+
+            binding.fixItDkmaAction.setOnClickListener {
+                Stuff.openInBrowser("https://dontkillmyapp.com")
+            }
+
+            optionsShown++
         }
-        if (!App.prefs.notiPersistent &&
+
+        if (!Stuff.isTv && !App.prefs.notiPersistent &&
             Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU
         ) {
             binding.fixItPersistentNotiLayout.visibility = View.VISIBLE
@@ -62,18 +73,48 @@ class FixItFragment : BottomSheetDialogFragment() {
                 )
                 button.isEnabled = false
             }
+
+            optionsShown++
         }
-        val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-        if (requireActivity().packageManager.queryIntentActivities(
-                batteryIntent,
-                PackageManager.MATCH_DEFAULT_ONLY
-            ).isNotEmpty()
-        ) {
+        val batteryIntent = if (Stuff.isTv) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                Intent().setComponent(
+                    ComponentName(Stuff.PACKAGE_TV_SETTINGS, Stuff.ACTIVITY_TV_SETTINGS)
+                )
+            } else
+                null
+        } else
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+
+        if (batteryIntent != null) {
+            val fixItBatteryTitleRes = if (Stuff.isTv)
+                R.string.fix_it_energy_title
+            else
+                R.string.fix_it_battery_title
+
+            binding.fixItBatteryTitle.text = getString(fixItBatteryTitleRes)
             binding.fixItBattery.visibility = View.VISIBLE
             binding.fixItBatteryAction.setOnClickListener {
+                requireContext().toast(
+                    getString(
+                        R.string.check_nls,
+                        if (Stuff.isTv)
+                            getString(R.string.special_app_access)
+                        else
+                            getString(R.string.app_name)
+                    )
+                )
                 startActivity(batteryIntent)
             }
+
+            optionsShown++
         }
+
+        if (optionsShown == 0) {
+            binding.fixItNoOptions.visibility = View.VISIBLE
+        }
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Stuff.getScrobblerExitReasons(App.prefs.lastKillCheckTime, false)
                 .firstOrNull()

@@ -6,15 +6,16 @@
     android:paddingVertical="16dp">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/info_extra_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
+            android:background="?selectableItemBackground"
+            android:padding="16dp"
             android:textAppearance="?textAppearanceTitleLarge"
             android:textColor="?colorPrimary"
             tools:text="title" />
@@ -23,7 +24,7 @@
             android:id="@+id/info_spotify_features"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout="@layout/layout_spotify_track_features"/>
+            android:layout="@layout/layout_spotify_track_features" />
 
         <include
             android:id="@+id/info_extra_header1"

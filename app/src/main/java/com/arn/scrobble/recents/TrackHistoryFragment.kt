@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -95,7 +94,6 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
             this,
             prefs.showAlbumInRecents,
             isShowingPlayers,
-            mainNotifierViewModel.currentUser.isSelf
         )
 
         val llm = LinearLayoutManager(requireContext())
@@ -176,13 +174,8 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {
-        val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         when (view.id) {
-            R.id.recents_menu -> openTrackPopupMenu(dateFrame, entry)
-            else -> {
-                if (!view.isInTouchMode)
-                    openTrackPopupMenu(dateFrame, entry)
-            }
+            R.id.recents_menu -> openTrackPopupMenu(view, entry)
         }
     }
 
@@ -190,14 +183,17 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
         val track = entry as Track
 
         val popup = PopupMenu(requireContext(), anchor)
-        popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
+        val menuRes = if (mainNotifierViewModel.currentUser.isSelf)
+            R.menu.recents_item_menu
+        else
+            R.menu.recents_item_friends_menu
+        popup.menuInflater.inflate(menuRes, popup.menu)
 
         popup.menu.removeItem(R.id.menu_love)
         val moreMenu: Menu = popup.menu.findItem(R.id.menu_more)?.subMenu ?: popup.menu
 
         moreMenu.removeItem(R.id.menu_hate)
         moreMenu.removeItem(R.id.menu_share)
-        moreMenu.removeItem(R.id.menu_info)
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {

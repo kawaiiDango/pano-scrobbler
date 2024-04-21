@@ -5,10 +5,8 @@
     android:id="@+id/blocked_metadata_list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="40dp"
     android:orientation="horizontal"
-    android:paddingVertical="8dp"
-    android:paddingStart="16dp">
+    android:paddingStart="@dimen/overscan_padding_horiz">
 
     <LinearLayout
         android:id="@+id/blocked_metadata_list_content"
@@ -18,7 +16,10 @@
         android:background="?selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:orientation="vertical">
+        android:gravity="center_vertical"
+        android:minHeight="60dp"
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/track"
@@ -84,13 +85,14 @@
         tools:srcCompat="@drawable/vd_skip" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/delete"
+        android:id="@+id/delete_menu"
         style="?materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:contentDescription="@string/delete"
+        android:contentDescription="@string/item_options"
         android:gravity="top|end"
-        app:icon="@drawable/vd_delete"
+        android:paddingEnd="@dimen/overscan_padding_horiz"
+        app:icon="@drawable/vd_more_vert"
         app:iconSize="28dp" />
 
 </LinearLayout>

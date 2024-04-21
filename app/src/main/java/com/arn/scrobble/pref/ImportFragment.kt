@@ -84,6 +84,7 @@ class ImportFragment : Fragment() {
 
         binding.codeEdittext.inputType = InputType.TYPE_NULL
         binding.code.endIconMode = TextInputLayout.END_ICON_NONE
+        binding.code.isEnabled = false
 
         if (Stuff.isTv) {
             binding.methodFile.isVisible = false

@@ -38,7 +38,6 @@ class TrackHistoryAdapter(
     private val itemClickListener: MusicEntryItemClickListener,
     private val isShowingAlbums: Boolean,
     private val isShowingPlayers: Boolean,
-    private val userIsSelf: Boolean
 ) : ListAdapter<Track, TrackHistoryAdapter.VHTrackHistoryItem>(
     GenericDiffCallback { old, new -> old.date == new.date }
 ), LoadMoreGetter {
@@ -63,7 +62,7 @@ class TrackHistoryAdapter(
         holder.setItemData(getItem(position))
     }
 
-    override fun getItemId(position: Int) = getItem(position).date?.toLong() ?: 0L
+    override fun getItemId(position: Int) = getItem(position).date ?: 0L
 
     inner class VHTrackHistoryItem(
         private val binding: ListItemRecentsBinding,
@@ -72,17 +71,23 @@ class TrackHistoryAdapter(
         private var job: Job? = null
 
         init {
-            binding.root.setOnClickListener {
-                itemClickListener.onItemClick(itemView, getItem(bindingAdapterPosition))
-            }
             binding.recentsPlaying.visibility = View.GONE
-            if (userIsSelf) {
+            binding.recentsImgFrame.background = null
+            binding.recentsTrackLl.background = null
+
+            if (itemView.isInTouchMode) {
                 binding.recentsMenu.setOnClickListener { v ->
                     itemClickListener.onItemClick(v, getItem(bindingAdapterPosition))
                 }
             } else {
-                binding.recentsMenu.visibility = View.GONE
-                binding.recentsMenuText.visibility = View.GONE
+                binding.recentsMenu.isEnabled = false
+                binding.root.isFocusable = true
+                binding.root.setOnClickListener {
+                    itemClickListener.onItemClick(
+                        binding.recentsMenu,
+                        getItem(bindingAdapterPosition)
+                    )
+                }
             }
         }
 
@@ -94,22 +99,8 @@ class TrackHistoryAdapter(
                 if (track.album != null) {
                     binding.recentsAlbum.text = track.album.name
                     binding.recentsAlbum.visibility = View.VISIBLE
-                    binding.recentsTrackLl.setPaddingRelative(
-                        0,
-                        0,
-                        0,
-                        0
-                    )
                 } else {
-                    val albumHeight =
-                        itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
                     binding.recentsAlbum.visibility = View.GONE
-                    binding.recentsTrackLl.setPaddingRelative(
-                        0,
-                        albumHeight / 2,
-                        0,
-                        albumHeight / 2
-                    )
                 }
             }
 

@@ -13,8 +13,8 @@
         android:id="@+id/info_title_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
         android:background="?selectableItemBackground"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <com.google.android.material.imageview.ShapeableImageView
@@ -45,15 +45,6 @@
             tools:text="@string/track" />
         <!-- Selectable text causes issues with animation -->
 
-        <TextView
-            android:id="@+id/info_track_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="4dp"
-            android:visibility="invisible"
-            tools:text="05:30"
-            tools:visibility="visible" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/info_link"
             style="?materialIconButtonStyle"
@@ -82,6 +73,16 @@
             android:layout_height="match_parent"
             app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
             tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/info_track_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:textAppearance="?textAppearanceBodyLarge"
+            tools:text="05:30" />
+
     </com.arn.scrobble.ui.SquareFrameLayout>
 
     <LinearLayout
@@ -196,7 +197,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:addStatesFromChildren="true"
             android:background="@drawable/selector_border_gentle"
             android:orientation="horizontal"
             android:padding="@dimen/list_item_padding"
@@ -268,8 +268,8 @@
                 android:contentDescription="@string/add_photo"
                 android:tooltipText="@string/add_photo"
                 android:visibility="gone"
-                app:iconTint="?colorSecondary"
                 app:icon="@drawable/vd_add_photo"
+                app:iconTint="?colorSecondary"
                 tools:visibility="visible" />
 
             <View
@@ -293,10 +293,11 @@
                 tools:text="n tracks" />
         </LinearLayout>
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/info_extra_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:minHeight="50dp"
             android:visibility="gone"
             tools:visibility="visible" />

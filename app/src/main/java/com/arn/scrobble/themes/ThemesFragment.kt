@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,7 @@ import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.dp
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
@@ -150,7 +152,7 @@ class ThemesFragment : Fragment() {
 
         mainNotifierViewModel.setFabData(fabData)
 
-        if (DynamicColors.isDynamicColorAvailable()) {
+        if (DynamicColors.isDynamicColorAvailable() && !Stuff.isTv) {
             binding.themeDynamic.visibility = View.VISIBLE
             binding.themeDynamic.setOnCheckedChangeListener { compoundButton, checked ->
                 setSwatchesEnabled(!checked)
@@ -172,6 +174,11 @@ class ThemesFragment : Fragment() {
             previewChipColors()
             previewTextColors()
             previewSwatchesColors()
+        }
+
+        if (Stuff.isTv) {
+            binding.themeDayNight.isVisible = false
+            binding.themeDayNight.check(R.id.chip_dark)
         }
     }
 
@@ -263,9 +270,25 @@ class ThemesFragment : Fragment() {
             themedContext.getStyledColor(styleId, com.google.android.material.R.attr.colorSecondary)
         binding.themePrimaryHeader.setTextColor(color)
         binding.themeSecondaryHeader.setTextColor(color)
-        binding.themeRandom.buttonTintList = ColorStateList.valueOf(color)
-        binding.themeDynamic.buttonTintList = ColorStateList.valueOf(color)
-        binding.themeTintBg.buttonTintList = ColorStateList.valueOf(color)
+
+        val buttonTintList = ContextCompat.getColorStateList(
+            themedContext,
+            com.google.android.material.R.color.m3_checkbox_button_tint
+        )
+
+        val iconTintList = ContextCompat.getColorStateList(
+            themedContext,
+            com.google.android.material.R.color.m3_checkbox_button_icon_tint
+        )
+
+        arrayOf(
+            binding.themeRandom,
+            binding.themeDynamic,
+            binding.themeTintBg
+        ).forEach {
+            it.buttonTintList = buttonTintList
+            it.buttonIconTintList = iconTintList
+        }
 
         previewChipColors()
     }
@@ -286,28 +309,33 @@ class ThemesFragment : Fragment() {
                 secondaryStyleId,
                 com.google.android.material.R.attr.colorSecondaryContainer
             )
+        val rippleColor = ContextCompat.getColorStateList(
+            themedContext,
+            com.google.android.material.R.color.m3_chip_ripple_color
+        )
+        val strokeColor = ContextCompat.getColorStateList(
+            themedContext,
+            com.google.android.material.R.color.m3_chip_stroke_color
+        )
 
         val states = arrayOf(
             intArrayOf(-android.R.attr.state_checked), // unchecked
-            intArrayOf(android.R.attr.state_checked), // unchecked
+            intArrayOf(android.R.attr.state_checked), // checked
+//            intArrayOf(android.R.attr.state_selected), // selected
         )
-        val colors = intArrayOf(primaryColor, secondaryColor)
+        val bgColors = intArrayOf(primaryColor, secondaryColor)
 
-        val textColor = MaterialColors.getColor(
+        val textColor = ContextCompat.getColorStateList(
             themedContext,
-            com.google.android.material.R.attr.colorOnPrimarySurface,
-            null
-        )
-        val outlineColor = themedContext.getStyledColor(
-            secondaryStyleId,
-            com.google.android.material.R.attr.colorOutline
+            com.google.android.material.R.color.m3_chip_text_color
         )
 
         binding.themeDayNight.children.forEach {
             it as Chip
-            it.chipBackgroundColor = ColorStateList(states, colors)
+            it.chipBackgroundColor = ColorStateList(states, bgColors)
             it.setTextColor(textColor)
-            it.chipStrokeColor = ColorStateList.valueOf(outlineColor)
+            it.chipStrokeColor = strokeColor
+            it.rippleColor = rippleColor
         }
     }
 
@@ -360,6 +388,10 @@ class ThemesFragment : Fragment() {
     }
 
     private fun previewSwatchesColors() {
+        val primary = getThemeName(binding.themePrimarySwatches)
+
+        val primaryStyleId = ColorPatchMap.primaryStyles[primary]!!
+
         // Define the states
         val states = arrayOf(
             intArrayOf(android.R.attr.state_focused), // State when the item is focused
@@ -368,10 +400,9 @@ class ThemesFragment : Fragment() {
 
         // Define the colors for each state
         val colors = intArrayOf(
-            MaterialColors.getColor(
-                themedContext,
-                com.google.android.material.R.attr.colorSecondaryContainer,
-                null
+            themedContext.getStyledColor(
+                primaryStyleId,
+                com.google.android.material.R.attr.colorPrimaryContainer
             ),
             ContextCompat.getColor(themedContext, R.color.foreground_pure)
         )

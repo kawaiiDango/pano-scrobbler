@@ -24,10 +24,6 @@ class VHPendingScrobble(
         binding.recentsImgOverlay.visibility = View.VISIBLE
         binding.recentsImgOverlay.contentDescription =
             itemView.context.getString(R.string.pending_scrobble)
-        if (Stuff.isTv)
-            binding.root.setOnClickListener {
-                itemClickListener.call(binding.recentsMenu, bindingAdapterPosition) { ps }
-            }
         binding.recentsMenu.setOnClickListener {
             itemClickListener.call(it, bindingAdapterPosition) { ps }
         }

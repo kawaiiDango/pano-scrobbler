@@ -38,7 +38,7 @@ object Journeys {
     fun MacrobenchmarkScope.switchTabs() {
         device.findObject(By.desc("Scrobbles")).click()
         device.waitForIdle()
-        device.findObject(By.desc("Friends")).click()
+        device.findObject(By.desc("Following")).click()
         device.waitForIdle()
         device.findObject(By.desc("Charts")).click()
         device.waitForIdle()

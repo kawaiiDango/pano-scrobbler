@@ -5,19 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
         android:id="@+id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/no_friends"
-        android:textAppearance="?textAppearanceHeadlineSmall"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_friends"
+            android:textAppearance="?textAppearanceHeadlineSmall" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/followers_link"
+            style="?materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/followers"
+            app:icon="@drawable/vd_open_in_new" />
+    </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
@@ -31,7 +40,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:layoutAnimation="@anim/layout_animation_slide_up"
-            android:paddingStart="8dp"
+            android:paddingHorizontal="@dimen/overscan_padding_horiz"
             android:paddingTop="8dp"
             tools:listitem="@layout/grid_item_friend"
             tools:visibility="visible" />

@@ -17,12 +17,12 @@ import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentBillingBinding
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.dp
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.toast
-import com.arn.scrobble.utils.Stuff
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
@@ -56,15 +56,18 @@ class BillingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setupInsets()
 
-        val bulletStrings = arrayOf(
+        val bulletStrings = listOfNotNull(
             R.drawable.vd_palette to getString(R.string.pref_themes),
             R.drawable.vd_apps to getString(R.string.billing_scrobble_source),
             R.drawable.vd_ban to getString(R.string.billing_block),
             R.drawable.vd_pin to getString(R.string.billing_pin_friends, 10),
-            R.drawable.vd_heart to getString(R.string.pref_link_heart_button_rating),
+            if (!Stuff.isTv)
+                R.drawable.vd_heart to getString(R.string.pref_link_heart_button_rating)
+            else
+                null,
             R.drawable.vd_extract to getString(R.string.billing_regex_extract),
             R.drawable.vd_share to getString(R.string.billing_sharing),
-        ).reversedArray()
+        ).asReversed()
 
         bulletStrings.forEach { (iconRes, string) ->
             val textView = MaterialTextView(requireContext()).apply {

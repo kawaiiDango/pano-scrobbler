@@ -15,6 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import coil.size.Precision
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
@@ -144,6 +146,12 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
             add(MusicEntryMapper())
             add(musicEntryImageInterceptor)
             add(StarMapper())
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                add(ImageDecoderDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
 
             if (prefs.demoMode)
                 add(DemoInterceptor())

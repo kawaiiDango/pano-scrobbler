@@ -68,7 +68,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                 true
             }
         }
-        
+
         binding.tagInfoLink.setOnClickListener {
             Stuff.openInBrowser(
                 "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8")
@@ -114,7 +114,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                             val clickListener = { view: View ->
                                 if (!(view is TextView && (view.selectionStart != -1 || view.selectionEnd != -1))) {
 
-                                    scheduleTransition()
+//                                    scheduleTransition()
 
                                     if (binding.tagInfoWiki.maxLines == 4) {
                                         binding.tagInfoWiki.maxLines = 1000
@@ -125,8 +125,9 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                                     }
                                 }
                             }
-                            binding.tagInfoWiki.setOnClickListener(clickListener)
-                            binding.tagInfoWikiExpand.setOnClickListener(clickListener)
+                            binding.tagInfoWikiContainer.setOnClickListener(clickListener)
+                            binding.tagInfoWikiContainer.isClickable = true
+                            binding.tagInfoWikiContainer.isFocusable = true
                             binding.tagInfoWikiExpand.visibility = View.VISIBLE
                         }
                     }

@@ -87,13 +87,13 @@ class InfoVM : ViewModel() {
                 it
             }
         }
+        _infoListReceiver.value = newInfos
 
-        viewModelScope.launch(Dispatchers.IO) {
-            _infoListReceiver.emit(newInfos)
-
-            if (prevInfo?.entry is Track && info.entry is Track) {
-                if ((prevInfo?.entry as Track).userloved != info.entry.userloved && info.entry.userloved != null)
+        if (prevInfo?.entry is Track && info.entry is Track) {
+            if ((prevInfo?.entry as Track).userloved != info.entry.userloved && info.entry.userloved != null) {
+                viewModelScope.launch(Dispatchers.IO) {
                     ScrobbleEverywhere.loveOrUnlove(info.entry, info.entry.userloved)
+                }
             }
         }
     }

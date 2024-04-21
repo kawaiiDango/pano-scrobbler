@@ -18,7 +18,6 @@ import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainNotifierViewModel
-import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
@@ -28,7 +27,7 @@ import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.flow.filterNotNull
 
-class BlockedMetadataFragment : Fragment(), ItemClickListener<BlockedMetadata> {
+class BlockedMetadataFragment : Fragment() {
     private var _binding: ContentBlockedMetadataBinding? = null
     private val binding
         get() = _binding!!
@@ -69,7 +68,11 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener<BlockedMetadata> {
 
         binding.blockList.setupInsets()
 
-        adapter = BlockedMetadataAdapter(this)
+        adapter = BlockedMetadataAdapter(
+            onItemClick = { showAddEditDialog(it) },
+            onDelete = { viewModel.delete(it) }
+        )
+
         binding.blockList.adapter = adapter
         binding.blockList.layoutManager = LinearLayoutManager(requireContext())
         binding.empty.text = resources.getQuantityString(R.plurals.num_blocked_metadata, 0, 0)
@@ -110,11 +113,4 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener<BlockedMetadata> {
         findNavController().navigate(R.id.blockedMetadataAddDialogFragment, args)
     }
 
-    override fun onItemClick(view: View, position: Int, item: BlockedMetadata) {
-        if (view.id == R.id.delete)
-            viewModel.delete(item)
-        else {
-            showAddEditDialog(item)
-        }
-    }
 }

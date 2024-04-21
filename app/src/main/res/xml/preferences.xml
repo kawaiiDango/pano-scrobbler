@@ -233,6 +233,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         app:icon="@drawable/vd_web"
+        android:key="accounts"
         android:title="@string/scrobble_services">
         <Preference
             android:title="@string/lastfm"

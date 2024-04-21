@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentDeleteAccountBinding
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 
 class DeleteAccountFragment : Fragment() {
@@ -34,7 +36,14 @@ class DeleteAccountFragment : Fragment() {
             binding.link1, binding.link2, binding.link3
         ).forEach {
             it.setOnClickListener { _ ->
-                Stuff.openInBrowser("https://" + it.text)
+                if (Stuff.isTv) {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(getString(R.string.tv_url_notice) + "\n\n " + it.text)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                } else {
+                    Stuff.openInBrowser("https://" + it.text)
+                }
             }
         }
     }

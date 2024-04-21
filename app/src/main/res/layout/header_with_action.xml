@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:drawablePadding="10dp"
-        android:padding="15dp"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
+        android:paddingVertical="16dp"
         android:textAppearance="?textAppearanceTitleMedium"
         app:drawableTint="?colorPrimary"
         tools:text="@string/recently_scrobbled" />
@@ -22,7 +23,7 @@
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         android:text="@string/show_all"
         app:drawableTint="?colorPrimary" />
 
@@ -32,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/more"
+        android:paddingHorizontal="@dimen/overscan_padding_horiz"
         android:visibility="gone"
         app:icon="@drawable/vd_more_horiz"
         tools:visibility="visible" />

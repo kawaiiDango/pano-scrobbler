@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingVertical="6dp"
-    android:paddingLeft="1dp"
-    android:paddingRight="1dp">
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/overscan_padding_horiz">
 
     <ImageView
         android:id="@+id/edits_img"
-        android:layout_width="70dp"
+        android:layout_width="60dp"
         android:layout_height="50dp"
         android:alpha="0.7"
         android:importantForAccessibility="no"
@@ -28,7 +26,8 @@
         android:background="?selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/edits_track"
@@ -80,14 +79,14 @@
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/edits_delete"
+        android:id="@+id/delete_menu"
         style="?materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/delete"
-        android:focusable="true"
+        android:contentDescription="@string/item_options"
         android:gravity="top|end"
-        app:icon="@drawable/vd_delete"
+        android:paddingEnd="@dimen/overscan_padding_horiz"
+        app:icon="@drawable/vd_more_vert"
         app:iconSize="28dp" />
 
 </LinearLayout>

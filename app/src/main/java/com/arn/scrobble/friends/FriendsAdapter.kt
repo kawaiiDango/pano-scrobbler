@@ -91,23 +91,22 @@ class FriendsAdapter(
 
     inner class VHUser(
         private val binding: GridItemFriendBinding,
-        private val clickable: Boolean = true
+        private val isRecyclerItem: Boolean = true
     ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         var isPinned = false
         private var friendsRecentsJob: Job? = null
 
         init {
-            if (clickable) {
+            if (isRecyclerItem) {
                 itemView.setOnClickListener(this)
-                binding.friendsPic.setOnClickListener(this)
-                binding.friendsPic.isFocusable = true
-                binding.friendsPic.isClickable = true
+                itemView.isFocusable = true
+                binding.friendsTrackFrame.background = null
             }
         }
 
         override fun onClick(view: View) {
-            if (clickable)
+            if (isRecyclerItem)
                 itemClickListener.call(itemView, bindingAdapterPosition) {
                     getItem(
                         bindingAdapterPosition
@@ -138,10 +137,10 @@ class FriendsAdapter(
             } else {
                 item.trackResult
                     .onFailure { error ->
-                        if (clickable) {
-                            binding.friendsTrackFrame.setOnClickListener {
-                                itemView.callOnClick()
-                            }
+                        if (!isRecyclerItem) {
+                            binding.friendsTrackFrame.setOnClickListener(null)
+                            binding.friendsTrackFrame.isClickable = false
+                            binding.friendsTrackFrame.isFocusable = false
                         }
 
                         binding.friendsSubtitle.text = if (error is ApiException)
@@ -167,8 +166,12 @@ class FriendsAdapter(
                                 R.drawable.vd_music_circle
                         )
 
-                        binding.friendsTrackFrame.setOnClickListener {
-                            Stuff.launchSearchIntent(track, null)
+                        if (!isRecyclerItem) {
+                            binding.friendsTrackFrame.setOnClickListener {
+                                Stuff.launchSearchIntent(track, null)
+                            }
+                            binding.friendsTrackFrame.isClickable = true
+                            binding.friendsTrackFrame.isFocusable = true
                         }
                     }
 

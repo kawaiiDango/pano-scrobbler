@@ -61,12 +61,8 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
     }
 
     fun expandTillToolbar(animate: Boolean = true) {
-        if (!Stuff.isTv) {
-            updateHeight(false)
-            super.setExpanded(true, animate)
-        } else {
-            super.setExpanded(false, animate)
-        }
+        updateHeight(false)
+        super.setExpanded(true, animate)
     }
 
     fun updateHeight(large: Boolean) {
@@ -79,13 +75,17 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
             else
                 context.resources.getDimensionPixelSize(R.dimen.app_bar_height)
         } else {
-            context.getDimenFromAttr(com.google.android.material.R.attr.collapsingToolbarLayoutMediumSize)
+            if (Stuff.isTv)
+                context.getDimenFromAttr(com.google.android.material.R.attr.actionBarSize)
+            else
+                context.getDimenFromAttr(com.google.android.material.R.attr.collapsingToolbarLayoutMediumSize)
         }
 
         val prevHeight = ctl.layoutParams.height
 
         if (prevHeight != ctlHeight) {
             if (ctl.getTag(R.id.inited) == null) { // prevent visual jerk
+                ctl.scrimVisibleHeightTrigger = ctlHeight
                 ctl.updateLayoutParams {
                     height = ctlHeight
                 }

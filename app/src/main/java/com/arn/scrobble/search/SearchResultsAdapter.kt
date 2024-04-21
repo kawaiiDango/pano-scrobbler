@@ -80,66 +80,48 @@ class SearchResultsAdapter(
 
     fun populate(searchResults: SearchResults) {
         searchType = searchResults.searchType
+        data.removeSection(Section.NOT_FOUND)
+        data.addSection(
+            SectionWithHeader(
+                Section.ARTISTS,
+                searchResults.artists,
+                header = ExpandableHeader(
+                    R.drawable.vd_mic,
+                    R.string.artists,
+                )
+            )
+        )
+        data.addSection(
+            SectionWithHeader(
+                Section.ALBUMS,
+                searchResults.albums,
+                header = ExpandableHeader(
+                    R.drawable.vd_album,
+                    R.string.albums,
+                )
+            )
+        )
+        data.addSection(
+            SectionWithHeader(
+                Section.TRACKS,
+                searchResults.tracks,
+                header = ExpandableHeader(
+                    R.drawable.vd_note,
+                    R.string.tracks,
+                )
+            )
+        )
+        data.addSection(
+            SectionWithHeader(
+                Section.LOVED_TRACKS,
+                searchResults.lovedTracks,
+                header = ExpandableHeader(
+                    R.drawable.vd_heart,
+                    R.string.loved,
+                )
+            )
+        )
 
-        if (searchResults.isEmpty) {
-            data.clear()
-            data.addSection(
-                SectionWithHeader(
-                    Section.NOT_FOUND,
-                    emptyList(),
-                    header = ExpandableHeader(
-                        R.drawable.vd_ban,
-                        if (!Stuff.isOnline)
-                            context.getString(R.string.unavailable_offline)
-                        else
-                            context.getString(R.string.not_found),
-                    ),
-                    showHeaderWhenEmpty = true
-                )
-            )
-        } else {
-            data.removeSection(Section.NOT_FOUND)
-            data.addSection(
-                SectionWithHeader(
-                    Section.ARTISTS,
-                    searchResults.artists,
-                    header = ExpandableHeader(
-                        R.drawable.vd_mic,
-                        R.string.artists,
-                    )
-                )
-            )
-            data.addSection(
-                SectionWithHeader(
-                    Section.ALBUMS,
-                    searchResults.albums,
-                    header = ExpandableHeader(
-                        R.drawable.vd_album,
-                        R.string.albums,
-                    )
-                )
-            )
-            data.addSection(
-                SectionWithHeader(
-                    Section.TRACKS,
-                    searchResults.tracks,
-                    header = ExpandableHeader(
-                        R.drawable.vd_note,
-                        R.string.tracks,
-                    )
-                )
-            )
-            data.addSection(
-                SectionWithHeader(
-                    Section.LOVED_TRACKS,
-                    searchResults.lovedTracks,
-                    header = ExpandableHeader(
-                        R.drawable.vd_heart,
-                        R.string.loved,
-                    )
-                )
-            )
-        }
 
         data.removeSection(Section.REINDEX)
 
@@ -174,10 +156,14 @@ class SearchResultsAdapter(
     inner class VHSearchResult(private val binding: ListItemRecentsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.recentsMenuText.visibility = View.GONE
             binding.recentsMenu.visibility = View.INVISIBLE
             binding.recentsImgOverlay.setBackgroundResource(R.drawable.vd_heart_stroked)
-            itemView.setOnClickListener {
+
+            binding.recentsImgFrame.background = null
+            binding.recentsTrackLl.background = null
+
+            binding.root.isFocusable = true
+            binding.root.setOnClickListener {
                 clickListener.onItemClick(
                     itemView,
                     data[bindingAdapterPosition] as? MusicEntry ?: return@setOnClickListener
@@ -233,16 +219,16 @@ class SearchResultsAdapter(
     inner class VHSearchHeader(private val binding: HeaderWithActionBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.fixFocusabilityOnTv()
-        }
-
         fun setData(headerData: ExpandableHeader) {
-            if (headerData.section.listSize > 3 || headerData.section.sectionId == Section.REINDEX) {
+            if (headerData.section.listSize > 3) {
                 binding.headerAction.visibility = View.VISIBLE
                 binding.headerAction.text = headerData.actionText
+                binding.fixFocusabilityOnTv()
             } else {
                 binding.headerAction.visibility = View.GONE
+                binding.root.setOnClickListener(null)
+                binding.root.isClickable = false
+                binding.root.isFocusable = false
             }
             binding.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ContextCompat.getDrawable(

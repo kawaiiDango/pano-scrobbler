@@ -47,11 +47,11 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         val metadata = requireArguments().getSingle<OptionsMenuMetadata>()!!
         binding.optionsMenuNav.inflateMenu(metadata.menuRes)
 
-        binding.optionsMenuNav.menu.findItem(R.id.nav_pro).isVisible =
+        binding.optionsMenuNav.menu.findItem(R.id.nav_pro)?.isVisible =
             !billingViewModel.proStatus.value
 
         mainNotifierViewModel.updateCanIndex()
-        binding.optionsMenuNav.menu.findItem(R.id.nav_do_index).isVisible =
+        binding.optionsMenuNav.menu.findItem(R.id.nav_do_index)?.isVisible =
             mainNotifierViewModel.canIndex.value && BuildConfig.DEBUG
 
         if (metadata.showHeader) {

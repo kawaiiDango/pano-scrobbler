@@ -8,14 +8,6 @@
         <item quantity="many">%1$s بيانات التعريف المحظورة</item>
         <item quantity="other">%1$s بيانات التعريف المحظورة</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="zero">صديق %1$s</item>
-        <item quantity="one">صديق %1$s</item>
-        <item quantity="two">صديقين %1$s</item>
-        <item quantity="few">أصدقاء %1$s</item>
-        <item quantity="many">أصدقاء %1$s</item>
-        <item quantity="other">أصدقاء %1$s</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="zero">معلّق %1$s</item>
         <item quantity="one">معلّق %1$s</item>
@@ -118,7 +110,6 @@
     <string name="pending_scrobbles">أسكروبلس معلق</string>
     <string name="pending_scrobble">أسكروبل معلق</string>
     <string name="pending_scrobbles_noti">يتم تحويل الأسكروبلس المعلق </string>
-    <string name="friends">الأصدقاء</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">أغنية ممسوحة %1$s منذ %2$s</string>
     <string name="allow_background">السماح بمسح الأغاني في الخلفية</string>
     <string name="grant_notification_access">منح صلاحية الإشعارات</string>

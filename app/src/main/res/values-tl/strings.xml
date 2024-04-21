@@ -60,10 +60,6 @@
         <item quantity="one">%1$d minuto</item>
         <item quantity="other">%1$d na mga minuto</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s kaibigan</item>
-        <item quantity="other">%1$s na mga kaibigan</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s pending</item>
         <item quantity="other">%1$s pending</item>

@@ -90,12 +90,6 @@
         <item quantity="many">%1$d minutės</item>
         <item quantity="other">%1$d minučių</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s draugas</item>
-        <item quantity="few">%1$s draugai</item>
-        <item quantity="many">%1$s draugo</item>
-        <item quantity="other">%1$s draugų</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s laukiama</item>
         <item quantity="few">%1$s laukiama</item>
@@ -199,7 +193,6 @@
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string name="pending_scrobble">Laukiamas skroblas</string>
     <string name="pending_scrobbles_noti">Apdorojama laukiančių skroblų</string>
-    <string name="friends">Draugai</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblai (-ų), nuo %2$s</string>
     <string name="allow_background">Leisti skrobalinimą fone</string>
     <string name="grant_notification_access">Suteikti prieigą prie pranešimų</string>
@@ -280,7 +273,6 @@
     <string name="close" comment="To close a dialog or something">Uždaryti</string>
     <string name="user_tags_hint" comment="To add a new tag">Nauja žymė</string>
     <string name="user_tags_empty">Nepridėjai jokių žymių</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Ilgai prispausk ant takelio, kad atidarytum</string>
     <string name="appwidget_loading">Kraunama…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Laikotarpis</string>
     <string name="appwidget_theme">Tema</string>
@@ -434,7 +426,6 @@
     <string name="custom_listenbrainz">Pasirinktinis Listenbrainz</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrink %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Speciali prieiga prie programėlės &gt; Prieiga prie pranešimų &gt; %1$s</string>
     <string name="artist_extra">Takeliai, albumai ir panašumai</string>
     <string name="no_browser">Neįdiegta jokia naršyklė</string>
     <string name="no_player">Nėra įdiegtas joks muzikos leistuvas</string>

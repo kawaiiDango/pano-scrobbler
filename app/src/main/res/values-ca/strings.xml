@@ -56,10 +56,6 @@
         <item quantity="one">%1$d minut</item>
         <item quantity="other">%1$d minuts</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s amic</item>
-        <item quantity="other">%1$s amics</item>
-    </plurals>
     <string name="yes">Sí</string>
     <string name="no">No</string>
     <string name="reset">Restableix</string>
@@ -143,7 +139,6 @@
     <string name="pending_scrobbles">Scrobbles pendents</string>
     <string name="pending_scrobble">Scrobble pendent</string>
     <string name="pending_scrobbles_noti">S\'estan processant els scrobbles pendents</string>
-    <string name="friends">Amics</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles des del %2$s</string>
     <string name="allow_background">Permet fer scrobbling en segon pla</string>
     <string name="send_notifications">Permet notificacions</string>
@@ -206,7 +201,6 @@
     <string name="close" comment="To close a dialog or something">Tanca</string>
     <string name="user_tags_hint" comment="To add a new tag">Etiqueta nova</string>
     <string name="user_tags_empty">No has afegit cap etiqueta</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">Mantín una cançó per a obrir açò</string>
     <string name="appwidget_loading">S\'està carregant…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Període</string>
     <string name="appwidget_theme">Tema</string>

@@ -45,9 +45,6 @@
     <plurals name="num_minutes">
         <item quantity="other">%1$d分</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="other">%1$s人のフレンド</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="other">%1$s件が保留中</item>
     </plurals>
@@ -147,7 +144,6 @@
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="pending_scrobble">保留中のScrobble</string>
     <string name="pending_scrobbles_noti">保留中のScrobbleを処理中</string>
-    <string name="friends">フレンド</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s Scrobble — %2$sより</string>
     <string name="allow_background">バックグラウンドでもScrobbleする</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
@@ -228,7 +224,6 @@
     <string name="close" comment="To close a dialog or something">閉じる</string>
     <string name="user_tags_hint" comment="To add a new tag">新規タグ</string>
     <string name="user_tags_empty">まだタグを追加していません</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">トラックを長押しで開く</string>
     <string name="appwidget_loading">読み込み中…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">期間</string>
     <string name="appwidget_theme">テーマ</string>
@@ -379,7 +374,6 @@
     <string name="custom_listenbrainz">カスタムListenbrainz</string>
     <string name="failed_encode_url">URLのエンコードに失敗しました</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$sを確認</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特別なアプリアクセス &gt; 通知へのアクセス &gt; %1$s</string>
     <string name="artist_extra">トラック、アルバム &amp; 類似</string>
     <string name="no_browser">ブラウザがインストールされていません</string>
     <string name="no_player">音楽プレーヤーがインストールされていません</string>

@@ -45,9 +45,6 @@
     <plurals name="num_minutes">
         <item quantity="other">%1$d 分钟</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="other">%1$s 位好友</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="other">%1$s 个待提交</item>
     </plurals>
@@ -147,7 +144,6 @@
     <string name="pending_scrobbles">待记录的音乐</string>
     <string name="pending_scrobble">待记录的音乐</string>
     <string name="pending_scrobbles_noti">正在处理待记录的音乐条目</string>
-    <string name="friends">好友</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s 项记录，始于 %2$s</string>
     <string name="allow_background">允许后台抓取记录</string>
     <string name="grant_notification_access">授予通知访问权限</string>
@@ -228,7 +224,6 @@
     <string name="close" comment="To close a dialog or something">关闭</string>
     <string name="user_tags_hint" comment="To add a new tag">新标记</string>
     <string name="user_tags_empty">您还没有添加任何标记</string>
-    <string name="info_long_press_hint" comment="'This' is a dialog">在曲目上长按以打开此操作</string>
     <string name="appwidget_loading">正在加载…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">时间段</string>
     <string name="appwidget_theme">主题</string>
@@ -378,7 +373,6 @@
     <string name="custom_listenbrainz">自定义 Listenbrainz</string>
     <string name="failed_encode_url">无法对 URL 进行编码</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">勾选 %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特殊应用访问 &gt; 通知访问 &gt; %1$s</string>
     <string name="artist_extra">曲目、专辑 &amp; 相似艺术家</string>
     <string name="no_browser">未安装浏览器</string>
     <string name="no_player">未安装音乐播放器</string>

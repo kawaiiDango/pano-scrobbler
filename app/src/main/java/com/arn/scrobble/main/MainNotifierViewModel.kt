@@ -9,7 +9,6 @@ import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.github.Updater
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
@@ -95,7 +94,7 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onCleared() {
-        PanoDb.destroyInstance()
+//        PanoDb.destroyInstance()
     }
 
     fun setFabData(fabData: FabData?) {

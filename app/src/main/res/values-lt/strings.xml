@@ -143,6 +143,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programėlės</string>
     <string name="offline">Atsijungę. Rodomi duomenys nėra nauji.</string>
     <string name="unavailable_offline">Nepasiekiama neprisijungus.</string>
+    <string name="tv_url_notice">Atidaryk šį URL adresą kito įrenginio naršyklėje</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Klausiausi\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s klausėsi\n%1$s %2$s</string>
@@ -192,6 +193,8 @@
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string name="pending_scrobble">Laukiamas skroblas</string>
     <string name="pending_scrobbles_noti">Apdorojama laukiančių skroblų</string>
+    <string name="following" comment="accounts you are following on lastfm">Sekama</string>
+    <string name="followers" comment="your lastfm followers">Sekėjai</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblai (-ų), nuo %2$s</string>
     <string name="allow_background">Leisti skrobalinimą fone</string>
     <string name="grant_notification_access">Suteikti prieigą prie pranešimų</string>
@@ -451,6 +454,7 @@
     <string name="fix_it_title">Galimi taisymai</string>
     <string name="fix_it_startup_title">Energijos taupyklės / paleidimo tvarkyklės</string>
     <string name="fix_it_battery_title">Išjungti akumuliatoriaus optimizavimą</string>
+    <string name="fix_it_energy_title">Išjunk energijos optimizavimą</string>
     <string name="fix_it_action" comment="(To open an app)">Atidaryti</string>
     <string name="delete_account">Ištrinti paskyrą</string>
     <string name="delete_account_custom_servers">Apie pasirinktinius serverius žiūrėk atitinkamus jų dokumentus.</string>

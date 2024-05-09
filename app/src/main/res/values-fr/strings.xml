@@ -54,7 +54,7 @@
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s métadonnée bloquée</item>
-        <item quantity="other">%1$s métadonnée bloquée</item>
+        <item quantity="other">%1$s métadonnées bloquées</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minute</item>
@@ -68,7 +68,7 @@
     <string name="no">Non</string>
     <string name="reset">Réinitialiser</string>
     <string name="settings">Configurer</string>
-    <string name="bug_report">Rapporter un bug</string>
+    <string name="bug_report">Signaler un Bug</string>
     <string name="faq">FAQ</string>
     <string name="album_art">Pochette d\'album</string>
     <string name="artist_image">Image d\'artiste</string>
@@ -76,27 +76,27 @@
     <string name="network_error">Erreur de réseau</string>
     <string name="disable_tls_verify">Ignorer les erreurs TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoré</string>
-    <string name="scrobble_ignored_save_edit">Lastfm a ignoré l\'édition probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cet édition pour les scrobbles futurs à la place ?</string>
+    <string name="scrobble_ignored_save_edit">Lastfm a ignoré la modification probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cette modification pour les scrobbles futurs à la place ?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
     <string name="artist">Artiste</string>
     <string name="artists">Artistes</string>
-    <string name="top_artists" comment="Top artists the user has listened to">Artistes favoris</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Meilleurs artistes</string>
     <string name="album_artist">Artiste de l\'album</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artiste / Chaîne</string>
     <string name="similar_artists">Artistes similaires</string>
     <string name="album_optional">Album (optionnel)</string>
     <string name="album">Album</string>
     <string name="albums">Albums</string>
-    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albums</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Meilleurs albums</string>
     <string name="track">Morceau</string>
     <string name="tracks">Morceaux</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Meilleurs titres</string>
     <string name="similar_tracks">Morceaux similaires</string>
     <string name="similar" comment="Similar tracks but in short">Similaire</string>
     <string name="state_scrobbling">Maintenant en scrobbling…</string>
-    <string name="state_scrobbled">Scrobbled</string>
-    <string name="unscrobble">Unscrobble</string>
-    <string name="state_unscrobbled">Unscrobbled</string>
+    <string name="state_scrobbled">Scrobblé</string>
+    <string name="unscrobble">Déscrobble</string>
+    <string name="state_unscrobbled">Déscrobblé</string>
     <string name="state_unrecognised_artist">Artiste non reconnu</string>
     <string name="tap_to_edit">(Appuyez pour modifier)</string>
     <string name="recently_scrobbled">Récemment Scrobbled</string>
@@ -108,7 +108,7 @@
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Autres applications</string>
     <string name="choose_apps">Choisir les applications</string>
     <string name="choose_an_app">Choisir une application</string>
-    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Applis</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Applications</string>
     <string name="offline">Hors-ligne. Les données affichées ne sont pas rafraichies</string>
     <string name="unavailable_offline">Indisponible hors-ligne</string>
     <string name="tv_url_notice">Ouvrir cette URL dans un navigateur sur un autre appareil</string>
@@ -124,7 +124,7 @@
     <string name="more" comment="More options menu in short">Plus</string>
     <string name="learn" comment="(Learn java regex syntax)">Apprendre</string>
     <string name="hide">Masquer</string>
-    <string name="rank_change" comment="%1= delta change">Changement en classement: %s</string>
+    <string name="rank_change" comment="%1= delta change">Changement de classement: %s</string>
     <string name="rank_change_no_change">Aucune modification</string>
     <string name="rank_change_new">Non scrobblé dans la période précédente</string>
     <string name="search">Rechercher</string>

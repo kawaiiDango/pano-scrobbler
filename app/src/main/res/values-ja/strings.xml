@@ -95,6 +95,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">アプリ</string>
     <string name="offline">現在オフラインです。表示中のデータは最新ではありません</string>
     <string name="unavailable_offline">オフライン時は利用できません</string>
+    <string name="tv_url_notice">このURLを他のデバイスのブラウザで開く</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">サービス</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\nを%2$sに聴きました</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$sさんは%1$s\nを%2$sに聴きました</string>
@@ -116,7 +117,7 @@
     <string name="library" comment="search within the library">ライブラリ</string>
     <string name="global" comment="search globally across lastfm">全体</string>
     <string name="reindex">簡易インデックス化</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Scrobblesをインデックス</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Scrobbleをインデックス化</string>
     <string name="full_index">フルインデックス化</string>
     <string name="take_long_time">これには時間がかかる場合があります</string>
     <string name="full_index_desc">ウェブサイトからScrobbleを編集や削除した際にのみこれを使用してください。</string>
@@ -144,6 +145,8 @@
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="pending_scrobble">保留中のScrobble</string>
     <string name="pending_scrobbles_noti">保留中のScrobbleを処理中</string>
+    <string name="following" comment="accounts you are following on lastfm">フォロー中</string>
+    <string name="followers" comment="your lastfm followers">フォロワー</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s Scrobble — %2$sより</string>
     <string name="allow_background">バックグラウンドでもScrobbleする</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
@@ -238,7 +241,7 @@
     <string name="secondary_color">サブカラー</string>
     <string name="tint_background" comment="Tint the background with the primary color">背景を明るくする</string>
     <string name="random_theme">起動するたびにランダム化する</string>
-    <string name="edit_name" comment="name for regex pattern">フレンドリーネーム</string>
+    <string name="edit_name" comment="name for regex pattern">名前</string>
     <string name="edit_regex">正規表現パターン</string>
     <string name="edit_regex_replacement">正規表現の置換</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">対象</string>
@@ -248,7 +251,7 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">抽出</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">キャプチャグループ <i>track, album, artist</i> もしくは <i>albumArtist</i> を他のフィールドから抽出して利用します。</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">例: アーティストとタイトルを入れ替えるには、アーティストの正規表現を (?&lt;track&gt;.*) 、トラックの正規表現を (?&lt;artist&gt;.*) として入力します。</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">正規表現は、少なくともこれらのキャプチャグループを持っている必要があります: \"track\", \"artist\"</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">正規表現は、少なくとも次のキャプチャグループを含んでいる必要があります: \"track\", \"artist\"</string>
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">複数の \"%1$s\" キャプチャグループが含まれる正規表現は許可されていません</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">無効な正規表現: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">使用されるパターン:</string>
@@ -311,12 +314,12 @@
     <string name="pref_auto_detect">新規アプリから自動的にScrobbleする</string>
     <string name="pref_spotify_remote">他のデバイスで再生中のSpotifyをScrobbleする</string>
     <string name="pref_link_heart_button_rating">通知のハートボタンを使用し、メディアプレーヤーでもお気に入りにする</string>
-    <string name="pref_prevent_duplicate_ambient_scrobbles">端末の音楽再生中はマイクからの連続的なscrobbleを無効にする</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">音楽再生中はマイクからScrobbleしない</string>
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">パーセント</string>
     <string name="pref_logout">ログアウト</string>
-    <string name="sure_tap_again">よろしいですか? もう一度タップしてください</string>
+    <string name="sure_tap_again">よろしいですか？もう一度タップしてください</string>
     <string name="pref_login">ログイン</string>
     <string name="pref_about" comment="Info about this app">アプリ情報</string>
     <string name="pref_privacy_policy">プライバシーポリシー</string>
@@ -324,7 +327,7 @@
     <string name="pref_user_label" comment="(Like username)">ユーザー</string>
     <string name="pref_token_label" comment="For Listenbrainz">認証トークン</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
-    <string name="server_url" comment="For self hosted scrobbling services">サーバー URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">サーバーURL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">認証トークンは %1$s で確認できます。</string>
     <string name="pref_now_playing">再生中の状態情報を送信する</string>
     <string name="pref_fetch_album">不足しているアルバムデータをLastFMから取得する</string>
@@ -332,11 +335,14 @@
     <string name="pref_change_locale">言語を変更</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
     <string name="pref_misc">その他</string>
-    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">週の開始日</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">週の始まり</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">インポート &amp; エクスポート</string>
     <string name="pref_export">エクスポート</string>
     <string name="pref_export_desc">設定や訂正内容、ブロックリストをバックアップします。ログイン情報は、セキュリティ上の観点から保存されません。デバイス間や友人との共有にご利用ください。</string>
     <string name="pref_import">インポート</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">ネットワーク</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">コード</string>
+    <string name="pref_imexport_network_notice">ネットワークモードでは、両方のデバイスが同じネットワークに接続されている必要があります。</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">個人設定</string>
     <string name="pref_themes" comment="Color themes">テーマ</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix &amp; Match\n通知の色も変化します</string>
@@ -405,7 +411,7 @@
     <string name="delete_account_custom_servers">上記以外については、各々の手順を確認してください。</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">画像の追加または変更</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">ギャラリーから選択</string>
-    <string name="square_photo_hint">最良の結果を得るために正方形の画像を使用</string>
+    <string name="square_photo_hint">正方形の画像を使用することを推奨します</string>
     <string name="scrobble_to_file">ファイル</string>
     <string name="password">パスワード</string>
     <string name="open_existing" comment="Append to an existing file">既存に追加</string>

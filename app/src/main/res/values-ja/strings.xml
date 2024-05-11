@@ -53,7 +53,7 @@
     <string name="reset">リセット</string>
     <string name="settings">設定</string>
     <string name="bug_report">バグ報告</string>
-    <string name="faq">FAQ (よくある質問)</string>
+    <string name="faq">よくある質問</string>
     <string name="album_art">アルバムアート</string>
     <string name="artist_image">アーティスト画像</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
@@ -136,7 +136,7 @@
     <string name="show_all">すべて表示</string>
     <string name="edit">訂正</string>
     <string name="delete">削除</string>
-    <string name="delete_all">全て削除</string>
+    <string name="delete_all">すべて削除</string>
     <string name="love" comment="Love/like a song">Love</string>
     <string name="hate" comment="Hate or dislike a song">キライ</string>
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">キライを解除</string>

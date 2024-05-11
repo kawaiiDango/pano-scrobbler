@@ -58,9 +58,12 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">تقريبا هناك…</string>
     <string name="music_players">مشغلي الموسيقى</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">تطبيقات أخرى</string>
+    <string name="choose_apps">اختر التطبيقات</string>
+    <string name="choose_an_app">اختر تطبيق</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">تطبيقات</string>
     <string name="offline">دون اتصال بالإنترنت. البيانات المعروضة ليست جديدة</string>
     <string name="unavailable_offline">غير متوفر عند عدم الاتصال</string>
+    <string name="tv_url_notice">افتح هذا الرابط في متصفح على جهاز آخر</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">الخدمات</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">كنت أستمع إلى\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s كان يستمع إلى\n%1$s %2$s</string>

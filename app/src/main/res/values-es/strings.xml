@@ -358,6 +358,7 @@
     <string name="pref_import">Importar</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Red de datos</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Codigo</string>
+    <string name="pref_imexport_network_notice">Para el modo red, ambos dispositivos deben estar conectados a la misma red.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalización</string>
     <string name="pref_themes" comment="Color themes">Temas</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mezclar y combinar\nTambién cambia el color de las notificaciones</string>
@@ -430,6 +431,7 @@
     <string name="square_photo_hint">Use una foto cuadrada para mejores resultados</string>
     <string name="scrobble_to_file">Archivo</string>
     <string name="password">Contraseña</string>
+    <string name="open_existing" comment="Append to an existing file">Anexar a los existentes</string>
     <string name="create" comment="Create a new file">Crear</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>

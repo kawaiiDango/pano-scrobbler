@@ -13,7 +13,6 @@
         android:layout_height="16dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="@dimen/overscan_padding_horiz"
         android:importantForAccessibility="no"
         android:visibility="gone"
         app:srcCompat="@drawable/vd_horizontal_rule"
@@ -73,6 +72,30 @@
             android:paddingVertical="8dp"
             android:paddingStart="4dp">
 
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end">
+
+                <TextView
+                    android:id="@+id/recents_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?textAppearanceCaption"
+                    tools:text="date date yay" />
+
+                <ImageView
+                    android:id="@+id/recents_playing"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="end"
+                    android:contentDescription="@string/state_scrobbling"
+                    android:visibility="gone"
+                    tools:srcCompat="@drawable/avd_now_playing"
+                    tools:visibility="visible" />
+
+            </FrameLayout>
+
             <TextView
                 android:id="@+id/recents_title"
                 android:layout_width="match_parent"
@@ -124,65 +147,29 @@
         </LinearLayout>
 
         <FrameLayout
-            android:id="@+id/date_frame"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:paddingVertical="8dp">
 
-            <LinearLayout
+            <ImageView
+                android:id="@+id/player_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="14dp"
+                android:visibility="gone"
+                tools:srcCompat="@drawable/vd_note"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/recents_menu"
+                style="?materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="bottom|end"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/player_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_vertical"
-                    android:visibility="gone"
-                    tools:srcCompat="@drawable/vd_note"
-                    tools:visibility="visible" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/recents_menu"
-                    style="?materialIconButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:contentDescription="@string/item_options"
-                    app:icon="@drawable/vd_more_vert"
-                    app:iconPadding="@dimen/overscan_padding_horiz"
-                    app:iconTint="?colorControlNormal" />
-
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginStart="4dp"
-                android:paddingEnd="@dimen/overscan_padding_horiz">
-
-                <TextView
-                    android:id="@+id/recents_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceCaption"
-                    tools:text="date date yay" />
-
-                <ImageView
-                    android:id="@+id/recents_playing"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="end"
-                    android:contentDescription="@string/state_scrobbling"
-                    android:visibility="gone"
-                    tools:srcCompat="@drawable/avd_now_playing"
-                    tools:visibility="visible" />
-            </FrameLayout>
-
+                android:layout_gravity="bottom"
+                android:contentDescription="@string/item_options"
+                app:icon="@drawable/vd_more_vert"
+                app:iconPadding="@dimen/overscan_padding_horiz"
+                app:iconTint="?colorControlNormal" />
         </FrameLayout>
     </LinearLayout>
 </LinearLayout>

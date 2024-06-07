@@ -17,7 +17,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Configuration
-import android.hardware.input.InputManager
 import android.media.MediaMetadata
 import android.media.session.PlaybackState
 import android.net.Uri
@@ -29,7 +28,6 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.format.DateUtils
-import android.view.InputDevice
 import androidx.annotation.Keep
 import androidx.annotation.PluralsRes
 import androidx.annotation.RequiresApi
@@ -879,16 +877,6 @@ object Stuff {
     fun <K, V> Map<K, V>.getOrDefaultKey(key: K, defaultKey: K) = this[key] ?: this[defaultKey]!!
 
     fun <T> List<T>.wrappedGet(index: Int) = this[(index + size) % size]
-
-    val hasMouse by lazy {
-        val inputManager = ContextCompat.getSystemService(App.context, InputManager::class.java)!!
-        inputManager.inputDeviceIds.any {
-            val device = inputManager.getInputDevice(it) ?: return@any false
-            // for windows 11 wsa
-            device.supportsSource(InputDevice.SOURCE_MOUSE) or
-                    device.supportsSource(InputDevice.SOURCE_STYLUS)
-        }
-    }
 
     val isTv by lazy {
         val uiModeManager = ContextCompat.getSystemService(App.context, UiModeManager::class.java)!!

@@ -7,7 +7,6 @@ import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePaddingRelative
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +30,6 @@ import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.UiUtils.dp
 import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import java.util.Objects
@@ -111,7 +109,7 @@ open class ChartsAdapter(
     }
 
     fun progressVisible(visible: Boolean) {
-        if (visible && itemCount == 0) {
+        if (visible) {
             skeleton.showSkeleton()
             binding.chartsStatus.isVisible = false
         } else {
@@ -124,21 +122,11 @@ open class ChartsAdapter(
     }
 
     open fun populate(newList: List<MusicEntry>) {
-        val oldCount = itemCount
         submitList(newList) {
-            if (oldCount != 0)
-                binding.chartsList.scrollToPosition(0)
             binding.chartsList.isVisible = newList.isNotEmpty()
         }
         binding.chartsList.layoutAnimation = null
 
-        binding.chartsList.updatePaddingRelative(
-            top = 0,
-            bottom = 0,
-            start = 24.dp,
-            end = 24.dp
-        )
-        
         if (newList.isEmpty()) {
             if (!Stuff.isOnline)
                 binding.chartsStatus.text =

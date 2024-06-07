@@ -91,8 +91,9 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
         collectLatestLifecycleFlow(viewModel.periodType) { periodType ->
             periodChipsBinding.chartsPeriodType.text = periodType.localizedName
 
-            periodChipsBinding.chartsCalendar.isVisible =
-                periodType in arrayOf(TimePeriodType.WEEK, TimePeriodType.MONTH)
+            // date picker has invisible cursor on TV
+            periodChipsBinding.chartsCalendar.isVisible = !Stuff.isTv &&
+                    periodType in arrayOf(TimePeriodType.WEEK, TimePeriodType.MONTH)
         }
 
         periodChipsBinding.chartsPeriodsList.layoutManager =
@@ -256,6 +257,9 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
             }
 //            idsToRemove.forEach { popup.menu.removeItem(it) }
         }
+
+        if (Stuff.isTv)
+            popup.menu.findItem(R.id.menu_custom)?.isVisible = false
 
         val menuIds = mutableListOf<Int>()
         popup.menu.forEachIndexed { index, menuItem ->

@@ -37,6 +37,7 @@ import com.arn.scrobble.utils.UiUtils.setTitle
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.showWithIcons
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.flow.filterNotNull
 
@@ -123,8 +124,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
 //                adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
             adapter.submitList(it)
 
-            if (it.isNotEmpty())
-                binding.tracksList.isVisible = true
+            binding.tracksList.isVisible = it.isNotEmpty()
 
         }
 
@@ -149,7 +149,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
         collectLatestLifecycleFlow(viewModel.hasLoaded) {
             if (it) {
                 skeleton.showOriginal()
-            } else {
+            } else if (viewModel.input.value?.page == 1) {
                 skeleton.showSkeleton()
             }
         }
@@ -198,13 +198,19 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> PopupMenuUtils.editScrobble(findNavController(), track)
-                R.id.menu_delete -> PopupMenuUtils.deleteScrobble(
-                    findNavController(),
-                    viewModel.viewModelScope,
-                    track
-                ) { succ ->
-                    if (succ) {
+                R.id.menu_delete -> {
+                    if (!Stuff.isOnline)
+                        requireActivity().toast(R.string.unavailable_offline)
+                    else {
                         viewModel.removeTrack(track)
+                        PopupMenuUtils.deleteScrobble(
+                            findNavController(),
+                            viewModel.viewModelScope,
+                            track
+                        ) { succ ->
+                            if (!succ)
+                                requireActivity().toast(R.string.network_error)
+                        }
                     }
                 }
 

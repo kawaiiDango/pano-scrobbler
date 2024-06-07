@@ -187,8 +187,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                 binding.friendsGrid.scheduleLayoutAnimation()
             }
             binding.empty.isVisible = it.isEmpty()
-            if (it.isNotEmpty())
-                binding.friendsGrid.isVisible = true
+            binding.friendsGrid.isVisible = it.isNotEmpty()
 
             adapter.submitList(it)
 
@@ -212,10 +211,6 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
             } else {
                 skeleton.showOriginal()
                 binding.swipeRefresh.isRefreshing = false
-
-                if (viewModel.friendsCombined.value?.isEmpty() == true) {
-                    binding.empty.isVisible = true
-                }
             }
         }
 

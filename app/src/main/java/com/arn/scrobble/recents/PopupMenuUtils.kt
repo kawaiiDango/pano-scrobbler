@@ -69,19 +69,15 @@ object PopupMenuUtils {
         track: Track,
         deleteAction: suspend (Boolean) -> Unit
     ) {
-        if (!Stuff.isOnline)
-            navController.context.toast(R.string.unavailable_offline)
-        else {
-            scope.launch {
-                val results = withContext(Dispatchers.IO) {
-                    ScrobbleEverywhere.delete(track)
-                }
-                withContext(Dispatchers.Main) {
-                    if (results.any { it.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException })
-                        showReauthenticatePrompt(navController)
-                    else
-                        deleteAction(results.all { it.isSuccess })
-                }
+        scope.launch {
+            val results = withContext(Dispatchers.IO) {
+                ScrobbleEverywhere.delete(track)
+            }
+            withContext(Dispatchers.Main) {
+                if (results.any { it.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException })
+                    showReauthenticatePrompt(navController)
+                else
+                    deleteAction(results.all { it.isSuccess })
             }
         }
     }

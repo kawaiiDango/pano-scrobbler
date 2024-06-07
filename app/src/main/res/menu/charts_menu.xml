@@ -7,21 +7,18 @@
             android:id="@+id/menu_collage"
             android:icon="@drawable/vd_mosaic"
             android:title="@string/create_collage"
-            app:iconTint="?android:colorForeground"
-            app:showAsAction="never" />
+            app:iconTint="?android:colorForeground" />
 
         <item
             android:id="@+id/menu_legend"
             android:icon="@drawable/vd_legend"
             android:title="@string/legend"
-            app:iconTint="?android:colorForeground"
-            app:showAsAction="never" />
+            app:iconTint="?android:colorForeground" />
 
         <item
             android:id="@+id/menu_grid_size"
             android:icon="@drawable/vd_grid_on"
             android:title="@string/grid_size"
-            app:iconTint="?android:colorForeground"
-            app:showAsAction="never" />
+            app:iconTint="?android:colorForeground" />
     </group>
 </menu>

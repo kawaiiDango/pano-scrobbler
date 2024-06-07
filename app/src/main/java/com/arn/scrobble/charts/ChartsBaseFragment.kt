@@ -50,7 +50,10 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = ContentChartsBinding.inflate(inflater, container, false)
-        binding.frameChartsList.chartsList.setupInsets()
+
+        val padding =
+            binding.root.context.resources.getDimensionPixelSize(R.dimen.overscan_padding_horiz)
+        binding.frameChartsList.chartsList.setupInsets(additionalSpaceSides = padding)
         _chartsBinding = binding
         _periodChipsBinding = binding.chipsChartsPeriod
         return binding.root
@@ -183,7 +186,8 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         collectLatestLifecycleFlow(
             viewModel.hasLoaded,
         ) {
-            adapter.progressVisible(!it)
+            if (viewModel.input.value == null || viewModel.input.value?.page == 1)
+                adapter.progressVisible(!it)
         }
 
         collectLatestLifecycleFlow(

@@ -35,10 +35,8 @@ import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.autoNotify
-import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import com.arn.scrobble.utils.UiUtils.memoryCacheKey
-import com.arn.scrobble.utils.UiUtils.showWithIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -141,12 +139,14 @@ class ScrobblesAdapter(
                 Section.NOTICE_SECTION.ordinal,
                 header = ExpandableHeader(
                     R.drawable.vd_error,
-                    if (showFixit)
-                        R.string.not_running
-                    else
-                        R.string.scrobbler_off,
-                    R.string.enable,
-                    R.string.enable,
+                    App.context.getString(
+                        if (showFixit)
+                            R.string.not_running
+                        else
+                            R.string.scrobbler_off
+                    ),
+                    "⋮",
+                    "⋮",
                 ),
                 showHeaderWhenEmpty = showFixit || showEnable
             )
@@ -286,7 +286,7 @@ class ScrobblesAdapter(
 
         init {
 
-            if (itemView.isInTouchMode) {
+            if (!Stuff.isTv) {
                 binding.recentsImgFrame.isFocusable = true
                 binding.recentsImgFrame.setOnClickListener {
                     itemClickListener.call(it, bindingAdapterPosition) {
@@ -308,7 +308,7 @@ class ScrobblesAdapter(
                 }
             }
 
-            if (!itemView.isInTouchMode) {
+            if (Stuff.isTv) {
                 binding.recentsTrackLl.setOnFocusChangeListener { v, hasFocus ->
                     if (hasFocus)
                         onFocusChange(bindingAdapterPosition)
@@ -446,10 +446,6 @@ class ScrobblesAdapter(
     inner class VHHeader(private val binding: HeaderWithActionBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.fixFocusabilityOnTv()
-        }
-
         fun setItemData(headerData: ExpandableHeader) {
             when (headerData.section.itemType) {
                 Section.PENDING_SCROBBLES.ordinal,
@@ -461,94 +457,101 @@ class ScrobblesAdapter(
                                 listSize,
                                 listSize
                             )
-                    binding.headerOverflowButton.isVisible = true
-                    binding.headerOverflowButton.setOnClickListener {
-                        val popupMenu = PopupMenu(
-                            binding.headerOverflowButton.context,
-                            binding.headerOverflowButton
-                        )
-                        popupMenu.inflate(R.menu.delete_all_menu)
-                        popupMenu.setOnMenuItemClickListener {
-                            if (it.itemId == R.id.delete_all_confirm) {
-                                viewModel.viewModelScope.launch(Dispatchers.IO) {
-                                    PanoDb.db.getPendingScrobblesDao().nuke()
-                                    PanoDb.db.getPendingLovesDao().nuke()
-                                }
-                                true
-                            } else
-                                false
-                        }
-                        popupMenu.showWithIcons()
-                    }
+//                    binding.headerOverflowButton.isVisible = true
+//                    binding.headerOverflowButton.setOnClickListener {
+//                        val popupMenu = PopupMenu(
+//                            binding.headerOverflowButton.context,
+//                            binding.headerOverflowButton
+//                        )
+//                        popupMenu.inflate(R.menu.delete_all_menu)
+//                        popupMenu.setOnMenuItemClickListener {
+//                            if (it.itemId == R.id.delete_all_confirm) {
+//                                viewModel.viewModelScope.launch(Dispatchers.IO) {
+//                                    PanoDb.db.getPendingScrobblesDao().nuke()
+//                                    PanoDb.db.getPendingLovesDao().nuke()
+//                                }
+//                                true
+//                            } else
+//                                false
+//                        }
+//                        popupMenu.showWithIcons()
+//                    }
                 }
 
                 Section.NOTICE_SECTION.ordinal -> {
                     binding.headerText.text = headerData.title
-                    binding.headerOverflowButton.isVisible = true
-
-                    binding.headerOverflowButton.setOnClickListener {
-                        val popupMenu = PopupMenu(
-                            binding.headerOverflowButton.context,
-                            binding.headerOverflowButton
-                        )
-
-                        if (viewModel.scrobblerEnabled.value == true && viewModel.scrobblerServiceRunning.value == false)
-                            popupMenu.inflate(R.menu.scrobbler_fix_it_menu)
-                        else
-                            popupMenu.inflate(R.menu.scrobbler_enable_menu)
-
-                        popupMenu.setOnMenuItemClickListener {
-                            when (it.itemId) {
-                                R.id.scrobbler_enable -> {
-                                    val hasNotificationListenerPerms =
-                                        Stuff.isNotificationListenerEnabled()
-
-                                    prefs.scrobblerEnabled = true
-
-                                    if (!hasNotificationListenerPerms) {
-                                        navController.navigate(R.id.onboardingFragment)
-                                    } else {
-                                        viewModel.updateScrobblerServiceStatus()
-                                    }
-                                    true
-                                }
-
-                                R.id.scrobbler_fix_it -> {
-                                    navController.navigate(R.id.fixItFragment)
-                                    true
-                                }
-
-                                else -> false
-                            }
-                        }
-                        popupMenu.show()
-                    }
+                    binding.headerActionTextview.isVisible = true
                 }
 
                 else -> {
                     binding.headerText.text = headerData.title
-                    binding.headerOverflowButton.isVisible = false
                 }
             }
 
-            if (headerData.section.listSize > 3) {
-                binding.headerAction.visibility = View.VISIBLE
-                binding.headerAction.text = headerData.actionText
-            } else {
-                binding.headerAction.visibility = View.GONE
-            }
+            binding.headerActionTextview.text = headerData.actionText
 
-            binding.headerAction.setOnClickListener {
-                (viewModel.virtualList[bindingAdapterPosition] as? ExpandableHeader)?.let {
-                    val oldData = viewModel.virtualList.copy()
-                    it.toggle()
-                    autoNotify(oldData, viewModel.virtualList) { o, n ->
-                        o is ExpandableHeader && n is ExpandableHeader
-                                // prevent change animation, check for contents later
-                                ||
-                                o === n
+            if (headerData.section.listSize >= 3) {
+                binding.headerActionTextview.visibility = View.VISIBLE
+                binding.headerContainer.isFocusable = true
+                binding.headerContainer.setOnClickListener {
+                    (viewModel.virtualList[bindingAdapterPosition] as? ExpandableHeader)?.let {
+                        val oldData = viewModel.virtualList.copy()
+                        it.toggle()
+                        autoNotify(oldData, viewModel.virtualList) { o, n ->
+                            o is ExpandableHeader && n is ExpandableHeader
+                                    // prevent change animation, check for contents later
+                                    ||
+                                    o === n
+                        }
                     }
                 }
+            } else if (headerData.section.itemType == Section.NOTICE_SECTION.ordinal) {
+                binding.headerActionTextview.visibility = View.VISIBLE
+                binding.headerContainer.isFocusable = true
+
+                binding.headerContainer.setOnClickListener {
+                    val popupMenu = PopupMenu(
+                        binding.headerContainer.context,
+                        binding.headerActionTextview
+                    )
+
+                    if (viewModel.scrobblerEnabled.value == true && viewModel.scrobblerServiceRunning.value == false)
+                        popupMenu.inflate(R.menu.scrobbler_fix_it_menu)
+                    else
+                        popupMenu.inflate(R.menu.scrobbler_enable_menu)
+
+                    popupMenu.setOnMenuItemClickListener {
+                        when (it.itemId) {
+                            R.id.scrobbler_enable -> {
+                                val hasNotificationListenerPerms =
+                                    Stuff.isNotificationListenerEnabled()
+
+                                prefs.scrobblerEnabled = true
+
+                                if (!hasNotificationListenerPerms) {
+                                    navController.navigate(R.id.onboardingFragment)
+                                } else {
+                                    viewModel.updateScrobblerServiceStatus()
+                                }
+                                true
+                            }
+
+                            R.id.scrobbler_fix_it -> {
+                                navController.navigate(R.id.fixItFragment)
+                                true
+                            }
+
+                            else -> false
+                        }
+                    }
+                    popupMenu.show()
+                }
+
+            } else {
+                binding.headerActionTextview.visibility = View.GONE
+                binding.headerContainer.isFocusable = false
+                binding.headerContainer.setOnClickListener(null)
+                binding.headerContainer.isClickable = false
             }
         }
     }

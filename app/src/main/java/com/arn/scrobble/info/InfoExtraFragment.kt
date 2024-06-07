@@ -35,7 +35,6 @@ import com.arn.scrobble.utils.Stuff.getData
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.expandIfNeeded
-import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.scheduleTransition
 import com.arn.scrobble.utils.UiUtils.startFadeLoop
 import com.github.mikephil.charting.charts.RadarChart
@@ -94,7 +93,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                 initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, false)
 
                 binding.infoExtraHeader3.headerText.text = getString(R.string.similar_artists)
-                binding.infoExtraHeader3.headerAction.setOnClickListener {
+                binding.infoExtraHeader3.headerContainer.setOnClickListener {
                     showFullFragment(R.id.infoPagerFragment, 2)
                 }
                 binding.infoExtraHeader3.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -104,7 +103,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                     0
                 )
                 binding.infoExtraHeader2.headerText.text = getString(R.string.top_albums)
-                binding.infoExtraHeader2.headerAction.setOnClickListener {
+                binding.infoExtraHeader2.headerContainer.setOnClickListener {
                     showFullFragment(R.id.infoPagerFragment, 1)
                 }
                 binding.infoExtraHeader2.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -114,7 +113,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                     0
                 )
                 binding.infoExtraHeader1.headerText.text = getString(R.string.top_tracks)
-                binding.infoExtraHeader1.headerAction.setOnClickListener {
+                binding.infoExtraHeader1.headerContainer.setOnClickListener {
                     showFullFragment(R.id.infoPagerFragment, 0)
                 }
                 binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -128,7 +127,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                     binding.infoExtraHeader1,
                     binding.infoExtraHeader2,
                     binding.infoExtraHeader3
-                ).forEach { it.fixFocusabilityOnTv() }
+                ).forEach { it.headerContainer.isFocusable = true }
 
                 binding.infoExtraTitle.text = musicEntry.name
 
@@ -199,9 +198,10 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
                 initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, true)
                 binding.infoExtraHeader1.headerText.text = getString(R.string.similar_tracks)
-                binding.infoExtraHeader1.headerAction.setOnClickListener {
+                binding.infoExtraHeader1.headerContainer.setOnClickListener {
                     showFullFragment(R.id.trackExtraFragment, 0)
                 }
+                binding.infoExtraHeader1.headerContainer.isFocusable = true
 
                 binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     R.drawable.vd_note,

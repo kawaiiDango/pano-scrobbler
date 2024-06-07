@@ -281,11 +281,9 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             loadMoreListener.loading = !it
 
             if (!it) {
-                if (adapter.itemCount == 0) {
+                if (adapter.itemCount == 0)
                     skeleton.showSkeleton()
-                }
-
-                if (!skeleton.isSkeleton() && viewModel.input.value?.page == 1)
+                else if (viewModel.input.value?.page == 1)
                     binding.swipeRefresh.isRefreshing = true
 
                 binding.empty.isVisible = false
@@ -368,15 +366,18 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     }
             }
             val customId = -1
-            popupMenu.menu.add(
-                Menu.NONE,
-                customId,
-                Menu.NONE,
-                getString(R.string.charts_custom)
-            )
-                .apply {
-                    setIcon(R.drawable.vd_calendar_today)
-                }
+
+            if (!Stuff.isTv) {
+                popupMenu.menu.add(
+                    Menu.NONE,
+                    customId,
+                    Menu.NONE,
+                    getString(R.string.charts_custom)
+                )
+                    .apply {
+                        setIcon(R.drawable.vd_calendar_today)
+                    }
+            }
 
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -552,7 +553,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             var lastSnackbar: Snackbar? = null
             collectLatestLifecycleFlow(
                 wm.getWorkInfosForUniqueWorkFlow(PendingScrobblesWorker.NAME)
-                    .map { it?.firstOrNull() }
+                    .map { it.firstOrNull() }
                     .filterNotNull(),
                 Lifecycle.State.RESUMED
             ) { workInfo ->
@@ -724,6 +725,9 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         if (Scrobblables.current !is ListenBrainz)
             moreMenu.removeItem(R.id.menu_hate)
 
+        if (Stuff.isTv)
+            moreMenu.removeItem(R.id.menu_share)
+
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_love -> {
@@ -748,15 +752,20 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 }
 
                 R.id.menu_edit -> PopupMenuUtils.editScrobble(findNavController(), track)
-                R.id.menu_delete -> PopupMenuUtils.deleteScrobble(
-                    findNavController(),
-                    viewModel.viewModelScope,
-                    track
-                ) { succ ->
-                    if (succ)
+                R.id.menu_delete -> {
+                    if (!Stuff.isOnline)
+                        requireActivity().toast(R.string.unavailable_offline)
+                    else {
                         viewModel.removeTrack(track)
-                    else
-                        requireActivity().toast(R.string.network_error)
+                        PopupMenuUtils.deleteScrobble(
+                            findNavController(),
+                            viewModel.viewModelScope,
+                            track
+                        ) { succ ->
+                            if (!succ)
+                                requireActivity().toast(R.string.network_error)
+                        }
+                    }
                 }
 
                 R.id.menu_block_track, R.id.menu_block_album, R.id.menu_block_artist -> {

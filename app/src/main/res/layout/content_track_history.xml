@@ -28,6 +28,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

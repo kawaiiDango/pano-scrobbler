@@ -116,7 +116,9 @@
             android:clipToPadding="false"
             android:layoutAnimation="@anim/layout_animation_slide_up"
             android:nestedScrollingEnabled="true"
-            tools:listitem="@layout/list_item_recents" />
+            android:visibility="gone"
+            tools:listitem="@layout/list_item_recents"
+            tools:visibility="visible" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

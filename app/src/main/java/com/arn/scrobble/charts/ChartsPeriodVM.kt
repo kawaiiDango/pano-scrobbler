@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -116,6 +117,7 @@ open class ChartsPeriodVM : ViewModel() {
 
     init {
         selectedPeriod
+            .debounce(100)
             .combine(_input.filterNotNull()) { period, input ->
                 loadCharts(
                     type = input.type,
@@ -153,6 +155,7 @@ open class ChartsPeriodVM : ViewModel() {
 
     fun setSelectedPeriod(period: TimePeriod) {
         _selectedPeriod.value = period
+        _input.value = _input.value?.copy(page = 1)
     }
 
     protected suspend fun emitEntries(

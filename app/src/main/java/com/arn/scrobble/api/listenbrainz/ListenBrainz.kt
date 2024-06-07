@@ -507,8 +507,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             ?.takeLast(n)
             ?.associate {
                 TimePeriod(
-                    it.from_ts.toLong(),
-                    it.to_ts.toLong(),
+                    it.from_ts,
+                    it.to_ts,
                     null,
                     it.time_range.transformName()
                 ) to it.listen_count

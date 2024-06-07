@@ -124,12 +124,12 @@ class SimpleEditsFragment : Fragment() {
 
         collectLatestLifecycleFlow(viewModel.count) {
             binding.searchTerm.isVisible = it > Stuff.MIN_ITEMS_TO_SHOW_SEARCH
-
-            binding.empty.isVisible = it == 0
-            binding.editsList.isVisible = it > 0
         }
 
         collectLatestLifecycleFlow(viewModel.simpleEditsFiltered.filterNotNull()) {
+            binding.empty.isVisible = it.isEmpty()
+            binding.editsList.isVisible = it.isNotEmpty()
+
             adapter.submitList(it) {
                 (view.parent as? ViewGroup)?.doOnPreDraw {
                     startPostponedEnterTransition()

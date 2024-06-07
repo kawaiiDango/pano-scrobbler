@@ -43,7 +43,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnNextLayout
-import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
@@ -69,7 +68,6 @@ import coil.result
 import coil.transform.CircleCropTransformation
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.LayoutSnowfallBinding
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.App
@@ -501,7 +499,7 @@ object UiUtils {
     fun BottomSheetDialogFragment.expandIfNeeded(dialog: Dialog, force: Boolean = false) {
         dialog.setOnShowListener {
             val bottomSheetDialog = it as BottomSheetDialog
-            if (view?.isInTouchMode == false || Stuff.hasMouse || isTabletUi || force) {
+            if (Stuff.isTv || isTabletUi || force) {
                 val bottomSheetView =
                     bottomSheetDialog.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
                 val behavior = BottomSheetBehavior.from(bottomSheetView)
@@ -524,24 +522,6 @@ object UiUtils {
                     }
                 }
             }
-        }
-    }
-
-    fun HeaderWithActionBinding.fixFocusabilityOnTv() {
-        if (root.isInTouchMode)
-            return
-
-        root.isFocusable = true
-        root.isClickable = true
-
-        headerAction.isFocusable = false
-        headerOverflowButton.isFocusable = false
-
-        root.setOnClickListener {
-            if (headerOverflowButton.isVisible)
-                headerOverflowButton.performClick()
-            else if (headerAction.isVisible)
-                headerAction.performClick()
         }
     }
 

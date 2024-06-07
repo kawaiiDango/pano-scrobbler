@@ -76,7 +76,7 @@ class InfoFragment : BottomSheetDialogFragment() {
 
         collectLatestLifecycleFlow(viewModel.infoList.filterNotNull()) {
             adapter.submitList(it) {
-                if (!view.isInTouchMode || Stuff.hasMouse || UiUtils.isTabletUi) {
+                if (Stuff.isTv || UiUtils.isTabletUi) {
                     val bottomSheetView =
                         requireDialog().window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
                     val behavior = BottomSheetBehavior.from(bottomSheetView)

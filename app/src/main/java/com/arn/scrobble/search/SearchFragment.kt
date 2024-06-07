@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -32,8 +31,6 @@ import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.showKeyboard
 import com.faltenreich.skeletonlayout.Skeleton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
@@ -113,6 +110,7 @@ class SearchFragment : Fragment() {
         }
 
         historyPref.load()
+        /*
 
         val searchHistoryAdapter =
             object : ArrayAdapter<String>(requireContext(), R.layout.list_item_history) {
@@ -150,6 +148,9 @@ class SearchFragment : Fragment() {
             }
 
         binding.searchEdittext.setAdapter(searchHistoryAdapter)
+
+        */
+
         binding.searchEdittext.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 updateSearchHistory()
@@ -216,21 +217,15 @@ class SearchFragment : Fragment() {
         }
 
         collectLatestLifecycleFlow(viewModel.hasLoaded) {
-            if (binding.searchEdittext.text.isEmpty())
+            if (binding.searchEdittext.text.isNullOrEmpty())
                 return@collectLatestLifecycleFlow
 
             if (it) {
                 skeleton.showOriginal()
-
-                if (binding.searchTerm.endIconMode != TextInputLayout.END_ICON_CLEAR_TEXT) {
-                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
-                    binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
-                }
             } else {
                 binding.empty.isVisible = false
                 skeleton.showSkeleton()
             }
-            binding.searchResultsList.isVisible = it
         }
     }
 

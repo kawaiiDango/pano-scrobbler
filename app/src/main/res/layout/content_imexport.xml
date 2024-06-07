@@ -1,70 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<androidx.core.widget.NestedScrollView-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:transitionGroup="true">-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:transitionGroup="true">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:animateLayoutChanges="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/method_group"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:animateLayoutChanges="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        app:selectionRequired="true"
+        app:singleLine="true"
+        app:singleSelection="true">
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/method_group"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/method_file"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:selectionRequired="true"
-            app:singleLine="true"
-            app:singleSelection="true">
+            android:text="@string/scrobble_to_file" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/method_file"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/scrobble_to_file" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/method_network"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pref_imexport_network" />
-
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/code"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/method_network"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/pref_imexport_code"
-            android:minWidth="300dp"
-            android:visibility="gone"
-            app:endIconDrawable="@drawable/vd_check_simple"
-            app:endIconMode="custom"
-            tools:visibility="visible">
+            android:text="@string/pref_imexport_network" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/code_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textAppearance="?textAppearanceTitleLarge" />
-        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
-        <TextView
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/pref_imexport_code"
+        android:minWidth="300dp"
+        android:visibility="gone"
+        app:endIconDrawable="@drawable/vd_check_simple"
+        app:endIconMode="custom"
+        tools:visibility="visible">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/code_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/overscan_padding_horiz"
-            android:text="@string/pref_imexport_network_notice"
-            android:textAlignment="center" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAppearance="?textAppearanceTitleLarge" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/overscan_padding_horiz"
+        android:text="@string/pref_imexport_network_notice"
+        android:textAlignment="center" />
+</LinearLayout><!--</androidx.core.widget.NestedScrollView>-->

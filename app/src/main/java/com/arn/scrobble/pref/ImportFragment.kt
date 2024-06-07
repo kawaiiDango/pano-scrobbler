@@ -87,9 +87,9 @@ class ImportFragment : Fragment() {
         binding.code.isEnabled = false
 
         if (Stuff.isTv) {
-            binding.methodFile.isVisible = false
             binding.methodGroup.check(R.id.method_network)
             binding.methodNetwork.callOnClick()
+            binding.methodGroup.isVisible = false
         }
 
         collectLatestLifecycleFlow(viewModel.postData.filterNotNull()) { postData ->

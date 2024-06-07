@@ -120,10 +120,16 @@ class AppListAdapter(
         fun setData(applicationInfo: ApplicationInfo) {
             val packageName = applicationInfo.packageName
             binding.appListName.text =
-                if (packageName == Stuff.PACKAGE_PIXEL_NP || packageName == Stuff.PACKAGE_PIXEL_NP_R)
-                    itemView.context.getString(R.string.pixel_np)
-                else
-                    applicationInfo.loadLabel(packageManager)
+                when (packageName) {
+                    Stuff.PACKAGE_PIXEL_NP, Stuff.PACKAGE_PIXEL_NP_R ->
+                        itemView.context.getString(R.string.pixel_np)
+
+                    Stuff.PACKAGE_SHAZAM ->
+                        itemView.context.getString(R.string.autoshazam)
+
+                    else ->
+                        applicationInfo.loadLabel(packageManager)
+                }
             binding.appListIcon.load(PackageName(packageName)) {
                 scale(Scale.FIT)
             }
@@ -143,7 +149,7 @@ class AppListAdapter(
                     com.google.android.material.R.attr.colorSecondary
                 )
             )
-            binding.headerAction.visibility = View.GONE
+            binding.headerActionTextview.visibility = View.GONE
         }
 
         fun setData(headerData: ExpandableHeader) {

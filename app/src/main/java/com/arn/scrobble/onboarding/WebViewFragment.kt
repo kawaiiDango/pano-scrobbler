@@ -70,7 +70,7 @@ class WebViewFragment : Fragment() {
 //        webview.settings.javaScriptEnabled =true
 
         binding.webview.loadUrl(url)
-        if (!binding.webview.isInTouchMode)
+        if (Stuff.isTv)
             binding.webview.requestFocus()
 
         collectLatestLifecycleFlow(viewModel.callbackProcessed) { done ->
@@ -170,6 +170,8 @@ class WebViewFragment : Fragment() {
     }
 
     inner class MyWebViewClient : WebViewClient() {
+        
+        @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(
             view: WebView,
             url: String?

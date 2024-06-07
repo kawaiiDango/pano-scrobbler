@@ -403,4 +403,9 @@
         android:name="com.arn.scrobble.pref.ExportFragment"
         android:label="@string/pref_export"
         tools:layout="@layout/content_imexport" />
+    <fragment
+        android:id="@+id/translatorsFragment"
+        android:name="com.arn.scrobble.pref.TranslatorsFragment"
+        android:label="@string/pref_translate_credits"
+        tools:layout="@layout/content_translators" />
 </navigation>

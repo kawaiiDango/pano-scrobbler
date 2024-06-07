@@ -1,6 +1,10 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Random
@@ -132,7 +136,6 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
-//    debugImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("androidjhlabs.jar"))))
 
     implementation(libs.profileinstaller)
     "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
@@ -308,3 +311,43 @@ githubRelease {
     overwrite(false) // by default false; if set to true, will delete an existing release with the same tag and name
     dryRun(false) // by default false; you can use this to see what actions would be taken without making a release
 }
+
+fun fetchCrowdinMembers(projectId: String, token: String) {
+    data class Data(val username: String)
+    data class UserData(val data: Data)
+    data class Root(val data: List<UserData>)
+
+    val url =
+        URL("https://api.crowdin.com/api/v2/projects/$projectId/members?limit=500&orderBy=username&role=translator")
+    val conn = url.openConnection() as HttpURLConnection
+    conn.requestMethod = "GET"
+    conn.setRequestProperty("Authorization", "Bearer $token")
+    conn.setRequestProperty("Accept", "application/json")
+    conn.connectTimeout = 3000
+
+    val responseCode = conn.responseCode
+    if (responseCode == HttpURLConnection.HTTP_OK) {
+        val responseJson = conn.inputStream.bufferedReader().readText()
+
+        val gson = Gson()
+        val root = gson.fromJson(responseJson, Root::class.java)
+        val userDataList = root.data
+
+        val outputJson = gson.toJson(userDataList.map { it.data.username })
+
+        file("src/main/res/raw/crowdin_members.json").writeText(outputJson)
+        println("Crowdin members fetched successfully.")
+    } else {
+        throw IOException("Failed to fetch Crowdin members. Response code: $responseCode")
+    }
+}
+
+tasks.register("fetchCrowdinMembers") {
+    doLast {
+        fetchCrowdinMembers(
+            localProperties["crowdin.project"]!!,
+            localProperties["crowdin.token"]!!
+        )
+    }
+}
+

@@ -43,7 +43,6 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.expandToHeroIfNeeded
-import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.setProgressCircleColors
 import com.arn.scrobble.utils.UiUtils.setTitle
 import com.arn.scrobble.utils.UiUtils.setupInsets
@@ -148,7 +147,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         initSection(binding.chartsAlbumsFrame, Stuff.TYPE_ALBUMS)
         initSection(binding.chartsTracksFrame, Stuff.TYPE_TRACKS)
 
-        binding.chartsArtistsHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_ARTISTS) }
+        binding.chartsArtistsHeader.headerContainer.setOnClickListener { launchChartsPager(Stuff.TYPE_ARTISTS) }
         setHeader(Stuff.TYPE_ARTISTS)
         binding.chartsArtistsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             R.drawable.vd_mic,
@@ -157,7 +156,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             0
         )
 
-        binding.chartsAlbumsHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_ALBUMS) }
+        binding.chartsAlbumsHeader.headerContainer.setOnClickListener { launchChartsPager(Stuff.TYPE_ALBUMS) }
         setHeader(Stuff.TYPE_ALBUMS)
         binding.chartsAlbumsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             R.drawable.vd_album,
@@ -166,7 +165,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             0
         )
 
-        binding.chartsTracksHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_TRACKS) }
+        binding.chartsTracksHeader.headerContainer.setOnClickListener { launchChartsPager(Stuff.TYPE_TRACKS) }
         setHeader(Stuff.TYPE_TRACKS)
         binding.chartsTracksHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             R.drawable.vd_note,
@@ -175,7 +174,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             0
         )
 
-        binding.chartsListeningActivityHeader.headerAction.visibility = View.GONE
+        binding.chartsListeningActivityHeader.headerActionTextview.visibility = View.GONE
         binding.chartsListeningActivityHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             R.drawable.vd_line_chart,
             0,
@@ -184,15 +183,15 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         )
 
         binding.chartsTagCloudHeader.headerText.text = getString(R.string.tag_cloud)
-        binding.chartsTagCloudHeader.headerAction.isVisible = false
-        binding.chartsTagCloudHeader.headerOverflowButton.isVisible = true
 
-        binding.chartsTagCloudHeader.headerOverflowButton.setOnClickListener { v ->
-            val popup = PopupMenu(requireContext(), v)
+        binding.chartsTagCloudHeader.headerActionTextview.text = "⋮"
+
+        binding.chartsTagCloudHeader.headerContainer.setOnClickListener { v ->
+            val popup = PopupMenu(requireContext(), v.findViewById(R.id.header_action_textview))
             popup.inflate(R.menu.tag_cloud_menu)
 
-            if (viewModel.tagCloudBitmap == null)
-                popup.menu.findItem(R.id.menu_share).isVisible = false
+            popup.menu.findItem(R.id.menu_share).isVisible =
+                viewModel.tagCloudBitmap != null && !Stuff.isTv
 
             popup.setOnMenuItemClickListener {
                 when (it.itemId) {
@@ -245,6 +244,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         binding.swipeRefresh.isEnabled = false
         // todo: actually fix this not loading the network version
 
+        binding.chartsCreateCollage.isVisible = !Stuff.isTv
         binding.chartsCreateCollage.setOnClickListener {
             if (viewModel.getTotal(Stuff.TYPE_ARTISTS) == 0) {
                 requireContext().toast(R.string.charts_no_data)
@@ -274,7 +274,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             binding.chartsAlbumsHeader,
             binding.chartsTracksHeader,
             binding.chartsTagCloudHeader,
-        ).forEach { it.fixFocusabilityOnTv() }
+        ).forEach { it.headerContainer.isFocusable = true }
 
         collectLatestLifecycleFlow(
             viewModel.listeningActivity.filterNotNull(),

@@ -57,7 +57,11 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
             height = ViewGroup.LayoutParams.MATCH_PARENT
         }
         binding.chartsList.isNestedScrollingEnabled = true
-        binding.chartsList.setupInsets()
+
+        val padding =
+            binding.root.context.resources.getDimensionPixelSize(R.dimen.overscan_padding_horiz)
+        binding.chartsList.setupInsets(additionalSpaceSides = padding)
+        
         return binding.root
     }
 

@@ -58,6 +58,7 @@ class ImageSearchResultsAdapter(
         init {
             binding.recentsMenu.isInvisible = true
             binding.recentsImgOverlay.isVisible = false
+            binding.recentsDate.isVisible = false
 
             binding.root.isFocusable = true
             binding.root.setOnClickListener {

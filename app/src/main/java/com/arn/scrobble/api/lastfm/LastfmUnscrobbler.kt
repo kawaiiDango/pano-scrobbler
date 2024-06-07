@@ -63,7 +63,7 @@ object LastfmUnscrobbler {
             }
 
             // add a random delay to prevent 406 error
-            delay((250L..1000L).random())
+            delay((500L..3000L).random())
         }
 
     const val COOKIE_CSRFTOKEN = "csrftoken"

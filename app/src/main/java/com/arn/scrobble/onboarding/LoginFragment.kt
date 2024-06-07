@@ -68,7 +68,7 @@ open class LoginFragment : DialogFragment() {
         }
         args.textField1?.let {
             binding.loginTextfield1.hint = it
-            if (!binding.root.isInTouchMode)
+            if (Stuff.isTv)
                 binding.loginTextfield1.requestFocus()
             binding.loginTextfield1.visibility = View.VISIBLE
         }

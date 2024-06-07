@@ -23,7 +23,6 @@ import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.UiUtils.autoNotify
-import com.arn.scrobble.utils.UiUtils.fixFocusabilityOnTv
 import com.arn.scrobble.utils.UiUtils.getTintedDrawable
 import java.text.DateFormat
 
@@ -220,16 +219,6 @@ class SearchResultsAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun setData(headerData: ExpandableHeader) {
-            if (headerData.section.listSize > 3) {
-                binding.headerAction.visibility = View.VISIBLE
-                binding.headerAction.text = headerData.actionText
-                binding.fixFocusabilityOnTv()
-            } else {
-                binding.headerAction.visibility = View.GONE
-                binding.root.setOnClickListener(null)
-                binding.root.isClickable = false
-                binding.root.isFocusable = false
-            }
             binding.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ContextCompat.getDrawable(
                     itemView.context,
@@ -239,19 +228,30 @@ class SearchResultsAdapter(
             binding.headerText.text = headerData.title
 
             if (headerData.section.sectionId != Section.REINDEX) {
-                binding.headerText.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleMedium)
 
-                binding.headerAction.setOnClickListener {
-                    (data[bindingAdapterPosition] as? ExpandableHeader)?.let {
-                        val oldData = data.copy()
-                        data.toggleOne(it.section.sectionId)
-                        autoNotify(oldData, data) { o, n ->
-                            o is ExpandableHeader && n is ExpandableHeader
-                                    // prevent change animation, check for contents later
-                                    ||
-                                    o === n
+
+                if (headerData.section.listSize > 3) {
+                    binding.headerActionTextview.visibility = View.VISIBLE
+                    binding.headerActionTextview.text = headerData.actionText
+                    binding.root.isFocusable = true
+
+                    binding.headerContainer.setOnClickListener {
+                        (data[bindingAdapterPosition] as? ExpandableHeader)?.let {
+                            val oldData = data.copy()
+                            data.toggleOne(it.section.sectionId)
+                            autoNotify(oldData, data) { o, n ->
+                                o is ExpandableHeader && n is ExpandableHeader
+                                        // prevent change animation, check for contents later
+                                        ||
+                                        o === n
+                            }
                         }
                     }
+                } else {
+                    binding.headerActionTextview.visibility = View.GONE
+                    binding.root.setOnClickListener(null)
+                    binding.root.isClickable = false
+                    binding.root.isFocusable = false
                 }
             }
         }

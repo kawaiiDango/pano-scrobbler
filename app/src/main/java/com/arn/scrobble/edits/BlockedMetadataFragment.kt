@@ -78,12 +78,13 @@ class BlockedMetadataFragment : Fragment() {
         binding.empty.text = resources.getQuantityString(R.plurals.num_blocked_metadata, 0, 0)
 
         collectLatestLifecycleFlow(viewModel.count) {
-            binding.empty.isVisible = it == 0
-            binding.blockList.isVisible = it > 0
             binding.searchTerm.isVisible = it > Stuff.MIN_ITEMS_TO_SHOW_SEARCH
         }
 
         collectLatestLifecycleFlow(viewModel.blockedMetadataFiltered.filterNotNull()) {
+            binding.empty.isVisible = it.isEmpty()
+            binding.blockList.isVisible = it.isNotEmpty()
+
             adapter.submitList(it) {
                 (view.parent as? ViewGroup)?.doOnPreDraw {
                     startPostponedEnterTransition()

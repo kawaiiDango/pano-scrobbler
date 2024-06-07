@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -74,20 +75,14 @@ class TrackHistoryAdapter(
             binding.recentsPlaying.visibility = View.GONE
             binding.recentsImgFrame.background = null
             binding.recentsTrackLl.background = null
+            binding.recentsMenu.isInvisible = true
+            binding.root.isFocusable = true
 
-            if (itemView.isInTouchMode) {
-                binding.recentsMenu.setOnClickListener { v ->
-                    itemClickListener.onItemClick(v, getItem(bindingAdapterPosition))
-                }
-            } else {
-                binding.recentsMenu.isEnabled = false
-                binding.root.isFocusable = true
-                binding.root.setOnClickListener {
-                    itemClickListener.onItemClick(
-                        binding.recentsMenu,
-                        getItem(bindingAdapterPosition)
-                    )
-                }
+            binding.root.setOnClickListener {
+                itemClickListener.onItemClick(
+                    binding.recentsMenu,
+                    getItem(bindingAdapterPosition)
+                )
             }
         }
 

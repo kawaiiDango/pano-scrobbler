@@ -5,6 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/friends_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
+            android:paddingHorizontal="@dimen/overscan_padding_horiz"
+            android:paddingTop="8dp"
+            android:visibility="gone"
+            tools:listitem="@layout/grid_item_friend"
+            tools:visibility="visible" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <LinearLayout
         android:id="@+id/empty"
         android:layout_width="wrap_content"
@@ -27,22 +46,4 @@
             android:text="@string/followers"
             app:icon="@drawable/vd_open_in_new" />
     </LinearLayout>
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/friends_grid"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
-            android:paddingHorizontal="@dimen/overscan_padding_horiz"
-            android:paddingTop="8dp"
-            tools:listitem="@layout/grid_item_friend"
-            tools:visibility="visible" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

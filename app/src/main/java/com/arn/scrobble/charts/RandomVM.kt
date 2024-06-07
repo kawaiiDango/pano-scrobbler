@@ -12,7 +12,9 @@ import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -23,8 +25,8 @@ import kotlinx.coroutines.launch
 
 
 class RandomVM : ChartsPeriodVM() {
-    private val _musicEntry = MutableStateFlow<MusicEntry?>(null)
-    val musicEntry = _musicEntry.asStateFlow()
+    private val _musicEntry = MutableSharedFlow<MusicEntry?>(replay = 1)
+    val musicEntry = _musicEntry.asSharedFlow()
     private val _error = MutableStateFlow<Throwable?>(null)
     val error = _error.asStateFlow()
     private val _hasLoaded = MutableStateFlow(false)

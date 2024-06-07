@@ -47,8 +47,6 @@ open class BasePagerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         postponeEnterTransition()
         //https://stackoverflow.com/questions/12490963/replacing-viewpager-with-fragment-then-navigating-back
-        if (!view.isInTouchMode)
-            view.requestFocus()
 
         binding.pager.offscreenPageLimit = adapter.count - 1
         binding.pager.adapter = adapter

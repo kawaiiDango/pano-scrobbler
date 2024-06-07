@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.databinding.ContentBillingToubleshootBinding
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
@@ -26,9 +27,15 @@ class BillingTroubleshootFragment : Fragment() {
         setupAxisTransitions(MaterialSharedAxis.X)
 
         _binding = ContentBillingToubleshootBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setupInsets()
 
-        return binding.root
+        binding.close.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     override fun onDestroyView() {

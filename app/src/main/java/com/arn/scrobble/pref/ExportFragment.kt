@@ -118,9 +118,9 @@ class ExportFragment : Fragment() {
         }
 
         if (Stuff.isTv) {
-            binding.methodFile.isVisible = false
             binding.methodGroup.check(R.id.method_network)
             binding.methodNetwork.callOnClick()
+            binding.methodGroup.isVisible = false
         }
 
         collectLatestLifecycleFlow(viewModel.result.filterNotNull()) { result ->

@@ -106,6 +106,9 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
             musicEntry.name
         }
 
+        if (Stuff.isTv)
+            binding.imageFromFile.isVisible = false
+
         binding.searchTerm.hint = printableEntryName
 
         binding.searchEdittext.setText(searchTerm)
@@ -230,8 +233,7 @@ class ImageSearchFragment : Fragment(), ItemClickListener<SpotifyMusicItem> {
                 binding.searchResultsList.scheduleLayoutAnimation()
             adapter.submitList(list)
 
-            if (list.isNotEmpty())
-                binding.searchResultsList.isVisible = true
+            binding.searchResultsList.isVisible = list.isNotEmpty()
         }
     }
 

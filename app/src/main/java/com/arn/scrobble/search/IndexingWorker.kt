@@ -289,7 +289,7 @@ class IndexingWorker(
 
             // put max time
             if (tracksLastPlayedMap[cachedTrack] == null || tracksLastPlayedMap[cachedTrack]!! < playedWhen)
-                tracksLastPlayedMap[cachedTrack] = playedWhen.toLong()
+                tracksLastPlayedMap[cachedTrack] = playedWhen
 
             trackCounts[cachedTrack] = (trackCounts[cachedTrack] ?: 0) + 1
             if (cachedAlbum != null)

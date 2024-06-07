@@ -11,7 +11,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 
 class InfoPagerFragment : BasePagerFragment() {
 
-    override val optionsMenuRes = R.menu.into_extra_full_menu
+    override val optionsMenuRes = R.menu.grid_size_menu
 
     override fun onCreateView(
         inflater: LayoutInflater,

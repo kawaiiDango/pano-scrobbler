@@ -2,9 +2,7 @@ package com.arn.scrobble
 
 import android.Manifest.permission.RECORD_AUDIO
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +10,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -66,10 +65,11 @@ class RecFragment : Fragment() {
         if (prefs.demoMode)
             binding.recShazam.text = binding.recShazam.text.toString().replace("Shazam", "S app")
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Stuff.isTv)
-            binding.recShazam.visibility = View.GONE
-        else
-            binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Stuff.isTv)
+//            binding.recShazam.visibility = View.GONE
+//        else
+//            binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
+        binding.recShazam.isVisible = false
 
         binding.recCancelScrobble.setOnClickListener {
             viewModel.scrobbleJob?.cancel()

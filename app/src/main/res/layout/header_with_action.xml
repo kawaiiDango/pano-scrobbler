@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/header_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground">
@@ -18,23 +19,25 @@
         app:drawableTint="?colorPrimary"
         tools:text="@string/recently_scrobbled" />
 
-    <Button
-        android:id="@+id/header_action"
-        style="@style/Widget.Material3.Button.TextButton"
+    <TextView
+        android:id="@+id/header_action_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/overscan_padding_horiz"
         android:text="@string/show_all"
+        android:textAppearance="?textAppearanceBodyMedium"
+        android:textColor="?colorPrimary"
+        android:textStyle="bold"
         app:drawableTint="?colorPrimary" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/header_overflow_button"
-        style="@style/Widget.Material3.Button.IconButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/more"
-        android:paddingHorizontal="@dimen/overscan_padding_horiz"
-        android:visibility="gone"
-        app:icon="@drawable/vd_more_horiz"
-        tools:visibility="visible" />
+    <!--    <com.google.android.material.button.MaterialButton-->
+    <!--        android:id="@+id/header_overflow_button"-->
+    <!--        style="@style/Widget.Material3.Button.IconButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:contentDescription="@string/more"-->
+    <!--        android:paddingHorizontal="@dimen/overscan_padding_horiz"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:icon="@drawable/vd_more_horiz"-->
+    <!--        tools:visibility="visible" />-->
 </LinearLayout>

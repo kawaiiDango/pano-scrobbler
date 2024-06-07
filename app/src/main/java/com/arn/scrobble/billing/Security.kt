@@ -98,10 +98,7 @@ object Security {
             val signatureAlgorithm = Signature.getInstance(SIGNATURE_ALGORITHM)
             signatureAlgorithm.initVerify(publicKey)
             signatureAlgorithm.update(signedData.toByteArray())
-            if (!signatureAlgorithm.verify(signatureBytes)) {
-                return false
-            }
-            return true
+            return signatureAlgorithm.verify(signatureBytes)
         } catch (e: NoSuchAlgorithmException) {
             // "RSA" is guaranteed to be available.
             throw RuntimeException(e)

@@ -69,7 +69,7 @@ class AppListFragment : Fragment() {
 
         viewModel.selectedPackages += allowedPackagesArg ?: prefs.allowedPackages
 
-        if (!binding.appList.isInTouchMode)
+        if (Stuff.isTv)
             binding.appList.requestFocus()
 
         if (singleChoiceArg)

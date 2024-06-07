@@ -25,9 +25,10 @@ which is a bug specific to WSA.
 ### Features:
 
 - No ads ever
-- Scrobbles to LastFM, LibreFM, GNU FM, Listenbrainz, Maloja, Pleroma or to a file
+- Scrobbles to LastFM, LibreFM, GNU FM, Listenbrainz, Maloja, Pleroma
+- * Scrobble to a CSV or JSONL file locally
 - Supports phones, TVs, tablets, and Android desktops, including Windows 11
-- Interactive notification: View song info, edit, love, cancel, or block songs directly from the
+- * Interactive notification: View song info, edit, love, cancel, or block songs directly from the
   notification
 - View song, album, artist, album artist, and tag details
 - View scrobbles from a specific time, such as last year or last month
@@ -36,20 +37,22 @@ which is a bug specific to WSA.
 - Block artists, songs, etc., and automatically skip or mute when they play
 - Check what your followed users are listening to and view their stats
 - Identify and scrobble a song from the microphone
-- Scrobble from the S app and Pixel Now Playing
+- * Scrobble from the S app and Pixel Now Playing
 - Import and export settings, edits, and blocklists
-- View charts for a specific week, month, year, or custom range, with change indicators
-- Charts are also available as a customizable home-screen widget
-- Collage generator
-- View scrobble count graphs for specific time periods
+- View charts with change indicators for specific time periods,
+- * Charts are also available as a customizable home-screen widget
+- * Collage generator
+- View scrobble count graphs and tag clouds
 - Get a random songs, album, or artist from your listening history
 - Search for a songs, artist, or album
 - Fetch albums and album artists from LastFM, if missing, before scrobbling
-- Get your top scrobble digests as a notification at the end of every week and month
+- * Get your top scrobble digests as a notification at the end of every week and month
 - Add or remove personal tags
 - Mix and match themes, supports Material You
-- Broadcast Intents for automation apps like Tasker
+- * Broadcast Intents for automation apps like Tasker
 - Remember and see apps you scrobbled from and search directly within them
+
+Features marked with * are not available on TV due to OS limitations.
 
 
 ### Compiling
@@ -69,5 +72,5 @@ See [instructions.md](instructions.md)
 - Icons from https://pictogrammers.com and https://material.io
 - Genres filter from https://everynoise.com
 
-Thanks to the amazing [translators](https://crowdin.com/project/pscrobbler/members) and everyone who
+Thanks to the amazing [translators](app/src/main/res/raw/crowdin_members.json) and everyone who
 reported bugs and helped me with this project.

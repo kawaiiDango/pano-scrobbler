@@ -40,7 +40,9 @@ class BillingRepository private constructor(private val application: Application
 
     fun startDataSourceConnections() {
         playStoreBillingClient = BillingClient.newBuilder(application.applicationContext)
-            .enablePendingPurchases() // required or app will crash
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+            ) // required or app will crash
             .setListener(this)
             .build()
         playStoreBillingClient.startConnection(this)

@@ -118,7 +118,6 @@ class TracksVM : ViewModel() {
         page: Int,
         username: String,
         timePeriod: TimePeriod?,
-        setLoading: Boolean = true
     ) {
         val isListenbrainz = Scrobblables.current is ListenBrainz
         val _to = if (isListenbrainz && page > 1)
@@ -126,8 +125,7 @@ class TracksVM : ViewModel() {
         else
             timePeriod?.end ?: -1L
 
-        if (setLoading)
-            _hasLoaded.emit(false)
+        _hasLoaded.emit(false)
 
         val includeNowPlaying = _input.value?.timePeriod == null && page == 1
 
@@ -144,7 +142,7 @@ class TracksVM : ViewModel() {
             selectedPos = 0
             loadedInitialCachedVersion = true
             viewModelScope.launch {
-                loadRecents(page, username, timePeriod, setLoading = false)
+                loadRecents(page, username, timePeriod)
             }
         }
 

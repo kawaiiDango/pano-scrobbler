@@ -52,7 +52,7 @@ class IndexingDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         collectLatestLifecycleFlow(viewModel.indexingProgress) {
-            if (it.isNullOrEmpty()) return@collectLatestLifecycleFlow
+            if (it.isEmpty()) return@collectLatestLifecycleFlow
             val progress = it.first().progress.getDouble(IndexingWorker.PROGRESS_KEY, 0.0)
             val errorMsg = it.first().progress.getString(IndexingWorker.ERROR_KEY)
             val finished =

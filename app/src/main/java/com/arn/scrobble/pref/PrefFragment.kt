@@ -461,8 +461,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("translate_credits")!!
             .setOnPreferenceClickListener {
-                val url = getString(R.string.crowdin_link) + "/members"
-                Stuff.openInBrowser(requireContext(), url)
+                findNavController().navigate(R.id.translatorsFragment)
                 true
             }
 

@@ -25,6 +25,7 @@ tasks.register<GradleBuild>("cleanBuildDraft") {
     tasks = listOf(
         "clean",
         "genDict",
+        "fetchCrowdinMembers",
         "publishReleaseBundle",
         "assembleRelease",
     )

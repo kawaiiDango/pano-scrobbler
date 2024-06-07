@@ -8,11 +8,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/search_term"
-        style="?textInputOutlinedExposedDropdownMenuStyle"
+        style="?textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/overscan_padding_horiz"
-        app:endIconMode="dropdown_menu"
+        app:endIconDrawable="@drawable/vd_cancel"
+        app:endIconMode="clear_text"
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,7 +21,7 @@
         app:startIconContentDescription="@string/search"
         app:startIconDrawable="@drawable/vd_search">
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/search_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

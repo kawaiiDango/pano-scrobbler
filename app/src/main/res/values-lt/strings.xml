@@ -69,25 +69,25 @@
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s redagavimas</item>
         <item quantity="few">%1$s redagavimai</item>
-        <item quantity="many">%1$s redagavimų</item>
+        <item quantity="many">%1$s radagavimo</item>
         <item quantity="other">%1$s redagavimų</item>
     </plurals>
     <plurals name="num_regex_edits">
         <item quantity="one">%1$s šablono redagavimas</item>
         <item quantity="few">%1$s šablonų redagavimai</item>
-        <item quantity="many">%1$s šablono redagavimų</item>
+        <item quantity="many">%1$s šablono redagavimo</item>
         <item quantity="other">%1$s šablonų redagavimų</item>
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s užblokuotas metaduomenys</item>
         <item quantity="few">%1$s užblokuoti metaduomenys</item>
-        <item quantity="many">%1$s užblokuotų metaduomenų</item>
+        <item quantity="many">%1$s užblokuoto metaduomeno</item>
         <item quantity="other">%1$s užblokuotų metaduomenų</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minutė</item>
-        <item quantity="few">%1$d minutes</item>
-        <item quantity="many">%1$d minutės</item>
+        <item quantity="few">%1$d minutės</item>
+        <item quantity="many">%1$d minutes</item>
         <item quantity="other">%1$d minučių</item>
     </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
@@ -99,7 +99,7 @@
     <string name="yes">Taip</string>
     <string name="no">Ne</string>
     <string name="reset">Atkurti</string>
-    <string name="settings">Konfigūracija</string>
+    <string name="settings">Konfigūruoti</string>
     <string name="bug_report">Pranešimas apie riktą</string>
     <string name="faq">DUK</string>
     <string name="album_art">Albumo viršelis</string>
@@ -108,8 +108,8 @@
     <string name="network_error">Tinklo klaida.</string>
     <string name="disable_tls_verify">Ignoruoti TLS klaidas</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Skroblas ignoruotas</string>
-    <string name="scrobble_ignored_save_edit">Lastfm ignoravo redagavimą, tikriausiai dėl to, kad skroblas yra per senas. Ar norėtum išsaugoti šį redagavimą būsimiems skrobliams?</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Privalomi laukai tušti.</string>
+    <string name="scrobble_ignored_save_edit">„last.fm“ ignoravo redagavimą, tikriausiai dėl to, kad skroblas yra per senas. Ar norėtum išsaugoti šį redagavimą būsimiems skroblams?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Privalomi laukai yra tušti.</string>
     <string name="artist">Atlikėjas</string>
     <string name="artists">Atlikėjai</string>
     <string name="top_artists" comment="Top artists the user has listened to">Geriausi atlikėjai</string>
@@ -147,11 +147,11 @@
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Klausiausi\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s klausėsi\n%1$s %2$s</string>
-    <string name="share_sig">(per Pano Scrobbler)</string>
+    <string name="share_sig">(per „Pano Scrobbler“)</string>
     <string name="share">Bendrinti</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Keisti tinklelio dydį</string>
-    <string name="pinch_to_zoom">Prispausti, kad priartinti</string>
+    <string name="pinch_to_zoom">Prispausk, kad padidinti</string>
     <string name="more_info">Daugiau informacijos</string>
     <string name="more" comment="More options menu in short">Daugiau</string>
     <string name="learn" comment="(Learn java regex syntax)">Išmokti</string>
@@ -159,8 +159,8 @@
     <string name="rank_change" comment="%1= delta change">Reitingo pokytis: %s</string>
     <string name="rank_change_no_change">Jokių pokyčių</string>
     <string name="rank_change_new">Per praėjusį laikotarpį nenuskrobuolinta</string>
-    <string name="search">Paieška</string>
-    <string name="clear_all_history" comment="(talking about search history, tag history)">Išvalyti visą istoriją</string>
+    <string name="search">Ieškoti</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Valyti visą istoriją</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Pašalinti šį elementą iš istorijos?</string>
     <string name="library" comment="search within the library">Biblioteka</string>
     <string name="global" comment="search globally across lastfm">Globalus</string>

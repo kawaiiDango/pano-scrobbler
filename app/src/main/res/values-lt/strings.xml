@@ -128,7 +128,7 @@
     <string name="state_scrobbling">Dabar skrobuolinama…</string>
     <string name="state_scrobbled">Nuskrobuolinta</string>
     <string name="unscrobble">Neskrobuolinti</string>
-    <string name="state_unscrobbled">Neskrobuolinta</string>
+    <string name="state_unscrobbled">Nenuskrobuolinta</string>
     <string name="state_unrecognised_artist">Neatpažintas atlikėjas</string>
     <string name="tap_to_edit">(Spausk, kad redaguoti)</string>
     <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
@@ -201,9 +201,9 @@
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
     <string name="send_notifications">Leisti pranešimus</string>
     <string name="notification_channel_blocked">Tam reikia, kad pranešimai būtų įjungti</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Patikrinti skroblų būseną ir skaičių.
-- Pamėgti arba blokuoti tiesiai iš pranešimo.
-- Gauti pranešimus apie skroblo klaidas ir veiksmus, kurių galima imtis.
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Patikrink skroblų būseną ir skaičių.
+- Pamėgk arba blokuok tiesiai iš pranešimo.
+- Gauk pranešimus apie skroblo klaidas ir veiksmus, kurių galima imtis.
 - Kiekvieną savaitę gauti geriausius skroblus.
 - Ir daugiau.
 - Pranešimai nedaro garso.\"\""</string>
@@ -213,7 +213,7 @@
     <string name="time_just_now">ką tik</string>
     <string name="no_mail_apps">Nėra įdiegta el. pašto kliento programėlė</string>
     <string name="loved" comment="Its a noun">Pamėgta</string>
-    <string name="unloved" comment="Its a noun">Panaikinta mėgstą</string>
+    <string name="unloved" comment="Its a noun">Panaikinta pamėgtą</string>
     <string name="simple_edits">Redagavimai</string>
     <string name="grant_rec_perm">Suteik leidimą naudoti mikrofoną</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>

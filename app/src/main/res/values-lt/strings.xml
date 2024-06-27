@@ -130,7 +130,7 @@
     <string name="unscrobble">Neskrobuolinti</string>
     <string name="state_unscrobbled">Nenuskrobuolinta</string>
     <string name="state_unrecognised_artist">Neatpažintas atlikėjas</string>
-    <string name="tap_to_edit">(Spausk, kad redaguoti)</string>
+    <string name="tap_to_edit">(Paliesk, kad redaguoti)</string>
     <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
@@ -290,8 +290,8 @@
     <string name="tint_background" comment="Tint the background with the primary color">Fono atspalvis</string>
     <string name="random_theme">Atrinkti atsitiktine tvarka kiekvieno paleidimo metu</string>
     <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>
-    <string name="edit_regex">Reguliarusis reiškianos šablonas</string>
-    <string name="edit_regex_replacement">Reguliarusis reiškianos keitimas</string>
+    <string name="edit_regex">Reguliariaus reiškinio šablonas</string>
+    <string name="edit_regex_replacement">Reguliariaus reiškinio keitimas</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Laukai</string>
     <string name="edit_replace">Pakeisti</string>
     <string name="edit_first" comment="First occurrence of a pattern">Pirmas</string>
@@ -301,20 +301,20 @@
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">pvz., kad pakeistum atlikėją ir pavadinimą, turėtum įrašyti atlikėjo reguliarį reiškinį kaip (?&lt;track&gt;.*), o takelio reguliarį reiškinį kaip (?&lt;artist&gt;.*)</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliariams reiškiniams turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliari reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
-    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkama reguliari reikšmė: %1$s.</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkamas reguliariusis reiškinys: %1$s.</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Naudojami šablonai:</string>
     <string name="edit_continue">Jei rasta, toliau atitikti kitų reguliarių reiškinių</string>
     <string name="edit_case_sensitive">Skirti raidžių lygį</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Testas</string>
-    <string name="edit_presets" comment="Regex presets">Numatytieji</string>
-    <string name="edit_presets_available">Pasiekimi numatytieji</string>
-    <string name="edit_no_presets_available">Visi numatytieji yra naudojami</string>
-    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Numatytasis: %1$s</string>
-    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono riba (%1$d).</string>
-    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Vilkimo rankenėlė</string>
+    <string name="edit_presets" comment="Regex presets">Išankstiniai nustatymai</string>
+    <string name="edit_presets_available">Galimi išankstiniai nustatymai</string>
+    <string name="edit_no_presets_available">Visi išankstiniai nustatymai yra naudojami</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Išankstinis nustatymas: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono ribojimas (%1$d).</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Nutempimo rankenėlė</string>
     <string name="text" comment="text to test regex rules with">Tekstas</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
-    <string name="blocked_metadata_info">ℹ️ Užpildžius daugiau nei vieną iš šių laukų, tarp jų bus taikomas AND operatorius</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">Javos reguliarią reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliariaus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
+    <string name="blocked_metadata_info">ℹ️ Užpildžius daugiau nei vieną iš šių laukų, tarp jų bus taikomas IR operatorius.</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Paliesk, kad blokuoti ir praleisti</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
     <string name="skip" comment="skip to next track">Praleisti</string>
@@ -324,7 +324,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Paslėptos žymės</string>
     <string name="pin" comment="pin a friend to the top">Prisegti</string>
     <string name="unpin" comment="unpin a friend to the top">Atsegti</string>
-    <string name="pin_limit_reached" formatted="true">Pasiekta smeigtukų riba (%1$d).</string>
+    <string name="pin_limit_reached" formatted="true">Pasiekta prisegimų ribojimas (%1$d).</string>
     <string name="pin_help">Ilgai prispausk prisegtus elementus, kad pakeisti jų tvarką</string>
     <string name="use_channel" comment="(Use youtube channel name)">Naudoti kanalo pavadinimą</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar nori įjungti šablono redagavimo taisyklę: %1$s?</string>
@@ -367,7 +367,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutės</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procentas</string>
     <string name="pref_logout">Atsijungti</string>
-    <string name="sure_tap_again">Tikrai? Spausk dar kartą</string>
+    <string name="sure_tap_again">Tikrai? Paliesk dar kartą</string>
     <string name="pref_login">Prisijungti</string>
     <string name="pref_about" comment="Info about this app">Apie</string>
     <string name="pref_privacy_policy">Privatumo politika</string>

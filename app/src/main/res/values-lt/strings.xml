@@ -31,7 +31,7 @@
         <item quantity="other">%1$s savaičių</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$s mėnesį</item>
+        <item quantity="one">%1$s mėnesis</item>
         <item quantity="few">%1$s mėnesiai</item>
         <item quantity="many">%1$s mėnesio</item>
         <item quantity="other">%1$s mėnesių</item>

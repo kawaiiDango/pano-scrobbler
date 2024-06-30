@@ -7,7 +7,38 @@
     <string name="faq">FAQ</string>
     <string name="album_art">Copertă album</string>
     <string name="artist_image">Imagine artist</string>
+    <string name="network_error">Eroare internet</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorat</string>
+    <string name="scrobble_ignored_save_edit">Lastfm a ignorat editul probabil deoarece scrooble-ul este prea vechi. Doriți să salvăm acest edit pentru viitoare scrobbles in loc?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Câmpurile necesare sunt goale</string>
+    <string name="artist">Artist</string>
+    <string name="artists">Artiști</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Topul artiștilor</string>
+    <string name="album_artist">Artistul albumului</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artist/ canal</string>
+    <string name="similar_artists">Artiști similari</string>
+    <string name="state_scrobbled">Ascultat</string>
+    <string name="unscrobble">Neascultat</string>
+    <string name="state_unscrobbled">Neascultat</string>
+    <string name="state_unrecognised_artist">Artist nerecunoscut</string>
+    <string name="tap_to_edit">(Apasă pentru editare)</string>
+    <string name="recently_scrobbled">Ascultat recent</string>
     <string name="recents" comment="Short for recently scrobbled">Recente</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Prima oară ascultat în %1$s</string>
+    <string name="auto" comment="automatic or default setting">Auto</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Aproape terminat…</string>
+    <string name="music_players">Player muzical</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Alte aplicații</string>
+    <string name="choose_apps">Alege aplicațiile</string>
+    <string name="choose_an_app">Alege o aplicație</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicații</string>
+    <string name="offline">Offline. Datele afișate nu sunt reîmprospătate</string>
+    <string name="unavailable_offline">Nu e valabil offline</string>
+    <string name="rank_change_new">Nu e valabil offline</string>
+    <string name="search">Caută</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Curăță istoricul</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Ștergi acest obiect din istoric?</string>
+    <string name="library" comment="search within the library">Librărie</string>
+    <string name="global" comment="search globally across lastfm">Global</string>
     <!--  pro  -->
 </resources>

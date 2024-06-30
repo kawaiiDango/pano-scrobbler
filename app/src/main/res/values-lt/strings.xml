@@ -26,12 +26,12 @@
     </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s savaitė</item>
-        <item quantity="few">%1$s savaites</item>
-        <item quantity="many">%1$s savaitės</item>
+        <item quantity="few">%1$s savaitės</item>
+        <item quantity="many">%1$s savaites</item>
         <item quantity="other">%1$s savaičių</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$s mėnesį</item>
+        <item quantity="one">%1$s mėnesis</item>
         <item quantity="few">%1$s mėnesiai</item>
         <item quantity="many">%1$s mėnesio</item>
         <item quantity="other">%1$s mėnesių</item>
@@ -69,25 +69,25 @@
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s redagavimas</item>
         <item quantity="few">%1$s redagavimai</item>
-        <item quantity="many">%1$s redagavimų</item>
+        <item quantity="many">%1$s radagavimo</item>
         <item quantity="other">%1$s redagavimų</item>
     </plurals>
     <plurals name="num_regex_edits">
         <item quantity="one">%1$s šablono redagavimas</item>
         <item quantity="few">%1$s šablonų redagavimai</item>
-        <item quantity="many">%1$s šablono redagavimų</item>
+        <item quantity="many">%1$s šablono redagavimo</item>
         <item quantity="other">%1$s šablonų redagavimų</item>
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s užblokuotas metaduomenys</item>
         <item quantity="few">%1$s užblokuoti metaduomenys</item>
-        <item quantity="many">%1$s užblokuotų metaduomenų</item>
+        <item quantity="many">%1$s užblokuoto metaduomeno</item>
         <item quantity="other">%1$s užblokuotų metaduomenų</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minutė</item>
-        <item quantity="few">%1$d minutes</item>
-        <item quantity="many">%1$d minutės</item>
+        <item quantity="few">%1$d minutės</item>
+        <item quantity="many">%1$d minutes</item>
         <item quantity="other">%1$d minučių</item>
     </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
@@ -99,7 +99,7 @@
     <string name="yes">Taip</string>
     <string name="no">Ne</string>
     <string name="reset">Atkurti</string>
-    <string name="settings">Konfigūracija</string>
+    <string name="settings">Konfigūruoti</string>
     <string name="bug_report">Pranešimas apie riktą</string>
     <string name="faq">DUK</string>
     <string name="album_art">Albumo viršelis</string>
@@ -108,8 +108,8 @@
     <string name="network_error">Tinklo klaida.</string>
     <string name="disable_tls_verify">Ignoruoti TLS klaidas</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Skroblas ignoruotas</string>
-    <string name="scrobble_ignored_save_edit">Lastfm ignoravo redagavimą, tikriausiai dėl to, kad skroblas yra per senas. Ar norėtum išsaugoti šį redagavimą būsimiems skrobliams?</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Privalomi laukai tušti.</string>
+    <string name="scrobble_ignored_save_edit">„last.fm“ ignoravo redagavimą, tikriausiai dėl to, kad skroblas yra per senas. Ar norėtum išsaugoti šį redagavimą būsimiems skroblams?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Privalomi laukai yra tušti.</string>
     <string name="artist">Atlikėjas</string>
     <string name="artists">Atlikėjai</string>
     <string name="top_artists" comment="Top artists the user has listened to">Geriausi atlikėjai</string>
@@ -128,9 +128,9 @@
     <string name="state_scrobbling">Dabar skrobuolinama…</string>
     <string name="state_scrobbled">Nuskrobuolinta</string>
     <string name="unscrobble">Neskrobuolinti</string>
-    <string name="state_unscrobbled">Neskrobuolinta</string>
+    <string name="state_unscrobbled">Nenuskrobuolinta</string>
     <string name="state_unrecognised_artist">Neatpažintas atlikėjas</string>
-    <string name="tap_to_edit">(Spausk, kad redaguoti)</string>
+    <string name="tap_to_edit">(Paliesk, kad redaguoti)</string>
     <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
@@ -143,14 +143,15 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programėlės</string>
     <string name="offline">Atsijungę. Rodomi duomenys nėra nauji.</string>
     <string name="unavailable_offline">Nepasiekiama neprisijungus.</string>
+    <string name="tv_url_notice">Atidaryk šį URL adresą kito įrenginio naršyklėje</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Klausiausi\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s klausėsi\n%1$s %2$s</string>
-    <string name="share_sig">(per Pano Scrobbler)</string>
+    <string name="share_sig">(per „Pano Scrobbler“)</string>
     <string name="share">Bendrinti</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Keisti tinklelio dydį</string>
-    <string name="pinch_to_zoom">Prispausti, kad priartinti</string>
+    <string name="pinch_to_zoom">Prispausk, kad padidinti</string>
     <string name="more_info">Daugiau informacijos</string>
     <string name="more" comment="More options menu in short">Daugiau</string>
     <string name="learn" comment="(Learn java regex syntax)">Išmokti</string>
@@ -158,8 +159,8 @@
     <string name="rank_change" comment="%1= delta change">Reitingo pokytis: %s</string>
     <string name="rank_change_no_change">Jokių pokyčių</string>
     <string name="rank_change_new">Per praėjusį laikotarpį nenuskrobuolinta</string>
-    <string name="search">Paieška</string>
-    <string name="clear_all_history" comment="(talking about search history, tag history)">Išvalyti visą istoriją</string>
+    <string name="search">Ieškoti</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Valyti visą istoriją</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Pašalinti šį elementą iš istorijos?</string>
     <string name="library" comment="search within the library">Biblioteka</string>
     <string name="global" comment="search globally across lastfm">Globalus</string>
@@ -192,15 +193,17 @@
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string name="pending_scrobble">Laukiamas skroblas</string>
     <string name="pending_scrobbles_noti">Apdorojama laukiančių skroblų</string>
+    <string name="following" comment="accounts you are following on lastfm">Sekama</string>
+    <string name="followers" comment="your lastfm followers">Sekėjai</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblai (-ų), nuo %2$s</string>
     <string name="allow_background">Leisti skrobalinimą fone</string>
     <string name="grant_notification_access">Suteikti prieigą prie pranešimų</string>
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
     <string name="send_notifications">Leisti pranešimus</string>
     <string name="notification_channel_blocked">Tam reikia, kad pranešimai būtų įjungti</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Patikrinti skroblų būseną ir skaičių.
-- Pamėgti arba blokuoti tiesiai iš pranešimo.
-- Gauti pranešimus apie skroblo klaidas ir veiksmus, kurių galima imtis.
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Patikrink skroblų būseną ir skaičių.
+- Pamėgk arba blokuok tiesiai iš pranešimo.
+- Gauk pranešimus apie skroblo klaidas ir veiksmus, kurių galima imtis.
 - Kiekvieną savaitę gauti geriausius skroblus.
 - Ir daugiau.
 - Pranešimai nedaro garso.\"\""</string>
@@ -210,7 +213,7 @@
     <string name="time_just_now">ką tik</string>
     <string name="no_mail_apps">Nėra įdiegta el. pašto kliento programėlė</string>
     <string name="loved" comment="Its a noun">Pamėgta</string>
-    <string name="unloved" comment="Its a noun">Panaikinta mėgstą</string>
+    <string name="unloved" comment="Its a noun">Panaikinta pamėgtą</string>
     <string name="simple_edits">Redagavimai</string>
     <string name="grant_rec_perm">Suteik leidimą naudoti mikrofoną</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>
@@ -218,11 +221,11 @@
     <string name="scrobble_from_mic" comment="Its a verb">Skrobuolinti iš mikrofono</string>
     <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Iš mikrofono</string>
     <string name="add_to_hs">Pridėti prie pradžios ekrano</string>
-    <string name="listening">Klausoma muzika, grojanti aplink tave…</string>
+    <string name="listening">Klausoma muzika, leidžianti aplink tave…</string>
     <string name="uploading">Įkeliama…</string>
     <string name="recording_failed">Nepavyko pradėti įrašymo. Mikrofonas gali būti užimtas arba nepasiekiamas šiame įrenginyje.</string>
     <string name="press_back">Paspausk atgal, kai baigsi</string>
-    <string name="powered_acr">Veikia <i><b>ACR</b>Cloud</i></string>
+    <string name="powered_acr">Veikia su „<i><b>ACR</b>Cloud</i>“</string>
     <string name="details">Išsamiau</string>
     <string name="saved_as_pending">Išsaugota kaip laukiamas skroblas</string>
     <string name="sort">Rūšiuoti</string>
@@ -272,7 +275,7 @@
     <string name="close" comment="To close a dialog or something">Uždaryti</string>
     <string name="user_tags_hint" comment="To add a new tag">Nauja žymė</string>
     <string name="user_tags_empty">Nepridėjai jokių žymių</string>
-    <string name="appwidget_loading">Kraunama…</string>
+    <string name="appwidget_loading">Įkeliama…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Laikotarpis</string>
     <string name="appwidget_theme">Tema</string>
     <string name="appwidget_shadow">Šešėlis</string>
@@ -287,8 +290,8 @@
     <string name="tint_background" comment="Tint the background with the primary color">Fono atspalvis</string>
     <string name="random_theme">Atrinkti atsitiktine tvarka kiekvieno paleidimo metu</string>
     <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>
-    <string name="edit_regex">Reguliarusis reiškianos šablonas</string>
-    <string name="edit_regex_replacement">Reguliarusis reiškianos keitimas</string>
+    <string name="edit_regex">Reguliariaus reiškinio šablonas</string>
+    <string name="edit_regex_replacement">Reguliariaus reiškinio keitimas</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Laukai</string>
     <string name="edit_replace">Pakeisti</string>
     <string name="edit_first" comment="First occurrence of a pattern">Pirmas</string>
@@ -296,22 +299,22 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Ištraukti</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pavadink savo fiksavimo grupes <i>track, album, artist</i> arba <i>albumArtist</i>, kad galėtum jas išgauti iš kitų laukų.</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">pvz., kad pakeistum atlikėją ir pavadinimą, turėtum įrašyti atlikėjo reguliarį reiškinį kaip (?&lt;track&gt;.*), o takelio reguliarį reiškinį kaip (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliarams reiškiniams turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliariams reiškiniams turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliari reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
-    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkama reguliari reikšmė: %1$s.</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkamas reguliariusis reiškinys: %1$s.</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Naudojami šablonai:</string>
     <string name="edit_continue">Jei rasta, toliau atitikti kitų reguliarių reiškinių</string>
     <string name="edit_case_sensitive">Skirti raidžių lygį</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Testas</string>
-    <string name="edit_presets" comment="Regex presets">Numatytieji</string>
-    <string name="edit_presets_available">Pasiekimi numatytieji</string>
-    <string name="edit_no_presets_available">Visi numatytieji yra naudojami</string>
-    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Numatytasis: %1$s</string>
-    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono riba (%1$d).</string>
-    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Vilkimo rankenėlė</string>
+    <string name="edit_presets" comment="Regex presets">Išankstiniai nustatymai</string>
+    <string name="edit_presets_available">Galimi išankstiniai nustatymai</string>
+    <string name="edit_no_presets_available">Visi išankstiniai nustatymai yra naudojami</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Išankstinis nustatymas: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono ribojimas (%1$d).</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Nutempimo rankenėlė</string>
     <string name="text" comment="text to test regex rules with">Tekstas</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">javos reguliarį reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliarus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
-    <string name="blocked_metadata_info">ℹ️ Užpildžius daugiau nei vieną iš šių laukų, tarp jų bus taikomas AND operatorius</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">Javos reguliarią reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliariaus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
+    <string name="blocked_metadata_info">ℹ️ Užpildžius daugiau nei vieną iš šių laukų, tarp jų bus taikomas IR operatorius.</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Paliesk, kad blokuoti ir praleisti</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
     <string name="skip" comment="skip to next track">Praleisti</string>
@@ -321,7 +324,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Paslėptos žymės</string>
     <string name="pin" comment="pin a friend to the top">Prisegti</string>
     <string name="unpin" comment="unpin a friend to the top">Atsegti</string>
-    <string name="pin_limit_reached" formatted="true">Pasiekta smeigtukų riba (%1$d).</string>
+    <string name="pin_limit_reached" formatted="true">Pasiekta prisegimų ribojimas (%1$d).</string>
     <string name="pin_help">Ilgai prispausk prisegtus elementus, kad pakeisti jų tvarką</string>
     <string name="use_channel" comment="(Use youtube channel name)">Naudoti kanalo pavadinimą</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar nori įjungti šablono redagavimo taisyklę: %1$s?</string>
@@ -354,17 +357,17 @@
     <string name="pref_lockscreen_noti">Užrakinto ekrano pranešimai</string>
     <string name="pref_offline_info">ℹ️ Atsijungę skroblai ir pamėgti bus išsaugoti, kad būtų išsiųsti vėliau.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Skrobuolinti iš</string>
-    <string name="pref_enabled_apps_summary">ℹ️ Palaiko muzikos metaduomenis atskleidžiančias programėles. Kad išvengtum dvigubo Spotify skroblo, įjunk šią funkciją tik vienoje vietoje.</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Palaiko muzikos metaduomenis atskleidžiančias programėles. Kad išvengtum dvigubo „Spotify“ skroblo, įjunk šią funkciją tik vienoje vietoje.</string>
     <string name="pref_enabled_apps_title">Pasirinkti programėles</string>
     <string name="pref_auto_detect">Automatiškai skrobuolinti iš naujų programėlių</string>
-    <string name="pref_spotify_remote">Skrobuolinti Spotify grojant kituose įrenginiuose</string>
+    <string name="pref_spotify_remote">Skrobuolinti „Spotify“ leidžiant kituose įrenginiuose</string>
     <string name="pref_link_heart_button_rating">Naudoti širdelės mygtuką pranešime, kad jį taip pat pamėgti medijos leistuve</string>
-    <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobalinimą, kai įrenginys groja muziką</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobalinimą, kai įrenginys leidžia muziką</string>
     <string name="pref_delay">Skroblo delsa (priklausomai nuo to, kuri ankstesnė)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutės</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procentas</string>
     <string name="pref_logout">Atsijungti</string>
-    <string name="sure_tap_again">Tikrai? Spausk dar kartą</string>
+    <string name="sure_tap_again">Tikrai? Paliesk dar kartą</string>
     <string name="pref_login">Prisijungti</string>
     <string name="pref_about" comment="Info about this app">Apie</string>
     <string name="pref_privacy_policy">Privatumo politika</string>
@@ -374,8 +377,8 @@
     <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="server_url" comment="For self hosted scrobbling services">Serverio URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Tapatybės nustatymo raktą galima rasti adresu: %1$s</string>
-    <string name="pref_now_playing">Pateikti dabar grojama</string>
-    <string name="pref_fetch_album">Gauti trūkstamus albumo duomenis iš lastFM</string>
+    <string name="pref_now_playing">Pateikti dabar leidžiama</string>
+    <string name="pref_fetch_album">Gauti trūkstamus albumo duomenis iš „last.fm“</string>
     <string name="pref_locale">Kalbos</string>
     <string name="pref_change_locale">Keisti kalbą</string>
     <string name="pref_crashlytics_enabled">Pranešti klaidas automatiškai</string>
@@ -390,12 +393,12 @@
     <string name="pref_imexport_network_notice">Tinklo režimu abu įrenginiai turi būti prijungti prie to paties tinklo.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Suasmeninimas</string>
     <string name="pref_themes" comment="Color themes">Temos</string>
-    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Maišyti ir derinti\nTaip pat keičia pranešimo spalvą</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Maišyti ir derinti\nTaip pat keičia pranešimo spalvą.</string>
     <string name="pref_widget_charts">Pradžios ekrano valdiklis – Diagramos</string>
     <string name="pref_show_albums">Rodyti albumų pavadinimus</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…skroblams</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…skroblams.</string>
     <string name="pref_show_scrobble_sources">Rodyti programėlių piktogramas, iš kurių nuskrobuoliniai</string>
-    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…prie kiekvieno skroblo. Šie duomenys lieka tavo įrenginyje</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…prie kiekvieno skroblo. Šie duomenys lieka tavo įrenginyje.</string>
     <string name="pref_search_in_source">Ieškoti ir leisti programėlėje, iš kurios nuskrobuoliniai</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Palaikomoms programėlėms</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Sąrašai</string>
@@ -408,7 +411,7 @@
     <string name="update_available" formatted="true" comment="%1= the version number">Yra naujinimas: %1$s</string>
     <string name="download" comment="Its a verb">Atsisiųsti</string>
     <string name="changelog">Pakeitimų žurnalas</string>
-    <string name="import_hey_wtf">Tai tikriausiai ne Pano Scrobbler eksporto failas.</string>
+    <string name="import_hey_wtf">Tai tikriausiai ne „Pano Scrobbler“ eksporto failas.</string>
     <string name="export_failed">Eksportuoti nepavyko.</string>
     <string name="imported">Importuota</string>
     <string name="import_options">Importavimo parinktys</string>
@@ -419,10 +422,10 @@
     <string name="import_settings">Importuoti nustatymus</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Transliavimo intencijos</string>
     <string name="current_track">Dabartinė daina:</string>
-    <string name="pref_intents">Tasker ketinimai ir pan.</string>
+    <string name="pref_intents">„Tasker“ ketinimai ir pan.</string>
     <string name="copied">Nukopijuota!</string>
-    <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti savo tapatybę</string>
-    <string name="custom_listenbrainz">Pasirinktinis Listenbrainz</string>
+    <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti tapatybę</string>
+    <string name="custom_listenbrainz">Pasirinktinis „Listenbrainz“</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrink %1$s</string>
     <string name="artist_extra">Takeliai, albumai ir panašumai</string>
@@ -435,22 +438,23 @@
     <string name="acr_host" comment="Web hostname">Serveris</string>
     <string name="acr_key" comment="API key">Prieigos raktas</string>
     <string name="acr_secret" comment="API secret">Paslaptis</string>
-    <string name="add_acr_key">Pridėti ACRCloud raktą</string>
-    <string name="remove_acr_key">Pašalinti ACRCloud raktą</string>
-    <string name="add_acr_consider">Kad išvengtum spartos ribojimų, apsvarstyk galimybę pridėti savo ACRCloud raktą</string>
+    <string name="add_acr_key">Pridėti „ACRCloud“ raktą</string>
+    <string name="remove_acr_key">Pašalinti „ACRCloud“ raktą</string>
+    <string name="add_acr_consider">Kad išvengtum spartos ribojimų, apsvarstyk galimybę pridėti savo „ACRCloud“ raktą</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Pridėti</string>
     <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Užsiregistruok adresu https://console.acrcloud.com.
-• Naršyk į Projects &gt; Audio &amp; video recognition.
-• Sukurk naują projektą, pasirink Recorded Audio ir ACRCloud Music kaušas."</string>
-    <string name="shazam_scrobbling">Jei nori nuolat skrobuolinti, vietoj to atidaryk <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> ir įjunk Auto Shazam. Taip pat įsitikink, kad Shazam įjungtas skrobavimui.</string>
+• Naršyk į „Projects“ &gt; „“Audio &amp; „video recognition“.
+• Sukurk naują projektą, pasirink „Recorded Audio“ ir „ACRCloud Music“ kaušas."</string>
+    <string name="shazam_scrobbling">Jei nori nuolat skrobuolinti, vietoj to atidaryk „<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>“ ir įjunk „Auto Shazam“. Taip pat įsitikink, kad „Shazam“ įjungtas skrobalinimui.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d likusių</string>
-    <string name="submitting_loves" formatted="true">Siunčiami mėgstamiausi, liko %1$d</string>
+    <string name="submitting_loves" formatted="true">Siunčiami mėgstami. Liko %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Siunčiamas paketas</string>
     <string name="bar_chart">Juostinė diagrama</string>
     <string name="cleared_disabled_apps">Išvalytos išjungtos programėlės</string>
     <string name="fix_it_title">Galimi taisymai</string>
-    <string name="fix_it_startup_title">Energijos taupyklės / paleidimo tvarkyklės</string>
+    <string name="fix_it_startup_title">Maitinimo taupyklės / paleidimo tvarkytuvai</string>
     <string name="fix_it_battery_title">Išjungti akumuliatoriaus optimizavimą</string>
+    <string name="fix_it_energy_title">Išjunk energijos optimizavimą</string>
     <string name="fix_it_action" comment="(To open an app)">Atidaryti</string>
     <string name="delete_account">Ištrinti paskyrą</string>
     <string name="delete_account_custom_servers">Apie pasirinktinius serverius žiūrėk atitinkamus jų dokumentus.</string>
@@ -464,23 +468,23 @@
     <!--  pro  -->
     <string name="get_pro">Palaikyti šią programėlę</string>
     <string name="help">Pagalba</string>
-    <string name="pro_support">Tai paprastas ir greitas būdas nuostabiems naudotojams, tokiems kaip tu, išreikšti paramą, pripažįstant šios programos teikiamą vertę.</string>
+    <string name="pro_support">Tai paprastas ir greitas būdas nuostabiems naudotojams, tokiems kaip tu, išreikšti palaikymą, pripažįstant šios programos teikiamą vertę.</string>
     <string name="pro_also_get">Taip pat gausi toliau nurodytas funkcijas:</string>
     <string name="thank_you">Ačiū!</string>
     <string name="purchase_pending">Mokėjimo paslaugų teikėjas dar nepatvirtino pirkimo. Patikrink po kelių minučių.</string>
     <string name="billing_troubleshoot_title">Atkurti pirkimą</string>
     <string name="billing_troubleshoot">"Jau nusipirkai?
 
-Tavo pirkimus tvarko Google Play. Jie susieti su Google Play paskyra, kurioje atliktas pirkimas. Įdiegus programėlę naujame įrenginyje su keliomis paskyromis, Google Play gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programėlę iš kompiuterio per Google Play tinklalapį:
+Tavo pirkimus tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programėlę naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programėlę iš kompiuterio per „Google Play“ tinklalapį:
 
 • Išdiegk šią programėlę.
-• Atidaryk Google Play tinklalapį iš kompiuterio.
+• Atidaryk „Google Play“ tinklalapį iš kompiuterio.
 • Prisijunk su paskyra, kuriai priklauso pirkimas.
-• Įdiek šią programėlę tiesiogiai iš Google Play tinklalapio.
+• Įdiek šią programėlę tiesiogiai iš „Google Play“ tinklalapio.
 "</string>
-    <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti garsą</string>
+    <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos</string>
     <string name="billing_sharing">Pašalinti programėlės pavadinimą bendrinant</string>
     <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobuolinai, ir tiesiogiai jose ieškoti</string>
-    <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliarį reiškinį</string>
+    <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliarią reiškinį</string>
 </resources>

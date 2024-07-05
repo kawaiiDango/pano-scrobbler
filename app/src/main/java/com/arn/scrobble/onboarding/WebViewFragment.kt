@@ -17,8 +17,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.databinding.ContentWebviewBinding
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.main.MainActivity
@@ -55,6 +57,10 @@ class WebViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         setupAxisTransitions(MaterialSharedAxis.X)
+
+        if (BuildConfig.DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true)
+        }
 
         _binding = ContentWebviewBinding.inflate(inflater, container, false)
         return binding.root
@@ -136,7 +142,7 @@ class WebViewFragment : Fragment() {
                     }
                 }
 
-                viewModel.doAuth(
+                viewModel.doLastFmAuth(
                     requireArguments().getSingle<UserAccountTemp>()!!.copy(authKey = token)
                 )
             }
@@ -144,7 +150,7 @@ class WebViewFragment : Fragment() {
             "/librefm" -> {
                 val token = uri.getQueryParameter("token") ?: return false
 
-                viewModel.doAuth(
+                viewModel.doLastFmAuth(
                     requireArguments().getSingle<UserAccountTemp>()!!.copy(authKey = token)
                 )
             }
@@ -152,8 +158,9 @@ class WebViewFragment : Fragment() {
             "/pleroma" -> {
                 val token = uri.getQueryParameter("code") ?: return false
 
-                viewModel.doAuth(
-                    requireArguments().getSingle<UserAccountTemp>()!!.copy(authKey = token)
+                viewModel.doPleromaAuth(
+                    requireArguments().getSingle<UserAccountTemp>()!!.copy(authKey = token),
+                    requireArguments().getSingle<PleromaOauthClientCreds>()!!
                 )
             }
 
@@ -170,7 +177,7 @@ class WebViewFragment : Fragment() {
     }
 
     inner class MyWebViewClient : WebViewClient() {
-        
+
         @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(
             view: WebView,

@@ -13,13 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.R
-import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.maloja.Maloja
+import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.main.App
@@ -37,7 +37,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.URLEncoder
 
 
 /**
@@ -268,20 +267,30 @@ open class LoginFragment : DialogFragment() {
                         if (!url.endsWith('/'))
                             url += '/'
 
-                        val arguments = Bundle().apply {
-                            putString(
-                                Stuff.ARG_URL,
-                                "${url}oauth/authorize?client_id=${Tokens.PLEROMA_CLIENT_ID}&redirect_uri=${
-                                    URLEncoder.encode(Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma")
-                                }&response_type=code&scope=${URLEncoder.encode("read write")}"
-                            )
-                            putSingle(UserAccountTemp(AccountType.PLEROMA, "", url))
-                        }
-                        withContext(Dispatchers.Main) {
-                            findNavController().popBackStack()
-                            findNavController().navigate(R.id.webViewFragment, arguments)
-                        }
-                        Result.success(Unit)
+                        Pleroma.createApp(url)
+                            .onSuccess { oauthClientCreds ->
+                                val arguments = Bundle().apply {
+                                    putString(
+                                        Stuff.ARG_URL,
+                                        "${url}oauth/authorize?client_id=${oauthClientCreds.client_id}&redirect_uri=${
+                                            oauthClientCreds.redirect_uri
+                                        }&response_type=code&scope=read+write"
+                                    )
+                                    putSingle(UserAccountTemp(AccountType.PLEROMA, "", url))
+                                    putSingle(oauthClientCreds)
+                                }
+                                withContext(Dispatchers.Main) {
+                                    findNavController().popBackStack()
+                                    findNavController().navigate(R.id.webViewFragment, arguments)
+                                }
+                                Result.success(Unit)
+                            }
+                            .map { }
+                            .recoverCatching {
+                                throw IllegalArgumentException(it.message)
+                            }
+
+
                     } else {
                         Result.failure(IllegalArgumentException(getString(R.string.failed_encode_url)))
                     }

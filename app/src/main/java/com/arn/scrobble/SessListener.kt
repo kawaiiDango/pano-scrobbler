@@ -553,11 +553,11 @@ class SessListener(
             Timber.dLazy { "onSessionEvent ${trackInfo.packageName}: $event ${extras.dump()}" }
         }
 
-        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
+        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
             Timber.dLazy { "audioinfo updated ${trackInfo.packageName}: $info" }
 
             isRemotePlayback =
-                info?.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE
+                info.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE
         }
 
         private fun resetMeta() {

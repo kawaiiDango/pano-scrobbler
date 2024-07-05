@@ -114,7 +114,7 @@ object Security {
                 App.context.packageName,
                 PackageManager.GET_SIGNATURES
             ).signatures
-            val signature = signatures[0].toCharsString()
+            val signature = signatures?.get(0)?.toCharsString()
             if (signature == Tokens.SIGNATURE)
                 return signature
         } catch (ex: Exception) {

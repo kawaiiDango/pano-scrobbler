@@ -146,7 +146,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
             add(MusicEntryMapper())
             add(musicEntryImageInterceptor)
             add(StarMapper())
-            
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 add(ImageDecoderDecoder.Factory())
             } else {

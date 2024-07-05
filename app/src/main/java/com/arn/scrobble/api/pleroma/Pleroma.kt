@@ -1,7 +1,8 @@
 package com.arn.scrobble.api.pleroma
 
+import android.os.Parcelable
 import androidx.core.text.HtmlCompat
-import com.arn.scrobble.Tokens
+import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.ExpirationPolicy
@@ -39,6 +40,7 @@ import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.http.parameters
 import kotlinx.coroutines.delay
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -195,14 +197,30 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
 
     companion object {
-        suspend fun authAndGetSession(userAccountTemp: UserAccountTemp): Result<Unit> {
+        suspend fun createApp(apiRoot: String) =
+            Requesters.genericKtorClient.postResult<PleromaOauthClientCreds>("$apiRoot/api/v1/apps") {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    CreateAppRequest(
+                        client_name = App.context.getString(R.string.app_name),
+                        redirect_uris = Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma",
+                        scopes = "read write",
+                        website = App.context.getString(R.string.github_link)
+                    )
+                )
+            }
+
+        suspend fun authAndGetSession(
+            userAccountTemp: UserAccountTemp,
+            oauthClientCreds: PleromaOauthClientCreds
+        ): Result<Unit> {
             val tokenResponse =
                 Requesters.genericKtorClient.postResult<TokenResponse>("${userAccountTemp.apiRoot!!}oauth/token") {
                     parameters {
-                        parameter("client_id", Tokens.PLEROMA_CLIENT_ID)
-                        parameter("client_secret", Tokens.PLEROMA_CLIENT_SECRET)
+                        parameter("client_id", oauthClientCreds.client_id)
+                        parameter("client_secret", oauthClientCreds.client_secret)
                         parameter("grant_type", "authorization_code")
-                        parameter("redirect_uri", Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma")
+                        parameter("redirect_uri", oauthClientCreds.redirect_uri)
                         parameter("code", userAccountTemp.authKey)
                     }.let { setBody(FormDataContent(it)) }
                 }
@@ -264,3 +282,23 @@ private data class TokenResponse(
     val access_token: String,
     val refresh_token: String,
 )
+
+@Serializable
+private data class CreateAppRequest(
+    val client_name: String,
+    val redirect_uris: String,
+    val scopes: String,
+    val website: String? = null,
+)
+
+@Serializable
+@Parcelize
+data class PleromaOauthClientCreds(
+    val id: String,
+    val name: String,
+    val client_id: String,
+    val client_secret: String,
+    val redirect_uri: String,
+    val website: String?,
+    val vapid_key: String,
+) : Parcelable

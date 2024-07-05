@@ -41,14 +41,12 @@ android {
         throw GradleException("Could not read version.txt!")
     }
 
-    compileSdk = 34
-//    compileSdkPreview = "VanillaIceCream"
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
         minSdk = 23
-        targetSdk = 34
-//        targetSdkPreview = "VanillaIceCream"
+        targetSdk = 35
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${
             SimpleDateFormat("YYYY, MMM dd").format(Date())

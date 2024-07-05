@@ -1,3 +1,4 @@
+- Targets Android 15
 - You can now import/export your settings and edits to other devices connected to the same local network
 - Bug fixes
 - Translation updates by the translators on Crowdin

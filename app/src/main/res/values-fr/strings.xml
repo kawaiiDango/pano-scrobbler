@@ -54,7 +54,7 @@
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s métadonnée bloquée</item>
-        <item quantity="other">%1$s métadonnée bloquée</item>
+        <item quantity="other">%1$s métadonnées bloquées</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minute</item>
@@ -68,7 +68,7 @@
     <string name="no">Non</string>
     <string name="reset">Réinitialiser</string>
     <string name="settings">Configurer</string>
-    <string name="bug_report">Rapporter un bug</string>
+    <string name="bug_report">Signaler un Bug</string>
     <string name="faq">FAQ</string>
     <string name="album_art">Pochette d\'album</string>
     <string name="artist_image">Image d\'artiste</string>
@@ -76,27 +76,27 @@
     <string name="network_error">Erreur de réseau</string>
     <string name="disable_tls_verify">Ignorer les erreurs TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoré</string>
-    <string name="scrobble_ignored_save_edit">Lastfm a ignoré l\'édition probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cet édition pour les scrobbles futurs à la place ?</string>
+    <string name="scrobble_ignored_save_edit">Lastfm a ignoré la modification probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cette modification pour les scrobbles futurs à la place ?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
     <string name="artist">Artiste</string>
     <string name="artists">Artistes</string>
-    <string name="top_artists" comment="Top artists the user has listened to">Artistes favoris</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Meilleurs artistes</string>
     <string name="album_artist">Artiste de l\'album</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artiste / Chaîne</string>
     <string name="similar_artists">Artistes similaires</string>
     <string name="album_optional">Album (optionnel)</string>
     <string name="album">Album</string>
     <string name="albums">Albums</string>
-    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albums</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Meilleurs albums</string>
     <string name="track">Morceau</string>
     <string name="tracks">Morceaux</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Meilleurs titres</string>
     <string name="similar_tracks">Morceaux similaires</string>
     <string name="similar" comment="Similar tracks but in short">Similaire</string>
     <string name="state_scrobbling">Maintenant en scrobbling…</string>
-    <string name="state_scrobbled">Scrobbled</string>
-    <string name="unscrobble">Unscrobble</string>
-    <string name="state_unscrobbled">Unscrobbled</string>
+    <string name="state_scrobbled">Scrobblé</string>
+    <string name="unscrobble">Déscrobble</string>
+    <string name="state_unscrobbled">Déscrobblé</string>
     <string name="state_unrecognised_artist">Artiste non reconnu</string>
     <string name="tap_to_edit">(Appuyez pour modifier)</string>
     <string name="recently_scrobbled">Récemment Scrobbled</string>
@@ -106,9 +106,12 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Presque prêt…</string>
     <string name="music_players">Lecteurs de musique</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Autres applications</string>
-    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Applis</string>
+    <string name="choose_apps">Choisir les applications</string>
+    <string name="choose_an_app">Choisir une application</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Applications</string>
     <string name="offline">Hors-ligne. Les données affichées ne sont pas rafraichies</string>
     <string name="unavailable_offline">Indisponible hors-ligne</string>
+    <string name="tv_url_notice">Ouvrir cette URL dans un navigateur sur un autre appareil</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Services</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">J\'écoutais\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s écoutait\n%1$s %2$s</string>
@@ -121,7 +124,7 @@
     <string name="more" comment="More options menu in short">Plus</string>
     <string name="learn" comment="(Learn java regex syntax)">Apprendre</string>
     <string name="hide">Masquer</string>
-    <string name="rank_change" comment="%1= delta change">Changement en classement: %s</string>
+    <string name="rank_change" comment="%1= delta change">Changement de classement: %s</string>
     <string name="rank_change_no_change">Aucune modification</string>
     <string name="rank_change_new">Non scrobblé dans la période précédente</string>
     <string name="search">Rechercher</string>
@@ -158,6 +161,8 @@
     <string name="pending_scrobbles">Scrobbles en attente</string>
     <string name="pending_scrobble">Scrobble en attente</string>
     <string name="pending_scrobbles_noti">Traitement des scrobbles en attente</string>
+    <string name="following" comment="accounts you are following on lastfm">Suivis</string>
+    <string name="followers" comment="your lastfm followers">Abonnés</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
     <string name="allow_background">Autoriser le scrobbling en arrière-plan</string>
     <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
@@ -324,6 +329,7 @@
     <string name="pref_enabled_apps_title">Choisir les applications</string>
     <string name="pref_auto_detect">Scrobbler automatiquement à partir de nouvelles applications</string>
     <string name="pref_spotify_remote">Scrobbler depuis Spotify utilisé sur d\'autres appareils</string>
+    <string name="pref_link_heart_button_rating">Utilisez le bouton en forme de cœur sur la notification pour également le mettre en favori sur le lecteur</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Désactiver le scrobbling continu depuis le microphone lorsque l\'appareil joue de la musique</string>
     <string name="pref_delay">Délai de prise en compte du scrobble (le plus rapide sera choisi)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutes</string>
@@ -337,6 +343,7 @@
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
     <string name="pref_token_label" comment="For Listenbrainz">Jeton d\'authentification</string>
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL du serveur</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d\'authentification ici : %1$s</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
     <string name="pref_fetch_album">Récupérer les données d\'album manquantes depuis lastFM</string>
@@ -349,6 +356,9 @@
     <string name="pref_export">Exportation</string>
     <string name="pref_export_desc">Sauvegarde les paramètres, les modifications et la blocklist. Ne sauvegarde pas les identifiants pour des raisons de sécurité. Utile en cas de changement d\'appareil ou pour partager les paramètres avec des amis.</string>
     <string name="pref_import">Importation</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Réseau</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Code</string>
+    <string name="pref_imexport_network_notice">Pour le mode réseau, les deux appareils doivent être connectés au même réseau.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personnalisation</string>
     <string name="pref_themes" comment="Color themes">Thèmes</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix and Match\nModifie également la couleur de la notification</string>
@@ -412,9 +422,17 @@
     <string name="fix_it_title">Corrections possibles</string>
     <string name="fix_it_startup_title">Économiseurs d\'énergie / gestionnaires de démarrage</string>
     <string name="fix_it_battery_title">Désactiver les optimisations de la batterie</string>
+    <string name="fix_it_energy_title">Désactiver les optimisations d\'énergie</string>
     <string name="fix_it_action" comment="(To open an app)">Ouvrir</string>
     <string name="delete_account">Supprimer votre compte</string>
     <string name="delete_account_custom_servers">Pour les serveurs personnalisés, consultez leurs documentations respectives.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Ajouter ou changer l\'image</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Depuis la galerie</string>
+    <string name="square_photo_hint">Utilisez une image carrée pour de meilleurs résultats</string>
+    <string name="scrobble_to_file">Fichier</string>
+    <string name="password">Mot de passe</string>
+    <string name="open_existing" comment="Append to an existing file">Ajouter à un fichier existant</string>
+    <string name="create" comment="Create a new file">Créer</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="help">Aide</string>

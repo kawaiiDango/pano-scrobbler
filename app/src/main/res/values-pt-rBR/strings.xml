@@ -111,6 +111,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicativos</string>
     <string name="offline">Sem rede. Dados mostrados não são recentes</string>
     <string name="unavailable_offline">Indisponível quando estiver sem rede</string>
+    <string name="tv_url_notice">Abra está URL em outro dispositivo</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Eu estava escutando\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escutando\n%1$s %2$s</string>
@@ -160,6 +161,8 @@
     <string name="pending_scrobbles">Scrobbles pendentes</string>
     <string name="pending_scrobble">Scrobble pendente</string>
     <string name="pending_scrobbles_noti">Processando scrobbles pendentes</string>
+    <string name="following" comment="accounts you are following on lastfm">Seguindo</string>
+    <string name="followers" comment="your lastfm followers">Seguidores</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
     <string name="allow_background">Permitir scrobbling em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
@@ -353,6 +356,9 @@
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
     <string name="pref_import">Importar</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Rede</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Código</string>
+    <string name="pref_imexport_network_notice">Para o modo de rede, ambos os dispositivos devem estar conectados à mesma rede.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalização</string>
     <string name="pref_themes" comment="Color themes">Temas</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Misturar e combinar\nAltera também a cor das notificações</string>
@@ -416,6 +422,7 @@
     <string name="fix_it_title">Possíveis correções</string>
     <string name="fix_it_startup_title">Economia de energia / gerentes de inicialização</string>
     <string name="fix_it_battery_title">Desativar otimização da bateria</string>
+    <string name="fix_it_energy_title">Desativar otimizações de bateria</string>
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
     <string name="delete_account">Excluir sua conta</string>
     <string name="delete_account_custom_servers">Para servidores personalizados, verifique suas respectivas documentações.</string>

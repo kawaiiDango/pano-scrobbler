@@ -111,6 +111,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicaciones</string>
     <string name="offline">Sin conexión. Los datos mostrados no son recientes</string>
     <string name="unavailable_offline">No disponible sin conexión</string>
+    <string name="tv_url_notice">Abrir este URL en un buscador en otro dispositivo</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servicios</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estaba escuchando\n%1$s el %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estaba escuchando\n%1$s el %2$s</string>
@@ -160,6 +161,8 @@
     <string name="pending_scrobbles">Scrobbles pendientes</string>
     <string name="pending_scrobble">Scrobble pendiente</string>
     <string name="pending_scrobbles_noti">Procesando scrobbles pendientes</string>
+    <string name="following" comment="accounts you are following on lastfm">Siguiendo</string>
+    <string name="followers" comment="your lastfm followers">Seguidores</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde el %2$s</string>
     <string name="allow_background">Permitir scrobbling en segundo plano</string>
     <string name="grant_notification_access">Permitir acceso a notificaciones</string>
@@ -340,6 +343,7 @@
     <string name="pref_user_label" comment="(Like username)">Usuario</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token de autenticación</string>
     <string name="api_url" comment="For Listenbrainz">ENLACE DE LA API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL de Servidor</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Puedes encontrar tu token de autenticación en: %1$s</string>
     <string name="pref_now_playing">Enviar reproducción</string>
     <string name="pref_fetch_album">Obtener los datos de los álbumes faltantes en lastFM</string>
@@ -352,6 +356,9 @@
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Realiza copias de seguridad de los ajustes, las ediciones y la lista de bloqueos. Por motivos de seguridad, no guarda los datos personales. Es muy útil para pasar de un dispositivo a otro o para compartilo con tus amigos.</string>
     <string name="pref_import">Importar</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Red de datos</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Codigo</string>
+    <string name="pref_imexport_network_notice">Para el modo red, ambos dispositivos deben estar conectados a la misma red.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalización</string>
     <string name="pref_themes" comment="Color themes">Temas</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mezclar y combinar\nTambién cambia el color de las notificaciones</string>
@@ -415,9 +422,17 @@
     <string name="fix_it_title">Posibles soluciones</string>
     <string name="fix_it_startup_title">Ahorradores de energía / gestores de arranque</string>
     <string name="fix_it_battery_title">Desactivar las optimizaciones de batería</string>
+    <string name="fix_it_energy_title">Deshabilitar optimizaciones de batería</string>
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
     <string name="delete_account">Eliminar tu cuenta</string>
     <string name="delete_account_custom_servers">Para servidores personalizados, verifique sus respectivas documentaciones.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Añadir o cambiar imagen</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Desde galería</string>
+    <string name="square_photo_hint">Use una foto cuadrada para mejores resultados</string>
+    <string name="scrobble_to_file">Archivo</string>
+    <string name="password">Contraseña</string>
+    <string name="open_existing" comment="Append to an existing file">Anexar a los existentes</string>
+    <string name="create" comment="Create a new file">Crear</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="help">Ayuda</string>

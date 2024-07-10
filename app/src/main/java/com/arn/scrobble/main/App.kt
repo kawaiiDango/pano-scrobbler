@@ -34,8 +34,9 @@ import com.arn.scrobble.ui.StarMapper
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
-import com.google.firebase.FirebaseApp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.initialize
 import kotlinx.coroutines.flow.MutableSharedFlow
 import timber.log.Timber
 
@@ -75,12 +76,12 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
 
         if (prefs.crashlyticsEnabled) {
-            FirebaseApp.initializeApp(applicationContext)
-            FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
+            Firebase.initialize(this)
+            Firebase.crashlytics.setCustomKey("isDebug", BuildConfig.DEBUG)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && getProcessName() == BuildConfig.APPLICATION_ID ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.P
             ) {
-                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+                Firebase.crashlytics.setCrashlyticsCollectionEnabled(true)
             }
             Timber.plant(CrashlyticsTree())
         }

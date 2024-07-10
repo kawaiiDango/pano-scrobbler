@@ -41,12 +41,12 @@ android {
         throw GradleException("Could not read version.txt!")
     }
 
-    compileSdk = 35
+    compileSdk = libs.versions.targetSdk.get().toInt()
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
-        minSdk = 23
-        targetSdk = 35
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${
             SimpleDateFormat("YYYY, MMM dd").format(Date())
@@ -141,27 +141,26 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.kotlin.stdlib)
     implementation(libs.appcompat)
-    implementation(libs.core.ktx)
-    implementation(libs.fragment.ktx)
+    implementation(libs.core)
+    implementation(libs.fragment)
     implementation(libs.preference.ktx)
     implementation(libs.media)
     implementation(libs.palette.ktx)
     implementation(libs.recyclerview)
-    implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.viewmodel)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.swiperefreshlayout)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.core.remoteviews)
     implementation(libs.androidx.transition)
     implementation(libs.androidx.activity)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.billing)
-    implementation(libs.review.ktx)
-    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.review)
+    implementation(libs.androidx.work.runtime)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.android.snowfall)
     implementation(libs.kotlin.csv.jvm)
@@ -173,7 +172,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
-    implementation(libs.crashlytics.ktx)
+    implementation(libs.crashlytics)
 
     implementation(libs.okhttp)
     implementation(libs.krate)
@@ -331,9 +330,9 @@ fun fetchCrowdinMembers(projectId: String, token: String) {
         val root = gson.fromJson(responseJson, Root::class.java)
         val userDataList = root.data
 
-        val outputJson = gson.toJson(userDataList.map { it.data.username })
+        val outputLines = userDataList.joinToString("\n") { it.data.username }
 
-        file("src/main/res/raw/crowdin_members.json").writeText(outputJson)
+        file("src/main/res/raw/crowdin_members.txt").writeText(outputLines)
         println("Crowdin members fetched successfully.")
     } else {
         throw IOException("Failed to fetch Crowdin members. Response code: $responseCode")

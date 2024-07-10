@@ -34,4 +34,9 @@
 -keepclassmembers class androidx.preference.PreferenceManager {
     private android.content.SharedPreferences mSharedPreferences;
 }
+
+# temporary workarounds for https://issuetracker.google.com/issues/349649095
+-keep class * implements com.google.firebase.components.ComponentRegistrar { void <init>(); }
+-keep class * extends androidx.room.RoomDatabase { void <init>(); }
+-keep class * extends androidx.work.InputMerger { void <init>(); }
 #-dontobfuscate

@@ -57,7 +57,8 @@ import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -327,7 +328,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                 newValue as Boolean
 
                 kotlin.runCatching {
-                    FirebaseCrashlytics.getInstance().apply {
+                    Firebase.crashlytics.apply {
                         setCrashlyticsCollectionEnabled(newValue)
                         if (!newValue)
                             deleteUnsentReports()

@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.arn.scrobble.baselineprofile"
-    compileSdk = 34
+    compileSdk = libs.versions.targetSdk.get().toInt()
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -20,8 +20,8 @@ android {
     }
 
     defaultConfig {
-        minSdk = 28
-        targetSdk = 34
+        minSdk = libs.versions.minSdkBaselineProfile.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"

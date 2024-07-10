@@ -72,5 +72,5 @@ See [instructions.md](instructions.md)
 - Icons from https://pictogrammers.com and https://material.io
 - Genres filter from https://everynoise.com
 
-Thanks to the amazing [translators](app/src/main/res/raw/crowdin_members.json) and everyone who
+Thanks to the amazing [translators](app/src/main/res/raw/crowdin_members.txt) and everyone who
 reported bugs and helped me with this project.

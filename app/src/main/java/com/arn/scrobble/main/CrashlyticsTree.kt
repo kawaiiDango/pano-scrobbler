@@ -1,7 +1,8 @@
 package com.arn.scrobble.main
 
 import android.util.Log
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import timber.log.Timber
 
 class CrashlyticsTree : Timber.Tree() {
@@ -12,10 +13,10 @@ class CrashlyticsTree : Timber.Tree() {
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         if (t != null) {
-            FirebaseCrashlytics.getInstance().log(t.message.toString())
-            FirebaseCrashlytics.getInstance().recordException(t)
+            Firebase.crashlytics.log(t.message.toString())
+            Firebase.crashlytics.recordException(t)
         } else
-            FirebaseCrashlytics.getInstance().log(message)
+            Firebase.crashlytics.log(message)
 
     }
 }

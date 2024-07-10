@@ -184,7 +184,7 @@ dependencies {
     implementation(libs.skeletonlayout)
     implementation(libs.coil)
     implementation(libs.coil.gif)
-//    implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.network.okhttp)
 
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.core)

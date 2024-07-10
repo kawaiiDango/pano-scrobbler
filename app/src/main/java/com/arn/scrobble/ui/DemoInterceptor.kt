@@ -1,7 +1,9 @@
 package com.arn.scrobble.ui
 
-import coil.intercept.Interceptor
-import coil.request.ImageResult
+import coil3.intercept.Interceptor
+import coil3.request.ImageResult
+import coil3.request.transformations
+
 
 class DemoInterceptor : Interceptor {
 
@@ -10,12 +12,12 @@ class DemoInterceptor : Interceptor {
         return if (imgUrl != null &&
             (imgUrl.endsWith(".webp") || imgUrl.endsWith(".gif") || imgUrl.startsWith("https://i.scdn.co"))
         ) {
-            chain.proceed(
+            chain.withRequest(
                 chain.request.newBuilder()
                     .transformations(CrystallizeTransformation(chain.request.context))
                     .build()
-            )
+            ).proceed()
         } else
-            chain.proceed(chain.request)
+            chain.proceed()
     }
 }

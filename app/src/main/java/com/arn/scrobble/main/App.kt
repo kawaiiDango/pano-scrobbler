@@ -13,11 +13,13 @@ import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.ContextCompat
 import androidx.work.Configuration
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.size.Precision
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.networkObserverEnabled
+import coil3.request.allowHardware
+import coil3.request.crossfade
+import coil3.size.Precision
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
@@ -41,7 +43,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import timber.log.Timber
 
 
-class App : Application(), ImageLoaderFactory, Configuration.Provider {
+class App : Application(), SingletonImageLoader.Factory, Configuration.Provider {
     private val musicEntryImageInterceptor = MusicEntryImageInterceptor()
 
     override val workManagerConfiguration =
@@ -140,19 +142,13 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         })
     }
 
-    override fun newImageLoader() = ImageLoader.Builder(this)
+    override fun newImageLoader(context: PlatformContext) = ImageLoader.Builder(this)
         .components {
             add(AppIconKeyer())
             add(AppIconFetcher.Factory())
             add(MusicEntryMapper())
             add(musicEntryImageInterceptor)
             add(StarMapper())
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
-            }
 
             if (prefs.demoMode)
                 add(DemoInterceptor())

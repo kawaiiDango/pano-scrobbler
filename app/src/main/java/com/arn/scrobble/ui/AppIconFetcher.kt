@@ -2,12 +2,13 @@ package com.arn.scrobble.ui
 
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.graphics.drawable.toBitmap
-import coil.ImageLoader
-import coil.decode.DataSource
-import coil.fetch.DrawableResult
-import coil.fetch.FetchResult
-import coil.fetch.Fetcher
-import coil.request.Options
+import coil3.ImageLoader
+import coil3.asImage
+import coil3.decode.DataSource
+import coil3.fetch.FetchResult
+import coil3.fetch.Fetcher
+import coil3.fetch.ImageFetchResult
+import coil3.request.Options
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -41,17 +42,17 @@ class AppIconFetcher(
                 icon.toBitmap()
             )
 
-        return DrawableResult(
-            drawable = icon,
-            isSampled = false,
-            dataSource = DataSource.DISK
-        )
-
-//        return ImageFetchResult(
-//            icon.asCoilImage(),
-//            false,
-//            DataSource.DISK
+//        return DrawableResult(
+//            drawable = icon,
+//            isSampled = false,
+//            dataSource = DataSource.DISK
 //        )
+
+        return ImageFetchResult(
+            icon.asImage(),
+            false,
+            DataSource.DISK
+        )
     }
 
     class Factory : Fetcher.Factory<PackageName> {

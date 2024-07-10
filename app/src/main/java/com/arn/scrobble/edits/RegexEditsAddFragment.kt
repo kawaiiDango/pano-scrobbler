@@ -1,7 +1,6 @@
 package com.arn.scrobble.edits
 
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,8 +16,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import coil.imageLoader
-import coil.request.ImageRequest
+import coil3.Image
+import coil3.asDrawable
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.error
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.billing.BillingViewModel
@@ -273,8 +275,8 @@ class RegexEditsAddFragment : Fragment() {
                     showOrHideAllPackagesChip()
                 }
 
-                fun onResult(image: Drawable?) {
-                    chipIcon = image
+                fun onResult(image: Image?) {
+                    chipIcon = image?.asDrawable(resources)
                 }
 
                 val request = ImageRequest.Builder(context)

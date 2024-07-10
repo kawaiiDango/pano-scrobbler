@@ -10,10 +10,12 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
-import coil.dispose
-import coil.load
-import coil.memory.MemoryCache
-import coil.size.Scale
+import coil3.dispose
+import coil3.load
+import coil3.memory.MemoryCache
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.ContentScrobblesBinding

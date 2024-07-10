@@ -5,7 +5,7 @@ minSdkBaselineProfile = "28"
 aboutlibraries = "11.2.2"
 activity = "1.9.0"
 androidSnowfall = "1.2.1"
-coil = "2.6.0"
+coil = "3.0.0-alpha08"
 constraintlayout = "2.2.0-alpha13"
 billing = "7.0.0"
 core = "1.15.0-alpha01"
@@ -83,9 +83,9 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "work-runtime" }
-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
-coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
-#coil-network-okhttp = { module = "io.coil-kt:coil-network-okhttp", version.ref = "coil" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 core = { module = "androidx.core:core", version.ref = "core" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }

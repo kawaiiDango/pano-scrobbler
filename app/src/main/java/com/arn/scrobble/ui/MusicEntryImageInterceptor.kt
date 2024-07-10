@@ -1,8 +1,8 @@
 package com.arn.scrobble.ui
 
 import android.util.LruCache
-import coil.intercept.Interceptor
-import coil.request.ImageResult
+import coil3.intercept.Interceptor
+import coil3.request.ImageResult
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
@@ -28,7 +28,7 @@ class MusicEntryImageInterceptor : Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val musicEntryImageReq =
-            chain.request.data as? MusicEntryImageReq ?: return chain.proceed(chain.request)
+            chain.request.data as? MusicEntryImageReq ?: return chain.proceed()
         val entry = musicEntryImageReq.musicEntry
         val key = MusicEntryReqKeyer.genKey(musicEntryImageReq)
         val cachedOptional = musicEntryCache[key]
@@ -122,7 +122,7 @@ class MusicEntryImageInterceptor : Interceptor {
             .data(fetchedImageUrl ?: "")
             .build()
 
-        return chain.proceed(request)
+        return chain.withRequest(request).proceed()
     }
 
     fun clearCacheForEntry(entry: MusicEntry) {

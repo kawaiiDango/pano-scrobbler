@@ -23,7 +23,7 @@ import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.contains
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import coil3.load
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R

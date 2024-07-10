@@ -39,9 +39,12 @@ import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import coil.dispose
-import coil.load
-import coil.memory.MemoryCache
+import coil3.asDrawable
+import coil3.dispose
+import coil3.load
+import coil3.memory.MemoryCache
+import coil3.request.error
+import coil3.request.placeholder
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
@@ -630,7 +633,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 listener(
                     onSuccess = { _, result ->
                         // Create the palette on a background thread.
-                        Palette.Builder(result.drawable.toBitmap())
+                        Palette.Builder(result.image.asDrawable(resources).toBitmap())
                             .generate { palette ->
                                 viewModel.setPaletteColors(
                                     PaletteColors(

@@ -1,6 +1,5 @@
 package com.arn.scrobble.edits
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -14,8 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import coil.imageLoader
-import coil.request.ImageRequest
+import coil3.Image
+import coil3.asDrawable
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.error
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -109,8 +111,8 @@ class RegexEditsTestFragment : Fragment() {
             viewModel.setPkgName(null)
         }
 
-        fun onAppIconResult(image: Drawable?) {
-            binding.regexTestPackage.chipIcon = image
+        fun onAppIconResult(image: Image?) {
+            binding.regexTestPackage.chipIcon = image?.asDrawable(resources)
         }
 
         setFragmentResultListener(Stuff.ARG_ALLOWED_PACKAGES) { key, bundle ->

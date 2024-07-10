@@ -16,7 +16,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import coil.load
+import coil3.asDrawable
+import coil3.load
+import coil3.request.error
+import coil3.request.placeholder
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.databinding.ContentFriendsBinding
@@ -215,7 +218,9 @@ class FriendsAdapter(
                                 onSuccess = { _, result ->
                                     // Create the palette on a background thread.
                                     Palette.Builder(
-                                        result.drawable.toBitmap()
+                                        result.image
+                                            .asDrawable(itemView.context.resources)
+                                            .toBitmap()
                                     )
                                         .generate { palette ->
                                             palette ?: return@generate

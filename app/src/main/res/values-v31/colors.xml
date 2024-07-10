@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="widget_dynamic_bg">@android:color/system_neutral1_50</color>
+    <!-- Copied from jetpack glance -->
+    <color name="widgetBg">@android:color/system_accent2_50</color>
+    <color name="widgetFg">@android:color/system_accent1_900</color>
+    <color name="widgetOutline">@android:color/system_neutral2_500</color>
 </resources>

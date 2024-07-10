@@ -34,4 +34,9 @@
 
     <color name="skeleton_mask">#407F7F7F</color>
     <color name="skeleton_shimmer">#597F7F7F</color>
+
+    <!-- Copied from jetpack glance -->
+    <color name="widgetBg">#ffe0f3ff</color>
+    <color name="widgetFg">#ff21005d</color> <!-- glance_colorOnPrimaryContainer -->
+    <color name="widgetOutline">#ff79747e</color>
 </resources>

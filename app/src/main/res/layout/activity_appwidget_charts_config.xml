@@ -47,47 +47,6 @@
                 android:textColor="?colorPrimary"
                 android:textAppearance="?textAppearanceTitleLarge"
                 android:layout_marginTop="16dp"
-                android:text="@string/appwidget_theme" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/widget_theme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="true"
-                app:selectionRequired="true"
-                app:checkedChip="@id/chip_dark">
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:id="@+id/chip_dark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dark"
-                    app:checkedIconEnabled="false" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:id="@+id/chip_light"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/light"
-                    app:checkedIconEnabled="false" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:id="@+id/chip_dynamic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/system_colors"
-                    app:checkedIconEnabled="false" />
-            </com.google.android.material.chip.ChipGroup>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="?colorPrimary"
-                android:textAppearance="?textAppearanceTitleLarge"
-                android:layout_marginTop="16dp"
                 android:text="@string/appwidget_alpha" />
 
             <com.google.android.material.slider.Slider

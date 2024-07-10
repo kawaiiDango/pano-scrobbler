@@ -2,35 +2,19 @@
 
     <style name="AppWidgetTheme" />
 
-    <style name="AppWidgetTheme.Dark" parent="Theme.Material3.Dark">
-        <item name="android:colorPrimary">@android:color/white</item>
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:colorBackground">@android:color/black</item>
+    <style name="AppWidgetTheme.Dynamic" parent="Theme.Material3.DynamicColors.DayNight">
         <item name="fakeShadowAlpha">0</item>
         <item name="android:textViewStyle">@style/WidgetText</item>
-    </style>
-    <style name="AppWidgetTheme.Light" parent="Theme.Material3.Light">
-        <item name="android:colorPrimary">@android:color/black</item>
-        <item name="android:textColorPrimary">@android:color/black</item>
-        <item name="android:colorBackground">@android:color/white</item>
-        <item name="fakeShadowAlpha">0</item>
-        <item name="android:textViewStyle">@style/WidgetText</item>
+        <item name="android:colorBackground">@color/widgetBg</item>
     </style>
 
-    <style name="AppWidgetTheme.Dynamic" parent="AppWidgetTheme.Dark" /> <!-- placeholder -->
-    <style name="AppWidgetTheme.Dynamic.Shadow" /> <!-- placeholder -->
-
-    <style name="AppWidgetTheme.Dark.Shadow">
-        <item name="fakeShadowAlpha">1</item>
-        <item name="android:textViewStyle">@style/WidgetText.Shadow</item>
-    </style>
-    <style name="AppWidgetTheme.Light.Shadow">
+    <style name="AppWidgetTheme.Dynamic.Shadow">
         <item name="fakeShadowAlpha">1</item>
         <item name="android:textViewStyle">@style/WidgetText.Shadow</item>
     </style>
 
     <style name="WidgetText">
-        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColor">@color/widgetFg</item>
     </style>
 
     <style name="WidgetText.Shadow">
@@ -40,11 +24,4 @@
         <item name="android:shadowRadius">6</item>
     </style>
 
-    <style name="WidgetTabIndicator">
-        <item name="android:src">@drawable/shape_widget_tab_indicator</item>
-    </style>
-    <style name="WidgetTabIndicator.Shadow">
-        <item name="android:tint">?android:colorBackground</item>
-        <item name="android:alpha">?fakeShadowAlpha</item>
-    </style>
 </resources>

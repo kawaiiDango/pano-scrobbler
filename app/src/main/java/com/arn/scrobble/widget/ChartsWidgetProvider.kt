@@ -5,13 +5,11 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
 import com.arn.scrobble.R
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.utils.Stuff
 import java.util.Objects
 
@@ -74,18 +72,13 @@ internal fun updateAppWidget(
     val tab = prefs.tab ?: Stuff.TYPE_ARTISTS
     val period = prefs.period
     val bgAlpha = prefs.bgAlpha
-    val theme = WidgetTheme.entries[prefs.theme]
     val hasShadow = prefs.shadow
 
-    val layoutId = when {
-        theme == WidgetTheme.DARK && hasShadow -> R.layout.appwidget_charts_dark_shadow
-        theme == WidgetTheme.DARK && !hasShadow -> R.layout.appwidget_charts_dark
-        theme == WidgetTheme.LIGHT && hasShadow -> R.layout.appwidget_charts_light_shadow
-        theme == WidgetTheme.LIGHT && !hasShadow -> R.layout.appwidget_charts_light
-        theme == WidgetTheme.DYNAMIC && hasShadow -> R.layout.appwidget_charts_dynamic_shadow
-        theme == WidgetTheme.DYNAMIC && !hasShadow -> R.layout.appwidget_charts_dynamic
-        else -> R.layout.appwidget_charts_dark_shadow
-    }
+    val layoutId = if (hasShadow)
+        R.layout.appwidget_charts_dynamic_shadow
+    else
+        R.layout.appwidget_charts_dynamic
+
     val rv = RemoteViews(context.packageName, layoutId)
 
     if (period != null) {
@@ -162,25 +155,23 @@ internal fun updateAppWidget(
 
     rv.setInt(R.id.appwidget_bg, "setImageAlpha", (bgAlpha * 255).toInt())
 
-    val tabShadowIds =
-        arrayOf(R.id.appwidget_tracks_glow, R.id.appwidget_albums_glow, R.id.appwidget_artists_glow)
-    val tabIndicatorShadowIds = arrayOf(
-        R.id.appwidget_tracks_glow_shadow,
-        R.id.appwidget_albums_glow_shadow,
-        R.id.appwidget_artists_glow_shadow
+    val tabIds =
+        arrayOf(R.id.appwidget_tracks, R.id.appwidget_albums, R.id.appwidget_artists)
+    val tabShadowIds = arrayOf(
+        R.id.appwidget_tracks_shadow, R.id.appwidget_albums_shadow, R.id.appwidget_artists_shadow
     )
-    val glowId = when (tab) {
-        Stuff.TYPE_TRACKS -> R.id.appwidget_tracks_glow
-        Stuff.TYPE_ALBUMS -> R.id.appwidget_albums_glow
-        else -> R.id.appwidget_artists_glow
+    val selectedTabIdx = when (tab) {
+        Stuff.TYPE_TRACKS -> 0
+        Stuff.TYPE_ALBUMS -> 1
+        else -> 2
     }
-    tabShadowIds.forEachIndexed { i, it ->
-        val visibility = if (it == glowId)
-            View.VISIBLE
+    (0..2).forEach { idx ->
+        val tabAlpha = if (idx == selectedTabIdx)
+            1f
         else
-            View.INVISIBLE
-        rv.setViewVisibility(it, visibility)
-        rv.setViewVisibility(tabIndicatorShadowIds[i], visibility)
+            0.55f
+        rv.setInt(tabIds[idx], "setImageAlpha", (tabAlpha * 255).toInt())
+        rv.setInt(tabShadowIds[idx], "setImageAlpha", (tabAlpha * 255).toInt())
     }
 
     // Instruct the widget manager to update the widget

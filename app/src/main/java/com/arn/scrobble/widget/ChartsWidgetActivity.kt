@@ -16,21 +16,15 @@ import com.arn.scrobble.R
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityAppwidgetChartsConfigBinding
 import com.arn.scrobble.databinding.AppwidgetChartsContentBinding
-import com.arn.scrobble.databinding.AppwidgetChartsDarkBinding
-import com.arn.scrobble.databinding.AppwidgetChartsDarkShadowBinding
 import com.arn.scrobble.databinding.AppwidgetChartsDynamicBinding
 import com.arn.scrobble.databinding.AppwidgetChartsDynamicShadowBinding
-import com.arn.scrobble.databinding.AppwidgetChartsLightBinding
-import com.arn.scrobble.databinding.AppwidgetChartsLightShadowBinding
 import com.arn.scrobble.databinding.ListItemChipPeriodBinding
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.color.DynamicColors
 
 class ChartsWidgetActivity : AppCompatActivity() {
     private val appWidgetId by lazy {
@@ -64,9 +58,6 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
         setResult(false)
 
-        if (!DynamicColors.isDynamicColorAvailable())
-            binding.chipDynamic.visibility = View.GONE
-
         widgetTimePeriods.periodsMap.forEach { (key, timePeriod) ->
             ListItemChipPeriodBinding.inflate(
                 layoutInflater,
@@ -93,15 +84,6 @@ class ChartsWidgetActivity : AppCompatActivity() {
             }
         }
 
-        binding.widgetTheme.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
-
-            val theme = themeFromChip(checkedIds[0])
-            prefs.theme = theme.ordinal
-            initPreview(theme, binding.widgetShadow.isChecked)
-            previewAlpha(binding.widgetBgAlpha.value / 100)
-        }
-
         binding.widgetBgAlpha.addOnChangeListener { slider, value, fromUser ->
             prefs.bgAlpha = value / 100
             previewAlpha(value / 100)
@@ -109,7 +91,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
         binding.widgetShadow.setOnCheckedChangeListener { compoundButton, checked ->
             prefs.shadow = checked
-            initPreview(themeFromChip(binding.widgetTheme.checkedChipId), checked)
+            initPreview(checked)
             previewAlpha(binding.widgetBgAlpha.value / 100)
         }
 
@@ -146,34 +128,19 @@ class ChartsWidgetActivity : AppCompatActivity() {
         previewAlpha(binding.widgetBgAlpha.value / 100)
     }
 
-    private fun themeFromChip(checkedId: Int) = when (checkedId) {
-        R.id.chip_dark -> WidgetTheme.DARK
-        R.id.chip_light -> WidgetTheme.LIGHT
-        R.id.chip_dynamic -> WidgetTheme.DYNAMIC
-        else -> WidgetTheme.DARK
-    }
-
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase ?: return)
         setLocaleCompat()
     }
 
     private fun initFromPrefs() {
-        val theme = WidgetTheme.entries[prefs.theme]
         val hasShadow = prefs.shadow
 
         val checkedChip = binding.widgetPeriod.children.firstOrNull { it.tag == prefs.period }
             ?: binding.widgetPeriod.children.first()
         (checkedChip as Chip).isChecked = true
 
-        initPreview(theme, hasShadow)
-
-        when (theme) {
-            WidgetTheme.DARK -> binding.chipDark.isChecked = true
-            WidgetTheme.LIGHT -> binding.chipLight.isChecked = true
-            WidgetTheme.DYNAMIC -> binding.chipDynamic.isChecked = true
-        }
-
+        initPreview(hasShadow)
         binding.widgetShadow.isChecked = hasShadow
         binding.widgetBgAlpha.value = prefs.bgAlpha * 100
         widgetExists = prefs.period != null
@@ -196,41 +163,15 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
     }
 
-    private fun initPreview(theme: WidgetTheme, hasShadow: Boolean) {
+    private fun initPreview(hasShadow: Boolean) {
         val b: ViewBinding
 
-        when {
-            theme == WidgetTheme.DARK && hasShadow -> {
-                b = AppwidgetChartsDarkShadowBinding.inflate(layoutInflater)
-                previewBinding = b.appwidgetOuterFrame
-            }
-
-            theme == WidgetTheme.DARK && !hasShadow -> {
-                b = AppwidgetChartsDarkBinding.inflate(layoutInflater)
-                previewBinding = b.appwidgetOuterFrame
-            }
-
-            theme == WidgetTheme.LIGHT && hasShadow -> {
-                b = AppwidgetChartsLightShadowBinding.inflate(layoutInflater)
-                previewBinding = b.appwidgetOuterFrame
-            }
-
-            theme == WidgetTheme.LIGHT && !hasShadow -> {
-                b = AppwidgetChartsLightBinding.inflate(layoutInflater)
-                previewBinding = b.appwidgetOuterFrame
-            }
-
-            theme == WidgetTheme.DYNAMIC && hasShadow -> {
-                b = AppwidgetChartsDynamicShadowBinding.inflate(layoutInflater)
-                previewBinding = b.appwidgetOuterFrame
-            }
-
-            theme == WidgetTheme.DYNAMIC && !hasShadow -> {
-                b = AppwidgetChartsDynamicBinding.inflate(layoutInflater)
-                previewBinding = b.appwidgetOuterFrame
-            }
-
-            else -> throw IllegalArgumentException("Invalid theme")
+        if (hasShadow) {
+            b = AppwidgetChartsDynamicShadowBinding.inflate(layoutInflater)
+            previewBinding = b.appwidgetOuterFrame
+        } else {
+            b = AppwidgetChartsDynamicBinding.inflate(layoutInflater)
+            previewBinding = b.appwidgetOuterFrame
         }
 
         binding.widgetPreviewFrame.removeAllViews()

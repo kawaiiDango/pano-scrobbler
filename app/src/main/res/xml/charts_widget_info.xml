@@ -5,10 +5,10 @@
     android:updatePeriodMillis="0"
     android:description="@string/charts"
     android:previewImage="@drawable/widget_charts_preview"
-    android:initialLayout="@layout/appwidget_charts_dark"
+    android:initialLayout="@layout/appwidget_charts_dynamic"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:initialKeyguardLayout="@layout/appwidget_charts_dark"
+    android:initialKeyguardLayout="@layout/appwidget_charts_dynamic"
     android:configure="com.arn.scrobble.widget.ChartsWidgetActivity"
     android:widgetFeatures="reconfigurable"/>
 <!-- size in dp: 70*n - 30 -->

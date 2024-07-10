@@ -5,7 +5,6 @@ import androidx.core.content.edit
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.widget.ChartsWidgetListItem
 import com.frybits.harmony.getHarmonySharedPreferences
-import com.google.android.material.color.DynamicColors
 import hu.autsoft.krate.Krate
 import hu.autsoft.krate.booleanPref
 import hu.autsoft.krate.default.withDefault
@@ -39,13 +38,6 @@ class WidgetPrefs(context: Context) {
 
         var tab by intPref(PREF_WIDGET_TAB.prefName)
         var bgAlpha by floatPref(PREF_WIDGET_BG_ALPHA.prefName).withDefault(0.6f)
-        var theme by intPref(PREF_WIDGET_THEME.prefName).withDefault(
-            if (DynamicColors.isDynamicColorAvailable())
-                WidgetTheme.DYNAMIC.ordinal
-            else
-                WidgetTheme.DARK.ordinal
-        )
-
         var period by stringPref(PREF_WIDGET_PERIOD.prefName)
         var periodName by stringPref(PREF_WIDGET_PERIOD_NAME.prefName)
         var shadow by booleanPref(PREF_WIDGET_SHADOW.prefName).withDefault(true)
@@ -70,14 +62,9 @@ class WidgetPrefs(context: Context) {
         const val NAME = "widget"
         const val PREF_WIDGET_TAB = "tab"
         const val PREF_WIDGET_BG_ALPHA = "bg_alpha"
-        const val PREF_WIDGET_THEME = "theme"
         const val PREF_WIDGET_PERIOD = "period_key"
         const val PREF_WIDGET_PERIOD_NAME = "period_name"
         const val PREF_WIDGET_SHADOW = "shadow"
         const val PREF_WIDGET_LAST_UPDATED = "last_updated"
     }
-}
-
-enum class WidgetTheme {
-    LIGHT, DARK, DYNAMIC
 }

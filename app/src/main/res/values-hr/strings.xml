@@ -122,9 +122,12 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Još malo…</string>
     <string name="music_players">Reproduktori glazbe</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostale aplikacije</string>
+    <string name="choose_apps">Odaberite aplikacije</string>
+    <string name="choose_an_app">Odaberite aplikaciju</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikacije</string>
     <string name="offline">Izvan mreže. Prikazani podatci nisu osvježeni</string>
     <string name="unavailable_offline">Nije dostupno izvan mreže</string>
+    <string name="tv_url_notice">Otvori ovaj URL u pregledniku na drugom uređaju</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servisi</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Slušao/la sam\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s je slušao/la\n%1$s %2$s</string>
@@ -174,6 +177,8 @@
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="pending_scrobble">Scrobble na čekanju</string>
     <string name="pending_scrobbles_noti">Procesiranje scrobbleova na čekanju</string>
+    <string name="following" comment="accounts you are following on lastfm">Pratim</string>
+    <string name="followers" comment="your lastfm followers">Pratitelji</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobbleano %1$s puta od %2$s</string>
     <string name="allow_background">Dopusti scrobbleanje u pozadini</string>
     <string name="grant_notification_access">Dopusti pristup obavijestima</string>
@@ -400,16 +405,21 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Preostalo %1$d</string>
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Prenošenje više scrobbleova</string>
+    <string name="bar_chart">Stupčasti dijagram</string>
     <string name="cleared_disabled_apps">Očišćene onemogućene aplikacije</string>
     <string name="fix_it_title">Mogući ispravci</string>
     <string name="fix_it_startup_title">Štednja baterije / upravitelji pokretanja</string>
     <string name="fix_it_battery_title">Onemogući optimizaciju baterije</string>
+    <string name="fix_it_energy_title">Onemogućite optimizaciju potrošnje energije</string>
     <string name="fix_it_action" comment="(To open an app)">Otvori</string>
     <string name="delete_account">Izbriši svoj račun</string>
     <string name="delete_account_custom_servers">Za prilagođene poslužitelje, provjerite njihovu dokumentaciju.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Dodaj ili promijeni sliku</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Iz galerije</string>
+    <string name="square_photo_hint">Za najbolji rezultat koristite kvadratnu sliku</string>
     <string name="scrobble_to_file">Datoteka</string>
     <string name="password">Lozinka</string>
+    <string name="open_existing" comment="Append to an existing file">Dodaj postojećem</string>
     <string name="create" comment="Create a new file">Kreiraj</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
@@ -432,4 +442,5 @@ Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom k
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>
     <string name="billing_scrobble_source">Zapamti i pregledaj aplikacije iz kojih si scrobblao i direktno pretraži u njima</string>
+    <string name="billing_regex_extract">Pisanje vlastitih pravila za izvlačenje metapodataka pomoću regexa</string>
 </resources>

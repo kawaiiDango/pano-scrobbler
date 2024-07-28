@@ -250,7 +250,7 @@
     <string name="original" comment="Original metadata before editing">Izvorno</string>
     <string name="corrected" comment="Corrected metadata after editing">Ispravljeno</string>
     <string name="tag" comment="last.fm tag">Oznaka</string>
-    <string name="taggers" comment="(number of) people who have tagged">Taggeri</string>
+    <string name="taggers" comment="(number of) people who have tagged">Označitelji</string>
     <string name="taggings" comment="(total count of) a particular tag">Oznake</string>
     <string name="digest_weekly">Moji prošlotjedni top scrobbleovi</string>
     <string name="digest_monthly">Moji prošlomjesečni top scrobbleovi</string>

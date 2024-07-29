@@ -63,7 +63,7 @@ class Maloja(userAccount: UserAccountSerializable) :
             title = scrobbleData.track,
             album = scrobbleData.album,
             albumartists = scrobbleData.albumArtist?.let { listOf(it) },
-            duration = scrobbleData.duration,
+            length = scrobbleData.duration,
             time = scrobbleData.timestamp,
             key = userAccount.authKey
         )
@@ -282,8 +282,9 @@ private data class MalojaScrobbleData(
     val album: String?,
     val albumartists: List<String>?,
     @Serializable(with = TimeSerializer::class)
-    val duration: Long?,
-    val length: Int? = null,
+    val duration: Long? = null,
+    @Serializable(with = TimeSerializer::class)
+    val length: Long? = null,
     @Serializable(with = TimeSerializer::class)
     val time: Long?,
     val nofix: Boolean? = null,

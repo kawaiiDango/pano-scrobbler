@@ -3,7 +3,6 @@ package com.arn.scrobble.ui
 import android.util.LruCache
 import coil3.intercept.Interceptor
 import coil3.request.ImageResult
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -63,12 +62,10 @@ class MusicEntryImageInterceptor : Interceptor {
                     }
 
                     is Album -> {
-                        val customMapping = if (BuildConfig.DEBUG)
-                            customSpotifyMappingsDao.searchAlbum(
-                                entry.artist!!.name,
-                                entry.name
-                            ) else
-                            null
+                        val customMapping = customSpotifyMappingsDao.searchAlbum(
+                            entry.artist!!.name,
+                            entry.name
+                        )
 
                         if (customMapping != null) {
                             if (customMapping.spotifyId != null) {

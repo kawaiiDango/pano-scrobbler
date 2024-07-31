@@ -14,6 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -57,33 +59,55 @@
 
     </LinearLayout>
 
-    <com.arn.scrobble.ui.SquareFrameLayout
-        android:id="@+id/info_pic_expanded_frame"
+    <LinearLayout
+        android:id="@+id/info_pic_expanded_container"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="8dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:visibility="gone"
-        app:maxSize="300dp"
         tools:visibility="visible">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/info_pic_expanded"
+        <com.arn.scrobble.ui.SquareFrameLayout
+            android:id="@+id/info_pic_expanded_frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
-            tools:srcCompat="@tools:sample/avatars" />
+            android:layout_height="300dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            app:maxSize="300dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/info_pic_expanded"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
+                tools:srcCompat="@tools:sample/avatars" />
+
+        </com.arn.scrobble.ui.SquareFrameLayout>
 
         <TextView
             android:id="@+id/info_track_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:padding="16dp"
             android:textAlignment="center"
             android:textAppearance="?textAppearanceBodyLarge"
             tools:text="05:30" />
 
-    </com.arn.scrobble.ui.SquareFrameLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/info_add_photo"
+            style="?materialIconButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/add_photo"
+            android:tooltipText="@string/add_photo"
+            android:visibility="gone"
+            app:backgroundTint="?android:colorBackground"
+            app:icon="@drawable/vd_add_photo"
+            app:iconTint="?colorSecondary"
+            tools:visibility="visible" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/info_content"
@@ -192,38 +216,38 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/info_wiki_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@drawable/selector_border_gentle"
-            android:orientation="horizontal"
-            android:padding="@dimen/list_item_padding"
             android:visibility="gone"
             tools:visibility="visible">
 
             <!-- justify doesnt work if text contains formatting -->
             <TextView
                 android:id="@+id/info_wiki"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_weight="1"
+                android:background="@drawable/selector_border_gentle"
                 android:ellipsize="end"
                 android:maxLines="2"
+                android:paddingVertical="@dimen/list_item_padding"
+                android:paddingStart="16dp"
+                android:paddingEnd="32dp"
                 android:scrollbars="none" />
 
             <ImageView
                 android:id="@+id/info_wiki_expand"
-                android:layout_width="40dp"
+                android:layout_width="32dp"
                 android:layout_height="match_parent"
+                android:layout_gravity="end|bottom"
                 android:contentDescription="@string/expand"
                 android:scaleType="center"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/vd_arrow_down"
                 tools:visibility="visible" />
-        </LinearLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -260,18 +284,6 @@
                 tools:icon="@drawable/vd_heart"
                 tools:visibility="visible" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/info_add_photo"
-                style="?materialIconButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/add_photo"
-                android:tooltipText="@string/add_photo"
-                android:visibility="gone"
-                app:icon="@drawable/vd_add_photo"
-                app:iconTint="?colorSecondary"
-                tools:visibility="visible" />
-
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -297,8 +309,8 @@
             android:id="@+id/info_extra_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:minHeight="50dp"
+            android:orientation="vertical"
             android:visibility="gone"
             tools:visibility="visible" />
     </LinearLayout>

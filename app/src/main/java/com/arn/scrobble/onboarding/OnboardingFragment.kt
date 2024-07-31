@@ -8,8 +8,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +15,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -33,7 +30,6 @@ import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.UiUtils.hideKeyboard
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.toast
@@ -54,7 +50,7 @@ class OnboardingFragment : Fragment() {
         super.onCreate(savedInstanceState)
         notificationPermRequest =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                if (isGranted)
                     adapter.checkIfStepsCompleted()
             }
     }
@@ -199,7 +195,8 @@ class OnboardingFragment : Fragment() {
             }
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // notifications dont work on tv anyways
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !Stuff.isTv) {
             steps += OnboardingStepData(
                 type = OnboardingStepType.SEND_NOTIFICATIONS,
                 title = getString(R.string.send_notifications),
@@ -220,6 +217,23 @@ class OnboardingFragment : Fragment() {
 
     }
 
+    private fun addLastfmTestCreds(username: String, sk: String) {
+        Scrobblables.add(
+            UserAccountSerializable(
+                AccountType.LASTFM,
+                UserCached(
+                    username,
+                    "https://last.fm/user/$username",
+                    username,
+                    "",
+                    -1,
+                ),
+                sk
+            )
+        )
+        adapter.skipToNextStep()
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun createLoginStepView(): View {
         val serviceEnums = AccountType.entries.toTypedArray()
@@ -228,7 +242,16 @@ class OnboardingFragment : Fragment() {
             ButtonStepperForLoginBinding.inflate(LayoutInflater.from(binding.root.context))
 
         binding.buttonService.setOnClickListener {
-            LoginFlows(findNavController()).go(AccountType.LASTFM)
+            // navArgs() did not work here
+            val testDeepLinkUriSeg = requireActivity().intent.data?.pathSegments?.takeLast(3)
+            if (testDeepLinkUriSeg != null &&
+                testDeepLinkUriSeg.size == 3 &&
+                testDeepLinkUriSeg[0] == "onboarding"
+            ) {
+                addLastfmTestCreds(testDeepLinkUriSeg[1], testDeepLinkUriSeg[2])
+            } else {
+                LoginFlows(findNavController()).go(AccountType.LASTFM)
+            }
         }
         binding.buttonService.post { binding.buttonService.requestFocus() }
 
@@ -246,69 +269,6 @@ class OnboardingFragment : Fragment() {
             }
 
             popup.show()
-        }
-
-        binding.buttonServiceChooser.setOnLongClickListener {
-            binding.testingPass.isVisible = true
-            binding.testingPass.alpha = 1f
-            true
-        }
-
-        // setup testing password box
-        if (Stuff.isTv)
-            binding.testingPass.isFocusable = false
-        binding.testingPass.showSoftInputOnFocus = false
-
-        if (Stuff.isTestLab)
-            binding.testingPass.isVisible = true
-
-        binding.testingPass.addTextChangedListener(object : TextWatcher {
-
-            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
-            }
-
-            override fun beforeTextChanged(
-                s: CharSequence,
-                arg1: Int,
-                arg2: Int,
-                arg3: Int
-            ) {
-            }
-
-            override fun afterTextChanged(editable: Editable) {
-                val splits = editable.split(',')
-                if (splits.size == 3) {
-                    val username = splits[0]
-                    val authKey = splits[1]
-
-                    Scrobblables.add(
-                        UserAccountSerializable(
-                            AccountType.LASTFM,
-                            UserCached(
-                                username,
-                                "https://last.fm/user/$username",
-                                username,
-                                "",
-                                -1,
-                            ),
-                            authKey
-                        )
-                    )
-                    hideKeyboard()
-                    adapter.skipToNextStep()
-                }
-            }
-
-        })
-
-        binding.testingPass.setOnTouchListener { v, event ->
-            if (v != null) {
-                if (Stuff.isTv)
-                    v.isFocusable = true
-                v.onTouchEvent(event)
-                v.alpha = 0.2f
-            }
-            true
         }
 
         return binding.root

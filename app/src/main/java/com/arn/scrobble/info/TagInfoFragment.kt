@@ -63,9 +63,8 @@ class TagInfoFragment : BottomSheetDialogFragment() {
         if (!Stuff.isTv) {
             binding.tagInfoWiki.autoLinkMask = Linkify.WEB_URLS
 
-            binding.tagInfoTitle.setOnLongClickListener {
+            binding.tagInfoTitleContainer.setOnClickListener {
                 requireContext().copyToClipboard(binding.tagInfoTitle.text.toString())
-                true
             }
         }
 
@@ -80,6 +79,11 @@ class TagInfoFragment : BottomSheetDialogFragment() {
         collectLatestLifecycleFlow(viewModel.info.filterNotNull()) {
             binding.root.clearAnimation()
             scheduleTransition()
+
+            if (it.reach == null && it.count == null && it.wiki == null) {
+                binding.tagInfoContent.visibility = View.GONE
+                return@collectLatestLifecycleFlow
+            }
 
             binding.tagInfoContent.visibility = View.VISIBLE
 
@@ -126,9 +130,9 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                                     }
                                 }
                             }
-                            binding.tagInfoWikiContainer.setOnClickListener(clickListener)
-                            binding.tagInfoWikiContainer.isClickable = true
-                            binding.tagInfoWikiContainer.isFocusable = true
+                            binding.tagInfoWiki.setOnClickListener(clickListener)
+                            binding.tagInfoWiki.isClickable = true
+                            binding.tagInfoWiki.isFocusable = true
                             binding.tagInfoWikiExpand.visibility = View.VISIBLE
                         }
                     }

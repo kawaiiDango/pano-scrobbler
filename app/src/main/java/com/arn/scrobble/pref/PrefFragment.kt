@@ -99,7 +99,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             master.summary = getString(R.string.pref_master_qs_hint)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !Stuff.isTv) {
             findPreference<Preference>("master_qs_add")!!.apply {
                 isVisible = true
                 setOnPreferenceClickListener {
@@ -620,8 +620,9 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun setAuthLabel(elemKey: String, type: AccountType) =
-        setAuthLabel(findPreference(elemKey)!!, type)
+    private fun setAuthLabel(elemKey: String, type: AccountType) {
+        setAuthLabel(findPreference<Preference>(elemKey)!!, type)
+    }
 
     private fun initAuthConfirmation(
         key: String,

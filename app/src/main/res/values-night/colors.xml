@@ -16,5 +16,5 @@
     <!-- Copied from jetpack glance -->
     <color name="widgetBg">#ff20333d</color>
     <color name="widgetFg">#ffeaddff</color> <!-- glance_colorOnPrimaryContainer -->
-    <color name="widgetOutline">#ff938f99</color>
+    <color name="widgetPrimary">#ffd0bcff</color>
 </resources>

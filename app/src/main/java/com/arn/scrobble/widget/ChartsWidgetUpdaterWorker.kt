@@ -185,7 +185,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
             delay(1000) // wait for apply()
 
-            ChartsListUtils.updateWidget(appWidgetIdToPeriodStr.keys.toIntArray())
+            ChartsListUtils.updateWidgets(appWidgetIdToPeriodStr.keys.toIntArray())
 
             logTimestampToFile("finished")
         }

@@ -9,6 +9,7 @@
         android:id="@+id/appwidget_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:importantForAccessibility="no"
         android:src="@drawable/shape_widget_rounded_bg" />
 
     <LinearLayout
@@ -33,7 +34,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:divider="@android:color/transparent"
-            android:dividerHeight="0dp" />
+            android:dividerHeight="0dp"
+            tools:listheader="@layout/appwidget_list_header"
+            tools:listitem="@layout/appwidget_charts_item" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -55,6 +58,8 @@
                     android:alpha="?fakeShadowAlpha"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
+                    android:focusable="false"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/vd_mic"
                     android:tint="?android:colorBackground" />
 
@@ -66,6 +71,8 @@
                     android:alpha="?fakeShadowAlpha"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
+                    android:focusable="false"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/vd_album"
                     android:tint="?android:colorBackground" />
 
@@ -77,6 +84,8 @@
                     android:alpha="?fakeShadowAlpha"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
+                    android:focusable="false"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/vd_note"
                     android:tint="?android:colorBackground" />
             </LinearLayout>
@@ -94,7 +103,7 @@
                     android:background="?android:selectableItemBackgroundBorderless"
                     android:contentDescription="@string/artists"
                     android:src="@drawable/vd_mic"
-                    android:tint="?android:colorPrimary" />
+                    android:tint="@color/widgetPrimary" />
 
                 <ImageButton
                     android:id="@+id/appwidget_albums"
@@ -104,7 +113,7 @@
                     android:background="?android:selectableItemBackgroundBorderless"
                     android:contentDescription="@string/albums"
                     android:src="@drawable/vd_album"
-                    android:tint="?android:colorPrimary" />
+                    android:tint="@color/widgetPrimary" />
 
                 <ImageButton
                     android:id="@+id/appwidget_tracks"
@@ -114,7 +123,7 @@
                     android:background="?android:selectableItemBackgroundBorderless"
                     android:contentDescription="@string/tracks"
                     android:src="@drawable/vd_note"
-                    android:tint="?android:colorPrimary" />
+                    android:tint="@color/widgetPrimary" />
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>

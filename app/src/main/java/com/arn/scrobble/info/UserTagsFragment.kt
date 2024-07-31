@@ -27,6 +27,7 @@ import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.hideKeyboard
 import com.arn.scrobble.utils.UiUtils.showKeyboard
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.filterNotNull
@@ -114,6 +115,8 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
                 }
                 viewModel.addTag(tags)
                 binding.userTagsInputEdittext.text.clear()
+            } else {
+                requireContext().toast(R.string.required_fields_empty)
             }
         }
 

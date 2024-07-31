@@ -5,6 +5,7 @@ import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.Converters
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.db.RegexEditsDao.Companion.import
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.main.App
@@ -34,7 +35,7 @@ class ImExporter {
             pano_version = BuildConfig.VERSION_CODE,
             simple_edits = db.getSimpleEditsDao().all().asReversed(),
             blocked_metadata = db.getBlockedMetadataDao().all().asReversed(),
-            regex_edits = db.getRegexEditsDao().all(),
+            regex_edits = db.getRegexEditsDao().allWithoutLimit(),
             scrobble_sources = null,
             settings = MainPrefs.MainPrefsPublic()
         )
@@ -110,11 +111,11 @@ class ImExporter {
 
         if (editsMode == EditsMode.EDITS_REPLACE_ALL || editsMode == EditsMode.EDITS_REPLACE_EXISTING) {
             appPrefs.simple_edits?.let { db.getSimpleEditsDao().insert(it) }
-            appPrefs.regex_edits?.let { db.getRegexEditsDao().insert(it) }
+            appPrefs.regex_edits?.let { db.getRegexEditsDao().import(it) }
             appPrefs.blocked_metadata?.let { db.getBlockedMetadataDao().insert(it) }
         } else if (editsMode == EditsMode.EDITS_KEEP_EXISTING) {
             appPrefs.simple_edits?.let { db.getSimpleEditsDao().insertIgnore(it) }
-            appPrefs.regex_edits?.let { db.getRegexEditsDao().insertIgnore(it) }
+            appPrefs.regex_edits?.let { db.getRegexEditsDao().import(it) }
             appPrefs.blocked_metadata?.let { db.getBlockedMetadataDao().insertIgnore(it) }
         }
         appPrefs.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }

@@ -34,6 +34,7 @@
     <string name="duration" translatable="false">Duration</string>
     <string name="unknown" translatable="false">Unknown</string>
     <string name="total_listen_time" translatable="false">Total listen time</string>
+    <string name="use_arrow_keys_to_adjust" translatable="false">Use the arrow keys to adjust the value</string>
 
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>

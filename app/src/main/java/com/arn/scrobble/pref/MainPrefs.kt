@@ -216,8 +216,7 @@ class MainPrefs : Krate {
         val themeDayNight: Int = App.prefs.themeDayNight,
         @SerialName(PREF_THEME_TINT_BG)
         val themeTintBackground: Boolean = App.prefs.themeTintBackground,
-        @SerialName(PREF_THEME_DYNAMIC)
-        val themeDynamic: Boolean = App.prefs.themeDynamic,
+
         @SerialName(PREF_SEARCH_IN_SOURCE)
         val searchInSource: Boolean = App.prefs.searchInSource,
         @SerialName(PREF_SCROBBLE_SPOTIFY_REMOTE)
@@ -228,9 +227,12 @@ class MainPrefs : Krate {
         val firstDayOfWeek: Int = App.prefs.firstDayOfWeek,
         @SerialName(PREF_ALLOWED_PACKAGES)
         val allowedPackages: Set<String> = App.prefs.allowedPackages,
+//        Does not work on TV and can lock the themes ui if enabled
+//        @SerialName(PREF_THEME_DYNAMIC)
+//        val themeDynamic: Boolean = App.prefs.themeDynamic,
+//        dont't expose their entire apps list to the public
 //        @SerialName(PREF_BLOCKED_PACKAGES)
 //        val blockedPackages: Set<String> = App.prefs.blockedPackages,
-        // dont't expose their entire apps list to the public
     )
 
     fun fromMainPrefsPublic(settings: MainPrefsPublic) {
@@ -250,12 +252,12 @@ class MainPrefs : Krate {
         themeRandom = settings.themeRandom
         themeDayNight = settings.themeDayNight
         themeTintBackground = settings.themeTintBackground
-        themeDynamic = settings.themeDynamic
         searchInSource = settings.searchInSource
         scrobbleSpotifyRemote = settings.scrobbleSpotifyRemote
         preventDuplicateAmbientScrobbles = settings.preventDuplicateAmbientScrobbles
         firstDayOfWeek = settings.firstDayOfWeek
         allowedPackages = settings.allowedPackages
+//        themeDynamic = settings.themeDynamic
 //        blockedPackages = settings.blockedPackages
 
     }

@@ -12,12 +12,13 @@ import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import timber.log.Timber
 
 @Dao
 interface RegexEditsDao {
-    @Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    fun all(): List<RegexEdit>
+    @Query("SELECT * FROM $tableName ORDER BY `order` ASC")
+    fun allWithoutLimit(): List<RegexEdit>
 
     @Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
     fun allFlow(): Flow<List<RegexEdit>>
@@ -52,6 +53,17 @@ interface RegexEditsDao {
     companion object {
         const val tableName = "regexEdits"
 
+        fun RegexEditsDao.import(e: List<RegexEdit>) {
+            val existingWithoutOrder =
+                allWithoutLimit().map { it.copy(order = -1, _id = -1) }.toSet()
+            val toInsert = e.filter {
+                it.copy(order = -1, _id = -1) !in existingWithoutOrder
+            }
+
+            if (toInsert.isNotEmpty())
+                insertIgnore(toInsert)
+        }
+
         fun RegexEdit.countNamedCaptureGroups(): Map<String, Int> {
             val extractionPatterns = extractionPatterns ?: return emptyMap()
 
@@ -72,10 +84,10 @@ interface RegexEditsDao {
             }
         }
 
-        fun RegexEditsDao.performRegexReplace(
+        suspend fun RegexEditsDao.performRegexReplace(
             scrobbleData: ScrobbleData,
             pkgName: String? = null, // null means all
-            regexEdits: List<RegexEdit> = all().map { RegexPresets.getPossiblePreset(it) },
+            regexEditsp: List<RegexEdit>? = null, // null means all
         ): Map<String, Set<RegexEdit>> {
             val numMatches = mutableMapOf(
                 NLService.B_ARTIST to mutableSetOf<RegexEdit>(),
@@ -83,6 +95,9 @@ interface RegexEditsDao {
                 NLService.B_ALBUM_ARTIST to mutableSetOf(),
                 NLService.B_TRACK to mutableSetOf(),
             )
+
+            val regexEdits =
+                regexEditsp ?: allFlow().first().map { RegexPresets.getPossiblePreset(it) }
 
             fun replaceField(textp: String?, field: String): String? {
                 textp ?: return null
@@ -108,7 +123,7 @@ interface RegexEditsDao {
                             else
                                 text.replaceFirst(regex, regexEdit.replacement).trim()
                         }
-                        
+
                         if (!regexEdit.continueMatching)
                             return text
                     }

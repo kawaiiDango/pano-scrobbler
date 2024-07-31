@@ -12,6 +12,7 @@ import androidx.preference.PreferenceViewHolder
 import androidx.preference.R
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.slider.Slider
 
 
@@ -42,6 +43,8 @@ class PersistedSliderPref @JvmOverloads constructor(
             // We don't want to propagate the click keys down to the SeekBar view since it will
             // create the ripple effect for the thumb.
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+                // visually respond to this event
+                context.toast(com.arn.scrobble.R.string.use_arrow_keys_to_adjust)
                 return@OnKeyListener false
             }
 

@@ -45,7 +45,8 @@ Alternatively, you can use this as a stub in `strings.xml`:
 create a file `/baselineprofile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt`:
 ```
 object Secrets {
-    const val loginCreds = "<lastfmUsername>,<lastfmSessionKey>,"
+    const val username = "<lastfmUsername>"
+    const val sessionKey = "<lastfmSessionKey>"
 }
 ```
 

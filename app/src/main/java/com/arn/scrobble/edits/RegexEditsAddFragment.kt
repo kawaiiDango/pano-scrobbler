@@ -292,7 +292,7 @@ class RegexEditsAddFragment : Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch {
                     text = withContext(Dispatchers.IO) {
                         try {
-                            pm.getApplicationLabel(pm.getApplicationInfo(pkgName, 0))
+                            pm.getApplicationLabel(pm.getApplicationInfo(pkgName, 0)).take(20)
                         } catch (e: PackageManager.NameNotFoundException) {
                             pkgName
                         }

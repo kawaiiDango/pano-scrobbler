@@ -381,6 +381,7 @@ class ThemesFragment : Fragment() {
                 vg.isEnabled = enabled
                 vg.alpha = alpha
                 vg.children.forEach {
+                    it as Chip
                     it.isEnabled = enabled
                 }
             }

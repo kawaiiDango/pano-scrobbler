@@ -72,9 +72,8 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         val musicEntry = requireArguments().getData<MusicEntry>()!!
 
         if (!Stuff.isTv) {
-            binding.infoExtraTitle.setOnLongClickListener {
+            binding.infoExtraTitle.setOnClickListener {
                 requireContext().copyToClipboard(binding.infoExtraTitle.text.toString())
-                true
             }
         }
 

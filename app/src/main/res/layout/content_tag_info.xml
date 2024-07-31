@@ -12,8 +12,10 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/tag_info_title_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?selectableItemBackground"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -110,38 +112,37 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/tag_info_wiki_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/selector_border_gentle"
-                android:orientation="horizontal"
-                android:padding="@dimen/list_item_padding"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <TextView
                     android:id="@+id/tag_info_wiki"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_weight="1"
+                    android:background="@drawable/selector_border_gentle"
                     android:ellipsize="end"
                     android:maxLines="4"
-                    android:scrollbars="none"
-                    tools:text="wiki" />
+                    android:paddingVertical="@dimen/list_item_padding"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="32dp"
+                    android:scrollbars="none" />
 
                 <ImageView
                     android:id="@+id/tag_info_wiki_expand"
-                    android:layout_width="40dp"
+                    android:layout_width="32dp"
                     android:layout_height="match_parent"
+                    android:layout_gravity="end|bottom"
                     android:contentDescription="@string/expand"
                     android:scaleType="center"
                     android:visibility="invisible"
                     app:srcCompat="@drawable/vd_arrow_down"
                     tools:visibility="visible" />
-            </LinearLayout>
+            </FrameLayout>
             <!--
                             <TextView
                                 android:id="@+id/tag_info_similar_title"

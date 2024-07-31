@@ -3,5 +3,5 @@
     <!-- Copied from jetpack glance -->
     <color name="widgetBg">@android:color/system_accent2_50</color>
     <color name="widgetFg">@android:color/system_accent1_900</color>
-    <color name="widgetOutline">@android:color/system_neutral2_500</color>
+    <color name="widgetPrimary">@android:color/system_accent1_600</color>
 </resources>

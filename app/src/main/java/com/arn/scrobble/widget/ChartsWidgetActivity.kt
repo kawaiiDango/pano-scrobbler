@@ -103,7 +103,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
                 prefs.period = key
                 prefs.periodName = widgetTimePeriods.periodsMap[key]?.name
             }
-            ChartsListUtils.updateWidget(intArrayOf(appWidgetId))
+            ChartsListUtils.updateWidgets(intArrayOf(appWidgetId))
 
             if (widgetExists)
                 ChartsWidgetUpdaterWorker.checkAndSchedule(applicationContext, true)

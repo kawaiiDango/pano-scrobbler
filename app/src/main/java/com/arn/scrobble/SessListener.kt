@@ -81,9 +81,8 @@ class SessListener(
 
             controller.playbackState?.let { cb.onPlaybackStateChanged(it) }
             controller.metadata?.let { cb.onMetadataChanged(it) }
-            controller.playbackInfo?.let { cb.onAudioInfoChanged(it) }
             controller.extras?.let { cb.onExtrasChanged(it) }
-            controller.playbackInfo?.let { cb.onAudioInfoChanged(it) }
+            cb.onAudioInfoChanged(controller.playbackInfo)
 
             controllersMap[controller.sessionToken] = controller to cb
         }

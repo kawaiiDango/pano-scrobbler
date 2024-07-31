@@ -19,6 +19,7 @@ import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.utils.UiUtils.trimmedText
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -109,8 +110,10 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                         newBlockedMetadata.album,
                         newBlockedMetadata.track
                     ).all { it.isEmpty() }
-                )
+                ) {
+                    requireContext().toast(R.string.required_fields_empty)
                     return@setOnClickListener
+                }
 
                 if (newBlockedMetadata != blockedMetadata || blockedMetadata._id == 0)
                     GlobalScope.launch(Dispatchers.IO) {

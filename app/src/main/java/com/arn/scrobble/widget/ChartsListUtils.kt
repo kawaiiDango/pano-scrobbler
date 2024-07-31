@@ -80,7 +80,7 @@ object ChartsListUtils {
         }.getOrDefault(arrayListOf())
     }
 
-    fun updateWidget(appWidgetIds: IntArray) {
+    fun updateWidgets(appWidgetIds: IntArray) {
         val i = Intent(App.context, ChartsWidgetProvider::class.java).apply {
             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)

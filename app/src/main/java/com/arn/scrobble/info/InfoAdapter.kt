@@ -17,14 +17,13 @@ import android.widget.TextView
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isEmpty
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.contains
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
-import com.arn.scrobble.BuildConfig
+import coil3.request.error
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
@@ -159,15 +158,20 @@ class InfoAdapter(
                 binding.infoWiki.autoLinkMask = Linkify.WEB_URLS
             }
 
+            binding.infoTitleBar.setOnClickListener {
+                viewModel.updateInfo(info.copy(headerExpanded = !info.headerExpanded))
+            }
+
             binding.infoAddPhoto.setOnClickListener {
                 val originalEntry = when (info.entry) {
                     is Artist -> viewModel.originalEntriesMap[NLService.B_ARTIST]!!
-                    is Album -> viewModel.originalEntriesMap[NLService.B_ALBUM]!!
+                    is Album -> viewModel.originalEntriesMap[NLService.B_ALBUM] // can be null
                     else -> return@setOnClickListener
                 }
 
                 val args = Bundle().putData(info.entry)
-                    .putData(originalEntry, Stuff.ARG_ORIGINAL)
+                if (originalEntry != null)
+                    args.putData(originalEntry, Stuff.ARG_ORIGINAL)
 
                 if (!navController.graph.contains(R.id.imageSearchFragment)) {
                     NavDeepLinkBuilder(itemView.context)
@@ -294,21 +298,21 @@ class InfoAdapter(
                     binding.infoWikiExpand.rotation = 0f
                 }
 
-                binding.infoWikiContainer.setOnClickListener {
+                binding.infoWiki.setOnClickListener {
                     viewModel.updateInfo(
                         info.copy(
                             wikiExpanded = !info.wikiExpanded
                         )
                     )
                 }
-                binding.infoWikiContainer.isClickable = true
-                binding.infoWikiContainer.isFocusable = true
+                binding.infoWiki.isClickable = true
+                binding.infoWiki.isFocusable = true
 
             } else {
                 binding.infoWikiExpand.visibility = View.GONE
-                binding.infoWikiContainer.setOnClickListener(null)
-                binding.infoWikiContainer.isClickable = false
-                binding.infoWikiContainer.isFocusable = false
+                binding.infoWiki.setOnClickListener(null)
+                binding.infoWiki.isClickable = false
+                binding.infoWiki.isFocusable = false
             }
         }
 
@@ -354,12 +358,6 @@ class InfoAdapter(
                                     )
                                 }
                             }
-                        }
-
-                        if (entry.duration != null && entry.duration > 0) {
-                            binding.infoTrackDuration.isVisible = true
-                            binding.infoTrackDuration.text =
-                                Stuff.humanReadableDuration(entry.duration)
                         }
 
                         binding.infoExtraButton.visibility = View.VISIBLE
@@ -437,10 +435,9 @@ class InfoAdapter(
             }
 
             binding.infoHeart.isVisible = entry is Track
-            binding.infoAddPhoto.isVisible =
-                (entry is Artist || BuildConfig.DEBUG && entry is Album)
+            binding.infoAddPhoto.isVisible = entry is Artist || entry is Album
 
-            binding.infoPicExpandedFrame.isVisible = info.headerExpanded
+            binding.infoPicExpandedContainer.isVisible = info.headerExpanded
 
             if (imgData != null) {
                 binding.infoPic.isVisible = !info.headerExpanded && info.hasImage
@@ -452,38 +449,21 @@ class InfoAdapter(
 
                             if (!info.hasImage)
                                 info.hasImage = true
-
-                            binding.infoTitleBar.isClickable = true
-                            binding.infoTitleBar.isFocusable = true
-                            binding.infoTitleBar.setOnClickListener {
-                                viewModel.updateInfo(info.copy(headerExpanded = !info.headerExpanded))
-                            }
                         },
                         onError = { _, _ ->
                             binding.infoPic.isVisible = false
-
-                            binding.infoTitleBar.setOnClickListener(null)
-                            binding.infoTitleBar.isClickable = false
-                            binding.infoTitleBar.isFocusable = false
                         }
                     )
                 }
             } else {
                 binding.infoPic.isVisible = false
-
-                if (entry is Track) {
-                    binding.infoTitleBar.setOnClickListener {
-                        viewModel.updateInfo(info.copy(headerExpanded = !info.headerExpanded))
-                    }
-                    binding.infoTitleBar.isClickable = true
-                    binding.infoTitleBar.isFocusable = true
-                }
             }
 
             if (info.headerExpanded) {
                 if (entry is Track) {
-                    binding.infoPicExpanded.isVisible = false
+                    binding.infoPicExpandedFrame.isVisible = false
                     binding.infoTrackDuration.isVisible = true
+                    binding.infoAddPhoto.isVisible = false
 
                     var durationText = itemView.context.getString(R.string.duration) + ": "
 
@@ -493,23 +473,16 @@ class InfoAdapter(
                         itemView.context.getString(R.string.unknown)
 
                     if ((entry.userplaycount ?: 0) > 1 && (entry.duration ?: 0) > 0)
-                        durationText += "\n\n" + itemView.context.getString(R.string.total_listen_time) + ": " +
+                        durationText += "\n" + itemView.context.getString(R.string.total_listen_time) + ": " +
                                 Stuff.humanReadableDuration(entry.duration!! * entry.userplaycount!!)
 
                     binding.infoTrackDuration.text = durationText
-
-                    binding.infoPicExpandedFrame.updateLayoutParams {
-                        height = 200.dp
-                        width = 200.dp
-                    }
                 } else {
-                    binding.infoPicExpanded.isVisible = true
+                    binding.infoPicExpandedFrame.isVisible = true
                     binding.infoTrackDuration.isVisible = false
-                    binding.infoPicExpanded.load(imgData)
-
-                    binding.infoPicExpandedFrame.updateLayoutParams {
-                        height = 300.dp
-                        width = 300.dp
+                    binding.infoAddPhoto.isVisible = true
+                    binding.infoPicExpanded.load(imgData) {
+                        error(R.drawable.vd_no_image)
                     }
                 }
             }

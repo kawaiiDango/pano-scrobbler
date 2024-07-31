@@ -20,6 +20,7 @@
             android:layout_marginStart="1dp"
             android:layout_marginTop="1dp"
             android:alpha="?fakeShadowAlpha"
+            android:importantForAccessibility="no"
             android:tint="?android:colorBackground"
             tools:src="@drawable/vd_stonks_up_double" />
 
@@ -31,7 +32,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="36dp"
+        android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
 

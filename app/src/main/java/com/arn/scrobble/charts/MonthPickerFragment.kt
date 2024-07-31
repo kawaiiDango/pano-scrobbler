@@ -59,6 +59,10 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     private lateinit var monthsButton: MaterialButton
     private lateinit var yearsButton: MaterialButton
 
+    private val customRequestKey by lazy {
+        requireArguments().getString(Stuff.ARG_CUSTOM_REQUEST_KEY)!!
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -93,7 +97,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
 
 //            val timePeriod = timePeriods[timePeriod]
             requireActivity().supportFragmentManager.setFragmentResult(
-                Stuff.ARG_MONTH_PICKER_PERIOD,
+                customRequestKey,
                 bundleOf(Stuff.ARG_MONTH_PICKER_PERIOD to timePeriod)
             )
             dismiss()

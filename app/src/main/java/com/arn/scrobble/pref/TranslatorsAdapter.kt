@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.databinding.ListItemTranslatorBinding
 import com.arn.scrobble.ui.GenericDiffCallback
-import com.arn.scrobble.utils.Stuff
 
 class TranslatorsAdapter : ListAdapter<String, TranslatorsAdapter.TransatorsVH>(
     GenericDiffCallback { o, n -> o == n }
@@ -28,16 +27,16 @@ class TranslatorsAdapter : ListAdapter<String, TranslatorsAdapter.TransatorsVH>(
     class TransatorsVH(private val binding: ListItemTranslatorBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            if (!Stuff.isTv) {
-                binding.username.setOnClickListener {
-                    Stuff.openInBrowser(
-                        itemView.context,
-                        "https://crowdin.com/profile/${binding.username.text}"
-                    )
-                }
-            }
-        }
+//        init {
+//            if (!Stuff.isTv) {
+//                binding.username.setOnClickListener {
+//                    Stuff.openInBrowser(
+//                        itemView.context,
+//                        "https://crowdin.com/profile/${binding.username.text}"
+//                    )
+//                }
+//            }
+//        }
 
         fun setData(username: String) {
             binding.username.text = username

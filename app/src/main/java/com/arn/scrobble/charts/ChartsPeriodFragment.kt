@@ -61,15 +61,11 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
     protected open fun postInit() {
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            Stuff.ARG_MONTH_PICKER_PERIOD,
+            Stuff.ARG_MONTH_PICKER_PERIOD + "|" + chartsType,
             viewLifecycleOwner
         ) { key, bundle ->
-            when (key) {
-                Stuff.ARG_MONTH_PICKER_PERIOD -> {
-                    viewModel.setSelectedPeriod(bundle.getParcelable(key)!!)
-                    findSelectedAndScroll(true)
-                }
-            }
+            viewModel.setSelectedPeriod(bundle.getParcelable(Stuff.ARG_MONTH_PICKER_PERIOD)!!)
+            findSelectedAndScroll(true)
         }
 
         periodChipsBinding.root.visibility = View.VISIBLE
@@ -232,6 +228,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
         val args = bundleOf(
             Stuff.ARG_SELECTED_YEAR to cal[Calendar.YEAR],
             Stuff.ARG_SELECTED_MONTH to cal[Calendar.MONTH],
+            Stuff.ARG_CUSTOM_REQUEST_KEY to Stuff.ARG_MONTH_PICKER_PERIOD + "|" + chartsType
         )
         findNavController().navigate(R.id.monthPickerFragment, args)
     }

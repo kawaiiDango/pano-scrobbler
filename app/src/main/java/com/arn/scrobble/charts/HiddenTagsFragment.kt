@@ -16,6 +16,7 @@ import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
+import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -53,6 +54,8 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
             if (tag.isNotEmpty()) {
                 addTag(tag, save = true)
                 binding.userTagsInputEdittext.text.clear()
+            } else {
+                requireContext().toast(R.string.required_fields_empty)
             }
         }
 

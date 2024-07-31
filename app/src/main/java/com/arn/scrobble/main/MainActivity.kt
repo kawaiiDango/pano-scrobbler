@@ -200,7 +200,11 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             mainFab.setOnClickListener(it.clickListener)
-            mainFab.setOnLongClickListener(it.longClickListener)
+            
+            if (BuildConfig.DEBUG) {
+                mainFab.setOnLongClickListener(it.longClickListener)
+                mainFab.isLongClickable = it.longClickListener != null
+            }
             showHiddenFab()
         }
 

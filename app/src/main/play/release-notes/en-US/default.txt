@@ -1,4 +1,6 @@
 - Targets Android 15
+- You can now add a custom image for an album as well as artists
 - You can now import/export your settings and edits to other devices connected to the same local network
+- Fixed Pleroma login
 - Bug fixes
 - Translation updates by the translators on Crowdin

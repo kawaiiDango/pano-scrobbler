@@ -95,6 +95,7 @@ object Stuff {
     const val ARG_MONTH_PICKER_PERIOD = "month_picker_period"
     const val ARG_SELECTED_YEAR = "selected_year"
     const val ARG_SELECTED_MONTH = "selected_month"
+    const val ARG_CUSTOM_REQUEST_KEY = "custom_request_key"
     const val ARG_HIDDEN_TAGS_CHANGED = "hidden_tags_changed"
     const val ARG_SCROLL_TO_ACCOUNTS = "scroll_to_accounts"
     const val ARG_EDIT = "edit"
@@ -260,7 +261,8 @@ object Stuff {
         )
     }
 
-    val updateCurrentOrImmutable = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    const val updateCurrentOrImmutable =
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
     val updateCurrentOrMutable =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
@@ -661,11 +663,16 @@ object Stuff {
     }
 
     fun NotificationManager.isChannelEnabled(pref: SharedPreferences, channelId: String) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isWindows11) {
-            areNotificationsEnabled() &&
-                    getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
-        } else {
-            pref.getBoolean(channelId, true)
+        when {
+            isTv -> false
+
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isWindows11 -> {
+                areNotificationsEnabled() &&
+                        getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
+            }
+
+            else -> pref.getBoolean(channelId, true)
+
         }
 
     fun timeToUTC(time: Long) = time + TimeZone.getDefault().getOffset(System.currentTimeMillis())

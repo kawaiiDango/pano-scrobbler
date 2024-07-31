@@ -122,9 +122,12 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Još malo…</string>
     <string name="music_players">Reproduktori glazbe</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostale aplikacije</string>
+    <string name="choose_apps">Odaberite aplikacije</string>
+    <string name="choose_an_app">Odaberite aplikaciju</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikacije</string>
     <string name="offline">Izvan mreže. Prikazani podatci nisu osvježeni</string>
     <string name="unavailable_offline">Nije dostupno izvan mreže</string>
+    <string name="tv_url_notice">Otvori ovaj URL u pregledniku na drugom uređaju</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servisi</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Slušao/la sam\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s je slušao/la\n%1$s %2$s</string>
@@ -174,6 +177,8 @@
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="pending_scrobble">Scrobble na čekanju</string>
     <string name="pending_scrobbles_noti">Procesiranje scrobbleova na čekanju</string>
+    <string name="following" comment="accounts you are following on lastfm">Pratim</string>
+    <string name="followers" comment="your lastfm followers">Pratitelji</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobbleano %1$s puta od %2$s</string>
     <string name="allow_background">Dopusti scrobbleanje u pozadini</string>
     <string name="grant_notification_access">Dopusti pristup obavijestima</string>
@@ -245,6 +250,7 @@
     <string name="original" comment="Original metadata before editing">Izvorno</string>
     <string name="corrected" comment="Corrected metadata after editing">Ispravljeno</string>
     <string name="tag" comment="last.fm tag">Oznaka</string>
+    <string name="taggers" comment="(number of) people who have tagged">Označitelji</string>
     <string name="taggings" comment="(total count of) a particular tag">Oznake</string>
     <string name="digest_weekly">Moji prošlotjedni top scrobbleovi</string>
     <string name="digest_monthly">Moji prošlomjesečni top scrobbleovi</string>
@@ -274,14 +280,27 @@
     <string name="edit_replace">Zamijeni</string>
     <string name="edit_first" comment="First occurrence of a pattern">Prvo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
-    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Raspakiraj</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Izdvoji</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Imenujte svoje grupe za dohvaćanje <i>track, album, artist</i> ili <i>albumArtist</i> kako biste ih izdvojili iz ostalih polja</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Npr. za zamjenu izvođača i naslova, možete u regex \"artist\" upisati (?&lt;track&gt;.*), a u regex \"track\" upisati (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vaši regexi bi barem trebali imati ove imenovane grupe za dohvaćanje: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vaši regexi sadrže više od jedne grupe za dohvaćanje \"%1$s\", što nije dozvoljeno</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Nevažeći regex: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Korišteni predlošci:</string>
     <string name="edit_continue">Ako je pronađeno, nastavi provjeravati ostale regexe</string>
     <string name="edit_case_sensitive">Razlikuj velika i mala slova</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Testiraj</string>
+    <string name="edit_presets" comment="Regex presets">Predlošci</string>
+    <string name="edit_presets_available">Dostupni predlošci</string>
+    <string name="edit_no_presets_available">Svi predlošci se koriste</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Predložak: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Dosegnuto ograničenje šablona (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Ručka za povlačenje</string>
     <string name="text" comment="text to test regex rules with">Tekst</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Budite sigurni da razumijete <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> prije korištenja ove funkcije ili koristite neki od dostupnih <b>predložaka</b>. Traženje podudaranja pomoću regexa provodi se od vrha prema dnu</string>
+    <string name="blocked_metadata_info">ℹ️ Ispunjavanje više od jednog od ovih polja primijenit će \"I\" (\"AND\") operator između njih</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Dodirnite za blokiranje i preskakanje</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Radnje reproduktora glazbe</string>
     <string name="skip" comment="skip to next track">Preskoči</string>
     <string name="mute" comment="mute the music">Utišaj</string>
     <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignoriraj</string>
@@ -313,6 +332,8 @@
     <string name="username" comment="last.fm Username">Korisničko ime</string>
     <string name="pref_master">Scrobbleaj glazbu</string>
     <string name="pref_master_qs_hint">Može se omogućiti i u brzim postavkama</string>
+    <string name="pref_master_qs_add">Dodaj pločicu brzih postavki</string>
+    <string name="pref_master_qs_already_addded">Pločica brzih postavki već je dodana</string>
     <string name="pref_noti_q">Možete promovirati obavijest, ako se ikona ne prikazuje</string>
     <string name="pref_noti">Obavijesti</string>
     <string name="pref_noti_categories">Kategorije obavijesti</string>
@@ -324,6 +345,8 @@
     <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
     <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
     <string name="pref_spotify_remote">Scrobblaj Spotify s drugih uređaja</string>
+    <string name="pref_link_heart_button_rating">Koristite tipku srca u obavijesti da biste pjesmu označili kao favorita i u reproduktoru glazbe</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Onemogući kontinuirano scrobblanje s mikrofona kada uređaj reproducira glazbu</string>
     <string name="pref_delay">Odgoda scrobbleanja (koje god će biti prvo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minute</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Postotak</string>
@@ -336,6 +359,8 @@
     <string name="pref_user_label" comment="(Like username)">Korisnik</string>
     <string name="pref_token_label" comment="For Listenbrainz">Autentifikacijski token</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL poslužitelja</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Svoj autentikacijski token možete pronaći na adresi: %1$s</string>
     <string name="pref_now_playing">Dijeli što sada svira</string>
     <string name="pref_fetch_album">Dohvati nedostale podatke albuma s lastFM-a</string>
     <string name="pref_locale">Jezici</string>
@@ -347,6 +372,9 @@
     <string name="pref_export">Izvezi</string>
     <string name="pref_export_desc">Sigurnosno kopira postavke, uređivanja i popise blokiranja. Iz sigurnosnih razloga ne sprema prijave. Korisno za premještanje na novi uređaj ili dijeljenje s prijateljima.</string>
     <string name="pref_import">Uvezi</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Mreža</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Kod</string>
+    <string name="pref_imexport_network_notice">Za mrežni način rada, oba uređaja moraju biti spojena na istu mrežu.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizacija</string>
     <string name="pref_themes" comment="Color themes">Teme</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Promiješaj i kombiniraj\nMijenja i boju obavijesti</string>
@@ -355,6 +383,7 @@
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…za scrobbleove</string>
     <string name="pref_show_scrobble_sources">Prikaz ikona aplikacija iz kojih je scrobbleano</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…za svaki scrobble. Ovi podatci ostaju na Vašem uređaju</string>
+    <string name="pref_search_in_source">Traži i reproduciraj u aplikaciji iz koje je scrobbleano</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Za podržane aplikacije</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Popisi</string>
     <string name="pref_regex_edits">Šablonska uređivanja</string>
@@ -372,8 +401,12 @@
     <string name="import_options">Opcije uvoza</string>
     <string name="import_lists_nope">Nemoj uvesti uređivanja i popise blokiranja</string>
     <string name="import_lists_replace_all">Zamijeni sva uređivanja i popise blokiranja</string>
+    <string name="import_lists_replace_existing">Spoji, sa zamjenom postojećih uređivanja i listi za blokiranje</string>
+    <string name="import_lists_keep">Spoji, sa zadržavanjem postojećih uređivanja i listi za blokiranje</string>
     <string name="import_settings">Postavke uvoza</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Broadcast intentovi</string>
     <string name="current_track">Trenutna pjesma:</string>
+    <string name="pref_intents">Intentovi za Tasker itd.</string>
     <string name="copied">Kopirano!</string>
     <string name="lastfm_reauth">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
     <string name="custom_listenbrainz">Prilagođeni Listenbrainz</string>
@@ -400,17 +433,22 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Preostalo %1$d</string>
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Prenošenje više scrobbleova</string>
+    <string name="bar_chart">Stupčasti dijagram</string>
     <string name="cleared_disabled_apps">Očišćene onemogućene aplikacije</string>
     <string name="fix_it_title">Mogući ispravci</string>
     <string name="fix_it_startup_title">Štednja baterije / upravitelji pokretanja</string>
     <string name="fix_it_battery_title">Onemogući optimizaciju baterije</string>
+    <string name="fix_it_energy_title">Onemogućite optimizaciju potrošnje energije</string>
     <string name="fix_it_action" comment="(To open an app)">Otvori</string>
     <string name="delete_account">Izbriši svoj račun</string>
     <string name="delete_account_custom_servers">Za prilagođene poslužitelje, provjerite njihovu dokumentaciju.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Dodaj ili promijeni sliku</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Iz galerije</string>
+    <string name="square_photo_hint">Za najbolji rezultat koristite kvadratnu sliku</string>
     <string name="scrobble_to_file">Datoteka</string>
     <string name="password">Lozinka</string>
-    <string name="create" comment="Create a new file">Kreiraj</string>
+    <string name="open_existing" comment="Append to an existing file">Dodaj postojećem</string>
+    <string name="create" comment="Create a new file">Stvori</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="help">Pomoć</string>
@@ -432,4 +470,5 @@ Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom k
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>
     <string name="billing_scrobble_source">Zapamti i pregledaj aplikacije iz kojih si scrobblao i direktno pretraži u njima</string>
+    <string name="billing_regex_extract">Pisanje vlastitih pravila za izvlačenje metapodataka pomoću regexa</string>
 </resources>

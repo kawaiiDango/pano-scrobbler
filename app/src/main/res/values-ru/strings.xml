@@ -143,6 +143,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Приложения</string>
     <string name="offline">Не в сети. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно, когда не в сети</string>
+    <string name="tv_url_notice">Открыть этот URL в браузере на другом устройстве</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервисы</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слушал\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слушал\n%1$s %2$s</string>
@@ -192,6 +193,8 @@
     <string name="pending_scrobbles">Отложенные скробблы</string>
     <string name="pending_scrobble">Отложенный скроббл</string>
     <string name="pending_scrobbles_noti">Обработка отложенных скробблов</string>
+    <string name="following" comment="accounts you are following on lastfm">Подписки</string>
+    <string name="followers" comment="your lastfm followers">Подписчики</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скробблов с %2$s</string>
     <string name="allow_background">Разрешить скробблинг в фоновом режиме</string>
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
@@ -358,6 +361,7 @@
     <string name="pref_enabled_apps_title">Выберите приложения</string>
     <string name="pref_auto_detect">Автоматически скробблить из новых приложений</string>
     <string name="pref_spotify_remote">Скробблинг Spotify, играющий на других устройствах</string>
+    <string name="pref_link_heart_button_rating">Использовать кнопку сердца в уведомлении, чтобы также добавить в избранное в медиаплеере</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Отключить непрерывный скробблинг с микрофона при воспроизведении музыки</string>
     <string name="pref_delay">Задержка скробблинга (в зависимости от того, что наступит раньше)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Минуты</string>
@@ -371,6 +375,7 @@
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
     <string name="api_url" comment="For Listenbrainz">URL-адрес API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL сервера</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Вы можете найти ваш токен аутентификации на: %1$s</string>
     <string name="pref_now_playing">Отправить сейчас играет</string>
     <string name="pref_fetch_album">Получить недостающие данные альбома с lastFM</string>
@@ -383,6 +388,9 @@
     <string name="pref_export">Экспорт</string>
     <string name="pref_export_desc">Сохраняет настройки, правки и черный список. Не сохраняет логины по соображениям безопасности. Полезно для перемещения между устройствами или обмена с друзьями.</string>
     <string name="pref_import">Импорт</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Сеть</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Код</string>
+    <string name="pref_imexport_network_notice">В сетевом режиме оба устройства должны быть подключены к одной сети.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Персонализация</string>
     <string name="pref_themes" comment="Color themes">Темы</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Смешивайте и комбинируйте\nТакже изменяет цвет уведомлений</string>
@@ -446,9 +454,17 @@
     <string name="fix_it_title">Возможные исправления</string>
     <string name="fix_it_startup_title">Экономия энергии / менеджеры запусков</string>
     <string name="fix_it_battery_title">Отключить оптимизацию батареи</string>
+    <string name="fix_it_energy_title">Отключить оптимизацию энергопотребления</string>
     <string name="fix_it_action" comment="(To open an app)">Открыть</string>
     <string name="delete_account">Удалить свою учётную запись</string>
     <string name="delete_account_custom_servers">Для пользовательских серверов, проверьте их документацию.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Добавить или изменить изображение</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Из галереи</string>
+    <string name="square_photo_hint">Используйте квадратное изображение для лучших результатов</string>
+    <string name="scrobble_to_file">Файл</string>
+    <string name="password">Пароль</string>
+    <string name="open_existing" comment="Append to an existing file">Добавить к существующему</string>
+    <string name="create" comment="Create a new file">Создать</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="help">Помощь</string>

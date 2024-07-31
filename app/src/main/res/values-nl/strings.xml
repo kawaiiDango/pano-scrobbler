@@ -56,6 +56,10 @@
         <item quantity="one">%1$s Geblokkeerd metadata</item>
         <item quantity="other">%1$s Geblokkeerde metadata</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minuut</item>
+        <item quantity="other">%1$d Minuten</item>
+    </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
     <string name="reset">Resetten</string>

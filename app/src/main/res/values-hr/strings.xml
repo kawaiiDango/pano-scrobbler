@@ -345,7 +345,7 @@
     <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
     <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
     <string name="pref_spotify_remote">Scrobblaj Spotify s drugih uređaja</string>
-    <string name="pref_link_heart_button_rating">Koristite tipku srca u obavijesti da biste pjesmu označili kao favorita i u reproduktoru glazbe</string>
+    <string name="pref_link_heart_button_rating">Koristi tipku srca u obavijesti za označavanje favorita i u reproduktoru glazbe</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Onemogući kontinuirano scrobblanje s mikrofona kada uređaj reproducira glazbu</string>
     <string name="pref_delay">Odgoda scrobbleanja (koje god će biti prvo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minute</string>

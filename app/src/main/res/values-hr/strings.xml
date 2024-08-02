@@ -202,7 +202,7 @@
     <string name="grant_rec_perm">Omogućite pristup mikrofonu</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
-    <string name="scrobble_from_mic" comment="Its a verb">Scrobbleaj pomoću mikrofona</string>
+    <string name="scrobble_from_mic" comment="Its a verb">Scrobblaj pomoću mikrofona</string>
     <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Pomoću mikrofona</string>
     <string name="add_to_hs">Dodaj na početni zaslon</string>
     <string name="listening">Slušanje glazbe koja svira oko Vas…</string>
@@ -330,7 +330,7 @@
     <string name="create_collage">Stvori kolaž</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Opisi slika</string>
     <string name="username" comment="last.fm Username">Korisničko ime</string>
-    <string name="pref_master">Scrobbleaj glazbu</string>
+    <string name="pref_master">Scrobblaj glazbu</string>
     <string name="pref_master_qs_hint">Može se omogućiti i u brzim postavkama</string>
     <string name="pref_master_qs_add">Dodaj pločicu brzih postavki</string>
     <string name="pref_master_qs_already_addded">Pločica brzih postavki već je dodana</string>
@@ -340,7 +340,7 @@
     <string name="pref_scrobble_noti">Obavijesti scrobbleanja</string>
     <string name="pref_lockscreen_noti">Obavijesti na zaslonu zaključavanja</string>
     <string name="pref_offline_info">ℹ️ Izvanmrežni scrobbleovi i oznake \"voljeno\" bit će spremljene i poslane kasnije.</string>
-    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbleaj iz</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblaj iz</string>
     <string name="pref_enabled_apps_summary">ℹ️ Podržane su aplikacije koje dijele metapodatke o glazbi. Da biste izbjegli duplo scrobbleanje sa Spotifya, samo aktivirajte značajku na jednom mjestu.</string>
     <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
     <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
@@ -381,7 +381,7 @@
     <string name="pref_widget_charts">Widget na početnom zaslonu - ljestvice</string>
     <string name="pref_show_albums">Prikaži nazive albuma</string>
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…za scrobbleove</string>
-    <string name="pref_show_scrobble_sources">Prikaz ikona aplikacija iz kojih je scrobbleano</string>
+    <string name="pref_show_scrobble_sources">Prikaži ikone aplikacija iz kojih je scrobblano</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…za svaki scrobble. Ovi podatci ostaju na Vašem uređaju</string>
     <string name="pref_search_in_source">Traži i reproduciraj u aplikaciji iz koje je scrobbleano</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Za podržane aplikacije</string>

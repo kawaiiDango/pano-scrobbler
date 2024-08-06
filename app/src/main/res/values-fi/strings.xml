@@ -107,6 +107,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Sovellukset</string>
     <string name="offline">Offline-tilassa. Näytetyt tiedot eivät ole tuoreita</string>
     <string name="unavailable_offline">Ei käytettävissä offline-tilassa</string>
+    <string name="tv_url_notice">Avaa tämä URL-osoite selaimessa toisella laitteella</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Palvelut</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Kuuntelin\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s kuunteli\n%1$s %2$s</string>
@@ -156,6 +157,8 @@
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
     <string name="pending_scrobble">Odottava scrobblaus</string>
     <string name="pending_scrobbles_noti">Käsitellään odottavia scrobblauksia</string>
+    <string name="following" comment="accounts you are following on lastfm">Seurataan</string>
+    <string name="followers" comment="your lastfm followers">Seuraajat</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblausta %2$s lähtien</string>
     <string name="allow_background">Salli scrobblaaminen taustalla</string>
     <string name="grant_notification_access">Myönnä ilmoitusten käyttöoikeus</string>
@@ -307,7 +310,7 @@
     <string name="pref_enabled_apps_title">Valitse sovellukset</string>
     <string name="pref_auto_detect">Scrobblaa automaattisesti uusista sovelluksista</string>
     <string name="pref_spotify_remote">Scrobblaa Spotify muista laitteista</string>
-    <string name="pref_prevent_duplicate_ambient_scrobbles">Poista käytöstä jatkuva scrobblaus mikrofonista kun laite toistaa musiikkia</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Poista käytöstä jatkuva scrobblaus mikrofonista, kun laite toistaa musiikkia</string>
     <string name="pref_delay">Scrobblauksen viive (näistä ensimmäinen)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuuttia</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Prosenttia</string>
@@ -320,6 +323,7 @@
     <string name="pref_user_label" comment="(Like username)">Käyttäjä</string>
     <string name="pref_token_label" comment="For Listenbrainz">Todennustunnus</string>
     <string name="api_url" comment="For Listenbrainz">API-osoite</string>
+    <string name="server_url" comment="For self hosted scrobbling services">Palvelimen URL-osoite</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Löydät todennustunnuksen osoitteesta: %1$s</string>
     <string name="pref_now_playing">Lähetä nyt soiva</string>
     <string name="pref_fetch_album">Hae puuttuvat levyn tiedot lastFM:stä</string>
@@ -332,6 +336,9 @@
     <string name="pref_export">Vie</string>
     <string name="pref_export_desc">Varmuuskopioi asetukset, muokkaukset ja estettyjen listan. Ei tallenna kirjautumistietoja turvallisuussyistä. Hyödyllinen laitteiden välillä siirtymisessä tai kavereille jaettaessa.</string>
     <string name="pref_import">Tuo</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Verkko</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Koodi</string>
+    <string name="pref_imexport_network_notice">Verkkotilassa molemmat laitteet on yhdistettävä samaan verkkoon.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personointi</string>
     <string name="pref_themes" comment="Color themes">Teemat</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix and match\nVaihtaa myös ilmoituksen värin</string>
@@ -393,6 +400,13 @@
     <string name="fix_it_action" comment="(To open an app)">Avaa</string>
     <string name="delete_account">Poista tili</string>
     <string name="delete_account_custom_servers">Tarkista omia palvelimia varten niitä koskevat asiakirjat.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Lisää tai vaihda kuva</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Galleriasta</string>
+    <string name="square_photo_hint">Saat parhaan tuloksen neliön muotoisella kuvalla</string>
+    <string name="scrobble_to_file">Tiedosto</string>
+    <string name="password">Salasana</string>
+    <string name="open_existing" comment="Append to an existing file">Lisää olemassaolevaan</string>
+    <string name="create" comment="Create a new file">Luo</string>
     <!--  pro  -->
     <string name="get_pro">Tue tätä sovellusta</string>
     <string name="help">Tuki</string>

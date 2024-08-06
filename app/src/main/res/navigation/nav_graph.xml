@@ -140,24 +140,11 @@
         android:name="com.arn.scrobble.onboarding.OnboardingFragment"
         android:label=" "
         tools:layout="@layout/content_onboarding_stepper">
-        <argument
-            android:name="u"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <deepLink
-            android:id="@+id/deepLink6"
-            app:uri="pano-scrobbler://screen/onboarding/{u}/{sk}" />
         <action
             android:id="@+id/action_onboardingFragment_to_myHomePagerFragment"
             app:destination="@id/myHomePagerFragment"
             app:popUpTo="@id/onboardingFragment"
             app:popUpToInclusive="true" />
-        <argument
-            android:name="sk"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/blockedMetadataAddDialogFragment"

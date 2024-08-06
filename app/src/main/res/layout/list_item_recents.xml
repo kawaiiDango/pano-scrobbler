@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:paddingStart="8dp">
+        android:paddingStart="@dimen/overscan_padding_horiz">
 
         <FrameLayout
             android:id="@+id/recents_img_frame"
@@ -72,29 +72,13 @@
             android:paddingVertical="8dp"
             android:paddingStart="4dp">
 
-            <FrameLayout
+            <TextView
+                android:id="@+id/recents_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end">
-
-                <TextView
-                    android:id="@+id/recents_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceCaption"
-                    tools:text="date date yay" />
-
-                <ImageView
-                    android:id="@+id/recents_playing"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="end"
-                    android:contentDescription="@string/state_scrobbling"
-                    android:visibility="gone"
-                    tools:srcCompat="@drawable/avd_now_playing"
-                    tools:visibility="visible" />
-
-            </FrameLayout>
+                android:layout_gravity="end"
+                android:textAppearance="?textAppearanceCaption"
+                tools:text="date date yay" />
 
             <TextView
                 android:id="@+id/recents_title"
@@ -148,14 +132,14 @@
 
         <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingVertical="8dp">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/player_icon"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="19dp"
+                android:layout_height="19dp"
                 android:layout_marginStart="15dp"
+                android:layout_marginTop="8dp"
                 android:visibility="gone"
                 tools:srcCompat="@drawable/vd_note"
                 tools:visibility="visible" />
@@ -168,7 +152,7 @@
                 android:layout_gravity="bottom"
                 android:contentDescription="@string/item_options"
                 app:icon="@drawable/vd_more_vert"
-                app:iconPadding="@dimen/overscan_padding_horiz"
+                android:paddingEnd="@dimen/overscan_padding_horiz"
                 app:iconTint="?colorControlNormal" />
         </FrameLayout>
     </LinearLayout>

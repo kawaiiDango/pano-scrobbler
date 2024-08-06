@@ -74,7 +74,6 @@ class TrackHistoryAdapter(
         private var job: Job? = null
 
         init {
-            binding.recentsPlaying.visibility = View.GONE
             binding.recentsImgFrame.background = null
             binding.recentsTrackLl.background = null
             binding.recentsMenu.isInvisible = true

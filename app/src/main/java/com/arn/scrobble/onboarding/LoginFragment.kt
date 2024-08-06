@@ -243,6 +243,13 @@ open class LoginFragment : DialogFragment() {
                 val password = tlast
 
                 if (url.isNotBlank() && username.isNotBlank() && password.isNotBlank()) {
+
+                    // test login
+                    if (url.startsWith("test_creds_")) {
+                        Stuff.addTestCreds(url.substringAfter("test_creds_"), username, password)
+                        return Result.success(Unit)
+                    }
+
                     if (URLUtil.isValidUrl(url)) {
                         if (!url.endsWith('/'))
                             url += '/'

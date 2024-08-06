@@ -51,6 +51,8 @@
         android:usesCleartextTraffic="false"
         tools:targetApi="UPSIDE_DOWN_CAKE">
 
+<!--        <profileable android:shell="true" />-->
+
         <provider
             android:name="com.google.firebase.provider.FirebaseInitProvider"
             android:authorities="${applicationId}.firebaseinitprovider"
@@ -117,7 +119,6 @@
 
                 <data android:scheme="pano-scrobbler" />
                 <data android:host="screen" />
-                <data android:host="test" />
             </intent-filter>
 
             <meta-data

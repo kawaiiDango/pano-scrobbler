@@ -1,7 +1,5 @@
 package com.arn.scrobble.baselineprofile
 
-import android.content.Intent
-import android.net.Uri
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
@@ -13,20 +11,18 @@ object Journeys {
             device.findObject(By.res(device.currentPackageName, "button_service"))
 
         if (lastfmButton != null) {
-
-            val loginIntent = Intent().apply {
-                action = Intent.ACTION_VIEW
-                addCategory(Intent.CATEGORY_BROWSABLE)
-                `package` = device.currentPackageName
-                data =
-                    Uri.parse("pano-scrobbler://screen/onboarding/${Secrets.username}/${Secrets.sessionKey}")
-            }
-            startActivityAndWait(loginIntent)
-            
             device.executeShellCommand("cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.NLService")
 
-            // click the fresh lastfm button
-            device.findObject(By.res(device.currentPackageName, "button_service")).click()
+            device.findObject(By.res(device.currentPackageName, "button_service_chooser")).click()
+            Thread.sleep(1000)
+            device.findObject(By.text("GNU FM")).click()
+            device.findObject(By.res(device.currentPackageName, "login_textfield1_edittext"))
+                .text = "test_creds_${Secrets.type}"
+            device.findObject(By.res(device.currentPackageName, "login_textfield2_edittext"))
+                .text = Secrets.username
+            device.findObject(By.res(device.currentPackageName, "login_textfield_last_edittext"))
+                .text = Secrets.sessionKey
+            device.findObject(By.res(device.currentPackageName, "login_submit")).click()
 
             device.waitForIdle()
             Thread.sleep(1000)

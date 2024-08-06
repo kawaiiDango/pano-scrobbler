@@ -39,6 +39,7 @@ import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Tokens
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -46,6 +47,8 @@ import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriodType
+import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.App
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.UiUtils.toast
@@ -158,7 +161,7 @@ object Stuff {
     const val PACKAGE_PIXEL_NP_R = "com.google.android.as"
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
     const val PACKAGE_SHAZAM = "com.shazam.android"
-    const val CHANNEL_SHAZAM = "auto_shazam_v2"
+    const val CHANNEL_SHAZAM = "notification_shazam_match_v1" //"auto_shazam_v2"
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
     const val PACKAGE_SONOS = "com.sonos.acr"
@@ -179,7 +182,7 @@ object Stuff {
     const val PACKAGE_NICOBOX = "jp.nicovideo.nicobox"
     const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
     const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
-    const val PACKAGE_GOOGLE = "com.google.android.googlequicksearchbox"
+    const val PACKAGE_NEWPIPE = "org.schabi.newpipe"
 
     val IGNORE_ARTIST_META = setOf(
         "com.google.android.youtube",
@@ -197,7 +200,7 @@ object Stuff {
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
 
-        "org.schabi.newpipe",
+        PACKAGE_NEWPIPE,
         PACKAGE_YMUSIC,
         PACKAGE_NICOBOX,
         PACKAGE_SOUNDCLOUD,
@@ -210,6 +213,7 @@ object Stuff {
         PACKAGE_SOUNDCLOUD,
         PACKAGE_NICOBOX,
         PACKAGE_YMUSIC,
+        PACKAGE_NEWPIPE,
         PACKAGE_YOUTUBE_MUSIC,
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
@@ -850,6 +854,30 @@ object Stuff {
         onSuccess {
             block(it)
         }
+    }
+
+    fun addTestCreds(serviceStr: String, username: String, sk: String): Boolean {
+        val type = try {
+            AccountType.valueOf(serviceStr.uppercase())
+        } catch (e: IllegalArgumentException) {
+            return false
+        }
+
+        Scrobblables.add(
+            UserAccountSerializable(
+                type,
+                UserCached(
+                    username,
+                    "https://last.fm/user/$username",
+                    username,
+                    "",
+                    -1,
+                ),
+                sk
+            )
+        )
+
+        return true
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

@@ -25,8 +25,6 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.ButtonStepperForLoginBinding
 import com.arn.scrobble.databinding.ContentOnboardingStepperBinding
-import com.arn.scrobble.friends.UserAccountSerializable
-import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.utils.Stuff
@@ -96,7 +94,6 @@ class OnboardingFragment : Fragment() {
             findNavController().navigate(R.id.webViewFragment, args)
         }
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -217,23 +214,6 @@ class OnboardingFragment : Fragment() {
 
     }
 
-    private fun addLastfmTestCreds(username: String, sk: String) {
-        Scrobblables.add(
-            UserAccountSerializable(
-                AccountType.LASTFM,
-                UserCached(
-                    username,
-                    "https://last.fm/user/$username",
-                    username,
-                    "",
-                    -1,
-                ),
-                sk
-            )
-        )
-        adapter.skipToNextStep()
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     private fun createLoginStepView(): View {
         val serviceEnums = AccountType.entries.toTypedArray()
@@ -242,16 +222,7 @@ class OnboardingFragment : Fragment() {
             ButtonStepperForLoginBinding.inflate(LayoutInflater.from(binding.root.context))
 
         binding.buttonService.setOnClickListener {
-            // navArgs() did not work here
-            val testDeepLinkUriSeg = requireActivity().intent.data?.pathSegments?.takeLast(3)
-            if (testDeepLinkUriSeg != null &&
-                testDeepLinkUriSeg.size == 3 &&
-                testDeepLinkUriSeg[0] == "onboarding"
-            ) {
-                addLastfmTestCreds(testDeepLinkUriSeg[1], testDeepLinkUriSeg[2])
-            } else {
-                LoginFlows(findNavController()).go(AccountType.LASTFM)
-            }
+            LoginFlows(findNavController()).go(AccountType.LASTFM)
         }
         binding.buttonService.post { binding.buttonService.requestFocus() }
 

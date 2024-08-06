@@ -26,7 +26,7 @@ import java.util.Objects
  * Created by arn on 04/07/2017.
  */
 class SessListener(
-    private val scrobbleHandler: NLService.ScrobbleHandler,
+    private val scrobbleHandler: NLService.ScrobbleQueue,
     private val audioManager: AudioManager,
 ) : OnActiveSessionsChangedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -339,16 +339,6 @@ class SessListener(
                     }
                 }
 
-                Stuff.PACKAGE_GOOGLE -> {
-                    // google podcasts
-                    if (artist == "") {
-                        artist =
-                            metadata.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
-                                ?.trim()
-                                ?: ""
-                    }
-                }
-
                 Stuff.PACKAGE_YANDEX_MUSIC -> {
                     albumArtist = ""
                 }
@@ -375,9 +365,6 @@ class SessListener(
                         "duration=$durationMillis lastState=$lastPlayingState, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()}}"
             )
 
-            if (artist == "" || title == "")
-                return
-
             if (!sameAsOld || onlyDurationUpdated) {
                 trackInfo.putOriginals(artist, title, album, albumArtist)
 
@@ -399,7 +386,8 @@ class SessListener(
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
                 if ((!scrobbleHandler.has(trackInfo.hash) || onlyDurationUpdated) &&
-                    lastPlayingState == PlaybackState.STATE_PLAYING
+                    lastPlayingState == PlaybackState.STATE_PLAYING &&
+                    artist.isNotEmpty() && title.isNotEmpty()
                 ) {
                     trackInfo.timePlayed = 0
                     scrobble()

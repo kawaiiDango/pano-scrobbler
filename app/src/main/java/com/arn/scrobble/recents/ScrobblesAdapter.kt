@@ -310,6 +310,8 @@ class ScrobblesAdapter(
                 }
             }
 
+            binding.playerIcon.isVisible = true
+
             if (Stuff.isTv) {
                 binding.recentsTrackLl.setOnFocusChangeListener { v, hasFocus ->
                     if (hasFocus)
@@ -336,7 +338,6 @@ class ScrobblesAdapter(
 
         private fun setPlayerIcon(track: Track) {
             val time = track.date
-            binding.playerIcon.visibility = View.VISIBLE
 
             fun fetchIcon(pkgName: String) {
                 binding.playerIcon.load(PackageName(pkgName)) {
@@ -382,10 +383,7 @@ class ScrobblesAdapter(
 
             if (track.isNowPlaying) {
                 binding.recentsDate.visibility = View.GONE
-                if (!binding.recentsPlaying.isVisible) {
-                    binding.recentsPlaying.isVisible = true
-                    binding.recentsPlaying.load(R.drawable.avd_now_playing)
-                }
+                binding.playerIcon.load(R.drawable.avd_now_playing)
                 binding.dividerCircle.isVisible = false
             } else {
                 binding.recentsDate.visibility = View.VISIBLE
@@ -399,9 +397,12 @@ class ScrobblesAdapter(
                     binding.recentsDate.typeface = Typeface.DEFAULT
                     binding.dividerCircle.isVisible = false
                 }
-                if (binding.recentsPlaying.isVisible) {
-                    binding.recentsPlaying.isVisible = false
-                    binding.recentsPlaying.load(null)
+                if (isShowingPlayers) {
+                    setPlayerIcon(track)
+                } else {
+                    binding.playerIcon.dispose()
+                    binding.playerIcon.load(null)
+                    binding.playerIcon.contentDescription = null
                 }
             }
 
@@ -418,9 +419,6 @@ class ScrobblesAdapter(
                 binding.recentsImgOverlay.visibility = View.INVISIBLE
             }
 
-            if (isShowingPlayers) {
-                setPlayerIcon(track)
-            }
 
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,

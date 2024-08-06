@@ -16,7 +16,6 @@ class VHPendingLove(
     lateinit var pl: PendingLove
 
     init {
-        binding.recentsPlaying.visibility = View.GONE
         binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
         binding.recentsImgOverlay.visibility = View.VISIBLE
         binding.recentsMenu.setOnClickListener {

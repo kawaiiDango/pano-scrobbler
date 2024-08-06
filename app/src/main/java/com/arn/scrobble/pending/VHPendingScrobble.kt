@@ -17,7 +17,6 @@ class VHPendingScrobble(
     private lateinit var ps: PendingScrobbleWithSource
 
     init {
-        binding.recentsPlaying.visibility = View.GONE
         binding.recentsImgOverlay.background =
             ContextCompat.getDrawable(itemView.context, R.drawable.vd_hourglass)
         binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)

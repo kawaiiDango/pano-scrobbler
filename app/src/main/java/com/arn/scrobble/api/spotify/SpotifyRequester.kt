@@ -137,13 +137,13 @@ class SpotifyRequester {
 
 class SpotifyCacheExpirationPolicy : ExpirationPolicy {
 
-    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
+    private val ONE_MONTH = TimeUnit.DAYS.toMillis(30)
     private val ONE_YEAR = TimeUnit.DAYS.toMillis(365)
 
     override fun getExpirationTime(url: Url) = when {
-        url.pathSegments.last() == "search" -> ONE_WEEK
+        url.pathSegments.last() == "search" -> ONE_MONTH
         url.pathSegments[url.pathSegments.size - 2] == "audio-features" -> ONE_YEAR
-        url.pathSegments[url.pathSegments.size - 2] == "artists" -> ONE_WEEK // artist images can change
+        url.pathSegments[url.pathSegments.size - 2] == "artists" -> ONE_MONTH // artist images can change
         url.pathSegments[url.pathSegments.size - 2] == "albums" -> ONE_YEAR // album arts usually don't change
         else -> -1
     }

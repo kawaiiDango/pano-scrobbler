@@ -71,7 +71,7 @@
                     android:id="@+id/charts_listening_activity_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="16dp">
+                    android:paddingHorizontal="@dimen/overscan_padding_horiz">
 
                     <View
                         android:id="@+id/charts_listening_activity_skeleton"
@@ -105,7 +105,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="350dp"
                     android:layout_gravity="center"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="@dimen/overscan_padding_horiz"
                     app:maxSize="370dp">
 
                     <View

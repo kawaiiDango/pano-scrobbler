@@ -16,14 +16,10 @@ import android.media.AudioManager
 import android.media.session.MediaSessionManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.os.SystemClock
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.text.Html
-import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -60,6 +56,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Objects
@@ -76,7 +73,7 @@ class NLService : NotificationListenerService() {
         )!!
     }
     private var sessListener: SessListener? = null
-    private lateinit var scrobbleHandler: ScrobbleHandler
+    private val scrobbleQueue by lazy { ScrobbleQueue() }
     private var lastNpTask: Job? = null
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var packageTagTrackMap: MutableMap<String, PlayingTrackInfo> // package name to track info
@@ -127,7 +124,7 @@ class NLService : NotificationListenerService() {
 
     private fun init() {
         job = SupervisorJob()
-        coroutineScope = CoroutineScope(Dispatchers.IO + job!!)
+        coroutineScope = CoroutineScope(Dispatchers.Main + job!!)
 
         val filter = IntentFilter().apply {
             addAction(iCANCEL)
@@ -179,10 +176,9 @@ class NLService : NotificationListenerService() {
 
         notiColor = ColorPatchUtils.getNotiColor(applicationContext)
 
-        scrobbleHandler = ScrobbleHandler(mainLooper)
         val sessManager = ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
 
-        sessListener = SessListener(scrobbleHandler, audioManager)
+        sessListener = SessListener(scrobbleQueue, audioManager)
         packageTagTrackMap = sessListener!!.packageTagTrackMap
         Stuff.updateBrowserPackages()
         try {
@@ -245,7 +241,7 @@ class NLService : NotificationListenerService() {
                 .removeOnActiveSessionsChangedListener(sessListener!!)
             sessListener!!.unregisterPrefsChangeListener()
             sessListener = null
-            scrobbleHandler.removeCallbacksAndMessages(null)
+            scrobbleQueue.shutdown()
         }
         job?.cancel()
         PanoDb.destroyInstance()
@@ -264,37 +260,41 @@ class NLService : NotificationListenerService() {
         super.onDestroy()
     }
 
-    private fun isAppEnabled(pkgName: String) =
-        pkgName in prefs.allowedPackages || (prefs.autoDetectApps && pkgName !in prefs.blockedPackages)
+    private fun shouldScrobbleFromNoti(pkgName: String) =
+        prefs.scrobblerEnabled && Stuff.isLoggedIn() &&
+                (pkgName in prefs.allowedPackages || (prefs.autoDetectApps && pkgName !in prefs.blockedPackages)) &&
+                !(prefs.preventDuplicateAmbientScrobbles && sessListener?.isMediaPlaying() == true)
+
+    // don't do file reads here
+    private fun shouldCheckNoti(sbn: StatusBarNotification?): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                sbn != null && (sbn.packageName == Stuff.PACKAGE_SHAZAM && sbn.notification.channelId == Stuff.CHANNEL_SHAZAM ||
+                sbn.packageName in Stuff.PACKAGES_PIXEL_NP && sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP)
+
+    }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        if (!(shouldCheckNoti(sbn) && shouldScrobbleFromNoti(sbn!!.packageName)))
+            return
 
-        scrobbleFromNoti(
-            sbn,
-            removed = false,
-            packageNames = Stuff.PACKAGES_PIXEL_NP,
-            channelName = Stuff.CHANNEL_PIXEL_NP,
-            notiField = Notification.EXTRA_TITLE,
-            format = R.string.song_format_string
-        )
-        scrobbleFromNoti(
-            sbn,
-            removed = false,
-            packageNames = listOf(Stuff.PACKAGE_SHAZAM),
-            channelName = Stuff.CHANNEL_SHAZAM,
-            notiField = Notification.EXTRA_TEXT,
-            format = R.string.auto_shazam_now_playing
-        )
-        if (BuildConfig.DEBUG) {
-            scrobbleFromNoti(
-                sbn,
-                removed = false,
-                packageNames = listOf(packageName),
-                channelName = MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
-                notiField = Notification.EXTRA_TITLE,
-                format = R.string.song_format_string
-            )
-        }
+        if (sbn.packageName == Stuff.PACKAGE_SHAZAM)
+            scrobbleFromNoti(sbn.packageName) {
+                val n = sbn.notification
+                val title = n.extras.getString(Notification.EXTRA_TITLE)
+                val artist = n.extras.getString(Notification.EXTRA_TEXT)
+
+                if (title != null && artist != null)
+                    Pair(artist, title)
+                else
+                    null
+            }
+        else if (sbn.packageName in Stuff.PACKAGES_PIXEL_NP)
+            scrobbleFromNoti(sbn.packageName) {
+                MetadataUtils.scrobbleFromNotiExtractMeta(
+                    sbn.notification.extras.getString(Notification.EXTRA_TITLE) ?: "",
+                    getStringInDeviceLocale(R.string.song_format_string)
+                )
+            }
     }
 
     override fun onNotificationRemoved(
@@ -302,100 +302,60 @@ class NLService : NotificationListenerService() {
         rankingMap: RankingMap?,
         reason: Int
     ) { //only for >26
-        if (reason == REASON_APP_CANCEL || reason == REASON_APP_CANCEL_ALL ||
-            reason == REASON_TIMEOUT || reason == REASON_ERROR
-        ) {
-            scrobbleFromNoti(
-                sbn,
-                removed = true,
-                packageNames = Stuff.PACKAGES_PIXEL_NP,
-                channelName = Stuff.CHANNEL_PIXEL_NP,
-            )
-            scrobbleFromNoti(
-                sbn,
-                removed = true,
-                packageNames = listOf(Stuff.PACKAGE_SHAZAM),
-                channelName = Stuff.CHANNEL_SHAZAM,
-            )
-            if (BuildConfig.DEBUG) {
-                scrobbleFromNoti(
-                    sbn,
-                    removed = true,
-                    packageNames = listOf(packageName),
-                    channelName = MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
-                )
-            }
-        }
+        if (!shouldCheckNoti(sbn) ||
+            !(reason == REASON_APP_CANCEL || reason == REASON_APP_CANCEL_ALL || reason == REASON_TIMEOUT || reason == REASON_ERROR)
+        )
+            return
+
+        if (sbn?.packageName in Stuff.PACKAGES_PIXEL_NP)
+            stopScrobbleFromNoti(sbn!!.packageName)
+    }
+
+
+    private fun stopScrobbleFromNoti(pkgName: String) {
+        val trackInfo = packageTagTrackMap["$pkgName|$TAG_NOTI"]
+        scrobbleQueue.remove(trackInfo?.hash ?: return, trackInfo.packageName)
     }
 
     private fun scrobbleFromNoti(
-        sbn: StatusBarNotification?,
-        removed: Boolean,
-        packageNames: Collection<String>,
-        channelName: String,
-        notiField: String = Notification.EXTRA_TITLE,
-        @StringRes format: Int = 0
+        pkgName: String,
+        transformIntoArtistTitle: () -> Pair<String, String>?,
     ) {
-        if (prefs.scrobblerEnabled &&
-            Stuff.isLoggedIn() &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-            sbn != null &&
-            sbn.packageName in packageNames &&
-            isAppEnabled(sbn.packageName)
-        ) {
+        val trackInfo = packageTagTrackMap["$pkgName|$TAG_NOTI"]
+        val meta = transformIntoArtistTitle()
 
-            if (prefs.preventDuplicateAmbientScrobbles && sessListener?.isMediaPlaying() == true)
-                return
-
-            val n = sbn.notification
-            if (n.channelId == channelName) {
-                val notiText = n.extras.getString(notiField) ?: return
-                val trackInfo = packageTagTrackMap[sbn.packageName + "|$TAG_NOTI"]
-
-                Timber.dLazy { "${this::scrobbleFromNoti.name} $notiText removed=$removed" }
-
-                if (removed) {
-                    scrobbleHandler.remove(trackInfo?.hash ?: return, trackInfo.packageName)
-                    return
+        if (meta != null) {
+            val (artist, title) = meta
+            val hash = Objects.hash(artist, "", title, pkgName)
+            if (trackInfo != null && trackInfo.hash == hash) {
+                val scrobbleTimeReached =
+                    SystemClock.elapsedRealtime() >= trackInfo.scrobbleElapsedRealtime
+                if (!scrobbleTimeReached && !scrobbleQueue.has(hash)) { //"resume" scrobbling
+                    scrobbleQueue.addScrobble(trackInfo.copy())
+                    notifyScrobble(trackInfo)
+                    Timber.i("${this::scrobbleFromNoti.name} rescheduling")
+                } else if (System.currentTimeMillis() - trackInfo.playStartTime < Stuff.NOTI_SCROBBLE_INTERVAL) {
+                    Timber.i("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                 }
-                val meta = MetadataUtils.scrobbleFromNotiExtractMeta(
-                    notiText,
-                    getStringInDeviceLocale(format)
+            } else {
+                // different song, scrobble it
+                trackInfo?.let { scrobbleQueue.remove(it.hash) }
+                val newTrackInfo = PlayingTrackInfo(
+                    playStartTime = System.currentTimeMillis(),
+                    hash = hash,
+                    packageName = pkgName,
+                    sessionTag = TAG_NOTI
                 )
-                if (meta != null) {
-                    val (artist, title) = meta
-                    val hash = Objects.hash(artist, "", title, sbn.packageName)
-                    if (trackInfo != null && trackInfo.hash == hash) {
-                        val scrobbleTimeReached =
-                            SystemClock.elapsedRealtime() >= trackInfo.scrobbleElapsedRealtime
-                        if (!scrobbleTimeReached && !scrobbleHandler.has(hash)) { //"resume" scrobbling
-                            scrobbleHandler.addScrobble(trackInfo.copy())
-                            notifyScrobble(trackInfo)
-                            Timber.i("${this::scrobbleFromNoti.name} rescheduling")
-                        } else if (System.currentTimeMillis() - trackInfo.playStartTime < Stuff.NOTI_SCROBBLE_INTERVAL) {
-                            Timber.i("${this::scrobbleFromNoti.name} ignoring possible duplicate")
-                        }
-                    } else {
-                        // different song, scrobble it
-                        trackInfo?.let { scrobbleHandler.remove(it.hash) }
-                        val newTrackInfo = PlayingTrackInfo(
-                            playStartTime = System.currentTimeMillis(),
-                            hash = hash,
-                            packageName = sbn.packageName,
-                            sessionTag = TAG_NOTI
-                        )
-                        newTrackInfo.putOriginals(artist, title)
+                newTrackInfo.putOriginals(artist, title)
 
-                        packageTagTrackMap[sbn.packageName + "|$TAG_NOTI"] = newTrackInfo
-                        scrobbleHandler.nowPlaying(
-                            newTrackInfo,
-                            prefs.delaySecs.coerceAtMost(3 * 60) * 1000L
-                        )
-                    }
-                } else {
-                    Timber.w("${this::scrobbleFromNoti.name} parse failed")
-                }
+                packageTagTrackMap["$pkgName|$TAG_NOTI"] = newTrackInfo
+                scrobbleQueue.nowPlaying(
+                    newTrackInfo,
+                    30 * 1000L
+                )
             }
+        } else {
+            Timber.w("${this::scrobbleFromNoti.name} parse failed")
         }
     }
 
@@ -425,7 +385,7 @@ class NLService : NotificationListenerService() {
         )
             return
 
-        val nowPlaying = scrobbleHandler.has(trackInfo.hash)
+        val nowPlaying = scrobbleQueue.has(trackInfo.hash)
 
         var i = Intent()
             .setPackage(packageName)
@@ -584,7 +544,7 @@ class NLService : NotificationListenerService() {
                     .setBigContentTitle(scrobbleError.title)
                     .bigText(subtitleSpanned)
             )
-        scrobbleHandler.remove(trackInfo.hash)
+        scrobbleQueue.remove(trackInfo.hash)
 
         nm.notify(trackInfo.packageName, 0, nb.build())
         sessListener?.findTrackInfoByHash(trackInfo.hash)?.markAsScrobbled()
@@ -622,7 +582,7 @@ class NLService : NotificationListenerService() {
     }
 
     private fun notifyUnscrobbled(hash: Int) {
-        val delay = 4000L
+        val delayTime = 4000L
         val trackInfo = sessListener?.findTrackInfoByHash(hash) ?: return
 
         val blockedMetadata = BlockedMetadata(
@@ -650,10 +610,13 @@ class NLService : NotificationListenerService() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentTitle(getString(R.string.state_unscrobbled) + " • " + getString(R.string.blocked_metadata_noti))
             .setContentIntent(blockPi)
-            .setTimeoutAfter(delay)
+            .setTimeoutAfter(delayTime)
         nm.notify(trackInfo.packageName, 0, nb.build())
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            scrobbleHandler.postDelayed({ nm.cancel(trackInfo.packageName, 0) }, delay)
+            coroutineScope.launch {
+                delay(delayTime)
+                nm.cancel(trackInfo.packageName, 0)
+            }
     }
 
     private fun notifyAppDetected(pkgName: String) {
@@ -751,7 +714,7 @@ class NLService : NotificationListenerService() {
                     if (!intent.hasExtra(B_HASH)) {
                         val trackInfo = packageTagTrackMap.values.find { it.isPlaying } ?: return
                         hash = trackInfo.hash
-                        if (!scrobbleHandler.has(hash))
+                        if (!scrobbleQueue.has(hash))
                             return
                         nm.cancel(trackInfo.packageName, 0)
                         trackInfo.markAsScrobbled()
@@ -759,7 +722,7 @@ class NLService : NotificationListenerService() {
                         hash = intent.getIntExtra(B_HASH, 0)
                         val packageName = intent.getStringExtra(B_PACKAGE_NAME)
                         val trackInfo = sessListener?.findTrackInfoByHash(hash)
-                        if (scrobbleHandler.has(hash)) {
+                        if (scrobbleQueue.has(hash)) {
                             trackInfo?.markAsScrobbled()
                         } else if (trackInfo != null) {
                             if (!Stuff.isOnline) {
@@ -779,7 +742,7 @@ class NLService : NotificationListenerService() {
                         notifyUnscrobbled(hash)
                     }
 
-                    scrobbleHandler.remove(hash)
+                    scrobbleQueue.remove(hash)
                 }
 
                 iLOVE, iUNLOVE -> {
@@ -809,7 +772,7 @@ class NLService : NotificationListenerService() {
                         )
                     }
 
-                    coroutineScope.launch {
+                    coroutineScope.launch(Dispatchers.IO) {
                         ScrobbleEverywhere.loveOrUnlove(trackInfo.toTrack(), loved)
                     }
 
@@ -860,7 +823,7 @@ class NLService : NotificationListenerService() {
 
                     if (username != null) {
                         listenAlongJob?.cancel()
-                        listenAlongJob = coroutineScope.launch {
+                        listenAlongJob = coroutineScope.launch(Dispatchers.IO) {
                             ListenAlong.fetchTrackLoop(username)
                         }
                     } else if (stop) {
@@ -926,9 +889,9 @@ class NLService : NotificationListenerService() {
                     if (hash == -1) return
 
                     if (locked) {
-                        scrobbleHandler.lockedHash = hash
+                        scrobbleQueue.lockedHash = hash
                     } else {
-                        scrobbleHandler.lockedHash = null
+                        scrobbleQueue.lockedHash = null
                     }
                 }
 
@@ -945,33 +908,50 @@ class NLService : NotificationListenerService() {
         }
     }
 
-    inner class ScrobbleHandler : Handler {
-        private val tracksCopyPQ = PriorityQueue<PlayingTrackInfo>(20) { a, b ->
-            (a.scrobbleElapsedRealtime - b.scrobbleElapsedRealtime).toInt()
-        }
+    inner class ScrobbleQueue {
 
         // delays scrobbling this hash until it becomes null again
         var lockedHash: Int? = null
 
-        constructor() : super()
-        constructor(looper: Looper) : super(looper)
+        private val tickEveryMs = 500L
 
-        init {
-            // start ticker
-            sendEmptyMessageDelayed(0, 500)
+        private val tracksCopyPQ = PriorityQueue<PlayingTrackInfo>(20) { a, b ->
+            (a.scrobbleElapsedRealtime - b.scrobbleElapsedRealtime).toInt()
         }
+
+        private var tickerJob: Job? = null
+
+//        constructor() : super()
+//        constructor(looper: Looper) : super(looper)
+//
+//        init {
+//            // start ticker
+//            sendEmptyMessageDelayed(0, 500)
+//        }
 
         // ticker, only handles empty messages and messagePQ
         // required because uptimeMillis pauses / slows down in deep sleep
-        override fun handleMessage(m: Message) {
-            val queuedMessage = tracksCopyPQ.peek()
-            if (queuedMessage != null && queuedMessage.hash != lockedHash &&
-                queuedMessage.scrobbleElapsedRealtime <= SystemClock.elapsedRealtime()
-            ) {
-                tracksCopyPQ.remove(queuedMessage)
-                submitScrobble(queuedMessage)
+
+        private fun startTickerIfNeeded() {
+            if (tickerJob?.isActive == true) return
+
+            tickerJob = coroutineScope.launch {
+                while (tracksCopyPQ.isNotEmpty()) {
+                    delay(tickEveryMs)
+                    val queuedMessage = tracksCopyPQ.peek()
+                    if (queuedMessage != null && queuedMessage.hash != lockedHash &&
+                        queuedMessage.scrobbleElapsedRealtime <= SystemClock.elapsedRealtime()
+                    ) {
+                        tracksCopyPQ.remove(queuedMessage)
+                        submitScrobble(queuedMessage)
+                    }
+                }
             }
-            sendEmptyMessageDelayed(0, 500)
+        }
+
+        fun shutdown() {
+            tickerJob?.cancel()
+            tracksCopyPQ.clear()
         }
 
         fun has(hash: Int) = tracksCopyPQ.any { it.hash == hash }
@@ -984,6 +964,7 @@ class NLService : NotificationListenerService() {
         fun addScrobble(trackInfo: PlayingTrackInfo) =
             trackInfo.copy().also {
                 tracksCopyPQ.add(it)
+                startTickerIfNeeded()
             }
 
         fun nowPlaying(trackInfo: PlayingTrackInfo, fixedDelay: Long? = null) {
@@ -1021,7 +1002,7 @@ class NLService : NotificationListenerService() {
             val trackInfoCopy = addScrobble(trackInfo)
 
             lastNpTask?.cancel()
-            lastNpTask = coroutineScope.launch {
+            lastNpTask = coroutineScope.launch(Dispatchers.IO) {
                 ScrobbleEverywhere.scrobble(true, trackInfoCopy)
             }
 
@@ -1036,7 +1017,7 @@ class NLService : NotificationListenerService() {
             if (sessListener?.hasOtherPlayingControllers(trackInfoCopy) == true && trackInfoCopy.hasBlockedTag)
                 return
 
-            coroutineScope.launch {
+            coroutineScope.launch(Dispatchers.IO) {
                 ScrobbleEverywhere.scrobble(false, trackInfoCopy)
             }
             val trackInfo = sessListener?.findTrackInfoByHash(trackInfoCopy.hash) ?: return

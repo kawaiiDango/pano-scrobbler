@@ -32,19 +32,17 @@ Put it in /app/src/main/res/raw/embedded_server_bks.bks
 the Android System Intelligence and Shazam apks respectively with ApkTool and then running [py-scripts/np-strings-extract.py](py-scripts/np-strings-extract.py) on them.
 
 Usage: `python ./np-strings-extract.py <decompiled-dir> song_format_string np` for scrobbling Pixel Now Playing and
-
-`python ./np-strings-extract.py <decompiled-dir> auto_shazam_now_playing sz` for scrobbling AutoShazam.
     
 Alternatively, you can use this as a stub in `strings.xml`:
 ```
 <string name="song_format_string">%1$s by %2$s</string>
-<string name="auto_shazam_now_playing">%1$s by %2$s</string>
 ```
 
 - If you want to generate the optional baseline profile for the app, which can improve its startup time,
 create a file `/baselineprofile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt`:
 ```
 object Secrets {
+    const val type = "lastfm"
     const val username = "<lastfmUsername>"
     const val sessionKey = "<lastfmSessionKey>"
 }

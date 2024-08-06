@@ -54,7 +54,7 @@ object BugReportUtils {
         text += "\n\n[Describe the issue]\n[If it is related to scrobbling, mention the media player name]\n"
         //keep the email in english
 
-        val log = Stuff.exec("logcat -i")
+        val log = Stuff.exec("logcat -d *:I")
         val logFile = File(App.context.cacheDir, "share/log.txt")
         logFile.parentFile!!.mkdirs()
         logFile.writeText(log)

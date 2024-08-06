@@ -406,6 +406,7 @@
     <string name="fix_it_title">修正可能な項目</string>
     <string name="fix_it_startup_title">パワーセーバー / スタートアップマネージャー</string>
     <string name="fix_it_battery_title">バッテリーの最適化の無効化</string>
+    <string name="fix_it_energy_title">エネルギー最適化を無効にする</string>
     <string name="fix_it_action" comment="(To open an app)">開く</string>
     <string name="delete_account">アカウントの削除</string>
     <string name="delete_account_custom_servers">上記以外については、各々の手順を確認してください。</string>

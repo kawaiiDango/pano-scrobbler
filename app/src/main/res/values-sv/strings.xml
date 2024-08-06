@@ -97,6 +97,20 @@
     <string name="state_scrobbled">Scrobblades</string>
     <string name="unscrobble">Avscrobbla</string>
     <string name="state_unscrobbled">Avscrobblad</string>
+    <string name="state_unrecognised_artist">Okänd artist</string>
+    <string name="tap_to_edit">(Tryck för att redigera)</string>
+    <string name="recently_scrobbled">Nyligen Scrobblad</string>
+    <string name="recents" comment="Short for recently scrobbled">Senaste</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Först scrobblad på %1$s</string>
+    <string name="auto" comment="automatic or default setting">Auto</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Snart klart…</string>
+    <string name="music_players">Musik spelare</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andra Appar</string>
+    <string name="choose_apps">Välj appar</string>
+    <string name="choose_an_app">Välj en app</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Appar</string>
+    <string name="offline">Offline. Data visad är inte ny</string>
+    <string name="unavailable_offline">Inte tillgänglig offline</string>
     <string name="no_apps_enabled">Inga appar är aktiverade</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d till</string>
     <string name="show_all">Visa alla</string>

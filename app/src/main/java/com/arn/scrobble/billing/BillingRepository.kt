@@ -49,6 +49,7 @@ class BillingRepository private constructor(private val application: Application
     }
 
     fun endDataSourceConnections() {
+        Timber.tag(LOG_TAG).w("endConnection")
         playStoreBillingClient.endConnection()
     }
 
@@ -65,7 +66,9 @@ class BillingRepository private constructor(private val application: Application
         reconnectCount++
 
         handler.postDelayed(
-            { playStoreBillingClient.startConnection(this@BillingRepository) },
+            {
+                playStoreBillingClient.startConnection(this@BillingRepository)
+            },
             reconnectMilliseconds
         )
     }

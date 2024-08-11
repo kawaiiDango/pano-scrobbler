@@ -43,6 +43,7 @@
         android:id="@+id/collage_footer_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingStart="4dp"
         android:textSize="42px"
         tools:text="username" />
 
@@ -101,5 +102,6 @@
         app:constraint_referenced_ids="collage_type_image, collage_footer_type, collage_footer_duration, collage_username_image, collage_footer_username"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
 </androidx.constraintlayout.widget.ConstraintLayout>

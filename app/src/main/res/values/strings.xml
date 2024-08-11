@@ -520,6 +520,8 @@
 
     <string name="scrobbler_off">Scrobbler disabled</string>
     <string name="scrobbler_on">Scrobbler active</string>
+    <string name="duration">Duration</string>
+    <string name="total_listen_time">Total listen time</string>
     <string name="acoustic"
         comment="(Acoustic music)"
         >Acoustic</string>
@@ -571,6 +573,9 @@
     <string name="pref_enabled_apps_title">Choose apps</string>
     <string name="pref_auto_detect">Automatically scrobble from new apps</string>
     <string name="pref_spotify_remote">Scrobble Spotify playing on other devices</string>
+    <string name="pref_spotify_artist_search_approximate"
+        comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is"
+        >Use approximate search for artist images</string>
     <string name="pref_link_heart_button_rating">Use the heart button in the notification to also favorite it on the media player</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Disable continuous scrobbling from microphone when the device is playing music</string>
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>

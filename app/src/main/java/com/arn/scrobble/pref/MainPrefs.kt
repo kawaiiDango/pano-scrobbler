@@ -177,6 +177,9 @@ class MainPrefs : Krate {
     // we want 401 and not 400
     var spotifyAccessToken by stringPref(PREF_SPOTIFY_ACCESS_TOKEN).withDefault("qwertyuiopasdfghjklzxcvbnm")
     var spotifyAccessTokenExpires by longPref(PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES).withDefault(-1)
+    var spotifyArtistSearchApproximate by booleanPref(PREF_SPOTIFY_ARTIST_SEARCH_APPROXIMATE).withDefault(
+        false
+    )
 
     var songSearchUrl by stringPref(PREF_ACTIVITY_SONG_SEARCH_URL).withDefault("https://www.youtube.com/results?search_query=\$artist+\$title")
 
@@ -221,6 +224,8 @@ class MainPrefs : Krate {
         val searchInSource: Boolean = App.prefs.searchInSource,
         @SerialName(PREF_SCROBBLE_SPOTIFY_REMOTE)
         val scrobbleSpotifyRemote: Boolean = App.prefs.scrobbleSpotifyRemote,
+        @SerialName(PREF_SPOTIFY_ARTIST_SEARCH_APPROXIMATE)
+        val spotifyArtistSearchApproximate: Boolean = App.prefs.spotifyArtistSearchApproximate,
         @SerialName(PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES)
         val preventDuplicateAmbientScrobbles: Boolean = App.prefs.preventDuplicateAmbientScrobbles,
         @SerialName(PREF_FIRST_DAY_OF_WEEK)
@@ -254,6 +259,7 @@ class MainPrefs : Krate {
         themeTintBackground = settings.themeTintBackground
         searchInSource = settings.searchInSource
         scrobbleSpotifyRemote = settings.scrobbleSpotifyRemote
+        spotifyArtistSearchApproximate = settings.spotifyArtistSearchApproximate
         preventDuplicateAmbientScrobbles = settings.preventDuplicateAmbientScrobbles
         firstDayOfWeek = settings.firstDayOfWeek
         allowedPackages = settings.allowedPackages
@@ -305,6 +311,7 @@ class MainPrefs : Krate {
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
         const val PREF_SCROBBLE_SPOTIFY_REMOTE = "scrobble_spotify_remote"
+        const val PREF_SPOTIFY_ARTIST_SEARCH_APPROXIMATE = "spotify_artist_search_approximate"
         const val PREF_LINK_HEART_BUTTON_TO_RATING = "link_heart_button_to_rating"
         const val PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES = "prevent_duplicate_ambient_scrobbles"
         const val PREF_FIRST_DAY_OF_WEEK = "first_day_of_week"

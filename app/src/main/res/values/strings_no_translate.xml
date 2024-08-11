@@ -31,9 +31,7 @@
     <string name="jsonl" translatable="false">JSONL</string>
     <string name="special_app_access" translatable="false">Special app access</string>
 
-    <string name="duration" translatable="false">Duration</string>
-    <string name="unknown" translatable="false">Unknown</string>
-    <string name="total_listen_time" translatable="false">Total listen time</string>
+    <!--  strings for unfinalized stuff  -->
     <string name="use_arrow_keys_to_adjust" translatable="false">Use the arrow keys to adjust the value</string>
 
     <!-- strings for dev only stuff  -->

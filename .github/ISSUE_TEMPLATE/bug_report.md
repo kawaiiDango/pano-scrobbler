@@ -16,4 +16,7 @@ assignees: ''
 **App version**
 
 
+**Android version**
+
+
 **Additional info**

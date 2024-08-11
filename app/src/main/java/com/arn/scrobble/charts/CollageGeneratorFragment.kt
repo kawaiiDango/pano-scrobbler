@@ -26,6 +26,7 @@ import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.request.error
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
@@ -404,7 +405,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         return bitmap to
                 FileProvider.getUriForFile(
                     requireContext(),
-                    "com.arn.scrobble.fileprovider",
+                    "${BuildConfig.APPLICATION_ID}.fileprovider",
                     collageFile
                 )
     }

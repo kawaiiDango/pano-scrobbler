@@ -161,9 +161,12 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val changeLocalePref = findPreference<Preference>(MainPrefs.PREF_LOCALE)!!
 
-        val _localeEntryValues = LocaleUtils.localesSet.toTypedArray()
         var prevLang = ""
-        val _localeEntries = _localeEntryValues.map {
+        val localeEntryValues = arrayOf("auto") + LocaleUtils.localesSet.toTypedArray()
+        val localeEntries = localeEntryValues.map {
+            if (it == "auto")
+                return@map getString(R.string.auto)
+
             val locale = Locale.forLanguageTag(it)
 
             val displayStr = when {
@@ -180,21 +183,23 @@ class PrefFragment : PreferenceFragmentCompat() {
             displayStr
         }.toTypedArray()
 
-        val localeEntries = arrayOf(getString(R.string.auto)) + _localeEntries
-        val localeEntryValues = arrayOf("auto") + _localeEntryValues
-        var currentLocale = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
-            prefs.locale
-        else {
-            val ll = requireContext().getSystemService(LocaleManager::class.java).applicationLocales
-            if (ll.size() == 0)
-                null
-            else
-                ll.get(0).toLanguageTag()
+        val currentLocale = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            prefs.locale ?: "auto"
+        } else {
+            requireContext()
+                .getSystemService(LocaleManager::class.java)
+                .applicationLocales
+                .takeIf { it.size() == 1 }
+                ?.get(0)
+                ?.let {
+                    if (it.toLanguageTag() in localeEntryValues)
+                        it.toLanguageTag()
+                    else if (it.language in localeEntryValues)
+                        it.language
+                    else
+                        "auto"
+                }
         }
-
-        currentLocale = currentLocale ?: "auto"
-
-        val checkedLocaleIndex = localeEntryValues.indexOf(currentLocale)
 
         changeLocalePref.setSummaryProvider { preference ->
             var idx = localeEntryValues.indexOf(currentLocale)
@@ -208,7 +213,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                     .setTitle(R.string.pref_change_locale)
                     .setSingleChoiceItems(
                         localeEntries,
-                        checkedLocaleIndex
+                        localeEntryValues.indexOf(currentLocale)
                     ) { dialogInterface, idx ->
                         dialogInterface.dismiss()
                         val newLocale = localeEntryValues[idx]

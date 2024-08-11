@@ -43,9 +43,9 @@ class ImportVM : ViewModel() {
             }
 
             val randomPort = (Base26Utils.PORT_START..Base26Utils.PORT_END).random()
-            val base26Address = Base26Utils.encodeIpPort(wifiIpAddress, randomPort)
 
             try {
+                val base26Address = Base26Utils.encodeIpPort(wifiIpAddress, randomPort)
                 val server = ImportServer(randomPort, base26Address) { postData ->
                     _postData.value = postData
                 }
@@ -53,6 +53,7 @@ class ImportVM : ViewModel() {
 
                 _serverAddress.value = Result.success(base26Address)
             } catch (e: Exception) {
+                _serverAddress.value = Result.failure(e)
                 e.printStackTrace()
             }
 

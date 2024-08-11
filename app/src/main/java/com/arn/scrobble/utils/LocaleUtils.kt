@@ -18,34 +18,37 @@ import java.util.Locale
 
 object LocaleUtils {
 
+    // localesSet start
     val localesSet = arrayOf(
-        "zh-hans",
+        "ar",
+        "ca",
+        "cs",
         "de",
+        "el",
         "en",
         "es",
-        "fr",
-        "ja",
-        "pt",
-        "pt-BR",
-        "ru",
-        "tr",
-        "pl",
-        "it",
-        "uk",
-        "cs",
-        "nl",
-        "ar",
-        "hr",
-        "ca",
-        "el",
-        "id",
-        "sv",
         "fi",
+        "fr",
+        "hi",
+        "hr",
+        "id",
+        "it",
+        "ja",
         "ko",
         "lt",
         "ne",
-        "hi",
-    ).toSortedSet()
+        "nl",
+        "pl",
+        "pt",
+        "pt-BR",
+        "ro",
+        "ru",
+        "sv",
+        "tr",
+        "uk",
+        "zh-Hans",
+    )
+    // localesSet end
 
     val showScriptSet = setOf(
         "zh",

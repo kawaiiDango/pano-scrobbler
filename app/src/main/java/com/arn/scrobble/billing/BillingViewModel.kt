@@ -23,8 +23,8 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
     fun queryPurchases() = repository.queryPurchasesAsync()
 
     override fun onCleared() {
-        super.onCleared()
         repository.endDataSourceConnections()
+        super.onCleared()
     }
 
     fun makePurchase(activity: Activity, productDetails: ProductDetails) {

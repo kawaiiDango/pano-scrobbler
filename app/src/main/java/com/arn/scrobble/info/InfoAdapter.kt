@@ -470,7 +470,7 @@ class InfoAdapter(
                     durationText += if ((entry.duration ?: 0) > 0)
                         Stuff.humanReadableDuration(entry.duration!!)
                     else
-                        itemView.context.getString(R.string.unknown)
+                        "—"
 
                     if ((entry.userplaycount ?: 0) > 1 && (entry.duration ?: 0) > 0)
                         durationText += "\n" + itemView.context.getString(R.string.total_listen_time) + ": " +

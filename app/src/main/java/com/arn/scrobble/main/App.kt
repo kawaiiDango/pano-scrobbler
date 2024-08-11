@@ -77,9 +77,11 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             .build()
         DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
 
+        Firebase.initialize(this)
+        // otherwise it crashes
+        Firebase.crashlytics.setCustomKey("isDebug", BuildConfig.DEBUG)
+
         if (prefs.crashlyticsEnabled) {
-            Firebase.initialize(this)
-            Firebase.crashlytics.setCustomKey("isDebug", BuildConfig.DEBUG)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && getProcessName() == BuildConfig.APPLICATION_ID ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.P
             ) {

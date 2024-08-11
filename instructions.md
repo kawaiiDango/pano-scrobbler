@@ -29,9 +29,9 @@ See https://firebase.google.com/docs/android/setup
 Put it in /app/src/main/res/raw/embedded_server_bks.bks
 
 - Obtain now playing notification strings and their translations by decompiling the resources of
-the Android System Intelligence and Shazam apks respectively with ApkTool and then running [py-scripts/np-strings-extract.py](py-scripts/np-strings-extract.py) on them.
+the Android System Intelligence apk with ApkTool and then running [py-scripts/np-strings-extract.py](py-scripts/np-strings-extract.py) on them.
 
-Usage: `python ./np-strings-extract.py <decompiled-dir> song_format_string np` for scrobbling Pixel Now Playing and
+Usage: `python ./np-strings-extract.py <decompiled-dir> song_format_string np` for scrobbling Pixel Now Playing.
     
 Alternatively, you can use this as a stub in `strings.xml`:
 ```

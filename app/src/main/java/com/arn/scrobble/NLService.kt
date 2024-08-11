@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -86,43 +85,39 @@ class NLService : NotificationListenerService() {
             AudioManager::class.java
         )!!
     }
-
-    override fun onCreate() {
-        if (BuildConfig.DEBUG)
-            toast(R.string.scrobbler_on)
-        super.onCreate()
-        init()
-    }
+    private var inited = false
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase?.setLocaleCompat() ?: return)
     }
 
     //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int) =
-        Service.START_STICKY
+//    override fun onStartCommand(intent: Intent, flags: Int, startId: Int) =
+//        Service.START_STICKY
 
 
 // this prevents the service from starting on N+
 //    override fun onBind(intent: Intent): IBinder? {
 //        return null
 //    }
-    /*
-        override fun onListenerConnected() {
-    //    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
-    //    onCreate seems to get called only once in those cases.
-    //    also unreliable on lp and mm
-            super.onListenerConnected()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                if (Looper.myLooper() == null) {
-                    Handler(mainLooper!!).post { init() }
-                } else
-                    init()
-            }
-        }
-    */
+
+    override fun onListenerConnected() {
+        //    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
+        //    onCreate seems to get called only once in those cases.
+        //    also unreliable on lp and mm
+        // just gate them with an inited flag
+        if (BuildConfig.DEBUG)
+            toast(R.string.scrobbler_on)
+
+        if (!inited)
+            init()
+    }
+
 
     private fun init() {
+        // set it to true right away in case onListenerConnected gets called again before init has finished
+        inited = true
+
         job = SupervisorJob()
         coroutineScope = CoroutineScope(Dispatchers.Main + job!!)
 
@@ -221,6 +216,8 @@ class NLService : NotificationListenerService() {
     }
 
     private fun destroy() {
+        inited = false
+
         Timber.i("destroy")
         try {
             applicationContext.unregisterReceiver(nlserviceReciver)
@@ -247,15 +244,17 @@ class NLService : NotificationListenerService() {
         PanoDb.destroyInstance()
     }
 
-    /*
     override fun onListenerDisconnected() { //api 24+ only
-        destroy()
-        super.onListenerDisconnected()
+        if (BuildConfig.DEBUG)
+            toast(R.string.scrobbler_off)
+
+        if (inited && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            destroy()
     }
-    */
+
 
     override fun onDestroy() {
-        if (sessListener != null)
+        if (inited && Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
             destroy()
         super.onDestroy()
     }
@@ -268,8 +267,9 @@ class NLService : NotificationListenerService() {
     // don't do file reads here
     private fun shouldCheckNoti(sbn: StatusBarNotification?): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                sbn != null && (sbn.packageName == Stuff.PACKAGE_SHAZAM && sbn.notification.channelId == Stuff.CHANNEL_SHAZAM ||
-                sbn.packageName in Stuff.PACKAGES_PIXEL_NP && sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP)
+                sbn != null &&
+                (sbn.packageName == Stuff.PACKAGE_SHAZAM && sbn.tag == Stuff.NOTIFICATION_TAG_SHAZAM && sbn.notification.channelId == Stuff.CHANNEL_SHAZAM ||
+                        sbn.packageName in Stuff.PACKAGES_PIXEL_NP && sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP)
 
     }
 

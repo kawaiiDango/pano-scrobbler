@@ -1,7 +1,9 @@
 package com.arn.scrobble.api.lastfm
 
+import androidx.annotation.Keep
 import timber.log.Timber
 
+@Keep
 open class ApiException(
     val code: Int,
     val description: String,

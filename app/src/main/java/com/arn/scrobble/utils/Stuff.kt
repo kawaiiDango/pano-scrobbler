@@ -162,6 +162,7 @@ object Stuff {
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
     const val PACKAGE_SHAZAM = "com.shazam.android"
     const val CHANNEL_SHAZAM = "notification_shazam_match_v1" //"auto_shazam_v2"
+    const val NOTIFICATION_TAG_SHAZAM = "NOTIFICATION_SHAZAM_RESULTS" //"auto_shazam_v2"
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
     const val PACKAGE_SONOS = "com.sonos.acr"
@@ -840,7 +841,7 @@ object Stuff {
 
     fun Context.copyToClipboard(text: String, toast: Boolean = true) {
         val clipboard = ContextCompat.getSystemService(this, ClipboardManager::class.java)!!
-        val clip = ClipData.newPlainText("Pano Scrobbler", text)
+        val clip = ClipData.newPlainText(getString(R.string.app_name), text)
         clipboard.setPrimaryClip(clip)
         if (toast)
             toast(R.string.copied)

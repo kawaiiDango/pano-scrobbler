@@ -75,9 +75,7 @@ class OnboardingFragment : Fragment() {
             loginStepView = ::createLoginStepView,
             onCompleted = {
                 mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
-                val navigated = findNavController().navigateUp()
-                if (!navigated)
-                    findNavController().navigate(R.id.action_onboardingFragment_to_myHomePagerFragment)
+                findNavController().navigate(R.id.action_onboardingFragment_to_myHomePagerFragment)
             }
         )
 

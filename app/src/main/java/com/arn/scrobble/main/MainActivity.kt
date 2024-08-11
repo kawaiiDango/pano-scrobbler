@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             mainFab.setOnClickListener(it.clickListener)
-            
+
             if (BuildConfig.DEBUG) {
                 mainFab.setOnLongClickListener(it.longClickListener)
                 mainFab.isLongClickable = it.longClickListener != null

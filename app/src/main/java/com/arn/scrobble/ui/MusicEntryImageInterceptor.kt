@@ -11,6 +11,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.api.spotify.SpotifySearchType
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.main.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
@@ -53,9 +54,17 @@ class MusicEntryImageInterceptor : Interceptor {
                                     entry.name,
                                     SpotifySearchType.artist,
                                     1
-                                ).getOrNull()?.artists?.items?.firstOrNull()?.takeIf {
-                                    it.name.equals(entry.name, ignoreCase = true)
-                                }?.mediumImageUrl
+                                ).getOrNull()
+                                    ?.artists
+                                    ?.items
+                                    ?.firstOrNull()
+                                    ?.takeIf {
+                                        if (App.prefs.spotifyArtistSearchApproximate)
+                                            it.popularity != null && it.popularity > 0
+                                        else
+                                            it.name.equals(entry.name, ignoreCase = true)
+                                    }
+                                    ?.mediumImageUrl
                             }
                             imageUrl
                         }

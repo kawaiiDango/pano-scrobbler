@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -36,7 +37,7 @@ class ExportFragment : Fragment() {
     private val binding
         get() = _binding!!
     private val viewModel by viewModels<ExportVM>()
-    private val billingViewModel by viewModels<BillingViewModel>()
+    private val billingViewModel by activityViewModels<BillingViewModel>()
     private lateinit var exportRequest: ActivityResultLauncher<String>
     private lateinit var exportPrivateDataRequest: ActivityResultLauncher<String>
 

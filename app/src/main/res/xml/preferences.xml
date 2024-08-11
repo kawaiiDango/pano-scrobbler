@@ -191,6 +191,12 @@
 
         <SwitchPreference
             android:defaultValue="false"
+            android:key="spotify_artist_search_approximate"
+            android:persistent="true"
+            android:summary="@string/pref_spotify_artist_search_approximate"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="prevent_duplicate_ambient_scrobbles"
             android:persistent="true"
             android:summary="@string/pref_prevent_duplicate_ambient_scrobbles"/>

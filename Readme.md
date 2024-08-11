@@ -59,9 +59,10 @@ Features marked with * are not available on TV due to OS limitations.
 
 See [instructions.md](instructions.md)
 
-### F-droid repo?
-[https://kawaiidango.github.io/pano-scrobbler/fdroid/repo/
-](https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA)
+### F-droid repo
+```
+https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
+```
 
 <img src="https://kawaiidango.github.io/pano-scrobbler/fdroid/repo/index.png" alt="QR code of the fdroid repo" width="200"/>
 

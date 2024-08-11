@@ -52,7 +52,6 @@ android {
             SimpleDateFormat("YYYY, MMM dd").format(Date())
         }"
         setProperty("archivesBaseName", "pano-scrobbler")
-        vectorDrawables.useSupportLibrary = true
 
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
@@ -290,23 +289,24 @@ play {
 
 githubRelease {
     token(localProperties["github.token"])
-    owner("kawaiidango")
-    repo("pano-scrobbler")
+    owner = "kawaiidango"
+    repo = "pano-scrobbler"
     val changelog = file("src/main/play/release-notes/en-US/default.txt").readText() +
             "\n\n" + "Copied from Play Store what's new, may not be accurate for minor updates."
-    body(changelog)
-    tagName(android.defaultConfig.versionCode.toString())
-    releaseName(android.defaultConfig.versionName)
-    targetCommitish("main")
-    releaseAssets(
-        listOf(
-            "build/outputs/apk/release/pano-scrobbler-release.apk",
-        )
-    )
-    draft(false) // by default this is true
-    allowUploadToExisting(false) // Setting this to true will allow this plugin to upload artifacts to a release if it found an existing one. If overwrite is set to true, this option is ignored.
-    overwrite(false) // by default false; if set to true, will delete an existing release with the same tag and name
-    dryRun(false) // by default false; you can use this to see what actions would be taken without making a release
+    body = changelog
+    tagName = android.defaultConfig.versionCode.toString()
+    releaseName = android.defaultConfig.versionName
+    targetCommitish = "main"
+    releaseAssets("build/outputs/apk/release/pano-scrobbler-release.apk")
+
+    // by default this is true
+    draft = false
+    // Setting this to true will allow this plugin to upload artifacts to a release if it found an existing one. If overwrite is set to true, this option is ignored.
+    allowUploadToExisting = false
+    // by default false; if set to true, will delete an existing release with the same tag and name
+    overwrite = false
+    // by default false; you can use this to see what actions would be taken without making a release
+    dryRun = false
 }
 
 fun fetchCrowdinMembers(projectId: String, token: String) {
@@ -339,11 +339,88 @@ fun fetchCrowdinMembers(projectId: String, token: String) {
     }
 }
 
+fun fetchCrowdinLanguages(projectId: String, token: String, minProgress: Int) {
+    data class Language(val twoLettersCode: String)
+    data class Data(val languageId: String, val language: Language, val translationProgress: Int)
+    data class LanguageData(val data: Data)
+    data class Root(val data: List<LanguageData>)
+
+    val customMappings = mapOf(
+        "zh-CN" to "zh-Hans",
+        "pt-BR" to "pt-BR",
+    )
+
+    val url =
+        URL("https://api.crowdin.com/api/v2/projects/$projectId/languages/progress?limit=500")
+    val conn = url.openConnection() as HttpURLConnection
+    conn.requestMethod = "GET"
+    conn.setRequestProperty("Authorization", "Bearer $token")
+    conn.setRequestProperty("Accept", "application/json")
+    conn.connectTimeout = 3000
+
+    val responseCode = conn.responseCode
+    if (responseCode == HttpURLConnection.HTTP_OK) {
+        val responseJson = conn.inputStream.bufferedReader().readText()
+
+        val gson = Gson()
+        val root = gson.fromJson(responseJson, Root::class.java)
+        val userDataList = root.data
+
+        val languagesFiltered = (
+                userDataList.filter {
+                    it.data.translationProgress >= minProgress
+                }.map {
+                    customMappings[it.data.languageId] ?: it.data.language.twoLettersCode
+                } + "en"
+                ).sorted()
+
+        // write to locale_config.xml
+        val localesConfigText = """
+<?xml version='1.0' encoding='UTF-8'?>
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+${languagesFiltered.joinToString("\n") { "    <locale android:name=\"$it\" />" }}
+</locale-config>
+"""
+        file("src/main/res/xml/locales_config.xml").writeText(localesConfigText)
+
+        val localeUtilsPartialText = """
+    val localesSet = arrayOf(
+${languagesFiltered.joinToString("\n") { "        \"$it\"," }}
+    )
+"""
+        // write to LocaleUtils.kt
+        val localeUtilsFile = file("src/main/java/com/arn/scrobble/utils/LocaleUtils.kt")
+
+        val localeUtilsText = localeUtilsFile.readText()
+        val start = localeUtilsText.indexOf("// localesSet start") + "// localesSet start".length
+        val end = localeUtilsText.indexOf("    // localesSet end")
+        val newLocaleUtilsText = localeUtilsText.substring(
+            0,
+            start
+        ) + localeUtilsPartialText + localeUtilsText.substring(end)
+        localeUtilsFile.writeText(newLocaleUtilsText)
+
+        println("Crowdin languages fetched successfully.")
+    } else {
+        throw IOException("Failed to fetch Crowdin languages. Response code: $responseCode")
+    }
+}
+
 tasks.register("fetchCrowdinMembers") {
     doLast {
         fetchCrowdinMembers(
             localProperties["crowdin.project"]!!,
             localProperties["crowdin.token"]!!
+        )
+    }
+}
+
+tasks.register("fetchCrowdinLanguages") {
+    doLast {
+        fetchCrowdinLanguages(
+            localProperties["crowdin.project"]!!,
+            localProperties["crowdin.token"]!!,
+            5
         )
     }
 }

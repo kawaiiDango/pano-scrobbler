@@ -694,7 +694,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         }
         return FileProvider.getUriForFile(
             requireContext(),
-            "com.arn.scrobble.fileprovider",
+            "${BuildConfig.APPLICATION_ID}.fileprovider",
             tagCloudFile
         )
     }

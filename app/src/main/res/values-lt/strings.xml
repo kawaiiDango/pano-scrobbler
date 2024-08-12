@@ -333,6 +333,8 @@
     <string name="persistent_noti_desc">Ilgai prispausk, kad paslėpti</string>
     <string name="scrobbler_off">Skrobuoklis išjungtas</string>
     <string name="scrobbler_on">Skrobuoklis aktyvus</string>
+    <string name="duration">Trukmė</string>
+    <string name="total_listen_time">Bendras klausymo laikas</string>
     <string name="acoustic" comment="(Acoustic music)">Akustika</string>
     <string name="instrumental">Instrumentinė</string>
     <string name="energetic" comment="(Energetic music)">Energinga</string>
@@ -361,6 +363,7 @@
     <string name="pref_enabled_apps_title">Pasirinkti programėles</string>
     <string name="pref_auto_detect">Automatiškai skrobuolinti iš naujų programėlių</string>
     <string name="pref_spotify_remote">Skrobuolinti „Spotify“ leidžiant kituose įrenginiuose</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Naudoti apytikslę atlikėjo vaizdų paiešką</string>
     <string name="pref_link_heart_button_rating">Naudoti širdelės mygtuką pranešime, kad jį taip pat pamėgti medijos leistuve</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobalinimą, kai įrenginys leidžia muziką</string>
     <string name="pref_delay">Skroblo delsa (priklausomai nuo to, kuri ankstesnė)</string>

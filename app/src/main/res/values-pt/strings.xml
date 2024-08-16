@@ -301,6 +301,8 @@
     <string name="persistent_noti_desc">Pressione e segure para ocultar isto</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="duration">Duração</string>
+    <string name="total_listen_time">Tempo total de música ouvida</string>
     <string name="acoustic" comment="(Acoustic music)">Acústica</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Enérgica</string>
@@ -329,6 +331,7 @@
     <string name="pref_enabled_apps_title">Selecionar aplicações</string>
     <string name="pref_auto_detect">Fazer scrobble automaticamente de novas aplicações</string>
     <string name="pref_spotify_remote">Fazer scrobble do Spotify enquanto reproduz noutros dispositivos</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Usar pesquisa aproximada para imagens de artistas</string>
     <string name="pref_link_heart_button_rating">Utilize o botão de coração na notificação para também favoritar no reprodutor multimédia</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Desativar scrobbling contínuo a partir do microfone quando o dispositivo estiver a reproduzir música</string>
     <string name="pref_delay">Intervalo de tempo para o scrobble (o que ocorrer primeiro)</string>

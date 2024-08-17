@@ -317,6 +317,8 @@
     <string name="persistent_noti_desc">Za skrivanje ovoga dugo pritisnite</string>
     <string name="scrobbler_off">Scrobbler onemogućen</string>
     <string name="scrobbler_on">Scrobbler aktivan</string>
+    <string name="duration">Trajanje</string>
+    <string name="total_listen_time">Ukupno vrijeme slušanja</string>
     <string name="acoustic" comment="(Acoustic music)">Akustična</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Energična</string>
@@ -345,6 +347,7 @@
     <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
     <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
     <string name="pref_spotify_remote">Scrobblaj Spotify s drugih uređaja</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Koristi približnu pretragu slike izvođača</string>
     <string name="pref_link_heart_button_rating">Koristi tipku srca u obavijesti za označavanje favorita i u reproduktoru glazbe</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Onemogući kontinuirano scrobblanje s mikrofona kada uređaj reproducira glazbu</string>
     <string name="pref_delay">Odgoda scrobbleanja (koje god će biti prvo)</string>

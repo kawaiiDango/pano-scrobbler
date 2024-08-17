@@ -311,7 +311,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 track = row[3],
                 album = row[4],
                 albumArtist = row[5],
-                durationMs = row[6].toLong(),
+                durationMs = row[6].toLongOrNull(),
                 mediaPlayerPackage = row[7],
                 mediaPlayerName = row.getOrNull(8),
                 mediaPlayerVersion = row.getOrNull(9),

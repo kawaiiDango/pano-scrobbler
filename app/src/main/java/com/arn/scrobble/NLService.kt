@@ -106,20 +106,25 @@ class NLService : NotificationListenerService() {
         //    onCreate seems to get called only once in those cases.
         //    also unreliable on lp and mm
         // just gate them with an inited flag
-        if (BuildConfig.DEBUG)
-            toast(R.string.scrobbler_on)
 
-        if (!inited)
-            init()
+
+        if (!inited) {
+            job = SupervisorJob()
+            coroutineScope = CoroutineScope(Dispatchers.Main + job!!)
+
+            // API 23 bug, force run them on Main thread
+            coroutineScope.launch {
+                if (BuildConfig.DEBUG)
+                    toast(R.string.scrobbler_on)
+                init()
+            }
+        }
     }
 
 
     private fun init() {
         // set it to true right away in case onListenerConnected gets called again before init has finished
         inited = true
-
-        job = SupervisorJob()
-        coroutineScope = CoroutineScope(Dispatchers.Main + job!!)
 
         val filter = IntentFilter().apply {
             addAction(iCANCEL)
@@ -240,22 +245,27 @@ class NLService : NotificationListenerService() {
             sessListener = null
             scrobbleQueue.shutdown()
         }
-        job?.cancel()
         PanoDb.destroyInstance()
+        job?.cancel()
     }
 
     override fun onListenerDisconnected() { //api 24+ only
         if (BuildConfig.DEBUG)
             toast(R.string.scrobbler_off)
 
-        if (inited && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        if (inited && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             destroy()
+        }
     }
 
 
     override fun onDestroy() {
-        if (inited && Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
-            destroy()
+        if (inited && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // API 23 bug, force run them on Main thread
+            coroutineScope.launch {
+                destroy()
+            }
+        }
         super.onDestroy()
     }
 

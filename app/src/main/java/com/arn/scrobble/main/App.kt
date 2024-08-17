@@ -16,7 +16,6 @@ import androidx.work.Configuration
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import coil3.networkObserverEnabled
 import coil3.request.allowHardware
 import coil3.request.crossfade
 import coil3.size.Precision
@@ -158,7 +157,6 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
         .crossfade(true)
         .precision(Precision.INEXACT)
         .allowHardware(false)
-        .networkObserverEnabled(true)
         .build()
 
     fun clearMusicEntryImageCache(entry: MusicEntry) {

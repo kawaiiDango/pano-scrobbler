@@ -162,7 +162,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         val changeLocalePref = findPreference<Preference>(MainPrefs.PREF_LOCALE)!!
 
         var prevLang = ""
-        val localeEntryValues = arrayOf("auto") + LocaleUtils.localesSet.toTypedArray()
+        val localeEntryValues = arrayOf("auto") + LocaleUtils.localesSet
         val localeEntries = localeEntryValues.map {
             if (it == "auto")
                 return@map getString(R.string.auto)
@@ -300,8 +300,8 @@ class PrefFragment : PreferenceFragmentCompat() {
             .title = getString(R.string.s_top_scrobbles, getString(R.string.monthly))
 
         val chartsWidget = findPreference<Preference>("charts_widget")!!
-        chartsWidget.setOnPreferenceClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            chartsWidget.setOnPreferenceClickListener {
                 val appWidgetManager = AppWidgetManager.getInstance(requireContext())
                 if (appWidgetManager.isRequestPinAppWidgetSupported) {
                     val pi = PendingIntent.getActivity(
@@ -316,8 +316,10 @@ class PrefFragment : PreferenceFragmentCompat() {
                         ComponentName(requireContext(), ChartsWidgetProvider::class.java)
                     appWidgetManager.requestPinAppWidget(myProvider, null, pi)
                 }
+                true
             }
-            true
+        } else {
+            chartsWidget.isVisible = false
         }
 
         hideOnTV += chartsWidget

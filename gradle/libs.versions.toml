@@ -2,11 +2,11 @@
 targetSdk = "35"
 minSdk = "23"
 minSdkBaselineProfile = "28"
-android-application = "8.7.0-alpha05"
+android-application = "8.7.0-alpha07"
 aboutlibraries = "11.2.2"
 activity = "1.9.1"
 androidSnowfall = "1.2.1"
-coil = "3.0.0-alpha09"
+coil = "3.0.0-alpha10"
 constraintlayout = "2.2.0-alpha14"
 billing = "7.0.0"
 core = "1.15.0-alpha01"
@@ -20,7 +20,7 @@ fragment = "1.8.2"
 harmony = "1.2.6"
 junit = "4.13.2"
 kotlin = "2.0.10"
-kotlinCsvJvm = "1.9.3"
+kotlinCsvJvm = "1.10.0"
 kotlinx-serialization-json = "1.7.1"
 ktorBom = "3.0.0-beta-2"
 kumo-core = "1.28.1"
@@ -37,7 +37,7 @@ play-publisher = "3.10.1"
 preference-ktx = "1.2.1"
 profileinstaller = "1.4.0-alpha02"
 recyclerview = "1.4.0-alpha02"
-runner = "1.6.1"
+runner = "1.6.2"
 skeletonlayout = "5.0.0"
 timber = "5.0.1"
 swiperefreshlayout = "1.2.0-alpha01"
@@ -60,7 +60,7 @@ android-snowfall = { module = "com.github.jetradarmobile:android-snowfall", vers
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version.ref = "viewpager" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
-kotlin-csv-jvm = { module = "com.github.doyaaaaaken:kotlin-csv-jvm", version.ref = "kotlinCsvJvm" }
+kotlin-csv-jvm = { module = "com.jsoizo:kotlin-csv-jvm", version.ref = "kotlinCsvJvm" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktorBom" }
 ktor-client-core = { module = "io.ktor:ktor-client-core" }

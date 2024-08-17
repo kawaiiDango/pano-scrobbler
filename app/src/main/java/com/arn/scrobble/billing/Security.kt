@@ -20,10 +20,13 @@ package com.arn.scrobble.billing
  * frauds.
  */
 import android.content.pm.PackageManager
-import android.util.Base64
 import com.android.billingclient.api.Purchase
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.main.App
+import com.arn.scrobble.utils.Stuff
+import io.ktor.util.decodeBase64Bytes
+import io.ktor.util.decodeBase64String
+import kotlinx.serialization.Serializable
 import java.io.IOException
 import java.security.*
 import java.security.spec.InvalidKeySpecException
@@ -35,7 +38,8 @@ import java.security.spec.X509EncodedKeySpec
  */
 object Security {
     private const val KEY_FACTORY_ALGORITHM = "RSA"
-    private const val SIGNATURE_ALGORITHM = "SHA1withRSA"
+    private const val PLAY_SIGNATURE_ALGORITHM = "SHA1withRSA"
+    private const val JWT_SIGNATURE_ALGORITHM = "SHA256withRSA"
 
     /**
      * Verifies that the data was signed with the given signature
@@ -53,7 +57,7 @@ object Security {
         ) {
             return false
         }
-        val key = generatePublicKey(Tokens.BASE_64_ENCODED_PUBLIC_KEY)
+        val key = loadPublicKey(Tokens.BASE_64_ENCODED_PUBLIC_KEY)
         return verify(key, purchase.originalJson, purchase.signature)
     }
 
@@ -65,9 +69,9 @@ object Security {
      * is invalid
      */
     @Throws(IOException::class)
-    private fun generatePublicKey(encodedPublicKey: String): PublicKey {
+    private fun loadPublicKey(encodedPublicKey: String): PublicKey {
         try {
-            val decodedKey = Base64.decode(encodedPublicKey, Base64.DEFAULT)
+            val decodedKey = encodedPublicKey.decodeBase64Bytes()
             val keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM)
             return keyFactory.generatePublic(X509EncodedKeySpec(decodedKey))
         } catch (e: NoSuchAlgorithmException) {
@@ -90,12 +94,12 @@ object Security {
     private fun verify(publicKey: PublicKey, signedData: String, signature: String): Boolean {
         val signatureBytes: ByteArray
         try {
-            signatureBytes = Base64.decode(signature, Base64.DEFAULT)
+            signatureBytes = signature.decodeBase64Bytes()
         } catch (e: IllegalArgumentException) {
             return false
         }
         try {
-            val signatureAlgorithm = Signature.getInstance(SIGNATURE_ALGORITHM)
+            val signatureAlgorithm = Signature.getInstance(PLAY_SIGNATURE_ALGORITHM)
             signatureAlgorithm.initVerify(publicKey)
             signatureAlgorithm.update(signedData.toByteArray())
             return signatureAlgorithm.verify(signatureBytes)
@@ -122,4 +126,56 @@ object Security {
         android.os.Process.killProcess(android.os.Process.myPid())
         return null
     }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun sha256(s: String) =
+        MessageDigest.getInstance("SHA-256")
+            .digest(s.toByteArray())
+            .toHexString()
+
+    fun validateJwt(token: String, base64PublicKey: String): Boolean {
+        @Serializable
+        data class JwtHeader(val alg: String, val typ: String)
+
+        try {
+            val parts = token.split(".")
+            if (parts.size != 3) return false
+
+            val header = parts[0].decodeBase64String().let {
+                Stuff.myJson.decodeFromString<JwtHeader>(it)
+            }
+
+            if (header.alg != "RS256") return false
+//            val payload = String(Base64.decode(parts[1], Base64.DEFAULT))
+            val signature = parts[2].decodeBase64Bytes()
+
+            val data = "${parts[0]}.${parts[1]}".toByteArray()
+
+            val trimmedKey = base64PublicKey.replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replace("\\s".toRegex(), "")
+
+            val publicKey = loadPublicKey(trimmedKey)
+            verifySignature(data, signature, publicKey)
+        } catch (e: Exception) {
+            return false
+        }
+        return true
+    }
+
+    private fun verifySignature(
+        data: ByteArray,
+        signature: ByteArray,
+        publicKey: PublicKey
+    ): Boolean {
+        return try {
+            val sig = Signature.getInstance("SHA256withRSA")
+            sig.initVerify(publicKey)
+            sig.update(data)
+            sig.verify(signature)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 }

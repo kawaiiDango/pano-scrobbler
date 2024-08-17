@@ -375,20 +375,20 @@ fun fetchCrowdinLanguages(projectId: String, token: String, minProgress: Int) {
                 ).sorted()
 
         // write to locale_config.xml
-        val localesConfigText = """
-<?xml version='1.0' encoding='UTF-8'?>
+        val localesConfigText =
+            """<?xml version='1.0' encoding='UTF-8'?>
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
 ${languagesFiltered.joinToString("\n") { "    <locale android:name=\"$it\" />" }}
 </locale-config>
 """
         file("src/main/res/xml/locales_config.xml").writeText(localesConfigText)
 
+        // write to LocaleUtils.kt
         val localeUtilsPartialText = """
     val localesSet = arrayOf(
 ${languagesFiltered.joinToString("\n") { "        \"$it\"," }}
     )
 """
-        // write to LocaleUtils.kt
         val localeUtilsFile = file("src/main/java/com/arn/scrobble/utils/LocaleUtils.kt")
 
         val localeUtilsText = localeUtilsFile.readText()

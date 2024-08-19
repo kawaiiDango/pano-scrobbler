@@ -24,10 +24,10 @@ which is a bug specific to WSA.
 
 ### Features:
 
-- No ads ever
-- Scrobbles to LastFM, LibreFM, GNU FM, Listenbrainz, Maloja, Pleroma
-- \* Scrobble to a CSV or JSONL file locally
 - Supports phones, TVs, tablets, and Android desktops, including Windows 11
+- No ads ever
+- Scrobbles to Lastfm, Librefm, GNUfm, ListenBrainz, Maloja, Pleroma
+- \* Scrobble to a CSV or JSONL file locally
 - \* Interactive notification: View song info, edit, love, cancel, or block songs directly from the
   notification
 - View song, album, artist, album artist, and tag details
@@ -44,13 +44,13 @@ which is a bug specific to WSA.
 - \* Collage generator
 - View scrobble count graphs and tag clouds
 - Get a random songs, album, or artist from your listening history
-- Search for a songs, artist, or album
-- Fetch albums and album artists from LastFM, if missing, before scrobbling
-- \* Get your top scrobble digests as a notification at the end of every week and month
-- Add or remove personal tags
-- Mix and match themes, supports Material You
-- \* Broadcast Intents for automation apps like Tasker
-- Remember and see apps you scrobbled from and search directly within them
+- Search Lastfm for a songs, artists, or albums
+- Fetch albums and album artists from Lastfm, if missing, before scrobbling
+- \* Get your top scrobbles digests as a notification at the end of every week and month
+- Add or remove personal tags from the info screen
+- Mix and match themes
+- \* Broadcast Intents for automation apps
+- Remember and see apps you scrobbled from and play directly in them
 
 Features marked with * are not available on TV due to OS limitations.
 

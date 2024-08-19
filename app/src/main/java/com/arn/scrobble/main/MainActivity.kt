@@ -141,9 +141,7 @@ class MainActivity : AppCompatActivity(),
         if (Stuff.isLoggedIn()) {
             canShowNotices = true
             mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
-            if (savedInstanceState == null && intent?.categories?.contains(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true) {
-                navController.navigate(R.id.prefFragment)
-            }
+            handleIntent(intent, false)
         }
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -297,6 +295,18 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    private fun handleIntent(intent: Intent, onNewIntent: Boolean) {
+        if (Stuff.isLoggedIn()) {
+            if (intent.categories?.contains(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true) {
+                navController.navigate(R.id.prefFragment)
+            } else if (intent.action == Intent.ACTION_SEARCH) {
+                navController.navigate(R.id.searchFragment, intent.extras)
+            } else if (onNewIntent) {
+                navController.handleDeepLink(intent)
+            }
+        }
+    }
+
     override fun onDestinationChanged(
         controller: NavController,
         destination: NavDestination,
@@ -324,10 +334,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        navController.handleDeepLink(intent)
-        if (Stuff.isLoggedIn() && intent.categories?.contains(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true) {
-            navController.navigate(R.id.prefFragment)
-        }
+        handleIntent(intent, true)
     }
 
     override fun attachBaseContext(newBase: Context?) {

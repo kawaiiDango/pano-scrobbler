@@ -1,6 +1,7 @@
 package com.arn.scrobble.search
 
 import android.annotation.SuppressLint
+import android.app.SearchManager
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -74,21 +75,25 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val queryFromIntent = arguments?.getString(SearchManager.QUERY)?.ifEmpty { null }
+
         if (!BuildConfig.DEBUG) {
             binding.searchType.visibility = View.GONE
         }
 
-        if (savedInstanceState == null) {
-            binding.searchEdittext.requestFocus()
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(400)
-                showKeyboard(binding.searchTerm.editText!!)
+        if (queryFromIntent == null) {
+            if (savedInstanceState == null) {
+                binding.searchEdittext.requestFocus()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(400)
+                    showKeyboard(binding.searchTerm.editText!!)
+                }
             }
-        }
 
-        binding.searchEdittext.setOnClickListener { v ->
-            if (Stuff.isTv)
-                showKeyboard(v)
+            binding.searchEdittext.setOnClickListener { v ->
+                if (Stuff.isTv)
+                    showKeyboard(v)
+            }
         }
 
         binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
@@ -226,6 +231,11 @@ class SearchFragment : Fragment() {
                 binding.empty.isVisible = false
                 skeleton.showSkeleton()
             }
+        }
+
+        if (queryFromIntent != null) {
+            binding.searchTerm.editText!!.setText(queryFromIntent)
+            viewModel.search(queryFromIntent, prefs.searchType)
         }
     }
 

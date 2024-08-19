@@ -1,42 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="n_mr1">
     <shortcut
-        android:shortcutId="pref"
         android:enabled="true"
         android:icon="@mipmap/ic_shortcut_settings"
-        android:shortcutShortLabel="@string/settings"
+        android:shortcutDisabledMessage="@string/settings"
+        android:shortcutId="pref"
         android:shortcutLongLabel="@string/settings"
-        android:shortcutDisabledMessage="@string/settings">
+        android:shortcutShortLabel="@string/settings">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.arn.scrobble"
+            android:data="pano-scrobbler://screen/settings"
             android:targetClass="com.arn.scrobble.main.MainActivity"
-            android:data="pano-scrobbler://screen/settings" />
+            android:targetPackage="com.arn.scrobble" />
     </shortcut>
     <shortcut
-        android:shortcutId="rec"
         android:enabled="true"
         android:icon="@mipmap/ic_shortcut_mic"
-        android:shortcutShortLabel="@string/from_mic"
+        android:shortcutDisabledMessage="@string/from_mic"
+        android:shortcutId="rec"
         android:shortcutLongLabel="@string/from_mic"
-        android:shortcutDisabledMessage="@string/from_mic">
+        android:shortcutShortLabel="@string/from_mic">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.arn.scrobble"
+            android:data="pano-scrobbler://screen/identify"
             android:targetClass="com.arn.scrobble.main.MainActivity"
-            android:data="pano-scrobbler://screen/identify" />
+            android:targetPackage="com.arn.scrobble" />
     </shortcut>
     <shortcut
-        android:shortcutId="search"
         android:enabled="true"
         android:icon="@mipmap/ic_shortcut_search"
-        android:shortcutShortLabel="@string/search"
+        android:shortcutDisabledMessage="@string/search"
+        android:shortcutId="search"
         android:shortcutLongLabel="@string/search"
-        android:shortcutDisabledMessage="@string/search">
+        android:shortcutShortLabel="@string/search">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.arn.scrobble"
+            android:data="pano-scrobbler://screen/search"
             android:targetClass="com.arn.scrobble.main.MainActivity"
-            android:data="pano-scrobbler://screen/search" />
+            android:targetPackage="com.arn.scrobble" />
     </shortcut>
 </shortcuts>

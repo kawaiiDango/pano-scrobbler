@@ -110,6 +110,7 @@
                 <category android:name="android.intent.category.NOTIFICATION_PREFERENCES" />
 
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
             <intent-filter android:label="Screen">
                 <action android:name="android.intent.action.VIEW" />
@@ -124,6 +125,10 @@
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
 
         <activity

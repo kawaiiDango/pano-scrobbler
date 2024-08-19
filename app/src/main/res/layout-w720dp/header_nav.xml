@@ -9,26 +9,29 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/nav_profile_pic"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:contentDescription="@string/profile_pic"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/roundedCorners"
+        app:shapeAppearance="@style/circleImageView"
         tools:srcCompat="@drawable/vd_wave_simple_filled" />
 
     <TextView
         android:id="@+id/nav_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:ellipsize="end"
+        android:maxWidth="80dp"
         android:maxLines="1"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nav_profile_links"
+        app:layout_constraintBottom_toBottomOf="@+id/nav_profile_pic"
+        app:layout_constraintStart_toEndOf="@+id/nav_profile_pic"
+        app:layout_constraintTop_toTopOf="@+id/nav_profile_pic"
         tools:text="nav_name" />
 
     <TextView
@@ -105,12 +108,12 @@
         android:paddingBottom="16dp"
         app:constraint_referenced_ids=" nav_num_scrobbles_total, nav_num_artists, nav_num_albums, nav_num_tracks,nav_num_scrobbles_today"
         app:flow_horizontalAlign="end"
-        app:flow_maxElementsWrap="2"
+        app:flow_maxElementsWrap="3"
         app:flow_wrapMode="chain2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nav_name" />
+        app:layout_constraintTop_toBottomOf="@+id/nav_profile_pic" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/nav_profile_links"
@@ -124,8 +127,9 @@
         app:elevation="4dp"
         app:icon="@drawable/vd_arrow_down"
         app:iconSize="24dp"
-        app:layout_constraintBaseline_toBottomOf="@id/nav_profile_pic"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@id/nav_profile_pic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/nav_profile_pic" />
     <!--sometimes focus doesn't work on borderless-->
 
     <com.google.android.material.divider.MaterialDivider

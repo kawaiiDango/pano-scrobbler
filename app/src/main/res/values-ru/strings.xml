@@ -333,6 +333,8 @@
     <string name="persistent_noti_desc">Нажмите и удерживайте, чтобы скрыть это</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
+    <string name="duration">Продолжительность</string>
+    <string name="total_listen_time">Общее время прослушивания</string>
     <string name="acoustic" comment="(Acoustic music)">Акустическая</string>
     <string name="instrumental">Инструментальная</string>
     <string name="energetic" comment="(Energetic music)">Энергичная</string>
@@ -361,6 +363,7 @@
     <string name="pref_enabled_apps_title">Выберите приложения</string>
     <string name="pref_auto_detect">Автоматически скробблить из новых приложений</string>
     <string name="pref_spotify_remote">Скробблинг Spotify, играющий на других устройствах</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Использовать примерный поиск изображений исполнителей</string>
     <string name="pref_link_heart_button_rating">Использовать кнопку сердца в уведомлении, чтобы также добавить в избранное в медиаплеере</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Отключить непрерывный скробблинг с микрофона при воспроизведении музыки</string>
     <string name="pref_delay">Задержка скробблинга (в зависимости от того, что наступит раньше)</string>

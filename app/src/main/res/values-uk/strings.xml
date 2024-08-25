@@ -131,6 +131,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Застосунки</string>
     <string name="offline">Офлайн. Дані не оновлюються</string>
     <string name="unavailable_offline">Недоступно в офлайн режимі</string>
+    <string name="tv_url_notice">Відкрити це посилання у браузері на іншому пристрої</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервіси</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слухав \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слухав \n%1$s %2$s</string>
@@ -180,6 +181,8 @@
     <string name="pending_scrobbles">Очікуючі Скробли</string>
     <string name="pending_scrobble">Очікуючі Скробли</string>
     <string name="pending_scrobbles_noti">Обробка очікуючих скроблів</string>
+    <string name="following" comment="accounts you are following on lastfm">Підписки</string>
+    <string name="followers" comment="your lastfm followers">підписники</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скроблів, з %2$s</string>
     <string name="allow_background">Дозволити скробблінг у фоновому режимі</string>
     <string name="grant_notification_access">Надайте доступ до сповіщень</string>
@@ -318,6 +321,8 @@
     <string name="persistent_noti_desc">Натисніть і утримуйте кнопку щоб сховати</string>
     <string name="scrobbler_off">Скроблер вимкнено</string>
     <string name="scrobbler_on">Скроблер увімкнений</string>
+    <string name="duration">Тривалість</string>
+    <string name="total_listen_time">Загальний час прослуховування</string>
     <string name="acoustic" comment="(Acoustic music)">Акустична</string>
     <string name="instrumental">Інструментальна</string>
     <string name="energetic" comment="(Energetic music)">Енергетика</string>
@@ -346,6 +351,7 @@
     <string name="pref_enabled_apps_title">Виберіть додатки</string>
     <string name="pref_auto_detect">Автоматично скробблити з нових додатків</string>
     <string name="pref_spotify_remote">Скробблити Spotify, коли він грає на інших пристроях</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Використовувати приблизний пошук зображень виконавця</string>
     <string name="pref_link_heart_button_rating">Використовувати кнопку «Сердечко» у сповіщенні, щоб також додати його до улюблених у медіапрогравачі</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Вимкнути безперервний скроблінг з мікрофона, коли пристрій відтворює музику</string>
     <string name="pref_delay">Затримка скроблінгу (яка є раніше)</string>
@@ -373,6 +379,9 @@
     <string name="pref_export">Експорт</string>
     <string name="pref_export_desc">Зберігає налаштування, правки та чорний список. Не зберігає логіни за міркувань безпеки. Корисно для переміщення між девайсами або обміну з друзями.</string>
     <string name="pref_import">Імпорт</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Мережа</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Код</string>
+    <string name="pref_imexport_network_notice">Для режиму мережі обидва пристрої повинні бути під\'єднані до однієї мережі.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Персоналізація</string>
     <string name="pref_themes" comment="Color themes">Теми</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Змішуйте та комбінуйте,\nТа також змінюйте колір сповіщень</string>
@@ -436,6 +445,7 @@
     <string name="fix_it_title">Можливі виправлення</string>
     <string name="fix_it_startup_title">Економія енергії, менеджер запусків</string>
     <string name="fix_it_battery_title">Вимкнути оптимізацію використання батареї</string>
+    <string name="fix_it_energy_title">Вимкнути оптимізацію енергоспоживання</string>
     <string name="fix_it_action" comment="(To open an app)">Відкрити</string>
     <string name="delete_account">Видалити обліковий запис</string>
     <string name="delete_account_custom_servers">Для користувацьких серверів перевірте їх відповідні документи.</string>

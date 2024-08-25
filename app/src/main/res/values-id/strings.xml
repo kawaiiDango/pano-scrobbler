@@ -285,6 +285,8 @@
     <string name="persistent_noti_desc">Tekan lama untuk menyembunyikan ini</string>
     <string name="scrobbler_off">Scrobbler dinonaktifkan</string>
     <string name="scrobbler_on">Scrobbler aktif</string>
+    <string name="duration">Durasi</string>
+    <string name="total_listen_time">Total waktu mendengarkan</string>
     <string name="acoustic" comment="(Acoustic music)">Akustik</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Energik</string>
@@ -313,6 +315,7 @@
     <string name="pref_enabled_apps_title">Pilih Aplikasi</string>
     <string name="pref_auto_detect">Scrobble otomatis dari aplikasi baru</string>
     <string name="pref_spotify_remote">Scrobble Spotify diputar di perangkat lain</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Gunakan pencarian perkiraan untuk gambar artis</string>
     <string name="pref_link_heart_button_rating">Gunakan tombol hati di notifikasi untuk juga memfavoritkannya di pemutar media</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Nonaktifkan scrobbling terus menerus dari mikrofon saat perangkat memutar musik</string>
     <string name="pref_delay">Penundaan scrobble (mana yang lebih dulu)</string>

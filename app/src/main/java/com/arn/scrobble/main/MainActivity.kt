@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity(),
 
         super.onCreate(savedInstanceState)
 
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
+        ColorPatchUtils.setTheme(this)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)
 
         binding = ContentMainBinding.inflate(layoutInflater)
@@ -214,8 +214,6 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        billingViewModel.queryPurchases()
-
         if (canShowNotices) {
             showChangelogIfNeeded()
         }
@@ -244,6 +242,8 @@ class MainActivity : AppCompatActivity(),
                 Timber.w(e.cause)
             }
         }
+
+        billingViewModel.queryPurchasesAsync()
     }
 
     override fun onDestroy() {

@@ -53,7 +53,7 @@ abstract class PanoDb : RoomDatabase() {
 
         val db
             get(): PanoDb = INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(App.context, PanoDb::class.java, fileName)
+                Room.databaseBuilder(App.application, PanoDb::class.java, fileName)
                     .addMigrations(*ManualMigrations.all)
                     .enableMultiInstanceInvalidation()
                     .build()

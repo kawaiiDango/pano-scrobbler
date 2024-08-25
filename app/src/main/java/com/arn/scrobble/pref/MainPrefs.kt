@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 
 class MainPrefs : Krate {
 
-    override val sharedPreferences = App.context.getHarmonySharedPreferences(NAME)
+    override val sharedPreferences = App.application.getHarmonySharedPreferences(NAME)
 
     init {
         json = Stuff.myJson
@@ -39,7 +39,7 @@ class MainPrefs : Krate {
 
     private val nm by lazy {
         ContextCompat.getSystemService(
-            App.context,
+            App.application,
             NotificationManager::class.java
         )!!
     }
@@ -163,7 +163,13 @@ class MainPrefs : Krate {
     var acrcloudKey by stringPref(PREF_ACR_KEY)
     var acrcloudSecret by stringPref(PREF_ACR_SECRET)
 
-    var proStatus by booleanPref(PREF_PRO_STATUS).withDefault(false)
+    val proStatus
+        get() =
+            App.billingRepository.proStatus.value
+
+    var receipt by stringPref(PREF_RECEIPT)
+    var receiptSignature by stringPref(PREF_RECEIPT_SIGNATURE)
+    var lastLicenseCheckTime by longPref(PREF_LAST_LICENSE_CHECK_TIME).withDefault(-1L)
     var digestSeconds by intPref(PREF_DIGEST_SECONDS)
     var lastReviewPromptTime by longPref(PREF_FIRST_LAUNCHED)
     var lastUpdateCheckTime by longPref(PREF_LAST_UPDATE_CHECK_TIME)
@@ -300,7 +306,9 @@ class MainPrefs : Krate {
         const val PREF_THEME_TINT_BG = "theme_tint_bg"
         const val PREF_THEME_DYNAMIC = "theme_dynamic"
         const val PREF_THEME_DAY_NIGHT = "theme_day_night"
-        const val PREF_PRO_STATUS = "pro_status"
+        const val PREF_RECEIPT = "receipt"
+        const val PREF_RECEIPT_SIGNATURE = "receipt_signature"
+        const val PREF_LAST_LICENSE_CHECK_TIME = "last_license_check_time"
         const val PREF_DIGEST_SECONDS = "digest_seconds"
         const val PREF_LOCALE = "locale"
         const val PREF_SEARCH_IN_SOURCE = "search_in_source"

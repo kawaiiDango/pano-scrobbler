@@ -6,7 +6,7 @@ import com.arn.scrobble.main.App
 
 class TranslatorsVM : ViewModel() {
     // read each line from the raw resource file and collect them into a list
-    val translators = App.context
+    val translators = App.application
         .resources
         .openRawResource(R.raw.crowdin_members)
         .bufferedReader()

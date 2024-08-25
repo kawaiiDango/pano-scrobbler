@@ -202,10 +202,10 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
                 contentType(ContentType.Application.Json)
                 setBody(
                     CreateAppRequest(
-                        client_name = App.context.getString(R.string.app_name),
+                        client_name = App.application.getString(R.string.app_name),
                         redirect_uris = Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma",
                         scopes = "read write",
-                        website = App.context.getString(R.string.github_link)
+                        website = App.application.getString(R.string.github_link)
                     )
                 )
             }
@@ -258,7 +258,7 @@ class PleromaExpirationPolicy : ExpirationPolicy {
     override fun getExpirationTime(url: Url) =
         when (url.pathSegments.lastOrNull()) {
             "scrobbles",
-            -> ONE_WEEK
+                -> ONE_WEEK
 
             else -> -1
         }

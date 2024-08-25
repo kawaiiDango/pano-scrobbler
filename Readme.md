@@ -43,7 +43,7 @@ which is a bug specific to WSA.
 - \* Charts are also available as a customizable home-screen widget
 - \* Collage generator
 - View scrobble count graphs and tag clouds
-- Get a random songs, album, or artist from your listening history
+- Get a random song, album, or artist from your listening history
 - Search Lastfm for a songs, artists, or albums
 - Fetch albums and album artists from Lastfm, if missing, before scrobbling
 - \* Get your top scrobbles digests as a notification at the end of every week and month

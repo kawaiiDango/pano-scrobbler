@@ -1,9 +1,9 @@
 package com.arn.scrobble.edits
 
-import com.arn.scrobble.main.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.main.App
 
 object RegexPresets {
     private val presets = mapOf(
@@ -53,7 +53,7 @@ object RegexPresets {
     val presetKeys = presets.keys
 
     fun getString(key: String): String {
-        return App.context.getString(presets[key]?.first ?: R.string.not_found)
+        return App.application.getString(presets[key]?.first ?: R.string.not_found)
     }
 
     fun getPossiblePreset(regexEdit: RegexEdit) = presets[regexEdit.preset]?.second

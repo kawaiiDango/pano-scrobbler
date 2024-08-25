@@ -2,8 +2,8 @@ package com.arn.scrobble.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.arn.scrobble.main.App
 import com.arn.scrobble.R
+import com.arn.scrobble.main.App
 import kotlin.math.min
 
 // TODO: test for race conditions
@@ -164,9 +164,9 @@ data class ExpandableHeader(
         maxCollapsedItems: Int = 3,
     ) : this(
         iconRes,
-        App.context.getString(titleRes),
-        App.context.getString(expandTextRes),
-        App.context.getString(collapseTextRes),
+        App.application.getString(titleRes),
+        App.application.getString(expandTextRes),
+        App.application.getString(collapseTextRes),
         isExpanded,
         maxCollapsedItems
     )

@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.ExtrasConsts
+import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentBillingToubleshootBinding
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
 import com.arn.scrobble.utils.UiUtils.setupInsets
@@ -32,6 +34,11 @@ class BillingTroubleshootFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setupInsets()
+
+        binding.billingTroubleshootText.text = if (ExtrasConsts.isFossBuild)
+            getString(R.string.billing_troubleshoot_github, 6, "October 2024", 4)
+        else
+            getString(R.string.billing_troubleshoot)
 
         binding.close.setOnClickListener {
             findNavController().popBackStack()

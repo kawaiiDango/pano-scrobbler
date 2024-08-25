@@ -63,7 +63,7 @@ class ExportVM : ViewModel() {
                 config {
                     val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
                     val keyStoreStream =
-                        App.context.resources.openRawResource(R.raw.embedded_server_bks)
+                        App.application.resources.openRawResource(R.raw.embedded_server_bks)
                     keyStore.load(keyStoreStream, null)
 
                     val trustManagerFactory =

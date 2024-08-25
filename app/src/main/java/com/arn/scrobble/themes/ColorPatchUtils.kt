@@ -5,9 +5,9 @@ import android.content.Intent
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
-import com.arn.scrobble.main.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff.getOrDefaultKey
 import com.google.android.material.color.DynamicColors
 
@@ -33,7 +33,7 @@ object ColorPatchUtils {
     }
 
     // after Activity.onCreate
-    fun setTheme(context: Context, proStatus: Boolean) {
+    fun setTheme(context: Context) {
         val prefs = App.prefs
 
 //        var dayNightConstant = prefs.themeDayNight
@@ -47,7 +47,7 @@ object ColorPatchUtils {
 //        }
 //        AppCompatDelegate.setDefaultNightMode(dayNightConstant)
 
-        if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable() && proStatus) {
+        if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable() && prefs.proStatus) {
             if (prefs.themeTintBackground)
                 context.theme.applyStyle(R.style.ColorPatchManual_DarkerLightBackground, true)
             else
@@ -60,7 +60,7 @@ object ColorPatchUtils {
         val primaryStyle: String
         val secondaryStyle: String
 
-        if (!proStatus) {
+        if (!prefs.proStatus) {
             primaryStyle = primaryDefault
             secondaryStyle = secondaryDefault
         } else if (isRandom) {
@@ -90,7 +90,7 @@ object ColorPatchUtils {
                 .getOrDefaultKey(secondaryStyle, secondaryDefault), true
         )
 
-        if (prefs.themeTintBackground || !proStatus)
+        if (prefs.themeTintBackground || !prefs.proStatus)
             context.theme.applyStyle(
                 ColorPatchMap.backgroundStyles
                     .getOrDefaultKey(primaryStyle, primaryDefault), true

@@ -36,18 +36,18 @@ object PackageNameMetadata {
         val _version: String
 
         try {
-            val pkgInfo = App.context.packageManager.getPackageInfo(packageName, 0)
+            val pkgInfo = App.application.packageManager.getPackageInfo(packageName, 0)
             val appInfo = pkgInfo.applicationInfo ?: return
-            val configuration = Configuration(App.context.resources.configuration)
+            val configuration = Configuration(App.application.resources.configuration)
             configuration.setLocale(Locale.US)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 configuration.setLocales(LocaleList(Locale.US))
             }
             val pkgRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                App.context.packageManager.getResourcesForApplication(appInfo, configuration)
+                App.application.packageManager.getResourcesForApplication(appInfo, configuration)
             } else {
-                App.context.packageManager.getResourcesForApplication(appInfo).also {
-                    it.updateConfiguration(configuration, App.context.resources.displayMetrics)
+                App.application.packageManager.getResourcesForApplication(appInfo).also {
+                    it.updateConfiguration(configuration, App.application.resources.displayMetrics)
                 }
             }
 

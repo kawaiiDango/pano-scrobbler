@@ -318,5 +318,9 @@
             android:title="@string/demo_mode"
             android:persistent="true"
             android:defaultValue="false"/>
+
+        <Preference
+            android:key="copy_sk"
+            android:title="@string/copy_sk"/>
     </PreferenceCategory>
 </PreferenceScreen>

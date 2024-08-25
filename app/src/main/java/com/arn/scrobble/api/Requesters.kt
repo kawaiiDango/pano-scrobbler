@@ -54,11 +54,11 @@ object Requesters {
 
                 install(UserAgent) {
                     agent =
-                        App.context.getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME
+                        App.application.getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME
                 }
 
                 install(HttpCache) {
-                    val cacheFile = File(App.context.cacheDir, "ktor")
+                    val cacheFile = File(App.application.cacheDir, "ktor")
                     cacheFile.mkdirs()
                     publicStorage(FileStorage(cacheFile))
                 }

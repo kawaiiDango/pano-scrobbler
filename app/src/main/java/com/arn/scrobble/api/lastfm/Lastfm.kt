@@ -18,7 +18,6 @@ import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
-import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.setMidnight
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
@@ -29,7 +28,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.Parameters
 import io.ktor.http.parametersOf
-import kotlinx.coroutines.supervisorScope
 import timber.log.Timber
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -191,10 +189,6 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             }
 
             it.copy(entries = entries)
-        }.recoverCatching {
-            if (it is ApiException && it.code == 17) {
-                throw ApiException(it.code, "This profile is private", it)
-            } else throw it
         }
     }
 
@@ -384,26 +378,18 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             timePeriod, registeredTime
         )
 
-        val periodCountsMap = mutableMapOf<TimePeriod, Int>()
-        timePeriods.forEach { periodCountsMap[it] = 0 }
-
-        supervisorScope {
-            timePeriods.mapConcurrently(5) {
-                if (it.start < System.currentTimeMillis()) {
-                    kotlin.runCatching {
-                        val resp = getRecents(
-                            username = username,
-                            from = it.start,
-                            to = it.end,
-                            page = 1,
-                            limit = 1
-                        )
-                        periodCountsMap[it] = resp.map { it.attr.totalPages }.getOrDefault(0)
-                    }
-                }
-            }
+        return timePeriods.associateWith {
+            if (it.start < System.currentTimeMillis()) {
+                getRecents(
+                    username = username,
+                    from = it.start,
+                    to = it.end,
+                    page = 1,
+                    limit = 1
+                ).map { it.attr.totalPages }.getOrDefault(0)
+            } else
+                0
         }
-        return periodCountsMap
     }
 
 

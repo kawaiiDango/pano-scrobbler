@@ -27,7 +27,7 @@
         android:layout_marginStart="16dp"
         android:ellipsize="end"
         android:maxWidth="80dp"
-        android:maxLines="1"
+        android:maxLines="2"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/nav_profile_pic"
         app:layout_constraintStart_toEndOf="@+id/nav_profile_pic"

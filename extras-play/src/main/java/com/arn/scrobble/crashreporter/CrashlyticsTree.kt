@@ -1,4 +1,4 @@
-package com.arn.scrobble.main
+package com.arn.scrobble.crashreporter
 
 import android.util.Log
 import com.google.firebase.Firebase

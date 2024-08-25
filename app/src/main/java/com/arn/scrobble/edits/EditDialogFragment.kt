@@ -67,10 +67,10 @@ class EditDialogFragment : LoginFragment() {
         lockScrobble(true)
 
         val placeholderTextArgs = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.edit),
-            textFieldLast = App.context.getString(R.string.artist),
-            textField1 = App.context.getString(R.string.track),
-            textField2 = App.context.getString(R.string.album_optional)
+            loginTitle = App.application.getString(R.string.edit),
+            textFieldLast = App.application.getString(R.string.artist),
+            textField1 = App.application.getString(R.string.track),
+            textField2 = App.application.getString(R.string.album_optional)
         )
             .toBundle()
 
@@ -403,10 +403,10 @@ class EditDialogFragment : LoginFragment() {
         // do not scrobble until the dialog is dismissed
 
         val intent = Intent(NLService.iSCROBBLE_SUBMIT_LOCK_S)
-            .setPackage(App.context.packageName)
+            .setPackage(App.application.packageName)
             .putExtra(NLService.B_LOCKED, lock)
             .putExtra(NLService.B_HASH, args.hash)
 
-        App.context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
+        App.application.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
     }
 }

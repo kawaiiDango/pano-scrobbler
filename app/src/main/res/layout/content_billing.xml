@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:clipToPadding="false"
     android:orientation="vertical"
     android:paddingVertical="16dp"
@@ -47,6 +48,25 @@
             android:maxLines="2"
             android:text="@string/get_pro"
             app:icon="@drawable/vd_heart" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/code"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="@string/pref_imexport_code"
+            android:visibility="gone"
+            app:endIconDrawable="@drawable/vd_check_simple"
+            app:endIconMode="custom"
+            tools:visibility="visible">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/code_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:maxLines="2" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/billing_troubleshoot"

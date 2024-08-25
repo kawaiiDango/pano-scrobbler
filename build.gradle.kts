@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.aboutlibraries) apply false
     alias(libs.plugins.github.release) apply false
     alias(libs.plugins.baselineprofile) apply false
+    alias(libs.plugins.android.library) apply false
 }
 
 tasks.register<Delete>("clean").configure {

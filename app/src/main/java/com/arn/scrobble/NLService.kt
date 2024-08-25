@@ -278,7 +278,7 @@ class NLService : NotificationListenerService() {
     private fun shouldCheckNoti(sbn: StatusBarNotification?): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 sbn != null &&
-                (sbn.packageName == Stuff.PACKAGE_SHAZAM && sbn.tag == Stuff.NOTIFICATION_TAG_SHAZAM && sbn.notification.channelId == Stuff.CHANNEL_SHAZAM ||
+                (sbn.packageName == Stuff.PACKAGE_SHAZAM && sbn.notification.channelId == Stuff.CHANNEL_SHAZAM && sbn.notification.actions != null ||
                         sbn.packageName in Stuff.PACKAGES_PIXEL_NP && sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP)
 
     }

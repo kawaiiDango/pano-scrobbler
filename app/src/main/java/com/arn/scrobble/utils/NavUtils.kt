@@ -74,7 +74,7 @@ object NavUtils {
         if (drawerData.scrobblesToday >= 0) {
             headerNavBinding.navNumScrobblesToday.isVisible = true
             headerNavBinding.navNumScrobblesToday.text =
-                App.context.resources.getQuantityString(
+                App.application.resources.getQuantityString(
                     R.plurals.num_scrobbles_today,
                     drawerData.scrobblesToday,
                     drawerData.scrobblesToday.format()
@@ -170,12 +170,15 @@ object NavUtils {
             val prefs = App.prefs
             val popup = PopupMenu(headerNavBinding.root.context, anchor)
 
-            popup.menu.add(1, -2, 0, R.string.profile)
+            popup.menu.add(1, -3, 0, R.string.profile)
                 .apply { setIcon(R.drawable.vd_open_in_new) }
 
             if (!Stuff.isTv) {
-                popup.menu.add(1, -1, 0, R.string.reports)
+                popup.menu.add(1, -2, 0, R.string.reports)
                     .apply { setIcon(R.drawable.vd_open_in_new) }
+            } else {
+                popup.menu.add(1, -1, 0, R.string.faq)
+                    .apply { setIcon(R.drawable.vd_help) }
             }
 
 //            if (currentUser.isSelf || Stuff.isTv) {
@@ -201,16 +204,12 @@ object NavUtils {
 
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    -3 -> {
-                        val args = Bundle().apply { putBoolean(Stuff.ARG_SCROLL_TO_ACCOUNTS, true) }
-                        navController.navigate(R.id.prefFragment, args)
-                    }
 
-                    -2 -> {
+                    -3 -> {
                         Stuff.openInBrowser(headerNavBinding.root.context, currentUser.url)
                     }
 
-                    -1 -> {
+                    -2 -> {
                         val url = when (currentAccount.type) {
                             AccountType.LASTFM -> "https://www.last.fm/user/${currentUser.name}/listening-report/week"
                             AccountType.LIBREFM -> "https://libre.fm/user/${currentUser.name}/stats"
@@ -223,6 +222,16 @@ object NavUtils {
                         }
 
                         Stuff.openInBrowser(headerNavBinding.root.context, url)
+                    }
+
+                    -1 -> {
+                        val args = Bundle().apply {
+                            putString(
+                                Stuff.ARG_URL,
+                                headerNavBinding.root.context.getString(R.string.faq_link)
+                            )
+                        }
+                        navController.navigate(R.id.webViewFragment, args)
                     }
 
                     else -> {
@@ -341,6 +350,9 @@ object NavUtils {
                             if (!App.prefs.proStatus)
                                 activityBinding.sidebarNav.menu.findItem(R.id.nav_pro)?.isVisible =
                                     true
+
+                            activityBinding.sidebarNav.menu.findItem(R.id.nav_help)?.isVisible =
+                                !Stuff.isTv
 
                         }
 

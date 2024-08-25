@@ -205,7 +205,7 @@ class Maloja(userAccount: UserAccountSerializable) :
                 parameter("key", userAccountTemp.authKey)
             }.map {
                 Requesters.genericKtorClient.getResult<ServerInfo>("${userAccountTemp.apiRoot}/apis/mlj_1/serverinfo")
-                    .map { it.name }.getOrNull() ?: App.context.getString(R.string.maloja)
+                    .map { it.name }.getOrNull() ?: App.application.getString(R.string.maloja)
 
             }.onSuccess { username ->
                 val account = UserAccountSerializable(
@@ -235,7 +235,7 @@ class MalojaExpirationPolicy : ExpirationPolicy {
     override fun getExpirationTime(url: Url) =
         when (url.pathSegments.lastOrNull()) {
             "scrobbles",
-            -> ONE_WEEK
+                -> ONE_WEEK
 
             else -> -1
         }

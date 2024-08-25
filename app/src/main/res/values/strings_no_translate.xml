@@ -8,6 +8,7 @@
     <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
     <string name="privacy_policy_link" translatable="false">https://telegra.ph/Pano-Scrobbler-Privacy-Policy-08-17</string>
     <string name="faq_link" translatable="false">https://telegra.ph/Pano-Scrobbler-FAQ-05-30</string>
+    <string name="ko_fi_link" translatable="false">https://ko-fi.com/kawaiiDango</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
     <string name="gnufm" translatable="false">GNU FM</string>
@@ -33,6 +34,18 @@
 
     <!--  strings for unfinalized stuff  -->
     <string name="use_arrow_keys_to_adjust" translatable="false">Use the arrow keys to adjust the value</string>
+    <string name="billing_troubleshoot_github" translatable="false" formatted="true">"""Already donated?
+
+If you had donated $%1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi with your email address and the code will be manually mailed to you.
+
+Already purchased through Google Play?
+
+According to Google Play's policy, purchases made through Google Play cannot be used for apps downloaded outside of Google Play.
+
+Activation code not working?
+
+A single activation code can be used on up to %3$d devices.
+"""</string>
 
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
@@ -42,4 +55,5 @@
     <string name="test_scrobble_from_noti" translatable="false">Scrobble from noti</string>
     <string name="do_index_desc" translatable="false">This will enable library search and scrobble counts</string>
     <string name="demo_mode" translatable="false">Demo mode</string>
+    <string name="copy_sk" translatable="false">Copy last.fm session key</string>
 </resources>

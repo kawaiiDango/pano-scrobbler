@@ -47,7 +47,6 @@ import coil3.request.error
 import coil3.request.placeholder
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.file.FileScrobblable
@@ -65,6 +64,7 @@ import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.pending.PendingScrobblesWorker
+import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.MusicEntryImageReq
@@ -303,7 +303,11 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
 
         collectLatestLifecycleFlow(activityViewModel.editData, Lifecycle.State.RESUMED) {
             viewModel.editTrack(it)
-            ReviewPrompter(requireActivity()).showIfNeeded()
+            ReviewPrompter(
+                requireActivity(),
+                prefs.lastReviewPromptTime
+            ) { t -> prefs.lastReviewPromptTime = t }
+                .showIfNeeded()
         }
 
         collectLatestLifecycleFlow(viewModel.fileException) {

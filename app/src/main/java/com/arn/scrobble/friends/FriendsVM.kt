@@ -135,7 +135,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
             )
         }.mapCatching { pr ->
             if (pr.entries.isEmpty())
-                throw ApiException(-1, App.context.getString(R.string.no_scrobbles))
+                throw ApiException(-1, App.application.getString(R.string.no_scrobbles))
 
             pr
         }

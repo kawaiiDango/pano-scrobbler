@@ -62,7 +62,7 @@ class ImportVM : ViewModel() {
 
     private fun getWifiIpAddress(): String? {
         val connectivityManager =
-            ContextCompat.getSystemService(App.context, ConnectivityManager::class.java)!!
+            ContextCompat.getSystemService(App.application, ConnectivityManager::class.java)!!
         val activeNetwork = connectivityManager.activeNetwork
         val linkProperties = connectivityManager.getLinkProperties(activeNetwork)
 
@@ -88,7 +88,7 @@ class ImportVM : ViewModel() {
     ) : NanoHTTPD(port) {
         init {
             val ks = KeyStore.getInstance(KeyStore.getDefaultType())
-            App.context.resources.openRawResource(R.raw.embedded_server_bks).use {
+            App.application.resources.openRawResource(R.raw.embedded_server_bks).use {
                 ks.load(it, Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray())
             }
             val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())

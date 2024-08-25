@@ -54,10 +54,10 @@ class LoginFlows(private val navController: NavController) {
 
     private fun gnufm() {
         val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.gnufm),
-            textFieldLast = App.context.getString(R.string.password),
-            textField1 = App.context.getString(R.string.api_url),
-            textField2 = App.context.getString(R.string.username)
+            loginTitle = App.application.getString(R.string.gnufm),
+            textFieldLast = App.application.getString(R.string.password),
+            textField1 = App.application.getString(R.string.api_url),
+            textField2 = App.application.getString(R.string.username)
         )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
@@ -65,9 +65,9 @@ class LoginFlows(private val navController: NavController) {
 
     private fun listenbrainz() {
         val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.listenbrainz),
-            textFieldLast = App.context.getString(R.string.pref_token_label),
-            infoText = App.context.getString(
+            loginTitle = App.application.getString(R.string.listenbrainz),
+            textFieldLast = App.application.getString(R.string.pref_token_label),
+            infoText = App.application.getString(
                 R.string.listenbrainz_info,
                 "https://listenbrainz.org/profile"
             )
@@ -78,10 +78,10 @@ class LoginFlows(private val navController: NavController) {
 
     private fun customListenbrainz() {
         val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.custom_listenbrainz),
-            textFieldLast = App.context.getString(R.string.pref_token_label),
-            textField1 = App.context.getString(R.string.api_url),
-            infoText = App.context.getString(
+            loginTitle = App.application.getString(R.string.custom_listenbrainz),
+            textFieldLast = App.application.getString(R.string.pref_token_label),
+            textField1 = App.application.getString(R.string.api_url),
+            infoText = App.application.getString(
                 R.string.listenbrainz_info,
                 "[API_URL]/profile"
             )
@@ -92,9 +92,9 @@ class LoginFlows(private val navController: NavController) {
 
     private fun maloja() {
         val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.maloja),
-            textFieldLast = App.context.getString(R.string.pref_token_label),
-            textField1 = App.context.getString(R.string.server_url)
+            loginTitle = App.application.getString(R.string.maloja),
+            textFieldLast = App.application.getString(R.string.pref_token_label),
+            textField1 = App.application.getString(R.string.server_url)
         )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
@@ -102,8 +102,8 @@ class LoginFlows(private val navController: NavController) {
 
     private fun pleroma() {
         val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.pleroma),
-            textFieldLast = App.context.getString(R.string.server_url),
+            loginTitle = App.application.getString(R.string.pleroma),
+            textFieldLast = App.application.getString(R.string.server_url),
         )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
@@ -115,11 +115,11 @@ class LoginFlows(private val navController: NavController) {
 
     fun acrCloud() {
         val arguments = LoginFragmentArgs(
-            App.context.getString(R.string.add_acr_key),
-            App.context.getString(R.string.acr_secret),
-            infoText = App.context.getString(R.string.add_acr_key_info),
-            textField1 = App.context.getString(R.string.acr_host),
-            textField2 = App.context.getString(R.string.acr_key),
+            App.application.getString(R.string.add_acr_key),
+            App.application.getString(R.string.acr_secret),
+            infoText = App.application.getString(R.string.add_acr_key_info),
+            textField1 = App.application.getString(R.string.acr_host),
+            textField2 = App.application.getString(R.string.acr_key),
         )
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)

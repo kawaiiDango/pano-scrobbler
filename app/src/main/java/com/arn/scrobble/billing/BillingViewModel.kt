@@ -1,33 +1,41 @@
 package com.arn.scrobble.billing
 
 import android.app.Activity
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import com.android.billingclient.api.ProductDetails
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.main.App
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 
-class BillingViewModel(application: Application) : AndroidViewModel(application) {
+class BillingViewModel : ViewModel() {
 
-    val proStatus: StateFlow<Boolean>
-    val proProductDetails: StateFlow<ProductDetails?>
-    val proPendingSince: StateFlow<Long>
+    private val repository = App.billingRepository
 
-    private val repository = BillingRepository.getInstance(application).also {
-        it.startDataSourceConnections()
-        proStatus = it.proStatus
-        proProductDetails = it.proProductDetails
-        proPendingSince = it.proPendingSince
+    val proStatus: StateFlow<Boolean> = repository.proStatus
+
+    val proProductDetails: StateFlow<MyProductDetails?> = repository.proProductDetails
+    val proPendingSince: StateFlow<Long> = repository.proPendingSince
+
+    init {
+        repository.initBillingClient()
+        repository.startDataSourceConnections()
     }
 
-    fun queryPurchases() = repository.queryPurchasesAsync()
+    fun queryPurchasesAsync() {
+        viewModelScope.launch {
+            delay(500)
+            repository.queryPurchasesAsync()
+        }
+    }
 
     override fun onCleared() {
         repository.endDataSourceConnections()
         super.onCleared()
     }
 
-    fun makePurchase(activity: Activity, productDetails: ProductDetails) {
-        repository.launchBillingFlow(activity, productDetails)
+    fun makePlayPurchase(activity: Activity) {
+        repository.launchPlayBillingFlow(activity)
     }
 }

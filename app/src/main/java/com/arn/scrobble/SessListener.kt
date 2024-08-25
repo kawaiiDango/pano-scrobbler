@@ -59,7 +59,7 @@ class SessListener(
 
         val controllersFiltered = controllers.mapNotNull {
             if (shouldScrobble(it) && it.sessionToken !in controllersMap)
-                MediaController(App.context, it.sessionToken)
+                MediaController(App.application, it.sessionToken)
             else null
         }
 

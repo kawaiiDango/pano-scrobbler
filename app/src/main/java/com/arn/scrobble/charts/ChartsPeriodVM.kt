@@ -57,7 +57,7 @@ open class ChartsPeriodVM : ViewModel() {
             TimePeriodsGenerator(
                 input.user.registeredTime,
                 System.currentTimeMillis(),
-                App.context
+                App.application
             )
 
         val timePeriods = when (periodType) {

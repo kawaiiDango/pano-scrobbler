@@ -61,17 +61,17 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
         if (started) return
 
         if (!Stuff.isOnline) {
-            statusText.value = App.context.getString(R.string.unavailable_offline)
+            statusText.value = App.application.getString(R.string.unavailable_offline)
             return
         }
 
         inited = client.initWithConfig(acrConfig) && client.startRecognize()
         if (!inited) {
-            statusText.value = App.context.getString(R.string.recording_failed)
+            statusText.value = App.application.getString(R.string.recording_failed)
             return
         }
 
-        statusText.value = App.context.getString(R.string.listening)
+        statusText.value = App.application.getString(R.string.listening)
 
         stopJob?.cancel()
         stopJob = viewModelScope.launch {
@@ -166,13 +166,13 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             0 -> {
                 viewModelScope.launch {
                     statusText.emit(
-                        "⌛ " + App.context.getString(R.string.artist_title, artist, title)
+                        "⌛ " + App.application.getString(R.string.artist_title, artist, title)
                     )
 
                     _scrobbleEvent.emit(Unit)
 
                     val trackInfo = PlayingTrackInfo(
-                        App.context.packageName,
+                        App.application.packageName,
                         "acr",
                         playStartTime = System.currentTimeMillis()
                     )
@@ -184,26 +184,26 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
                         ScrobbleEverywhere.scrobble(false, trackInfo)
 
                         statusText.emit(
-                            "✅ " + App.context.getString(R.string.artist_title, artist, title)
+                            "✅ " + App.application.getString(R.string.artist_title, artist, title)
                         )
                     }
                 }
             }
 
-            1001 -> statusText.value = App.context.getString(R.string.not_found)
+            1001 -> statusText.value = App.application.getString(R.string.not_found)
             2000 -> {
                 if (acrConfig.recorderConfig.source != MediaRecorder.AudioSource.VOICE_RECOGNITION) {
                     acrConfig.recorderConfig.source = MediaRecorder.AudioSource.VOICE_RECOGNITION
                     start()
                 } else
-                    statusText.value = App.context.getString(R.string.recording_failed)
+                    statusText.value = App.application.getString(R.string.recording_failed)
             }
 
-            2001 -> statusText.value = App.context.getString(R.string.recording_failed)
+            2001 -> statusText.value = App.application.getString(R.string.recording_failed)
             3003, 3015 -> _rateLimitedEvent.tryEmit(Unit)
             else -> {
                 Timber.w("rec error: $statusCode - $statusMsg")
-                statusText.value = App.context.getString(R.string.network_error)
+                statusText.value = App.application.getString(R.string.network_error)
             }
         }
     }

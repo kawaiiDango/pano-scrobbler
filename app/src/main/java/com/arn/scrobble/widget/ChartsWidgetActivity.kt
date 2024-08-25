@@ -6,14 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMarginsRelative
 import androidx.viewbinding.ViewBinding
 import com.arn.scrobble.R
-import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityAppwidgetChartsConfigBinding
 import com.arn.scrobble.databinding.AppwidgetChartsContentBinding
 import com.arn.scrobble.databinding.AppwidgetChartsDynamicBinding
@@ -45,13 +43,12 @@ class ChartsWidgetActivity : AppCompatActivity() {
     private val prefs by lazy { WidgetPrefs(this)[appWidgetId] }
 
     private var widgetExists = false
-    private val billingViewModel by viewModels<BillingViewModel>()
     private val widgetTimePeriods by lazy { WidgetTimePeriods(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
+        ColorPatchUtils.setTheme(this)
 
         binding = ActivityAppwidgetChartsConfigBinding.inflate(layoutInflater)
         setContentView(binding.root)

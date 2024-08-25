@@ -19,3 +19,6 @@ dependencyResolutionManagement {
 rootProject.name = "pano-scrobbler"
 include(":app")
 include(":baselineprofile")
+include(":extras-common")
+include(":extras-play")
+include(":extras-foss")

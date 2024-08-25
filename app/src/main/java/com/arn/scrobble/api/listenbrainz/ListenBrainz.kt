@@ -95,7 +95,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = scrobbleData.duration?.takeIf { it > 30000 },
-                            submission_client = App.context.getString(R.string.app_name),
+                            submission_client = App.application.getString(R.string.app_name),
                             submission_client_version = BuildConfig.VERSION_NAME,
                         )
                     )
@@ -565,12 +565,12 @@ class ListenbrainzExpirationPolicy : ExpirationPolicy {
             "listens",
             "following",
             "get-feedback",
-            -> ONE_WEEK
+                -> ONE_WEEK
 
             "artists",
             "releases",
             "recordings",
-            -> FIVE_MINUTES
+                -> FIVE_MINUTES
 
             else -> -1
         }

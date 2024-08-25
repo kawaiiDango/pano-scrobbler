@@ -36,6 +36,12 @@ android {
             systemImageSource = "google_apis_playstore"
         }
     }
+
+    buildTypes {
+        create("releaseGithub") {
+//            initWith(getByName("nonMinifiedRelease"))
+        }
+    }
 }
 
 // This is the configuration block for the Baseline Profile plugin.

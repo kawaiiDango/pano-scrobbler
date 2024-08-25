@@ -138,7 +138,7 @@ class ExportFragment : Fragment() {
     private fun export(currentUri: Uri?, privateData: Boolean = false) {
         currentUri ?: return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            val exported = App.context.contentResolver.openOutputStream(currentUri)?.use {
+            val exported = App.application.contentResolver.openOutputStream(currentUri)?.use {
                 if (privateData)
                     viewModel.imExporter.exportPrivateData(it)
                 else

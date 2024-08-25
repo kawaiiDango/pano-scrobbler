@@ -6,5 +6,5 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
 
 class LicensesVM : ViewModel() {
-    val libraries = Libs.Builder().withContext(App.context).build().libraries
+    val libraries = Libs.Builder().withContext(App.application).build().libraries
 }

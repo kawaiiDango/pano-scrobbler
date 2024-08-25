@@ -32,11 +32,13 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.ExtrasConsts
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.main.App
 import com.arn.scrobble.onboarding.LoginFlows
@@ -57,8 +59,6 @@ import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -330,19 +330,18 @@ class PrefFragment : PreferenceFragmentCompat() {
                 true
             }
 
-        findPreference<SwitchPreference>(MainPrefs.PREF_CRASHLYTICS_ENABLED)!!
-            .setOnPreferenceChangeListener { preference, newValue ->
-                newValue as Boolean
+        val crashReporter = findPreference<SwitchPreference>(MainPrefs.PREF_CRASHLYTICS_ENABLED)!!
 
-                kotlin.runCatching {
-                    Firebase.crashlytics.apply {
-                        setCrashlyticsCollectionEnabled(newValue)
-                        if (!newValue)
-                            deleteUnsentReports()
-                    }
-                }
-                true
-            }
+        crashReporter.setOnPreferenceChangeListener { preference, newValue ->
+            newValue as Boolean
+            CrashReporter.setEnabled(newValue)
+
+            true
+        }
+
+        if (ExtrasConsts.isFossBuild) {
+            crashReporter.isVisible = false
+        }
 
         val showScrobbleSources = findPreference<SwitchPreference>("show_scrobble_sources")!!
 
@@ -496,51 +495,58 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         if (BuildConfig.DEBUG) {
             findPreference<PreferenceCategory>("debug")!!.isVisible = true
-        }
 
-        findPreference<EditTextPreference>("force_exception")!!.apply {
-            setOnBindEditTextListener { editText ->
-                editText.setText("Unspecified")
+            findPreference<EditTextPreference>("force_exception")!!.apply {
+                setOnBindEditTextListener { editText ->
+                    editText.setText("Unspecified")
+                }
+                setOnPreferenceChangeListener { preference, newValue ->
+                    Timber.tag(Stuff.TAG).e(ForceLogException(newValue.toString()))
+                    preference as EditTextPreference
+                    preference.text = ""
+                    true
+                }
             }
-            setOnPreferenceChangeListener { preference, newValue ->
-                Timber.tag(Stuff.TAG).e(ForceLogException(newValue.toString()))
-                preference as EditTextPreference
-                preference.text = ""
-                true
-            }
-        }
 
-        findPreference<EditTextPreference>(MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI)!!.apply {
-            setOnBindEditTextListener { editText ->
-                editText.setText("Back Door by nachi")
-            }
-            setOnPreferenceChangeListener { preference, newValue ->
-                newValue as String
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val notificationManager =
-                        ContextCompat.getSystemService(
-                            requireContext(),
-                            NotificationManager::class.java
-                        )!!
-                    val channel = NotificationChannel(
-                        MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
-                        getString(R.string.test_scrobble_from_noti),
-                        NotificationManager.IMPORTANCE_DEFAULT
-                    )
-                    notificationManager.createNotificationChannel(channel)
-
-                    if (newValue.isNotEmpty()) {
-                        val notification = NotificationCompat.Builder(
-                            context,
-                            MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI
+            findPreference<EditTextPreference>(MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI)!!.apply {
+                setOnBindEditTextListener { editText ->
+                    editText.setText("Back Door by nachi")
+                }
+                setOnPreferenceChangeListener { preference, newValue ->
+                    newValue as String
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val notificationManager =
+                            ContextCompat.getSystemService(
+                                requireContext(),
+                                NotificationManager::class.java
+                            )!!
+                        val channel = NotificationChannel(
+                            MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
+                            getString(R.string.test_scrobble_from_noti),
+                            NotificationManager.IMPORTANCE_DEFAULT
                         )
-                            .setContentTitle(newValue)
-                            .setSmallIcon(R.drawable.vd_noti_persistent)
-                            .build()
-                        notificationManager.notify(55, notification)
-                    } else {
-                        notificationManager.cancel(55)
+                        notificationManager.createNotificationChannel(channel)
+
+                        if (newValue.isNotEmpty()) {
+                            val notification = NotificationCompat.Builder(
+                                context,
+                                MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI
+                            )
+                                .setContentTitle(newValue)
+                                .setSmallIcon(R.drawable.vd_noti_persistent)
+                                .build()
+                            notificationManager.notify(55, notification)
+                        } else {
+                            notificationManager.cancel(55)
+                        }
                     }
+                    true
+                }
+            }
+
+            findPreference<Preference>("copy_sk")!!.setOnPreferenceClickListener {
+                Scrobblables.byType(AccountType.LASTFM)?.userAccount?.authKey?.let {
+                    requireContext().copyToClipboard(it)
                 }
                 true
             }

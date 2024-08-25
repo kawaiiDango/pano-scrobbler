@@ -57,7 +57,7 @@ object ScrobbleEverywhere {
 
         val scrobbleData = trackInfo.toScrobbleData()
         val scrobbleDataOrig = scrobbleData.copy()
-        val context = App.context
+        val context = App.application
         val prefs = App.prefs
 
 
@@ -434,7 +434,7 @@ object ScrobbleEverywhere {
                 }
                 if (entry.state != 0) {
                     dao.insert(entry)
-                    PendingScrobblesWorker.checkAndSchedule(App.context)
+                    PendingScrobblesWorker.checkAndSchedule(App.application)
                 }
             }
         }

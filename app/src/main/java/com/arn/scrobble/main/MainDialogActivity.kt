@@ -11,7 +11,6 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.Stuff
@@ -19,14 +18,13 @@ import com.arn.scrobble.utils.Stuff.myHash
 import java.util.Objects
 
 class MainDialogActivity : AppCompatActivity() {
-    private val billingViewModel by viewModels<BillingViewModel>()
     private val activityViewModel by viewModels<MainNotifierViewModel>()
     private lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value)
+        ColorPatchUtils.setTheme(this)
 
         setContentView(R.layout.content_main_dialog)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -78,7 +76,7 @@ class MainDialogActivity : AppCompatActivity() {
         const val ARG_NAV_ARGS = "@nav_args"
 
         private fun createDestinationIntent(@IdRes destinationId: Int, args: Bundle) =
-            Intent(App.context, MainDialogActivity::class.java).apply {
+            Intent(App.application, MainDialogActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 putExtra(ARG_DESTINATION, destinationId)
                 putExtra(ARG_NAV_ARGS, args)
@@ -91,7 +89,7 @@ class MainDialogActivity : AppCompatActivity() {
             mutable: Boolean = false
         ) =
             PendingIntent.getActivity(
-                App.context,
+                App.application,
                 Objects.hash(args.myHash(), destinationId),
                 createDestinationIntent(destinationId, args),
                 if (mutable) Stuff.updateCurrentOrMutable else Stuff.updateCurrentOrImmutable

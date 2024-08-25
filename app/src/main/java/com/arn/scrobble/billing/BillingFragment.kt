@@ -6,17 +6,22 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Layout
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.core.widget.TextViewCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.ExtrasConsts
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentBillingBinding
+import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.dp
@@ -32,7 +37,7 @@ import kotlinx.coroutines.flow.filterNotNull
 
 class BillingFragment : Fragment() {
 
-    private val billingViewModel by activityViewModels<BillingViewModel>()
+    private val viewModel by activityViewModels<BillingViewModel>()
     private var _binding: ContentBillingBinding? = null
     private val binding
         get() = _binding!!
@@ -66,7 +71,10 @@ class BillingFragment : Fragment() {
             else
                 null,
             R.drawable.vd_extract to getString(R.string.billing_regex_extract),
-            R.drawable.vd_share to getString(R.string.billing_sharing),
+            if (!Stuff.isTv)
+                R.drawable.vd_share to getString(R.string.billing_sharing)
+            else
+                null,
         ).asReversed()
 
         bulletStrings.forEach { (iconRes, string) ->
@@ -101,10 +109,10 @@ class BillingFragment : Fragment() {
         }
 
         binding.startBilling.setOnClickListener {
-            val productDetails = billingViewModel.proProductDetails.value
-            if (productDetails != null)
-                billingViewModel.makePurchase(requireActivity(), productDetails)
-            else {
+            val productDetails = viewModel.proProductDetails.value
+            if (productDetails != null) {
+                makePurchase()
+            } else {
                 MaterialAlertDialogBuilder(requireContext())
                     .setMessage(R.string.thank_you)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -114,18 +122,45 @@ class BillingFragment : Fragment() {
             }
         }
 
+        if (ExtrasConsts.isFossBuild) {
+            binding.code.isVisible = true
+
+            binding.code.setEndIconOnClickListener {
+                App.prefs.receipt = binding.codeEdittext.text?.trim()?.toString()
+                viewModel.queryPurchasesAsync()
+            }
+
+            binding.codeEdittext.inputType =
+                EditorInfo.TYPE_CLASS_TEXT or EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS
+
+            binding.codeEdittext.setOnEditorActionListener { textView, actionId, keyEvent ->
+                if (actionId == EditorInfo.IME_ACTION_DONE ||
+                    (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
+                ) {
+                    App.prefs.receipt = binding.codeEdittext.text?.trim()?.toString()
+                    viewModel.queryPurchasesAsync()
+                    true
+                } else
+                    false
+            }
+
+            binding.codeEdittext.addTextChangedListener {
+                binding.code.error = null
+            }
+        }
+
         binding.billingTroubleshoot.setOnClickListener {
             findNavController().navigate(R.id.billingTroubleshootFragment)
         }
 
-        collectLatestLifecycleFlow(billingViewModel.proProductDetails.filterNotNull()) {
+        collectLatestLifecycleFlow(viewModel.proProductDetails.filterNotNull()) {
             binding.startBilling.text = Html.fromHtml(
                 "<big>" + getString(R.string.get_pro) + "</big>" +
-                        "<br><small>" + it.oneTimePurchaseOfferDetails!!.formattedPrice + "</small>"
+                        "<br><small>" + it.formattedPrice + "</small>"
             )
         }
 
-        collectLatestLifecycleFlow(billingViewModel.proPendingSince.filterNotNull()) {
+        collectLatestLifecycleFlow(viewModel.proPendingSince.filterNotNull()) {
 //          This doesn't go away after the slow card gets declined. So, only notify recent purchases
             if (System.currentTimeMillis() - it < Stuff.PENDING_PURCHASE_NOTIFY_THRESHOLD)
                 MaterialAlertDialogBuilder(requireContext())
@@ -134,12 +169,19 @@ class BillingFragment : Fragment() {
                     .show()
         }
 
-        collectLatestLifecycleFlow(billingViewModel.proStatus) {
+        collectLatestLifecycleFlow(viewModel.proStatus) {
             if (it) {
                 requireContext().toast(R.string.thank_you)
-                if (!BuildConfig.DEBUG)
-                    findNavController().popBackStack(R.id.myHomePagerFragment, false)
+                findNavController().popBackStack(R.id.myHomePagerFragment, false)
             }
+        }
+    }
+
+    private fun makePurchase() {
+        if (ExtrasConsts.isFossBuild) {
+            Stuff.openInBrowser(requireContext(), getString(R.string.ko_fi_link))
+        } else {
+            viewModel.makePlayPurchase(requireActivity())
         }
     }
 }

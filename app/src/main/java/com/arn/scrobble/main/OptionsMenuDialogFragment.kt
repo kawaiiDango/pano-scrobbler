@@ -48,7 +48,7 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         binding.optionsMenuNav.inflateMenu(metadata.menuRes)
 
         binding.optionsMenuNav.menu.findItem(R.id.nav_pro)?.isVisible =
-            !billingViewModel.proStatus.value
+            BuildConfig.DEBUG || !billingViewModel.proStatus.value
 
         mainNotifierViewModel.updateCanIndex()
         binding.optionsMenuNav.menu.findItem(R.id.nav_do_index)?.isVisible =

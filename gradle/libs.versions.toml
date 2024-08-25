@@ -3,23 +3,23 @@ targetSdk = "35"
 minSdk = "23"
 minSdkBaselineProfile = "28"
 android-application = "8.7.0-alpha07"
-aboutlibraries = "11.2.2"
+aboutlibraries = "11.2.3"
 activity = "1.9.1"
 androidSnowfall = "1.2.1"
 coil = "3.0.0-alpha10"
 constraintlayout = "2.2.0-alpha14"
 billing = "7.0.0"
-core = "1.15.0-alpha01"
+core = "1.15.0-alpha02"
 appcompat = "1.7.0"
 core-remoteviews = "1.1.0"
 desugar_jdk_libs = "2.0.4"
 espresso-core = "3.6.1"
-firebase-bom = "33.1.2"
+firebase-bom = "33.2.0"
 crashlytics = "3.0.2"
 fragment = "1.8.2"
 harmony = "1.2.6"
 junit = "4.13.2"
-kotlin = "2.0.10"
+kotlin = "2.0.20"
 kotlinCsvJvm = "1.10.0"
 kotlinx-serialization-json = "1.7.1"
 ktorBom = "3.0.0-beta-2"
@@ -29,28 +29,28 @@ lifecycle = "2.8.4"
 material = "1.13.0-alpha05"
 media = "1.7.0"
 mpAndroidChart = "v3.1.0"
-navigation = "2.8.0-beta07"
+navigation = "2.8.0-rc01"
 nestedscrollwebview = "0.1.6"
 okhttp = "5.0.0-alpha.14"
 palette-ktx = "1.0.0"
 play-publisher = "3.10.1"
 preference-ktx = "1.2.1"
-profileinstaller = "1.4.0-alpha02"
-recyclerview = "1.4.0-alpha02"
+profileinstaller = "1.4.0-beta01"
+recyclerview = "1.4.0-beta01"
 runner = "1.6.2"
 skeletonlayout = "5.0.0"
 timber = "5.0.1"
 swiperefreshlayout = "1.2.0-alpha01"
-room = "2.7.0-alpha06"
+room = "2.7.0-alpha07"
 review = "2.0.1"
 uiautomator = "2.3.0"
 viewpager = "1.1.0-alpha01"
 work-runtime = "2.10.0-alpha02"
 google-services = "4.4.2"
-benchmark-macro-junit4 = "1.2.4"
-ksp = "2.0.10-1.0.24"
+benchmark = "1.3.0"
+ksp = "2.0.20-1.0.24"
 github-release = "2.5.2"
-baselineprofile = "1.3.0-rc01"
+baselineprofile = "1.3.0"
 androidx-test-ext-junit = "1.2.1"
 transition = "1.5.1"
 nanohttpd = "2.3.1"
@@ -65,7 +65,6 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktorBom" }
 ktor-client-core = { module = "io.ktor:ktor-client-core" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp" }
-ktor-client-android = { module = "io.ktor:ktor-client-android" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
@@ -111,8 +110,8 @@ recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "r
 skeletonlayout = { module = "com.faltenreich:skeletonlayout", version.ref = "skeletonlayout" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 review = { module = "com.google.android.play:review", version.ref = "review" }
-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark-macro-junit4" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-test-ext-junit" }
 androidx-transition = { group = "androidx.transition", name = "transition", version.ref = "transition" }
 
 [plugins]
@@ -129,6 +128,7 @@ github-release = { id = "com.github.breadmoirai.github-release", version.ref = "
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
 play-publisher = { id = "com.github.triplet.play", version.ref = "play-publisher" }
+android-library = { id = "com.android.library", version.ref = "android-application" }
 
 [bundles]
 

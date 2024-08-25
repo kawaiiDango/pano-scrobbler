@@ -1,10 +1,8 @@
 package com.arn.scrobble.main
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -20,9 +18,16 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import coil3.size.Precision
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.ExtrasConsts
 import com.arn.scrobble.R
+import com.arn.scrobble.Tokens
+import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.billing.BaseBillingRepository
+import com.arn.scrobble.billing.BillingClientData
+import com.arn.scrobble.billing.BillingRepository
+import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
 import com.arn.scrobble.themes.ColorPatchUtils
@@ -35,9 +40,6 @@ import com.arn.scrobble.ui.StarMapper
 import com.arn.scrobble.utils.Stuff
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.initialize
 import kotlinx.coroutines.flow.MutableSharedFlow
 import timber.log.Timber
 
@@ -53,12 +55,12 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
 
 
     override fun onCreate() {
+        super.onCreate()
+        application = this
+
         if (BuildConfig.DEBUG) {
             enableStrictMode()
         }
-
-        context = applicationContext
-        super.onCreate()
 
         Timber.plant(LogcatTree())
 
@@ -76,18 +78,11 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             .build()
         DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
 
-        Firebase.initialize(this)
-        // otherwise it crashes
-        Firebase.crashlytics.setCustomKey("isDebug", BuildConfig.DEBUG)
+        val crashlyticsKeys = mapOf(
+            "isDebug" to BuildConfig.DEBUG.toString(),
+        )
 
-        if (prefs.crashlyticsEnabled) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && getProcessName() == BuildConfig.APPLICATION_ID ||
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-            ) {
-                Firebase.crashlytics.setCrashlyticsCollectionEnabled(true)
-            }
-            Timber.plant(CrashlyticsTree())
-        }
+        CrashReporter.init(this, prefs.crashlyticsEnabled, crashlyticsKeys)
 
         createChannels()
 
@@ -217,12 +212,32 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
         )
     }
 
-    @SuppressLint("StaticFieldLeak")
     companion object {
         // not a leak
-        lateinit var context: Context
+        lateinit var application: Application
             private set
         val prefs by lazy { MainPrefs() }
+        val billingRepository: BaseBillingRepository by lazy {
+            val billingClientData = BillingClientData(
+                proProductId = Stuff.PRO_PRODUCT_ID,
+                appName = application.getString(R.string.app_name),
+                publicKeyBase64 = if (ExtrasConsts.isFossBuild)
+                    Tokens.LICENSE_PUBLIC_KEY_BASE64
+                else
+                    Tokens.PLAY_BILLING_PUBLIC_KEY_BASE64,
+                apkSignature = Tokens.APK_SIGNATURE,
+                httpClient = Requesters.genericKtorClient,
+                serverUrl = Tokens.LICENSE_CHECKING_SERVER,
+                getLastcheckTime = { prefs.lastLicenseCheckTime },
+                setLastcheckTime = { prefs.lastLicenseCheckTime = it },
+                getReceipt = { prefs.receipt to prefs.receiptSignature },
+                setReceipt = { r, s ->
+                    prefs.receipt = r
+                    prefs.receiptSignature = s
+                }
+            )
+            BillingRepository(application, billingClientData)
+        }
         val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
     }
 }

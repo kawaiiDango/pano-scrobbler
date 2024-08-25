@@ -141,7 +141,7 @@ class ScrobblesAdapter(
                 Section.NOTICE_SECTION.ordinal,
                 header = ExpandableHeader(
                     R.drawable.vd_error,
-                    App.context.getString(
+                    App.application.getString(
                         if (showFixit)
                             R.string.not_running
                         else

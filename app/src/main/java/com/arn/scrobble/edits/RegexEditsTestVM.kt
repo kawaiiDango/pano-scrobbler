@@ -2,10 +2,10 @@ package com.arn.scrobble.edits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.main.App
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
+import com.arn.scrobble.main.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 
 class RegexEditsTestVM : ViewModel() {
     private val dao = PanoDb.db.getRegexEditsDao()
-    val pm by lazy { App.context.packageManager!! }
+    val pm by lazy { App.application.packageManager!! }
     private val _scrobbleData = MutableStateFlow<ScrobbleData?>(null)
     val scrobbleData = _scrobbleData.asStateFlow()
     val regexMatches = scrobbleData

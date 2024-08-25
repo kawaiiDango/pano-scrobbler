@@ -61,7 +61,7 @@ class RandomVM : ChartsPeriodVM() {
                         _error.emit(null)
                     } else {
                         _musicEntry.emit(null)
-                        _error.emit(IllegalStateException(App.context.getString(R.string.charts_no_data)))
+                        _error.emit(IllegalStateException(App.application.getString(R.string.charts_no_data)))
                     }
                     input.value?.type?.let { type ->
                         setTotal(type, total)

@@ -49,43 +49,45 @@ object ListenAlong {
     }
 
     private fun showNotification(username: String) {
-        nm = ContextCompat.getSystemService(App.context, NotificationManager::class.java)!!
+        nm = ContextCompat.getSystemService(App.application, NotificationManager::class.java)!!
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     CHANNEL_ID,
-                    App.context.getString(R.string.listen_along), NotificationManager.IMPORTANCE_LOW
+                    App.application.getString(R.string.listen_along),
+                    NotificationManager.IMPORTANCE_LOW
                 )
             )
         }
 
-        val intent = Intent(App.context, MainActivity::class.java)
+        val intent = Intent(App.application, MainActivity::class.java)
         val launchIntent = PendingIntent.getActivity(
-            App.context, 8, intent,
+            App.application, 8, intent,
             Stuff.updateCurrentOrImmutable
         )
-        val notification = NotificationCompat.Builder(App.context, MainPrefs.CHANNEL_NOTI_PENDING)
-            .setSmallIcon(R.drawable.vd_noti_persistent)
-            .setPriority(Notification.PRIORITY_LOW)
-            .setOngoing(true)
-            .setContentIntent(launchIntent)
-            .apply { color = (ColorPatchUtils.getNotiColor(App.context) ?: return@apply) }
-            .addAction(
-                NotificationCompat.Action(
-                    R.drawable.vd_cancel, App.context.getString(R.string.close),
-                    PendingIntent.getBroadcast(
-                        App.context, NOTIFICATION_ID,
-                        Intent(NLService.iLISTEN_ALONG)
-                            .setPackage(App.context.packageName)
-                            .putExtra(STOP_EXTRA, true),
-                        Stuff.updateCurrentOrImmutable
+        val notification =
+            NotificationCompat.Builder(App.application, MainPrefs.CHANNEL_NOTI_PENDING)
+                .setSmallIcon(R.drawable.vd_noti_persistent)
+                .setPriority(Notification.PRIORITY_LOW)
+                .setOngoing(true)
+                .setContentIntent(launchIntent)
+                .apply { color = (ColorPatchUtils.getNotiColor(App.application) ?: return@apply) }
+                .addAction(
+                    NotificationCompat.Action(
+                        R.drawable.vd_cancel, App.application.getString(R.string.close),
+                        PendingIntent.getBroadcast(
+                            App.application, NOTIFICATION_ID,
+                            Intent(NLService.iLISTEN_ALONG)
+                                .setPackage(App.application.packageName)
+                                .putExtra(STOP_EXTRA, true),
+                            Stuff.updateCurrentOrImmutable
+                        )
                     )
                 )
-            )
-            .setContentTitle(App.context.getString(R.string.listen_along))
-            .setContentText(username)
-            .build()
+                .setContentTitle(App.application.getString(R.string.listen_along))
+                .setContentText(username)
+                .build()
 
         nm.notify(NOTIFICATION_ID, notification)
     }

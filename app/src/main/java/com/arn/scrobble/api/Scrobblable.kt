@@ -272,13 +272,13 @@ object Scrobblables {
     }
 
     fun getString(accountType: AccountType) = when (accountType) {
-        AccountType.LASTFM -> App.context.getString(R.string.lastfm)
-        AccountType.LIBREFM -> App.context.getString(R.string.librefm)
-        AccountType.GNUFM -> App.context.getString(R.string.gnufm)
-        AccountType.LISTENBRAINZ -> App.context.getString(R.string.listenbrainz)
-        AccountType.CUSTOM_LISTENBRAINZ -> App.context.getString(R.string.custom_listenbrainz)
-        AccountType.MALOJA -> App.context.getString(R.string.maloja)
-        AccountType.PLEROMA -> App.context.getString(R.string.pleroma)
-        AccountType.FILE -> App.context.getString(R.string.scrobble_to_file)
+        AccountType.LASTFM -> App.application.getString(R.string.lastfm)
+        AccountType.LIBREFM -> App.application.getString(R.string.librefm)
+        AccountType.GNUFM -> App.application.getString(R.string.gnufm)
+        AccountType.LISTENBRAINZ -> App.application.getString(R.string.listenbrainz)
+        AccountType.CUSTOM_LISTENBRAINZ -> App.application.getString(R.string.custom_listenbrainz)
+        AccountType.MALOJA -> App.application.getString(R.string.maloja)
+        AccountType.PLEROMA -> App.application.getString(R.string.pleroma)
+        AccountType.FILE -> App.application.getString(R.string.scrobble_to_file)
     }
 }

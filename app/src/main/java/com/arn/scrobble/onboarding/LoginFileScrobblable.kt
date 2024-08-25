@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
@@ -14,6 +15,7 @@ import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.databinding.ContentLoginFileScrobblableBinding
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
+import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
 
@@ -22,6 +24,7 @@ class LoginFileScrobblable : Fragment() {
     private val binding get() = _binding!!
     private lateinit var fileScrobblableCreate: ActivityResultLauncher<String>
     private lateinit var fileScrobblableOpen: ActivityResultLauncher<Array<String>>
+    private var fileFormat: FileScrobblable.FileFormat = FileScrobblable.FileFormat.csv
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,28 +56,11 @@ class LoginFileScrobblable : Fragment() {
         _binding = ContentLoginFileScrobblableBinding.bind(view)
 
         binding.loginCreate.setOnClickListener {
-            val extension = when (binding.loginFileFormat.checkedChipId) {
-                R.id.login_file_format_csv -> ".csv"
-                R.id.login_file_format_jsonl -> ".jsonl"
-                else -> throw IllegalStateException("Unknown file format")
-            }
-
-            kotlin.runCatching {
-                fileScrobblableCreate.launch("scrobbles_log_" + Stuff.getFileNameDateSuffix() + extension)
-            }
+            showFileTypeChooser(it, create = true)
         }
 
         binding.loginOpen.setOnClickListener {
-            val mimeTypes = when (binding.loginFileFormat.checkedChipId) {
-                R.id.login_file_format_csv -> arrayOf("text/comma-separated-values", "text/csv")
-                R.id.login_file_format_jsonl -> arrayOf("*/*")
-
-                else -> throw IllegalStateException("Unknown file format")
-            }
-
-            kotlin.runCatching {
-                fileScrobblableOpen.launch(mimeTypes)
-            }
+            showFileTypeChooser(it, create = false)
         }
     }
 
@@ -83,13 +69,44 @@ class LoginFileScrobblable : Fragment() {
         _binding = null
     }
 
-    private fun onFilePicked(uri: Uri) {
-        val format = when (binding.loginFileFormat.checkedChipId) {
-            R.id.login_file_format_csv -> FileScrobblable.FileFormat.csv
-            R.id.login_file_format_jsonl -> FileScrobblable.FileFormat.jsonl
-            else -> throw IllegalStateException("Unknown file format")
+    private fun showFileTypeChooser(anchor: View, create: Boolean) {
+        PopupMenu(requireContext(), anchor).apply {
+            menuInflater.inflate(R.menu.file_format_menu, menu)
+            setOnMenuItemClickListener {
+                runCatching {
+                    when (it.itemId) {
+                        R.id.file_csv -> {
+                            fileFormat = FileScrobblable.FileFormat.csv
+
+                            if (create) {
+                                fileScrobblableCreate.launch("scrobbles_log_" + Stuff.getFileNameDateSuffix() + ".csv")
+                            } else {
+                                fileScrobblableOpen.launch(arrayOf("*/*"))
+                                // "text/comma-separated-values" did not work on oreo
+                            }
+                        }
+
+                        R.id.file_jsonl -> {
+                            fileFormat = FileScrobblable.FileFormat.jsonl
+
+                            if (create) {
+                                fileScrobblableCreate.launch("scrobbles_log_" + Stuff.getFileNameDateSuffix() + ".jsonl")
+                            } else {
+                                fileScrobblableOpen.launch(arrayOf("*/*"))
+                            }
+                        }
+                    }
+                }.onFailure {
+                    requireContext().toast(it.message.toString())
+                }
+                true
+            }
+            showWithIcons()
         }
-        FileScrobblable.authAndGetSession(uri, format)
+    }
+
+    private fun onFilePicked(uri: Uri) {
+        FileScrobblable.authAndGetSession(uri, fileFormat)
             .onSuccess { findNavController().popBackStack() }
             .onFailure { requireContext().toast(it.message.toString()) }
     }

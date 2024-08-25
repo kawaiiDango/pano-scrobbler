@@ -28,7 +28,6 @@ import coil3.request.crossfade
 import coil3.request.error
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -41,6 +40,7 @@ import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
@@ -221,7 +221,11 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                         binding.collageSaveButton.setText(R.string.save)
                         binding.collageSaveButton.isEnabled = true
 
-                        ReviewPrompter(requireActivity()).showIfNeeded()
+                        ReviewPrompter(
+                            requireActivity(),
+                            prefs.lastReviewPromptTime
+                        ) { prefs.lastReviewPromptTime = it }
+                            .showIfNeeded()
                     } else {
                         saveBySafRequest.launch(fileName)
                     }

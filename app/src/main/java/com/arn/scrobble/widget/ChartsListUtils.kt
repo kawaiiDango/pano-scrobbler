@@ -20,13 +20,13 @@ import kotlinx.serialization.json.Json
 object ChartsListUtils {
 
     fun createHeader(prefs: WidgetPrefs.SpecificWidgetPrefs): RemoteViews {
-        val headerView = RemoteViews(App.context.packageName, R.layout.appwidget_list_header)
+        val headerView = RemoteViews(App.application.packageName, R.layout.appwidget_list_header)
         headerView.setTextViewText(R.id.appwidget_period, prefs.periodName)
         return headerView
     }
 
     fun createMusicItem(tab: Int, idx: Int, item: ChartsWidgetListItem): RemoteViews {
-        val rv = RemoteViews(App.context.packageName, R.layout.appwidget_charts_item)
+        val rv = RemoteViews(App.application.packageName, R.layout.appwidget_charts_item)
         rv.setTextViewText(
             R.id.appwidget_charts_serial, (idx + 1).format() + "."
         )
@@ -81,10 +81,10 @@ object ChartsListUtils {
     }
 
     fun updateWidgets(appWidgetIds: IntArray) {
-        val i = Intent(App.context, ChartsWidgetProvider::class.java).apply {
+        val i = Intent(App.application, ChartsWidgetProvider::class.java).apply {
             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
         }
-        App.context.sendBroadcast(i)
+        App.application.sendBroadcast(i)
     }
 }

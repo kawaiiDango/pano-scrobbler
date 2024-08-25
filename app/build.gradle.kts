@@ -42,6 +42,7 @@ android {
     }
 
     compileSdk = libs.versions.targetSdk.get().toInt()
+
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
@@ -73,27 +74,40 @@ android {
         buildConfig = true
     }
 
-    packaging {
-        jniLibs {
-            useLegacyPackaging = false
-        }
-    }
-
     buildTypes {
-        release {
+        getByName("release") {
             isShrinkResources = true
             isMinifyEnabled = true
-            setProguardFiles(
-                listOf(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
-                )
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
 
-        debug {
+        getByName("debug") {
             versionNameSuffix = " DEBUG"
 //            extra["enableCrashlytics"] = false
+        }
+
+        create("releaseGithub") {
+            initWith(getByName("release"))
+            versionNameSuffix = " GH"
+        }
+    }
+
+    packaging {
+        resources {
+            excludes.add("/META-INF/**/*.txt")
+        }
+
+        jniLibs {
+            useLegacyPackaging = false
+        }
+
+        bundle {
+            language {
+                enableSplit = false
+            }
         }
     }
 
@@ -101,6 +115,12 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 
     kotlinOptions {
@@ -135,7 +155,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 
     implementation(libs.profileinstaller)
-    "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
+    baselineProfile(project(mapOf("path" to ":baselineprofile")))
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.kotlin.stdlib)
@@ -157,8 +177,6 @@ dependencies {
     implementation(libs.androidx.activity)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.billing)
-    implementation(libs.review)
     implementation(libs.androidx.work.runtime)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.android.snowfall)
@@ -168,10 +186,6 @@ dependencies {
 
     implementation(libs.material)
     implementation(libs.timber)
-    implementation(platform(libs.firebase.bom))
-    // Declare the dependencies for the Crashlytics and Analytics libraries
-    // When using the BoM, you don"t specify versions in Firebase library dependencies
-    implementation(libs.crashlytics)
 
     implementation(libs.okhttp)
     implementation(libs.krate)
@@ -188,7 +202,7 @@ dependencies {
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.android)
+//    implementation(libs.ktor.client.android)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.content.negotiation)
@@ -197,10 +211,17 @@ dependencies {
     implementation(libs.aboutlibraries.core)
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
+    implementation(project(":extras-common"))
+    releaseImplementation(project(":extras-play"))
+//    debugImplementation(project(":extras-play"))
+    debugImplementation(project(":extras-foss"))
+    "releaseGithubImplementation"(project(":extras-foss"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.uiautomator)
     androidTestImplementation(libs.androidx.runner)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
 }
 
 // https://yrom.net/blog/2019/06/19/simple-codes-to-generate-obfuscation-dictionary/
@@ -267,11 +288,15 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
             signingConfig = signingConfigs.getByName("release")
         }
 
-        debug {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+
+        getByName("releaseGithub") {
             signingConfig = signingConfigs.getByName("release")
         }
     }

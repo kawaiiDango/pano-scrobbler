@@ -41,7 +41,7 @@ object ApiErrorDeserializer : KSerializer<ApiErrorResponse> {
     override fun deserialize(decoder: Decoder): ApiErrorResponse {
         val input = decoder as? JsonDecoder
             ?: error("Can be deserialized only by JSON")
-        return when (val jsonElement = input.decodeJsonElement()) {
+        val apiErrorResponse = when (val jsonElement = input.decodeJsonElement()) {
             is JsonObject -> {
                 when (val errorObject = jsonElement["error"]) {
                     is JsonObject -> ApiErrorResponse(
@@ -68,6 +68,10 @@ object ApiErrorDeserializer : KSerializer<ApiErrorResponse> {
 
             else -> throw SerializationException("Unknown JSON structure")
         }
+
+        if (apiErrorResponse.code == 17) // lastfm error
+            return apiErrorResponse.copy(message = "This profile is private")
+        return apiErrorResponse
     }
 
 }

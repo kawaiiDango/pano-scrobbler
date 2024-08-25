@@ -103,6 +103,7 @@ object Stuff {
     const val ARG_SCROLL_TO_ACCOUNTS = "scroll_to_accounts"
     const val ARG_EDIT = "edit"
     const val MIME_TYPE_JSON = "application/json"
+    const val PRO_PRODUCT_ID = "pscrobbler_pro"
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
@@ -162,7 +163,8 @@ object Stuff {
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
     const val PACKAGE_SHAZAM = "com.shazam.android"
     const val CHANNEL_SHAZAM = "notification_shazam_match_v1" //"auto_shazam_v2"
-    const val NOTIFICATION_TAG_SHAZAM = "NOTIFICATION_SHAZAM_RESULTS" //"auto_shazam_v2"
+
+    //    const val NOTIFICATION_TAG_SHAZAM = "NOTIFICATION_SHAZAM_RESULTS" //"auto_shazam_v2"
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
     const val PACKAGE_SONOS = "com.sonos.acr"
@@ -278,7 +280,7 @@ object Stuff {
 
     val isTestLab by lazy {
         Settings.System.getString(
-            App.context.contentResolver,
+            App.application.contentResolver,
             "firebase.test.lab"
         ) == "true"
     }
@@ -491,7 +493,7 @@ object Stuff {
         val packages = STARTUPMGR_INTENTS.map { it.first }.toSet()
         return packages.any {
             try {
-                App.context.packageManager.getApplicationInfo(it, 0)
+                App.application.packageManager.getApplicationInfo(it, 0)
                 true
             } catch (e: PackageManager.NameNotFoundException) {
                 false
@@ -501,7 +503,7 @@ object Stuff {
 
     fun isPackageInstalled(packageName: String): Boolean {
         return try {
-            App.context.packageManager.getPackageInfo(packageName, 0) != null
+            App.application.packageManager.getPackageInfo(packageName, 0) != null
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
@@ -513,7 +515,7 @@ object Stuff {
     }
 
     fun updateBrowserPackages() {
-        browserPackages += getBrowsers(App.context.packageManager)
+        browserPackages += getBrowsers(App.application.packageManager)
             .map { it.activityInfo.applicationInfo.packageName }
             .toSet()
     }
@@ -532,9 +534,9 @@ object Stuff {
         val plus = if (count == 1000 && periodType != TimePeriodType.CONTINUOUS) "+" else ""
 
         return if (count <= 0)
-            App.context.getString(zeroStrRes)
+            App.application.getString(zeroStrRes)
         else
-            App.context.resources.getQuantityString(
+            App.application.resources.getQuantityString(
                 pluralRes,
                 count,
                 count.format() + plus
@@ -595,17 +597,17 @@ object Stuff {
                 `package` = pkgName
         }
         try {
-            App.context.startActivity(intent)
+            App.application.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             if (pkgName != null) {
                 try {
                     intent.`package` = null
-                    App.context.startActivity(intent)
+                    App.application.startActivity(intent)
                 } catch (e: ActivityNotFoundException) {
-                    App.context.toast(R.string.no_player)
+                    App.application.toast(R.string.no_player)
                 }
             } else
-                App.context.toast(R.string.no_player)
+                App.application.toast(R.string.no_player)
         }
     }
 
@@ -646,7 +648,7 @@ object Stuff {
         var uri: Uri? = null
 
         runCatching {
-            with(App.context.contentResolver) {
+            with(App.application.contentResolver) {
                 insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)?.also {
                     uri = it // Keep uri reference so it can be removed on failure
                     openOutputStream(it)?.use { ostream ->
@@ -660,7 +662,7 @@ object Stuff {
         }.getOrElse {
             uri?.let { orphanUri ->
                 // Don't leave an orphan entry in the MediaStore
-                App.context.contentResolver.delete(orphanUri, null, null)
+                App.application.contentResolver.delete(orphanUri, null, null)
             }
 
             throw it
@@ -710,8 +712,8 @@ object Stuff {
     }
 
     fun isNotificationListenerEnabled() =
-        NotificationManagerCompat.getEnabledListenerPackages(App.context)
-            .any { it == App.context.packageName }
+        NotificationManagerCompat.getEnabledListenerPackages(App.application)
+            .any { it == App.application.packageName }
 
     fun isLoggedIn() = Scrobblables.current != null
 
@@ -756,8 +758,8 @@ object Stuff {
     fun Bundle.myHash() = keySet().map { get(it) }.hashCode()
 
     fun isScrobblerRunning(): Boolean {
-        val serviceComponent = ComponentName(App.context, NLService::class.java)
-        val manager = ContextCompat.getSystemService(App.context, ActivityManager::class.java)!!
+        val serviceComponent = ComponentName(App.application, NLService::class.java)
+        val manager = ContextCompat.getSystemService(App.application, ActivityManager::class.java)!!
         val nlsService = try {
             manager.getRunningServices(Integer.MAX_VALUE)?.find { it.service == serviceComponent }
         } catch (e: SecurityException) {
@@ -888,11 +890,11 @@ object Stuff {
     ): List<ApplicationExitInfo> {
         return try {
             val activityManager =
-                ContextCompat.getSystemService(App.context, ActivityManager::class.java)!!
+                ContextCompat.getSystemService(App.application, ActivityManager::class.java)!!
             val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 30)
 
             exitReasons.filter {
-                it.processName == "${App.context.packageName}:$SCROBBLER_PROCESS_NAME"
+                it.processName == "${App.application.packageName}:$SCROBBLER_PROCESS_NAME"
 //                        && it.reason == ApplicationExitInfo.REASON_OTHER
                         && it.timestamp > afterTime
             }.also {
@@ -915,7 +917,8 @@ object Stuff {
     fun <T> List<T>.wrappedGet(index: Int) = this[(index + size) % size]
 
     val isTv by lazy {
-        val uiModeManager = ContextCompat.getSystemService(App.context, UiModeManager::class.java)!!
+        val uiModeManager =
+            ContextCompat.getSystemService(App.application, UiModeManager::class.java)!!
         uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 }

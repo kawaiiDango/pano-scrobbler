@@ -2,75 +2,51 @@ package com.arn.scrobble.billing
 
 import android.app.Activity
 import android.app.Application
-import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
-import com.arn.scrobble.NLService
-import com.arn.scrobble.R
-import com.arn.scrobble.Tokens
-import com.arn.scrobble.main.App
-import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import java.util.*
-import kotlin.math.min
 
 
-class BillingRepository private constructor(private val application: Application) :
+class BillingRepository(
+    application: Application,
+    clientData: BillingClientData,
+) : BaseBillingRepository(
+    application,
+    clientData
+),
     PurchasesUpdatedListener, BillingClientStateListener {
 
     // Breaking change in billing v4: callbacks don't run on main thread, always use LiveData.postValue()
 
     // how long before the data source tries to reconnect to Google play
-    private var reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
-
-    private lateinit var playStoreBillingClient: BillingClient
-    private val prefs = App.prefs
-    private val _proStatus by lazy { MutableStateFlow(prefs.proStatus) }
-    val proStatus by lazy { _proStatus.asStateFlow() }
+    override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
+    override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
     private val _proPendingSince by lazy { MutableStateFlow(0L) }
-    val proPendingSince by lazy { _proPendingSince.asStateFlow() }
-    private val _proProductDetails by lazy { MutableStateFlow<ProductDetails?>(null) }
-    val proProductDetails by lazy { _proProductDetails.asStateFlow() }
-    private var reconnectCount = 0
+    override val proPendingSince by lazy { _proPendingSince.asStateFlow() }
+    private val TAG = BillingRepository::class.simpleName!!
+    private lateinit var playStoreBillingClient: BillingClient
+    private var proProductDetailsList: List<ProductDetails>? = null
 
-    fun startDataSourceConnections() {
+    override fun initBillingClient() {
         playStoreBillingClient = BillingClient.newBuilder(application.applicationContext)
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
             ) // required or app will crash
             .setListener(this)
             .build()
+    }
+
+    override fun startDataSourceConnections() {
         playStoreBillingClient.startConnection(this)
     }
 
-    fun endDataSourceConnections() {
-        Timber.tag(LOG_TAG).w("endConnection")
+    override fun endDataSourceConnections() {
         playStoreBillingClient.endConnection()
-    }
-
-    @Synchronized
-    private fun retryBillingConnectionWithExponentialBackoff() {
-        if (reconnectCount >= RECONNECT_MAX_TIMES) {
-            return
-        }
-
-        reconnectMilliseconds = min(
-            reconnectMilliseconds * 2,
-            RECONNECT_TIMER_MAX_TIME_MILLISECONDS
-        )
-        reconnectCount++
-
-        handler.postDelayed(
-            {
-                playStoreBillingClient.startConnection(this@BillingRepository)
-            },
-            reconnectMilliseconds
-        )
     }
 
 
@@ -80,8 +56,12 @@ class BillingRepository private constructor(private val application: Application
                 handler.removeCallbacksAndMessages(null)
                 reconnectCount = 0
                 reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
-                fetchProductDetails(Tokens.PRO_PRODUCT_ID)
-                queryPurchasesAsync()
+                fetchProductDetails(clientData.proProductId)
+
+                // this runs in a separate thread anyways
+                runBlocking {
+                    queryPurchasesAsync()
+                }
             }
 
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
@@ -90,7 +70,7 @@ class BillingRepository private constructor(private val application: Application
             }
 
             BillingClient.BillingResponseCode.ERROR -> {
-                Timber.tag(LOG_TAG)
+                Timber.tag(TAG)
                     .e(RuntimeException("BILLING_ERROR " + billingResult.debugMessage))
             }
 
@@ -140,7 +120,7 @@ class BillingRepository private constructor(private val application: Application
      * owned," which can happen if a user buys the item around the same time
      * on a different device.
      */
-    fun queryPurchasesAsync() {
+    override suspend fun queryPurchasesAsync() {
         if (!playStoreBillingClient.isReady)
             return
 
@@ -160,11 +140,12 @@ class BillingRepository private constructor(private val application: Application
         val validPurchases = HashSet<Purchase>(purchasesResult.size)
         purchasesResult.forEach { purchase ->
             if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                if (Security.verifyPurchase(purchase)) {
+                if (verifyPurchase(purchase.originalJson, purchase.signature)) {
+                    clientData.setReceipt(purchase.originalJson, purchase.signature)
                     validPurchases.add(purchase)
                 }
             } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-                if (Tokens.PRO_PRODUCT_ID in purchase.products) {
+                if (clientData.proProductId in purchase.products) {
                     _proPendingSince.tryEmit(purchase.purchaseTime)
                 }
             }
@@ -183,6 +164,14 @@ class BillingRepository private constructor(private val application: Application
         acknowledgeNonConsumablePurchasesAsync(validPurchases)
     }
 
+    override fun verifyPurchase(data: String, signature: String) =
+        Security.verifyPurchase(
+            data,
+            signature,
+            clientData.publicKeyBase64,
+        ) &&
+                Security.signature(application, clientData.apkSignature) != null
+
 
     /**
      * If you do not acknowledge a purchase, the Google Play Store will provide a refund to the
@@ -190,8 +179,8 @@ class BillingRepository private constructor(private val application: Application
      * [BillingClient.acknowledgePurchase] inside your app.
      */
     private fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
-        if (nonConsumables.isEmpty() || !nonConsumables.any { Tokens.PRO_PRODUCT_ID in it.products }) {
-            revokePro()
+        if (nonConsumables.isEmpty() || !nonConsumables.any { clientData.proProductId in it.products }) {
+            updateProStatus(false)
         }
 
         nonConsumables.forEach { purchase ->
@@ -202,12 +191,15 @@ class BillingRepository private constructor(private val application: Application
             playStoreBillingClient.acknowledgePurchase(params) { billingResult ->
                 when (billingResult.responseCode) {
                     BillingClient.BillingResponseCode.OK -> {
-                        disburseNonConsumableEntitlement(purchase)
+                        if (clientData.proProductId in purchase.products) {
+                            updateProStatus(true)
+                            _proPendingSince.tryEmit(0)
+                        }
                     }
 
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
-                        if (Tokens.PRO_PRODUCT_ID in purchase.products) {
-                            revokePro()
+                        if (clientData.proProductId in purchase.products) {
+                            updateProStatus(false)
                         }
                     }
                 }
@@ -216,43 +208,18 @@ class BillingRepository private constructor(private val application: Application
         }
     }
 
-    /**
-     * This is the final step, where purchases/receipts are converted to premium contents.
-     * In this sample, once the entitlement is disbursed the receipt is thrown out.
-     */
-    private fun disburseNonConsumableEntitlement(purchase: Purchase) {
-        if (Tokens.PRO_PRODUCT_ID in purchase.products) {
-            prefs.proStatus = true
-            if (!_proStatus.value) {
-                _proStatus.tryEmit(true)
-                application.sendBroadcast(
-                    Intent(NLService.iTHEME_CHANGED_S)
-                        .setPackage(application.packageName),
-                    NLService.BROADCAST_PERMISSION
-                )
-            }
-            _proPendingSince.tryEmit(0)
-        }
-    }
-
-    private fun revokePro() {
-        prefs.proStatus = false
-        if (_proStatus.value)
-            _proStatus.tryEmit(false)
-    }
-
-    private fun findProProduct(productDetailsList: List<ProductDetails>?): ProductDetails? {
+    private fun findProProduct(): ProductDetails? {
         val productDetails =
-            productDetailsList?.firstOrNull { it.productId == Tokens.PRO_PRODUCT_ID }
+            proProductDetailsList?.firstOrNull { it.productId == clientData.proProductId }
 
-        return if (productDetails != null && application.getString(R.string.app_name) in productDetails.title &&
-            application.getString(R.string.app_name) in productDetails.name &&
+        return if (productDetails != null && clientData.appName in productDetails.title &&
+            clientData.appName in productDetails.name &&
             productDetails.productId != productDetails.title && productDetails.productId != productDetails.name
         )
             productDetails
         else if (productDetails != null) {
             _proProductDetails.tryEmit(null)
-            revokePro()
+            updateProStatus(false)
             null
         } else null
     }
@@ -275,13 +242,23 @@ class BillingRepository private constructor(private val application: Application
         playStoreBillingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsList ->
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
-                    findProProduct(productDetailsList)?.let {
-                        _proProductDetails.tryEmit(it)
+                    proProductDetailsList = productDetailsList
+                    findProProduct()?.let {
+                        _proProductDetails.tryEmit(
+                            MyProductDetails(
+                                it.productId,
+                                it.title,
+                                it.name,
+                                it.description,
+                                it.oneTimePurchaseOfferDetails!!.formattedPrice
+                            )
+                        )
                     }
                 }
 
                 else -> {
-                    Timber.tag(LOG_TAG).d(billingResult.debugMessage)
+                    Timber.tag(TAG)
+                        .d(billingResult.debugMessage)
                 }
             }
         }
@@ -292,8 +269,8 @@ class BillingRepository private constructor(private val application: Application
      * launch the Google Play Billing flow. The response to this call is returned in
      * [onPurchasesUpdated]
      */
-    fun launchBillingFlow(activity: Activity, productDetails: ProductDetails) {
-        findProProduct(listOf(productDetails))?.let { productDetails ->
+    override fun launchPlayBillingFlow(activity: Activity) {
+        findProProduct()?.let { productDetails ->
             val flowParams = BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(
                     listOf(
@@ -333,7 +310,9 @@ class BillingRepository private constructor(private val application: Application
 
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
                 // item already owned? call queryPurchasesAsync to verify and process all such items
-                queryPurchasesAsync()
+                runBlocking {
+                    queryPurchasesAsync()
+                }
             }
 
             BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> {
@@ -341,29 +320,23 @@ class BillingRepository private constructor(private val application: Application
             }
 
             else -> {
-                Timber.tag(LOG_TAG).d(billingResult.debugMessage)
+                Timber.tag(TAG).d(billingResult.debugMessage)
             }
         }
     }
 
-    companion object {
-        private const val LOG_TAG = Stuff.TAG
-        private val INAPP_PRODUCT_IDS = listOf(Tokens.PRO_PRODUCT_ID)
+//    companion object {
+//        @Volatile
+//        private var INSTANCE: BillingRepository? = null
+//
+//        fun getInstance(application: Application): BillingRepository =
+//            INSTANCE ?: synchronized(this) {
+//                INSTANCE
+//                    ?: BillingRepository(application)
+//                        .also { INSTANCE = it }
+//            }
+//
+//    }
 
-        private const val RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L
-        private const val RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L // 15 minutes
-        private const val RECONNECT_MAX_TIMES = 10
-
-        @Volatile
-        private var INSTANCE: BillingRepository? = null
-        private val handler = Handler(Looper.getMainLooper())
-
-        fun getInstance(application: Application): BillingRepository =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE
-                    ?: BillingRepository(application)
-                        .also { INSTANCE = it }
-            }
-    }
 }
 

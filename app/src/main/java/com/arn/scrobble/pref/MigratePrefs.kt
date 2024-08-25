@@ -18,7 +18,8 @@ object MigratePrefs {
         if (prefs.prefVersion == 0) {
             prefs.prefVersion = MainPrefs.PREF_VERSION_INT
             // do not display changelog for fresh installations
-            prefs.changelogSeenHashcode = App.context.getString(R.string.changelog_text).hashCode()
+            prefs.changelogSeenHashcode =
+                App.application.getString(R.string.changelog_text).hashCode()
             return
         }
 
@@ -70,7 +71,7 @@ object MigratePrefs {
     private fun migrateV4() {
 
         // migrate old cookies
-        val prefs = App.context.getHarmonySharedPreferences("CookiePersistence")
+        val prefs = App.application.getHarmonySharedPreferences("CookiePersistence")
         prefs.all.forEach { (key, value) ->
             if ("|sessionid" in key || "|csrftoken" in key) {
                 val cookie = SerializableCookie.decode(value as String)

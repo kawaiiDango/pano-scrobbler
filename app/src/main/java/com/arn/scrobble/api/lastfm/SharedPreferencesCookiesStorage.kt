@@ -56,7 +56,7 @@ data class CookieSerializable(
 
 class SharedPreferencesCookiesStorage(prefsName: String) : CookiesStorage {
 
-    private val sharedPreferences = App.context.getHarmonySharedPreferences(prefsName)
+    private val sharedPreferences = App.application.getHarmonySharedPreferences(prefsName)
     private val json = Stuff.myJson
 
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {

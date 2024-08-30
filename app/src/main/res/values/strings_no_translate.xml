@@ -3,11 +3,11 @@
     <!-- DO NOT TRANSLATE -->
     <string name="app_name" translatable="false">Pano Scrobbler</string>
     <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
-    <string name="tv_link" translatable="false">https://bit.ly/Pscrtv</string>
+    <string name="tv_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/tv</string>
     <string name="github_link" translatable="false">https://github.com/kawaiiDango/pano-scrobbler</string>
     <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
-    <string name="privacy_policy_link" translatable="false">https://telegra.ph/Pano-Scrobbler-Privacy-Policy-08-17</string>
-    <string name="faq_link" translatable="false">https://telegra.ph/Pano-Scrobbler-FAQ-05-30</string>
+    <string name="privacy_policy_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/privacy-policy</string>
+    <string name="faq_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/faq</string>
     <string name="ko_fi_link" translatable="false">https://ko-fi.com/kawaiiDango</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>

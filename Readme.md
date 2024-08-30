@@ -1,8 +1,3 @@
----
-layout: home
-permalink: /
----
-
 ## <img src="app/src/main/play/listings/en-US/icon/icon.png" alt="app icon" width="32"/> Pano Scrobbler
 
 [play-store]: img/play-store.svg

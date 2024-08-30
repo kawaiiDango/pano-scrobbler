@@ -38,10 +38,19 @@ plugins:
   - jekyll-readme-index
   - jekyll-github-metadata
   - jekyll-titles-from-headings
+  - jekyll-optional-front-matter
+  - jekyll-default-layout
+  - jekyll-commonmark-ghpages
 
 keep_files:
   - fdroid
 
+defaults:
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+    values:
+      layout: "page"
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to

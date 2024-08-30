@@ -1,7 +1,3 @@
----
-layout: page
----
-
 # Build Instructions
 
 Welcome to my spaghetti

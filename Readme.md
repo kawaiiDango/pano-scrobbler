@@ -48,6 +48,17 @@
 
 Features marked with * are not available on TV due to OS limitations.
 
+### FAQ
+
+See [faq.md](faq.md)
+
+### Privacy Policy
+
+See [privacy-policy.md](privacy-policy.md)
+
+### Enabling notification access on old TVs
+
+See [tv.md](tv.md)
 
 ### Compiling
 

@@ -4,7 +4,7 @@ Getting Notification access to work on TV on Android 8.1 and below is not very s
 
 This may also work on devices that do not allow notification access, such as WSA or old versions of Android Go.
 
-- Open this page on a PC (URL: bit.ly/Pscrtv)
+- Open this page on a PC (URL: bit.ly/pano-tv)
 
 - Enable Developer Options, if you haven't (Settings > About > (Tap on Build Number 5 times))
 

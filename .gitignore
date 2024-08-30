@@ -26,3 +26,6 @@
 stylegen/Tonal Palettes.svg
 .privado
 crowdin.properties
+Gemfile.lock
+.jekyll-cache
+_site/

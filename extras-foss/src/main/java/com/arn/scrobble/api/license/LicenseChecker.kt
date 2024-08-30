@@ -29,7 +29,7 @@ data class JwtPayload(
 )
 
 @Serializable
-private data class LicenseCheckResponse(
+data class LicenseCheckResponse(
     val code: Int,
     val message: String
 )
@@ -47,7 +47,7 @@ object LicenseChecker {
         client: HttpClient,
         url: String,
         token: String,
-    ): Result<Boolean> {
+    ): Result<LicenseCheckResponse> {
         val did = getDeviceIdentifier()
         val lcr = LicenseCheckRequest(did, token)
 
@@ -56,9 +56,7 @@ object LicenseChecker {
                 contentType(ContentType.Application.Json)
                 setBody(lcr)
             }
-                .body<LicenseCheckResponse>().let {
-                    it.code == 0 && it.message == "valid"
-                }
+                .body<LicenseCheckResponse>()
         }
     }
 

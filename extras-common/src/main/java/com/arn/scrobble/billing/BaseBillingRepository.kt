@@ -33,17 +33,18 @@ abstract class BaseBillingRepository(
     protected abstract val _proProductDetails: MutableStateFlow<MyProductDetails?>
     abstract val proProductDetails: StateFlow<MyProductDetails?>
 
-    private val _proStatus by lazy {
+    protected val _licenseState by lazy {
         val (r, s) = clientData.getReceipt()
         MutableStateFlow(
-            if (r == null) false
+            if (r == null)
+                LicenseState.NO_LICENSE
+            else if (verifyPurchase(r, s ?: ""))
+                LicenseState.VALID
             else
-                verifyPurchase(r, s ?: "")
+                LicenseState.NO_LICENSE
         )
     }
-    val proStatus = _proStatus.asStateFlow()
-
-    abstract val proPendingSince: StateFlow<Long>
+    val licenseState = _licenseState.asStateFlow()
 
     open fun initBillingClient() {
     }
@@ -53,13 +54,6 @@ abstract class BaseBillingRepository(
     abstract suspend fun queryPurchasesAsync()
     abstract fun verifyPurchase(data: String, signature: String): Boolean
     abstract fun launchPlayBillingFlow(activity: Activity)
-
-    protected fun updateProStatus(active: Boolean) {
-        _proStatus.value = active
-        if (!active) {
-            clientData.setReceipt(null, null)
-        }
-    }
 
     @Synchronized
     protected fun retryBillingConnectionWithExponentialBackoff() {

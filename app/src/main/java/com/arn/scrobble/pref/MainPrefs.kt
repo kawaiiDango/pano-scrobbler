@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.Period
+import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserAccountSerializable
@@ -165,7 +166,7 @@ class MainPrefs : Krate {
 
     val proStatus
         get() =
-            App.billingRepository.proStatus.value
+            App.billingRepository.licenseState.value == LicenseState.VALID
 
     var receipt by stringPref(PREF_RECEIPT)
     var receiptSignature by stringPref(PREF_RECEIPT_SIGNATURE)

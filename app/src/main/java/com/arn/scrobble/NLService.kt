@@ -207,11 +207,17 @@ class NLService : NotificationListenerService() {
         }
 
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
-        if (prefs.notiPersistent && Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU)
-            ContextCompat.startForegroundService(
-                this,
-                Intent(this, PersistentNotificationService::class.java)
-            )
+        if (prefs.notiPersistent && Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU) {
+            try {
+                ContextCompat.startForegroundService(
+                    this,
+                    Intent(this, PersistentNotificationService::class.java)
+                )
+//                ForegroundServiceStartNotAllowedException extends IllegalStateException
+            } catch (e: IllegalStateException) {
+                Timber.w(e)
+            }
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getScrobblerExitReasons(printAll = true)

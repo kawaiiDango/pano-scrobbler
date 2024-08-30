@@ -16,12 +16,6 @@
 
 <img src="https://i.imgur.com/pgETfhc.png" alt="scrobbles" width="150"/> <img src="https://i.imgur.com/Q7yPi2z.png" alt="friends" width="150"/> <img src="https://i.imgur.com/MUhcyBw.png" alt="charts" width="150"/> <img src="https://i.imgur.com/aikbtGR.png" alt="random" width="150"/>
 
-### PC app?
-
-Pano Scrobbler works on Windows 11 with WSA and can scrobble from other Android apps.
-However, there is a known issue with the buttons in notifications not functioning as expected,
-which is a bug specific to WSA.
-
 ### Features:
 
 - Supports phones, TVs, tablets, and Android desktops, including Windows 11

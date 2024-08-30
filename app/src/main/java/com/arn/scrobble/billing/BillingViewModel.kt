@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.main.App
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
@@ -13,10 +12,9 @@ class BillingViewModel : ViewModel() {
 
     private val repository = App.billingRepository
 
-    val proStatus: StateFlow<Boolean> = repository.proStatus
+    val proProductDetails = repository.proProductDetails
 
-    val proProductDetails: StateFlow<MyProductDetails?> = repository.proProductDetails
-    val proPendingSince: StateFlow<Long> = repository.proPendingSince
+    val licenseState = repository.licenseState
 
     init {
         repository.initBillingClient()

@@ -23,12 +23,12 @@ import coil3.request.ImageRequest
 import coil3.request.error
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentRegexEditAddBinding
 import com.arn.scrobble.db.ExtractionPatterns
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.RegexEditsDao.Companion.countNamedCaptureGroups
+import com.arn.scrobble.main.App
 import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.PackageName
@@ -52,7 +52,6 @@ class RegexEditsAddFragment : Fragment() {
     private var _binding: ContentRegexEditAddBinding? = null
     private val binding get() = _binding!!
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
-    private val billingViewModel by activityViewModels<BillingViewModel>()
     private val pm by lazy { requireContext().packageManager }
     private val dao by lazy { PanoDb.db.getRegexEditsDao() }
     private var hasChanged
@@ -75,7 +74,7 @@ class RegexEditsAddFragment : Fragment() {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) // needs java 8
             binding.editExtract.isVisible = false
-        else if (!billingViewModel.proStatus.value) {
+        else if (!App.prefs.proStatus) {
             binding.editExtract.setOnClickListener {
                 findNavController().navigate(R.id.billingFragment)
             }
@@ -353,7 +352,7 @@ class RegexEditsAddFragment : Fragment() {
         }
 
         if (binding.editExtract.isChecked) {
-            if (!billingViewModel.proStatus.value) {
+            if (!App.prefs.proStatus) {
                 findNavController().navigate(R.id.billingFragment)
                 return false
             }

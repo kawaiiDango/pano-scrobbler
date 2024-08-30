@@ -432,7 +432,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 return@collectLatestLifecycleFlow
 
 
-            if ((!billingViewModel.proStatus.value || prefs.themeTintBackground) && !UiUtils.isTabletUi) {
+            if ((!App.prefs.proStatus || prefs.themeTintBackground) && !UiUtils.isTabletUi) {
                 val animSetList = mutableListOf<Animator>()
                 val contentBgFrom = (binding.root.background as ColorDrawable).color
 //                if (UiUtils.isTabletUi)
@@ -515,7 +515,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     activityViewModel.currentUser.name
                 )
 
-            if (!billingViewModel.proStatus.value)
+            if (!App.prefs.proStatus)
                 shareText += "\n\n" + getString(R.string.share_sig)
 
             val i = Intent(Intent.ACTION_SEND).apply {

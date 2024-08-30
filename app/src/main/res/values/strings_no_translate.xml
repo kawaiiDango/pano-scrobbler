@@ -36,16 +36,13 @@
     <string name="use_arrow_keys_to_adjust" translatable="false">Use the arrow keys to adjust the value</string>
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">"""Already donated?
 
-If you had donated $%1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi with your email address and the code will be manually mailed to you.
+If you had donated %1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi with your email address and the code will be manually mailed to you.
 
 Already purchased through Google Play?
 
 According to Google Play's policy, purchases made through Google Play cannot be used for apps downloaded outside of Google Play.
-
-Activation code not working?
-
-A single activation code can be used on up to %3$d devices.
 """</string>
+    <string name="billing_max_devices_reached" translatable="false" formatted="true">This code has already been used on maximum (%1$d) devices</string>
 
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>

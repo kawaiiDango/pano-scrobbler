@@ -36,7 +36,7 @@ class BillingTroubleshootFragment : Fragment() {
         binding.root.setupInsets()
 
         binding.billingTroubleshootText.text = if (ExtrasConsts.isFossBuild)
-            getString(R.string.billing_troubleshoot_github, 6, "October 2024", 4)
+            getString(R.string.billing_troubleshoot_github, 6, "October 2024")
         else
             getString(R.string.billing_troubleshoot)
 

@@ -160,19 +160,34 @@ class BillingFragment : Fragment() {
             )
         }
 
-        collectLatestLifecycleFlow(viewModel.proPendingSince.filterNotNull()) {
-//          This doesn't go away after the slow card gets declined. So, only notify recent purchases
-            if (System.currentTimeMillis() - it < Stuff.PENDING_PURCHASE_NOTIFY_THRESHOLD)
-                MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(R.string.purchase_pending)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
-        }
+        collectLatestLifecycleFlow(viewModel.licenseState.filterNotNull()) {
+            when (it) {
+                LicenseState.VALID -> {
+                    requireContext().toast(R.string.thank_you)
+                    findNavController().popBackStack(R.id.myHomePagerFragment, false)
+                }
 
-        collectLatestLifecycleFlow(viewModel.proStatus) {
-            if (it) {
-                requireContext().toast(R.string.thank_you)
-                findNavController().popBackStack(R.id.myHomePagerFragment, false)
+                LicenseState.PENDING -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(R.string.purchase_pending)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+
+                LicenseState.NO_LICENSE -> {
+
+                }
+
+                LicenseState.REJECTED -> {
+                    requireContext().toast(R.string.not_found)
+                }
+
+                LicenseState.MAX_DEVICES_REACHED -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setMessage(getString(R.string.billing_max_devices_reached, 4))
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
             }
         }
     }

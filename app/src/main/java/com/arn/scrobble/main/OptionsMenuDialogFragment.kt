@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentOptionsMenuBinding
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.utils.NavUtils
@@ -27,7 +26,6 @@ import kotlinx.parcelize.Parcelize
 
 class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
 
-    private val billingViewModel by activityViewModels<BillingViewModel>()
     private val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     private var _binding: ContentOptionsMenuBinding? = null
@@ -48,7 +46,7 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         binding.optionsMenuNav.inflateMenu(metadata.menuRes)
 
         binding.optionsMenuNav.menu.findItem(R.id.nav_pro)?.isVisible =
-            BuildConfig.DEBUG || !billingViewModel.proStatus.value
+            BuildConfig.DEBUG || !App.prefs.proStatus
 
         mainNotifierViewModel.updateCanIndex()
         binding.optionsMenuNav.menu.findItem(R.id.nav_do_index)?.isVisible =

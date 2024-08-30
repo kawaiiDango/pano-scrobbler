@@ -135,7 +135,6 @@ object Stuff {
     const val TRACK_INFO_REQUESTS = 2
     const val META_WAIT = 400L
     const val START_POS_LIMIT = 1500L
-    const val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
     const val SCROBBLE_FROM_MIC_DELAY = 3 * 1000L
     const val MIN_LISTENER_COUNT = 5
 

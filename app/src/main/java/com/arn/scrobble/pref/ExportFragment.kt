@@ -98,7 +98,7 @@ class ExportFragment : Fragment() {
         binding.methodFile.setOnClickListener {
             binding.code.isVisible = false
 
-            if (billingViewModel.proStatus.value && App.prefs.showScrobbleSources) {
+            if (App.prefs.proStatus && App.prefs.showScrobbleSources) {
                 val privateFileName = getString(
                     R.string.export_file_name,
                     "private_" + Stuff.getFileNameDateSuffix()

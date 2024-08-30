@@ -10,9 +10,10 @@ abstract class BaseReviewPrompter(
     fun showIfNeeded(): Boolean {
         if (lastReviewPromptTime == null) {
             setReviewPromptTime(System.currentTimeMillis())
+            return false
         }
 
-        val shouldShowPrompt = System.currentTimeMillis() - lastReviewPromptTime!! >= INTERVAL
+        val shouldShowPrompt = System.currentTimeMillis() - lastReviewPromptTime >= INTERVAL
 
         if (shouldShowPrompt)
             launchReviewFlow()

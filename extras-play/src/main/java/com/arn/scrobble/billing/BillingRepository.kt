@@ -26,11 +26,11 @@ class BillingRepository(
     // how long before the data source tries to reconnect to Google play
     override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
-    private val _proPendingSince by lazy { MutableStateFlow(0L) }
-    override val proPendingSince by lazy { _proPendingSince.asStateFlow() }
     private val TAG = BillingRepository::class.simpleName!!
     private lateinit var playStoreBillingClient: BillingClient
     private var proProductDetailsList: List<ProductDetails>? = null
+    val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
+
 
     override fun initBillingClient() {
         playStoreBillingClient = BillingClient.newBuilder(application.applicationContext)
@@ -146,7 +146,9 @@ class BillingRepository(
                 }
             } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
                 if (clientData.proProductId in purchase.products) {
-                    _proPendingSince.tryEmit(purchase.purchaseTime)
+                    // This doesn't go away after the slow card gets declined. So, only notify recent purchases
+                    if (System.currentTimeMillis() - purchase.purchaseTime < PENDING_PURCHASE_NOTIFY_THRESHOLD)
+                        _licenseState.tryEmit(LicenseState.PENDING)
                 }
             }
         }
@@ -180,7 +182,9 @@ class BillingRepository(
      */
     private fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
         if (nonConsumables.isEmpty() || !nonConsumables.any { clientData.proProductId in it.products }) {
-            updateProStatus(false)
+            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+            clientData.setReceipt(null, null)
+            return
         }
 
         nonConsumables.forEach { purchase ->
@@ -192,14 +196,14 @@ class BillingRepository(
                 when (billingResult.responseCode) {
                     BillingClient.BillingResponseCode.OK -> {
                         if (clientData.proProductId in purchase.products) {
-                            updateProStatus(true)
-                            _proPendingSince.tryEmit(0)
+                            _licenseState.tryEmit(LicenseState.VALID)
                         }
                     }
 
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
                         if (clientData.proProductId in purchase.products) {
-                            updateProStatus(false)
+                            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+                            clientData.setReceipt(null, null)
                         }
                     }
                 }
@@ -219,7 +223,8 @@ class BillingRepository(
             productDetails
         else if (productDetails != null) {
             _proProductDetails.tryEmit(null)
-            updateProStatus(false)
+            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+            clientData.setReceipt(null, null)
             null
         } else null
     }

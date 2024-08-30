@@ -275,7 +275,9 @@ tasks.register("genDict") {
 // play store and github publishing scripts
 // remove if not needed
 
-val localProperties = gradleLocalProperties(rootDir, project.providers) as Map<String, String>
+val localProperties = gradleLocalProperties(rootDir, project.providers)
+    .map { it.key to it.value.toString() }
+    .toMap()
 
 android {
     signingConfigs {

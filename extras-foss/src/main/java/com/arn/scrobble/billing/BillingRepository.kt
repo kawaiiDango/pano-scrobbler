@@ -20,8 +20,6 @@ class BillingRepository(
 
     override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
-    private val _proPendingSince by lazy { MutableStateFlow(0L) }
-    override val proPendingSince by lazy { _proPendingSince.asStateFlow() }
     private val CHECK_EVERY = 1000L * 60 * 60 * 24 // 1 day
 
 
@@ -48,22 +46,39 @@ class BillingRepository(
     override suspend fun queryPurchasesAsync() {
         val (receipt, _) = clientData.getReceipt()
         if (receipt != null && verifyPurchase(receipt, "")) {
-            if (!proStatus.value || System.currentTimeMillis() - clientData.getLastcheckTime() > CHECK_EVERY) {
+            if (_licenseState.value != LicenseState.VALID || System.currentTimeMillis() - clientData.getLastcheckTime() > CHECK_EVERY) {
                 LicenseChecker.checkLicenseOnline(
                     clientData.httpClient,
                     clientData.serverUrl,
                     receipt
                 ).onSuccess {
-                    updateProStatus(it)
+                    when (it.code) {
+                        0 -> {
+                            if (it.message == "valid") {
+                                _licenseState.emit(LicenseState.VALID)
+                            } else {
+                                _licenseState.emit(LicenseState.REJECTED)
+                                clientData.setReceipt(null, null)
+                            }
+                        }
 
-                    if (!it) {
-                        clientData.setReceipt(null, null)
+                        1 -> {
+                            _licenseState.emit(LicenseState.REJECTED)
+                            clientData.setReceipt(null, null)
+                        }
+
+                        2 -> {
+                            _licenseState.emit(LicenseState.MAX_DEVICES_REACHED)
+                            clientData.setReceipt(null, null)
+                        }
                     }
+
                     clientData.setLastcheckTime(System.currentTimeMillis())
                 }
             }
         } else {
-            updateProStatus(false)
+            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+            clientData.setReceipt(null, null)
         }
     }
 

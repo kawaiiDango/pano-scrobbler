@@ -1,6 +1,5 @@
 package com.arn.scrobble.charts
 
-import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
@@ -39,7 +38,6 @@ class ChartsOverviewVM : ChartsPeriodVM() {
     private val _tagCloudVisible = MutableStateFlow(false)
     private val _tagCloudProgress = MutableStateFlow(0.0)
     val tagCloudProgress = _tagCloudProgress.asSharedFlow()
-    var tagCloudBitmap: Pair<Int, Bitmap?>? = null
     private val totalsMap = mutableMapOf(
         Stuff.TYPE_ARTISTS to 0,
         Stuff.TYPE_ALBUMS to 0,
@@ -281,7 +279,6 @@ class ChartsOverviewVM : ChartsPeriodVM() {
             _listeningActivity.emit(null)
             _tagCloud.emit(null)
         }
-        tagCloudBitmap = null
     }
 
     class TagStats {

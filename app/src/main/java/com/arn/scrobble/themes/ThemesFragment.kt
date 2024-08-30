@@ -22,7 +22,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentThemesBinding
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.FabData
@@ -56,7 +55,6 @@ class ThemesFragment : Fragment() {
         )
     }
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
-    private val billingViewModel by activityViewModels<BillingViewModel>()
 
     private lateinit var themedContext: ContextThemeWrapper
 
@@ -129,7 +127,7 @@ class ThemesFragment : Fragment() {
             com.google.android.material.R.string.abc_action_mode_done,
             R.drawable.vd_check_simple,
             {
-                if (billingViewModel.proStatus.value) {
+                if (App.prefs.proStatus) {
 
                     val prevDayNightId = prefs.themeDayNight
                     saveTheme()

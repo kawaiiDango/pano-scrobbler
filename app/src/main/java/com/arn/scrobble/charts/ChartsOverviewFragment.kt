@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,6 +16,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -34,6 +34,8 @@ import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.LayoutCollageFooterBinding
+import com.arn.scrobble.kumo.compat.MyKBitmap
+import com.arn.scrobble.kumo.compat.MyKGraphicsFactory
 import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.ui.MusicEntryLoaderInput
@@ -61,7 +63,7 @@ import com.kennycason.kumo.CollisionMode
 import com.kennycason.kumo.WordCloud
 import com.kennycason.kumo.WordFrequency
 import com.kennycason.kumo.bg.CircleBackground
-import com.kennycason.kumo.font.KumoFont
+import com.kennycason.kumo.compat.KumoRect
 import com.kennycason.kumo.font.scale.LinearFontScalar
 import com.kennycason.kumo.image.AngleGenerator
 import com.kennycason.kumo.palette.LinearGradientColorPalette
@@ -191,7 +193,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             popup.inflate(R.menu.tag_cloud_menu)
 
             popup.menu.findItem(R.id.menu_share).isVisible =
-                viewModel.tagCloudBitmap != null && !Stuff.isTv
+                binding.chartsTagCloud.drawable != null && !Stuff.isTv
 
             popup.setOnMenuItemClickListener {
                 when (it.itemId) {
@@ -336,20 +338,13 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             binding.chartsTagCloud.post {
 
                 lastTagCloudJob = viewLifecycleOwner.lifecycleScope.launch {
-                    val bitmap =
-                        if (viewModel.tagCloudBitmap?.first == tagWeights.hashCode()) {
-                            viewModel.tagCloudBitmap!!.second
-                        } else {
-                            withContext(Dispatchers.IO) {
-                                generateTagCloud(tagWeights, binding.chartsTagCloud.width)
-                            }
-                        }
-
-                    viewModel.tagCloudBitmap = tagWeights.hashCode() to bitmap
+                    val bmp = withContext(Dispatchers.IO) {
+                        generateTagCloud(tagWeights, binding.chartsTagCloud.width)
+                    }
 
                     binding.chartsTagCloudProgress.hide()
 
-                    binding.chartsTagCloud.setImageBitmap(bitmap)
+                    binding.chartsTagCloud.setImageBitmap(bmp)
 
                     val center = binding.chartsTagCloud.width / 2
 
@@ -365,7 +360,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                     delay(200)
 
                     tagCloudSkeleton.showOriginal()
-//                    binding.chartsTagCloud.visibility = View.VISIBLE
+                    binding.chartsTagCloud.visibility = View.VISIBLE
                     binding.chartsTagCloudNotice.text =
                         getString(R.string.based_on, getString(R.string.artists))
                     binding.chartsTagCloudNotice.visibility = View.VISIBLE
@@ -594,13 +589,13 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
     }
 
-    private suspend fun generateTagCloud(weights: Map<String, Float>, dimensionPx: Int): Bitmap? {
+    private suspend fun generateTagCloud(weights: Map<String, Float>, dimensionPx: Int): Bitmap {
         val t1 = System.currentTimeMillis()
         val wordFrequenciesFetched = weights.map { (tag, size) ->
             WordFrequency(tag, size.toInt())
         }
 
-        val dimension = Rect(0, 0, dimensionPx, dimensionPx)
+        val dimension = KumoRect(0, 0, dimensionPx, dimensionPx)
         val tintColor = MaterialColors.getColor(
             requireContext(),
             com.google.android.material.R.attr.colorSecondary,
@@ -610,34 +605,39 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         val palette = LinearGradientColorPalette(
             tintColor,
             ContextCompat.getColor(requireContext(), R.color.foreground_pure),
-            7
+            wordFrequenciesFetched.size - 2
         )
-        val bmp = WordCloud(dimension, CollisionMode.PIXEL_PERFECT).apply {
-            setBackgroundColor(Color.TRANSPARENT)
-            setKumoFont(KumoFont(Typeface.DEFAULT))
-            setColorPalette(palette)
-            setAngleGenerator(AngleGenerator(0.0, 90.0, 2))
+
+        val bmp = WordCloud(
+            dimension,
+            CollisionMode.PIXEL_PERFECT,
+            MyKGraphicsFactory,
+        ).apply {
             setBackground(CircleBackground(dimensionPx / 2))
+            setBackgroundColor(Color.TRANSPARENT)
+            setColorPalette(palette)
+            setAngleGenerator(AngleGenerator(0))
             setPadding(4.sp)
             setFontScalar(LinearFontScalar(12.sp, 48.sp))
-            setProgressCallback { currentItem, placed, total ->
-                _binding ?: return@setProgressCallback
-
-                binding.chartsTagCloudProgress.progress =
-                    (currentItem * binding.chartsTagCloudProgress.max / total) + (binding.chartsTagCloudProgress.max * 0.8).toInt()
-            }
+//            setProgressCallback { currentItem, placed, total ->
+//                _binding ?: return@setProgressCallback
+//
+//                binding.chartsTagCloudProgress.progress =
+//                    (currentItem * binding.chartsTagCloudProgress.max / total) + (binding.chartsTagCloudProgress.max * 0.8).toInt()
+//            }
             build(wordFrequenciesFetched)
-        }.bitmap
+        }.bufferedImage as MyKBitmap
+
         val t2 = System.currentTimeMillis()
         if (BuildConfig.DEBUG)
             withContext(Dispatchers.Main) {
                 requireContext().toast("Generated in ${t2 - t1}ms")
             }
-        return bmp
+        return bmp.bitmap
     }
 
     private suspend fun getTagCloudUri(): Uri? {
-        val tagCloudBitmap = viewModel.tagCloudBitmap?.second ?: return null
+        val tagCloudBitmap = binding.chartsTagCloud.drawable?.toBitmapOrNull() ?: return null
         val selectedPeriod = viewModel.selectedPeriod.value
 
         val footerBinding = LayoutCollageFooterBinding.inflate(layoutInflater, null, false)

@@ -1,3 +1,7 @@
+---
+layout: page
+---
+
 # Delete Your Scrobbling Account(s)
 
 Pano Scrobbler is a third party client app, which uses the APIs of multiple scrobbling services, such as last.fm, libre.fm, listenbrainz.org, and self-hosted custom servers. Pano Scrobbler does not host your accounts and does not have direct access to your data.

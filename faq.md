@@ -1,4 +1,8 @@
-# Pano Scrobbler FAQ
+---
+layout: page
+---
+
+# FAQ
 
 ### The app skips scrobbles when it is in the background / The app says that it has been killed
 

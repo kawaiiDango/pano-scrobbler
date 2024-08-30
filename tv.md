@@ -1,3 +1,7 @@
+---
+layout: page
+---
+
 # Pano Scrobbler On Old TVs
 
 Getting Notification access to work on TV on Android 8.1 and below is not very straightforward due to Android's limitations, as Google didn't provide a UI to do so.

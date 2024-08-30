@@ -1,4 +1,8 @@
-# Pano Scrobbler Privacy Policy
+---
+layout: page
+---
+
+# Privacy Policy
 
 _Last updated on 2023, Aug 30 UTC_
 

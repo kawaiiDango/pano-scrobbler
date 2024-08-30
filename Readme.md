@@ -1,14 +1,19 @@
+---
+layout: home
+permalink: /
+---
+
 ## <img src="app/src/main/play/listings/en-US/icon/icon.png" alt="app icon" width="32"/> Pano Scrobbler
 
-[play-store]: shields/play-store.svg
+[play-store]: img/play-store.svg
 
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
 
-[ko-fi]: shields/ko-fi.svg
+[ko-fi]: img/ko-fi.svg
 
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
 
-[crowdin]: shields/crowdin.svg
+[crowdin]: img/crowdin.svg
 
 [crowdin-link]: https://crowdin.com/project/pscrobbler
 
@@ -75,8 +80,8 @@ https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F
 ### Credits
 - Inspiration from Musixmatch's FloatingLyrics
 - YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler) and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
-- Icons from https://pictogrammers.com and https://material.io
-- Genres filter from https://everynoise.com
+- Icons from [pictogrammers.com](https://pictogrammers.com) and [material.io](https://material.io)
+- Genres filter from [everynoise.com](https://everynoise.com)
 
 Thanks to the amazing [translators](app/src/main/res/raw/crowdin_members.txt) and everyone who
 reported bugs and helped me with this project.

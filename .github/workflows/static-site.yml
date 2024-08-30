@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: "Generate repo"
+    name: "Generate fdroid repo and static site"
 
     environment:
       name: github-pages
@@ -47,25 +47,30 @@ jobs:
 
       - name: Set up repo secrets
         run: |
-          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > fdroid-repo/fdroid/keystore.p12
-          echo "${{ secrets.CONFIG_YML }}" | base64 -d - > fdroid-repo/fdroid/config.yml
+          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > static-site/fdroid/keystore.p12
+          echo "${{ secrets.CONFIG_YML }}" | base64 -d - > static-site/fdroid/config.yml
         
       - name: Run update script
-        run: cd fdroid-repo/fdroid && bash update.sh 2>&1
+        run: cd static-site/fdroid && bash update.sh 2>&1
 
       - name: Remove unneded files and secrets
-        run: rm -r fdroid-repo/fdroid/keystore.p12 fdroid-repo/fdroid/config.yml fdroid-repo/fdroid/tmp fdroid-repo/fdroid/srclibs fdroid-repo/fdroid/update.sh fdroid-repo/fdroid/metadata
+        run: rm -r static-site/fdroid/keystore.p12 static-site/fdroid/config.yml static-site/fdroid/tmp static-site/fdroid/srclibs static-site/fdroid/update.sh static-site/fdroid/metadata
 
       - name: Fix permissions
         run: |
-          chmod -c -R +rX "fdroid-repo" | while read line; do
+          chmod -c -R +rX "static-site" | while read line; do
             echo "::warning title=Invalid file permissions automatically fixed::$line"
           done
+
+      - name: Build Jekyll site
+        uses: actions/jekyll-build-pages@v1
+        with:
+          destination: "./static-site"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './fdroid-repo'
+          path: './static-site'
 
       - name: Deploy to GitHub Pages
         id: deployment

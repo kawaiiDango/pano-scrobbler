@@ -1,3 +1,9 @@
+---
+layout: page
+---
+
+# Build Instructions
+
 Welcome to my spaghetti
 
 - Create /app/src/main/java/com/arn/scrobble/Tokens.kt

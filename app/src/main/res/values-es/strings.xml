@@ -301,7 +301,6 @@
     <string name="persistent_noti_desc">Mantén presionado para ocultar esto</string>
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
-    <string name="duration"></string>
     <string name="acoustic" comment="(Acoustic music)">Acústica</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Enérgica</string>

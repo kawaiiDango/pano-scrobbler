@@ -1,9 +1,9 @@
 package com.arn.scrobble.main
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.github.Updater
@@ -15,26 +15,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-class MainNotifierViewModel(application: Application) : AndroidViewModel(application) {
+class MainNotifierViewModel : ViewModel() {
 
-    private val prefs = App.prefs
     var prevDestinationId: Int? = null
     private var lastDrawerDataRefreshTime = 0L
+    private val mainPrefs = PlatformStuff.mainPrefs
 
-    private val _drawerData by lazy {
-        MutableStateFlow(Scrobblables.current?.userAccount?.type?.let { prefs.drawerData[it] })
-    }
-
-    val drawerData = _drawerData.asStateFlow()
-
-    private val _canIndex = MutableStateFlow(false)
-    val canIndex = _canIndex.asStateFlow()
+    val canIndex = mainPrefs.data.map { it.lastMaxIndexTime }.map {
+        BuildConfig.DEBUG && Scrobblables.current.value is LastFm &&
+                System.currentTimeMillis() - (it ?: 0) > TimeUnit.HOURS.toMillis(12)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     private val _fabData = MutableStateFlow<FabData?>(null)
     val fabData = _fabData.asStateFlow()
@@ -45,10 +45,25 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     private val _updateAvailablity = MutableSharedFlow<GithubReleases>()
     val updateAvailability = _updateAvailablity.asSharedFlow()
 
-    lateinit var currentUser: UserCached
-        private set
+    private val _currentUser = MutableStateFlow<UserCached?>(null)
+    val currentUser get() = _currentUser.value!!
 
-    private var prevDrawerUser: UserCached? = null
+    val drawerData = mainPrefs.data.map { it.drawerData }
+        .combine(_currentUser) { drawerData, user ->
+
+            if (user?.isSelf == true) {
+                Scrobblables.current.value?.userAccount?.type?.let { type ->
+                    drawerData[type]
+                }
+            } else if (user != null) {
+                lastDrawerDataRefreshTime = System.currentTimeMillis()
+
+                Scrobblables.current.value
+                    ?.loadDrawerData(user.name)
+
+            } else
+                null
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     var pendingSubmitAttempted = false
 
@@ -59,38 +74,13 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
                 (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
     }
 
-    fun updateCanIndex() {
-        _canIndex.value = BuildConfig.DEBUG && Scrobblables.current is LastFm &&
-                System.currentTimeMillis() -
-                (prefs.lastMaxIndexTime ?: 0) > TimeUnit.HOURS.toMillis(12)
-    }
-
     fun initializeCurrentUser(user: UserCached) {
-        if (!::currentUser.isInitialized)
-            currentUser = user
+        if (_currentUser.value == null)
+            _currentUser.value = user
     }
 
     fun setCurrentUser(user: UserCached) {
-        currentUser = user
-    }
-
-    fun loadCurrentUserDrawerData() {
-        if (
-            prevDrawerUser != currentUser ||
-            System.currentTimeMillis() - lastDrawerDataRefreshTime > Stuff.RECENTS_REFRESH_INTERVAL
-        ) {
-
-            viewModelScope.launch {
-                if (currentUser.isSelf)
-                    loadDrawerDataCached()
-                Scrobblables.current
-                    ?.loadDrawerData(currentUser.name)
-                    ?.let {
-                        _drawerData.emit(it)
-                    }
-                lastDrawerDataRefreshTime = System.currentTimeMillis()
-            }
-        }
+        _currentUser.value = user
     }
 
     override fun onCleared() {
@@ -101,10 +91,6 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch {
             _fabData.emit(fabData)
         }
-    }
-
-    fun loadDrawerDataCached() {
-        _drawerData.value = Scrobblables.current?.userAccount?.type?.let { prefs.drawerData[it] }
     }
 
     fun notifyEdit(track: Track) {

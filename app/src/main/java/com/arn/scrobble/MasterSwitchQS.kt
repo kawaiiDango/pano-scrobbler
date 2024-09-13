@@ -4,7 +4,9 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import com.arn.scrobble.main.App
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.N)
 class MasterSwitchQS : TileService() {
@@ -12,13 +14,15 @@ class MasterSwitchQS : TileService() {
     override fun onClick() {
         qsTile ?: return
         val isActive = qsTile.state == Tile.STATE_ACTIVE
-        App.prefs.scrobblerEnabled = !isActive
+
+        runBlocking { PlatformStuff.mainPrefs.updateData { it.copy(scrobblerEnabled = !isActive) } }
         setActive(!isActive)
     }
 
     override fun onStartListening() {
         qsTile ?: return
-        val isActive = App.prefs.scrobblerEnabled
+        val isActive =
+            runBlocking { PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }.first() }
         setActive(isActive)
     }
 

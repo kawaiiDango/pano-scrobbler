@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 
 
 class RegexItemTouchHelper(
-    adapter: RegexEditsAdapter,
     viewModel: RegexEditsVM,
     viewLifecycleOwner: LifecycleOwner
 ) : ItemTouchHelper(object : SimpleCallback(0, UP or DOWN) {

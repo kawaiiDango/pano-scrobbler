@@ -1,6 +1,7 @@
 package com.arn.scrobble.charts
 
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
@@ -9,7 +10,6 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
-import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,10 +46,10 @@ class RandomVM : ChartsPeriodVM() {
 
                     inp.copy(timePeriod = period)
                 }
-                .mapLatest {
+                .mapLatest { input ->
                     _hasLoaded.emit(false)
-                    App.prefs.lastRandomType = it.type
-                    loadRandom(it)
+                    mainPrefs.updateData { it.copy(lastRandomType = input.type) }
+                    loadRandom(input)
                 }
                 .catch { exception ->
                     emit(null to input.value!!.type)
@@ -61,7 +61,7 @@ class RandomVM : ChartsPeriodVM() {
                         _error.emit(null)
                     } else {
                         _musicEntry.emit(null)
-                        _error.emit(IllegalStateException(App.application.getString(R.string.charts_no_data)))
+                        _error.emit(IllegalStateException(PlatformStuff.application.getString(R.string.charts_no_data)))
                     }
                     input.value?.type?.let { type ->
                         setTotal(type, total)
@@ -99,7 +99,7 @@ class RandomVM : ChartsPeriodVM() {
             val _total: Int
             when {
                 input.type == Stuff.TYPE_TRACKS &&
-                        Scrobblables.current!!.userAccount.type == AccountType.LASTFM -> {
+                        Scrobblables.current.value!!.userAccount.type == AccountType.LASTFM -> {
                     isCharts = false
                     var to = -1L
                     var from = -1L
@@ -113,7 +113,7 @@ class RandomVM : ChartsPeriodVM() {
                         to = approxTimePeriod.end
                     }
 
-                    Scrobblables.current!!.getRecents(
+                    Scrobblables.current.value!!.getRecents(
                         page,
                         input.user.name,
                         from = from,
@@ -127,7 +127,7 @@ class RandomVM : ChartsPeriodVM() {
 
                 input.type == Stuff.TYPE_LOVES -> {
                     isCharts = false
-                    Scrobblables.current!!.getLoves(
+                    Scrobblables.current.value!!.getLoves(
                         page,
                         input.user.name,
                         limit = 1,
@@ -139,17 +139,17 @@ class RandomVM : ChartsPeriodVM() {
 
                 else -> {
                     isCharts = true
-                    Scrobblables.current!!.getCharts(
+                    Scrobblables.current.value!!.getCharts(
                         input.type,
                         input.timePeriod,
                         page,
                         input.user.name,
-                        limit = if (input.timePeriod.period == null && Scrobblables.current?.userAccount?.type == AccountType.LASTFM)
+                        limit = if (input.timePeriod.period == null && Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM)
                             -1
                         else
                             1
                     ).getOrThrow().let {
-                        if (input.timePeriod.period == null && Scrobblables.current?.userAccount?.type == AccountType.LASTFM) {
+                        if (input.timePeriod.period == null && Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM) {
                             _entry = it.entries.randomOrNull()
                             _total = it.entries.size
                         } else {
@@ -170,7 +170,7 @@ class RandomVM : ChartsPeriodVM() {
             result = getOne(1)
             total = result.second
 
-            if (total > 0 && isCharts && input.timePeriod.period == null && Scrobblables.current?.userAccount?.type == AccountType.LASTFM) {
+            if (total > 0 && isCharts && input.timePeriod.period == null && Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM) {
                 // lastfm weekly charts. Already randomised
                 return result
             }
@@ -181,7 +181,7 @@ class RandomVM : ChartsPeriodVM() {
             result = getOne(page)
 
             if (result.first != null && !isCharts &&
-                Scrobblables.current!!.userAccount.type == AccountType.LASTFM
+                Scrobblables.current.value!!.userAccount.type == AccountType.LASTFM
             ) {
                 val track = result.first as Track
 

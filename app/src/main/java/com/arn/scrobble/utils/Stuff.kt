@@ -13,7 +13,6 @@ import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Configuration
@@ -35,36 +34,52 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.datastore.core.MultiProcessDataStoreFactory
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.ExtrasConsts
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.billing.BaseBillingRepository
+import com.arn.scrobble.billing.BillingClientData
+import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.main.App
-import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.pref.WidgetPrefsMigration1
+import com.arn.scrobble.pref.WidgetPrefsSerializer
 import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLParserException
 import io.ktor.http.maxAge
+import io.ktor.http.takeFrom
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import timber.log.Timber
+import java.io.File
 import java.io.IOException
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -93,13 +108,12 @@ object Stuff {
     const val ARG_SHOW_DIALOG = "dialog"
     const val ARG_PKG = "pkg"
     const val ARG_ACTION = "action"
-    const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
+    const val ARG_ALLOWED_PACKAGES = "allowed_packages"
     const val ARG_SINGLE_CHOICE = "single_choice"
     const val ARG_MONTH_PICKER_PERIOD = "month_picker_period"
     const val ARG_SELECTED_YEAR = "selected_year"
     const val ARG_SELECTED_MONTH = "selected_month"
     const val ARG_CUSTOM_REQUEST_KEY = "custom_request_key"
-    const val ARG_HIDDEN_TAGS_CHANGED = "hidden_tags_changed"
     const val ARG_SCROLL_TO_ACCOUNTS = "scroll_to_accounts"
     const val ARG_EDIT = "edit"
     const val MIME_TYPE_JSON = "application/json"
@@ -137,6 +151,7 @@ object Stuff {
     const val START_POS_LIMIT = 1500L
     const val SCROBBLE_FROM_MIC_DELAY = 3 * 1000L
     const val MIN_LISTENER_COUNT = 5
+    const val MAX_HISTORY_ITEMS = 20
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
@@ -185,6 +200,15 @@ object Stuff {
     const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
     const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
     const val PACKAGE_NEWPIPE = "org.schabi.newpipe"
+
+    const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
+    const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"
+    const val CHANNEL_NOTI_NEW_APP = "noti_new_app"
+    const val CHANNEL_NOTI_PENDING = "noti_pending_scrobbles"
+    const val CHANNEL_NOTI_DIGEST_WEEKLY = "noti_digest_weekly"
+    const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
+    const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
+    const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
     val IGNORE_ARTIST_META = setOf(
         "com.google.android.youtube",
@@ -257,6 +281,8 @@ object Stuff {
 
     var isOnline = true
 
+    var isInDemoMode = false
+
     val forcePersistentNoti by lazy {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
@@ -279,7 +305,7 @@ object Stuff {
 
     val isTestLab by lazy {
         Settings.System.getString(
-            App.application.contentResolver,
+            PlatformStuff.application.contentResolver,
             "firebase.test.lab"
         ) == "true"
     }
@@ -303,6 +329,48 @@ object Stuff {
     private val numberFormat by lazy {
         NumberFormat.getInstance()
     }
+
+    val notificationManager by lazy {
+        PlatformStuff.application.getSystemService(NotificationManager::class.java)!!
+    }
+
+    val billingRepository: BaseBillingRepository by lazy {
+        val billingClientData = BillingClientData(
+            proProductId = PRO_PRODUCT_ID,
+            appName = PlatformStuff.application.getString(R.string.app_name),
+            publicKeyBase64 = if (ExtrasConsts.isFossBuild)
+                Tokens.LICENSE_PUBLIC_KEY_BASE64
+            else
+                Tokens.PLAY_BILLING_PUBLIC_KEY_BASE64,
+            apkSignature = Tokens.APK_SIGNATURE,
+            httpClient = Requesters.genericKtorClient,
+            serverUrl = Tokens.LICENSE_CHECKING_SERVER,
+            lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
+            setLastcheckTime = {
+                PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = it.lastLicenseCheckTime) }
+            },
+            receipt = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature },
+            setReceipt = { r, s ->
+                PlatformStuff.mainPrefs.updateData { it.copy(receipt = r, receiptSignature = s) }
+            }
+        )
+        BillingRepository(PlatformStuff.application, billingClientData)
+    }
+
+    val widgetPrefs by lazy {
+        MultiProcessDataStoreFactory.create(
+            serializer = WidgetPrefsSerializer,
+            migrations = listOf(
+                WidgetPrefsMigration1(),
+            ),
+            corruptionHandler = null,
+            produceFile = {
+                File(PlatformStuff.filesDir, WidgetPrefs.FILE_NAME)
+            }
+        )
+    }
+
+    val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
 
     val browserPackages = mutableSetOf<String>()
 
@@ -440,10 +508,10 @@ object Stuff {
     }
 
     fun myRelativeTime(
-        context: Context,
+        context: Context = PlatformStuff.application,
         millis: Long?,
         withPreposition: Boolean = false
-    ): CharSequence {
+    ): String {
         val millis = millis ?: 0
         val diff = System.currentTimeMillis() - millis
         return when {
@@ -456,7 +524,7 @@ object Stuff {
                     context,
                     millis,
                     true
-                )
+                ).toString()
             }
 
             else -> {
@@ -466,7 +534,7 @@ object Stuff {
                     DateUtils.MINUTE_IN_MILLIS,
                     DateUtils.DAY_IN_MILLIS * 2,
                     DateUtils.FORMAT_ABBREV_ALL or DateUtils.FORMAT_SHOW_TIME
-                )
+                ).toString()
             }
         }
     }
@@ -492,7 +560,7 @@ object Stuff {
         val packages = STARTUPMGR_INTENTS.map { it.first }.toSet()
         return packages.any {
             try {
-                App.application.packageManager.getApplicationInfo(it, 0)
+                PlatformStuff.application.packageManager.getApplicationInfo(it, 0)
                 true
             } catch (e: PackageManager.NameNotFoundException) {
                 false
@@ -502,7 +570,7 @@ object Stuff {
 
     fun isPackageInstalled(packageName: String): Boolean {
         return try {
-            App.application.packageManager.getPackageInfo(packageName, 0) != null
+            PlatformStuff.application.packageManager.getPackageInfo(packageName, 0) != null
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
@@ -514,7 +582,7 @@ object Stuff {
     }
 
     fun updateBrowserPackages() {
-        browserPackages += getBrowsers(App.application.packageManager)
+        browserPackages += getBrowsers(PlatformStuff.application.packageManager)
             .map { it.activityInfo.applicationInfo.packageName }
             .toSet()
     }
@@ -533,9 +601,9 @@ object Stuff {
         val plus = if (count == 1000 && periodType != TimePeriodType.CONTINUOUS) "+" else ""
 
         return if (count <= 0)
-            App.application.getString(zeroStrRes)
+            PlatformStuff.application.getString(zeroStrRes)
         else
-            App.application.resources.getQuantityString(
+            PlatformStuff.application.resources.getQuantityString(
                 pluralRes,
                 count,
                 count.format() + plus
@@ -546,7 +614,6 @@ object Stuff {
         musicEntry: MusicEntry,
         pkgName: String?
     ) {
-        val prefs = App.prefs
 
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -592,21 +659,23 @@ object Stuff {
 
             putExtra(SearchManager.QUERY, searchQuery)
 
-            if (pkgName != null && prefs.proStatus && prefs.searchInSource)
+            val searchInSource =
+                runBlocking { PlatformStuff.mainPrefs.data.map { it.searchInSource }.first() }
+            if (pkgName != null && billingRepository.isLicenseValid && searchInSource)
                 `package` = pkgName
         }
         try {
-            App.application.startActivity(intent)
+            PlatformStuff.application.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             if (pkgName != null) {
                 try {
                     intent.`package` = null
-                    App.application.startActivity(intent)
+                    PlatformStuff.application.startActivity(intent)
                 } catch (e: ActivityNotFoundException) {
-                    App.application.toast(R.string.no_player)
+                    PlatformStuff.application.toast(R.string.no_player)
                 }
             } else
-                App.application.toast(R.string.no_player)
+                PlatformStuff.application.toast(R.string.no_player)
         }
     }
 
@@ -647,7 +716,7 @@ object Stuff {
         var uri: Uri? = null
 
         runCatching {
-            with(App.application.contentResolver) {
+            with(PlatformStuff.application.contentResolver) {
                 insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)?.also {
                     uri = it // Keep uri reference so it can be removed on failure
                     openOutputStream(it)?.use { ostream ->
@@ -661,14 +730,14 @@ object Stuff {
         }.getOrElse {
             uri?.let { orphanUri ->
                 // Don't leave an orphan entry in the MediaStore
-                App.application.contentResolver.delete(orphanUri, null, null)
+                PlatformStuff.application.contentResolver.delete(orphanUri, null, null)
             }
 
             throw it
         }
     }
 
-    fun NotificationManager.isChannelEnabled(pref: SharedPreferences, channelId: String) =
+    fun NotificationManager.isChannelEnabled(channelId: String) =
         when {
             isTv -> false
 
@@ -677,8 +746,7 @@ object Stuff {
                         getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
             }
 
-            else -> pref.getBoolean(channelId, true)
-
+            else -> true
         }
 
     fun timeToUTC(time: Long) = time + TimeZone.getDefault().getOffset(System.currentTimeMillis())
@@ -711,10 +779,10 @@ object Stuff {
     }
 
     fun isNotificationListenerEnabled() =
-        NotificationManagerCompat.getEnabledListenerPackages(App.application)
-            .any { it == App.application.packageName }
+        NotificationManagerCompat.getEnabledListenerPackages(PlatformStuff.application)
+            .any { it == PlatformStuff.application.packageName }
 
-    fun isLoggedIn() = Scrobblables.current != null
+    fun isLoggedIn() = Scrobblables.current.value != null
 
     fun stonksIconForDelta(delta: Int?) = when {
         delta == null -> 0
@@ -734,9 +802,11 @@ object Stuff {
         this[Calendar.MILLISECOND] = 0
     }
 
-    fun Calendar.setUserFirstDayOfWeek(): Calendar {
-        if (App.prefs.firstDayOfWeek >= Calendar.SUNDAY)
-            firstDayOfWeek = App.prefs.firstDayOfWeek
+    suspend fun Calendar.setUserFirstDayOfWeek(): Calendar {
+        val firstDayOfWeek = PlatformStuff.mainPrefs.data.map { it.firstDayOfWeek }.first()
+        if (firstDayOfWeek >= Calendar.SUNDAY)
+            this.firstDayOfWeek = firstDayOfWeek
+        // else auto
         return this
     }
 
@@ -757,8 +827,9 @@ object Stuff {
     fun Bundle.myHash() = keySet().map { get(it) }.hashCode()
 
     fun isScrobblerRunning(): Boolean {
-        val serviceComponent = ComponentName(App.application, NLService::class.java)
-        val manager = ContextCompat.getSystemService(App.application, ActivityManager::class.java)!!
+        val serviceComponent = ComponentName(PlatformStuff.application, NLService::class.java)
+        val manager =
+            ContextCompat.getSystemService(PlatformStuff.application, ActivityManager::class.java)!!
         val nlsService = try {
             manager.getRunningServices(Integer.MAX_VALUE)?.find { it.service == serviceComponent }
         } catch (e: SecurityException) {
@@ -786,6 +857,15 @@ object Stuff {
             "$it: $value"
         }
         Timber.dLazy { "MediaMetadata\n$data" }
+    }
+
+    fun isValidUrl(url: String): Boolean {
+        return try {
+            URLBuilder().takeFrom(url)
+            true
+        } catch (e: URLParserException) {
+            false
+        }
     }
 
     fun Intent.putSingle(parcelable: Parcelable): Intent {
@@ -850,7 +930,7 @@ object Stuff {
 
     suspend fun <T> Result<T>.doOnSuccessLoggingFaliure(block: suspend (T) -> Unit) {
         onFailure {
-            App.globalExceptionFlow.emit(it)
+            globalExceptionFlow.emit(it)
         }
 
         onSuccess {
@@ -858,7 +938,7 @@ object Stuff {
         }
     }
 
-    fun addTestCreds(serviceStr: String, username: String, sk: String): Boolean {
+    suspend fun addTestCreds(serviceStr: String, username: String, sk: String): Boolean {
         val type = try {
             AccountType.valueOf(serviceStr.uppercase())
         } catch (e: IllegalArgumentException) {
@@ -889,11 +969,14 @@ object Stuff {
     ): List<ApplicationExitInfo> {
         return try {
             val activityManager =
-                ContextCompat.getSystemService(App.application, ActivityManager::class.java)!!
+                ContextCompat.getSystemService(
+                    PlatformStuff.application,
+                    ActivityManager::class.java
+                )!!
             val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 30)
 
             exitReasons.filter {
-                it.processName == "${App.application.packageName}:$SCROBBLER_PROCESS_NAME"
+                it.processName == "${PlatformStuff.application.packageName}:$SCROBBLER_PROCESS_NAME"
 //                        && it.reason == ApplicationExitInfo.REASON_OTHER
                         && it.timestamp > afterTime
             }.also {
@@ -917,7 +1000,7 @@ object Stuff {
 
     val isTv by lazy {
         val uiModeManager =
-            ContextCompat.getSystemService(App.application, UiModeManager::class.java)!!
+            ContextCompat.getSystemService(PlatformStuff.application, UiModeManager::class.java)!!
         uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 }

@@ -18,11 +18,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import coil3.load
 import coil3.request.error
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.HeaderNavBinding
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.BasePagerFragment
 import com.arn.scrobble.main.HomePagerFragment
 import com.arn.scrobble.main.MainActivity
@@ -34,6 +34,7 @@ import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.slide
+import kotlinx.coroutines.runBlocking
 
 
 object NavUtils {
@@ -42,7 +43,7 @@ object NavUtils {
         headerNavBinding: HeaderNavBinding,
         mainNotifierViewModel: MainNotifierViewModel
     ) {
-        val accountType = Scrobblables.current?.userAccount?.type
+        val accountType = Scrobblables.current.value?.userAccount?.type
 
         if (accountType == null || mainNotifierViewModel.drawerData.value == null) {
             headerNavBinding.navName.text =
@@ -63,7 +64,7 @@ object NavUtils {
         )
 
         val displayText = when {
-            App.prefs.demoMode -> "nobody"
+            Stuff.isInDemoMode -> "nobody"
             accountType == AccountType.LASTFM -> username
             else -> Scrobblables.getString(accountType) + ": " + username
         }
@@ -74,7 +75,7 @@ object NavUtils {
         if (drawerData.scrobblesToday >= 0) {
             headerNavBinding.navNumScrobblesToday.isVisible = true
             headerNavBinding.navNumScrobblesToday.text =
-                App.application.resources.getQuantityString(
+                PlatformStuff.application.resources.getQuantityString(
                     R.plurals.num_scrobbles_today,
                     drawerData.scrobblesToday,
                     drawerData.scrobblesToday.format()
@@ -136,7 +137,7 @@ object NavUtils {
         mainNotifierViewModel: MainNotifierViewModel
     ) {
         headerNavBinding.navProfileLinks.setOnClickListener { anchor ->
-            val currentAccount = Scrobblables.current?.userAccount
+            val currentAccount = Scrobblables.current.value?.userAccount
 
             // show FAQ in the dropdown as a way to prevent a focus bug on TV
             if (currentAccount == null) {
@@ -167,7 +168,6 @@ object NavUtils {
 
             val currentUser = mainNotifierViewModel.currentUser
 
-            val prefs = App.prefs
             val popup = PopupMenu(headerNavBinding.root.context, anchor)
 
             popup.menu.add(1, -3, 0, R.string.profile)
@@ -187,11 +187,11 @@ object NavUtils {
 //            }
 
             if (mainNotifierViewModel.currentUser.isSelf) {
-                Scrobblables.all.forEachIndexed { idx, it ->
-                    if (it != Scrobblables.current)
+                Scrobblables.all.value.forEach {
+                    if (it != Scrobblables.current.value)
                         popup.menu.add(
                             2,
-                            idx,
+                            it.userAccount.type.ordinal,
                             0,
                             Scrobblables.getString(it.userAccount.type) + ": " + it.userAccount.user.name
                         ).apply { setIcon(R.drawable.vd_swap_horiz) }
@@ -235,16 +235,19 @@ object NavUtils {
                     }
 
                     else -> {
-                        val changed = prefs.currentAccountIdx != menuItem.itemId
+                        val changed =
+                            Scrobblables.current.value?.userAccount?.type?.ordinal != menuItem.itemId
                         if (changed) {
-                            prefs.currentAccountIdx = menuItem.itemId
+                            runBlocking {
+                                Scrobblables.setCurrent(AccountType.entries[menuItem.itemId])
+                            }
+
                             setProfileSwitcher(
                                 headerNavBinding,
                                 navController,
                                 mainNotifierViewModel
                             )
 
-                            mainNotifierViewModel.loadDrawerDataCached()
                             navController.popBackStack(R.id.myHomePagerFragment, true)
                             navController.navigate(R.id.myHomePagerFragment)
 
@@ -271,9 +274,12 @@ object NavUtils {
         val activityViewModel by activityViewModels<MainNotifierViewModel>()
 
         if (this is HomePagerFragment) {
-            activityViewModel.setCurrentUser(
-                arguments?.getSingle() ?: Scrobblables.currentScrobblableUser!!
-            )
+            val currentUser = arguments?.getSingle() ?: Scrobblables.currentScrobblableUser
+
+            if (currentUser != null)
+                activityViewModel.setCurrentUser(currentUser)
+            else // todo remove this hack later
+                requireActivity().finish()
         }
 
         fun clearMenus() {
@@ -321,7 +327,7 @@ object NavUtils {
                             )
                             moreMenu.isCheckable = false
                             if (shouldShowUser) {
-                                if (App.prefs.demoMode) {
+                                if (Stuff.isInDemoMode) {
                                     moreMenu.setIcon(R.drawable.vd_user)
                                 } else {
                                     UiUtils.loadSmallUserPic(
@@ -347,7 +353,7 @@ object NavUtils {
                             if (optionsMenuRes != 0)
                                 activityBinding.sidebarNav.inflateMenu(optionsMenuRes)
 
-                            if (!App.prefs.proStatus)
+                            if (!Stuff.billingRepository.isLicenseValid)
                                 activityBinding.sidebarNav.menu.findItem(R.id.nav_pro)?.isVisible =
                                     true
 
@@ -430,10 +436,17 @@ object NavUtils {
                                         idOffset + position
                                     activityBinding.sidebarNav.setCheckedItem(idOffset + position)
 
-                                    if (this@setupWithNavUi is HomePagerFragment) {
-                                        if (findNavController().currentDestination?.id == R.id.myHomePagerFragment)
-                                            prefs.lastHomePagerTab = position
-                                    }
+//                                    if (this@setupWithNavUi is HomePagerFragment) {
+//                                        if (findNavController().currentDestination?.id == R.id.myHomePagerFragment) {
+//                                            runBlocking {
+//                                                PlatformStuff.mainPrefs.updateData {
+//                                                    it.copy(
+//                                                        lastHomePagerTab = position
+//                                                    )
+//                                                }
+//                                            }
+//                                        }
+//                                    }
                                 }
                             }
 
@@ -460,8 +473,7 @@ object NavUtils {
                         if (!UiUtils.isTabletUi) {
                             activityBinding.bottomNav.visibility = View.VISIBLE
                             activityBinding.bottomNav.slide()
-                        } else
-                            mainNotifierViewModel.loadCurrentUserDrawerData()
+                        }
                     }
 
                     Lifecycle.Event.ON_DESTROY -> {

@@ -7,12 +7,9 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.delay
@@ -29,12 +26,12 @@ object ListenAlong {
 
     suspend fun fetchTrackLoop(username: String) {
         while (true) {
-            val track = Scrobblables.current!!.getRecents(
+            val track = Scrobblables.current.value?.getRecents(
                 1,
                 username,
                 limit = 1,
-            ).map { it.entries.firstOrNull() }
-                .getOrNull()
+            )?.map { it.entries.firstOrNull() }
+                ?.getOrNull()
             if (track != null && (track.artist.name != currentTrack?.artist?.name || track.name != currentTrack?.name)) {
                 currentTrack = track
 
@@ -49,43 +46,44 @@ object ListenAlong {
     }
 
     private fun showNotification(username: String) {
-        nm = ContextCompat.getSystemService(App.application, NotificationManager::class.java)!!
+        val application = PlatformStuff.application
+        val nm = PlatformStuff.notificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     CHANNEL_ID,
-                    App.application.getString(R.string.listen_along),
+                    application.getString(R.string.listen_along),
                     NotificationManager.IMPORTANCE_LOW
                 )
             )
         }
 
-        val intent = Intent(App.application, MainActivity::class.java)
+        val intent = Intent(application, MainActivity::class.java)
         val launchIntent = PendingIntent.getActivity(
-            App.application, 8, intent,
+            application, 8, intent,
             Stuff.updateCurrentOrImmutable
         )
         val notification =
-            NotificationCompat.Builder(App.application, MainPrefs.CHANNEL_NOTI_PENDING)
+            NotificationCompat.Builder(application, Stuff.CHANNEL_NOTI_PENDING)
                 .setSmallIcon(R.drawable.vd_noti_persistent)
                 .setPriority(Notification.PRIORITY_LOW)
                 .setOngoing(true)
                 .setContentIntent(launchIntent)
-                .apply { color = (ColorPatchUtils.getNotiColor(App.application) ?: return@apply) }
+                .apply { color = (ColorPatchUtils.getNotiColor(application) ?: return@apply) }
                 .addAction(
                     NotificationCompat.Action(
-                        R.drawable.vd_cancel, App.application.getString(R.string.close),
+                        R.drawable.vd_cancel, application.getString(R.string.close),
                         PendingIntent.getBroadcast(
-                            App.application, NOTIFICATION_ID,
+                            application, NOTIFICATION_ID,
                             Intent(NLService.iLISTEN_ALONG)
-                                .setPackage(App.application.packageName)
+                                .setPackage(application.packageName)
                                 .putExtra(STOP_EXTRA, true),
                             Stuff.updateCurrentOrImmutable
                         )
                     )
                 )
-                .setContentTitle(App.application.getString(R.string.listen_along))
+                .setContentTitle(application.getString(R.string.listen_along))
                 .setContentText(username)
                 .build()
 

@@ -20,12 +20,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.ButtonStepperForLoginBinding
 import com.arn.scrobble.databinding.ContentOnboardingStepperBinding
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
@@ -33,6 +33,9 @@ import com.arn.scrobble.utils.UiUtils.setupInsets
 import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 class OnboardingFragment : Fragment() {
     private var _binding: ContentOnboardingStepperBinding? = null
@@ -75,7 +78,8 @@ class OnboardingFragment : Fragment() {
             loginStepView = ::createLoginStepView,
             onCompleted = {
                 mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
-                findNavController().navigate(R.id.action_onboardingFragment_to_myHomePagerFragment)
+//                findNavController().navigate(R.id.action_onboardingFragment_to_myHomePagerFragment)
+                findNavController().navigate(R.id.myHomePagerFragment)
             }
         )
 
@@ -179,12 +183,15 @@ class OnboardingFragment : Fragment() {
             )
         }
 
+        val appListWasRun =
+            runBlocking { PlatformStuff.mainPrefs.data.map { it.appListWasRun }.first() }
+
         steps += OnboardingStepData(
             type = OnboardingStepType.CHOOSE_APPS,
             title = getString(R.string.pref_scrobble_from),
             description = getString(R.string.choose_apps),
             canSkip = false,
-            isCompleted = { App.prefs.appListWasRun },
+            isCompleted = { appListWasRun },
             openAction = {
                 findNavController().navigate(R.id.appListFragment)
             }
@@ -220,7 +227,7 @@ class OnboardingFragment : Fragment() {
             ButtonStepperForLoginBinding.inflate(LayoutInflater.from(binding.root.context))
 
         binding.buttonService.setOnClickListener {
-            LoginFlows(findNavController()).go(AccountType.LASTFM)
+            LoginDestinations(findNavController()).go(AccountType.LASTFM)
         }
         binding.buttonService.post { binding.buttonService.requestFocus() }
 
@@ -233,7 +240,7 @@ class OnboardingFragment : Fragment() {
             }
 
             popup.setOnMenuItemClickListener { menuItem ->
-                LoginFlows(findNavController()).go(serviceEnums[menuItem.itemId])
+                LoginDestinations(findNavController()).go(serviceEnums[menuItem.itemId])
                 true
             }
 

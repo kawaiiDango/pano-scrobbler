@@ -9,7 +9,6 @@ import androidx.room.Query
 import com.arn.scrobble.NLService
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.edits.RegexPresets
-import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -30,7 +29,7 @@ interface RegexEditsDao {
     fun maxOrder(): Int?
 
     @Query("SELECT * FROM $tableName WHERE preset IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    fun allPresets(): List<RegexEdit>
+    fun allPresets(): Flow<List<RegexEdit>>
 
     @Query("SELECT count(1) FROM $tableName WHERE packages IS NOT NULL")
     fun hasPkgNameFlow(): Flow<Boolean>
@@ -206,7 +205,7 @@ interface RegexEditsDao {
                 scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)!!
 
                 // needs java 8
-                if (App.prefs.proStatus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                if (Stuff.billingRepository.isLicenseValid && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     extract()
             } catch (e: IllegalArgumentException) {
                 Timber.w("regex error: ${e.message}")

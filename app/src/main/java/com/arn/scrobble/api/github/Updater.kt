@@ -1,22 +1,25 @@
 package com.arn.scrobble.api.github
 
-import com.arn.scrobble.main.App
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 
 class Updater {
-    private val prefs = App.prefs
 
     suspend fun checkGithubForUpdates(): GithubReleases? {
+        val lastUpdateCheckTime =
+            PlatformStuff.mainPrefs.data.map { it.lastUpdateCheckTime }.first()
         val now = System.currentTimeMillis()
-        if ((now - (prefs.lastUpdateCheckTime ?: -1)) <= UPDATE_CHECK_INTERVAL)
+        if ((now - (lastUpdateCheckTime ?: -1)) <= UPDATE_CHECK_INTERVAL)
             return null
 
         Requesters.genericKtorClient.getResult<GithubReleases>(githubApiUrl)
             .onSuccess { releases ->
-                prefs.lastUpdateCheckTime = now
+                PlatformStuff.mainPrefs.updateData { it.copy(lastUpdateCheckTime = now) }
 
                 if (releases.versionCode > BuildConfig.VERSION_CODE) {
                     return releases

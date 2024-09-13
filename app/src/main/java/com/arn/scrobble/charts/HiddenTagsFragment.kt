@@ -9,24 +9,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogUserTagsBinding
-import com.arn.scrobble.main.App
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     private var _binding: DialogUserTagsBinding? = null
     private val binding
         get() = _binding!!
-    private val prefs = App.prefs
-    private var changed = false
+    private val mainPrefs = PlatformStuff.mainPrefs
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +54,9 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         addButton.setOnClickListener {
             val tag = binding.userTagsInputEdittext.text.toString().trim().lowercase()
             if (tag.isNotEmpty()) {
-                addTag(tag, save = true)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    addTag(tag, save = true)
+                }
                 binding.userTagsInputEdittext.text.clear()
             } else {
                 requireContext().toast(R.string.required_fields_empty)
@@ -68,7 +72,10 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         binding.userTagsInput.endIconMode = TextInputLayout.END_ICON_NONE
         binding.userTagsInput.isEndIconVisible = false
 
-        prefs.hiddenTags.forEach { addTag(it.lowercase(), save = false) }
+        runBlocking {
+            mainPrefs.data.map { it.hiddenTags }.first()
+                .forEach { addTag(it.lowercase(), save = false) }
+        }
 
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(UiUtils.getColoredTitle(requireContext(), getString(R.string.hidden_tags)))
@@ -81,51 +88,37 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
             }
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        requireActivity().supportFragmentManager.setFragmentResult(
-            Stuff.ARG_HIDDEN_TAGS_CHANGED,
-            bundleOf(Stuff.ARG_HIDDEN_TAGS_CHANGED to changed)
-        )
-    }
-
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
     }
 
-    private fun removeTag(tag: String) {
-        prefs.hiddenTags = prefs.hiddenTags.toMutableSet().apply { remove(tag) }
-        changed = true
+    private suspend fun removeTag(tag: String) {
+        mainPrefs.updateData {
+            it.copy(hiddenTags = it.hiddenTags - tag)
+        }
     }
 
-    private fun addTag(tag: String, save: Boolean) {
-        if (save && tag in prefs.hiddenTags)
+    private suspend fun addTag(tag: String, save: Boolean) {
+        if (save && tag in mainPrefs.data.map { it.hiddenTags }.first())
             return
 
         if (save) {
-            prefs.hiddenTags = prefs.hiddenTags.toMutableSet().apply { add(tag) }
-            changed = true
+            mainPrefs.updateData {
+                it.copy(hiddenTags = it.hiddenTags + tag)
+            }
         }
 
         val chip = Chip(binding.root.context).apply {
             text = tag
             isCloseIconVisible = true
             setOnCloseIconClickListener {
-                removeTag(tag)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    removeTag(tag)
+                }
                 binding.userTagsChipGroup.removeView(it)
             }
         }
         binding.userTagsChipGroup.addView(chip)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(::changed.name, changed)
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        changed = savedInstanceState?.getBoolean(::changed.name) ?: false
     }
 }

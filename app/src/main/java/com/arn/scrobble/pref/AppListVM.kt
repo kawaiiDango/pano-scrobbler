@@ -1,46 +1,49 @@
 package com.arn.scrobble.pref
 
-import android.app.Application
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media.MediaBrowserServiceCompat
-import com.arn.scrobble.main.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.R
-import com.arn.scrobble.ui.ExpandableHeader
-import com.arn.scrobble.ui.SectionWithHeader
-import com.arn.scrobble.ui.SectionedVirtualList
+import com.arn.scrobble.PlatformStuff
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AppListVM(application: Application) : AndroidViewModel(application) {
-    private val _appList = MutableStateFlow(SectionedVirtualList())
+class AppListVM : ViewModel() {
+    private val _appList = MutableStateFlow(AppList())
     val appList = _appList.asStateFlow()
-    private val packageManager = application.packageManager
-    val selectedPackages = mutableSetOf<String>()
+    private val packageManager = PlatformStuff.application.packageManager
+    private val _selectedPackages = MutableStateFlow(emptySet<String>())
+    val selectedPackages = _selectedPackages.asStateFlow()
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
-    private val prefs = App.prefs
     private val packagesToNotConsider = setOf(
         BuildConfig.APPLICATION_ID,
+        "com.android.bluetooth",
         "com.google.android.bluetooth"
     )
 
     init {
         viewModelScope.launch {
-            load(!prefs.appListWasRun)
+            val appListWasRun = PlatformStuff.mainPrefs.data.map { it.appListWasRun }.first()
+            load(!appListWasRun)
+
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(appListWasRun = true)
+            }
         }
     }
 
     suspend fun load(checkDefaultApps: Boolean) {
         withContext(Dispatchers.IO) {
-            val sectionedList = SectionedVirtualList()
             val musicPlayers = mutableMapOf<String, ApplicationInfo>()
             val otherApps = mutableMapOf<String, ApplicationInfo>()
 
@@ -94,34 +97,17 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
             // remove music players from other apps
             musicPlayers.forEach { (key, _) -> otherApps.remove(key) }
 
-            sectionedList.addSection(
-                SectionWithHeader(
-                    AppListSection.MUSIC_PLAYERS,
-                    musicPlayers.values.sortApps(),
-                    header = ExpandableHeader(
-                        R.drawable.vd_play_circle,
-                        R.string.music_players,
-                        isExpanded = true
-                    )
-                )
+            if (checkDefaultApps)
+                _selectedPackages.value = musicPlayers.keys
+
+            _appList.value = AppList(
+                musicPlayers = musicPlayers.values.sortAndTransform(),
+                otherApps = otherApps.values.sortAndTransform()
             )
 
-            if (checkDefaultApps)
-                selectedPackages += musicPlayers.keys
 
             // add other apps to list
-            sectionedList.addSection(
-                SectionWithHeader(
-                    AppListSection.OTHERS,
-                    otherApps.values.sortApps(),
-                    header = ExpandableHeader(
-                        R.drawable.vd_apps,
-                        R.string.other_apps,
-                        isExpanded = true
-                    )
-                )
-            )
-            _appList.emit(sectionedList)
+
             _hasLoaded.emit(true)
         }
     }
@@ -130,15 +116,44 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
         it.icon != 0 && it.enabled && it.packageName !in packagesToNotConsider
     }
 
-    private fun Collection<ApplicationInfo>.sortApps(): List<ApplicationInfo> {
+    private fun Collection<ApplicationInfo>.sortAndTransform(): List<AppItem> {
         val (selectedList, unselectedList) = this
             .sortedWith(ApplicationInfo.DisplayNameComparator(packageManager))
-            .partition { it.packageName in selectedPackages }
+            .map { AppItem(it.packageName, packageManager.getApplicationLabel(it).toString()) }
+            .partition { it.appId in selectedPackages.value }
         return selectedList + unselectedList
     }
 
-    enum class AppListSection {
-        MUSIC_PLAYERS,
-        OTHERS
+    fun setSelectedPackages(packages: Set<String>) {
+        _selectedPackages.value = packages
     }
+
+    fun setMultiSelection(packageName: String, add: Boolean) {
+        _selectedPackages.value = if (add) {
+            _selectedPackages.value + packageName
+        } else {
+            _selectedPackages.value - packageName
+        }
+    }
+
+    fun saveToPrefs() {
+        GlobalScope.launch {
+            val blockedPackages = appList.value.musicPlayers
+                .union(appList.value.otherApps)
+                .map { it.appId }
+                .toSet() - selectedPackages.value
+            //BL = old WL - new WL
+//            prefs.blockedPackages =
+//                prefs.blockedPackages + prefs.allowedPackages - viewModel.selectedPackages
+            // behaviour change: all unselected apps on the list are blocklisted
+
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(
+                    allowedPackages = selectedPackages.value,
+                    blockedPackages = blockedPackages
+                )
+            }
+        }
+    }
+
 }

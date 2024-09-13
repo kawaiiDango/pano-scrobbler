@@ -7,6 +7,7 @@ import android.text.format.Formatter
 import androidx.collection.CircularArray
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
@@ -24,7 +25,6 @@ import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.PackageNameMetadata.englishLabel
@@ -44,8 +44,8 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
     private val fileType = FileFormat.valueOf(userAccount.authKey)
 
     private val fileUri = userAccount.apiRoot!!.toUri()
-    val documentFile = DocumentFile.fromSingleUri(App.application, fileUri)!!
-    private val contentResolver by lazy { App.application.contentResolver }
+    val documentFile = DocumentFile.fromSingleUri(PlatformStuff.application, fileUri)!!
+    private val contentResolver by lazy { PlatformStuff.application.contentResolver }
 
     fun isFileOk() = documentFile.exists() && documentFile.canWrite() && documentFile.canRead()
 
@@ -55,7 +55,6 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
     }
 
     override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
-        val contentResolver = App.application.contentResolver
 
         return kotlin.runCatching {
             if (!isFileOk())
@@ -156,7 +155,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 throw FException(
                     documentFile,
                     "File too large to read: " + Formatter.formatFileSize(
-                        App.application,
+                        PlatformStuff.application,
                         documentFile.length()
                     )
                 )
@@ -242,9 +241,9 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
         val dd = DrawerData(0)
         if (isSelf) {
-            val drawerData = App.prefs.drawerData.toMutableMap()
-            drawerData[userAccount.type] = dd
-            App.prefs.drawerData = drawerData
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(drawerData = it.drawerData + (userAccount.type to dd))
+            }
         }
 
         return dd
@@ -320,7 +319,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
             fun fromScrobbleData(scrobbleData: ScrobbleData, event: Event) = Entry(
                 timeHuman = DateUtils.formatDateTime(
-                    App.application,
+                    PlatformStuff.application,
                     scrobbleData.timestamp,
                     DateUtils.FORMAT_SHOW_DATE or
                             DateUtils.FORMAT_SHOW_TIME or
@@ -357,24 +356,24 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         private val CSV_HEADER =
             "${Entry::timeHuman.name},${Entry::timeMs.name},${Entry::artist.name},${Entry::track.name},${Entry::album.name},${Entry::albumArtist.name},${Entry::durationMs.name},${Entry::mediaPlayerPackage.name},${Entry::mediaPlayerName.name},${Entry::mediaPlayerVersion.name},${Entry::event.name}"
 
-        fun authAndGetSession(fileUri: Uri, format: FileFormat): Result<Session> {
+        suspend fun authAndGetSession(fileUri: Uri, format: FileFormat): Result<Session> {
             return kotlin.runCatching {
                 val profileUrl = fileUri.toString()
-                val documentFile = DocumentFile.fromSingleUri(App.application, fileUri)!!
+                val documentFile = DocumentFile.fromSingleUri(PlatformStuff.application, fileUri)!!
                 val fileName = documentFile.name!!
 
                 require(fileName.lowercase().endsWith(".${format.name}")) {
                     "File name must end with .${format.name}"
                 }
 
-                App.application.contentResolver.takePersistableUriPermission(
+                PlatformStuff.application.contentResolver.takePersistableUriPermission(
                     fileUri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
 
                 if (format == FileFormat.csv && documentFile.length() == 0L) {
                     val outputStream =
-                        App.application.contentResolver.openOutputStream(fileUri, "wa")!!
+                        PlatformStuff.application.contentResolver.openOutputStream(fileUri, "wa")!!
                     outputStream.bufferedWriter().use {
                         it.write(CSV_HEADER + "\n")
                     }

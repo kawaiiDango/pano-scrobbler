@@ -47,7 +47,7 @@ class InfoVM : ViewModel() {
                 .filterNotNull()
                 .collectLatest { (entry, username) ->
                     val _username =
-                        if (Scrobblables.current?.userAccount?.type == AccountType.LASTFM)
+                        if (Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM)
                             username
                         else
                             null
@@ -233,8 +233,8 @@ class InfoVM : ViewModel() {
         }
 
         // dirty delta updates only for lastfm and self
-        if (Scrobblables.current?.userAccount?.type == AccountType.LASTFM &&
-            Scrobblables.current?.userAccount?.user?.isSelf == true
+        if (Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
+            Scrobblables.current.value?.userAccount?.user?.isSelf == true
         ) {
             doDirtyDeltaUpdates(
                 artistDef.await(),

@@ -69,18 +69,14 @@ import coil3.request.error
 import coil3.request.transformations
 import coil3.result
 import coil3.transform.CircleCropTransformation
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.LayoutSnowfallBinding
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.StatefulAppBar
-import com.arn.scrobble.utils.Stuff.dLazy
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -97,7 +93,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -114,6 +109,8 @@ object UiUtils {
             TypedValue.COMPLEX_UNIT_SP, this.toFloat(),
             Resources.getSystem().displayMetrics
         ).toInt()
+
+    const val DISABLED_ALPHA = 0.5f
 
     fun TextView.setTextAndAnimate(@StringRes stringRes: Int) =
         setTextAndAnimate(context.getString(stringRes))
@@ -370,7 +367,7 @@ object UiUtils {
         drawerData: DrawerData?,
         onResult: (Drawable) -> Unit
     ) {
-        if (App.prefs.demoMode) {
+        if (Stuff.isInDemoMode) {
             onResult(ContextCompat.getDrawable(context, R.drawable.vd_user)!!)
             return
         }
@@ -511,20 +508,20 @@ object UiUtils {
             WindowCompat.setDecorFitsSystemWindows(bottomSheetDialog.window!!, false)
 
             // todo remove
-            if (BuildConfig.DEBUG) {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    var prevFocus: View? = null
-                    while (isActive) {
-                        delay(1000)
-                        val currentFocus =
-                            bottomSheetDialog.window!!.currentFocus
-                        if (currentFocus != prevFocus) {
-                            prevFocus = currentFocus
-                            Timber.dLazy { "focus: $currentFocus" }
-                        }
-                    }
-                }
-            }
+//            if (BuildConfig.DEBUG) {
+//                viewLifecycleOwner.lifecycleScope.launch {
+//                    var prevFocus: View? = null
+//                    while (isActive) {
+//                        delay(1000)
+//                        val currentFocus =
+//                            bottomSheetDialog.window!!.currentFocus
+//                        if (currentFocus != prevFocus) {
+//                            prevFocus = currentFocus
+//                            Timber.dLazy { "focus: $currentFocus" }
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 
@@ -560,7 +557,7 @@ object UiUtils {
             context, 8, intent,
             Stuff.updateCurrentOrImmutable
         )
-        return NotificationCompat.Builder(context, MainPrefs.CHANNEL_NOTI_PENDING)
+        return NotificationCompat.Builder(context, Stuff.CHANNEL_NOTI_PENDING)
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(Notification.PRIORITY_MIN)
             .setContentIntent(launchIntent)

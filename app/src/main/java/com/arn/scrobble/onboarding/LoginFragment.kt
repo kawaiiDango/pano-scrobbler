@@ -22,7 +22,6 @@ import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.friends.UserAccountTemp
-import com.arn.scrobble.main.App
 import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putSingle
@@ -43,7 +42,6 @@ import kotlinx.coroutines.withContext
  * Created by arn on 06/09/2017.
  */
 open class LoginFragment : DialogFragment() {
-    protected val prefs = App.prefs
     protected open val checksLogin = true
     private var _binding: ContentLoginBinding? = null
     protected val binding
@@ -325,35 +323,6 @@ open class LoginFragment : DialogFragment() {
                     } else {
                         Result.failure(IllegalArgumentException(getString(R.string.failed_encode_url)))
                     }
-                } else {
-                    Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
-                }
-            }
-
-            getString(R.string.add_acr_key) -> {
-                if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
-
-//                    val i = IdentifyProtocolV1()
-//                    var url = t1
-//                    if (!url.startsWith("http"))
-//                        url = "https://$url"
-//                    if (!URLUtil.isValidUrl(url)) {
-//                        withContext(Dispatchers.Main) {
-//                            requireActivity().toast(R.string.failed_encode_url)
-//                        }
-//                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
-//                    }
-//                    val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
-//                    val j = JSONObject(res)
-//                    val statusCode = j.getJSONObject("status").getInt("code")
-//
-//                    if (statusCode == 2004) {
-                    // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
-                    prefs.acrcloudHost = t1
-                    prefs.acrcloudKey = t2
-                    prefs.acrcloudSecret = tlast
-                    Result.success(Unit)
-//                    }
                 } else {
                     Result.failure(IllegalArgumentException(getString(R.string.required_fields_empty)))
                 }

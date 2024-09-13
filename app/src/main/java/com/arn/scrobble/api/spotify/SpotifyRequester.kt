@@ -1,10 +1,10 @@
 package com.arn.scrobble.api.spotify
 
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.main.App
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
@@ -20,6 +20,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.parametersOf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -27,7 +29,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
 
 class SpotifyRequester {
-    private val prefs = App.prefs
+    private val mainPrefs = PlatformStuff.mainPrefs
     private val authMutex by lazy { Mutex() }
     private val client: HttpClient by lazy {
         Requesters.genericKtorClient.config {
@@ -38,15 +40,25 @@ class SpotifyRequester {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        if (prefs.spotifyAccessTokenExpires >= System.currentTimeMillis())
-                            BearerTokens(prefs.spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
+                        val spotifyAccessToken =
+                            mainPrefs.data.map { it.spotifyAccessToken }.first()
+                        val spotifyAccessTokenExpires =
+                            mainPrefs.data.map { it.spotifyAccessTokenExpires }.first()
+
+                        if (spotifyAccessTokenExpires >= System.currentTimeMillis())
+                            BearerTokens(spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
                         else
                             null
                     }
 
                     refreshTokens {
+                        val spotifyAccessToken =
+                            mainPrefs.data.map { it.spotifyAccessToken }.first()
+                        val spotifyAccessTokenExpires =
+                            mainPrefs.data.map { it.spotifyAccessTokenExpires }.first()
+
                         authMutex.withLock {
-                            if (prefs.spotifyAccessTokenExpires >= System.currentTimeMillis())
+                            if (spotifyAccessTokenExpires >= System.currentTimeMillis())
                                 return@withLock
 
                             withContext(Dispatchers.IO) {
@@ -63,14 +75,17 @@ class SpotifyRequester {
                                     )
                                 }
                                     .body<SpotifyTokenResponse>()
-                                    .let {
-                                        prefs.spotifyAccessToken = it.access_token
-                                        prefs.spotifyAccessTokenExpires =
-                                            System.currentTimeMillis() + (it.expires_in - 60) * 1000
+                                    .let { response ->
+                                        mainPrefs.updateData {
+                                            it.copy(
+                                                spotifyAccessToken = response.access_token,
+                                                spotifyAccessTokenExpires = System.currentTimeMillis() + (response.expires_in - 60) * 1000
+                                            )
+                                        }
                                     }
                             }
                         }
-                        BearerTokens(prefs.spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
+                        BearerTokens(spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
                     }
                 }
             }
@@ -141,10 +156,10 @@ class SpotifyCacheExpirationPolicy : ExpirationPolicy {
     private val ONE_YEAR = TimeUnit.DAYS.toMillis(365)
 
     override fun getExpirationTime(url: Url) = when {
-        url.pathSegments.last() == "search" -> ONE_MONTH
-        url.pathSegments[url.pathSegments.size - 2] == "audio-features" -> ONE_YEAR
-        url.pathSegments[url.pathSegments.size - 2] == "artists" -> ONE_MONTH // artist images can change
-        url.pathSegments[url.pathSegments.size - 2] == "albums" -> ONE_YEAR // album arts usually don't change
+        url.segments.last() == "search" -> ONE_MONTH
+        url.segments[url.segments.size - 2] == "audio-features" -> ONE_YEAR
+        url.segments[url.segments.size - 2] == "artists" -> ONE_MONTH // artist images can change
+        url.segments[url.segments.size - 2] == "albums" -> ONE_YEAR // album arts usually don't change
         else -> -1
     }
 

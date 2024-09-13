@@ -2,6 +2,7 @@ package com.arn.scrobble.recents
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.ApiException
@@ -11,7 +12,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.main.App
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff
@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
@@ -38,8 +39,13 @@ class TracksVM : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val pendingLoves = PanoDb.db.getPendingLovesDao().allFlow(10000)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-    private val _scrobblerEnabled = MutableStateFlow<Boolean?>(null)
-    val scrobblerEnabled = _scrobblerEnabled.asStateFlow()
+    val scrobblerEnabled =
+        PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled && Stuff.isNotificationListenerEnabled() }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                false
+            )
     private val _scrobblerServiceRunning = MutableStateFlow<Boolean?>(null)
     val scrobblerServiceRunning = _scrobblerServiceRunning.asStateFlow()
 
@@ -94,12 +100,11 @@ class TracksVM : ViewModel() {
     }
 
     fun updateScrobblerServiceStatus() {
-        if (input.value?.user?.isSelf == true) {
-            _scrobblerEnabled.value =
-                Stuff.isNotificationListenerEnabled() && App.prefs.scrobblerEnabled
-
-            if (scrobblerEnabled.value == true && scrobblerServiceRunning.value == null) // do only once
-                _scrobblerServiceRunning.value = Stuff.isScrobblerRunning()
+        viewModelScope.launch {
+            if (input.value?.user?.isSelf == true) {
+                if (scrobblerEnabled.value && scrobblerServiceRunning.value == null) // do only once
+                    _scrobblerServiceRunning.value = Stuff.isScrobblerRunning()
+            }
         }
     }
 
@@ -119,7 +124,7 @@ class TracksVM : ViewModel() {
         username: String,
         timePeriod: TimePeriod?,
     ) {
-        val isListenbrainz = Scrobblables.current is ListenBrainz
+        val isListenbrainz = Scrobblables.current.value is ListenBrainz
         val _to = if (isListenbrainz && page > 1)
             tracks.value?.lastOrNull()?.date ?: -1L
         else
@@ -129,7 +134,7 @@ class TracksVM : ViewModel() {
 
         val includeNowPlaying = _input.value?.timePeriod == null && page == 1
 
-        val pr = Scrobblables.current!!.getRecents(
+        val pr = Scrobblables.current.value!!.getRecents(
             page,
             username,
             cached = !loadedInitialCachedVersion,
@@ -195,7 +200,7 @@ class TracksVM : ViewModel() {
     private suspend fun loadLoves(page: Int, username: String) {
         _hasLoaded.emit(false)
 
-        val pr = Scrobblables.current!!.getLoves(page, username)
+        val pr = Scrobblables.current.value!!.getLoves(page, username)
 
         pr.onSuccess {
             totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0
@@ -208,7 +213,7 @@ class TracksVM : ViewModel() {
     private suspend fun loadTrackScrobbles(track: Track, page: Int, username: String) {
         _hasLoaded.emit(false)
 
-        (Scrobblables.current as? LastFm)
+        (Scrobblables.current.value as? LastFm)
             ?.userGetTrackScrobbles(track, page, username, limit)
             ?.let {
                 it.onSuccess { pr ->
@@ -239,7 +244,7 @@ class TracksVM : ViewModel() {
         val track = pr.entries.firstOrNull() ?: return
         pr.attr.total ?: return
         val firstScrobbleDate = if (pr.attr.total > limit)
-            (Scrobblables.current as? LastFm)
+            (Scrobblables.current.value as? LastFm)
                 ?.userGetTrackScrobbles(
                     track = track,
                     username = username,

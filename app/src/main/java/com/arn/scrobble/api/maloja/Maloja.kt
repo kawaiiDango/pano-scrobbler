@@ -1,5 +1,6 @@
 package com.arn.scrobble.api.maloja
 
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CustomCachePlugin
@@ -24,7 +25,6 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
@@ -169,9 +169,9 @@ class Maloja(userAccount: UserAccountSerializable) :
 
         val dd = DrawerData(0)
         if (isSelf) {
-            val drawerData = App.prefs.drawerData.toMutableMap()
-            drawerData[userAccount.type] = dd
-            App.prefs.drawerData = drawerData
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(drawerData = it.drawerData + (userAccount.type to dd))
+            }
         }
 
         return dd
@@ -205,7 +205,8 @@ class Maloja(userAccount: UserAccountSerializable) :
                 parameter("key", userAccountTemp.authKey)
             }.map {
                 Requesters.genericKtorClient.getResult<ServerInfo>("${userAccountTemp.apiRoot}/apis/mlj_1/serverinfo")
-                    .map { it.name }.getOrNull() ?: App.application.getString(R.string.maloja)
+                    .map { it.name }.getOrNull()
+                    ?: PlatformStuff.application.getString(R.string.maloja)
 
             }.onSuccess { username ->
                 val account = UserAccountSerializable(
@@ -233,7 +234,7 @@ class MalojaExpirationPolicy : ExpirationPolicy {
     private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
 
     override fun getExpirationTime(url: Url) =
-        when (url.pathSegments.lastOrNull()) {
+        when (url.segments.lastOrNull()) {
             "scrobbles",
                 -> ONE_WEEK
 

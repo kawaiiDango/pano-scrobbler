@@ -18,19 +18,10 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import coil3.size.Precision
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.ExtrasConsts
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.Tokens
-import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
-import com.arn.scrobble.billing.BaseBillingRepository
-import com.arn.scrobble.billing.BillingClientData
-import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.crashreporter.CrashReporter
-import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.pref.MigratePrefs
-import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.AppIconFetcher
 import com.arn.scrobble.ui.AppIconKeyer
 import com.arn.scrobble.ui.DemoInterceptor
@@ -38,9 +29,9 @@ import com.arn.scrobble.ui.MusicEntryImageInterceptor
 import com.arn.scrobble.ui.MusicEntryMapper
 import com.arn.scrobble.ui.StarMapper
 import com.arn.scrobble.utils.Stuff
-import com.google.android.material.color.DynamicColors
-import com.google.android.material.color.DynamicColorsOptions
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 
@@ -55,34 +46,40 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
 
 
     override fun onCreate() {
+        PlatformStuff.application = this
+
         super.onCreate()
-        application = this
 
         if (BuildConfig.DEBUG) {
             enableStrictMode()
+            Stuff.isInDemoMode =
+                runBlocking { PlatformStuff.mainPrefs.data.map { it.demoModeP }.first() }
         }
 
         Timber.plant(LogcatTree())
 
-        // migrate prefs
-        MigratePrefs.migrate(prefs)
-        Scrobblables.updateScrobblables()
+//        ColorPatchUtils.setDarkMode()
 
-        ColorPatchUtils.setDarkMode(prefs.proStatus)
-
-        val colorsOptions = DynamicColorsOptions.Builder()
-            .setThemeOverlay(R.style.AppTheme_Dynamic_Overlay)
-            .setPrecondition { _, _ ->
-                prefs.themeDynamic && prefs.proStatus
-            }
-            .build()
-        DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
+//        val colorsOptions = DynamicColorsOptions.Builder()
+//            .setThemeOverlay(R.style.AppTheme_Dynamic_Overlay)
+//            .setPrecondition { _, _ ->
+//                runBlocking { PlatformStuff.mainPrefs.data.map { it.themeDynamic }.first() } &&
+//                        Stuff.billingRepository.isLicenseValid
+//            }
+//            .build()
+//        DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
 
         val crashlyticsKeys = mapOf(
             "isDebug" to BuildConfig.DEBUG.toString(),
         )
 
-        CrashReporter.init(this, prefs.crashlyticsEnabled, crashlyticsKeys)
+        CrashReporter.init(
+            this,
+            runBlocking {
+                PlatformStuff.mainPrefs.data.map { it.crashReporterEnabled }.first()
+            },
+            crashlyticsKeys
+        )
 
         createChannels()
 
@@ -146,7 +143,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             add(musicEntryImageInterceptor)
             add(StarMapper())
 
-            if (prefs.demoMode)
+            if (Stuff.isInDemoMode)
                 add(DemoInterceptor())
         }
         .crossfade(true)
@@ -173,71 +170,42 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
 
         nm.createNotificationChannel(
             NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_SCROBBLING,
+                Stuff.CHANNEL_NOTI_SCROBBLING,
                 getString(R.string.state_scrobbling), NotificationManager.IMPORTANCE_LOW
             )
         )
         nm.createNotificationChannel(
             NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_SCR_ERR,
+                Stuff.CHANNEL_NOTI_SCR_ERR,
                 getString(R.string.channel_err), NotificationManager.IMPORTANCE_MIN
             )
         )
         nm.createNotificationChannel(
             NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_NEW_APP,
+                Stuff.CHANNEL_NOTI_NEW_APP,
                 getString(R.string.new_player, getString(R.string.new_app)),
                 NotificationManager.IMPORTANCE_LOW
             )
         )
         nm.createNotificationChannel(
             NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_PENDING,
+                Stuff.CHANNEL_NOTI_PENDING,
                 getString(R.string.pending_scrobbles), NotificationManager.IMPORTANCE_MIN
             )
         )
         nm.createNotificationChannel(
             NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY,
+                Stuff.CHANNEL_NOTI_DIGEST_WEEKLY,
                 getString(R.string.s_top_scrobbles, getString(R.string.weekly)),
                 NotificationManager.IMPORTANCE_LOW
             )
         )
         nm.createNotificationChannel(
             NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY,
+                Stuff.CHANNEL_NOTI_DIGEST_MONTHLY,
                 getString(R.string.s_top_scrobbles, getString(R.string.monthly)),
                 NotificationManager.IMPORTANCE_LOW
             )
         )
-    }
-
-    companion object {
-        // not a leak
-        lateinit var application: Application
-            private set
-        val prefs by lazy { MainPrefs() }
-        val billingRepository: BaseBillingRepository by lazy {
-            val billingClientData = BillingClientData(
-                proProductId = Stuff.PRO_PRODUCT_ID,
-                appName = application.getString(R.string.app_name),
-                publicKeyBase64 = if (ExtrasConsts.isFossBuild)
-                    Tokens.LICENSE_PUBLIC_KEY_BASE64
-                else
-                    Tokens.PLAY_BILLING_PUBLIC_KEY_BASE64,
-                apkSignature = Tokens.APK_SIGNATURE,
-                httpClient = Requesters.genericKtorClient,
-                serverUrl = Tokens.LICENSE_CHECKING_SERVER,
-                getLastcheckTime = { prefs.lastLicenseCheckTime },
-                setLastcheckTime = { prefs.lastLicenseCheckTime = it },
-                getReceipt = { prefs.receipt to prefs.receiptSignature },
-                setReceipt = { r, s ->
-                    prefs.receipt = r
-                    prefs.receiptSignature = s
-                }
-            )
-            BillingRepository(application, billingClientData)
-        }
-        val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
     }
 }

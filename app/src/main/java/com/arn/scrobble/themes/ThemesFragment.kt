@@ -12,18 +12,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentThemesBinding
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
@@ -37,6 +37,9 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ThemesFragment : Fragment() {
 
@@ -46,12 +49,12 @@ class ThemesFragment : Fragment() {
 
     private lateinit var primarySwatchIds: List<Int>
     private lateinit var secondarySwatchIds: List<Int>
-    private val prefs = App.prefs
+    private val mainPrefs = PlatformStuff.mainPrefs
     private val dayNightIdsMap by lazy {
         mapOf(
-            R.id.chip_dark to AppCompatDelegate.MODE_NIGHT_YES,
-            R.id.chip_light to AppCompatDelegate.MODE_NIGHT_NO,
-            R.id.chip_auto to AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            R.id.chip_dark to DayNightMode.DARK,
+            R.id.chip_light to DayNightMode.LIGHT,
+            R.id.chip_auto to DayNightMode.SYSTEM
         )
     }
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
@@ -72,17 +75,15 @@ class ThemesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setupInsets()
 
-        var primaryPref = prefs.themePrimary
-        if (ColorPatchMap.primaryStyles[primaryPref] == null)
-            primaryPref = ColorPatchUtils.primaryDefault
+        val prefs = runBlocking {
+            mainPrefs.data.first()
+        }
+        var primaryPref = ColorPatchUtils.primaryDefault
 
-        var secondaryPref = prefs.themeSecondary
-        if (ColorPatchMap.secondaryStyles[secondaryPref] == null)
-            secondaryPref = ColorPatchUtils.secondaryDefault
+        var secondaryPref = ColorPatchUtils.secondaryDefault
 
 
-        binding.themeRandom.isChecked = prefs.themeRandom
-        binding.themeTintBg.isChecked = prefs.themeTintBackground
+
         binding.themeDynamic.isChecked = prefs.themeDynamic
 
         val dayNightSelectedId = dayNightIdsMap
@@ -127,10 +128,12 @@ class ThemesFragment : Fragment() {
             com.google.android.material.R.string.abc_action_mode_done,
             R.drawable.vd_check_simple,
             {
-                if (App.prefs.proStatus) {
+                if (Stuff.billingRepository.isLicenseValid) {
 
                     val prevDayNightId = prefs.themeDayNight
-                    saveTheme()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        saveTheme()
+                    }
                     if (!binding.themeRandom.isChecked)
                         requireContext().sendBroadcast(
                             Intent(NLService.iTHEME_CHANGED_S)
@@ -140,7 +143,7 @@ class ThemesFragment : Fragment() {
                     findNavController().popBackStack()
 
                     if (prefs.themeDayNight != prevDayNightId)
-                        ColorPatchUtils.setDarkMode(true) // recreates
+                        ColorPatchUtils.setDarkMode() // recreates
                     else
                         requireActivity().recreate()
                 } else {
@@ -433,14 +436,16 @@ class ThemesFragment : Fragment() {
         return group.findViewById<Chip>(id).contentDescription.toString()
     }
 
-    private fun saveTheme() {
-        prefs.apply {
-            themePrimary = getThemeName(binding.themePrimarySwatches)
-            themeSecondary = getThemeName(binding.themeSecondarySwatches)
-            themeRandom = binding.themeRandom.isChecked
-            themeDynamic = binding.themeDynamic.isChecked
-            themeTintBackground = binding.themeTintBg.isChecked
-            themeDayNight = dayNightIdsMap[binding.themeDayNight.checkedChipId]!!
-        }
+    private suspend fun saveTheme() {
+//        mainPrefs.updateData {
+//            it.copy(
+//                themePrimary = getThemeName(binding.themePrimarySwatches),
+//                themeSecondary = getThemeName(binding.themeSecondarySwatches),
+//                themeRandom = binding.themeRandom.isChecked,
+//                themeDynamic = binding.themeDynamic.isChecked,
+//                themeTintBackground = binding.themeTintBg.isChecked,
+//                themeDayNight = dayNightIdsMap[binding.themeDayNight.checkedChipId]!!
+//            )
+//        }
     }
 }

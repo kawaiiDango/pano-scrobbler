@@ -78,8 +78,10 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
     private fun optionsMenuSelected(menuItemId: Int) {
         when (menuItemId) {
             R.id.menu_collage -> {
+                val selectedPeriod = viewModel.selectedPeriod.value ?: return
+
                 val arguments = Bundle().apply {
-                    putSingle(viewModel.selectedPeriod.value)
+                    putSingle(selectedPeriod)
                     putInt(Stuff.ARG_TYPE, chartsType)
                 }
                 findNavController().navigate(R.id.collageGeneratorFragment, arguments)

@@ -115,7 +115,7 @@ class PendingScrobblesWorker(
                 val scrobbleResults = mutableMapOf<Scrobblable, kotlin.Result<ScrobbleIgnored>>()
                 //if an error occurs, there will be only one result
 
-                Scrobblables.all.forEach {
+                Scrobblables.all.value.forEach {
                     val filteredData by lazy { filterForService(it, scrobbleDataToEntry) }
                     if (filteredData.isNotEmpty()) {
                         val result = it.scrobble(filteredData)
@@ -199,7 +199,7 @@ class PendingScrobblesWorker(
                 )
                 val results = mutableMapOf<Scrobblable, Boolean>()
 
-                Scrobblables.all.forEach {
+                Scrobblables.all.value.forEach {
                     val shouldSubmit by lazy { filterOneForService(it, entry) }
                     if (shouldSubmit) {
                         val track = Track(
@@ -252,7 +252,7 @@ class PendingScrobblesWorker(
 
     private fun deleteForLoggedOutServices() {
         var loggedInServicesBitset = 0
-        Scrobblables.all.forEach {
+        Scrobblables.all.value.forEach {
             loggedInServicesBitset =
                 loggedInServicesBitset or (1 shl it.userAccount.type.ordinal)
         }

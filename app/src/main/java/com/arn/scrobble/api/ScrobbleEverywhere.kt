@@ -3,6 +3,7 @@ package com.arn.scrobble.api
 import android.content.Intent
 import android.util.LruCache
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.PlayingTrackInfo
 import com.arn.scrobble.R
 import com.arn.scrobble.ScrobbleError
@@ -20,13 +21,13 @@ import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
-import com.arn.scrobble.main.App
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.putSingle
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import java.io.IOException
 
@@ -50,16 +51,16 @@ object ScrobbleEverywhere {
                     + " " + trackInfo.artist + " - " + trackInfo.title
         )
 
-        Scrobblables.current ?: return
+        Scrobblables.current.value ?: return
 
         var scrobbleResults = mapOf<Scrobblable, Result<ScrobbleIgnored>>()
         var savedAsPending = false
 
         val scrobbleData = trackInfo.toScrobbleData()
         val scrobbleDataOrig = scrobbleData.copy()
-        val context = App.application
-        val prefs = App.prefs
-
+        val context = PlatformStuff.application
+        val prefs = PlatformStuff.mainPrefs.data.first()
+        val allScrobblables = Scrobblables.all.value
 
         suspend fun doFallbackScrobble(): Boolean {
             if (trackInfo.canDoFallbackScrobble && parseTitle) {
@@ -78,7 +79,7 @@ object ScrobbleEverywhere {
         }
 
         fun shouldBlockScrobble(): Boolean {
-            if (prefs.proStatus) {
+            if (Stuff.billingRepository.isLicenseValid) {
                 val blockedMetadata = PanoDb.db
                     .getBlockedMetadataDao()
                     .getBlockedEntry(scrobbleData)
@@ -249,7 +250,7 @@ object ScrobbleEverywhere {
             if (Stuff.isOnline) {
                 if (correctedArtist != null || edit != null) {
                     if (prefs.submitNowPlaying) {
-                        scrobbleResults = Scrobblables.all.mapConcurrently(5) {
+                        scrobbleResults = allScrobblables.mapConcurrently(5) {
                             it to it.updateNowPlaying(scrobbleData)
                         }.toMap()
                     }
@@ -281,7 +282,7 @@ object ScrobbleEverywhere {
                 .getScrobbleSourcesDao()
                 .insert(scrobbleSource)
 
-            scrobbleResults = Scrobblables.all.mapConcurrently(5) {
+            scrobbleResults = allScrobblables.mapConcurrently(5) {
                 if (Stuff.isOnline || it.userAccount.type == AccountType.FILE)
                     it to it.scrobble(scrobbleData)
                 else
@@ -304,7 +305,7 @@ object ScrobbleEverywhere {
                 }
 
                 if (scrobbleResults.isEmpty())
-                    Scrobblables.all.forEach {
+                    allScrobblables.forEach {
                         entry.state =
                             entry.state or (1 shl it.userAccount.type.ordinal)
                     }
@@ -409,16 +410,17 @@ object ScrobbleEverywhere {
 
         val dao = PanoDb.db.getPendingLovesDao()
         val pl = dao.find(track.artist.name, track.name)
+        val allScrobblables = Scrobblables.all.value
         if (pl != null) {
             if (pl.shouldLove == !love) {
                 pl.shouldLove = love
-                Scrobblables.all.forEach {
+                allScrobblables.forEach {
                     pl.state = pl.state or (1 shl it.userAccount.type.ordinal)
                 }
                 dao.update(pl)
             }
         } else {
-            val successes = Scrobblables.all.mapConcurrently(5) {
+            val successes = allScrobblables.mapConcurrently(5) {
                 it to it.loveOrUnlove(track, love).isSuccess
             }.toMap()
 
@@ -434,14 +436,16 @@ object ScrobbleEverywhere {
                 }
                 if (entry.state != 0) {
                     dao.insert(entry)
-                    PendingScrobblesWorker.checkAndSchedule(App.application)
+                    PendingScrobblesWorker.checkAndSchedule(PlatformStuff.application)
                 }
             }
         }
     }
 
     suspend fun delete(track: Track): List<Result<Unit>> {
-        val results = Scrobblables.all.mapConcurrently(5) {
+        val allScrobblables = Scrobblables.all.value
+
+        val results = allScrobblables.mapConcurrently(5) {
             it.delete(track)
                 .onFailure { it.printStackTrace() }
         }

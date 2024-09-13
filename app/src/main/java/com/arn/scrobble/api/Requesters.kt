@@ -1,6 +1,7 @@
 package com.arn.scrobble.api
 
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ApiErrorResponse
 import com.arn.scrobble.api.lastfm.ApiException
@@ -54,11 +55,11 @@ object Requesters {
 
                 install(UserAgent) {
                     agent =
-                        App.application.getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME
+                        PlatformStuff.application.getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME
                 }
 
                 install(HttpCache) {
-                    val cacheFile = File(App.application.cacheDir, "ktor")
+                    val cacheFile = File(PlatformStuff.application.cacheDir, "ktor")
                     cacheFile.mkdirs()
                     publicStorage(FileStorage(cacheFile))
                 }

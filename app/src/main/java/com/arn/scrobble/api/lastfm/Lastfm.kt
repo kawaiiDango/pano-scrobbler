@@ -1,5 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
@@ -14,7 +15,6 @@ import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.friends.UserCached.Companion.toUserCached
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
@@ -274,11 +274,11 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             albumCount = user?.album_count ?: 0,
             trackCount = user?.track_count ?: 0,
             profilePicUrl = user?.webp300
-        ).also {
+        ).also { dd ->
             if (isSelf) {
-                val drawerData = App.prefs.drawerData.toMutableMap()
-                drawerData[userAccount.type] = it
-                App.prefs.drawerData = drawerData
+                PlatformStuff.mainPrefs.updateData {
+                    it.copy(drawerData = it.drawerData + (userAccount.type to dd))
+                }
             }
         }
 

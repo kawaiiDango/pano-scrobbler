@@ -4,14 +4,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.myHash
@@ -22,12 +22,10 @@ class MainDialogActivity : AppCompatActivity() {
     private lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        ColorPatchUtils.setTheme(this)
 
         setContentView(R.layout.content_main_dialog)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -76,7 +74,7 @@ class MainDialogActivity : AppCompatActivity() {
         const val ARG_NAV_ARGS = "@nav_args"
 
         private fun createDestinationIntent(@IdRes destinationId: Int, args: Bundle) =
-            Intent(App.application, MainDialogActivity::class.java).apply {
+            Intent(PlatformStuff.application, MainDialogActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 putExtra(ARG_DESTINATION, destinationId)
                 putExtra(ARG_NAV_ARGS, args)
@@ -89,7 +87,7 @@ class MainDialogActivity : AppCompatActivity() {
             mutable: Boolean = false
         ) =
             PendingIntent.getActivity(
-                App.application,
+                PlatformStuff.application,
                 Objects.hash(args.myHash(), destinationId),
                 createDestinationIntent(destinationId, args),
                 if (mutable) Stuff.updateCurrentOrMutable else Stuff.updateCurrentOrImmutable

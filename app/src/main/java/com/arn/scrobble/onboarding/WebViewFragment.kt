@@ -213,7 +213,7 @@ class WebViewFragment : Fragment() {
             request: WebResourceRequest,
             error: WebResourceError?
         ) {
-            if (request.isForMainFrame)
+            if (request.isForMainFrame && !BuildConfig.DEBUG)
                 showErrorMessage(error?.description.toString())
 
             super.onReceivedError(view, request, error)

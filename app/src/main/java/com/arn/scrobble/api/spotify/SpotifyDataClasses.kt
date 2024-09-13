@@ -59,7 +59,7 @@ data class SpotifySearchResponse(
     val tracks: SearchItems<TrackItem>?,
 )
 
-interface SpotifyMusicItem {
+sealed interface SpotifyMusicItem {
     val id: String
     val name: String
     val uri: String

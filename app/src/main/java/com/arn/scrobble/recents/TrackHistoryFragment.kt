@@ -16,12 +16,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.MusicEntryItemClickListener
@@ -40,6 +40,9 @@ import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     private var _binding: ContentTrackHistoryBinding? = null
@@ -86,14 +89,21 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val prefs = App.prefs
+        val mainPrefs = PlatformStuff.mainPrefs
+
+        // todo make async
+        val showScrobbleSources =
+            runBlocking { mainPrefs.data.map { it.showScrobbleSources }.first() }
+        val showAlbumInRecents =
+            runBlocking { mainPrefs.data.map { it.showAlbumsInRecents }.first() }
+
         val isShowingPlayers =
-            mainNotifierViewModel.currentUser.isSelf && prefs.proStatus && prefs.showScrobbleSources
+            mainNotifierViewModel.currentUser.isSelf && Stuff.billingRepository.isLicenseValid && showScrobbleSources
 
         adapter = TrackHistoryAdapter(
             viewModel,
             this,
-            prefs.showAlbumInRecents,
+            showAlbumInRecents,
             isShowingPlayers,
         )
 

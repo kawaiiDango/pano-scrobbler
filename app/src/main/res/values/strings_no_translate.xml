@@ -18,7 +18,7 @@
     <string name="pixel_np" translatable="false">Pixel Now Playing</string>
     <string name="autoshazam" translatable="false">AutoShazam</string>
     <string name="loading" translatable="false">…</string>
-    <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s.json</string>
+    <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s</string>
     <string name="edit_case_sensitive_aa" translatable="false">Aa</string>
 
     <string name="preset_remastered" translatable="false">Remastered</string>
@@ -33,16 +33,22 @@
     <string name="special_app_access" translatable="false">Special app access</string>
 
     <!--  strings for unfinalized stuff  -->
-    <string name="use_arrow_keys_to_adjust" translatable="false">Use the arrow keys to adjust the value</string>
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">"""Already donated?
 
-If you had donated %1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi with your email address and the code will be manually mailed to you.
+If you had donated $%1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi with your email address and the code will be manually mailed to you.
 
 Already purchased through Google Play?
 
 According to Google Play's policy, purchases made through Google Play cannot be used for apps downloaded outside of Google Play.
 """</string>
     <string name="billing_max_devices_reached" translatable="false" formatted="true">This code has already been used on maximum (%1$d) devices</string>
+    <string name="done" translatable="false">Done</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel" translatable="false">Cancel</string>
+    <string name="high" translatable="false" comment="As in high/medium/low">High</string>
+    <string name="medium" translatable="false" comment="As in high/medium/low">Medium</string>
+    <string name="low" translatable="false" comment="As in high/medium/low">Low</string>
+    <string name="contrast" translatable="false" comment="Color contrast">Contrast</string>
 
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
@@ -53,4 +59,5 @@ According to Google Play's policy, purchases made through Google Play cannot be 
     <string name="do_index_desc" translatable="false">This will enable library search and scrobble counts</string>
     <string name="demo_mode" translatable="false">Demo mode</string>
     <string name="copy_sk" translatable="false">Copy last.fm session key</string>
+    <string name="delete_receipt" translatable="false">Delete receipt</string>
 </resources>

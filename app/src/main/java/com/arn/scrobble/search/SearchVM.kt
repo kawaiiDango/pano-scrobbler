@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.SearchResults
+import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.db.CachedAlbum.Companion.toAlbum
 import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -25,12 +25,11 @@ import kotlinx.coroutines.withContext
 
 
 class SearchVM : ViewModel() {
-    private val _searchTerm = MutableSharedFlow<Pair<String, SearchResultsAdapter.SearchType>>()
+    private val _searchTerm = MutableSharedFlow<Pair<String, SearchType>>()
     private val _searchResults = MutableStateFlow<SearchResults?>(null)
     val searchResults = _searchResults.asSharedFlow()
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
-    val virtualList = SectionedVirtualList()
 
     init {
         viewModelScope.launch {
@@ -42,14 +41,14 @@ class SearchVM : ViewModel() {
                         return@collectLatest
 
                     val results = when (searchType) {
-                        SearchResultsAdapter.SearchType.GLOBAL -> {
+                        SearchType.GLOBAL -> {
                             _hasLoaded.value = false
                             val r = Requesters.lastfmUnauthedRequester.search(term)
                             _hasLoaded.value = true
                             r
                         }
 
-                        SearchResultsAdapter.SearchType.LOCAL -> withContext(Dispatchers.IO) {
+                        SearchType.LOCAL -> withContext(Dispatchers.IO) {
                             getLocalSearches(term)
                         }
                     }
@@ -60,7 +59,7 @@ class SearchVM : ViewModel() {
         }
     }
 
-    fun search(term: String, searchType: SearchResultsAdapter.SearchType) {
+    fun search(term: String, searchType: SearchType) {
         viewModelScope.launch {
             _searchTerm.emit(term to searchType)
         }
@@ -100,7 +99,7 @@ class SearchVM : ViewModel() {
 
         val sr = SearchResults(
             term,
-            SearchResultsAdapter.SearchType.LOCAL,
+            SearchType.LOCAL,
             lovedTracks.getOrDefault(listOf()),
             tracks.getOrDefault(listOf()),
             artists.getOrDefault(listOf()),

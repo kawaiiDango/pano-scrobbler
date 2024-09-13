@@ -231,7 +231,7 @@ class RandomFragment : ChartsPeriodFragment() {
             )
 
             if (musicEntry is Artist || musicEntry is Album)
-                scrobblesCount += " • " + viewModel.selectedPeriod.value.name
+                scrobblesCount += " • " + viewModel.selectedPeriod.value?.name
             else if (musicEntry is Track && musicEntry.date?.takeIf { it > 0 } != null)
                 scrobblesCount += " • " + Stuff.myRelativeTime(requireContext(), musicEntry.date)
 

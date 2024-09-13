@@ -1,12 +1,12 @@
 package com.arn.scrobble.utils
 
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.main.App
 
 object AcceptableTags {
 
     private val tagFragments by lazy {
-        App.application.resources
+        PlatformStuff.application.resources
             .openRawResource(R.raw.everynoise_genres)
             .bufferedReader()
             .readLines()

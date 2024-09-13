@@ -11,7 +11,10 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
-import com.arn.scrobble.main.App
+import com.arn.scrobble.PlatformStuff
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.util.Locale
 
@@ -54,18 +57,23 @@ object LocaleUtils {
         "zh",
     )
 
+    val showCountrySet = setOf(
+        "pt",
+    )
+
     private var deviceLocaleContext: WeakReference<Context> = WeakReference(null)
 
-    fun Context.setLocaleCompat(force: Boolean = false): Context {
+    fun Context.setLocaleCompat(
+        langp: String? = runBlocking { PlatformStuff.mainPrefs.data.map { it.locale }.first() },
+        force: Boolean = false,
+    ): Context {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || force) {
-            val prefs = App.prefs
-            var lang = prefs.locale
             val configuration = Configuration(resources.configuration)
 
-            if (lang != null && lang !in localesSet) {
-                prefs.locale = null
-                lang = null
-            }
+            val lang = if (langp != null && langp !in localesSet) {
+                null
+            } else
+                langp
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && lang == null) {
                 AppCompatDelegate.setApplicationLocales(LocaleListCompat.wrap(LocaleList.getEmptyLocaleList()))

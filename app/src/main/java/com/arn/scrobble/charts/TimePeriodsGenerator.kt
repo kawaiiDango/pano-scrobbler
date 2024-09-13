@@ -5,12 +5,13 @@ import android.os.Parcelable
 import android.text.format.DateUtils
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
-import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
@@ -27,7 +28,7 @@ class TimePeriodsGenerator(
     private val anchorTime: Long,
     private val contextForFormatter: Context?
 ) {
-    private val cal by lazy { Calendar.getInstance().setUserFirstDayOfWeek() }
+    private val cal by lazy { runBlocking { Calendar.getInstance().setUserFirstDayOfWeek() } }
 
     val days
         get(): List<TimePeriod> {
@@ -214,7 +215,7 @@ class TimePeriodsGenerator(
             timePeriods += TimePeriod(
                 start, end,
                 name = DateUtils.formatDateRange(
-                    App.application,
+                    PlatformStuff.application,
                     start,
                     end - 1,
                     DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
@@ -228,7 +229,7 @@ class TimePeriodsGenerator(
             timePeriods += TimePeriod(
                 cal.timeInMillis, start,
                 name = DateUtils.formatDateRange(
-                    App.application,
+                    PlatformStuff.application,
                     cal.timeInMillis,
                     start - 1,
                     DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
@@ -255,7 +256,7 @@ class TimePeriodsGenerator(
             timePeriods += TimePeriod(
                 start, end,
                 name = DateUtils.formatDateRange(
-                    App.application,
+                    PlatformStuff.application,
                     start,
                     end - 1,
                     DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
@@ -277,7 +278,7 @@ class TimePeriodsGenerator(
             timePeriods += TimePeriod(
                 start, end,
                 name = DateUtils.formatDateRange(
-                    App.application,
+                    PlatformStuff.application,
                     start,
                     end - 1,
                     DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
@@ -418,7 +419,7 @@ data class TimePeriod(
     val end: Long,
     val period: Period? = null,
     var name: String = DateUtils.formatDateRange(
-        App.application,
+        PlatformStuff.application,
         start,
         end - 1,
         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
@@ -430,7 +431,7 @@ data class TimePeriod(
         -1,
         -1,
         period,
-        name = App.application.resources!!.let {
+        name = PlatformStuff.application.resources!!.let {
             when (period) {
                 Period.WEEK -> it.getQuantityString(R.plurals.num_weeks, 1, 1)
                 Period.MONTH -> it.getQuantityString(R.plurals.num_months, 1, 1)
@@ -454,4 +455,16 @@ enum class TimePeriodType {
     CONTINUOUS,
     CUSTOM,
     LISTENBRAINZ,
+}
+
+enum class AllPeriods {
+    THIS_WEEK,
+    WEEK,
+    THIS_MONTH,
+    MONTH,
+    QUARTER,
+    HALF_YEAR,
+    THIS_YEAR,
+    YEAR,
+    ALL_TIME
 }

@@ -1,8 +1,8 @@
 package com.arn.scrobble.friends
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
@@ -12,7 +12,6 @@ import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.friends.UserCached.Companion.toUserCached
-import com.arn.scrobble.main.App
 import com.arn.scrobble.recents.PaletteColors
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
@@ -34,12 +33,27 @@ import kotlinx.coroutines.sync.withPermit
 import kotlin.math.max
 
 
-class FriendsVM(app: Application) : AndroidViewModel(app) {
-    private val prefs = App.prefs
+class FriendsVM : ViewModel() {
+    private val mainPrefs = PlatformStuff.mainPrefs
     private val lastPlayedTracksMap = mutableMapOf<String, Result<Track>>()
     private val playCountsMap = mutableMapOf<String, Int>()
     val urlToPaletteMap = mutableMapOf<String, PaletteColors>()
-    private val _pinnedFriends = MutableStateFlow<List<UserCached>>(emptyList()) // from json
+    private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
+    val input = _input.asStateFlow()
+    var showsPins = false
+        private set
+    private val _pinnedFriends = combine(input.filterNotNull(),
+        mainPrefs.data.map { it.pinnedFriends.sortedBy { it.order } }) { input, pinnedFriends ->
+        showsPins = input.user.isSelf &&
+                Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
+                Stuff.billingRepository.isLicenseValid
+
+        if (showsPins)
+            pinnedFriends
+        else
+            emptyList()
+    }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     private val _pinnedUsernamesSet = _pinnedFriends
         .map { it.map { it.name }.toSet() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
@@ -72,12 +86,10 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     private val friendsRecentsSemaphore = Semaphore(2)
-    private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
-    val input = _input.asStateFlow()
+
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
-    var showsPins = false
-        private set
+
     var totalPages = 1
         private set
     private val _total = MutableStateFlow(0)
@@ -92,27 +104,11 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             _input.filterNotNull()
                 .collectLatest { input ->
-                    showsPins = input.user.isSelf &&
-                            Scrobblables.current?.userAccount?.type == AccountType.LASTFM &&
-                            prefs.proStatus
-
-                    if (showsPins && _pinnedFriends.value.isEmpty()) {
-                        val pinnedJson = prefs.pinnedFriendsJson
-                        _pinnedFriends.emit(pinnedJson.sortedBy { it.order })
-                    }
                     loadFriends(input.page, input.user.name)
-
                 }
         }
         viewModelScope.launch {
             refreshPins()
-        }
-
-        viewModelScope.launch {
-            _pinnedFriends.collectLatest { pinnedFriends ->
-                if (showsPins)
-                    prefs.pinnedFriendsJson = pinnedFriends
-            }
         }
     }
 
@@ -126,7 +122,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         if (lastPlayedTracksMap[username]?.isFailure == true) return
 
         friendsRecentsSemaphore.withPermit {
-            Scrobblables.current!!.getRecents(
+            Scrobblables.current.value!!.getRecents(
                 1,
                 username,
                 limit = 1,
@@ -135,7 +131,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
             )
         }.mapCatching { pr ->
             if (pr.entries.isEmpty())
-                throw ApiException(-1, App.application.getString(R.string.no_scrobbles))
+                throw ApiException(-1, PlatformStuff.application.getString(R.string.no_scrobbles))
 
             pr
         }
@@ -153,7 +149,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         if (setLoading)
             _hasLoaded.emit(false)
 
-        val pr = Scrobblables.current!!.getFriends(
+        val pr = Scrobblables.current.value!!.getFriends(
             page, username, cached = !loadedInitialCachedVersion
         )
 
@@ -193,14 +189,14 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     }
 
     suspend fun addPinAndSave(user: UserCached): Boolean {
-        if (!prefs.proStatus || _pinnedFriends.value.size >= Stuff.MAX_PINNED_FRIENDS) return false
+        if (!Stuff.billingRepository.isLicenseValid || _pinnedFriends.value.size >= Stuff.MAX_PINNED_FRIENDS) return false
 
         val newUser = user.copy(order = _pinnedFriends.value.size)
 
         val willBeAdded = newUser.name !in _pinnedUsernamesSet.value
 
         if (willBeAdded) {
-            _pinnedFriends.emit(_pinnedFriends.value + newUser)
+            mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends + newUser) }
         }
         return willBeAdded
     }
@@ -209,7 +205,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         val willBeRemoved = user.name in _pinnedUsernamesSet.value
 
         if (willBeRemoved) {
-            _pinnedFriends.emit(_pinnedFriends.value - user)
+            mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends - user) }
         }
         return willBeRemoved
     }
@@ -218,7 +214,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
 
     fun savePinnedFriends(newList: List<UserCached>) {
         viewModelScope.launch {
-            _pinnedFriends.emit(newList)
+            mainPrefs.updateData { it.copy(pinnedFriends = newList) }
         }
     }
 
@@ -240,7 +236,9 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     private suspend fun refreshPins() {
         supervisorScope {
             val lastfmSession =
-                Scrobblables.byType(AccountType.LASTFM) as? LastFm ?: return@supervisorScope
+                Scrobblables.all.value
+                    .firstOrNull { it.userAccount.type == AccountType.LASTFM } as? LastFm
+                    ?: return@supervisorScope
             var modifiedCount = 0
             val now = System.currentTimeMillis()
             val newPinnedFriends = _pinnedFriends.value
@@ -255,7 +253,6 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
                 }
 
             if (modifiedCount > 0) {
-                _pinnedFriends.emit(newPinnedFriends)
                 savePinnedFriends(newPinnedFriends)
             }
         }

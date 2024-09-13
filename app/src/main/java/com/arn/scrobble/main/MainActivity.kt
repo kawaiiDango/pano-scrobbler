@@ -12,11 +12,11 @@ import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updateLayoutParams
@@ -31,15 +31,14 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
-import com.arn.scrobble.onboarding.ChangelogDialogFragmentArgs
 import com.arn.scrobble.search.IndexingWorker
-import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.NavUtils
 import com.arn.scrobble.utils.Stuff
@@ -53,6 +52,11 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerializationException
 import timber.log.Timber
 
@@ -60,7 +64,7 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity(),
     NavController.OnDestinationChangedListener {
 
-    private val prefs = App.prefs
+    private val mainPrefs = PlatformStuff.mainPrefs
     lateinit var binding: ContentMainBinding
     private val billingViewModel by viewModels<BillingViewModel>()
     private val mainNotifierViewModel by viewModels<MainNotifierViewModel>()
@@ -71,9 +75,9 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         var canShowNotices = false
 
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        ColorPatchUtils.setTheme(this)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)
 
         binding = ContentMainBinding.inflate(layoutInflater)
@@ -132,7 +136,7 @@ class MainActivity : AppCompatActivity(),
             binding.root.fitsSystemWindows = true
             binding.appBar.fitsSystemWindows = true
             binding.heroDarkOverlayTop.isVisible = true
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+//            WindowCompat.setDecorFitsSystemWindows(window, false)
         }
         setContentView(binding.root)
 
@@ -140,7 +144,13 @@ class MainActivity : AppCompatActivity(),
 
         if (Stuff.isLoggedIn()) {
             canShowNotices = true
-            mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
+
+            // todo make async and move to viewmodel
+            runBlocking {
+                Scrobblables.current.filterNotNull().first().let {
+                    mainNotifierViewModel.initializeCurrentUser(it.userAccount.user)
+                }
+            }
             handleIntent(intent, false)
         }
 
@@ -209,13 +219,18 @@ class MainActivity : AppCompatActivity(),
         collectLatestLifecycleFlow(mainNotifierViewModel.canIndex) {
             if (!BuildConfig.DEBUG)
                 binding.sidebarNav.menu.findItem(R.id.nav_do_index)?.isVisible = it
-            if (it && prefs.lastMaxIndexTime != null) {
+
+            val lastMaxIndexTime = mainPrefs.data.map { it.lastMaxIndexTime }.first()
+
+            if (it && lastMaxIndexTime != null) {
                 IndexingWorker.schedule(this)
             }
         }
 
         if (canShowNotices) {
-            showChangelogIfNeeded()
+            lifecycleScope.launch {
+                showChangelogIfNeeded()
+            }
         }
 
         collectLatestLifecycleFlow(mainNotifierViewModel.drawerData) {
@@ -225,7 +240,7 @@ class MainActivity : AppCompatActivity(),
             )
         }
 
-        collectLatestLifecycleFlow(App.globalExceptionFlow) { e ->
+        collectLatestLifecycleFlow(Stuff.globalExceptionFlow) { e ->
             if (BuildConfig.DEBUG)
                 e.printStackTrace()
 
@@ -251,18 +266,16 @@ class MainActivity : AppCompatActivity(),
         super.onDestroy()
     }
 
-    private fun showChangelogIfNeeded() {
+    private suspend fun showChangelogIfNeeded() {
         val changelogHashcode = getString(R.string.changelog_text).hashCode()
+        val storedHashcode = mainPrefs.data.map { it.changelogSeenHashcode }.first()
 
-        if (prefs.changelogSeenHashcode != changelogHashcode) {
-            val args = ChangelogDialogFragmentArgs(
-                getString(R.string.changelog_text),
-            )
-                .toBundle()
-
-            navController.navigate(R.id.changelogDialogFragment, args)
-
-            prefs.changelogSeenHashcode = changelogHashcode
+        if (storedHashcode != changelogHashcode) {
+            if (storedHashcode != null) {
+                navController.navigate(R.id.changelogDialogFragment)
+            }
+            // else is fresh install
+            mainPrefs.updateData { it.copy(changelogSeenHashcode = changelogHashcode) }
         }
     }
 

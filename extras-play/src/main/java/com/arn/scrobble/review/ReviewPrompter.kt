@@ -2,11 +2,13 @@ package com.arn.scrobble.review
 
 import android.app.Activity
 import com.google.android.play.core.review.ReviewManagerFactory
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class ReviewPrompter(
     private val activity: Activity,
     lastReviewPromptTime: Long?,
-    override val setReviewPromptTime: (Long?) -> Unit
+    override val setReviewPromptTime: suspend (Long?) -> Unit
 
 ) : BaseReviewPrompter(activity, lastReviewPromptTime, setReviewPromptTime) {
     override fun launchReviewFlow() {
@@ -14,7 +16,9 @@ class ReviewPrompter(
 
         manager.requestReviewFlow().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                setReviewPromptTime(System.currentTimeMillis())
+                GlobalScope.launch {
+                    setReviewPromptTime(System.currentTimeMillis())
+                }
                 manager.launchReviewFlow(activity, task.result)
             } else {
                 task.exception?.printStackTrace()

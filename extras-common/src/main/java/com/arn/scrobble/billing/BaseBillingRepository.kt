@@ -5,9 +5,16 @@ import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlin.math.min
 
 data class BillingClientData(
@@ -17,10 +24,10 @@ data class BillingClientData(
     val apkSignature: String,
     val httpClient: HttpClient,
     val serverUrl: String,
-    val getLastcheckTime: () -> Long,
-    val setLastcheckTime: (Long) -> Unit,
-    val getReceipt: () -> Pair<String?, String?>,
-    val setReceipt: (String?, String?) -> Unit,
+    val lastcheckTime: Flow<Long>,
+    val setLastcheckTime: suspend (Long) -> Unit,
+    val receipt: Flow<Pair<String?, String?>>,
+    val setReceipt: suspend (String?, String?) -> Unit,
 )
 
 abstract class BaseBillingRepository(
@@ -30,21 +37,32 @@ abstract class BaseBillingRepository(
     protected var reconnectCount = 0
     protected var reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
 
+    protected val scope = GlobalScope
+
     protected abstract val _proProductDetails: MutableStateFlow<MyProductDetails?>
     abstract val proProductDetails: StateFlow<MyProductDetails?>
+    protected val _licenseState = MutableStateFlow<LicenseState?>(null)
+    val licenseState = _licenseState.filterNotNull().stateIn(scope, SharingStarted.Eagerly, null)
 
-    protected val _licenseState by lazy {
-        val (r, s) = clientData.getReceipt()
-        MutableStateFlow(
-            if (r == null)
-                LicenseState.NO_LICENSE
-            else if (verifyPurchase(r, s ?: ""))
-                LicenseState.VALID
-            else
-                LicenseState.NO_LICENSE
-        )
+    val isLicenseValid: Boolean
+        get() = licenseState.value == LicenseState.VALID
+
+    init {
+        scope.launch {
+            clientData.receipt
+                .distinctUntilChanged()
+                .mapLatest { (r, s) ->
+                    if (r == null)
+                        LicenseState.NO_LICENSE
+                    else if (verifyPurchase(r, s ?: ""))
+                        LicenseState.VALID
+                    else
+                        LicenseState.NO_LICENSE
+                }.collect {
+                    _licenseState.value = it
+                }
+        }
     }
-    val licenseState = _licenseState.asStateFlow()
 
     open fun initBillingClient() {
     }

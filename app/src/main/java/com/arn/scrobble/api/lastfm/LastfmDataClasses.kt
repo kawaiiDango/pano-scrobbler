@@ -1,7 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
 import android.os.Parcelable
-import com.arn.scrobble.search.SearchResultsAdapter
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
@@ -9,6 +8,11 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonNames
 
+
+enum class SearchType {
+    GLOBAL,
+    LOCAL
+}
 
 enum class ImageSize {
     small, medium, large, extralarge
@@ -508,7 +512,7 @@ data class DeleteScrobbleResponse(
 
 data class SearchResults(
     val term: String,
-    val searchType: SearchResultsAdapter.SearchType,
+    val searchType: SearchType,
     val lovedTracks: List<Track>,
     val tracks: List<Track>,
     val artists: List<Artist>,

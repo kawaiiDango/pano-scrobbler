@@ -9,7 +9,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.utils.Stuff
 
 class PersistentNotificationService : Service() {
 
@@ -28,15 +28,16 @@ class PersistentNotificationService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
-                    MainPrefs.CHANNEL_NOTI_PERSISTENT,
+                    Stuff.CHANNEL_NOTI_PERSISTENT,
                     getString(R.string.show_persistent_noti), NotificationManager.IMPORTANCE_MIN
                 )
             )
         }
-        val nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_PERSISTENT)
-            .setSmallIcon(R.drawable.vd_noti_persistent)
-            .setPriority(Notification.PRIORITY_MIN)
-            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+        val nb =
+            NotificationCompat.Builder(applicationContext, Stuff.CHANNEL_NOTI_PERSISTENT)
+                .setSmallIcon(R.drawable.vd_noti_persistent)
+                .setPriority(Notification.PRIORITY_MIN)
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nb.setContentTitle(getString(R.string.persistent_noti_desc))

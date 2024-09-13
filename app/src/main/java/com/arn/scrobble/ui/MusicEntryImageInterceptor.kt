@@ -3,6 +3,7 @@ package com.arn.scrobble.ui
 import android.util.LruCache
 import coil3.intercept.Interceptor
 import coil3.request.ImageResult
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -11,9 +12,10 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.api.spotify.SpotifySearchType
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.main.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -25,6 +27,8 @@ class MusicEntryImageInterceptor : Interceptor {
     private val musicEntryCache by lazy { LruCache<String, OptionalString>(500) }
     private val semaphore = Semaphore(3)
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
+    private val spotifyArtistSearchApproximate by lazy { PlatformStuff.mainPrefs.data.map { it.spotifyArtistSearchApproximate } }
+
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val musicEntryImageReq =
@@ -59,7 +63,7 @@ class MusicEntryImageInterceptor : Interceptor {
                                     ?.items
                                     ?.firstOrNull()
                                     ?.takeIf {
-                                        if (App.prefs.spotifyArtistSearchApproximate)
+                                        if (spotifyArtistSearchApproximate.first())
                                             it.popularity != null && it.popularity > 0
                                         else
                                             it.name.equals(entry.name, ignoreCase = true)

@@ -1,10 +1,14 @@
 package com.arn.scrobble.pref
 
+import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.main.App
+import com.arn.scrobble.utils.UiUtils.toast
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -16,8 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.security.KeyStore
 import java.security.SecureRandom
 import javax.net.ssl.SSLContext
@@ -29,10 +38,25 @@ class ExportVM : ViewModel() {
 
     private val _result = MutableStateFlow<Result<Unit>?>(null)
     val result = _result.asStateFlow()
-    val imExporter by lazy { ImExporter() }
+    private val imExporter by lazy { ImExporter() }
     private val ktorClient by lazy { buildKtorClient() }
 
-    fun export(base26Address: String) {
+    fun exportToFile(outputStream: OutputStream?, privateData: Boolean) {
+        outputStream ?: return
+            viewModelScope.launch(Dispatchers.IO) {
+                        val exported = if (privateData)
+                            imExporter.exportPrivateData(outputStream)
+                        else
+                            imExporter.export(outputStream)
+
+                if (!exported)
+                    _result.value = Result.failure(IOException("Export failed"))
+                else
+                    Timber.i("Exported")
+            }
+    }
+
+    fun exportToServer(base26Address: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val outputStream = ByteArrayOutputStream()
             val exported = imExporter.export(outputStream)
@@ -63,7 +87,7 @@ class ExportVM : ViewModel() {
                 config {
                     val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
                     val keyStoreStream =
-                        App.application.resources.openRawResource(R.raw.embedded_server_bks)
+                        PlatformStuff.application.resources.openRawResource(R.raw.embedded_server_bks)
                     keyStore.load(keyStoreStream, null)
 
                     val trustManagerFactory =

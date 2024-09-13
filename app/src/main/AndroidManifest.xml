@@ -141,10 +141,10 @@
             android:windowSoftInputMode="adjustPan" />
 
         <activity
-            android:name=".widget.ChartsWidgetActivity"
+            android:name=".widget.ChartsWidgetConfigActivity"
             android:configChanges="keyboard|keyboardHidden|navigation"
             android:exported="true"
-            android:theme="@style/AppTheme.Wallpaper">
+            android:theme="@style/AppThemeWithWallpaper">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>

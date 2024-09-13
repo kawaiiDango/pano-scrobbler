@@ -83,7 +83,7 @@ class FriendsAdapter(
         val holder = VHUser(binding, false)
         holder.setItemData(item)
 
-        if (!App.prefs.demoMode)
+        if (!Stuff.isInDemoMode)
             binding.friendsName.text = (item.user.realname.ifEmpty { item.user.name })
         return binding
     }
@@ -124,7 +124,7 @@ class FriendsAdapter(
                 (item.user.realname.ifEmpty { item.user.name }) +
                         (if (item.isPinned) " 📍" else "")
 
-            if (App.prefs.demoMode)
+            if (Stuff.isInDemoMode)
                 binding.friendsName.text = "User ${bindingAdapterPosition + 1}"
 
             if (item.trackResult == null) {

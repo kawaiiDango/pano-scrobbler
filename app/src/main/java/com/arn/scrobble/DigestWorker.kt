@@ -1,10 +1,8 @@
 package com.arn.scrobble
 
-import android.app.NotificationManager
 import android.content.Context
 import android.text.Html
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.work.Constraints
@@ -20,10 +18,8 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainDialogActivity
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
@@ -33,6 +29,9 @@ import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -41,14 +40,7 @@ import java.util.concurrent.TimeUnit
 
 class DigestWorker(context: Context, private val workerParameters: WorkerParameters) :
     CoroutineWorker(context, workerParameters) {
-    private val nm by lazy {
-        ContextCompat.getSystemService(
-            applicationContext,
-            NotificationManager::class.java
-        )!!
-    }
-    private val prefs = App.prefs
-    private val cal by lazy { Calendar.getInstance().setUserFirstDayOfWeek() }
+    private val cal by lazy { Calendar.getInstance() }
 
     override suspend fun getForegroundInfo() = ForegroundInfo(
         this::class.hashCode(),
@@ -60,12 +52,9 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
 
     override suspend fun doWork(): Result {
         var errored = false
+        cal.setUserFirstDayOfWeek()
 
-        if (nm.isChannelEnabled(
-                prefs.sharedPreferences,
-                MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY
-            )
-        ) {
+        if (PlatformStuff.notificationManager.isChannelEnabled(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY)) {
             val coExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
                 throwable.printStackTrace()
                 errored = true
@@ -100,9 +89,12 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
 
     private suspend fun fetchAndNotify(period: Period) {
         supervisorScope {
+            val notificationsOnLockscreen =
+                PlatformStuff.mainPrefs.data.map { it.notificationsOnLockscreen }.first()
+
             val limit = 3
             val notificationTextList = mutableListOf<String>()
-            val scrobblable = Scrobblables.current ?: return@supervisorScope
+            val scrobblable = Scrobblables.current.value ?: return@supervisorScope
 
             val timePeriod = TimePeriod(period).apply {
                 tag = when (period) {
@@ -154,9 +146,9 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
             val notificationText = Html.fromHtml(notificationTextList.joinToString("<br>\n"))
 
             val channelId = if (period == Period.WEEK)
-                MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY
+                Stuff.CHANNEL_NOTI_DIGEST_WEEKLY
             else
-                MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY
+                Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
             val launchPi = NavDeepLinkBuilder(applicationContext)
                 .setComponentName(MainActivity::class.java)
@@ -197,13 +189,13 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
                         .bigText(notificationText)
                 )
                 .setVisibility(
-                    if (prefs.notificationsOnLockscreen)
+                    if (notificationsOnLockscreen)
                         NotificationCompat.VISIBILITY_PUBLIC
                     else
                         NotificationCompat.VISIBILITY_SECRET
                 )
 
-            nm.notify(channelId, period.ordinal, nb.build())
+            PlatformStuff.notificationManager.notify(channelId, period.ordinal, nb.build())
         }
     }
 
@@ -222,7 +214,7 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-            val scheduleTimes = getScheduleTimes()
+            val scheduleTimes = runBlocking { getScheduleTimes() }
 
             fun enqueue(period: String) {
                 val inputData = Data.Builder()
@@ -250,13 +242,16 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
             Timber.i("scheduling ${DigestWorker::class.java.simpleName}")
         }
 
-        private fun getScheduleTimes(): Map<String, Long> {
-            val prefs = App.prefs
+        private suspend fun getScheduleTimes(): Map<String, Long> {
+            val storedDigestSeconds = PlatformStuff.mainPrefs.data
+                .map { it.digestSeconds }.first()
 
-            if (prefs.digestSeconds == null)
-                prefs.digestSeconds = (60..(30 * 60)).random()
+            val digestSeconds = storedDigestSeconds ?: (60..(30 * 60)).random()
 
-            val secondsToAdd = -(prefs.digestSeconds ?: 60)
+            if (storedDigestSeconds == null)
+                PlatformStuff.mainPrefs.updateData { it.copy(digestSeconds = digestSeconds) }
+
+            val secondsToAdd = -digestSeconds
 
             val timesMap = mutableMapOf<String, Long>()
 

@@ -5,16 +5,20 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.Tokens
-import com.arn.scrobble.main.App
 import fi.iki.elonen.NanoHTTPD
 import fi.iki.elonen.NanoHTTPD.Response.Status
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.io.InputStream
 import java.net.Inet4Address
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
@@ -24,11 +28,30 @@ class ImportVM : ViewModel() {
 
     private val _serverAddress = MutableStateFlow<Result<String>?>(null)
     val serverAddress = _serverAddress.asStateFlow()
-    private val _postData = MutableStateFlow<String?>(null)
-    val postData = _postData.asStateFlow()
-    val imExporter by lazy { ImExporter() }
+    private val _inputStream = MutableStateFlow<InputStream?>(null)
+    val inputStream = _inputStream.filterNotNull()
+    private val _importResult = MutableSharedFlow<Boolean>()
+    val importResult = _importResult.asSharedFlow()
+    private val imExporter by lazy { ImExporter() }
 
     private var server: ImportServer? = null
+
+    fun import(
+        editsMode: EditsMode,
+        settings: Boolean
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _inputStream.value?.let {
+                val imported = imExporter.import(it, editsMode, settings)
+                _importResult.emit(imported)
+            }
+            _inputStream.value = null
+        }
+    }
+
+    fun setInputStream(inputStream: InputStream?) {
+        _inputStream.value = inputStream
+    }
 
     fun startServer() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,7 +70,7 @@ class ImportVM : ViewModel() {
             try {
                 val base26Address = Base26Utils.encodeIpPort(wifiIpAddress, randomPort)
                 val server = ImportServer(randomPort, base26Address) { postData ->
-                    _postData.value = postData
+                    _inputStream.tryEmit(postData.byteInputStream())
                 }
                 server.start()
 
@@ -62,7 +85,10 @@ class ImportVM : ViewModel() {
 
     private fun getWifiIpAddress(): String? {
         val connectivityManager =
-            ContextCompat.getSystemService(App.application, ConnectivityManager::class.java)!!
+            ContextCompat.getSystemService(
+                PlatformStuff.application,
+                ConnectivityManager::class.java
+            )!!
         val activeNetwork = connectivityManager.activeNetwork
         val linkProperties = connectivityManager.getLinkProperties(activeNetwork)
 
@@ -77,18 +103,20 @@ class ImportVM : ViewModel() {
     }
 
     override fun onCleared() {
+        _inputStream.value?.close()
+        _inputStream.value = null
         server?.stop()
         super.onCleared()
     }
 
-    class ImportServer(
+    private class ImportServer(
         port: Int,
         private val path: String,
         private val onImport: (String) -> Unit
     ) : NanoHTTPD(port) {
         init {
             val ks = KeyStore.getInstance(KeyStore.getDefaultType())
-            App.application.resources.openRawResource(R.raw.embedded_server_bks).use {
+            PlatformStuff.application.resources.openRawResource(R.raw.embedded_server_bks).use {
                 ks.load(it, Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray())
             }
             val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())

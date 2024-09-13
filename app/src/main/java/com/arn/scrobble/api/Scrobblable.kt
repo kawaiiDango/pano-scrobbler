@@ -1,5 +1,6 @@
 package com.arn.scrobble.api
 
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Album
@@ -23,9 +24,13 @@ import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 
 
@@ -189,96 +194,66 @@ enum class AccountType {
 }
 
 object Scrobblables {
-    val all = mutableListOf<Scrobblable>()
+    val all = PlatformStuff.mainPrefs.data.mapLatest { prefs ->
+        prefs.scrobbleAccounts
+            .distinctBy { it.type }
+            .map {
+                when (it.type) {
+                    AccountType.LASTFM -> LastFm(it)
+                    AccountType.LIBREFM,
+                    AccountType.GNUFM,
+                        -> GnuFm(it)
 
-    fun updateScrobblables() {
-        val prefs = App.prefs
-        synchronized(all) {
-            all.clear()
-            all.addAll(
-                prefs.scrobbleAccounts
-                    .distinctBy { it.type }
-                    .map {
-                        when (it.type) {
-                            AccountType.LASTFM -> LastFm(it)
-                            AccountType.LIBREFM,
-                            AccountType.GNUFM -> GnuFm(it)
+                    AccountType.LISTENBRAINZ,
+                    AccountType.CUSTOM_LISTENBRAINZ,
+                        -> ListenBrainz(it)
 
-                            AccountType.LISTENBRAINZ,
-                            AccountType.CUSTOM_LISTENBRAINZ -> ListenBrainz(it)
+                    AccountType.MALOJA -> Maloja(it)
 
-                            AccountType.MALOJA -> Maloja(it)
+                    AccountType.PLEROMA -> Pleroma(it)
 
-                            AccountType.PLEROMA -> Pleroma(it)
+                    AccountType.FILE -> FileScrobblable(it)
+                }
+            }
+    }.stateIn(GlobalScope, SharingStarted.Eagerly, emptyList())
 
-                            AccountType.FILE -> FileScrobblable(it)
-                        }
-                    }
-            )
-        }
-
-        if (current == null) {
-            prefs.currentAccountIdx = 0
-        }
-    }
-
-    val current
-        get() =
-            all.getOrNull(App.prefs.currentAccountIdx)
+    val current = all.mapLatest {
+        it.firstOrNull {
+            it.userAccount.type == PlatformStuff.mainPrefs.data.mapLatest { it.currentAccountType }
+                .first()
+        } ?: it.firstOrNull()
+    }.stateIn(GlobalScope, SharingStarted.Eagerly, null)
 
     val currentScrobblableUser
         get() =
-            current?.userAccount?.user
+            current.value?.userAccount?.user
 
-    fun setCurrent(userAccount: UserAccountSerializable) {
-        val idx = all.indexOfFirst { it.userAccount == userAccount }
-        if (idx != -1) {
-            App.prefs.currentAccountIdx = idx
-        }
-    }
-
-    fun byType(type: AccountType) = all.find { it.userAccount.type == type }
-
-    fun allByType(type: AccountType) =
-        all.filter { it.userAccount.type == type }.ifEmpty { null }
-
-    fun deleteAllByType(type: AccountType) {
-        val prefs = App.prefs
-        prefs.scrobbleAccounts =
-            prefs.scrobbleAccounts.toMutableList().apply { removeAll { it.type == type } }
-        updateScrobblables()
+    suspend fun deleteAllByType(type: AccountType) {
+        PlatformStuff.mainPrefs.updateData { it.copy(scrobbleAccounts = it.scrobbleAccounts.filterNot { it.type == type }) }
 
         if (type == AccountType.LASTFM) {
             LastfmUnscrobbler.cookieStorage.clear()
         }
     }
 
-    fun delete(userAccount: UserAccountSerializable) {
-        val prefs = App.prefs
-        prefs.scrobbleAccounts =
-            prefs.scrobbleAccounts.toMutableList().apply { removeAll { it == userAccount } }
-        updateScrobblables()
-
-        if (userAccount.type == AccountType.LASTFM) {
-            LastfmUnscrobbler.cookieStorage.clear()
-        }
+    suspend fun add(userAccount: UserAccountSerializable) {
+        // if already exists, remove it first
+        PlatformStuff.mainPrefs.updateData { it.copy(scrobbleAccounts = it.scrobbleAccounts.filterNot { it.type == userAccount.type } + userAccount) }
     }
 
-    fun add(userAccount: UserAccountSerializable) {
-        // if already exists, remove it first
-        App.prefs.scrobbleAccounts =
-            App.prefs.scrobbleAccounts.filterNot { it.type == userAccount.type } + userAccount
-        updateScrobblables()
+    suspend fun setCurrent(type: AccountType) {
+        PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = type) }
     }
 
     fun getString(accountType: AccountType) = when (accountType) {
-        AccountType.LASTFM -> App.application.getString(R.string.lastfm)
-        AccountType.LIBREFM -> App.application.getString(R.string.librefm)
-        AccountType.GNUFM -> App.application.getString(R.string.gnufm)
-        AccountType.LISTENBRAINZ -> App.application.getString(R.string.listenbrainz)
-        AccountType.CUSTOM_LISTENBRAINZ -> App.application.getString(R.string.custom_listenbrainz)
-        AccountType.MALOJA -> App.application.getString(R.string.maloja)
-        AccountType.PLEROMA -> App.application.getString(R.string.pleroma)
-        AccountType.FILE -> App.application.getString(R.string.scrobble_to_file)
+        AccountType.LASTFM -> PlatformStuff.application.getString(R.string.lastfm)
+        AccountType.LIBREFM -> PlatformStuff.application.getString(R.string.librefm)
+        AccountType.GNUFM -> PlatformStuff.application.getString(R.string.gnufm)
+        AccountType.LISTENBRAINZ -> PlatformStuff.application.getString(R.string.listenbrainz)
+        AccountType.CUSTOM_LISTENBRAINZ -> PlatformStuff.application.getString(R.string.custom_listenbrainz)
+        AccountType.MALOJA -> PlatformStuff.application.getString(R.string.maloja)
+        AccountType.PLEROMA -> PlatformStuff.application.getString(R.string.pleroma)
+        AccountType.FILE -> PlatformStuff.application.getString(R.string.scrobble_to_file)
     }
+
 }

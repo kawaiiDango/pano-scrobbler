@@ -17,7 +17,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobbleWithSource
 import com.arn.scrobble.edits.EditDialogFragmentArgs
-import com.arn.scrobble.onboarding.LoginFlows
+import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.arn.scrobble.utils.UiUtils.toast
@@ -33,7 +33,7 @@ object PopupMenuUtils {
         MaterialAlertDialogBuilder(navController.context)
             .setMessage(R.string.lastfm_reauth)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                LoginFlows(navController).go(AccountType.LASTFM)
+                LoginDestinations(navController).go(AccountType.LASTFM)
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -108,7 +108,7 @@ object PopupMenuUtils {
         if (p is PendingLove)
             popup.menu.removeItem(R.id.menu_love)
 
-        if (accountTypesList.size == 1 && accountTypesList.first() == Scrobblables.current?.userAccount?.type)
+        if (accountTypesList.size == 1 && accountTypesList.first() == Scrobblables.current.value?.userAccount?.type)
             popup.menu.removeItem(R.id.menu_services)
 
         popup.setOnMenuItemClickListener { menuItem ->

@@ -11,14 +11,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.PersistentNotificationService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogFixItBinding
-import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.expandIfNeeded
 import com.arn.scrobble.utils.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 
 class FixItFragment : BottomSheetDialogFragment() {
@@ -61,21 +65,6 @@ class FixItFragment : BottomSheetDialogFragment() {
             optionsShown++
         }
 
-        if (!Stuff.isTv && !App.prefs.notiPersistent &&
-            Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU
-        ) {
-            binding.fixItPersistentNotiLayout.visibility = View.VISIBLE
-            binding.fixItPersistentNotiAction.setOnClickListener { button ->
-                App.prefs.notiPersistent = true
-                ContextCompat.startForegroundService(
-                    requireContext(),
-                    Intent(requireContext(), PersistentNotificationService::class.java)
-                )
-                button.isEnabled = false
-            }
-
-            optionsShown++
-        }
         val batteryIntent = if (Stuff.isTv) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 Intent().setComponent(
@@ -113,18 +102,40 @@ class FixItFragment : BottomSheetDialogFragment() {
         if (optionsShown == 0) {
             binding.fixItNoOptions.visibility = View.VISIBLE
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val mainPrefs = PlatformStuff.mainPrefs
+            val notiPersistent = mainPrefs.data.map { it.notiPersistent }.first()
+            val lastKillCheckTime = mainPrefs.data.map { it.lastKillCheckTime }.first()
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Stuff.getScrobblerExitReasons(App.prefs.lastKillCheckTime, false)
-                .firstOrNull()
-                ?.let {
-                    binding.fixItExitReason.text =
-                        getString(R.string.kill_reason, "\n" + it.description)
+            if (!Stuff.isTv && !notiPersistent &&
+                Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU
+            ) {
+                binding.fixItPersistentNotiLayout.visibility = View.VISIBLE
+                binding.fixItPersistentNotiAction.setOnClickListener { button ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        mainPrefs.updateData { it.copy(notiPersistent = true) }
+                    }
+                    ContextCompat.startForegroundService(
+                        requireContext(),
+                        Intent(requireContext(), PersistentNotificationService::class.java)
+                    )
+                    button.isEnabled = false
                 }
 
-            App.prefs.lastKillCheckTime = System.currentTimeMillis()
-            // todo: this is technically wrong
+                optionsShown++
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Stuff.getScrobblerExitReasons(lastKillCheckTime, false)
+                    .firstOrNull()
+                    ?.let {
+                        binding.fixItExitReason.text =
+                            getString(R.string.kill_reason, "\n" + it.description)
+                    }
+
+                mainPrefs.updateData { it.copy(lastKillCheckTime = System.currentTimeMillis()) }
+                // todo: this is technically wrong
+            }
         }
     }
 }

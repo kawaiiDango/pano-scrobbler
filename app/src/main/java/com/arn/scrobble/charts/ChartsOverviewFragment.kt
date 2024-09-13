@@ -3,7 +3,6 @@ package com.arn.scrobble.charts
 import android.animation.ArgbEvaluator
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
@@ -14,10 +13,8 @@ import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmapOrNull
-import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -33,10 +30,8 @@ import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
-import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.kumo.compat.MyKBitmap
 import com.arn.scrobble.kumo.compat.MyKGraphicsFactory
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.RoundedBarChart
@@ -73,8 +68,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 
 
 open class ChartsOverviewFragment : ChartsPeriodFragment() {
@@ -88,19 +81,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
     override val periodChipsBinding
         get() = _periodChipsBinding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            Stuff.ARG_HIDDEN_TAGS_CHANGED,
-            this
-        ) { requestKey, bundle ->
-            if (requestKey == Stuff.ARG_HIDDEN_TAGS_CHANGED && bundle.getBoolean(Stuff.ARG_HIDDEN_TAGS_CHANGED)) {
-                viewModel.updateHiddenTags()
-            }
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -248,13 +228,14 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
         binding.chartsCreateCollage.isVisible = !Stuff.isTv
         binding.chartsCreateCollage.setOnClickListener {
-            if (viewModel.getTotal(Stuff.TYPE_ARTISTS) == 0) {
+            val selectedPeriod = viewModel.selectedPeriod.value
+            if (viewModel.getTotal(Stuff.TYPE_ARTISTS) == 0 || selectedPeriod == null) {
                 requireContext().toast(R.string.charts_no_data)
                 return@setOnClickListener
             }
 
             val arguments = Bundle().apply {
-                putSingle(viewModel.selectedPeriod.value)
+                putSingle(selectedPeriod)
                 putInt(Stuff.ARG_TYPE, Stuff.TYPE_ALL)
             }
             findNavController().navigate(R.id.collageGeneratorFragment, arguments)
@@ -638,65 +619,67 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
     private suspend fun getTagCloudUri(): Uri? {
         val tagCloudBitmap = binding.chartsTagCloud.drawable?.toBitmapOrNull() ?: return null
-        val selectedPeriod = viewModel.selectedPeriod.value
+        val selectedPeriod = viewModel.selectedPeriod.value ?: return null
 
-        val footerBinding = LayoutCollageFooterBinding.inflate(layoutInflater, null, false)
+//        val footerBinding = LayoutCollageFooterBinding.inflate(layoutInflater, null, false)
+//
+//        if (Stuff.billingRepository.isLicenseValid) {
+//            footerBinding.collageFooterBrandingText.visibility = View.GONE
+//            footerBinding.collageFooterBrandingImage.visibility = View.GONE
+//            footerBinding.collageFooterBrandingImageBg.visibility = View.GONE
+//        }
+//
+//        footerBinding.collageFooterDuration.text = selectedPeriod.name
+//        footerBinding.collageFooterBrandingText.text =
+//            getString(R.string.app_name).replace(" ", "\n")
+//        footerBinding.collageUsernameImage.visibility = View.GONE
+//        footerBinding.collageTypeImage.setImageResource(R.drawable.vd_tag)
+//
+//        footerBinding.root.measure(
+//            View.MeasureSpec.makeMeasureSpec(tagCloudBitmap.width, View.MeasureSpec.EXACTLY),
+//            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+//        )
+//        footerBinding.root.layout(
+//            footerBinding.root.left,
+//            footerBinding.root.top,
+//            footerBinding.root.measuredWidth,
+//            footerBinding.root.measuredHeight
+//        )
+//        val footerBitmap = footerBinding.root.drawToBitmap()
+//
+//        // merge bitmaps
+//        val bitmap = Bitmap.createBitmap(
+//            tagCloudBitmap.width,
+//            tagCloudBitmap.height + footerBinding.root.height,
+//            Bitmap.Config.ARGB_8888
+//        )
+//        Canvas(bitmap).apply {
+//            // draw opaque bg
+//            drawColor(
+//                MaterialColors.getColor(
+//                    requireContext(),
+//                    android.R.attr.colorBackground,
+//                    null
+//                )
+//            )
+//            drawBitmap(tagCloudBitmap, 0f, 0f, null)
+//            drawBitmap(footerBitmap, 0f, tagCloudBitmap.height.toFloat(), null)
+//        }
+//
+//        val tagCloudFile = File(requireContext().cacheDir, "share/tag_cloud.jpg")
+//        withContext(Dispatchers.IO) {
+//            tagCloudFile.parentFile!!.mkdirs()
+//            FileOutputStream(tagCloudFile).use { fos ->
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
+//            }
+//        }
+//        return FileProvider.getUriForFile(
+//            requireContext(),
+//            "${BuildConfig.APPLICATION_ID}.fileprovider",
+//            tagCloudFile
+//        )
 
-        if (App.prefs.proStatus) {
-            footerBinding.collageFooterBrandingText.visibility = View.GONE
-            footerBinding.collageFooterBrandingImage.visibility = View.GONE
-            footerBinding.collageFooterBrandingImageBg.visibility = View.GONE
-        }
-
-        footerBinding.collageFooterDuration.text = selectedPeriod.name
-        footerBinding.collageFooterBrandingText.text =
-            getString(R.string.app_name).replace(" ", "\n")
-        footerBinding.collageUsernameImage.visibility = View.GONE
-        footerBinding.collageTypeImage.setImageResource(R.drawable.vd_tag)
-
-        footerBinding.root.measure(
-            View.MeasureSpec.makeMeasureSpec(tagCloudBitmap.width, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        )
-        footerBinding.root.layout(
-            footerBinding.root.left,
-            footerBinding.root.top,
-            footerBinding.root.measuredWidth,
-            footerBinding.root.measuredHeight
-        )
-        val footerBitmap = footerBinding.root.drawToBitmap()
-
-        // merge bitmaps
-        val bitmap = Bitmap.createBitmap(
-            tagCloudBitmap.width,
-            tagCloudBitmap.height + footerBinding.root.height,
-            Bitmap.Config.ARGB_8888
-        )
-        Canvas(bitmap).apply {
-            // draw opaque bg
-            drawColor(
-                MaterialColors.getColor(
-                    requireContext(),
-                    android.R.attr.colorBackground,
-                    null
-                )
-            )
-            drawBitmap(tagCloudBitmap, 0f, 0f, null)
-            drawBitmap(footerBitmap, 0f, tagCloudBitmap.height.toFloat(), null)
-        }
-
-        val tagCloudFile = File(requireContext().cacheDir, "share/tag_cloud.jpg")
-        withContext(Dispatchers.IO) {
-            tagCloudFile.parentFile!!.mkdirs()
-            FileOutputStream(tagCloudFile).use { fos ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
-            }
-        }
-        return FileProvider.getUriForFile(
-            requireContext(),
-            "${BuildConfig.APPLICATION_ID}.fileprovider",
-            tagCloudFile
-        )
+        return null
     }
 
 }

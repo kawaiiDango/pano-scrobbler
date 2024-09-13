@@ -49,27 +49,13 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
                         binding.userTagsInputEdittext.setText(item, false)
                         binding.userTagsInputEdittext.clearFocus()
                     }
-                    historyTextView.setOnLongClickListener {
-                        MaterialAlertDialogBuilder(context)
-                            .setMessage(R.string.clear_history_specific)
-                            .setPositiveButton(R.string.yes) { dialogInterface, i ->
-                                val item = getItem(position)
-                                viewModel.historyPref.remove(item)
-                            }
-                            .setNegativeButton(R.string.no, null)
-                            .setNeutralButton(R.string.clear_all_history) { dialogInterface, i ->
-                                viewModel.historyPref.removeAll()
-                            }
-                            .show()
-                        false
-                    }
                 }
                 return historyTextView
             }
 
-            override fun getItem(position: Int) = viewModel.historyPref.history[position]
+            override fun getItem(position: Int) = viewModel.tagHistory.value[position]
 
-            override fun getCount() = viewModel.historyPref.history.size
+            override fun getCount() = viewModel.tagHistory.value.size
         }
     }
     private var _binding: DialogUserTagsBinding? = null
@@ -110,9 +96,6 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         addButton.setOnClickListener {
             val tags = binding.userTagsInputEdittext.text.toString().trim()
             if (tags.isNotEmpty()) {
-                viewModel.splitTags(tags).forEach {
-                    viewModel.historyPref.add(it.trim())
-                }
                 viewModel.addTag(tags)
                 binding.userTagsInputEdittext.text.clear()
             } else {
@@ -147,7 +130,6 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     override fun onDestroyView() {
         _binding = null
-        viewModel.historyPref.save()
         super.onDestroyView()
     }
 

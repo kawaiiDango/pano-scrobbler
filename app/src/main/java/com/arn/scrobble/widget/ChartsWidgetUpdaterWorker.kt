@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
@@ -15,18 +16,17 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
+import com.arn.scrobble.charts.AllPeriods
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
-import com.arn.scrobble.main.App
-import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.setMidnight
@@ -34,6 +34,8 @@ import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -44,10 +46,12 @@ import java.util.concurrent.TimeUnit
 
 class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
-    private val widgetPrefs by lazy { WidgetPrefs(applicationContext) }
+
+    val workName = inputData.getString(WORK_NAME_KEY)!!
+    val isOneTimeWork = workName == NAME_ONE_TIME
 
     override suspend fun getForegroundInfo() = ForegroundInfo(
-        NAME_ONE_TIME.hashCode(),
+        workName.hashCode(),
         UiUtils.createNotificationForFgs(
             applicationContext,
             applicationContext.getString(R.string.pref_widget_charts)
@@ -57,7 +61,11 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
     // runs in Dispatchers.DEFAULT
     override suspend fun doWork(): Result {
         // not logged in
-        Scrobblables.current ?: return Result.failure()
+        val currentScrobblable = Scrobblables.current.value ?: return Result.failure(
+            Data.Builder()
+                .putString("reason", "Not logged in")
+                .build()
+        )
 
         logTimestampToFile("started")
 
@@ -65,7 +73,6 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
         val widgetTimePeriods = WidgetTimePeriods(applicationContext)
 
-        val appWidgetIdToPeriodStr = mutableMapOf<Int, String>()
         val appWidgetIds =
             appWidgetManager.getAppWidgetIds(
                 ComponentName(
@@ -73,125 +80,123 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                     ChartsWidgetProvider::class.java
                 )
             )
-        var errored = false
+        val widgetPrefs = Stuff.widgetPrefs.data.first()
+        val lastInteractiveTime =
+            PlatformStuff.mainPrefs.data.map { it.lastInteractiveTime }.first()
+
 
         // don't run if the user has not checked the device recently or it already ran recently
-        val lastInteractiveTime = App.prefs.lastInteractiveTime
-        if ((appWidgetIds.isEmpty() ||
-                    System.currentTimeMillis() - (widgetPrefs[appWidgetIds.first()].lastUpdated
-                ?: 0) < Stuff.CHARTS_WIDGET_REFRESH_INTERVAL / 2 ||
+        if (!isOneTimeWork && (appWidgetIds.isEmpty() ||
+                    System.currentTimeMillis() - widgetPrefs.lastFetched < Stuff.CHARTS_WIDGET_REFRESH_INTERVAL / 2 ||
                     lastInteractiveTime == null ||
                     System.currentTimeMillis() - lastInteractiveTime > Stuff.CHARTS_WIDGET_REFRESH_INTERVAL * 2)
         ) {
             logTimestampToFile("skipped")
-            return Result.failure()
+            return Result.failure(
+                Data.Builder()
+                    .putString("reason", "Not enough widgets or not enough interaction")
+                    .build()
+            )
         }
 
-        appWidgetIds.forEach { id ->
-            if (widgetPrefs[id].lastUpdated != null && widgetPrefs[id].period == null) { // set default value for old prefs
-                widgetPrefs[id].period = Period.MONTH.value
-            }
-            widgetPrefs[id].period?.let { period ->
-                appWidgetIdToPeriodStr[id] = period
-                widgetPrefs[id].periodName = widgetTimePeriods.periodsMap[period]?.name
-            }
-
-        }
+        var errorData: Data? = null
 
         val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
             throwable.printStackTrace()
             logTimestampToFile("errored " + throwable.message)
-            errored = true
+            errorData = Data.Builder()
+                .putString("reason", throwable.message)
+                .build()
         }
 
         withContext(exHandler) {
-            // support a max of 3 widgets at a time
-            appWidgetIdToPeriodStr.values.toSet().take(3).mapConcurrently(3) { periodStr ->
-                val timePeriod = widgetTimePeriods.periodsMap[periodStr]
-                    ?: widgetTimePeriods.periodsMap[Period.MONTH.value]!! // default to 1 month
+            // support a max of 3 periods
+            widgetPrefs.widgets
+                .values
+                .map { it.period }
+                .toSet()
+                .take(3)
+                .mapConcurrently(3) { period ->
+                    val timePeriod = widgetTimePeriods.toTimePeriod(period)
+                    val cal = Calendar.getInstance().setUserFirstDayOfWeek()
+                    cal.setMidnight()
 
-                val cal = Calendar.getInstance().setUserFirstDayOfWeek()
-                cal.setMidnight()
+                    val prevTimePeriod =
+                        if (timePeriod.period != null && timePeriod.period != Period.OVERALL) {
+                            val duration = timePeriod.period.toDuration(endTime = cal.timeInMillis)
+                            timePeriod.period.toTimePeriod(endTime = cal.timeInMillis - duration)
 
-                val prevTimePeriod =
-                    if (timePeriod.period != null && timePeriod.period != Period.OVERALL) {
-                        val duration = timePeriod.period.toDuration(endTime = cal.timeInMillis)
-                        timePeriod.period.toTimePeriod(endTime = cal.timeInMillis - duration)
+                        } else {
+                            cal.timeInMillis = timePeriod.start
 
-                    } else {
-                        cal.timeInMillis = timePeriod.start
-
-                        when (periodStr) {
-                            TimePeriodType.WEEK.toString() -> cal.add(Calendar.WEEK_OF_YEAR, -1)
-                            TimePeriodType.MONTH.toString() -> cal.add(Calendar.MONTH, -1)
-                            TimePeriodType.YEAR.toString() -> cal.add(Calendar.YEAR, -1)
-                            else -> null
-                        }?.let {
-                            TimePeriod(cal.timeInMillis, timePeriod.start)
-                        }
-                    }
-
-                val (artists, albums, tracks) = listOf(
-                    Stuff.TYPE_ARTISTS,
-                    Stuff.TYPE_ALBUMS,
-                    Stuff.TYPE_TRACKS
-                ).mapConcurrently(3) { type ->
-                    Scrobblables.current!!.getChartsWithStonks(
-                        type,
-                        timePeriod,
-                        prevTimePeriod,
-                        1,
-                        limit = 50
-                    )
-                        .map { pr ->
-                            pr.entries.map {
-                                val subtitle = when (it) {
-                                    is Album -> it.artist!!.name
-                                    is Track -> it.artist.name
-                                    else -> ""
-                                }
-
-                                val imgUrl = if (it is Album) it.webp300 else null
-
-                                ChartsWidgetListItem(
-                                    it.name,
-                                    subtitle,
-                                    it.playcount ?: 0,
-                                    imgUrl ?: "",
-                                    it.stonksDelta
-                                )
+                            when (period) {
+                                AllPeriods.THIS_WEEK -> cal.add(Calendar.WEEK_OF_YEAR, -1)
+                                AllPeriods.THIS_MONTH -> cal.add(Calendar.MONTH, -1)
+                                AllPeriods.THIS_YEAR -> cal.add(Calendar.YEAR, -1)
+                                else -> null
+                            }?.let {
+                                TimePeriod(cal.timeInMillis, timePeriod.start)
                             }
                         }
 
-                }
+                    val (artists, albums, tracks) = listOf(
+                        Stuff.TYPE_ARTISTS,
+                        Stuff.TYPE_ALBUMS,
+                        Stuff.TYPE_TRACKS
+                    ).mapConcurrently(3) { type ->
+                        currentScrobblable.getChartsWithStonks(
+                            type,
+                            timePeriod,
+                            prevTimePeriod,
+                            1,
+                            limit = 50
+                        )
+                            .map { pr ->
+                                pr.entries.map {
+                                    val subtitle = when (it) {
+                                        is Album -> it.artist!!.name
+                                        is Track -> it.artist.name
+                                        else -> null
+                                    }
 
-                artists.onSuccess {
-                    widgetPrefs.chartsData(Stuff.TYPE_ARTISTS, periodStr).dataJson = it
-                }
+                                    val imgUrl = if (it is Album) it.webp300 else null
 
-                albums.onSuccess {
-                    widgetPrefs.chartsData(Stuff.TYPE_ALBUMS, periodStr).dataJson = it
-                }
+                                    ChartsWidgetListItem(
+                                        it.name,
+                                        subtitle,
+                                        it.playcount ?: 0,
+                                        imgUrl ?: "",
+                                        it.stonksDelta
+                                    )
+                                }
+                            }
+                    }
 
-                tracks.onSuccess {
-                    widgetPrefs.chartsData(Stuff.TYPE_TRACKS, periodStr).dataJson = it
-                }
-            }
+                    Stuff.widgetPrefs.updateData {
+                        val chartsData = it.chartsData.toMutableMap()
+                        val chartsDataForPeriod = chartsData[period] ?: emptyMap()
+                        chartsData[period] = mapOf(
+                            Stuff.TYPE_ARTISTS to (artists.getOrNull()
+                                ?: chartsDataForPeriod[Stuff.TYPE_ARTISTS] ?: emptyList()),
+                            Stuff.TYPE_ALBUMS to (albums.getOrNull()
+                                ?: chartsDataForPeriod[Stuff.TYPE_ALBUMS] ?: emptyList()),
+                            Stuff.TYPE_TRACKS to (tracks.getOrNull()
+                                ?: chartsDataForPeriod[Stuff.TYPE_TRACKS] ?: emptyList())
+                        )
 
-            if (!errored)
-                appWidgetIdToPeriodStr.keys.forEach { id ->
-                    widgetPrefs[id].lastUpdated = System.currentTimeMillis()
+                        it.copy(chartsData = chartsData, lastFetched = System.currentTimeMillis())
+                    }
                 }
 
             delay(1000) // wait for apply()
 
-            ChartsListUtils.updateWidgets(appWidgetIdToPeriodStr.keys.toIntArray())
+            ChartsListUtils.updateWidgets(appWidgetIds)
 
             logTimestampToFile("finished")
         }
 
-        return if (errored)
-            Result.failure()
+        return if (errorData != null)
+            Result.failure(errorData!!)
         else
             Result.success()
     }
@@ -199,7 +204,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
     private fun logTimestampToFile(event: String) {
         if (!BuildConfig.DEBUG) return
 
-        val file = File(applicationContext.filesDir, "timestamps.txt")
+        val file = File(PlatformStuff.filesDir, "timestamps.txt")
         if (!file.exists()) {
             file.createNewFile()
         }
@@ -214,6 +219,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
         const val NAME_ONE_TIME = "charts_widget_updater_one_time"
         const val NAME_PERIODIC = "charts_widget_updater_periodic"
+        private const val WORK_NAME_KEY = "uniqueWorkName"
 
         fun checkAndSchedule(context: Context, runImmediately: Boolean) {
             val constraints = Constraints.Builder()
@@ -221,9 +227,14 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 .build()
 
             if (runImmediately) {
+                val inputData = Data.Builder()
+                    .putString(WORK_NAME_KEY, NAME_ONE_TIME)
+                    .build()
+
                 val oneTimeWork = OneTimeWorkRequestBuilder<ChartsWidgetUpdaterWorker>()
                     .setConstraints(constraints)
                     .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .setInputData(inputData)
                     .build()
 
                 WorkManager.getInstance(context).enqueueUniqueWork(
@@ -233,11 +244,16 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 )
             }
 
+            val inputData = Data.Builder()
+                .putString(WORK_NAME_KEY, NAME_PERIODIC)
+                .build()
+
             val periodicWork = PeriodicWorkRequestBuilder<ChartsWidgetUpdaterWorker>(
                 Stuff.CHARTS_WIDGET_REFRESH_INTERVAL,
                 TimeUnit.MILLISECONDS
             )
                 .setConstraints(constraints)
+                .setInputData(inputData)
                 .setInitialDelay(Stuff.CHARTS_WIDGET_REFRESH_INTERVAL, TimeUnit.MILLISECONDS)
                 .build()
 

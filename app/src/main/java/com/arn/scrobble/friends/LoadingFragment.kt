@@ -6,14 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentLoadingBinding
-import com.arn.scrobble.friends.UserCached.Companion.toUserCached
-import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.setupAxisTransitions
-import com.arn.scrobble.utils.Stuff.putSingle
 import com.google.android.material.transition.MaterialSharedAxis
 
 class LoadingFragment : Fragment() {
@@ -21,7 +15,7 @@ class LoadingFragment : Fragment() {
     val binding get() = _binding!!
 
     private val viewModel by viewModels<UserLoaderVM>()
-    private val args by navArgs<LoadingFragmentArgs>()
+//    private val args by navArgs<LoadingFragmentArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,15 +34,15 @@ class LoadingFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        collectLatestLifecycleFlow(viewModel.userInfo) { user ->
-            findNavController().navigate(
-                R.id.action_loadingFragment_to_othersHomePagerFragment,
-                Bundle().putSingle(user.toUserCached())
-            )
-        }
-
-        // opened www.last.fm link
-        binding.loadingUsername.text = args.lastfmUsername
-        viewModel.fetchUserInfo(args.lastfmUsername!!)
+//        collectLatestLifecycleFlow(viewModel.userInfo) { user ->
+//            findNavController().navigate(
+//                R.id.action_loadingFragment_to_othersHomePagerFragment,
+//                Bundle().putSingle(user.toUserCached())
+//            )
+//        }
+//
+//        // opened www.last.fm link
+//        binding.loadingUsername.text = args.lastfmUsername
+//        viewModel.fetchUserInfo(args.lastfmUsername!!)
     }
 }

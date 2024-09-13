@@ -46,6 +46,7 @@ import coil3.memory.MemoryCache
 import coil3.request.error
 import coil3.request.placeholder
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
@@ -59,7 +60,6 @@ import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
@@ -93,8 +93,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Objects
@@ -106,7 +108,7 @@ import java.util.Objects
 
 class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.SetHeroTrigger {
     private lateinit var adapter: ScrobblesAdapter
-    private val prefs = App.prefs
+    private val mainPrefs = PlatformStuff.mainPrefs
     private var timedRefreshJob: Job? = null
     private lateinit var coordinatorBinding: ContentMainBinding
     private var _binding: ContentScrobblesBinding? = null
@@ -203,10 +205,20 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             viewModel = viewModel,
             userIsSelf = activityViewModel.currentUser.isSelf,
         )
-        adapter.isShowingAlbums = prefs.showAlbumInRecents
+
+        // todo make async
+        val showAlbumsInRecents =
+            runBlocking { mainPrefs.data.map { it.showAlbumsInRecents }.first() }
+        val showScrobbleSources =
+            runBlocking { mainPrefs.data.map { it.showScrobbleSources }.first() }
+        val themeTintBackground = false
+
+        adapter.isShowingAlbums = showAlbumsInRecents
         adapter.isShowingPlayers =
             !viewModel.isShowingLoves && activityViewModel.currentUser.isSelf &&
-                    prefs.proStatus && prefs.showScrobbleSources
+                    Stuff.billingRepository.isLicenseValid && showScrobbleSources
+
+        adapter.themeTintBackground = themeTintBackground
 
         animSet = AnimatorSet()
 
@@ -238,13 +250,13 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             listItemLayoutResId = R.layout.list_item_recents_skeleton,
         )
 
-        if (Scrobblables.current is FileScrobblable) {
+        if (Scrobblables.current.value is FileScrobblable) {
             val fabData = FabData(
                 viewLifecycleOwner,
                 R.string.fix_it_action,
                 R.drawable.vd_open_in_new,
                 {
-                    (Scrobblables.current as FileScrobblable).documentFile.uri.let { uri ->
+                    (Scrobblables.current.value as FileScrobblable).documentFile.uri.let { uri ->
                         val intent = Intent(Intent.ACTION_VIEW)
                             .setDataAndType(uri, "text/*")
                             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -276,7 +288,6 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 binding.scrobblesList.isVisible = true
                 loadMoreListener.currentPage = viewModel.input.value?.page ?: 1
 
-                activityViewModel.updateCanIndex()
                 doNextTimedRefresh()
             }
         }
@@ -305,8 +316,8 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             viewModel.editTrack(it)
             ReviewPrompter(
                 requireActivity(),
-                prefs.lastReviewPromptTime
-            ) { t -> prefs.lastReviewPromptTime = t }
+                mainPrefs.data.map { it.lastReviewPromptTime }.first(),
+            ) { t -> mainPrefs.updateData { it.copy(lastReviewPromptTime = t) } }
                 .showIfNeeded()
         }
 
@@ -432,7 +443,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 return@collectLatestLifecycleFlow
 
 
-            if ((!App.prefs.proStatus || prefs.themeTintBackground) && !UiUtils.isTabletUi) {
+            if ((!Stuff.billingRepository.isLicenseValid || themeTintBackground) && !UiUtils.isTabletUi) {
                 val animSetList = mutableListOf<Animator>()
                 val contentBgFrom = (binding.root.background as ColorDrawable).color
 //                if (UiUtils.isTabletUi)
@@ -515,7 +526,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     activityViewModel.currentUser.name
                 )
 
-            if (!App.prefs.proStatus)
+            if (!Stuff.billingRepository.isLicenseValid)
                 shareText += "\n\n" + getString(R.string.share_sig)
 
             val i = Intent(Intent.ACTION_SEND).apply {
@@ -730,7 +741,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
 
         val moreMenu: Menu = popup.menu.findItem(R.id.menu_more)?.subMenu ?: popup.menu
 
-        if (Scrobblables.current !is ListenBrainz)
+        if (Scrobblables.current.value !is ListenBrainz)
             moreMenu.removeItem(R.id.menu_hate)
 
         if (Stuff.isTv)
@@ -751,7 +762,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     val newHated = track.userHated != true
                     viewModel.viewModelScope.launch(Dispatchers.IO) {
                         if (newHated)
-                            (Scrobblables.current as? ListenBrainz)?.hate(track)
+                            (Scrobblables.current.value as? ListenBrainz)?.hate(track)
                         else
                             ScrobbleEverywhere.loveOrUnlove(track, false)
                     }

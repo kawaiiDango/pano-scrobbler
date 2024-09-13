@@ -5,6 +5,7 @@ import android.app.Application
 import com.arn.scrobble.api.license.LicenseChecker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 
 class BillingRepository(
     application: Application,
@@ -44,9 +45,9 @@ class BillingRepository(
 
 
     override suspend fun queryPurchasesAsync() {
-        val (receipt, _) = clientData.getReceipt()
+        val (receipt, _) = clientData.receipt.first()
         if (receipt != null && verifyPurchase(receipt, "")) {
-            if (_licenseState.value != LicenseState.VALID || System.currentTimeMillis() - clientData.getLastcheckTime() > CHECK_EVERY) {
+            if (_licenseState.value != LicenseState.VALID || System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY) {
                 LicenseChecker.checkLicenseOnline(
                     clientData.httpClient,
                     clientData.serverUrl,

@@ -1,70 +1,48 @@
 package com.arn.scrobble.pref
 
-import android.content.Context
-import androidx.core.content.edit
+import androidx.datastore.core.Serializer
+import com.arn.scrobble.charts.AllPeriods
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.widget.ChartsWidgetListItem
-import com.frybits.harmony.getHarmonySharedPreferences
-import hu.autsoft.krate.Krate
-import hu.autsoft.krate.booleanPref
-import hu.autsoft.krate.default.withDefault
-import hu.autsoft.krate.floatPref
-import hu.autsoft.krate.intPref
-import hu.autsoft.krate.kotlinx.json
-import hu.autsoft.krate.kotlinx.kotlinxPref
-import hu.autsoft.krate.longPref
-import hu.autsoft.krate.stringPref
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.encodeToStream
+import java.io.InputStream
+import java.io.OutputStream
 
-class WidgetPrefs(context: Context) {
+@Serializable
+data class SpecificWidgetPrefs(
+    val tab: Int = Stuff.TYPE_ARTISTS,
+    val bgAlpha: Float = 0.6f,
+    val period: AllPeriods = AllPeriods.MONTH,
+    val shadow: Boolean = true,
+)
 
-    val sharedPreferences = context.getHarmonySharedPreferences(NAME)
-
-    operator fun get(widgetId: Int) = SpecificWidgetPrefs(widgetId)
-
-    fun chartsData(tab: Int, period: String) = ChartsData(tab, period)
-
-    inner class ChartsData(tab: Int, period: String) : Krate {
-        override val sharedPreferences = this@WidgetPrefs.sharedPreferences
-
-        var dataJson by kotlinxPref<List<ChartsWidgetListItem>>("${tab}_$period")
-    }
-
-    inner class SpecificWidgetPrefs(private val widgetId: Int) : Krate {
-        override val sharedPreferences = this@WidgetPrefs.sharedPreferences
-
-        init {
-            json = Stuff.myJson
-        }
-
-        var tab by intPref(PREF_WIDGET_TAB.prefName)
-        var bgAlpha by floatPref(PREF_WIDGET_BG_ALPHA.prefName).withDefault(0.6f)
-        var period by stringPref(PREF_WIDGET_PERIOD.prefName)
-        var periodName by stringPref(PREF_WIDGET_PERIOD_NAME.prefName)
-        var shadow by booleanPref(PREF_WIDGET_SHADOW.prefName).withDefault(true)
-        var lastUpdated by longPref(PREF_WIDGET_LAST_UPDATED.prefName)
-
-        fun clear() {
-            sharedPreferences.edit {
-                sharedPreferences.all
-                    .keys
-                    .toList()
-                    .forEach { key ->
-                        if (key.endsWith("_$widgetId"))
-                            remove(key)
-                    }
-            }
-        }
-
-        private val String.prefName inline get() = "${this}_$widgetId"
-    }
-
+@Serializable
+data class WidgetPrefs(
+    val widgets: Map<Int, SpecificWidgetPrefs> = emptyMap(),
+    val chartsData: Map<AllPeriods, Map<Int, List<ChartsWidgetListItem>>> = emptyMap(),
+    val lastFetched: Long = -1,
+    val version: Int = 0,
+) {
     companion object {
-        const val NAME = "widget"
-        const val PREF_WIDGET_TAB = "tab"
-        const val PREF_WIDGET_BG_ALPHA = "bg_alpha"
-        const val PREF_WIDGET_PERIOD = "period_key"
-        const val PREF_WIDGET_PERIOD_NAME = "period_name"
-        const val PREF_WIDGET_SHADOW = "shadow"
-        const val PREF_WIDGET_LAST_UPDATED = "last_updated"
+        const val FILE_NAME = "widget-prefs.json"
     }
+}
+
+object WidgetPrefsSerializer : Serializer<WidgetPrefs> {
+    override val defaultValue = WidgetPrefs()
+
+    override suspend fun readFrom(input: InputStream) =
+        try {
+            Stuff.myJson.decodeFromStream<WidgetPrefs>(input)
+        } catch (exception: SerializationException) {
+            defaultValue
+        }
+
+    override suspend fun writeTo(
+        t: WidgetPrefs,
+        output: OutputStream
+    ) = Stuff.myJson.encodeToStream(t, output)
 }

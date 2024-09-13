@@ -1,6 +1,7 @@
 package com.arn.scrobble.charts
 
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.log10
@@ -33,7 +35,7 @@ class ChartsOverviewVM : ChartsPeriodVM() {
     val tagCloud = _tagCloud.asStateFlow()
     private val _tagCloudError = MutableSharedFlow<Throwable>(replay = 1)
     val tagCloudError = _tagCloudError.asSharedFlow()
-    private val _hiddenTags = MutableStateFlow(prefs.hiddenTags)
+    private val _hiddenTags = PlatformStuff.mainPrefs.data.mapLatest { it.hiddenTags }
     private val _listeningActivityVisible = MutableStateFlow(false)
     private val _tagCloudVisible = MutableStateFlow(false)
     private val _tagCloudProgress = MutableStateFlow(0.0)
@@ -76,7 +78,7 @@ class ChartsOverviewVM : ChartsPeriodVM() {
                         return@collectLatest
 
                     loadListeningActivity(
-                        input.value!!.user, entries, selectedPeriod.value
+                        input.value!!.user, entries, selectedPeriod.value ?: return@collectLatest
                     )
                 }
         }
@@ -143,7 +145,7 @@ class ChartsOverviewVM : ChartsPeriodVM() {
 
             _hasLoaded[type]!!.emit(false)
 
-            val result = Scrobblables.current!!
+            val result = Scrobblables.current.value!!
                 .getChartsWithStonks(
                     type = type,
                     timePeriod = timePeriod,
@@ -178,7 +180,7 @@ class ChartsOverviewVM : ChartsPeriodVM() {
             return
         }
 
-        val la = Scrobblables.current
+        val la = Scrobblables.current.value
             ?.getListeningActivity(timePeriod, user)
 
         _listeningActivityHasLoaded.emit(true)
@@ -189,11 +191,6 @@ class ChartsOverviewVM : ChartsPeriodVM() {
             else
                 _listeningActivity.emit(it)
         }
-    }
-
-    fun updateHiddenTags() {
-        _tagCloud.value = null
-        _hiddenTags.value = prefs.hiddenTags
     }
 
     private suspend fun loadTagCloud(

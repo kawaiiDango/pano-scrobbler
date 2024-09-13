@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import android.content.SharedPreferences
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -10,14 +9,17 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
-import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.main.App
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.dLazy
 import com.arn.scrobble.utils.Stuff.dump
 import com.arn.scrobble.utils.Stuff.isUrlOrDomain
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Locale
 import java.util.Objects
@@ -26,27 +28,50 @@ import java.util.Objects
  * Created by arn on 04/07/2017.
  */
 class SessListener(
+    private val scope: CoroutineScope,
     private val scrobbleHandler: NLService.ScrobbleQueue,
     private val audioManager: AudioManager,
-) : OnActiveSessionsChangedListener,
-    SharedPreferences.OnSharedPreferenceChangeListener {
+) : OnActiveSessionsChangedListener {
 
-    private val prefs = App.prefs
+    private val mainPrefs = PlatformStuff.mainPrefs
     private val controllersMap =
         mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
     private var platformControllers: List<MediaController>? = null
 
-    private val blockedPackages = mutableSetOf<String>()
-    private val allowedPackages = mutableSetOf<String>()
+    private val blockedPackages =
+        mainPrefs.data.map { it.blockedPackages }.stateIn(scope, SharingStarted.Eagerly, emptySet())
+    private val allowedPackages =
+        mainPrefs.data.map { it.allowedPackages }.stateIn(scope, SharingStarted.Eagerly, emptySet())
+    private val seenPackages =
+        mainPrefs.data.map { it.seenPackages }.stateIn(scope, SharingStarted.Eagerly, emptySet())
+    private val scrobblerEnabled =
+        mainPrefs.data.map { it.scrobblerEnabled }.stateIn(scope, SharingStarted.Eagerly, false)
+    private val autoDetectApps =
+        mainPrefs.data.map { it.autoDetectAppsP }.stateIn(scope, SharingStarted.Eagerly, false)
+    private val scrobbleSpotifyRemote = mainPrefs.data.map { it.scrobbleSpotifyRemote }
+        .stateIn(scope, SharingStarted.Eagerly, false)
     private val loggedIn
         get() = Stuff.isLoggedIn()
     val packageTagTrackMap = mutableMapOf<String, PlayingTrackInfo>()
     private var mutedHash: Int? = null
 
     init {
-        prefs.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        allowedPackages.addAll(prefs.allowedPackages)
-        blockedPackages.addAll(prefs.blockedPackages)
+        scope.launch {
+            combine(
+                allowedPackages,
+                blockedPackages,
+                autoDetectApps,
+                scrobblerEnabled,
+            ) { allowed, blocked, autoDetect, scrobbleEnabled ->
+                onActiveSessionsChanged(platformControllers)
+                val pkgsToKeep = controllersMap.values
+                    .map { it.first }
+                    .filter { shouldScrobble(it) }
+                    .map { it.packageName }
+                    .toSet()
+                removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
+            }
+        }
     }
 
     @Synchronized
@@ -54,12 +79,12 @@ class SessListener(
         this.platformControllers = controllers
         Timber.dLazy { "controllers: " + controllers?.joinToString { it.packageName } }
 
-        if (!prefs.scrobblerEnabled || controllers == null)
+        if (!scrobblerEnabled.value || controllers == null)
             return
 
         val controllersFiltered = controllers.mapNotNull {
             if (shouldScrobble(it) && it.sessionToken !in controllersMap)
-                MediaController(App.application, it.sessionToken)
+                MediaController(PlatformStuff.application, it.sessionToken)
             else null
         }
 
@@ -151,10 +176,6 @@ class SessListener(
         }
     }
 
-    fun unregisterPrefsChangeListener() {
-        prefs.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-    }
-
     //        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
     // MediaController.getTag() exists on Android 10 and lower but is marked as @hide
 
@@ -177,9 +198,9 @@ class SessListener(
     }
 
     private fun shouldScrobble(platformController: MediaController): Boolean {
-        val should = prefs.scrobblerEnabled && loggedIn &&
-                (platformController.packageName in allowedPackages ||
-                        (prefs.autoDetectApps && platformController.packageName !in blockedPackages))
+        val should = scrobblerEnabled.value && loggedIn &&
+                (platformController.packageName in allowedPackages.value ||
+                        (autoDetectApps.value && platformController.packageName !in blockedPackages.value))
 
         return should
     }
@@ -198,38 +219,6 @@ class SessListener(
                         trackInfo.artist.isUrlOrDomain())
     }
 
-    override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String?) {
-        when (key) {
-            MainPrefs.PREF_ALLOWED_PACKAGES -> synchronized(allowedPackages) {
-                allowedPackages.clear()
-                allowedPackages.addAll(pref.getStringSet(key, setOf())!!)
-            }
-
-            MainPrefs.PREF_BLOCKED_PACKAGES -> synchronized(blockedPackages) {
-                blockedPackages.clear()
-                blockedPackages.addAll(pref.getStringSet(key, setOf())!!)
-            }
-
-            MainPrefs.PREF_SCROBBLE_ACCOUNTS -> {
-                Scrobblables.updateScrobblables()
-            }
-        }
-        if (key == MainPrefs.PREF_ALLOWED_PACKAGES ||
-            key == MainPrefs.PREF_BLOCKED_PACKAGES ||
-            key == MainPrefs.PREF_AUTO_DETECT ||
-            key == MainPrefs.PREF_MASTER
-        ) {
-
-            onActiveSessionsChanged(platformControllers)
-            val pkgsToKeep = controllersMap.values
-                .map { it.first }
-                .filter { shouldScrobble(it) }
-                .map { it.packageName }
-                .toSet()
-            removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
-        }
-    }
-
     inner class ControllerCallback(
         val trackInfo: PlayingTrackInfo,
         private val token: MediaSession.Token
@@ -240,7 +229,7 @@ class SessListener(
         private var isRemotePlayback = false
         var isMuted = false
 
-        private fun scrobble() {
+        private suspend fun scrobble() {
             if (hasOtherPlayingControllers(trackInfo) && trackInfo.hasBlockedTag) {
                 Timber.dLazy { "multiple scrobblable controllers for ${trackInfo.packageName}, ignoring ${trackInfo.sessionTag}" }
                 pause()
@@ -262,8 +251,8 @@ class SessListener(
             unmute(clearMutedHash = isMuted)
 
             // add to seen packages
-            if (trackInfo.packageName !in prefs.seenPackages) {
-                prefs.seenPackages += trackInfo.packageName
+            if (trackInfo.packageName !in seenPackages.value) {
+                mainPrefs.updateData { it.copy(seenPackages = (it.seenPackages + trackInfo.packageName)) }
             }
         }
 
@@ -390,7 +379,9 @@ class SessListener(
                     artist.isNotEmpty() && title.isNotEmpty()
                 ) {
                     trackInfo.timePlayed = 0
-                    scrobble()
+                    scope.launch {
+                        scrobble()
+                    }
                 }
             }
         }
@@ -416,7 +407,7 @@ class SessListener(
 //            extras?.let { Timber.dLazy { "state extras: " + it.dump() } }
 
             // do not scrobble spotify remote playback
-            if (!prefs.scrobbleSpotifyRemote &&
+            if (!scrobbleSpotifyRemote.value &&
                 trackInfo.packageName == Stuff.PACKAGE_SPOTIFY
                 && state.extras?.getBoolean("com.spotify.music.extra.ACTIVE_PLAYBACK_LOCAL") == false
             ) {
@@ -475,7 +466,9 @@ class SessListener(
                             ((pos >= 0L && isPossiblyAtStart) ||
                                     trackInfo.hash != trackInfo.lastSubmittedScrobbleHash)
                         ) {
-                            scrobble()
+                            scope.launch {
+                                scrobble()
+                            }
                         }
                     }
                 }

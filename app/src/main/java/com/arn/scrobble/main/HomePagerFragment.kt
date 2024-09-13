@@ -8,6 +8,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
@@ -19,20 +20,23 @@ import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 
 class HomePagerFragment : BasePagerFragment() {
 
-    val prefs = App.prefs
     override val optionsMenuRes = R.menu.nav_menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Scrobblables.currentScrobblableUser == null) {
-            findNavController().navigate(R.id.onboardingFragment, null, navOptions {
-                popUpTo(R.id.myHomePagerFragment) { inclusive = true }
-            })
-            return
+        runBlocking {
+            if (Scrobblables.current.first() == null) {
+                findNavController().navigate(R.id.onboardingFragment, null, navOptions {
+                    popUpTo(R.id.myHomePagerFragment) { inclusive = true }
+                })
+            }
         }
     }
 
@@ -47,12 +51,15 @@ class HomePagerFragment : BasePagerFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (savedInstanceState == null && findNavController().currentDestination?.id == R.id.myHomePagerFragment)
-            arguments = bundleOf(Stuff.ARG_TAB to prefs.lastHomePagerTab)
+        if (savedInstanceState == null && findNavController().currentDestination?.id == R.id.myHomePagerFragment) {
+            val lastHomePagerTab =
+                runBlocking { PlatformStuff.mainPrefs.data.map { it.lastHomePagerTab }.first() }
+            arguments = bundleOf(Stuff.ARG_TAB to lastHomePagerTab)
+        }
 
         adapter = HomePagerAdapter(
             this,
-            Scrobblables.current?.userAccount?.type ?: AccountType.LASTFM
+            Scrobblables.current.value?.userAccount?.type ?: AccountType.LASTFM
         )
 
         super.onViewCreated(view, savedInstanceState)
@@ -96,7 +103,10 @@ class HomePagerFragment : BasePagerFragment() {
 
             R.id.nav_pro -> navController.navigate(R.id.billingFragment)
             R.id.nav_do_index -> {
-                if (prefs.lastMaxIndexTime == null) {
+                val lastMaxIndexTime =
+                    runBlocking { PlatformStuff.mainPrefs.data.map { it.lastMaxIndexTime }.first() }
+
+                if (lastMaxIndexTime == null) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage(R.string.do_index_desc)
                         .setNegativeButton(android.R.string.cancel, null)

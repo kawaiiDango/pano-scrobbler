@@ -80,7 +80,7 @@ object LastfmUnscrobbler {
 
     private val lock by lazy { Mutex() }
 
-    val cookieStorage by lazy { SharedPreferencesCookiesStorage(SharedPreferencesCookiesStorage.LASTFM_COOKIES) }
+    val cookieStorage by lazy { CookiesDatastore() }
     private val client by lazy {
         Requesters.genericKtorClient.config {
             install(HttpCookies) {

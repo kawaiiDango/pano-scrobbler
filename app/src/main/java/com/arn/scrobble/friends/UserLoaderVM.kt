@@ -16,7 +16,7 @@ class UserLoaderVM : ViewModel() {
 
     fun fetchUserInfo(username: String) {
         viewModelScope.launch {
-            (Scrobblables.current as? LastFm)
+            (Scrobblables.current.value as? LastFm)
                 ?.userGetInfo(username)
                 ?.doOnSuccessLoggingFaliure {
                     _userInfo.emit(it)

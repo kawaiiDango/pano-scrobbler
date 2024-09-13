@@ -4,11 +4,14 @@ import android.annotation.SuppressLint
 import android.view.ScaleGestureDetector
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.main.App
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.utils.UiUtils.toast
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.wrappedGet
+import com.arn.scrobble.utils.UiUtils.toast
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 
 class ScalableGrid(
@@ -17,7 +20,7 @@ class ScalableGrid(
 
     private val context get() = recyclerView.context
 
-    private val prefs = App.prefs
+    private val mainPrefs = PlatformStuff.mainPrefs
 
     private val numColumnsList = mutableListOf(0)
     private var defaultNumCols = 2
@@ -64,10 +67,13 @@ class ScalableGrid(
                 context.resources.getDimension(R.dimen.min_grid_size)).toInt()
             .coerceAtMost(Stuff.MAX_CHARTS_NUM_COLUMNS)
 
-        numColumnsToAdd = prefs.gridColumnsToAdd
+        val gridColumnsToAdd = runBlocking { mainPrefs.data.map { it.gridColumnsToAdd }.first() }
+        val gridSingleColumn = runBlocking { mainPrefs.data.map { it.gridSingleColumn }.first() }
+
+        numColumnsToAdd = gridColumnsToAdd
         numColumnsToAdd = numColumns.coerceIn(minNumCols..maxNumCols) - defaultNumCols
 
-        if (numColumns == 1 || prefs.gridSingleColumn)
+        if (numColumns == 1 || gridSingleColumn)
             isSingleColumn = true
 
         numColumnsList.clear()
@@ -91,21 +97,30 @@ class ScalableGrid(
 
         cols = numColumnsList.wrappedGet(idx)
 
-        if (cols == 1) {
-            prefs.gridSingleColumn = true
-            isSingleColumn = true
-            numColumnsToAdd = cols - defaultNumCols
-        } else {
-            prefs.gridSingleColumn = false
-            isSingleColumn = false
-            numColumnsToAdd = cols - defaultNumCols
-            prefs.gridColumnsToAdd = numColumnsToAdd
+        runBlocking {
+            if (cols == 1) {
+                isSingleColumn = true
+                numColumnsToAdd = cols - defaultNumCols
+                mainPrefs.updateData { it.copy(gridSingleColumn = true) }
+            } else {
+                isSingleColumn = false
+                numColumnsToAdd = cols - defaultNumCols
+                mainPrefs.updateData {
+                    it.copy(
+                        gridSingleColumn = false,
+                        gridColumnsToAdd = numColumnsToAdd
+                    )
+                }
+            }
+
+            val gridPinchLearnt = mainPrefs.data.map { it.gridPinchLearnt }.first()
+
+            if (fromMenu && !gridPinchLearnt) {
+                mainPrefs.updateData { it.copy(gridPinchLearnt = true) }
+                context.toast(R.string.pinch_to_zoom)
+            }
         }
         updateColumnCounts()
-
-
-        if (fromMenu && !prefs.gridPinchLearnt)
-            context.toast(R.string.pinch_to_zoom)
     }
 
     private fun updateColumnCounts() {
@@ -126,7 +141,6 @@ class ScalableGrid(
         ) {
             // relayout and animate?
             recyclerView.adapter?.notifyDataSetChanged()
-            prefs.gridPinchLearnt = true
         }
     }
 }

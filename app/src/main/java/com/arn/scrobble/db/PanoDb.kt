@@ -4,7 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.arn.scrobble.main.App
+import com.arn.scrobble.PlatformStuff
 
 
 /**
@@ -53,7 +53,7 @@ abstract class PanoDb : RoomDatabase() {
 
         val db
             get(): PanoDb = INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(App.application, PanoDb::class.java, fileName)
+                Room.databaseBuilder(PlatformStuff.application, PanoDb::class.java, fileName)
                     .addMigrations(*ManualMigrations.all)
                     .enableMultiInstanceInvalidation()
                     .build()

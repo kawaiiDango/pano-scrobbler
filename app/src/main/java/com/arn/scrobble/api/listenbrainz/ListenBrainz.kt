@@ -2,6 +2,7 @@ package com.arn.scrobble.api.listenbrainz
 
 import androidx.annotation.IntRange
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.ExpirationPolicy
@@ -31,7 +32,6 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
@@ -95,7 +95,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = scrobbleData.duration?.takeIf { it > 30000 },
-                            submission_client = App.application.getString(R.string.app_name),
+                            submission_client = PlatformStuff.application.getString(R.string.app_name),
                             submission_client_version = BuildConfig.VERSION_NAME,
                         )
                     )
@@ -366,9 +366,9 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
         val dd = DrawerData(totalCount)
         if (isSelf) {
-            val drawerData = App.prefs.drawerData.toMutableMap()
-            drawerData[userAccount.type] = dd
-            App.prefs.drawerData = drawerData
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(drawerData = it.drawerData + (userAccount.type to dd))
+            }
         }
 
         return dd
@@ -560,7 +560,7 @@ class ListenbrainzExpirationPolicy : ExpirationPolicy {
     private val FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5)
 
     override fun getExpirationTime(url: Url) =
-        when (url.pathSegments.lastOrNull()) {
+        when (url.segments.lastOrNull()) {
             "playing-now",
             "listens",
             "following",

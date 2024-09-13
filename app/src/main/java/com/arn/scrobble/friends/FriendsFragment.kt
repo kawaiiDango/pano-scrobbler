@@ -27,12 +27,12 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ListenAlong
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
@@ -55,7 +55,10 @@ import com.google.android.material.transition.platform.MaterialElevationScale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -72,7 +75,6 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
     private var popupWr: WeakReference<PopupWindow>? = null
     private val viewModel by viewModels<FriendsVM>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
-    private val prefs = App.prefs
     private var _binding: ContentFriendsBinding? = null
     private val binding
         get() = _binding!!
@@ -118,7 +120,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
             Stuff.openInBrowser(requireContext(), url)
         }
         binding.followersLink.isVisible =
-            Scrobblables.current?.userAccount?.type == AccountType.LASTFM
+            Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM
 
         collectLatestLifecycleFlow(viewModel.total, Lifecycle.State.RESUMED) { total ->
             if (total == 0)
@@ -326,7 +328,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                         R.string.from,
                         userCached.country + " " + Stuff.getCountryFlag(userCached.country)
                     )
-                if (prefs.demoMode)
+                if (Stuff.isInDemoMode)
                     contentBinding.friendsCountry.text = getString(R.string.from, "Gensokyo")
                 contentBinding.friendsCountry.visibility = View.VISIBLE
             }
@@ -372,12 +374,19 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                     }
                     if (succ) {
                         updatePinIndicator(!wasPinned)
-                        if (!prefs.reorderFriendsLearnt && !wasPinned && !Stuff.isTv) {
-                            requireContext().toast(R.string.pin_help, Toast.LENGTH_LONG)
-                            prefs.reorderFriendsLearnt = true
+
+                        runBlocking {
+                            val reorderFriendsLearnt =
+                                PlatformStuff.mainPrefs.data.map { it.reorderFriendsLearnt }.first()
+                            if (!reorderFriendsLearnt && !wasPinned && !Stuff.isTv) {
+                                requireContext().toast(R.string.pin_help, Toast.LENGTH_LONG)
+                                PlatformStuff.mainPrefs.updateData {
+                                    it.copy(reorderFriendsLearnt = true)
+                                }
+                            }
                         }
                     } else {
-                        if (!prefs.proStatus) {
+                        if (!Stuff.billingRepository.isLicenseValid) {
                             findNavController().navigate(R.id.billingFragment)
                         } else {
                             requireContext().toast(

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.main.App
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
@@ -13,6 +14,8 @@ import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedArtistsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 
 /**
@@ -99,9 +102,9 @@ interface CachedTracksDao {
             deltaCount: Int,
             mode: DirtyUpdate = DirtyUpdate.CLEAN
         ) {
-            val prefs = App.prefs
+            val lastMaxIndexedScrobbleTime = PlatformStuff.mainPrefs.data.map { it.lastMaxIndexedScrobbleTime }.first()
 
-            val maxIndexedScrobbleTime = prefs.lastMaxIndexedScrobbleTime ?: -1
+            val maxIndexedScrobbleTime = lastMaxIndexedScrobbleTime ?: -1
             val wasIndexed =
                 track.date != null && track.date < maxIndexedScrobbleTime
 

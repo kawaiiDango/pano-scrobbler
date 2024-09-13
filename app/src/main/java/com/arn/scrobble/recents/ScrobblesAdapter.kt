@@ -16,6 +16,7 @@ import coil3.memory.MemoryCache
 import coil3.request.error
 import coil3.request.placeholder
 import coil3.size.Scale
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.ContentScrobblesBinding
@@ -24,7 +25,6 @@ import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobbleWithSource
-import com.arn.scrobble.main.App
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
@@ -43,6 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Objects
 
 
@@ -63,9 +64,10 @@ class ScrobblesAdapter(
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     var isShowingAlbums = false
     var isShowingPlayers = false
+    var themeTintBackground = false
     private var lastPopulateTime = System.currentTimeMillis()
     private val playerDao = PanoDb.db.getScrobbleSourcesDao()
-    private val prefs = App.prefs
+    private val mainPrefs = PlatformStuff.mainPrefs
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -141,7 +143,7 @@ class ScrobblesAdapter(
                 Section.NOTICE_SECTION.ordinal,
                 header = ExpandableHeader(
                     R.drawable.vd_error,
-                    App.application.getString(
+                    PlatformStuff.application.getString(
                         if (showFixit)
                             R.string.not_running
                         else
@@ -432,7 +434,9 @@ class ScrobblesAdapter(
                 error(errorDrawable)
             }
 
-            if (prefs.themeTintBackground)
+
+
+            if (themeTintBackground)
                 viewModel.paletteColors.value?.foreground?.let {
                     // todo this still does not fix the colors bug
 //                Timber.i("Color for ${track.name} is $it")
@@ -526,7 +530,8 @@ class ScrobblesAdapter(
                                 val hasNotificationListenerPerms =
                                     Stuff.isNotificationListenerEnabled()
 
-                                prefs.scrobblerEnabled = true
+                                // todo make async
+                                runBlocking { mainPrefs.updateData { it.copy(scrobblerEnabled = true) } }
 
                                 if (!hasNotificationListenerPerms) {
                                     navController.navigate(R.id.onboardingFragment)

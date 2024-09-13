@@ -6,7 +6,7 @@ import android.app.Activity
 class ReviewPrompter(
     activity: Activity,
     lastReviewPromptTime: Long?,
-    setReviewPromptTime: (Long?) -> Unit
+    setReviewPromptTime: suspend (Long?) -> Unit
 
 ) : BaseReviewPrompter(activity, lastReviewPromptTime, setReviewPromptTime) {
 

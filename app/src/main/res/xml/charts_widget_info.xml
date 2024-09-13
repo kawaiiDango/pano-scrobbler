@@ -9,7 +9,7 @@
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:initialKeyguardLayout="@layout/appwidget_charts_dynamic"
-    android:configure="com.arn.scrobble.widget.ChartsWidgetActivity"
+    android:configure="com.arn.scrobble.widget.ChartsWidgetConfigActivity"
     android:widgetFeatures="reconfigurable"/>
 <!-- size in dp: 70*n - 30 -->
 <!-- preview image has to be a square on launcher3 -->

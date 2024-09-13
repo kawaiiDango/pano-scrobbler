@@ -15,11 +15,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.FabData
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.ItemClickListener
@@ -35,7 +35,10 @@ import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 
@@ -45,7 +48,6 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
         get() = _binding!!
     private val viewModel by viewModels<RegexEditsVM>()
     private lateinit var adapter: RegexEditsAdapter
-    private val prefs = App.prefs
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
@@ -82,7 +84,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
         binding.editsList.setupInsets()
 
         adapter = RegexEditsAdapter(this, viewModel)
-        RegexItemTouchHelper(adapter, viewModel, viewLifecycleOwner).apply {
+        RegexItemTouchHelper(viewModel, viewLifecycleOwner).apply {
             attachToRecyclerView(binding.editsList)
             adapter.itemTouchHelper = this
         }
@@ -143,7 +145,11 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
             putSingle(regexEdit ?: return@apply)
         }
 
-        if (prefs.regexLearnt) {
+        val regexLearnt =
+            runBlocking { PlatformStuff.mainPrefs.data.map { it.regexLearnt }.first() }
+
+
+        if (regexLearnt) {
             findNavController().navigate(R.id.regexEditsAddFragment, args)
         } else {
             MaterialAlertDialogBuilder(requireContext()).apply {
@@ -162,7 +168,9 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
                         }
                     }
                 setNegativeButton(R.string.hide) { _, _ ->
-                    prefs.regexLearnt = true
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        PlatformStuff.mainPrefs.updateData { it.copy(regexLearnt = true) }
+                    }
                     findNavController().navigate(R.id.regexEditsAddFragment, args)
                 }
             }
@@ -171,13 +179,13 @@ class RegexEditsFragment : Fragment(), ItemClickListener<RegexEdit> {
     }
 
     private suspend fun showPresetsDialog() {
-        if (viewModel.limitReached.value == true)
+        if (viewModel.limitReached.value)
             return
 
         val dao = PanoDb.db.getRegexEditsDao()
 
         val presetsAvailable = withContext(Dispatchers.IO) {
-            (RegexPresets.presetKeys - dao.allPresets().map {
+            (RegexPresets.presetKeys - dao.allPresets().first().map {
                 it.preset
             }.toSet()).toList()
         }

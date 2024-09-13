@@ -3,14 +3,14 @@ package com.arn.scrobble.billing
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.main.App
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 class BillingViewModel : ViewModel() {
 
-    private val repository = App.billingRepository
+    private val repository = Stuff.billingRepository
 
     val proProductDetails = repository.proProductDetails
 

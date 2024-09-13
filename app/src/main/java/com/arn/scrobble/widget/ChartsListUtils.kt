@@ -5,28 +5,31 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainDialogActivity
-import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.putData
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 object ChartsListUtils {
 
-    fun createHeader(prefs: WidgetPrefs.SpecificWidgetPrefs): RemoteViews {
-        val headerView = RemoteViews(App.application.packageName, R.layout.appwidget_list_header)
-        headerView.setTextViewText(R.id.appwidget_period, prefs.periodName)
+    fun createHeader(periodName: String): RemoteViews {
+        val headerView =
+            RemoteViews(PlatformStuff.application.packageName, R.layout.appwidget_list_header)
+        headerView.setTextViewText(R.id.appwidget_period, periodName)
         return headerView
     }
 
     fun createMusicItem(tab: Int, idx: Int, item: ChartsWidgetListItem): RemoteViews {
-        val rv = RemoteViews(App.application.packageName, R.layout.appwidget_charts_item)
+        val rv = RemoteViews(PlatformStuff.application.packageName, R.layout.appwidget_charts_item)
         rv.setTextViewText(
             R.id.appwidget_charts_serial, (idx + 1).format() + "."
         )
@@ -39,7 +42,7 @@ object ChartsListUtils {
         )
         rv.setContentDescription(R.id.appwidget_charts_stonks_icon, item.stonksDelta.toString())
 
-        if (item.subtitle != "") {
+        if (item.subtitle != null) {
             rv.setTextViewText(R.id.appwidget_charts_subtitle, item.subtitle)
             rv.setViewVisibility(R.id.appwidget_charts_subtitle, View.VISIBLE)
         } else rv.setViewVisibility(R.id.appwidget_charts_subtitle, View.GONE)
@@ -56,11 +59,13 @@ object ChartsListUtils {
             }
 
             Stuff.TYPE_ALBUMS -> {
-                navArgs.putData(Album(item.title, Artist(item.subtitle)))
+                if (item.subtitle != null)
+                    navArgs.putData(Album(item.title, Artist(item.subtitle)))
             }
 
             Stuff.TYPE_TRACKS -> {
-                navArgs.putData(Track(item.title, null, Artist(item.subtitle)))
+                if (item.subtitle != null)
+                    navArgs.putData(Track(item.title, null, Artist(item.subtitle)))
             }
         }
         val fillInIntent = Intent().putExtra(MainDialogActivity.ARG_NAV_ARGS, navArgs)
@@ -69,22 +74,25 @@ object ChartsListUtils {
         return rv
     }
 
-    fun readList(prefs: WidgetPrefs.SpecificWidgetPrefs): ArrayList<ChartsWidgetListItem> {
-        val tab = prefs.tab ?: Stuff.TYPE_ARTISTS
-        val period = prefs.period ?: return arrayListOf()
+    fun readList(prefs: SpecificWidgetPrefs): List<ChartsWidgetListItem> {
+        val tab = prefs.tab
+        val period = prefs.period
 
-        return kotlin.runCatching {
-            Json.decodeFromString<ArrayList<ChartsWidgetListItem>>(
-                prefs.sharedPreferences.getString("${tab}_$period", null)!!
-            )
-        }.getOrDefault(arrayListOf())
+        val chartsData = runBlocking {
+            Stuff.widgetPrefs.data.map {
+                it.chartsData[period]?.get(tab)
+            }
+                .first()
+        } ?: emptyList()
+
+        return chartsData
     }
 
     fun updateWidgets(appWidgetIds: IntArray) {
-        val i = Intent(App.application, ChartsWidgetProvider::class.java).apply {
+        val i = Intent(PlatformStuff.application, ChartsWidgetProvider::class.java).apply {
             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
         }
-        App.application.sendBroadcast(i)
+        PlatformStuff.application.sendBroadcast(i)
     }
 }

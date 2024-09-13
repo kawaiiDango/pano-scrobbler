@@ -1,4 +1,5 @@
 <resources>
+    <style name="ParentTheme" parent="android:Theme.DeviceDefault.NoActionBar"/>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
@@ -42,22 +43,12 @@
         <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
         <item name="bottomSheetDialogTheme">@style/RoundedBottomSheetDialog</item>
         <item name="android:selectableItemBackground">@drawable/ripple_rounded</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material.M3</item>
         <item name="textInputOutlinedStyle">@style/Widget.App.TextInputLayout.OutlinedBox</item>
         <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
     </style>
 
     <style name="WebViewTheme" parent="Theme.Material3.Light">
         <item name="android:forceDarkAllowed">true</item>
-    </style>
-
-
-    <style name="PreferenceThemeOverlay.v14.Material.M3">
-        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference.Material.M3</item>
-    </style>
-
-    <style name="Preference.SwitchPreference.Material.M3">
-        <item name="android:widgetLayout">@layout/pref_switch</item>
     </style>
 
     <style name="Widget.App.TextInputLayout.OutlinedBox" parent="Widget.Material3.TextInputLayout.OutlinedBox">
@@ -68,7 +59,7 @@
         <item name="shapeAppearanceOverlay">@style/roundedCorners</item>
     </style>
 
-    <style name="AppTheme.Wallpaper">
+    <style name="AppThemeWithWallpaper" parent="ParentTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowShowWallpaper">true</item>

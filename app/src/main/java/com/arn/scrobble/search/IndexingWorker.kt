@@ -11,6 +11,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
@@ -32,12 +33,13 @@ import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTracksDao.Companion.deltaUpdate
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.main.App.Companion.prefs
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -47,7 +49,8 @@ class IndexingWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     private val db = PanoDb.db
-    private val lastfmScrobblable = Scrobblables.current as? LastFm
+    private val lastfmScrobblable = Scrobblables.current.value as? LastFm
+    private val mainPrefs = PlatformStuff.mainPrefs
 
     override suspend fun getForegroundInfo() = ForegroundInfo(
         NAME.hashCode(),
@@ -76,7 +79,8 @@ class IndexingWorker(
             }
 
             var doFullIndex = workerParams.inputData.getBoolean(FULL_INDEX_KEY, false)
-            if (!doFullIndex && prefs.lastMaxIndexedScrobbleTime == null)
+            if (!doFullIndex && mainPrefs.data.map { it.lastMaxIndexedScrobbleTime }
+                    .first() == null)
                 doFullIndex = true
 
             if (doFullIndex) {
@@ -211,11 +215,14 @@ class IndexingWorker(
             insert(list.map { (it as Track).toCachedTrack() })
         }
 
-        prefs.lastFullIndexedScrobbleTime = lastScrobbledTrack.date!!
-        prefs.lastFullIndexTime = System.currentTimeMillis()
-
-        prefs.lastDeltaIndexedScrobbleTime = null
-        prefs.lastDeltaIndexTime = null
+        mainPrefs.updateData {
+            it.copy(
+                lastFullIndexedScrobbleTime = lastScrobbledTrack.date!!,
+                lastFullIndexTime = System.currentTimeMillis(),
+                lastDeltaIndexedScrobbleTime = null,
+                lastDeltaIndexTime = null
+            )
+        }
 
         postProgress(finished = true)
     }
@@ -224,7 +231,7 @@ class IndexingWorker(
 
         Timber.i(this::runDeltaIndex.name)
 
-        val from = prefs.lastMaxIndexedScrobbleTime
+        val from = mainPrefs.data.map { it.lastMaxIndexedScrobbleTime }.first()
             ?: throw IllegalStateException("Full index never run")
         val to = System.currentTimeMillis()
         val limitPerPage = 1000
@@ -311,11 +318,14 @@ class IndexingWorker(
             db.getCachedArtistsDao().deltaUpdate(artist, count)
         }
 
-        tracks.firstOrNull()?.let {
-            prefs.lastDeltaIndexedScrobbleTime = it.date!!
-            prefs.lastDeltaIndexTime = System.currentTimeMillis()
+        tracks.firstOrNull()?.let { track ->
+            mainPrefs.updateData {
+                it.copy(
+                    lastDeltaIndexedScrobbleTime = track.date!!,
+                    lastDeltaIndexTime = System.currentTimeMillis()
+                )
+            }
         }
-
 
         setProgress(workDataOf(PROGRESS_KEY to 1.0))
     }

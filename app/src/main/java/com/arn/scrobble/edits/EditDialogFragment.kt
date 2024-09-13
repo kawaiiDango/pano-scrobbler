@@ -12,11 +12,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.navArgs
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
@@ -37,7 +39,6 @@ import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
-import com.arn.scrobble.main.App
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.onboarding.LoginFragment
@@ -46,6 +47,9 @@ import com.arn.scrobble.utils.Stuff
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
@@ -54,6 +58,7 @@ class EditDialogFragment : LoginFragment() {
     override val checksLogin = false
     private val args by navArgs<EditDialogFragmentArgs>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val mainPrefs = PlatformStuff.mainPrefs
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,10 +72,10 @@ class EditDialogFragment : LoginFragment() {
         lockScrobble(true)
 
         val placeholderTextArgs = LoginFragmentArgs(
-            loginTitle = App.application.getString(R.string.edit),
-            textFieldLast = App.application.getString(R.string.artist),
-            textField1 = App.application.getString(R.string.track),
-            textField2 = App.application.getString(R.string.album_optional)
+            loginTitle = PlatformStuff.application.getString(R.string.edit),
+            textFieldLast = PlatformStuff.application.getString(R.string.artist),
+            textField1 = PlatformStuff.application.getString(R.string.track),
+            textField2 = PlatformStuff.application.getString(R.string.album_optional)
         )
             .toBundle()
 
@@ -178,7 +183,9 @@ class EditDialogFragment : LoginFragment() {
 
             }
             .setNegativeButton(R.string.no) { _, _ ->
-                prefs.regexEditsLearnt = true
+                viewLifecycleOwner.lifecycleScope.launch {
+                    mainPrefs.updateData { it.copy(regexEditsLearnt = true) }
+                }
             }
             .show()
     }
@@ -195,7 +202,9 @@ class EditDialogFragment : LoginFragment() {
         val timeMillis = args.data.timestamp
         val isNowPlaying = timeMillis == 0L
 
-        val fetchAlbumAndAlbumArtist = album.isBlank() && origAlbum.isBlank() && prefs.fetchAlbum
+        val regexEditsLearnt = PlatformStuff.mainPrefs.data.map { it.regexEditsLearnt }.first()
+        val fetchAlbum = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
+        val fetchAlbumAndAlbumArtist = album.isBlank() && origAlbum.isBlank() && fetchAlbum
         val rescrobbleRequired = !isNowPlaying && (fetchAlbumAndAlbumArtist ||
                 (track.equals(origTrack, ignoreCase = true) &&
                         artist.equals(origArtist, ignoreCase = true)
@@ -209,7 +218,8 @@ class EditDialogFragment : LoginFragment() {
             duration = args.data.duration,
             packageName = args.packageName,
         )
-        val lastfmScrobblable = Scrobblables.byType(AccountType.LASTFM)
+        val lastfmScrobblable =
+            Scrobblables.all.value.firstOrNull { it.userAccount.type == AccountType.LASTFM }
         val lastfmScrobbleResult: Result<ScrobbleIgnored>
 
         val origTrackObj = Track(
@@ -246,7 +256,7 @@ class EditDialogFragment : LoginFragment() {
 
         if (!isNowPlaying && track == origTrack &&
             artist == origArtist && album == origAlbum && albumArtist == "" &&
-            !(album == "" && prefs.fetchAlbum)
+            !(album == "" && fetchAlbum)
         ) {
             return Result.success(Unit)
         }
@@ -310,7 +320,7 @@ class EditDialogFragment : LoginFragment() {
 
 
         // scrobble everywhere else (delete first)
-        Scrobblables.all
+        Scrobblables.all.value
             .filter {
                 it.userAccount.type != AccountType.LASTFM &&
                         it.userAccount.type != AccountType.PLEROMA &&
@@ -340,10 +350,10 @@ class EditDialogFragment : LoginFragment() {
         saveEdit()
 
         // suggest regex edit
-        if (!prefs.regexEditsLearnt) {
+        if (!regexEditsLearnt) {
             val dao = PanoDb.db.getRegexEditsDao()
 
-            val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets()
+            val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets().first()
                 .map { it.preset }.toSet())
                 .mapIndexed { index, key ->
                     RegexPresets.getPossiblePreset(
@@ -403,10 +413,10 @@ class EditDialogFragment : LoginFragment() {
         // do not scrobble until the dialog is dismissed
 
         val intent = Intent(NLService.iSCROBBLE_SUBMIT_LOCK_S)
-            .setPackage(App.application.packageName)
+            .setPackage(PlatformStuff.application.packageName)
             .putExtra(NLService.B_LOCKED, lock)
             .putExtra(NLService.B_HASH, args.hash)
 
-        App.application.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
+        PlatformStuff.application.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
     }
 }

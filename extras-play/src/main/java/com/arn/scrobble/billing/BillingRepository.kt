@@ -7,6 +7,7 @@ import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import java.util.*
@@ -131,12 +132,14 @@ class BillingRepository(
 
         playStoreBillingClient.queryPurchasesAsync(queryPurchasesParams) { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                processPurchases(purchases.toHashSet())
+                scope.launch {
+                    processPurchases(purchases.toHashSet())
+                }
             }
         }
     }
 
-    private fun processPurchases(purchasesResult: Set<Purchase>) {
+    private suspend fun processPurchases(purchasesResult: Set<Purchase>) {
         val validPurchases = HashSet<Purchase>(purchasesResult.size)
         purchasesResult.forEach { purchase ->
             if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
@@ -148,7 +151,7 @@ class BillingRepository(
                 if (clientData.proProductId in purchase.products) {
                     // This doesn't go away after the slow card gets declined. So, only notify recent purchases
                     if (System.currentTimeMillis() - purchase.purchaseTime < PENDING_PURCHASE_NOTIFY_THRESHOLD)
-                        _licenseState.tryEmit(LicenseState.PENDING)
+                        _licenseState.emit(LicenseState.PENDING)
                 }
             }
         }
@@ -180,9 +183,9 @@ class BillingRepository(
      * users within a few days of the transaction. Therefore you have to implement
      * [BillingClient.acknowledgePurchase] inside your app.
      */
-    private fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
+    private suspend fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
         if (nonConsumables.isEmpty() || !nonConsumables.any { clientData.proProductId in it.products }) {
-            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+            _licenseState.emit(LicenseState.NO_LICENSE)
             clientData.setReceipt(null, null)
             return
         }
@@ -203,7 +206,9 @@ class BillingRepository(
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
                         if (clientData.proProductId in purchase.products) {
                             _licenseState.tryEmit(LicenseState.NO_LICENSE)
-                            clientData.setReceipt(null, null)
+                            scope.launch {
+                                clientData.setReceipt(null, null)
+                            }
                         }
                     }
                 }
@@ -224,7 +229,7 @@ class BillingRepository(
         else if (productDetails != null) {
             _proProductDetails.tryEmit(null)
             _licenseState.tryEmit(LicenseState.NO_LICENSE)
-            clientData.setReceipt(null, null)
+//            clientData.setReceipt(null, null)
             null
         } else null
     }
@@ -310,7 +315,7 @@ class BillingRepository(
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
                 // will handle server verification, consumables, and updating the local cache
-                purchases?.apply { processPurchases(this.toSet()) }
+                purchases?.let { scope.launch { processPurchases(it.toSet()) } }
             }
 
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {

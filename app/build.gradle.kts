@@ -21,7 +21,9 @@ plugins {
     alias(libs.plugins.github.release)
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.play.publisher)
+    alias(libs.plugins.compose.compiler)
     id(libs.plugins.parcelize.get().pluginId)
+
 }
 
 android {
@@ -72,6 +74,7 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        compose = true
     }
 
     buildTypes {
@@ -162,19 +165,21 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.core)
     implementation(libs.fragment)
-    implementation(libs.preference.ktx)
     implementation(libs.media)
     implementation(libs.palette.ktx)
     implementation(libs.recyclerview)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.fragment.compose)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.core.remoteviews)
     implementation(libs.androidx.transition)
-    implementation(libs.androidx.activity)
+    implementation(libs.activity)
+    implementation(libs.activity.compose)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.work.runtime)
@@ -182,20 +187,30 @@ dependencies {
     implementation(libs.android.snowfall)
     implementation(libs.kotlin.csv.jvm)
     implementation(libs.androidx.viewpager)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.shimmer)
+    implementation(libs.datastore.core)
+    implementation(libs.paging.compose)
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation(libs.material)
     implementation(libs.timber)
 
     implementation(libs.okhttp)
-    implementation(libs.krate)
-    implementation(libs.krate.kotlinx)
     implementation(libs.harmony)
     implementation(libs.kumo.core)
     implementation(libs.mpAndroidChart)
     implementation(libs.nestedscrollwebview)
     implementation(libs.skeletonlayout)
     implementation(libs.coil)
+    implementation(libs.coil.compose)
     implementation(libs.coil.gif)
     implementation(libs.coil.network.okhttp)
 

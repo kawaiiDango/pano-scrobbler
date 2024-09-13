@@ -107,7 +107,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                 showWeekPicker()
         }
 
-        periodChipsBinding.chartsPeriodType.isVisible = Scrobblables.current is LastFm
+        periodChipsBinding.chartsPeriodType.isVisible = Scrobblables.current.value is LastFm
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -135,7 +135,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun showWeekPicker() {
-        if (viewModel.timePeriods.value.isEmpty())
+        val selectedPeriod = viewModel.selectedPeriod.value
+        if (viewModel.timePeriods.value.isEmpty() || selectedPeriod == null)
             return
 
         val timePeriods = viewModel.timePeriods.value.keys
@@ -143,7 +144,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
         val startTime = Stuff.timeToUTC(timePeriods.last().start)
         val endTime = Stuff.timeToUTC(timePeriods.first().end)
         var openAtTime = Stuff.timeToUTC(
-            viewModel.selectedPeriod.value.start
+            selectedPeriod.start
         )
         if (openAtTime !in startTime..endTime)
             openAtTime = System.currentTimeMillis()
@@ -182,8 +183,9 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun showDateRangePicker() {
+        val selectedPeriod = viewModel.selectedPeriod.value ?: return
         val time = System.currentTimeMillis()
-        var openAtTime = Stuff.timeToUTC(viewModel.selectedPeriod.value.start)
+        var openAtTime = Stuff.timeToUTC(selectedPeriod.start)
         if (openAtTime !in activityViewModel.currentUser.registeredTime..time)
             openAtTime = System.currentTimeMillis()
 
@@ -221,7 +223,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun showMonthPicker() {
-        val selectedPeriod = viewModel.selectedPeriod.value
+        val selectedPeriod = viewModel.selectedPeriod.value ?: return
         val cal = Calendar.getInstance()
         cal.timeInMillis = selectedPeriod.start
 
@@ -237,13 +239,13 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
         val popup = PopupMenu(requireContext(), periodChipsBinding.chartsPeriodType)
         popup.menuInflater.inflate(R.menu.period_type_menu, popup.menu)
 
-        val idToKeep = when (Scrobblables.current) {
+        val idToKeep = when (Scrobblables.current.value) {
             is ListenBrainz -> R.id.menu_listenbrainz
             !is LastFm -> R.id.menu_continuous
             else -> 0
         }
 
-        if (Scrobblables.current !is LastFm) {
+        if (Scrobblables.current.value !is LastFm) {
 //            val idsToRemove = mutableListOf<Int>()
             popup.menu.forEach {
                 if (idToKeep != 0 && it.itemId != idToKeep) {

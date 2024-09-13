@@ -6,10 +6,14 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.main.App
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getOrDefaultKey
 import com.google.android.material.color.DynamicColors
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 object ColorPatchUtils {
 
@@ -17,16 +21,17 @@ object ColorPatchUtils {
     const val secondaryDefault = "Deeporange"
 
     // before Activity.onCreate
-    fun setDarkMode(proStatus: Boolean) {
-        val prefs = App.prefs
+    fun setDarkMode() {
+        val proStatus = Stuff.billingRepository.isLicenseValid
+        val themeDayNight =
+            runBlocking { PlatformStuff.mainPrefs.data.map { it.themeDayNight }.first() }
 
-        var dayNightConstant = prefs.themeDayNight
-        if (dayNightConstant !in arrayOf(
-                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
-                AppCompatDelegate.MODE_NIGHT_YES,
-                AppCompatDelegate.MODE_NIGHT_NO
-            ) || !proStatus
-        ) {
+        var dayNightConstant = when (themeDayNight) {
+            DayNightMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+            DayNightMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        if (!proStatus) {
             dayNightConstant = AppCompatDelegate.MODE_NIGHT_YES
         }
         AppCompatDelegate.setDefaultNightMode(dayNightConstant)
@@ -34,33 +39,19 @@ object ColorPatchUtils {
 
     // after Activity.onCreate
     fun setTheme(context: Context) {
-        val prefs = App.prefs
+        val proStatus = Stuff.billingRepository.isLicenseValid
+        val prefs = runBlocking { PlatformStuff.mainPrefs.data.first() }
 
-//        var dayNightConstant = prefs.themeDayNight
-//        if (dayNightConstant !in arrayOf(
-//                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
-//                AppCompatDelegate.MODE_NIGHT_YES,
-//                AppCompatDelegate.MODE_NIGHT_NO
-//            ) || !proStatus
-//        ) {
-//            dayNightConstant = AppCompatDelegate.MODE_NIGHT_YES
-//        }
-//        AppCompatDelegate.setDefaultNightMode(dayNightConstant)
-
-        if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable() && prefs.proStatus) {
-            if (prefs.themeTintBackground)
-                context.theme.applyStyle(R.style.ColorPatchManual_DarkerLightBackground, true)
-            else
-                context.theme.applyStyle(R.style.ColorPatchManual_Pure_Background, true)
-
+        if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable() && proStatus) {
+            context.theme.applyStyle(R.style.ColorPatchManual_DarkerLightBackground, true)
             return
         }
 
-        val isRandom = prefs.themeRandom
+        val isRandom = false
         val primaryStyle: String
         val secondaryStyle: String
 
-        if (!prefs.proStatus) {
+        if (!proStatus) {
             primaryStyle = primaryDefault
             secondaryStyle = secondaryDefault
         } else if (isRandom) {
@@ -69,16 +60,20 @@ object ColorPatchUtils {
             primaryStyle = ColorPatchMap.primaryStyles.keys.elementAt(primaryIdx)
             secondaryStyle = ColorPatchMap.secondaryStyles.keys.elementAt(secondaryIndex)
 
-            prefs.themePrimary = primaryStyle
-            prefs.themeSecondary = secondaryStyle
+//            runBlocking {
+//                PlatformStuff.mainPrefs.updateData {
+//                    it.copy(themePrimary = primaryStyle, themeSecondary = secondaryStyle)
+//                }
+//            }
+
             context.sendBroadcast(
                 Intent(NLService.iTHEME_CHANGED_S)
                     .setPackage(context.packageName),
                 NLService.BROADCAST_PERMISSION
             )
         } else {
-            primaryStyle = prefs.themePrimary
-            secondaryStyle = prefs.themeSecondary
+            primaryStyle = primaryDefault
+            secondaryStyle = secondaryDefault
         }
 
         context.theme.applyStyle(
@@ -90,25 +85,21 @@ object ColorPatchUtils {
                 .getOrDefaultKey(secondaryStyle, secondaryDefault), true
         )
 
-        if (prefs.themeTintBackground || !prefs.proStatus)
-            context.theme.applyStyle(
-                ColorPatchMap.backgroundStyles
-                    .getOrDefaultKey(primaryStyle, primaryDefault), true
-            )
-        else
-            context.theme.applyStyle(R.style.ColorPatchManual_Pure_Background, true)
+        context.theme.applyStyle(
+            ColorPatchMap.backgroundStyles
+                .getOrDefaultKey(primaryStyle, primaryDefault), true
+        )
     }
 
     fun getNotiColor(context: Context): Int? {
-        val prefs = App.prefs
+        val proStatus = Stuff.billingRepository.isLicenseValid
+        val themeDynamic =
+            runBlocking { PlatformStuff.mainPrefs.data.map { it.themeDynamic }.first() }
 
-        if (prefs.proStatus && prefs.themeDynamic && DynamicColors.isDynamicColorAvailable())
+        if (proStatus && themeDynamic && DynamicColors.isDynamicColorAvailable())
             return null
 
-        val primaryStyle = if (prefs.proStatus)
-            prefs.themePrimary
-        else
-            primaryDefault
+        val primaryStyle = primaryDefault
         return context.getStyledColor(
             ColorPatchMap.primaryStyles
                 .getOrDefaultKey(primaryStyle, primaryDefault),

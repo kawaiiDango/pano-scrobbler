@@ -16,6 +16,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentOptionsMenuBinding
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.utils.NavUtils
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
@@ -46,11 +47,10 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         binding.optionsMenuNav.inflateMenu(metadata.menuRes)
 
         binding.optionsMenuNav.menu.findItem(R.id.nav_pro)?.isVisible =
-            BuildConfig.DEBUG || !App.prefs.proStatus
+            BuildConfig.DEBUG || !Stuff.billingRepository.isLicenseValid
 
-        mainNotifierViewModel.updateCanIndex()
-        binding.optionsMenuNav.menu.findItem(R.id.nav_do_index)?.isVisible =
-            mainNotifierViewModel.canIndex.value && BuildConfig.DEBUG
+        binding.optionsMenuNav.menu.findItem(R.id.nav_do_index)?.isVisible = BuildConfig.DEBUG
+//            mainNotifierViewModel.canIndex.value && BuildConfig.DEBUG
 
         if (metadata.showHeader) {
             binding.headerNav.root.isVisible = true
@@ -60,7 +60,6 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
                 scheduleTransition()
                 NavUtils.updateHeaderWithDrawerData(binding.headerNav, mainNotifierViewModel)
             }
-            mainNotifierViewModel.loadCurrentUserDrawerData()
             NavUtils.setProfileSwitcher(
                 binding.headerNav,
                 findNavController(),

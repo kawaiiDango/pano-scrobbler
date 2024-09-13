@@ -32,7 +32,7 @@ class ChartsVM : ChartsPeriodVM() {
         var prevPeriod: TimePeriod? = null
 
         if (periodType.value != TimePeriodType.CONTINUOUS) {
-            if (Scrobblables.current !is ListenBrainz) {
+            if (Scrobblables.current.value !is ListenBrainz) {
                 reachedEnd = true
             }
             timePeriods.value[timePeriod]?.let { idx ->
@@ -51,7 +51,7 @@ class ChartsVM : ChartsPeriodVM() {
 
         _hasLoaded.emit(false)
 
-        val result = Scrobblables.current!!
+        val result = Scrobblables.current.value!!
             .getChartsWithStonks(
                 type = type,
                 timePeriod = timePeriod,

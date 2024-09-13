@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.R
-import com.arn.scrobble.databinding.AppwidgetChartsItemBinding
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 
@@ -36,14 +37,16 @@ class FakeChartsAdapter(
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: inflater.inflate(R.layout.appwidget_charts_item, parent, false)
-        val binding = AppwidgetChartsItemBinding.bind(view)
         val item = getItem(position)!!
-        binding.appwidgetChartsSerial.text = (position + 1).format() + "."
-        binding.appwidgetChartsTitle.text = item.title
-        binding.appwidgetChartsSubtitle.text = item.subtitle
-        binding.appwidgetChartsPlays.text = item.number.format()
-        binding.appwidgetChartsStonksIcon.setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
-        binding.appwidgetChartsStonksIconShadow.setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
+        view.findViewById<TextView>(R.id.appwidget_charts_serial).text =
+            (position + 1).format() + "."
+        view.findViewById<TextView>(R.id.appwidget_charts_title).text = item.title
+        view.findViewById<TextView>(R.id.appwidget_charts_subtitle).text = item.subtitle
+        view.findViewById<TextView>(R.id.appwidget_charts_plays).text = item.number.format()
+        view.findViewById<ImageView>(R.id.appwidget_charts_stonks_icon)
+            .setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
+        view.findViewById<ImageView>(R.id.appwidget_charts_stonks_icon_shadow)
+            .setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
 
         return view
     }

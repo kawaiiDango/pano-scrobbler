@@ -27,28 +27,28 @@ data class RegexEdit(
     @Transient
     val _id: Int = 0,
 
-    var order: Int = -1,
-    var preset: String? = null,
-    var name: String? = null,
-    var pattern: String? = null,
-    var replacement: String = "",
+    val order: Int = -1,
+    val preset: String? = null,
+    val name: String? = null,
+    val pattern: String? = null,
+    val replacement: String = "",
 
     @Embedded
-    var extractionPatterns: ExtractionPatterns? = null,
+    val extractionPatterns: ExtractionPatterns? = null,
 
     @field:TypeConverters(Converters::class)
-    var fields: Set<String>? = null,
+    val fields: Set<String>? = null,
 
     @field:TypeConverters(Converters::class)
-    var packages: Set<String>? = null,
-    var replaceAll: Boolean = false,
-    var caseSensitive: Boolean = false,
-    var continueMatching: Boolean = false,
+    val packages: Set<String>? = null,
+    val replaceAll: Boolean = false,
+    val caseSensitive: Boolean = false,
+    val continueMatching: Boolean = false,
 ) : Parcelable {
     @SerialName("field")
     @IgnoredOnParcel
     @Ignore
-    var fieldCompat: String? = null
+    val fieldCompat: String? = null
 }
 
 @Parcelize

@@ -3,7 +3,6 @@ package com.arn.scrobble.api.lastfm
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
-import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.parameter
@@ -61,7 +60,7 @@ class LastFmUnauthedRequester {
 
         val sr = SearchResults(
             term,
-            searchType = SearchResultsAdapter.SearchType.GLOBAL,
+            searchType = SearchType.GLOBAL,
             lovedTracks = listOf(),
             tracks = tracks.getOrDefault(listOf()),
             artists = artists.getOrDefault(listOf()),

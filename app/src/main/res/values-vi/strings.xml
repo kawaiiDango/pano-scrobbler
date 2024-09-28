@@ -7,5 +7,6 @@
     <string name="required_fields_empty" comment="Shown on filling a form">Yêu cầu ô này là trống</string>
     <string name="track">Bài hát</string>
     <string name="tracks">Bài hát</string>
+    <string name="similar_tracks">Bài hát phổ biến</string>
     <!--  pro  -->
 </resources>

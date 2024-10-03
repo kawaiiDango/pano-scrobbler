@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobbel</item>
-        <item quantity="other">%1$s scrobbels</item>
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
         <item quantity="one">%1$s vandaag</item>
@@ -21,12 +21,12 @@
         <item quantity="other">%1$s weken</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$s Maand</item>
-        <item quantity="other">%1$s Maanden</item>
+        <item quantity="one">%1$s maand</item>
+        <item quantity="other">%1$s maanden</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">%1$s jaar</item>
-        <item quantity="other">%1$s Jaren</item>
+        <item quantity="other">%1$s jaren</item>
     </plurals>
     <plurals name="num_artists">
         <item quantity="one">%1$s artiest</item>
@@ -45,26 +45,31 @@
         <item quantity="other">%1$d overeenkomsten</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$s bewerk</item>
+        <item quantity="one">%1$s bewerking</item>
         <item quantity="other">%1$s bewerkingen</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$s Bewerk patroon</item>
-        <item quantity="other">%1$s Bewerkte patronen</item>
+        <item quantity="one">%1$s patroon bewerking</item>
+        <item quantity="other">%1$s patroon bewerkingen</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$s Geblokkeerd metadata</item>
-        <item quantity="other">%1$s Geblokkeerde metadata</item>
+        <item quantity="one">%1$s geblokkeerde metadata</item>
+        <item quantity="other">%1$s geblokkeerde metadata</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minuut</item>
-        <item quantity="other">%1$d Minuten</item>
+        <item quantity="other">%1$d minuten</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s in behandeling</item>
+        <item quantity="other">%1$s in behandeling</item>
     </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
     <string name="reset">Resetten</string>
     <string name="settings">Configureren</string>
     <string name="bug_report">Fout melden</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Albumhoes</string>
     <string name="artist_image">Artiest afbeelding</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Kon titel niet verwerken</string>
@@ -103,6 +108,7 @@
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
     <string name="offline">Offline. Getoonde data is niet nieuw</string>
     <string name="unavailable_offline">Niet offline beschikbaar</string>
+    <string name="tv_url_notice">Open deze URL in een browser op een ander apparaat</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Diensten</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ik was aan het luisteren naar\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s luisterde naar\n%1$s %2$s</string>
@@ -148,6 +154,7 @@
     <string name="pending_scrobbles">Wachtende scrobbels</string>
     <string name="pending_scrobble">Wachtende scrobbel</string>
     <string name="pending_scrobbles_noti">Wachtende scrobbels verwerken</string>
+    <string name="followers" comment="your lastfm followers">Volgers</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbels sinds %2$s</string>
     <string name="allow_background">Scrobbelen in de achtergrond toestaan</string>
     <string name="grant_notification_access">Toegang tot meldingen geven</string>
@@ -248,6 +255,8 @@
     <string name="edit_replace">Vervangen</string>
     <string name="edit_first" comment="First occurrence of a pattern">Eerste</string>
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Uw regexen bevatten meer dan één \"%1$s\" capture groepen, wat niet is toegestaan</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Ongeldige regex: %1$s</string>
     <string name="edit_continue">Indien gevonden, ga door met andere regexes matchen</string>
     <string name="edit_case_sensitive">Hoofdlettergevoelig</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
@@ -309,6 +318,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
     <string name="pref_logout">Log uit</string>
+    <string name="sure_tap_again">Zeker? Tik nogmaals</string>
     <string name="pref_login">Log in</string>
     <string name="pref_about" comment="Info about this app">Over</string>
     <string name="pref_privacy_policy">Privacybeleid</string>
@@ -316,6 +326,7 @@
     <string name="pref_user_label" comment="(Like username)">Gebruiker</string>
     <string name="pref_token_label" comment="For Listenbrainz">Authenticatietoken</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">Server-URL</string>
     <string name="pref_now_playing">Nu aan het spelen doorgeven</string>
     <string name="pref_fetch_album">Ontbrekende albumgegevens ophalen van lastFM</string>
     <string name="pref_locale">Talen</string>
@@ -326,6 +337,7 @@
     <string name="pref_export">Exporteren</string>
     <string name="pref_export_desc">Back-up van instellingen, bewerkingen en blokkeerlijsten. Slaat logins niet op voor veiligheidsredenen. Nuttig om te wisselen tussen apparaten of delen met vrienden.</string>
     <string name="pref_import">Importeren</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Code</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalisatie</string>
     <string name="pref_themes" comment="Color themes">Thema\'s</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix en match\nverandert ook de kleur van de notificatie</string>
@@ -384,6 +396,7 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d resterend</string>
     <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
     <string name="pending_batch" comment="For pending scrobbles">Een batch indienen</string>
+    <string name="bar_chart">Staafdiagram</string>
     <string name="cleared_disabled_apps">Uitgeschakelde apps gewist</string>
     <string name="fix_it_title">Mogelijke oplossingen</string>
     <string name="fix_it_startup_title">Energiespaarders / opstartmanagers</string>
@@ -391,6 +404,9 @@
     <string name="fix_it_action" comment="(To open an app)">Open</string>
     <string name="delete_account">Verwijder je account</string>
     <string name="delete_account_custom_servers">Raadpleeg voor aangepaste servers hun respectievelijke documentatie.</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Uit galerij</string>
+    <string name="scrobble_to_file">Bestand</string>
+    <string name="password">Wachtwoord</string>
     <!--  pro  -->
     <string name="get_pro">Steun deze app</string>
     <string name="help">Help</string>

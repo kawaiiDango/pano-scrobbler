@@ -1,13 +1,14 @@
 package com.arn.scrobble.search
 
-import android.os.Bundle
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
@@ -29,8 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
@@ -38,23 +37,24 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.friends.UserCached
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.ExpandableSublist
 import com.arn.scrobble.ui.ExtraBottomSpace
 import com.arn.scrobble.ui.MusicEntryListItem
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.ui.SearchBox
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.Stuff.putData
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-private fun SearchContent(
+fun SearchScreen(
     viewModel: SearchVM = viewModel(),
-    onItemClick: (MusicEntry) -> Unit,
-    onReindexClick: () -> Unit,
+    user: UserCached,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle(null)
@@ -68,6 +68,16 @@ private fun SearchContent(
     var tracksExpanded by rememberSaveable { mutableStateOf(false) }
     var lovedExpanded by rememberSaveable { mutableStateOf(false) }
 
+    fun onItemClick(item: MusicEntry) {
+        onNavigate(
+            PanoRoute.MusicEntryInfo(
+                musicEntry = item,
+                pkgName = null,
+                user = user,
+            )
+        )
+    }
+
     LaunchedEffect(searchTerm, searchType) {
         viewModel.search(searchTerm, searchType)
     }
@@ -79,6 +89,7 @@ private fun SearchContent(
         SearchBox(
             searchTerm = searchTerm,
             onSearchTermChange = { searchTerm = it },
+            modifier = Modifier.padding(panoContentPadding(bottom = false))
         )
 
         if (BuildConfig.DEBUG) {
@@ -105,15 +116,22 @@ private fun SearchContent(
             visible = hasLoaded && searchResults?.isEmpty == true,
         )
 
-        AnimatedVisibility(hasLoaded) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            hasLoaded,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            LazyColumn(
+                contentPadding = panoContentPadding(),
+                modifier = Modifier.fillMaxSize()
+            ) {
                 ExpandableSublist(
                     headerRes = R.string.artists,
                     headerIcon = Icons.Outlined.Mic,
                     items = searchResults?.artists ?: emptyList(),
                     expanded = artistsExpanded,
                     onToggle = { artistsExpanded = it },
-                    onItemClick = onItemClick,
+                    onItemClick = ::onItemClick,
                 )
 
                 ExpandableSublist(
@@ -122,7 +140,7 @@ private fun SearchContent(
                     items = searchResults?.albums ?: emptyList(),
                     expanded = albumsExpanded,
                     onToggle = { albumsExpanded = it },
-                    onItemClick = onItemClick,
+                    onItemClick = ::onItemClick,
                 )
 
                 ExpandableSublist(
@@ -131,7 +149,7 @@ private fun SearchContent(
                     items = searchResults?.tracks ?: emptyList(),
                     expanded = tracksExpanded,
                     onToggle = { tracksExpanded = it },
-                    onItemClick = onItemClick,
+                    onItemClick = ::onItemClick,
                     fetchAlbumImageIfMissing = true,
                 )
 
@@ -141,7 +159,7 @@ private fun SearchContent(
                     items = searchResults?.lovedTracks ?: emptyList(),
                     expanded = lovedExpanded,
                     onToggle = { lovedExpanded = it },
-                    onItemClick = onItemClick,
+                    onItemClick = ::onItemClick,
                     fetchAlbumImageIfMissing = true,
                 )
 
@@ -154,7 +172,9 @@ private fun SearchContent(
                             ),
                             icon = Icons.Outlined.Info,
                             menuItemText = stringResource(R.string.reindex),
-                            onMenuClick = onReindexClick
+                            onMenuClick = {
+                                onNavigate(PanoRoute.Index)
+                            }
                         )
                     }
                 }
@@ -164,8 +184,13 @@ private fun SearchContent(
                 }
             }
         }
-        AnimatedVisibility(searchResults != null && !hasLoaded) {
+        AnimatedVisibility(
+            searchResults != null && !hasLoaded,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
             LazyColumn(
+                contentPadding = panoContentPadding(),
                 modifier = Modifier
                     .fillMaxSize()
                     .shimmer()
@@ -187,28 +212,5 @@ private fun SearchContent(
                 }
             }
         }
-    }
-}
-
-@Keep
-@Composable
-fun SearchScreen() {
-    val fragment = LocalFragment.current
-
-    ScreenParent {
-        SearchContent(
-            onItemClick = {
-                val args = Bundle().apply {
-                    putData(it)
-                }
-
-                fragment.findNavController().navigate(R.id.infoFragment, args)
-            },
-
-            onReindexClick = {
-                fragment.findNavController().navigate(R.id.indexingDialogFragment)
-            },
-            modifier = it
-        )
     }
 }

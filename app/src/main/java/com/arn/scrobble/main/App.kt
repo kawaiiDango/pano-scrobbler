@@ -11,32 +11,21 @@ import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.ContextCompat
 import androidx.work.Configuration
-import coil3.ImageLoader
-import coil3.PlatformContext
-import coil3.SingletonImageLoader
-import coil3.request.allowHardware
-import coil3.request.crossfade
-import coil3.size.Precision
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.crashreporter.CrashReporter
-import com.arn.scrobble.ui.AppIconFetcher
-import com.arn.scrobble.ui.AppIconKeyer
-import com.arn.scrobble.ui.DemoInterceptor
-import com.arn.scrobble.ui.MusicEntryImageInterceptor
-import com.arn.scrobble.ui.MusicEntryMapper
-import com.arn.scrobble.ui.StarMapper
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import timber.log.Timber
 
 
-class App : Application(), SingletonImageLoader.Factory, Configuration.Provider {
-    private val musicEntryImageInterceptor = MusicEntryImageInterceptor()
+class App : Application(), Configuration.Provider {
 
     override val workManagerConfiguration =
         Configuration.Builder().apply {
@@ -55,8 +44,11 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             Stuff.isInDemoMode =
                 runBlocking { PlatformStuff.mainPrefs.data.map { it.demoModeP }.first() }
         }
-
-        Timber.plant(LogcatTree())
+//        Logger.setLogWriters(platformLogWriter())
+        Logger.setTag("scrobbler")
+        Logger.setMinSeverity(
+            if (BuildConfig.DEBUG) Severity.Debug else Severity.Info
+        )
 
 //        ColorPatchUtils.setDarkMode()
 
@@ -69,17 +61,23 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
 //            .build()
 //        DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
 
-        val crashlyticsKeys = mapOf(
-            "isDebug" to BuildConfig.DEBUG.toString(),
-        )
-
-        CrashReporter.init(
-            this,
-            runBlocking {
+        GlobalScope.launch {
+            val crashlyticsEnabled =
                 PlatformStuff.mainPrefs.data.map { it.crashReporterEnabled }.first()
-            },
-            crashlyticsKeys
-        )
+
+            if (crashlyticsEnabled) {
+                val crashlyticsKeys = mapOf(
+                    "isDebug" to BuildConfig.DEBUG.toString(),
+                )
+
+                CrashReporter.init(
+                    this@App,
+                    true,
+                    crashlyticsKeys
+                )
+            }
+
+        }
 
         createChannels()
 
@@ -135,25 +133,6 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
         })
     }
 
-    override fun newImageLoader(context: PlatformContext) = ImageLoader.Builder(this)
-        .components {
-            add(AppIconKeyer())
-            add(AppIconFetcher.Factory())
-            add(MusicEntryMapper())
-            add(musicEntryImageInterceptor)
-            add(StarMapper())
-
-            if (Stuff.isInDemoMode)
-                add(DemoInterceptor())
-        }
-        .crossfade(true)
-        .precision(Precision.INEXACT)
-        .allowHardware(false)
-        .build()
-
-    fun clearMusicEntryImageCache(entry: MusicEntry) {
-        musicEntryImageInterceptor.clearCacheForEntry(entry)
-    }
 
     private fun createChannels() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

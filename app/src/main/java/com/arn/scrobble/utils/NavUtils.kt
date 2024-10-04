@@ -25,8 +25,8 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.main.BasePagerFragment
 import com.arn.scrobble.main.HomePagerFragment
-import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainActivityOld
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.main.OptionsMenuMetadata
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.utils.Stuff.format
@@ -41,7 +41,7 @@ object NavUtils {
 
     fun updateHeaderWithDrawerData(
         headerNavBinding: HeaderNavBinding,
-        mainNotifierViewModel: MainNotifierViewModel
+        mainNotifierViewModel: MainViewModel
     ) {
         val accountType = Scrobblables.current.value?.userAccount?.type
 
@@ -134,7 +134,7 @@ object NavUtils {
     fun setProfileSwitcher(
         headerNavBinding: HeaderNavBinding,
         navController: NavController,
-        mainNotifierViewModel: MainNotifierViewModel
+        mainNotifierViewModel: MainViewModel
     ) {
         headerNavBinding.navProfileLinks.setOnClickListener { anchor ->
             val currentAccount = Scrobblables.current.value?.userAccount
@@ -206,7 +206,7 @@ object NavUtils {
                 when (menuItem.itemId) {
 
                     -3 -> {
-                        Stuff.openInBrowser(headerNavBinding.root.context, currentUser.url)
+                        Stuff.openInBrowser(currentUser.url)
                     }
 
                     -2 -> {
@@ -221,7 +221,7 @@ object NavUtils {
                             AccountType.FILE -> currentAccount.apiRoot!!
                         }
 
-                        Stuff.openInBrowser(headerNavBinding.root.context, url)
+                        Stuff.openInBrowser(url)
                     }
 
                     -1 -> {
@@ -262,7 +262,7 @@ object NavUtils {
     }
 
     fun BasePagerFragment.setupWithNavUi() {
-        val activityBinding = (activity as? MainActivity)?.binding ?: return
+        val activityBinding = (activity as? MainActivityOld)?.binding ?: return
         val menus = listOf(
             activityBinding.bottomNav.menu,
             activityBinding.sidebarNav.menu
@@ -271,7 +271,7 @@ object NavUtils {
         // hack to prevent a visual glitch
         // todo actually make it work
         val idOffset = 10 // optionsMenuViewModel.hashCode()
-        val activityViewModel by activityViewModels<MainNotifierViewModel>()
+        val activityViewModel by activityViewModels<MainViewModel>()
 
         if (this is HomePagerFragment) {
             val currentUser = arguments?.getSingle() ?: Scrobblables.currentScrobblableUser

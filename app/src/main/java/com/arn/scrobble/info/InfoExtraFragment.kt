@@ -24,9 +24,9 @@ import com.arn.scrobble.charts.ChartsOverviewAdapter
 import com.arn.scrobble.databinding.ContentInfoExtraBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.LayoutSpotifyTrackFeaturesBinding
-import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.main.MainDialogActivity
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
@@ -55,7 +55,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
     private val trackFeaturesVM by viewModels<TrackFeaturesVM>()
     private val infoExtraVM by viewModels<InfoExtraVM>()
-    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val mainNotifierViewModel by activityViewModels<MainViewModel>()
     private var _binding: ContentInfoExtraBinding? = null
     private val binding get() = _binding!!
 
@@ -296,13 +296,13 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
         if (activity is MainDialogActivity) {
             NavDeepLinkBuilder(requireContext())
-                .setComponentName(MainActivity::class.java)
+                .setComponentName(MainActivityOld::class.java)
                 .setGraph(R.navigation.nav_graph)
                 .setDestination(fragmentId)
                 .setArguments(args)
                 .createPendingIntent()
                 .send()
-        } else if (activity is MainActivity)
+        } else if (activity is MainActivityOld)
             findNavController().navigate(fragmentId, args)
     }
 

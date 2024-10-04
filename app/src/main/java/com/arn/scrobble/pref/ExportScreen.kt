@@ -2,7 +2,6 @@ package com.arn.scrobble.pref
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,10 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.Icon
@@ -38,20 +35,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.OutlinedToggleButtons
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 
 @Composable
-private fun ExportContent(viewModel: ExportVM = viewModel(), modifier: Modifier = Modifier) {
+fun ExportScreen(
+    viewModel: ExportVM = viewModel(),
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
-    val fragment = LocalFragment.current
     var codeText by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf<String?>(null) }
     var toggleButtonSelectedIndex by remember { mutableIntStateOf(-1) }
@@ -82,7 +79,7 @@ private fun ExportContent(viewModel: ExportVM = viewModel(), modifier: Modifier 
         }
 
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -151,7 +148,7 @@ private fun ExportContent(viewModel: ExportVM = viewModel(), modifier: Modifier 
         viewModel.result.filterNotNull().collectLatest {
             it.onSuccess {
                 errorText = null
-                fragment.findNavController().popBackStack()
+                onBack()
             }.onFailure {
                 errorText = it.message
             }
@@ -182,10 +179,4 @@ fun ImExportModeSelector(
             selectedIndex = selectedIndex,
         )
     }
-}
-
-@Keep
-@Composable
-fun ExportScreen() {
-    ScreenParent { ExportContent(modifier = it) }
 }

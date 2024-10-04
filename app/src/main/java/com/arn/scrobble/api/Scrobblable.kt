@@ -1,5 +1,6 @@
 package com.arn.scrobble.api
 
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.file.FileScrobblable
@@ -31,7 +32,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import timber.log.Timber
 
 
 abstract class Scrobblable(val userAccount: UserAccountSerializable) {
@@ -100,7 +100,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         networkOnly: Boolean = false,
         limit: Int = if (timePeriod.period != null) 50 else -1
     ): Result<PageResult<out MusicEntry>> {
-        Timber.i(this::getChartsWithStonks.name + " $type timePeriod: $timePeriod prevTimePeriod: $prevTimePeriod")
+        Logger.i { this::getChartsWithStonks.name + " $type timePeriod: $timePeriod prevTimePeriod: $prevTimePeriod" }
 
         fun toHashableEntry(entry: MusicEntry): Any = when (type) {
             Stuff.TYPE_ARTISTS -> {

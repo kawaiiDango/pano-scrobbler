@@ -111,7 +111,7 @@ private fun FixItContent(
                 )
                 OutlinedButton(
                     onClick = {
-                        Stuff.openInBrowser(context, "https://dontkillmyapp.com")
+                        Stuff.openInBrowser("https://dontkillmyapp.com")
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {

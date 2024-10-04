@@ -12,6 +12,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblable
@@ -24,7 +25,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -32,8 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import org.xml.sax.SAXException
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 
@@ -158,27 +156,18 @@ class PendingScrobblesWorker(
 
                 scrobbleResults.forEach { (scrobblable, result) ->
                     if (result.isFailure) {
-                        Timber.w(
+                        Logger.w {
                             "PendingScrobblesWorker: err for " + scrobblable.userAccount.type.ordinal +
                                     ": " + result
-                        )
+                        }
                         done = false
                     }
                 }
 
-            } catch (e: SAXException) {
-                Timber.w("PendingScrobblesWorker: SAXException " + e.message)
-                if (BATCH_SIZE != 1) {
-                    BATCH_SIZE = 1
-                    done = true //try again
-                } else
-                    done = false
-                return done
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Timber.w("PendingScrobblesWorker: n/w err - ")
-                Timber.tag(Stuff.TAG).w(e)
+                Logger.w(e) { "PendingScrobblesWorker: n/w err" }
                 done = false
                 return done
             }
@@ -229,7 +218,7 @@ class PendingScrobblesWorker(
             }
             return true
         } catch (e: Exception) {
-            Timber.w("OfflineScrobble: n/w err submitLoves - " + e.message)
+            Logger.w(e) { "OfflineScrobble: n/w err submitLoves" }
             return false
         }
     }

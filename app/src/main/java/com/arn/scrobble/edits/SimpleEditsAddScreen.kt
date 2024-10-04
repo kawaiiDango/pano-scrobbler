@@ -1,19 +1,16 @@
 package com.arn.scrobble.edits
 
-import androidx.annotation.Keep
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,26 +21,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
-import com.arn.scrobble.themes.AppPreviewTheme
+import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
-import com.arn.scrobble.ui.ScreenParent
-import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
-fun SimpleEditsEditContent(
+fun SimpleEditsAddScreen(
     simpleEdit: SimpleEdit? = null,
-    onSave: (SimpleEdit) -> Unit,
-    onCancel: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var origTrack by remember { mutableStateOf(simpleEdit?.origTrack ?: "") }
@@ -54,28 +46,34 @@ fun SimpleEditsEditContent(
     var artist by remember { mutableStateOf(simpleEdit?.artist ?: "") }
     var albumArtist by remember { mutableStateOf(simpleEdit?.albumArtist ?: "") }
     var showError by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     fun onDone() {
-        if (origTrack.isEmpty() || artist.isEmpty() || track.isEmpty()) {
-            showError = true
-        } else {
-            val newEdit = SimpleEdit(
-                _id = simpleEdit?._id ?: 0,
-                origTrack = origTrack,
-                track = track,
-                origAlbum = origAlbum,
-                album = album,
-                origArtist = origArtist,
-                artist = artist,
-                albumArtist = albumArtist
-            )
-            onSave(newEdit)
+        scope.launch {
+            if (origTrack.isEmpty() || artist.isEmpty() || track.isEmpty()) {
+                showError = true
+            } else {
+                val newEdit = SimpleEdit(
+                    _id = simpleEdit?._id ?: 0,
+                    origTrack = origTrack,
+                    track = track,
+                    origAlbum = origAlbum,
+                    album = album,
+                    origArtist = origArtist,
+                    artist = artist,
+                    albumArtist = albumArtist
+                )
+                withContext(Dispatchers.IO) {
+                    PanoDb.db.getSimpleEditsDao().insertReplaceLowerCase(newEdit)
+                }
+                onBack()
+            }
         }
     }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier
     ) {
         Text(
             text = stringResource(id = R.string.original),
@@ -157,46 +155,11 @@ fun SimpleEditsEditContent(
             ErrorText(stringResource(id = R.string.required_fields_empty))
         }
 
-        Row(
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            TextButton(
-                onClick = onCancel,
-                modifier = Modifier.padding(end = 8.dp)
-            ) {
-                Text(stringResource(id = android.R.string.cancel))
-            }
-            TextButton(onClick = ::onDone) {
-                Text(stringResource(id = android.R.string.ok))
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SimpleEditsEditContentPreview() {
-    AppPreviewTheme {
-        SimpleEditsEditContent(simpleEdit = SimpleEdit(), onSave = {}, onCancel = {})
-    }
-}
-
-@Keep
-@Composable
-fun SimpleEditsEditScreen(
-) {
-    val fragment = LocalFragment.current
-    val simpleEdit = fragment.arguments?.getParcelable<SimpleEdit>(Stuff.ARG_EDIT)
-    val scope = rememberCoroutineScope()
-
-    ScreenParent {
-        SimpleEditsEditContent(simpleEdit = simpleEdit, onSave = {
-            scope.launch(Dispatchers.IO) {
-                PanoDb.db.getSimpleEditsDao().insertReplaceLowerCase(it)
-            }
-            fragment.findNavController().popBackStack()
-        }, onCancel = {
-            fragment.findNavController().popBackStack()
-        }, modifier = it)
+        ButtonWithIcon(
+            onClick = ::onDone,
+            text = stringResource(id = R.string.save),
+            icon = Icons.Outlined.Check,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }

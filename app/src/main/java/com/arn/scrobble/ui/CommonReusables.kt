@@ -5,14 +5,18 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,6 +29,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,20 +39,25 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -58,12 +68,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.compose.LocalFragment
 import com.arn.scrobble.R
+import com.arn.scrobble.navigation.LocalNavigationType
+import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.pref.EditsMode
-import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
 
@@ -79,6 +89,7 @@ fun ExtraBottomSpace(modifier: Modifier = Modifier) {
 @Composable
 fun AlertDialogOk(
     text: String,
+    icon: ImageVector = Icons.Outlined.Info,
     onConfirmation: () -> Unit = {},
     onDismissRequest: () -> Unit = onConfirmation,
     title: String? = null,
@@ -93,6 +104,12 @@ fun AlertDialogOk(
             null,
         text = {
             Text(text = text)
+        },
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null
+            )
         },
         onDismissRequest = {
             onDismissRequest()
@@ -116,7 +133,11 @@ fun OutlinedToggleButtons(
     onSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy((-1).dp),
+        modifier = modifier,
+    ) {
         items.forEachIndexed { index, item ->
             OutlinedButton(
                 onClick = {
@@ -249,6 +270,30 @@ fun InfoText(
 
 
 @Composable
+fun TextWithIcon(
+    text: String,
+    icon: ImageVector,
+    style: TextStyle = LocalTextStyle.current,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 4.dp)
+        )
+        Text(
+            text = text,
+            style = style
+        )
+    }
+}
+
+
+@Composable
 fun SearchBox(
     searchTerm: String,
     label: String = stringResource(R.string.search),
@@ -282,7 +327,7 @@ fun SearchBox(
 }
 
 @Composable
-fun <T> ButtonWithDropdown(
+fun <T> ButtonWithSpinner(
     prefixText: String?,
     itemToTexts: Map<T, String>,
     selected: T,
@@ -324,10 +369,136 @@ fun <T> ButtonWithDropdown(
     }
 }
 
+@Composable
+fun <T> ButtonWithDropdown(
+    text: String,
+    itemToTexts: Map<T, String>,
+    onMainButtonClick: () -> Unit,
+    onItemClick: (T) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var dropDownShown by remember { mutableStateOf(false) }
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy((-5).dp),
+        modifier = modifier
+    ) {
+        OutlinedButton(
+            onClick = onMainButtonClick,
+            shape = CircleShape.copy(
+                topEnd = ZeroCornerSize,
+                bottomEnd = ZeroCornerSize
+            ),
+        ) {
+            Text(text)
+        }
+
+        OutlinedIconButton(
+            onClick = { dropDownShown = true },
+            border = ButtonDefaults.outlinedButtonBorder(true),
+            shape = CircleShape.copy(
+                topStart = ZeroCornerSize,
+                bottomStart = ZeroCornerSize
+            ),
+        ) {
+            Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+
+            DropdownMenu(
+                expanded = dropDownShown,
+                onDismissRequest = { dropDownShown = false }
+            ) {
+                itemToTexts.forEach { (item, text) ->
+                    DropdownMenuItem(
+                        onClick = {
+                            onItemClick(item)
+                            dropDownShown = false
+                        },
+                        text = {
+                            Text(text)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun IconButtonWithTooltip(
+    icon: ImageVector,
+    onClick: () -> Unit,
+    contentDescription: String,
+    enabled: Boolean = true,
+    tint: Color = MaterialTheme.colorScheme.secondary,
+    modifier: Modifier = Modifier
+) {
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = { PlainTooltip { Text(contentDescription) } },
+        state = rememberTooltipState(),
+        modifier = modifier,
+    ) {
+        IconButton(
+            onClick = onClick,
+            enabled = enabled,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                tint = tint
+            )
+        }
+    }
+}
+
+@Composable
+fun ButtonWithIcon(
+    onClick: () -> Unit,
+    icon: ImageVector,
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onClick,
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+        modifier = modifier
+    ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            modifier = Modifier.size(ButtonDefaults.IconSize)
+        )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Text(text)
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-private fun ButttonWithDropdownPreview() {
+private fun IconButtonWithTooltipPreview() {
+    IconButtonWithTooltip(
+        icon = Icons.Outlined.Info,
+        onClick = {},
+        contentDescription = "Info"
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ButtonWithDropdownPreview() {
     ButtonWithDropdown(
+        text = "Text",
+        itemToTexts = EditsMode.entries.associateWith { it.name },
+        onItemClick = {},
+        onMainButtonClick = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ButttonWithSpinnerPreview() {
+    ButtonWithSpinner(
         prefixText = "Prefix",
         itemToTexts = EditsMode.entries.associateWith { it.name },
         selected = EditsMode.EDITS_NOPE,
@@ -358,45 +529,50 @@ fun ScreenParent(
     content: @Composable (modifier: Modifier) -> Unit
 ) {
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
-    AppTheme {
-        Surface {
-            content(
-                Modifier
-                    .nestedScroll(nestedScrollConnection)
-                    .fillMaxSize()
-                    .padding(horizontal = dimensionResource(R.dimen.overscan_padding_horiz))
-                    .padding(horizontal = 8.dp)
-            )
-        }
-    }
+    content(
+        Modifier
+            .nestedScroll(nestedScrollConnection)
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(R.dimen.overscan_padding_horiz))
+            .padding(horizontal = 8.dp)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetDialogParent(
+    padding: Boolean = true,
     content: @Composable (modifier: Modifier) -> Unit
 ) {
-    val fragment = LocalFragment.current as DialogFragment
+//    val fragment = LocalFragment.current as DialogFragment
     val sheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = Stuff.isTv || UiUtils.isTabletUi)
     var showSheet by remember { mutableStateOf(true) }
+//    val nestedScrollConnection = rememberNestedScrollInteropConnection()
 
     if (showSheet) {
-        AppTheme {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showSheet = false
-                    fragment.dismiss()
-                },
-                sheetState = sheetState,
-            ) {
-                content(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp)
-                )
-            }
+//        AppTheme {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showSheet = false
+//                    fragment.dismiss()
+            },
+//                dragHandle = null,
+            sheetState = sheetState,
+        ) {
+            content(
+                Modifier
+                    .fillMaxWidth()
+//                        .nestedScroll(nestedScrollConnection)
+                    .then(
+                        if (padding)
+                            Modifier.padding(horizontal = 24.dp)
+                        else
+                            Modifier
+                    )
+            )
         }
+//        }
     }
 }
 
@@ -405,23 +581,23 @@ fun BottomSheetDialogParent(
 fun DialogParent(
     content: @Composable (modifier: Modifier) -> Unit
 ) {
-    val fragment = LocalFragment.current as DialogFragment
     var showDialog by remember { mutableStateOf(true) }
 
     if (showDialog) {
-        AppTheme {
-            BasicAlertDialog(
-                onDismissRequest = {
-                    showDialog = false
-                    fragment.dismiss()
-                },
-                content = {
-                    Surface {
-                        content(Modifier.padding(24.dp))
-                    }
+//        AppTheme {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            content = {
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                ) {
+                    content(Modifier.padding(24.dp))
                 }
-            )
-        }
+            }
+        )
+//        }
     }
 }
 
@@ -449,9 +625,135 @@ fun EmptyText(
 }
 
 
-fun Modifier.backgroundForShimmer(isShimmer: Boolean): Modifier = composed {
-    if (!isShimmer) return@composed this
+@Composable
+fun SimpleHeaderItem(
+    text: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .defaultMinSize(minHeight = 48.dp)
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .background(
+                MaterialTheme.colorScheme.surfaceContainerHigh,
+                shape = MaterialTheme.shapes.medium
+            )
+            .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding()),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .padding(end = 32.dp)
+                .size(24.dp)
+        )
 
-    clip(MaterialTheme.shapes.medium)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SimpleHeaderItemPreview() {
+    SimpleHeaderItem(
+        text = "Text",
+        icon = Icons.Outlined.Info
+    )
+}
+
+@Composable
+fun VerifyButton(
+    doStuff: () -> Unit,
+    result: Result<*>?,
+    onDone: () -> Unit,
+    buttonText: String = stringResource(R.string.login_submit),
+    modifier: Modifier = Modifier,
+    extraContent: @Composable RowScope.() -> Unit = {},
+) {
+    var verifying by remember { mutableStateOf(false) }
+    var errorText by remember { mutableStateOf<String?>(null) }
+    val networkErrorStr = stringResource(R.string.network_error)
+
+    LaunchedEffect(result) {
+        result?.onFailure {
+            verifying = false
+            errorText = it.message ?: networkErrorStr
+        }?.onSuccess {
+            verifying = false
+            errorText = null
+            onDone()
+        }
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            extraContent()
+            Box(
+                modifier = Modifier
+                    .height(60.dp)
+            ) {
+                if (verifying) {
+                    CircularProgressIndicator()
+                } else {
+                    OutlinedButton(
+                        onClick = {
+                            verifying = true
+                            errorText = null
+                            doStuff()
+                        },
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    ) {
+                        Text(buttonText, maxLines = 1)
+                    }
+                }
+            }
+        }
+
+        ErrorText(errorText)
+    }
+}
+
+@Composable
+fun Modifier.backgroundForShimmer(isShimmer: Boolean): Modifier {
+    if (!isShimmer) return this
+
+    return clip(MaterialTheme.shapes.medium)
         .background(Color.Gray.copy(alpha = 0.3f))
+}
+
+
+@Composable
+fun horizontalOverscanPadding(): Dp {
+    val navigationType = LocalNavigationType.current
+    return when (navigationType) {
+        PanoNavigationType.BOTTOM_NAVIGATION -> 16.dp
+        PanoNavigationType.NAVIGATION_RAIL -> 24.dp
+        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 48.dp
+    }
+}
+
+@Composable
+fun verticalOverscanPadding(): Dp {
+    val navigationType = LocalNavigationType.current
+    return when (navigationType) {
+        PanoNavigationType.BOTTOM_NAVIGATION,
+        PanoNavigationType.NAVIGATION_RAIL -> 0.dp
+
+        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 27.dp
+    }
 }

@@ -18,7 +18,7 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.ChartsAdapter
 import com.arn.scrobble.databinding.FrameChartsListBinding
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
@@ -44,7 +44,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
     private val binding
         get() = _binding!!
     private val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
-    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val mainNotifierViewModel by activityViewModels<MainViewModel>()
     private val musicEntry by lazy { requireArguments().getData<MusicEntry>()!! }
 
     override fun onCreateView(
@@ -61,7 +61,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
         val padding =
             binding.root.context.resources.getDimensionPixelSize(R.dimen.overscan_padding_horiz)
         binding.chartsList.setupInsets(additionalSpaceSides = padding)
-        
+
         return binding.root
     }
 

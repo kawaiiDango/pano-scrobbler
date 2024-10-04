@@ -1,19 +1,30 @@
 package com.arn.scrobble.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material.icons.automirrored.outlined.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Favorite
@@ -21,8 +32,6 @@ import androidx.compose.material.icons.outlined.HeartBroken
 import androidx.compose.material.icons.outlined.HorizontalRule
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -32,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,6 +54,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,9 +67,11 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.themes.AppPreviewTheme
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun MusicEntryListItem(
@@ -262,6 +275,131 @@ fun MusicEntryListItem(
 }
 
 @Composable
+fun MusicEntryGridItem(
+    entry: MusicEntry,
+    progress: Float? = null,
+    showArtist: Boolean,
+    fetchAlbumImageIfMissing: Boolean = false,
+    forShimmer: Boolean = false,
+    imageUrlOverride: String? = null,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(enabled = !forShimmer, onClick = onClick)
+            .padding(8.dp)
+    ) {
+        AsyncImage(
+            model = if (forShimmer)
+                null
+            else if (imageUrlOverride != null)
+                imageUrlOverride
+            else
+                ImageRequest.Builder(context)
+                    .data(
+                        MusicEntryImageReq(
+                            entry,
+                            fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
+                        )
+                    )
+                    .placeholder(R.drawable.avd_loading)
+                    .error(R.drawable.vd_wave_simple_filled)
+                    .build(),
+            contentDescription = stringResource(R.string.album_art),
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(
+                    MaterialTheme.shapes.medium.copy(
+                        bottomEnd = ZeroCornerSize,
+                        bottomStart = ZeroCornerSize
+                    )
+                )
+                .backgroundForShimmer(forShimmer)
+        )
+        Column(
+            modifier = Modifier
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.outline,
+                    MaterialTheme.shapes.medium.copy(
+                        topEnd = ZeroCornerSize,
+                        topStart = ZeroCornerSize
+                    )
+                )
+                .padding(8.dp)
+        ) {
+
+            val firstText = when (entry) {
+                is Album -> entry.name
+                is Track -> entry.name
+                is Artist -> entry.name
+            }
+
+            val secondText = if (showArtist) {
+                when (entry) {
+                    is Album -> entry.artist?.name
+                    is Track -> entry.artist.name
+                    else -> null
+                }
+            } else null
+
+            val playCount = entry.userplaycount ?: entry.playcount
+            val thirdText = if (playCount != null)
+                pluralStringResource(
+                    R.plurals.num_scrobbles_noti,
+                    playCount,
+                    playCount.format()
+                )
+            else
+                null
+
+            Text(
+                text = firstText,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .backgroundForShimmer(forShimmer)
+
+            )
+
+            if (secondText != null)
+                Text(
+                    text = secondText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+            if (thirdText != null)
+                Text(
+                    text = thirdText,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+            if (progress != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(progress)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun ExpandableHeaderItem(
     title: String,
     icon: ImageVector,
@@ -433,6 +571,118 @@ fun LazyListScope.ExpandableSublist(
     }
 }
 
+@Composable
+fun ColumnScope.EntriesHorizontal(
+    title: String,
+    entries: List<MusicEntry>,
+    headerIcon: ImageVector,
+    maxCountEvaluater: () -> Float = {
+        entries.maxOfOrNull { it.playcount?.toFloat() ?: 0f } ?: 0f
+    },
+    showArtists: Boolean,
+    emptyStringRes: Int,
+    shimmer: Boolean = false,
+    onHeaderClick: () -> Unit,
+    onItemClick: (MusicEntry) -> Unit,
+) {
+    val maxCount by remember(entries) { mutableFloatStateOf(maxCountEvaluater()) }
+
+    GoToDetailsHeaderItem(
+        icon = headerIcon,
+        title = title,
+        enabled = !shimmer,
+        onClick = onHeaderClick,
+    )
+
+    if (entries.isEmpty()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .height(150.dp)
+                .align(Alignment.CenterHorizontally),
+        ) {
+            Text(
+                text = stringResource(emptyStringRes),
+                textAlign = TextAlign.Center,
+            )
+        }
+    } else {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            modifier = if (shimmer) Modifier.shimmer() else Modifier
+        ) {
+            items(entries, key = { it }) { entry ->
+                MusicEntryGridItem(
+                    entry,
+                    forShimmer = shimmer,
+                    onClick = {
+                        onItemClick(entry)
+                    },
+                    progress = if (maxCount > 0) {
+                        entry.playcount?.toFloat()?.div(maxCount) ?: 0f
+                    } else
+                        entry.match,
+                    showArtist = showArtists,
+                    modifier = Modifier
+                        .width(150.dp)
+                        .animateItem()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun EntriesGrid(
+    entries: List<MusicEntry>,
+    maxCountEvaluater: () -> Float = {
+        entries.maxOfOrNull { it.playcount?.toFloat() ?: 0f } ?: 0f
+    },
+    showArtists: Boolean,
+    emptyStringRes: Int,
+    shimmer: Boolean = false,
+    onItemClick: (MusicEntry) -> Unit,
+) {
+    val maxCount by remember(entries) { mutableFloatStateOf(maxCountEvaluater()) }
+
+    if (entries.isEmpty()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Text(
+                text = stringResource(emptyStringRes),
+                textAlign = TextAlign.Center,
+            )
+        }
+    } else {
+        LazyVerticalGrid(
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            columns = GridCells.Adaptive(minSize = 220.dp),
+            modifier = if (shimmer) Modifier.shimmer() else Modifier
+        ) {
+            items(entries, key = { it }) { entry ->
+                MusicEntryGridItem(
+                    entry,
+                    forShimmer = shimmer,
+                    onClick = {
+                        onItemClick(entry)
+                    },
+                    progress = if (maxCount > 0) {
+                        entry.playcount?.toFloat()?.div(maxCount) ?: 0f
+                    } else
+                        entry.match,
+                    showArtist = showArtists,
+                    modifier = Modifier
+                        .width(150.dp)
+                        .animateItem()
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun ExpandableHeaderItemPreview() {
@@ -467,7 +717,7 @@ private fun GoToDetailsHeaderItemPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun RecentsListItemPreview() {
+private fun RecentsListItemPreview() {
     AppPreviewTheme {
         MusicEntryListItem(
             entry = Track(
@@ -480,6 +730,25 @@ fun RecentsListItemPreview() {
             onMenuClick = {},
             onTrackClick = {},
 //            showDateSeperator = true
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MusicEntryGridItemPreview() {
+    AppPreviewTheme {
+        MusicEntryGridItem(
+            entry = Track(
+                name = "Track Name",
+                artist = Artist(name = "Artist Name"),
+                album = Album(name = "Album Name"),
+                userloved = true,
+            ),
+            showArtist = true,
+            imageUrlOverride = "",
+            progress = 0.5f,
+            onClick = {},
         )
     }
 }

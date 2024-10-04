@@ -24,7 +24,7 @@ open class BasePagerFragment : Fragment() {
     val binding
         get() = _binding!!
     val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
-    val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    val mainNotifierViewModel by activityViewModels<MainViewModel>()
     var isReady = false
         private set
 

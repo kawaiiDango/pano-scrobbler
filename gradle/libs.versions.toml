@@ -1,67 +1,69 @@
 [versions]
-composeShimmer = "1.3.1"
-paging = "3.3.2"
 targetSdk = "35"
 minSdk = "23"
 minSdkBaselineProfile = "28"
-android-application = "8.8.0-alpha02"
+android-application = "8.8.0-alpha05"
+
+paging = "3.3.2"
+composeShimmer = "1.3.1"
+koalaplot = "0.6.3"
 aboutlibraries = "11.2.3"
 activity = "1.9.2"
 androidSnowfall = "1.2.1"
 coil = "3.0.0-alpha10"
 constraintlayout = "2.2.0-beta01"
-billing = "7.0.0"
-core = "1.15.0-alpha02"
+billing = "7.1.1"
+core = "1.15.0-beta01"
 appcompat = "1.7.0"
 core-remoteviews = "1.1.0"
 desugar_jdk_libs = "2.1.2"
 espresso-core = "3.6.1"
-firebase-bom = "33.3.0"
+firebase-bom = "33.4.0"
 crashlytics = "3.0.2"
-fragment = "1.8.3"
+fragment = "1.8.4"
 harmony = "1.2.6"
 junit = "4.13.2"
 kotlin = "2.0.20"
 kotlinCsvJvm = "1.10.0"
-kotlinx-serialization-json = "1.7.2"
-ktorBom = "3.0.0-rc-1"
+kotlinx-serialization-json = "1.7.3"
+ktorBom = "3.0.0-rc-2"
 kumo-core = "1.28.3"
-lifecycle = "2.8.5"
-material = "1.13.0-alpha05"
+lifecycle = "2.8.6"
+material = "1.13.0-alpha06"
 media = "1.7.0"
 mpAndroidChart = "v3.1.0"
-navigation = "2.8.0"
+navigation = "2.8.2"
 nestedscrollwebview = "0.1.6"
 okhttp = "5.0.0-alpha.14"
 palette-ktx = "1.0.0"
 play-publisher = "3.10.1"
-profileinstaller = "1.4.0-rc01"
-recyclerview = "1.4.0-beta01"
+profileinstaller = "1.4.1"
+recyclerview = "1.4.0-rc01"
 runner = "1.6.2"
 skeletonlayout = "5.0.0"
-timber = "5.0.1"
+kermit = "2.0.4"
 swiperefreshlayout = "1.2.0-alpha01"
-room = "2.7.0-alpha07"
+room = "2.7.0-alpha09"
 review = "2.0.1"
 uiautomator = "2.3.0"
 viewpager = "1.1.0-alpha01"
-work-runtime = "2.10.0-alpha03"
+work-runtime = "2.10.0-beta01"
 google-services = "4.4.2"
-benchmark = "1.3.0"
+benchmark = "1.3.2"
 ksp = "2.0.20-1.0.24"
 github-release = "2.5.2"
-baselineprofile = "1.3.0"
+baselineprofile = "1.3.2"
 androidx-test-ext-junit = "1.2.1"
-transition = "1.5.1"
 nanohttpd = "2.3.1"
-compose-bom = "2024.09.01"
+compose-bom = "2024.09.03"
 datastore = "1.1.1"
+detekt = "1.23.3"
 
 [libraries]
 android-snowfall = { module = "com.github.jetradarmobile:android-snowfall", version.ref = "androidSnowfall" }
 activity = { module = "androidx.activity:activity", version.ref = "activity" }
-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+
+koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koalaplot" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version.ref = "viewpager" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
@@ -80,7 +82,6 @@ androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", vers
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment", version.ref = "navigation" }
-androidx-navigation-fragment-compose = { module = "androidx.navigation:navigation-fragment-compose", version.ref = "navigation" }
 androidx-navigation-ui = { module = "androidx.navigation:navigation-ui", version.ref = "navigation" }
 androidx-core-remoteviews = { module = "androidx.core:core-remoteviews", version.ref = "core-remoteviews" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
@@ -113,12 +114,12 @@ palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "palette-
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 skeletonlayout = { module = "com.faltenreich:skeletonlayout", version.ref = "skeletonlayout" }
-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 review = { module = "com.google.android.play:review", version.ref = "review" }
 benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-test-ext-junit" }
-androidx-transition = { group = "androidx.transition", name = "transition", version.ref = "transition" }
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "datastore" }
+compose-bom = { group = "androidx.compose", name = "compose-bom-alpha", version.ref = "compose-bom" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -126,8 +127,11 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+activity-compose = { module = "androidx.activity:activity-compose"}
+adaptive = { module = "androidx.compose.material3.adaptive:adaptive"}
+navigation-compose = { module = "androidx.navigation:navigation-compose" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "datastore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }
@@ -145,7 +149,7 @@ parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
 play-publisher = { id = "com.github.triplet.play", version.ref = "play-publisher" }
 android-library = { id = "com.android.library", version.ref = "android-application" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 [bundles]
 
 

@@ -18,7 +18,7 @@ import com.arn.scrobble.utils.Stuff.myHash
 import java.util.Objects
 
 class MainDialogActivity : AppCompatActivity() {
-    private val activityViewModel by viewModels<MainNotifierViewModel>()
+    private val activityViewModel by viewModels<MainViewModel>()
     private lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {

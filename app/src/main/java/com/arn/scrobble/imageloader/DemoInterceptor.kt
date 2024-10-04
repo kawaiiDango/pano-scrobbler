@@ -1,9 +1,8 @@
-package com.arn.scrobble.ui
+package com.arn.scrobble.imageloader
 
 import coil3.intercept.Interceptor
 import coil3.request.ImageResult
 import coil3.request.transformations
-
 
 class DemoInterceptor : Interceptor {
 

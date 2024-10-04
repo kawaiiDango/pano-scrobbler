@@ -174,10 +174,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.navigation.fragment)
-    implementation(libs.androidx.navigation.fragment.compose)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.core.remoteviews)
-    implementation(libs.androidx.transition)
     implementation(libs.activity)
     implementation(libs.activity.compose)
     ksp(libs.androidx.room.compiler)
@@ -196,12 +194,15 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.datastore.core)
     implementation(libs.paging.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.adaptive)
+    implementation(libs.koalaplot.core)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation(libs.material)
-    implementation(libs.timber)
+    implementation(libs.kermit)
 
     implementation(libs.okhttp)
     implementation(libs.harmony)
@@ -351,119 +352,128 @@ githubRelease {
     dryRun = false
 }
 
-fun fetchCrowdinMembers(projectId: String, token: String) {
-    data class Data(val username: String)
-    data class UserData(val data: Data)
-    data class Root(val data: List<UserData>)
+data class CrowdinMember(val username: String)
+data class CrowdinMemberData(val data: CrowdinMember)
+data class CrowdinMembersRoot(val data: List<CrowdinMemberData>)
 
-    val url =
-        URL("https://api.crowdin.com/api/v2/projects/$projectId/members?limit=500&orderBy=username&role=translator")
-    val conn = url.openConnection() as HttpURLConnection
-    conn.requestMethod = "GET"
-    conn.setRequestProperty("Authorization", "Bearer $token")
-    conn.setRequestProperty("Accept", "application/json")
-    conn.connectTimeout = 3000
+tasks.register("fetchCrowdinMembers") {
+    val projectIdProvider = project.provider { localProperties["crowdin.project"]!! }
+    val tokenProvider = project.provider { localProperties["crowdin.token"]!! }
+    val membersFile = file("src/main/res/raw/crowdin_members.txt")
+    outputs.file(membersFile)
 
-    val responseCode = conn.responseCode
-    if (responseCode == HttpURLConnection.HTTP_OK) {
-        val responseJson = conn.inputStream.bufferedReader().readText()
+    doLast {
+        val projectId = projectIdProvider.get()
+        val token = tokenProvider.get()
 
-        val gson = Gson()
-        val root = gson.fromJson(responseJson, Root::class.java)
-        val userDataList = root.data
+        val url =
+            URL("https://api.crowdin.com/api/v2/projects/$projectId/members?limit=500&orderBy=username&role=translator")
+        val conn = url.openConnection() as HttpURLConnection
+        conn.requestMethod = "GET"
+        conn.setRequestProperty("Authorization", "Bearer $token")
+        conn.setRequestProperty("Accept", "application/json")
+        conn.connectTimeout = 3000
 
-        val outputLines = userDataList.joinToString("\n") { it.data.username }
+        val responseCode = conn.responseCode
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            val responseJson = conn.inputStream.bufferedReader().readText()
 
-        file("src/main/res/raw/crowdin_members.txt").writeText(outputLines)
-        println("Crowdin members fetched successfully.")
-    } else {
-        throw IOException("Failed to fetch Crowdin members. Response code: $responseCode")
+            val gson = Gson()
+            val root = gson.fromJson(responseJson, CrowdinMembersRoot::class.java)
+            val userDataList = root.data
+
+            val outputLines = userDataList.joinToString("\n") { it.data.username }
+
+            membersFile.writeText(outputLines)
+            println("Crowdin members fetched successfully.")
+        } else {
+            throw IOException("Failed to fetch Crowdin members. Response code: $responseCode")
+        }
     }
 }
 
-fun fetchCrowdinLanguages(projectId: String, token: String, minProgress: Int) {
-    data class Language(val twoLettersCode: String)
-    data class Data(val languageId: String, val language: Language, val translationProgress: Int)
-    data class LanguageData(val data: Data)
-    data class Root(val data: List<LanguageData>)
+data class CrowdinLanguageProps(val twoLettersCode: String)
+data class CrowdinLanguage(
+    val languageId: String,
+    val language: CrowdinLanguageProps,
+    val translationProgress: Int
+)
 
-    val customMappings = mapOf(
-        "zh-CN" to "zh-Hans",
-        "pt-BR" to "pt-BR",
-    )
+data class CrowdinLanguageData(val data: CrowdinLanguage)
+data class CrowdinLanguagesRoot(val data: List<CrowdinLanguageData>)
 
-    val url =
-        URL("https://api.crowdin.com/api/v2/projects/$projectId/languages/progress?limit=500")
-    val conn = url.openConnection() as HttpURLConnection
-    conn.requestMethod = "GET"
-    conn.setRequestProperty("Authorization", "Bearer $token")
-    conn.setRequestProperty("Accept", "application/json")
-    conn.connectTimeout = 3000
+tasks.register("fetchCrowdinLanguages") {
+    val projectIdProvider = project.provider { localProperties["crowdin.project"]!! }
+    val tokenProvider = project.provider { localProperties["crowdin.token"]!! }
+    val localesConfigFile = file("src/main/res/xml/locales_config.xml")
+    val localeUtilsFile = file("src/main/java/com/arn/scrobble/utils/LocaleUtils.kt")
 
-    val responseCode = conn.responseCode
-    if (responseCode == HttpURLConnection.HTTP_OK) {
-        val responseJson = conn.inputStream.bufferedReader().readText()
+    outputs.file(localesConfigFile)
+    outputs.file(localeUtilsFile)
 
-        val gson = Gson()
-        val root = gson.fromJson(responseJson, Root::class.java)
-        val userDataList = root.data
+    doLast {
+        val projectId = projectIdProvider.get()
+        val token = tokenProvider.get()
+        val minProgress = 5
+        val customMappings = mapOf(
+            "zh-CN" to "zh-Hans",
+            "pt-BR" to "pt-BR",
+        )
 
-        val languagesFiltered = (
-                userDataList.filter {
-                    it.data.translationProgress >= minProgress
-                }.map {
-                    customMappings[it.data.languageId] ?: it.data.language.twoLettersCode
-                } + "en"
-                ).sorted()
+        val url =
+            URL("https://api.crowdin.com/api/v2/projects/$projectId/languages/progress?limit=500")
+        val conn = url.openConnection() as HttpURLConnection
+        conn.requestMethod = "GET"
+        conn.setRequestProperty("Authorization", "Bearer $token")
+        conn.setRequestProperty("Accept", "application/json")
+        conn.connectTimeout = 3000
 
-        // write to locale_config.xml
-        val localesConfigText =
-            """<?xml version='1.0' encoding='UTF-8'?>
+        val responseCode = conn.responseCode
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            val responseJson = conn.inputStream.bufferedReader().readText()
+
+            val gson = Gson()
+            val root = gson.fromJson(responseJson, CrowdinLanguagesRoot::class.java)
+            val userDataList = root.data
+
+            val languagesFiltered = (
+                    userDataList.filter {
+                        it.data.translationProgress >= minProgress
+                    }.map {
+                        customMappings[it.data.languageId] ?: it.data.language.twoLettersCode
+                    } + "en"
+                    ).sorted()
+
+            // write to locale_config.xml
+            val localesConfigText =
+                """<?xml version='1.0' encoding='UTF-8'?>
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
 ${languagesFiltered.joinToString("\n") { "    <locale android:name=\"$it\" />" }}
 </locale-config>
 """
-        file("src/main/res/xml/locales_config.xml").writeText(localesConfigText)
+            localesConfigFile.writeText(localesConfigText)
 
-        // write to LocaleUtils.kt
-        val localeUtilsPartialText = """
+            // write to LocaleUtils.kt
+            val localeUtilsPartialText = """
     val localesSet = arrayOf(
 ${languagesFiltered.joinToString("\n") { "        \"$it\"," }}
     )
 """
-        val localeUtilsFile = file("src/main/java/com/arn/scrobble/utils/LocaleUtils.kt")
 
-        val localeUtilsText = localeUtilsFile.readText()
-        val start = localeUtilsText.indexOf("// localesSet start") + "// localesSet start".length
-        val end = localeUtilsText.indexOf("    // localesSet end")
-        val newLocaleUtilsText = localeUtilsText.substring(
-            0,
-            start
-        ) + localeUtilsPartialText + localeUtilsText.substring(end)
-        localeUtilsFile.writeText(newLocaleUtilsText)
+            val localeUtilsText = localeUtilsFile.readText()
+            val start =
+                localeUtilsText.indexOf("// localesSet start") + "// localesSet start".length
+            val end = localeUtilsText.indexOf("    // localesSet end")
+            val newLocaleUtilsText = localeUtilsText.substring(
+                0,
+                start
+            ) + localeUtilsPartialText + localeUtilsText.substring(end)
+            localeUtilsFile.writeText(newLocaleUtilsText)
 
-        println("Crowdin languages fetched successfully.")
-    } else {
-        throw IOException("Failed to fetch Crowdin languages. Response code: $responseCode")
-    }
-}
-
-tasks.register("fetchCrowdinMembers") {
-    doLast {
-        fetchCrowdinMembers(
-            localProperties["crowdin.project"]!!,
-            localProperties["crowdin.token"]!!
-        )
-    }
-}
-
-tasks.register("fetchCrowdinLanguages") {
-    doLast {
-        fetchCrowdinLanguages(
-            localProperties["crowdin.project"]!!,
-            localProperties["crowdin.token"]!!,
-            5
-        )
+            println("Crowdin languages fetched successfully.")
+        } else {
+            throw IOException("Failed to fetch Crowdin languages. Response code: $responseCode")
+        }
     }
 }
 

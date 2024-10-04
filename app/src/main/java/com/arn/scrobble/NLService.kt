@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.navigation.NavDeepLinkBuilder
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.PlayerActions.love
 import com.arn.scrobble.PlayerActions.skip
 import com.arn.scrobble.PlayerActions.unlove
@@ -33,15 +34,13 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.edits.EditDialogFragmentArgs
-import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.LocaleUtils.getStringInDeviceLocale
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.dLazy
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.utils.Stuff.getSingle
@@ -57,7 +56,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.Objects
 import java.util.PriorityQueue
 import kotlin.math.min
@@ -202,12 +200,12 @@ class NLService : NotificationListenerService() {
                 )
             )
         } catch (exception: SecurityException) {
-            Timber.w("Failed to start media controller: " + exception.message)
+            Logger.w(exception) { "Failed to start media controller" }
             // Try to unregister it, just in case.
             try {
                 sessManager.removeOnActiveSessionsChangedListener(sessListener!!)
             } catch (e: Exception) {
-                Timber.tag(Stuff.TAG).w(e)
+                Logger.w(e) { "Failed to unregister media controller" }
             }
             // Media controller needs notification listener service permissions.
         }
@@ -222,7 +220,7 @@ class NLService : NotificationListenerService() {
                 )
 //                ForegroundServiceStartNotAllowedException extends IllegalStateException
             } catch (e: IllegalStateException) {
-                Timber.w(e)
+                Logger.e(e) { "Foreground service start not allowed" }
             }
         }
 
@@ -230,17 +228,17 @@ class NLService : NotificationListenerService() {
             getScrobblerExitReasons(printAll = true)
         }
 
-        Timber.i("init")
+        Logger.i { "init" }
     }
 
     private fun destroy() {
         inited = false
 
-        Timber.i("destroy")
+        Logger.i { "destroy" }
         try {
             applicationContext.unregisterReceiver(nlserviceReciver)
         } catch (e: IllegalArgumentException) {
-            Timber.w("nlservicereciver wasn't registered")
+            Logger.w { "nlservicereciver wasn't registered" }
         }
         try {
             applicationContext.unregisterReceiver(pkgInstallReceiver)
@@ -363,9 +361,9 @@ class NLService : NotificationListenerService() {
                 if (!scrobbleTimeReached && !scrobbleQueue.has(hash)) { //"resume" scrobbling
                     scrobbleQueue.addScrobble(trackInfo.copy())
                     notifyScrobble(trackInfo)
-                    Timber.i("${this::scrobbleFromNoti.name} rescheduling")
+                    Logger.i { "${this::scrobbleFromNoti.name} rescheduling" }
                 } else if (System.currentTimeMillis() - trackInfo.playStartTime < Stuff.NOTI_SCROBBLE_INTERVAL) {
-                    Timber.i("${this::scrobbleFromNoti.name} ignoring possible duplicate")
+                    Logger.i("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                 }
             } else {
                 // different song, scrobble it
@@ -384,7 +382,7 @@ class NLService : NotificationListenerService() {
                 }
             }
         } else {
-            Timber.w("${this::scrobbleFromNoti.name} parse failed")
+            Logger.w("${this::scrobbleFromNoti.name} parse failed")
         }
     }
 
@@ -461,11 +459,10 @@ class NLService : NotificationListenerService() {
             Stuff.updateCurrentOrImmutable
         )
 
-        val editArgs = EditDialogFragmentArgs(
-            data = trackInfo.toScrobbleData(),
-            hash = trackInfo.hash
-        )
-            .toBundle()
+        val editArgs = Bundle().apply {
+            putParcelable("data", trackInfo.toScrobbleData())
+            putInt("hash", trackInfo.hash)
+        }
 
         val editPi =
             MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
@@ -542,11 +539,10 @@ class NLService : NotificationListenerService() {
     }
 
     private fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val editArgs = EditDialogFragmentArgs(
-            data = trackInfo.toScrobbleData(),
-            hash = trackInfo.hash
-        )
-            .toBundle()
+        val editArgs = Bundle().apply {
+            putParcelable("data", trackInfo.toScrobbleData())
+            putInt("hash", trackInfo.hash)
+        }
 
         val editPi =
             MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
@@ -576,7 +572,7 @@ class NLService : NotificationListenerService() {
     }
 
     private fun notifyOtherError(scrobbleError: ScrobbleError) {
-        val intent = Intent(applicationContext, MainActivity::class.java)
+        val intent = Intent(applicationContext, MainActivityOld::class.java)
         val launchIntent = PendingIntent.getActivity(
             applicationContext, 8, intent,
             Stuff.updateCurrentOrImmutable
@@ -670,7 +666,7 @@ class NLService : NotificationListenerService() {
 
         val launchIntent = NavDeepLinkBuilder(this)
             .setGraph(R.navigation.nav_graph)
-            .setComponentName(MainActivity::class.java)
+            .setComponentName(MainActivityOld::class.java)
             .setDestination(R.id.appListFragment)
             .createPendingIntent()
 
@@ -1062,7 +1058,7 @@ class NLService : NotificationListenerService() {
         fun remove(hash: Int, notificationPackageNameToRemove: String? = null) {
             if (hash == lockedHash) return
 
-            Timber.dLazy { "$hash from $notificationPackageNameToRemove cancelled" }
+            Logger.d { "$hash from $notificationPackageNameToRemove cancelled" }
             tracksCopyPQ.removeAll { it.hash == hash }
             sessListener?.findTrackInfoByHash(hash)?.isPlaying = false
             if (notificationPackageNameToRemove != null)

@@ -3,12 +3,12 @@ package com.arn.scrobble.search
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Keep
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.OutlinedButton
@@ -26,8 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
@@ -37,15 +35,12 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
 import com.arn.scrobble.api.spotify.TrackItem
-import com.arn.scrobble.main.App
+import com.arn.scrobble.imageloader.clearMusicEntryImageCache
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.ExtraBottomSpace
 import com.arn.scrobble.ui.MusicEntryListItem
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.ui.SearchBox
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.getData
+import com.arn.scrobble.ui.panoContentPadding
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -53,13 +48,17 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-private fun ImageSearchContent(
+fun ImageSearchScreen(
     viewModel: ImageSearchVM = viewModel(),
     musicEntry: MusicEntry,
     originalMusicEntry: MusicEntry? = null,
-    onDone: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    fun onDone() {
+        clearMusicEntryImageCache(entry = musicEntry)
+        onBack()
+    }
 
     val printableEntryName = if (musicEntry is Album) {
         stringResource(R.string.artist_title, musicEntry.artist!!.name, musicEntry.name)
@@ -134,6 +133,7 @@ private fun ImageSearchContent(
             searchTerm = searchTerm,
             label = printableEntryName,
             onSearchTermChange = { searchTerm = it },
+            modifier = Modifier.padding(panoContentPadding(bottom = false))
         )
 
         EmptyText(
@@ -141,7 +141,10 @@ private fun ImageSearchContent(
             visible = searchResults?.isEmpty() == true,
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            contentPadding = panoContentPadding(),
+            modifier = Modifier.fillMaxSize()
+        ) {
 
             item("buttons") {
                 Row(
@@ -233,14 +236,11 @@ private fun ImageSearchContent(
                     )
                 }
             }
-
-            item("extraBottomSpace") {
-                ExtraBottomSpace()
-            }
         }
 
         if (searchResults == null) {
             LazyColumn(
+                contentPadding = panoContentPadding(),
                 modifier = Modifier
                     .fillMaxSize()
                     .shimmer()
@@ -275,25 +275,4 @@ private fun ImageSearchContent(
                 showSquarePhotoDialog = false
             }
         )
-}
-
-@Keep
-@Composable
-fun ImageSearchScreen() {
-    val fragment = LocalFragment.current
-
-    val musicEntry = fragment.requireArguments().getData<MusicEntry>()!!
-    val originalMusicEntry = fragment.requireArguments().getData<MusicEntry>(Stuff.ARG_ORIGINAL)
-
-    ScreenParent {
-        ImageSearchContent(
-            onDone = {
-                (PlatformStuff.application as? App)?.clearMusicEntryImageCache(musicEntry)
-                fragment.findNavController().popBackStack()
-            },
-            musicEntry = musicEntry,
-            originalMusicEntry = originalMusicEntry,
-            modifier = it
-        )
-    }
 }

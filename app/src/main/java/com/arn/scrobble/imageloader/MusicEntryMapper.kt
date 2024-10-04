@@ -1,4 +1,4 @@
-package com.arn.scrobble.ui
+package com.arn.scrobble.imageloader
 
 import coil3.map.Mapper
 import coil3.request.Options

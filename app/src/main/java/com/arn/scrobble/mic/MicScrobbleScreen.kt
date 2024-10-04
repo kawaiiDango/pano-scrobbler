@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material3.Button
@@ -92,7 +90,6 @@ private fun MicIdentifyContent(
 
     Box(
         modifier = modifier
-            .verticalScroll(rememberScrollState()),
     ) {
         Text(
             text = stringResource(R.string.shazam_scrobbling).replace("Shazam", "S app"),

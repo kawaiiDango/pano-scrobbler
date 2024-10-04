@@ -31,10 +31,12 @@ import androidx.annotation.Keep
 import androidx.annotation.PluralsRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.compose.material3.SnackbarDuration
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.MultiProcessDataStoreFactory
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ExtrasConsts
 import com.arn.scrobble.NLService
@@ -58,8 +60,8 @@ import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetPrefsMigration1
 import com.arn.scrobble.pref.WidgetPrefsSerializer
+import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.UiUtils.toast
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -78,7 +80,6 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.text.DecimalFormat
@@ -114,7 +115,6 @@ object Stuff {
     const val ARG_SELECTED_YEAR = "selected_year"
     const val ARG_SELECTED_MONTH = "selected_month"
     const val ARG_CUSTOM_REQUEST_KEY = "custom_request_key"
-    const val ARG_SCROLL_TO_ACCOUNTS = "scroll_to_accounts"
     const val ARG_EDIT = "edit"
     const val MIME_TYPE_JSON = "application/json"
     const val PRO_PRODUCT_ID = "pscrobbler_pro"
@@ -122,8 +122,9 @@ object Stuff {
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
     const val TYPE_TRACKS = 3
-    const val TYPE_LOVES = 4
-    const val TYPE_FRIENDS = 5
+    const val TYPE_ALBUM_ARTISTS = 4
+    const val TYPE_LOVES = 5
+    const val TYPE_FRIENDS = 6
     const val LIBREFM_KEY = "panoScrobbler"
     val LAST_KEY = Tokens.LAST_KEY
     val LAST_SECRET = Tokens.LAST_SECRET
@@ -372,19 +373,16 @@ object Stuff {
 
     val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
 
+    val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>() }
+
     val browserPackages = mutableSetOf<String>()
 
     fun Number.format() = numberFormat.format(this)!!
 
-    fun Timber.Tree.dLazy(s: () -> String) {
-        if (BuildConfig.DEBUG)
-            Timber.tag(TAG).d(s())
-    }
-
     fun timeIt(s: () -> String) {
         if (BuildConfig.DEBUG) {
             val now = System.currentTimeMillis()
-            Timber.tag(TAG + "_time").d("[${now - timeIt}] ${s()}")
+            Logger.d("timeIt") { "[${now - timeIt}] ${s()}" }
             timeIt = now
         }
     }
@@ -679,14 +677,15 @@ object Stuff {
         }
     }
 
-    fun openInBrowser(activityContext: Context, url: String) {
+    fun openInBrowser(url: String) {
         if (isTv) {
-            MaterialAlertDialogBuilder(activityContext)
-                .setTitle(R.string.tv_url_notice)
-                .setMessage(url)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
-
+            globalSnackbarFlow.tryEmit(
+                PanoSnackbarVisuals(
+                    message = PlatformStuff.application.getString(R.string.tv_url_notice) + "\n" + url,
+                    isError = false,
+                    duration = SnackbarDuration.Long
+                )
+            )
             return
         }
 
@@ -694,9 +693,14 @@ object Stuff {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            activityContext.startActivity(browserIntent)
+            PlatformStuff.application.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
-            activityContext.toast(R.string.no_browser)
+            globalSnackbarFlow.tryEmit(
+                PanoSnackbarVisuals(
+                    message = PlatformStuff.application.getString(R.string.no_browser),
+                    isError = true,
+                )
+            )
         }
     }
 
@@ -838,7 +842,7 @@ object Stuff {
 
         nlsService ?: return false
 
-        Timber.i(
+        Logger.i(
             "${NLService::class.java.name} - clientCount: ${nlsService.clientCount} process:${nlsService.process}"
         )
 
@@ -856,7 +860,7 @@ object Stuff {
                 value = getRating(it)?.toString()
             "$it: $value"
         }
-        Timber.dLazy { "MediaMetadata\n$data" }
+        Logger.d { "MediaMetadata\n$data" }
     }
 
     fun isValidUrl(url: String): Boolean {
@@ -982,7 +986,7 @@ object Stuff {
             }.also {
                 if (printAll) {
                     it.take(5).forEachIndexed { index, applicationExitInfo ->
-                        Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
+                        Logger.w("exitReasons") { "${index + 1}. $applicationExitInfo" }
                     }
                 }
             }

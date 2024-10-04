@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.annotation.Keep
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.indication
@@ -18,26 +17,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.ui.ExtraBottomSpace
-import com.arn.scrobble.ui.ScreenParent
+import com.arn.scrobble.ui.panoContentPadding
 
 @Preview(showBackground = true)
 @Composable
-private fun TranslatorsScreenContents(
+fun TranslatorsScreen(
     viewModel: TranslatorsVM = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val translators = remember { viewModel.translators }
 
     LazyColumn(
+        contentPadding = panoContentPadding(),
         modifier = modifier
     ) {
-        items(translators) { translator ->
-            TranslatorItem(translator)
-        }
-
-        item("spacer") {
-            ExtraBottomSpace()
+        items(translators, key = { it }) {
+            TranslatorItem(it)
         }
     }
 }
@@ -60,10 +55,4 @@ private fun TranslatorItem(translator: String) {
             .padding(16.dp)
 
     )
-}
-
-@Keep
-@Composable
-fun TranslatorsScreen() {
-    ScreenParent { TranslatorsScreenContents(modifier = it) }
 }

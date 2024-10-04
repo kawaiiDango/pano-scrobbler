@@ -34,8 +34,8 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainActivityOld
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
@@ -74,7 +74,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
     private lateinit var adapter: FriendsAdapter
     private var popupWr: WeakReference<PopupWindow>? = null
     private val viewModel by viewModels<FriendsVM>()
-    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
+    private val activityViewModel by activityViewModels<MainViewModel>()
     private var _binding: ContentFriendsBinding? = null
     private val binding
         get() = _binding!!
@@ -106,18 +106,18 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
         if (binding.friendsGrid.adapter != null)
             doNextTimedRefresh()
         showFabIfNeeded()
-        (activity as MainActivity).binding.appBar.expandToHeroIfNeeded(false)
+        (activity as MainActivityOld).binding.appBar.expandToHeroIfNeeded(false)
     }
 
     override fun onPause() {
         super.onPause()
-        (requireActivity() as? MainActivity)?.hideFab(false)
+        (requireActivity() as? MainActivityOld)?.hideFab(false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.followersLink.setOnClickListener {
             val url = activityViewModel.currentUser.url + "/followers"
-            Stuff.openInBrowser(requireContext(), url)
+            Stuff.openInBrowser(url)
         }
         binding.followersLink.isVisible =
             Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM
@@ -134,7 +134,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
 
         binding.swipeRefresh.setProgressCircleColors()
         binding.swipeRefresh.setOnRefreshListener {
-            (requireActivity() as? MainActivity)?.hideFab(false)
+            (requireActivity() as? MainActivityOld)?.hideFab(false)
             viewModel.setInput(viewModel.input.value!!.copyCacheBusted(page = 1))
             if (isResumed)
                 refreshFriendsRecents()
@@ -245,7 +245,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                 R.drawable.vd_sort_clock,
                 {
                     viewModel.sortByTime()
-                    (requireActivity() as? MainActivity)?.hideFab(false)
+                    (requireActivity() as? MainActivityOld)?.hideFab(false)
                     binding.friendsGrid.smoothScrollToPosition(0)
                 }
             )
@@ -414,7 +414,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
                 contentBinding.friendsScrobbles.requestFocus()
             } else {
                 contentBinding.friendsProfile.setOnClickListener {
-                    Stuff.openInBrowser(requireContext(), userCached.url)
+                    Stuff.openInBrowser(userCached.url)
                 }
             }
 
@@ -468,7 +468,7 @@ class FriendsFragment : Fragment(), ItemClickListener<FriendsVM.FriendsItemHolde
     }
 
     private fun getNumColumns(): Int {
-        val cols = (activity as MainActivity).binding.ctl.width /
+        val cols = (activity as MainActivityOld).binding.ctl.width /
                 resources.getDimension(R.dimen.grid_size).roundToInt()
         return cols.coerceIn(2, 5)
     }

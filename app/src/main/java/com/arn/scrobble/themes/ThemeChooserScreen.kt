@@ -1,7 +1,6 @@
 package com.arn.scrobble.themes
 
 import android.os.Build
-import androidx.annotation.Keep
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,17 +13,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,37 +32,25 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.billing.LicenseState
-import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.themes.colors.OrangeYellow
 import com.arn.scrobble.themes.colors.ThemeVariants
-import com.arn.scrobble.ui.ExtraBottomSpace
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-private data class ThemeChooserState(
-    val themeName: String,
-    val dynamic: Boolean,
-    val dayNightMode: DayNightMode,
-    val contrastMode: ContrastMode,
-)
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ThemeChooserContent(
-    onThemeChooserStateChange: (ThemeChooserState) -> Unit,
+fun ThemeChooserScreen(
+    onNavigateToBilling: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val licenseState by Stuff.billingRepository.licenseState.collectAsStateWithLifecycle()
     var themeName: String? by remember { mutableStateOf(null) }
     var dynamic: Boolean? by remember { mutableStateOf(null) }
     var dayNightMode: DayNightMode? by remember { mutableStateOf(null) }
@@ -77,16 +62,23 @@ private fun ThemeChooserContent(
         false
     }
 
-    LaunchedEffect(themeName, dynamic, dayNightMode, contrastMode) {
-        if (themeName != null && dynamic != null && dayNightMode != null && contrastMode != null) {
-            onThemeChooserStateChange(
-                ThemeChooserState(
-                    themeName = themeName!!,
-                    dynamic = dynamic!!,
-                    dayNightMode = dayNightMode!!,
-                    contrastMode = contrastMode!!
-                )
-            )
+    DisposableEffect(Unit) {
+        onDispose {
+            if (themeName != null && dynamic != null && dayNightMode != null && contrastMode != null) {
+                if (licenseState == LicenseState.VALID) {
+                    GlobalScope.launch {
+                        PlatformStuff.mainPrefs.updateData {
+                            it.copy(
+                                themeName = themeName!!,
+                                themeDynamic = dynamic!!,
+                                themeDayNight = dayNightMode!!,
+                                themeContrast = contrastMode!!
+                            )
+                        }
+                    }
+                } else
+                    onNavigateToBilling()
+            }
         }
     }
 
@@ -105,7 +97,7 @@ private fun ThemeChooserContent(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier
     ) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -148,12 +140,12 @@ private fun ThemeChooserContent(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .alpha(if (dayNightMode == DayNightMode.SYSTEM) 0.5f else 1f)
+                .alpha(if (dynamic == true) 0.5f else 1f)
         ) {
             ContrastMode.entries.forEach {
                 FilterChip(
                     label = { it.label() },
-                    enabled = dayNightMode != DayNightMode.SYSTEM,
+                    enabled = dynamic != true,
                     selected = contrastMode == it,
                     onClick = {
                         contrastMode = it
@@ -167,9 +159,6 @@ private fun ThemeChooserContent(
             checked = dynamic == true,
             onCheckedChange = { dynamic = it }
         )
-
-        ExtraBottomSpace()
-
     }
 }
 
@@ -270,49 +259,4 @@ private fun ThemeSwatchPreview() {
         enabled = true,
         modifier = Modifier
     )
-}
-
-@Keep
-@Composable
-fun ThemeChooserScreen() {
-    val licenseState by Stuff.billingRepository.licenseState.collectAsStateWithLifecycle()
-    var themeChooserState: ThemeChooserState? by remember { mutableStateOf(null) }
-
-    val scope = rememberCoroutineScope()
-    val fragment = LocalFragment.current
-
-    LaunchedEffect(Unit) {
-        val fabData = FabData(
-            fragment.viewLifecycleOwner,
-            R.string.done,
-            R.drawable.vd_check_simple,
-            {
-                if (licenseState == LicenseState.VALID && themeChooserState != null) {
-                    scope.launch {
-                        PlatformStuff.mainPrefs.updateData {
-                            it.copy(
-                                themeName = themeChooserState!!.themeName,
-                                themeDynamic = themeChooserState!!.dynamic,
-                                themeDayNight = themeChooserState!!.dayNightMode,
-                                themeContrast = themeChooserState!!.contrastMode
-                            )
-                        }
-                        fragment.findNavController().popBackStack()
-                    }
-                } else
-                    fragment.findNavController().navigate(R.id.billingFragment)
-            }
-        )
-
-        val mainNotifierViewModel by fragment.activityViewModels<MainNotifierViewModel>()
-
-        mainNotifierViewModel.setFabData(fabData)
-    }
-
-    ScreenParent {
-        ThemeChooserContent(
-            onThemeChooserStateChange = { themeChooserState = it },
-            modifier = it
-        )
-    }
 }

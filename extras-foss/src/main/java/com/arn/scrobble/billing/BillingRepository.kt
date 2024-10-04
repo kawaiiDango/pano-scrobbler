@@ -43,10 +43,14 @@ class BillingRepository(
     override fun endDataSourceConnections() {
     }
 
-
     override suspend fun queryPurchasesAsync() {
         val (receipt, _) = clientData.receipt.first()
-        if (receipt != null && verifyPurchase(receipt, "")) {
+        receipt ?: return
+        checkAndStoreLicense(receipt)
+    }
+
+    override suspend fun checkAndStoreLicense(receipt: String) {
+        if (verifyPurchase(receipt, null)) {
             if (_licenseState.value != LicenseState.VALID || System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY) {
                 LicenseChecker.checkLicenseOnline(
                     clientData.httpClient,
@@ -57,6 +61,7 @@ class BillingRepository(
                         0 -> {
                             if (it.message == "valid") {
                                 _licenseState.emit(LicenseState.VALID)
+                                clientData.setReceipt(receipt, null)
                             } else {
                                 _licenseState.emit(LicenseState.REJECTED)
                                 clientData.setReceipt(null, null)
@@ -84,7 +89,7 @@ class BillingRepository(
     }
 
 
-    override fun verifyPurchase(data: String, signature: String) =
+    override fun verifyPurchase(data: String, signature: String?) =
         LicenseChecker.validateJwt(
             data,
             clientData.proProductId,

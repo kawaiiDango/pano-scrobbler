@@ -9,7 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.delay
@@ -59,7 +59,7 @@ object ListenAlong {
             )
         }
 
-        val intent = Intent(application, MainActivity::class.java)
+        val intent = Intent(application, MainActivityOld::class.java)
         val launchIntent = PendingIntent.getActivity(
             application, 8, intent,
             Stuff.updateCurrentOrImmutable

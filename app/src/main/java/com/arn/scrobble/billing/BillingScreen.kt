@@ -2,16 +2,13 @@ package com.arn.scrobble.billing
 
 import android.app.Activity
 import android.content.Context
-import androidx.annotation.Keep
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.Apps
@@ -32,8 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,29 +40,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.ExtrasConsts
-import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.ErrorText
-import com.arn.scrobble.ui.ScreenParent
+import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.toast
-import kotlinx.coroutines.launch
 
 @Composable
-private fun BillingContent(
+fun BillingScreen(
     viewModel: BillingViewModel = viewModel(),
+    onNavigateToTroubleshoot: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val fragment = LocalFragment.current
-    val scope = rememberCoroutineScope()
     val proProductDetails by viewModel.proProductDetails.collectAsStateWithLifecycle()
     val licenseState by viewModel.licenseState.collectAsStateWithLifecycle()
-    var noticeText by remember { mutableStateOf<String?>(null) }
+    var noticeText by rememberSaveable { mutableStateOf<String?>(null) }
 
     val thankYouText = stringResource(R.string.thank_you)
     val purchasePendingText = stringResource(R.string.purchase_pending)
@@ -83,20 +75,17 @@ private fun BillingContent(
         if (!Stuff.isTv) Icons.Outlined.Share to stringResource(R.string.billing_sharing) else null,
     )
 
-    var code by remember { mutableStateOf("") }
-    var codeError by remember { mutableStateOf<String?>(null) }
+    var code by rememberSaveable { mutableStateOf("") }
+    var codeError by rememberSaveable { mutableStateOf<String?>(null) }
 
     fun verifyLicenseOnline() {
-        scope.launch {
-            PlatformStuff.mainPrefs.updateData {
-                it.copy(receipt = code.trim().takeIf { it.isNotEmpty() })
-            }
+        code.trim().ifEmpty { null }?.let {
+            viewModel.checkAndStoreLicense(it)
         }
-        viewModel.queryPurchasesAsync()
     }
 
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier
     ) {
         Icon(
             imageVector = Icons.Outlined.FavoriteBorder,
@@ -211,24 +200,19 @@ private fun BillingContent(
             )
         }
 
-        IconButton(
-            onClick = {
-                fragment.findNavController().navigate(R.id.billingTroubleshootFragment)
-            },
+        IconButtonWithTooltip(
+            onClick = onNavigateToTroubleshoot,
+            icon = Icons.AutoMirrored.Outlined.HelpOutline,
+            contentDescription = stringResource(R.string.help),
             modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                contentDescription = stringResource(R.string.help),
-            )
-        }
+        )
     }
 
     LaunchedEffect(licenseState) {
         when (licenseState) {
             LicenseState.VALID -> {
                 context.toast(thankYouText)
-                fragment.findNavController().popBackStack()
+                onBack()
             }
 
             LicenseState.PENDING -> {
@@ -257,16 +241,8 @@ private fun BillingContent(
 
 private fun makePurchase(context: Context, viewModel: BillingViewModel) {
     if (ExtrasConsts.isFossBuild) {
-        Stuff.openInBrowser(context, context.getString(R.string.ko_fi_link))
+        Stuff.openInBrowser(context.getString(R.string.ko_fi_link))
     } else {
         viewModel.makePlayPurchase(context as Activity)
-    }
-}
-
-@Keep
-@Composable
-fun BillingScreen() {
-    ScreenParent {
-        BillingContent(modifier = it)
     }
 }

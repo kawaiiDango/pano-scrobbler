@@ -1,4 +1,4 @@
-package com.arn.scrobble.ui
+package com.arn.scrobble.imageloader
 
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables

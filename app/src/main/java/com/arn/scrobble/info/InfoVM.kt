@@ -2,17 +2,18 @@ package com.arn.scrobble.info
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.IHasImage
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
+import com.arn.scrobble.api.spotify.SpotifySearchType
+import com.arn.scrobble.api.spotify.TrackWithFeatures
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
@@ -21,12 +22,17 @@ import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTracksDao.Companion.deltaUpdate
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
@@ -34,12 +40,30 @@ import kotlinx.coroutines.withContext
 
 class InfoVM : ViewModel() {
 
-    private val _infoListReceiver = MutableStateFlow<List<InfoHolder>?>(null)
-    val infoList = _infoListReceiver.asStateFlow()
-    private val _hasLoaded = MutableStateFlow(false)
-    val hasLoaded = _hasLoaded.asStateFlow()
+    private val _infoMap = MutableStateFlow<Map<Int, MusicEntry>?>(null)
+    val infoMap = _infoMap.asStateFlow()
+    private val _infoLoaded = MutableStateFlow(false)
+    val infoLoaded = _infoLoaded.asStateFlow()
     private val initialEntryAndUsername = MutableStateFlow<Pair<MusicEntry, String>?>(null)
-    lateinit var originalEntriesMap: Map<String, MusicEntry>
+    lateinit var originalEntriesMap: Map<Int, MusicEntry>
+
+    private val _userTags = MutableStateFlow<Map<Int, Set<String>>>(emptyMap())
+    val userTags = _userTags.asStateFlow()
+    val userTagsHistory = PlatformStuff.mainPrefs.data.map { it.tagHistory }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        emptyList()
+    )
+
+    private val _spotifyTrackWithFeatures = MutableStateFlow<TrackWithFeatures?>(null)
+    val spotifyTrackWithFeatures = _spotifyTrackWithFeatures.asStateFlow()
+    private val _trackFeaturesLoaded = MutableStateFlow(false)
+    val trackFeaturesLoaded = _trackFeaturesLoaded.asStateFlow()
+
+    val artistTopTracksVM by lazy { InfoExtraFullVM() }
+    val artistTopAlbumsVM by lazy { InfoExtraFullVM() }
+    val similarArtistsVM by lazy { InfoExtraFullVM() }
+    val similarTracksVM by lazy { InfoExtraFullVM() }
 
     init {
         viewModelScope.launch {
@@ -54,18 +78,14 @@ class InfoVM : ViewModel() {
 
                     val infos = createInitialData(entry)
 
-                    _infoListReceiver.emit(infos.map { (k, v) ->
-                        InfoHolder(k, v)
-                    })
+                    _infoMap.emit(infos)
 
                     val infosFetched = withContext(Dispatchers.IO) {
                         getInfos(infos, _username)
-                    }.map { (k, v) ->
-                        InfoHolder(k, v)
                     }
 
-                    _infoListReceiver.emit(infosFetched)
-                    _hasLoaded.emit(true)
+                    _infoMap.emit(infosFetched)
+                    _infoLoaded.emit(true)
                 }
         }
     }
@@ -76,47 +96,31 @@ class InfoVM : ViewModel() {
         }
     }
 
-    fun updateInfo(info: InfoHolder) {
-        var prevInfo: InfoHolder? = null
-
-        val newInfos = _infoListReceiver.value?.map {
-            if (it.type == info.type) {
-                prevInfo = it
-                info
-            } else {
-                it
-            }
-        }
-        _infoListReceiver.value = newInfos
-
-        if (prevInfo?.entry is Track && info.entry is Track) {
-            if ((prevInfo?.entry as Track).userloved != info.entry.userloved && info.entry.userloved != null) {
-                viewModelScope.launch(Dispatchers.IO) {
-                    ScrobbleEverywhere.loveOrUnlove(info.entry, info.entry.userloved)
-                }
-            }
+    fun setLoved(track: Track, loved: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            ScrobbleEverywhere.loveOrUnlove(track, loved)
         }
     }
 
-    private fun createInitialData(entryp: MusicEntry): Map<String, MusicEntry> {
-        val entriesMap = mutableMapOf<String, MusicEntry>()
+    private fun createInitialData(entryp: MusicEntry): Map<Int, MusicEntry> {
+        val entriesMap = mutableMapOf<Int, MusicEntry>()
 
         when (entryp) {
             is Track -> {
                 val entry = entryp.copy(playcount = null, listeners = null)
-                entriesMap[NLService.B_TRACK] = entry.copy(album = null)
-                entriesMap[NLService.B_ARTIST] = entry.artist
-                entry.album?.let { entriesMap[NLService.B_ALBUM] = it.copy(artist = entry.artist) }
+                entriesMap[Stuff.TYPE_TRACKS] = entry.copy(album = null)
+                entriesMap[Stuff.TYPE_ARTISTS] = entry.artist
+                entry.album?.let { entriesMap[Stuff.TYPE_ALBUMS] = it.copy(artist = entry.artist) }
             }
 
             is Album -> {
                 val entry = entryp.copy(playcount = null, listeners = null)
-                entriesMap[NLService.B_ALBUM] = entry
-                entriesMap[NLService.B_ARTIST] = entry.artist!!
+                entriesMap[Stuff.TYPE_ALBUMS] = entry
+                entriesMap[Stuff.TYPE_ARTISTS] = entry.artist!!
             }
 
             is Artist -> {
-                entriesMap[NLService.B_ARTIST] = entryp.copy(playcount = null, listeners = null)
+                entriesMap[Stuff.TYPE_ARTISTS] = entryp.copy(playcount = null, listeners = null)
             }
         }
         originalEntriesMap = entriesMap
@@ -125,7 +129,7 @@ class InfoVM : ViewModel() {
     }
 
     private suspend fun getInfos(
-        infoMapp: Map<String, MusicEntry>,
+        infoMapp: Map<Int, MusicEntry>,
         username: String?
     ) = supervisorScope {
         val db = PanoDb.db
@@ -179,9 +183,9 @@ class InfoVM : ViewModel() {
         }
 
         var albumArtist: Artist? = null
-        var album = infoMap[NLService.B_ALBUM] as? Album
-        val artist = infoMap[NLService.B_ARTIST] as? Artist
-        val track = infoMap[NLService.B_TRACK] as? Track
+        var album = infoMap[Stuff.TYPE_ALBUMS] as? Album
+        val artist = infoMap[Stuff.TYPE_ARTISTS] as? Artist
+        val track = infoMap[Stuff.TYPE_TRACKS] as? Track
 
         val trackDef = async {
             track?.let {
@@ -192,7 +196,7 @@ class InfoVM : ViewModel() {
         if (track != null) {
             val trackInfo = trackDef.await()
             if (trackInfo != null) {
-                infoMap[NLService.B_TRACK] = trackInfo
+                infoMap[Stuff.TYPE_TRACKS] = trackInfo
             }
 
             if (album == null)
@@ -223,13 +227,13 @@ class InfoVM : ViewModel() {
         }
 
         artistDef.await()?.let {
-            infoMap[NLService.B_ARTIST] = it
+            infoMap[Stuff.TYPE_ARTISTS] = it
         }
         albumArtistDef.await()?.let {
-            infoMap[NLService.B_ALBUM_ARTIST] = it
+            infoMap[Stuff.TYPE_ALBUM_ARTISTS] = it
         }
         albumDef.await()?.let {
-            infoMap[NLService.B_ALBUM] = it
+            infoMap[Stuff.TYPE_ALBUMS] = it
         }
 
         // dirty delta updates only for lastfm and self
@@ -247,13 +251,119 @@ class InfoVM : ViewModel() {
         infoMap.toMap()
     }
 
-    data class InfoHolder(
-        val type: String,
-        val entry: MusicEntry,
-        val headerExpanded: Boolean = false,
-        val wikiExpanded: Boolean = false,
-        val trackListExpanded: Boolean = false,
-    ) {
-        var hasImage: Boolean = if (entry is IHasImage) entry.webp300 != null else false
+    // user tags
+
+    fun loadTagsIfNeeded(type: Int) {
+        if (type in userTags.value)
+            return
+        val entry = infoMap.value?.get(type) ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            populateTagHistoryIfNeeded()
+
+            val tags = (Scrobblables.current.value as? LastFm)
+                ?.getUserTagsFor(entry)
+                ?.map {
+                    it.toptags.tag.map { it.name }
+                        .toSet()
+                }
+                ?.getOrNull() ?: emptySet()
+
+            _userTags.value += (type to tags)
+
+        }
+    }
+
+    fun deleteTag(type: Int, tag: String) {
+        val existingTags = userTags.value[type] ?: return
+        val entry = infoMap.value?.get(type) ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val tags = existingTags.filter { it != tag }.toSet()
+            _userTags.value += (type to tags)
+
+            (Scrobblables.current.value as? LastFm)
+                ?.removeUserTagFor(entry, tag)
+
+        }
+    }
+
+    fun addTag(type: Int, newTags: String) {
+        val existingTags = userTags.value[type] ?: return
+        val entry = infoMap.value?.get(type) ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val newTagsList = splitTags(newTags)
+
+            if (newTagsList.isEmpty())
+                return@launch
+
+            val tags = existingTags + newTagsList
+
+            _userTags.value += (type to tags)
+
+            if (Stuff.isTestLab)
+                return@launch
+
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(
+                    tagHistory = (it.tagHistory + newTagsList).distinct()
+                        .take(Stuff.MAX_HISTORY_ITEMS)
+                )
+            }
+
+            (Scrobblables.current.value as? LastFm)
+                ?.addUserTagsFor(entry, newTagsList.joinToString(","))
+        }
+    }
+
+    private suspend fun populateTagHistoryIfNeeded() {
+        val mainPrefs = PlatformStuff.mainPrefs
+        if (mainPrefs.data.map { it.userTopTagsFetched }.first()) return
+
+        (Scrobblables.current.value as? LastFm)
+            ?.userGetTopTags(limit = 20)
+            ?.map { it.toptags.tag }
+            ?.onSuccess {
+                val tags = it.reversed().map { it.name }
+                mainPrefs.updateData {
+                    it.copy(tagHistory = tags, userTopTagsFetched = true)
+                }
+            }
+    }
+
+    private fun splitTags(tags: String) = tags.split(",")
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+
+    // track features
+
+    fun loadTrackFeaturesIfNeeded() {
+        if (trackFeaturesLoaded.value)
+            return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val track = infoMap.value?.get(Stuff.TYPE_TRACKS) as? Track ?: return@launch
+
+            Requesters.spotifyRequester.search(
+                "${track.artist.name} ${track.name}",
+                SpotifySearchType.track
+            ).onSuccess {
+                it.tracks?.items?.firstOrNull()?.let { spotifyTrack ->
+                    if (spotifyTrack.artists.first().name == track.artist.name &&
+                        spotifyTrack.name == track.name
+                    ) {
+                        val features =
+                            Requesters.spotifyRequester.trackFeatures(spotifyTrack.id)
+
+                        _spotifyTrackWithFeatures.emit(
+                            TrackWithFeatures(spotifyTrack, features.getOrNull())
+                        )
+                    }
+                }
+            }
+
+            _trackFeaturesLoaded.value = true
+        }
     }
 }

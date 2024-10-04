@@ -47,6 +47,7 @@ data class UserAccountSerializable(
     val apiRoot: String? = null,
 )
 
+@Serializable
 @Parcelize
 data class UserAccountTemp(
     val type: AccountType,

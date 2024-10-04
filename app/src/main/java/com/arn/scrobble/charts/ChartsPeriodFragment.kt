@@ -16,13 +16,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putData
@@ -32,7 +33,6 @@ import com.arn.scrobble.utils.UiUtils.showWithIcons
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.Calendar
 
 
@@ -42,7 +42,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     protected abstract val periodChipsBinding: ChipsChartsPeriodBinding
     private lateinit var periodChipsAdapter: PeriodChipsAdapter
     private lateinit var prevSelectedPeriod: TimePeriod
-    protected val activityViewModel by activityViewModels<MainNotifierViewModel>()
+    protected val activityViewModel by activityViewModels<MainViewModel>()
 
 
 //    protected open var lastPeriodSelectedJson
@@ -216,7 +216,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                 viewModel.setSelectedPeriod(it)
                 viewModel.setPeriodType(TimePeriodType.CUSTOM) // re emit to fire the flow
             }
-            Timber.i("selectedPeriod: ${viewModel.selectedPeriod.value}")
+            Logger.i { "selectedPeriod: ${viewModel.selectedPeriod.value}" }
         }
 
         dpd.show(parentFragmentManager, null)

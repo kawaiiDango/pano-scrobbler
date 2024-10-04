@@ -1,39 +1,43 @@
 package com.arn.scrobble.info
 
 import androidx.annotation.Keep
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.ui.BottomSheetDialogParent
+import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.copyToClipboard
-import com.arn.scrobble.utils.Stuff.getData
 import java.net.URLEncoder
 
 @Composable
 fun TagInfoContent(
     tag: Tag,
-    onCopy: (String) -> Unit,
     onOpenUrl: (String) -> Unit,
     viewModel: TagInfoVM = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val info by viewModel.info.collectAsState(initial = null)
+    var wikiExpanded by rememberSaveable { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         viewModel.loadInfoIfNeeded(tag)
@@ -47,9 +51,20 @@ fun TagInfoContent(
         InfoSimpleHeader(
             text = tag.name,
             icon = Icons.Outlined.Tag,
-            url = "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8"),
-            onCopy = onCopy,
-            onOpenUrl = onOpenUrl
+            trailingContent = {
+                if (!Stuff.isTv) {
+                    IconButtonWithTooltip(
+                        icon = Icons.Outlined.OpenInBrowser,
+                        contentDescription = stringResource(id = R.string.more_info),
+                        onClick = {
+                            val url =
+                                "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8")
+                            onOpenUrl(url)
+                        }
+                    )
+                }
+            },
+            onClick = null,
         )
 
         InfoCounts(
@@ -60,10 +75,14 @@ fun TagInfoContent(
             forShimmer = info == null
         )
 
-        info?.wiki?.content?.let {
+        AnimatedVisibility(
+            info?.wiki?.content != null,
+        ) {
             InfoWikiText(
-                text = it,
+                text = info?.wiki?.content ?: "",
                 maxLinesWhenCollapsed = 4,
+                expanded = wikiExpanded,
+                onExpandToggle = { wikiExpanded = !wikiExpanded },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -72,16 +91,13 @@ fun TagInfoContent(
 
 @Keep
 @Composable
-fun TagInfoScreen() {
-    val fragment = LocalFragment.current
-
-    val tag = fragment.requireArguments().getData<Tag>()!!
-
+fun TagInfoScreen(
+    tag: Tag,
+) {
     BottomSheetDialogParent {
         TagInfoContent(
             tag = tag,
-            onCopy = { fragment.requireContext().copyToClipboard(it) },
-            onOpenUrl = { Stuff.openInBrowser(fragment.requireContext(), it) },
+            onOpenUrl = { Stuff.openInBrowser(it) },
             modifier = it
         )
     }

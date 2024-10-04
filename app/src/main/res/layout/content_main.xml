@@ -6,7 +6,7 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.arn.scrobble.main.MainActivity">
+    tools:context="com.arn.scrobble.main.MainActivityOld">
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/sidebar_nav"

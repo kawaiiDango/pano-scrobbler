@@ -15,6 +15,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
@@ -37,7 +38,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.File
 import java.text.DateFormat
 import java.util.Calendar
@@ -263,12 +263,12 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 periodicWork
             )
 
-            Timber.i("scheduling ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
+            Logger.i { "scheduling ${ChartsWidgetUpdaterWorker::class.java.simpleName}" }
         }
 
         fun cancel(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(NAME_PERIODIC)
-            Timber.i("cancelled ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
+            Logger.i { "cancelled ${ChartsWidgetUpdaterWorker::class.java.simpleName}" }
         }
     }
 }

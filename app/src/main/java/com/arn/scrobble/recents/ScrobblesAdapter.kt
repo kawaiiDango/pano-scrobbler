@@ -25,13 +25,13 @@ import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobbleWithSource
+import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
-import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
@@ -439,7 +439,7 @@ class ScrobblesAdapter(
             if (themeTintBackground)
                 viewModel.paletteColors.value?.foreground?.let {
                     // todo this still does not fix the colors bug
-//                Timber.i("Color for ${track.name} is $it")
+//                Napier.i("Color for ${track.name} is $it")
                     binding.recentsTitle.setTextColor(it)
                 }
 

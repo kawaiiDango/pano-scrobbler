@@ -2,6 +2,7 @@ package com.arn.scrobble.api
 
 import android.content.Intent
 import android.util.LruCache
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.NLService
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.PlayingTrackInfo
@@ -28,7 +29,6 @@ import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.putSingle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import timber.log.Timber
 import java.io.IOException
 
 
@@ -45,12 +45,9 @@ object ScrobbleEverywhere {
         trackInfo: PlayingTrackInfo,
         parseTitle: Boolean = trackInfo.ignoreOrigArtist
     ) {
-        Timber.i(
-            this::scrobble.name + " " +
-                    (if (nowPlaying) "np" else "submit")
-                    + " " + trackInfo.artist + " - " + trackInfo.title
-        )
-
+        Logger.i {
+            this::scrobble.name + " " + (if (nowPlaying) "np" else "submit") + " " + trackInfo.artist + " - " + trackInfo.title
+        }
         Scrobblables.current.value ?: return
 
         var scrobbleResults = mapOf<Scrobblable, Result<ScrobbleIgnored>>()
@@ -362,7 +359,7 @@ object ScrobbleEverywhere {
         }
         if (failedTextLines.isNotEmpty()) {
             val failedText = failedTextLines.joinToString("<br>\n")
-            Timber.w("failedText= $failedText")
+            Logger.w { "failedText= $failedText" }
             if (ignored) {
                 val i = Intent(NLService.iBAD_META_S)
                     .setPackage(context.packageName)
@@ -395,7 +392,7 @@ object ScrobbleEverywhere {
     }
 
     suspend fun loveOrUnlove(track: Track, love: Boolean) {
-        Timber.i(this::loveOrUnlove.name + " " + love)
+        Logger.i { this::loveOrUnlove.name + " " + love }
 
         if (track.artist.name.isEmpty() || track.name.isEmpty())
             return

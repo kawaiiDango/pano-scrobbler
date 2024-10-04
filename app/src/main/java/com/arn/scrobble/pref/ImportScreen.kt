@@ -2,13 +2,10 @@ package com.arn.scrobble.pref
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -28,22 +25,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.RadioButtonGroup
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.toast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 
 @Composable
-private fun ImportContent(viewModel: ImportVM = viewModel(), modifier: Modifier = Modifier) {
+fun ImportScreen(
+    viewModel: ImportVM = viewModel(),
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
-    val fragment = LocalFragment.current
     var codeText by remember { mutableStateOf<String?>(null) }
     var errorText by remember { mutableStateOf<String?>(null) }
     var toggleButtonSelectedIndex by remember { mutableIntStateOf(-1) }
@@ -68,7 +65,7 @@ private fun ImportContent(viewModel: ImportVM = viewModel(), modifier: Modifier 
         }
 
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -153,7 +150,7 @@ private fun ImportContent(viewModel: ImportVM = viewModel(), modifier: Modifier 
             if (it) {
                 errorText = null
                 context.toast(importSuccessText)
-                fragment.findNavController().popBackStack()
+                onBack()
             } else {
                 errorText = importErrorText
             }
@@ -222,10 +219,4 @@ private fun ImportDialog(
             }
         }
     )
-}
-
-@Keep
-@Composable
-fun ImportScreen() {
-    ScreenParent { ImportContent(modifier = it) }
 }

@@ -6,6 +6,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.acrcloud.rec.ACRCloudClient
 import com.acrcloud.rec.ACRCloudConfig
 import com.acrcloud.rec.ACRCloudResult
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import timber.log.Timber
 
 class MicScrobbleVM : ViewModel(), IACRCloudListener {
 
@@ -160,7 +160,7 @@ class MicScrobbleVM : ViewModel(), IACRCloudListener {
             }
         } catch (e: JSONException) {
             statusCode = -1
-            Timber.tag(Stuff.TAG).w(e)
+            Logger.w(e) { "Acrcloud response parse failed" }
         }
 
 
@@ -204,7 +204,7 @@ class MicScrobbleVM : ViewModel(), IACRCloudListener {
             2001 -> statusText.value = context.getString(R.string.recording_failed)
             3003, 3015 -> _rateLimitedEvent.tryEmit(Unit)
             else -> {
-                Timber.w("rec error: $statusCode - $statusMsg")
+                Logger.w { "rec error: $statusCode - $statusMsg" }
                 statusText.value = context.getString(R.string.network_error)
             }
         }

@@ -1,6 +1,5 @@
 package com.arn.scrobble.edits
 
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -34,26 +33,19 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.db.SimpleEdit
-import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.ExtraBottomSpace
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.ui.SearchBox
 import com.arn.scrobble.ui.backgroundForShimmer
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.Stuff
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-private fun SimpleEditsContent(
+fun SimpleEditsScreen(
     viewModel: SimpleEditsVM = viewModel(),
     onEdit: (SimpleEdit?) -> Unit,
     modifier: Modifier = Modifier
@@ -61,10 +53,6 @@ private fun SimpleEditsContent(
     val simpleEdits by viewModel.simpleEditsFiltered.collectAsStateWithLifecycle()
     val count by viewModel.count.collectAsStateWithLifecycle(0)
     var searchTerm by rememberSaveable { mutableStateOf("") }
-
-    fun doDelete(edit: SimpleEdit) {
-        viewModel.delete(edit)
-    }
 
     LaunchedEffect(searchTerm) {
         viewModel.setFilter(searchTerm)
@@ -76,7 +64,9 @@ private fun SimpleEditsContent(
                 searchTerm = searchTerm,
                 onSearchTermChange = {
                     searchTerm = it
-                }
+                },
+                modifier = Modifier
+                    .padding(panoContentPadding(bottom = false))
             )
         }
 
@@ -85,9 +75,14 @@ private fun SimpleEditsContent(
             text = pluralStringResource(R.plurals.num_simple_edits, 0, 0)
         )
 
-        AnimatedVisibility(visible = simpleEdits == null) {
+        AnimatedVisibility(
+            visible = simpleEdits == null,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
             val shimmerEdits = remember { List(10) { SimpleEdit(_id = it) } }
             LazyColumn(
+                contentPadding = panoContentPadding(),
                 modifier = Modifier
                     .fillMaxSize()
                     .shimmer()
@@ -106,6 +101,7 @@ private fun SimpleEditsContent(
             exit = fadeOut(),
         ) {
             LazyColumn(
+                contentPadding = panoContentPadding(),
                 modifier = Modifier
                     .fillMaxSize()
             ) {
@@ -115,13 +111,9 @@ private fun SimpleEditsContent(
                     SimpleEditItem(
                         edit,
                         onEdit = onEdit,
-                        onDelete = ::doDelete,
+                        onDelete = { viewModel.delete(it) },
                         modifier = Modifier.animateItem()
                     )
-                }
-
-                item("extra_space") {
-                    ExtraBottomSpace()
                 }
             }
         }
@@ -194,34 +186,5 @@ private fun SimpleEditItem(
             enabled = !forShimmer
         )
 
-    }
-}
-
-@Keep
-@Composable
-fun SimpleEditsScreen(
-) {
-    val fragment = LocalFragment.current
-
-    LaunchedEffect(Unit) {
-        val fabData = FabData(
-            fragment.viewLifecycleOwner,
-            R.string.add,
-            R.drawable.vd_add_borderless,
-            {
-                fragment.findNavController().navigate(R.id.simpleEditsEditFragment)
-            }
-        )
-
-        val mainNotifierViewModel by fragment.activityViewModels<MainNotifierViewModel>()
-
-        mainNotifierViewModel.setFabData(fabData)
-    }
-
-    ScreenParent {
-        SimpleEditsContent(onEdit = {
-            fragment.findNavController()
-                .navigate(R.id.simpleEditsEditFragment, bundleOf(Stuff.ARG_EDIT to it))
-        }, modifier = it)
     }
 }

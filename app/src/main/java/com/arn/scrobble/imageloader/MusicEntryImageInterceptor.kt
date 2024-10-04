@@ -1,4 +1,4 @@
-package com.arn.scrobble.ui
+package com.arn.scrobble.imageloader
 
 import android.util.LruCache
 import coil3.intercept.Interceptor
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
-
 
 class MusicEntryImageInterceptor : Interceptor {
 

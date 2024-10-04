@@ -60,14 +60,14 @@ import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainActivityOld
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.createSkeletonWithFade
@@ -116,7 +116,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         get() = _binding!!
     private val viewModel by viewModels<TracksVM>()
     private val billingViewModel by activityViewModels<BillingViewModel>()
-    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
+    private val activityViewModel by activityViewModels<MainViewModel>()
     private var animSet: AnimatorSet? = null
     private val args by navArgs<ScrobblesFragmentArgs>()
     private var lastSetHeroJob: Job? = null
@@ -130,7 +130,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     ): View {
         _binding = ContentScrobblesBinding.inflate(inflater, container, false)
         binding.scrobblesList.setupInsets()
-        coordinatorBinding = (activity as MainActivity).binding
+        coordinatorBinding = (activity as MainActivityOld).binding
         return binding.root
     }
 
@@ -187,7 +187,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = activity as MainActivity? ?: return
+        val activity = activity as MainActivityOld? ?: return
 
         val llm = LinearLayoutManager(requireContext())
         binding.scrobblesList.layoutManager = llm
@@ -857,7 +857,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             .build()
         dpd.addOnPositiveButtonClickListener {
             val toTime = Stuff.timeToLocal(it) + (24 * 60 * 60 - 1) * 1000
-//                Timber.i("time=" + Date(viewModel.toTime))
+//                Napier.i("time=" + Date(viewModel.toTime))
 
             binding.timeJumpChip.isCheckable = true
             binding.timeJumpChip.isChecked = true

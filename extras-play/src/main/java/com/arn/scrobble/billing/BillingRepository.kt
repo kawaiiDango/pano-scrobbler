@@ -2,6 +2,7 @@ package com.arn.scrobble.billing
 
 import android.app.Activity
 import android.app.Application
+import co.touchlab.kermit.Logger
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
@@ -9,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import timber.log.Timber
 import java.util.*
 
 
@@ -30,7 +30,7 @@ class BillingRepository(
     private val TAG = BillingRepository::class.simpleName!!
     private lateinit var playStoreBillingClient: BillingClient
     private var proProductDetailsList: List<ProductDetails>? = null
-    val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
+    private val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
 
 
     override fun initBillingClient() {
@@ -54,9 +54,7 @@ class BillingRepository(
     override fun onBillingSetupFinished(billingResult: BillingResult) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
-                handler.removeCallbacksAndMessages(null)
-                reconnectCount = 0
-                reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
+                resetReconnectTimer()
                 fetchProductDetails(clientData.proProductId)
 
                 // this runs in a separate thread anyways
@@ -66,13 +64,12 @@ class BillingRepository(
             }
 
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Timber.w("BILLING_UNAVAILABLE")
+                Logger.w(TAG) { "BILLING_UNAVAILABLE" }
                 //Some apps may choose to make decisions based on this knowledge.
             }
 
             BillingClient.BillingResponseCode.ERROR -> {
-                Timber.tag(TAG)
-                    .e(RuntimeException("BILLING_ERROR " + billingResult.debugMessage))
+                Logger.d(TAG) { billingResult.debugMessage }
             }
 
             else -> {
@@ -169,13 +166,15 @@ class BillingRepository(
         acknowledgeNonConsumablePurchasesAsync(validPurchases)
     }
 
-    override fun verifyPurchase(data: String, signature: String) =
-        Security.verifyPurchase(
+    override fun verifyPurchase(data: String, signature: String?): Boolean {
+        val s = signature ?: return false
+        return Security.verifyPurchase(
             data,
-            signature,
+            s,
             clientData.publicKeyBase64,
         ) &&
                 Security.signature(application, clientData.apkSignature) != null
+    }
 
 
     /**
@@ -267,8 +266,7 @@ class BillingRepository(
                 }
 
                 else -> {
-                    Timber.tag(TAG)
-                        .d(billingResult.debugMessage)
+                    Logger.d(TAG) { billingResult.debugMessage }
                 }
             }
         }
@@ -330,9 +328,12 @@ class BillingRepository(
             }
 
             else -> {
-                Timber.tag(TAG).d(billingResult.debugMessage)
+                Logger.d(TAG) { billingResult.debugMessage }
             }
         }
+    }
+
+    override suspend fun checkAndStoreLicense(receipt: String) {
     }
 
 //    companion object {

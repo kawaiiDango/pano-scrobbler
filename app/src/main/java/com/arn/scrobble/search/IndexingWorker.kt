@@ -11,6 +11,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
@@ -41,7 +42,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class IndexingWorker(
     context: Context,
@@ -98,7 +98,7 @@ class IndexingWorker(
 
 
     private suspend fun runFullIndex() {
-        Timber.i(this::runFullIndex.name)
+        Logger.i { this::runFullIndex.name }
 
         val limitPerPage = 1000
         val numPages = Stuff.MAX_INDEXED_ITEMS / limitPerPage
@@ -229,7 +229,7 @@ class IndexingWorker(
 
     private suspend fun runDeltaIndex(prFromRecents: PageResult<Track>? = null) {
 
-        Timber.i(this::runDeltaIndex.name)
+        Logger.i { this::runDeltaIndex.name }
 
         val from = mainPrefs.data.map { it.lastMaxIndexedScrobbleTime }.first()
             ?: throw IllegalStateException("Full index never run")

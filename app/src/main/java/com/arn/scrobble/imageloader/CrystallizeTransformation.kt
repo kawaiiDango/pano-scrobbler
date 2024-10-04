@@ -1,6 +1,4 @@
-@file:Suppress("unused")
-
-package com.arn.scrobble.ui
+package com.arn.scrobble.imageloader
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -11,7 +9,6 @@ import com.arn.scrobble.utils.UiUtils.toIntArray
 import com.jabistudio.androidjhlabs.filter.CellularCrystallizeFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
 
 class CrystallizeTransformation(private val context: Context) : Transformation() {
 

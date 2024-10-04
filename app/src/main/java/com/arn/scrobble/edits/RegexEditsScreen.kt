@@ -1,26 +1,19 @@
 package com.arn.scrobble.edits
 
-import android.os.Bundle
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.DraggableState
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
@@ -41,8 +34,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,42 +47,39 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.NLService
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.AlertDialogOk
+import com.arn.scrobble.ui.DraggableItem
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ErrorText
-import com.arn.scrobble.ui.ExtraBottomSpace
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.ui.backgroundForShimmer
+import com.arn.scrobble.ui.panoContentPadding
+import com.arn.scrobble.ui.dragContainer
+import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.UiUtils.toast
 import com.valentinilk.shimmer.shimmer
-import kotlin.math.roundToInt
 
 @Composable
-private fun RegexEditsContent(
+fun RegexEditsScreen(
     viewModel: RegexEditsVM = viewModel(),
     onNavigateToTest: () -> Unit,
     onNavigateToEdit: (RegexEdit) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val regexEdits by viewModel.regexes.collectAsStateWithLifecycle()
+    var regexEditsReordered by remember { mutableStateOf<List<RegexEdit>?>(null) }
     val limitReached by viewModel.limitReached.collectAsStateWithLifecycle()
 
     val presetsAvailable by viewModel.presetsAvailable.collectAsStateWithLifecycle()
@@ -102,11 +90,15 @@ private fun RegexEditsContent(
         null
     }
 
+    LaunchedEffect(regexEdits) {
+        regexEditsReordered = regexEdits
+    }
+
     Column(
         modifier = modifier
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(panoContentPadding(bottom = false)),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             AssistChip(onClick = onNavigateToTest,
@@ -117,9 +109,8 @@ private fun RegexEditsContent(
             },
                 label = { Text(text = stringResource(R.string.edit_presets)) })
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
-        ErrorText(limitReachedMessage, modifier = Modifier.padding(bottom = 16.dp))
+        ErrorText(limitReachedMessage, modifier = Modifier.padding(vertical = 16.dp))
 
         AnimatedVisibility(
             visible = regexEdits == null,
@@ -130,36 +121,35 @@ private fun RegexEditsContent(
         }
 
         EmptyText(
-            visible = regexEdits?.isEmpty() == true,
+            visible = regexEditsReordered?.isEmpty() == true,
             text = pluralStringResource(R.plurals.num_regex_edits, 0, 0)
         )
 
         AnimatedVisibility(
-            visible = regexEdits?.isNotEmpty() == true,
+            visible = regexEditsReordered?.isNotEmpty() == true,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
             RegexEditsList(
-                regexEdits = regexEdits ?: emptyList(),
+                regexEdits = regexEditsReordered ?: emptyList(),
                 onItemClick = {
                     onNavigateToEdit(RegexPresets.getPossiblePreset(it))
                 },
                 onMoveItem = { fromIndex, toIndex ->
-                    val regexEdits = regexEdits ?: return@RegexEditsList
+                    val _regexEditsReordered = regexEditsReordered ?: return@RegexEditsList
 
                     if (fromIndex == toIndex) return@RegexEditsList
                     if (fromIndex < 0 || toIndex < 0) return@RegexEditsList
-                    if (fromIndex >= regexEdits.size || toIndex >= regexEdits.size) return@RegexEditsList
+                    if (fromIndex >= _regexEditsReordered.size || toIndex >= _regexEditsReordered.size) return@RegexEditsList
 
-                    val updatedList = regexEdits.toMutableList().apply {
-                        val movedItem = removeAt(fromIndex)
-                        add(toIndex, movedItem)
-                    }.mapIndexed { index, regex ->
+                    regexEditsReordered = _regexEditsReordered.toMutableList()
+                        .apply { add(toIndex, removeAt(fromIndex)) }
+                },
+                onDragEnd = {
+                    regexEditsReordered?.mapIndexed { index, regex ->
                         regex.copy(order = index)
-                    }
-
-                    viewModel.upsertAll(updatedList)
-                }
+                    }?.let { viewModel.upsertAll(it) }
+                },
             )
         }
     }
@@ -181,54 +171,55 @@ private fun RegexEditsContent(
 private fun RegexEditsList(
     regexEdits: List<RegexEdit>,
     onItemClick: (RegexEdit) -> Unit,
-    onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit
+    onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
+    onDragEnd: () -> Unit,
 ) {
     val listState = rememberLazyListState()
-
-    LazyColumn(state = listState) {
-        items(regexEdits, key = { it._id }) { item ->
-            var offsetY by remember { mutableFloatStateOf(0f) }
-            val dragState = rememberDraggableState { delta ->
-                offsetY = delta
-            }
-
-            RegexEditItem(
-                regexEdit = item,
-                dragState = dragState,
-                onItemClick = { onItemClick(it) },
-                onMoveItem = { f, t ->
-                    onMoveItem(f, t)
-                    // todo auto scroll if out of bounds
-                },
-                modifier = Modifier
-                    .animateItem()
-                    .offset { IntOffset(0, offsetY.roundToInt()) }
-            )
+    val dragDropState =
+        rememberDragDropState(
+            listState,
+            onDragEnd = onDragEnd
+        ) { fromIndex, toIndex ->
+            onMoveItem(fromIndex, toIndex)
         }
 
-        item("extra_space") {
-            ExtraBottomSpace()
+    LazyColumn(
+        state = listState,
+        contentPadding = panoContentPadding(),
+        modifier = Modifier.dragContainer(dragDropState),
+    ) {
+        itemsIndexed(regexEdits, key = { _, item -> item._id }) { index, item ->
+            DraggableItem(dragDropState, index) { isDragging ->
+                RegexEditItem(
+                    regexEdit = item,
+                    onItemClick = { onItemClick(it) },
+                    onKeypressMoveItem = { f, t ->
+                        onMoveItem(f, t)
+                        onDragEnd()
+                    },
+                    modifier = Modifier.alpha(if (isDragging) 0.5f else 1f)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun RegexEditsListShimmer(
-) {
+private fun RegexEditsListShimmer() {
     val listForShimmer = List(10) {
         RegexEdit(_id = it)
     }
 
     LazyColumn(
+        contentPadding = panoContentPadding(),
         modifier = Modifier.shimmer(),
     ) {
         items(listForShimmer, key = { it._id }) {
             RegexEditItem(
                 regexEdit = it,
                 forShimmer = true,
+                onKeypressMoveItem = { _, _ -> },
                 onItemClick = { },
-                dragState = null,
-                onMoveItem = { _, _ -> }
             )
         }
     }
@@ -237,16 +228,12 @@ private fun RegexEditsListShimmer(
 @Composable
 private fun RegexEditItem(
     regexEdit: RegexEdit,
-    dragState: DraggableState?,
-    onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
+    onKeypressMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
     onItemClick: (RegexEdit) -> Unit,
     forShimmer: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val regexEdit = remember(regexEdit) { RegexPresets.getPossiblePreset(regexEdit) }
-    var isDragging by remember { mutableStateOf(false) }
-    val itemHeight = remember { mutableIntStateOf(0) }
-    var dragOffset by remember { mutableFloatStateOf(0f) }
 
     val modifierIcons = getModifierIcons(regexEdit)
 
@@ -262,11 +249,7 @@ private fun RegexEditItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .alpha(if (isDragging) 0.5f else 1f)
-            .onGloballyPositioned { coordinates ->
-                itemHeight.value = coordinates.size.height
-            }
+            .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding())
     ) {
         Icon(
             imageVector = Icons.Outlined.DragHandle,
@@ -274,52 +257,38 @@ private fun RegexEditItem(
             modifier = Modifier
                 .size(40.dp)
                 .clip(MaterialTheme.shapes.medium)
-                .clickable(enabled = !forShimmer) {
-                    // todo toast that this is for reordering
-                }
-                .padding(end = 12.dp)
-                .onKeyEvent { event ->
-                    if (event.type == KeyEventType.KeyDown) {
-                        when (event.key) {
-                            Key.DirectionUp -> {
-                                onMoveItem(regexEdit.order, regexEdit.order - 1)
-                                true
+                .then(
+                    if (Stuff.isTv) {
+                        Modifier
+                            .clickable(enabled = !forShimmer) {
+                                PlatformStuff.application.toast(R.string.reorder_dpad)
                             }
+                            .onKeyEvent { event ->
+                                if (event.type == KeyEventType.KeyDown) {
+                                    when (event.key) {
+                                        Key.DirectionUp -> {
+                                            onKeypressMoveItem(regexEdit.order, regexEdit.order - 1)
+                                            true
+                                        }
 
-                            Key.DirectionDown -> {
-                                onMoveItem(regexEdit.order, regexEdit.order + 1)
-                                true
-                            }
+                                        Key.DirectionDown -> {
+                                            onKeypressMoveItem(regexEdit.order, regexEdit.order + 1)
+                                            true
+                                        }
 
-                            else -> {
-                                false
-                            }
-                        }
-                    } else {
-                        false
-                    }
-
-                }
-                .then(if (forShimmer || dragState == null) Modifier
-                else
-                    Modifier
-                        .draggable(
-                            state = dragState,
-                            orientation = Orientation.Vertical,
-                            onDragStarted = {
-                                isDragging = true
-                            },
-                            onDragStopped = {
-                                isDragging = false
-                                dragOffset = 0f
-                                val newPosition =
-                                    (regexEdit.order + (it / itemHeight.value).toInt())
-                                if (newPosition != regexEdit.order) {
-                                    onMoveItem(regexEdit.order, newPosition)
+                                        else -> {
+                                            false
+                                        }
+                                    }
+                                } else {
+                                    false
                                 }
                             }
-                        )
+                    } else {
+                        Modifier
+                    }
                 )
+                .padding(8.dp)
         )
         Column(
             modifier = Modifier
@@ -431,41 +400,5 @@ fun PresetsDialog(
             text = stringResource(R.string.edit_no_presets_available)
         )
 
-    }
-}
-
-@Keep
-@Composable
-fun RegexEditsScreen() {
-    val fragment = LocalFragment.current
-    LaunchedEffect(Unit) {
-        val fabData = FabData(
-            fragment.viewLifecycleOwner,
-            R.string.add,
-            R.drawable.vd_add_borderless,
-            {
-                // todo do not navigate if limit reached
-                fragment.findNavController().navigate(R.id.regexEditsAddFragment)
-            }
-        )
-
-        val mainNotifierViewModel by fragment.activityViewModels<MainNotifierViewModel>()
-
-        mainNotifierViewModel.setFabData(fabData)
-    }
-
-    ScreenParent {
-        RegexEditsContent(
-            onNavigateToTest = {
-                fragment.findNavController().navigate(R.id.regexEditsTestFragment)
-            },
-            onNavigateToEdit = {
-                val args = Bundle().apply {
-                    putSingle(it)
-                }
-                fragment.findNavController().navigate(R.id.regexEditsAddFragment, args)
-            },
-            modifier = it
-        )
     }
 }

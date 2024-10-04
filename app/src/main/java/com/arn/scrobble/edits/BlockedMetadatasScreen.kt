@@ -1,7 +1,5 @@
 package com.arn.scrobble.edits
 
-import android.os.Bundle
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -34,26 +32,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.ExtraBottomSpace
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.ui.SearchBox
 import com.arn.scrobble.ui.backgroundForShimmer
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.putSingle
 import com.valentinilk.shimmer.shimmer
 
 @Composable
-private fun BlockedMetadataContent(
+fun BlockedMetadatasScreen(
     viewModel: BlockedMetadataVM = viewModel(),
     onEdit: (BlockedMetadata) -> Unit,
     modifier: Modifier = Modifier
@@ -77,7 +68,8 @@ private fun BlockedMetadataContent(
                 onSearchTermChange = {
                     searchTerm = it
                     viewModel.setFilter(it)
-                }
+                },
+                modifier = Modifier.padding(panoContentPadding(bottom = false))
             )
         }
 
@@ -86,9 +78,14 @@ private fun BlockedMetadataContent(
             text = pluralStringResource(R.plurals.num_blocked_metadata, 0, 0)
         )
 
-        AnimatedVisibility(visible = blockedMetadatas == null) {
-            val shimmerEdits = remember { List(10) { BlockedMetadata(_id = it) } }
+        AnimatedVisibility(
+            visible = blockedMetadatas == null,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            val shimmerEdits = remember { List(10) { BlockedMetadata(track = "a", _id = it) } }
             LazyColumn(
+                contentPadding = panoContentPadding(),
                 modifier = Modifier
                     .fillMaxSize()
                     .shimmer()
@@ -107,6 +104,7 @@ private fun BlockedMetadataContent(
             exit = fadeOut(),
         ) {
             LazyColumn(
+                contentPadding = panoContentPadding(),
                 modifier = Modifier
                     .fillMaxSize()
             ) {
@@ -119,10 +117,6 @@ private fun BlockedMetadataContent(
                         onDelete = ::doDelete,
                         modifier = Modifier.animateItem()
                     )
-                }
-
-                item("extra_space") {
-                    ExtraBottomSpace()
                 }
             }
         }
@@ -147,7 +141,6 @@ private fun BlockedMetadataItem(
             modifier = Modifier
                 .weight(1f)
                 .defaultMinSize(minHeight = 56.dp)
-                .backgroundForShimmer(forShimmer)
                 .clip(MaterialTheme.shapes.medium)
                 .clickable(enabled = !forShimmer) { onEdit(blockedMetadata) }
                 .padding(8.dp)
@@ -156,6 +149,8 @@ private fun BlockedMetadataItem(
                 Text(
                     text = blockedMetadata.track,
                     style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .backgroundForShimmer(forShimmer)
                 )
             }
             if (blockedMetadata.artist.isNotEmpty()) {
@@ -202,36 +197,5 @@ private fun BlockedMetadataItem(
             onDelete = { onDelete(blockedMetadata) },
             enabled = !forShimmer
         )
-    }
-}
-
-@Keep
-@Composable
-fun BlockedMetadataScreen() {
-    val fragment = LocalFragment.current
-
-    LaunchedEffect(Unit) {
-        val fabData = FabData(
-            fragment.viewLifecycleOwner,
-            R.string.add,
-            R.drawable.vd_add_borderless,
-            {
-                fragment.findNavController().navigate(R.id.blockedMetadataAddDialogFragment)
-            }
-        )
-
-        val mainNotifierViewModel by fragment.activityViewModels<MainNotifierViewModel>()
-
-        mainNotifierViewModel.setFabData(fabData)
-    }
-
-    ScreenParent {
-        BlockedMetadataContent(onEdit = {
-            val args = Bundle().apply {
-                putSingle(it)
-            }
-            fragment.findNavController()
-                .navigate(R.id.blockedMetadataAddDialogFragment, args)
-        }, modifier = it)
     }
 }

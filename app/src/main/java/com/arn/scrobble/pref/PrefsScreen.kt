@@ -10,10 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
-import android.os.Bundle
 import android.provider.Settings
-import androidx.annotation.Keep
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,8 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ExtrasConsts
 import com.arn.scrobble.MasterSwitchQS
@@ -58,8 +53,9 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.ui.ExtraBottomSpace
-import com.arn.scrobble.ui.ScreenParent
+import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.utils.Stuff
@@ -73,12 +69,13 @@ import java.util.Calendar
 import java.util.Locale
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PrefsScreenContent(modifier: Modifier = Modifier) {
+fun PrefsScreen(
+    onNavigate: (PanoRoute) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val mainPrefs = remember { PlatformStuff.mainPrefs }
     val context = LocalContext.current
-    val fragment = LocalFragment.current
     val nlsEnabled = remember { Stuff.isNotificationListenerEnabled() }
 
     val autoString = stringResource(R.string.auto)
@@ -132,7 +129,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
     var showIntentsDescDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier, contentPadding = panoContentPadding()) {
         item(MainPrefs::scrobblerEnabled.name) {
             SwitchPref(
                 text = stringResource(R.string.pref_master),
@@ -172,7 +169,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
         }
 
         stickyHeader("apps_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.choose_apps),
                 icon = Icons.Outlined.Apps
             )
@@ -182,7 +179,13 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
             AppIconsPref(
                 packageNames = allowedPackages,
                 onClick = {
-                    fragment.findNavController().navigate(R.id.appListFragment)
+                    onNavigate(
+                        PanoRoute.AppList(
+                            preSelectedPackages = emptyList(),
+                            hasPreSelection = false,
+                            isSingleSelect = false,
+                        )
+                    )
                 }
             )
         }
@@ -211,7 +214,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
         }
 
         stickyHeader("pref_delay_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.pref_delay),
                 icon = Icons.Outlined.HourglassEmpty
             )
@@ -246,7 +249,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
         }
 
         stickyHeader("personalization_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.pref_personalization),
                 icon = Icons.Outlined.Person
             )
@@ -255,8 +258,9 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
         item(MainPrefs::themeName.name) {
             TextPref(
                 text = stringResource(R.string.pref_themes),
+                needsPremium = true,
                 onClick = {
-                    fragment.findNavController().navigate(R.id.themesFragment)
+                    onNavigate(PanoRoute.ThemeChooser)
                 }
             )
         }
@@ -356,7 +360,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
         }
 
         stickyHeader("lists_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.pref_lists),
                 icon = Icons.AutoMirrored.Outlined.List
             )
@@ -370,7 +374,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                     numSimpleEdits
                 ),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.simpleEditsFragment)
+                    onNavigate(PanoRoute.SimpleEdits)
                 }
             )
         }
@@ -383,7 +387,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                     numRegexEdits
                 ),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.regexEditsFragment)
+                    onNavigate(PanoRoute.RegexEdits)
                 }
             )
         }
@@ -396,13 +400,13 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                     numBlockedMetadata
                 ),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.blockedMetadataFragment)
+                    onNavigate(PanoRoute.BlockedMetadatas)
                 }
             )
         }
 
         stickyHeader("languages_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.pref_locale),
                 icon = Icons.Outlined.Translate
             )
@@ -415,12 +419,18 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                 val autoEntry = mapOf("auto" to autoString)
                 LocaleUtils.localesSet.associateWith {
                     val localeObj = Locale.forLanguageTag(it)
+                    val displayLanguage = localeObj.displayLanguage
 
-                    when (localeObj.language) {
-                        in LocaleUtils.showScriptSet -> localeObj.displayLanguage + " (${localeObj.displayScript})"
-                        in LocaleUtils.showCountrySet -> localeObj.displayLanguage + " (${localeObj.displayCountry})"
-                        else -> localeObj.displayLanguage
+                    val suffix = when (localeObj.language) {
+                        in LocaleUtils.showScriptSet -> " (${localeObj.displayScript})"
+                        in LocaleUtils.showCountrySet -> localeObj.displayCountry
+                            .ifEmpty { null }
+                            ?.let { " ($it)" } ?: ""
+
+                        else -> ""
                     }
+
+                    displayLanguage + suffix
                 }.let { autoEntry + it }
             }
 
@@ -442,7 +452,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
             TextPref(
                 text = stringResource(R.string.pref_translate),
                 onClick = {
-                    Stuff.openInBrowser(context, crowdinLink)
+                    Stuff.openInBrowser(crowdinLink)
                 }
             )
         }
@@ -451,13 +461,13 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
             TextPref(
                 text = stringResource(R.string.pref_translate_credits),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.translatorsFragment)
+                    onNavigate(PanoRoute.Translators)
                 }
             )
         }
 
         stickyHeader("misc_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.pref_misc),
                 icon = Icons.Outlined.MoreHoriz
             )
@@ -525,7 +535,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
         }
 
         stickyHeader("imexport_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.pref_imexport),
                 icon = Icons.Outlined.SwapVert
             )
@@ -536,7 +546,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                 text = stringResource(R.string.pref_export),
                 summary = stringResource(R.string.pref_export_desc),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.exportFragment)
+                    onNavigate(PanoRoute.Export)
                 }
             )
         }
@@ -545,13 +555,13 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
             TextPref(
                 text = stringResource(R.string.pref_import),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.importFragment)
+                    onNavigate(PanoRoute.Import)
                 }
             )
         }
 
         stickyHeader("services_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.scrobble_services),
                 icon = Icons.Outlined.Dns
             )
@@ -566,6 +576,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                     AccountPref(
                         type = accountType,
                         usernamesMap = scrobblableLabels,
+                        onNavigate = onNavigate
                     )
                 }
             }
@@ -574,13 +585,13 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
             TextPref(
                 text = stringResource(R.string.delete_account),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.deleteAccountFragment)
+                    onNavigate(PanoRoute.DeleteAccount)
                 }
             )
         }
 
         stickyHeader("about_header") {
-            HeaderPref(
+            SimpleHeaderItem(
                 text = stringResource(R.string.pref_about),
                 icon = Icons.Outlined.Info
             )
@@ -590,7 +601,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
             TextPref(
                 text = stringResource(R.string.pref_oss_credits),
                 onClick = {
-                    fragment.findNavController().navigate(R.id.licensesFragment)
+                    onNavigate(PanoRoute.OssCredits)
                 }
             )
         }
@@ -601,10 +612,11 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
             TextPref(
                 text = stringResource(R.string.pref_privacy_policy),
                 onClick = {
-                    val args = Bundle().apply {
-                        putString(Stuff.ARG_URL, privacyPolicyLink)
-                    }
-                    fragment.findNavController().navigate(R.id.webViewFragment, args)
+                    // todo: implement WebViewFragment
+//                    val args = Bundle().apply {
+//                        putString(Stuff.ARG_URL, privacyPolicyLink)
+//                    }
+//                    fragment.findNavController().navigate(R.id.webViewFragment, args)
                 }
             )
         }
@@ -616,14 +628,14 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                 text = "v " + BuildConfig.VERSION_NAME,
                 summary = githubLink,
                 onClick = {
-                    Stuff.openInBrowser(context, githubLink)
+                    Stuff.openInBrowser(githubLink)
                 }
             )
         }
 
         if (BuildConfig.DEBUG) {
             stickyHeader("debug_header") {
-                HeaderPref(
+                SimpleHeaderItem(
                     text = stringResource(R.string.debug_menu),
                     icon = Icons.Outlined.BugReport
                 )
@@ -664,17 +676,7 @@ private fun PrefsScreenContent(modifier: Modifier = Modifier) {
                 )
             }
         }
-
-        item("spacer") {
-            ExtraBottomSpace()
-        }
     }
-}
-
-@Keep
-@Composable
-fun PrefsScreen() {
-    ScreenParent { PrefsScreenContent(it) }
 }
 
 @TargetApi(Build.VERSION_CODES.O)

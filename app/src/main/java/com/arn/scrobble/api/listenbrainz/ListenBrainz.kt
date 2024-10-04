@@ -1,6 +1,7 @@
 package com.arn.scrobble.api.listenbrainz
 
 import androidx.annotation.IntRange
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
@@ -35,7 +36,6 @@ import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.DrawerData
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
-import com.arn.scrobble.utils.Stuff.dLazy
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.expectSuccess
@@ -47,7 +47,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.util.appendIfNameAbsent
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
@@ -160,10 +159,10 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         else
             null
 
-        Timber.dLazy { "msid: $msid mbid: $mbid" }
+        Logger.d { "msid: $msid mbid: $mbid" }
 
         if (msid == null && mbid == null) {
-            Timber.w("Track mbid not found, skipping feedback")
+            Logger.w { "Track mbid not found, skipping feedback" }
             return Result.success(ScrobbleIgnored(true)) // ignore
         }
 
@@ -313,8 +312,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
         val actualLimit = if (limit > 0) limit else 25
 
-        Timber.i(this::getLoves.name + " " + page)
-
+        Logger.i { this::getLoves.name + " " + page }
 
         return client.getPageResult<ListenBrainzFeedbacks, Track>(
             "feedback/user/$username/get-feedback",

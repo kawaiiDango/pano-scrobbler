@@ -21,6 +21,12 @@ class BillingViewModel : ViewModel() {
         repository.startDataSourceConnections()
     }
 
+    fun checkAndStoreLicense(receipt: String) {
+        viewModelScope.launch {
+            repository.checkAndStoreLicense(receipt)
+        }
+    }
+
     fun queryPurchasesAsync() {
         viewModelScope.launch {
             delay(500)

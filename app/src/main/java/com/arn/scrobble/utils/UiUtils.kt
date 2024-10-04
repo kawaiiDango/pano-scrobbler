@@ -73,7 +73,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.databinding.LayoutSnowfallBinding
 import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.DrawerData
-import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.StatefulAppBar
@@ -478,7 +478,7 @@ object UiUtils {
 //        if (isDetached || isRemoving || !isResumed)
 //            return
 
-        val activity = activity as? MainActivity ?: return
+        val activity = activity as? MainActivityOld ?: return
         val title = str ?: " "
 
         findNavController().currentDestination?.addArgument(
@@ -517,7 +517,7 @@ object UiUtils {
 //                            bottomSheetDialog.window!!.currentFocus
 //                        if (currentFocus != prevFocus) {
 //                            prevFocus = currentFocus
-//                            Timber.dLazy { "focus: $currentFocus" }
+//                            Napier.dLazy { "focus: $currentFocus" }
 //                        }
 //                    }
 //                }
@@ -552,7 +552,7 @@ object UiUtils {
     fun EditText.trimmedText() = text.toString().trim()
 
     fun createNotificationForFgs(context: Context, title: String): Notification {
-        val intent = Intent(context, MainActivity::class.java)
+        val intent = Intent(context, MainActivityOld::class.java)
         val launchIntent = PendingIntent.getActivity(
             context, 8, intent,
             Stuff.updateCurrentOrImmutable

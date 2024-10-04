@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -26,31 +24,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.NLService
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.themes.AppPreviewTheme
 import com.arn.scrobble.ui.DialogParent
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.putSingle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 private fun BlockedMetadataAddContent(
-    blockedMetadata: BlockedMetadata = BlockedMetadata(skip = true),
+    blockedMetadata: BlockedMetadata,
     ignoredArtist: String?,
     onSave: (BlockedMetadata) -> Unit,
     onNavigateToBilling: () -> Unit,
@@ -79,7 +72,6 @@ private fun BlockedMetadataAddContent(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
-            .verticalScroll(rememberScrollState())
     ) {
         OutlinedTextField(
             value = track,
@@ -204,54 +196,41 @@ private fun BlockedMetadataAddContent(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun BlockedMetadataAddPreview() {
-    AppPreviewTheme {
-        BlockedMetadataAddContent(
-            blockedMetadata = BlockedMetadata(skip = true),
-            ignoredArtist = "ignoredArtist",
-            onSave = {},
-            onNavigateToBilling = {}
-        )
-    }
-}
-
 @Keep
 @Composable
-fun BlockedMetadataAddScreen() {
-    val fragment = LocalFragment.current as DialogFragment
+fun BlockedMetadataAddScreen(
+    blockedMetadata: BlockedMetadata,
+    ignoredArtist: String?,
+    hash: Int?,
+    onBack: () -> Unit,
+    onNavigateToBilling: () -> Unit,
+) {
     val scope = rememberCoroutineScope()
-
-    val blockedMetadata =
-        fragment.arguments?.getSingle<BlockedMetadata>()?.copy()
-            ?: BlockedMetadata(skip = true)
-    val ignoredArtist = fragment.arguments?.getString(NLService.B_IGNORED_ARTIST)
-    val hash = fragment.arguments?.getInt(NLService.B_HASH) ?: 0
 
     DialogParent {
         BlockedMetadataAddContent(
             blockedMetadata = blockedMetadata,
             ignoredArtist = ignoredArtist,
             onSave = {
-                scope.launch(Dispatchers.IO) {
-                    PanoDb.db.getBlockedMetadataDao().insertLowerCase(listOf(it), ignore = false)
-                }
-
-                if (hash != 0) {
-                    val i = Intent(NLService.iBLOCK_ACTION_S).apply {
-                        `package` = PlatformStuff.application.packageName
-                        putSingle(it)
-                        putExtra(NLService.B_HASH, hash)
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        PanoDb.db.getBlockedMetadataDao()
+                            .insertLowerCase(listOf(it), ignore = false)
                     }
-                    PlatformStuff.application.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
-                }
 
-                fragment.dismiss()
+                    if (hash != 0) {
+                        val i = Intent(NLService.iBLOCK_ACTION_S).apply {
+                            `package` = PlatformStuff.application.packageName
+                            putSingle(it)
+                            putExtra(NLService.B_HASH, hash)
+                        }
+                        PlatformStuff.application.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+                    }
+
+                    onBack()
+                }
             },
-            onNavigateToBilling = {
-                fragment.findNavController().navigate(R.id.billingFragment)
-            },
+            onNavigateToBilling = onNavigateToBilling,
             modifier = it
         )
     }

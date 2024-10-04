@@ -3,8 +3,10 @@ package com.arn.scrobble.api.lastfm
 import android.os.Parcelable
 import androidx.annotation.Keep
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Keep
+@Serializable
 @Parcelize
 data class ScrobbleData(
     var artist: String,

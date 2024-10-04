@@ -1,4 +1,4 @@
-package com.arn.scrobble.ui
+package com.arn.scrobble.imageloader
 
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.graphics.drawable.toBitmap
@@ -9,6 +9,7 @@ import coil3.fetch.FetchResult
 import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
 import coil3.request.Options
+import com.arn.scrobble.ui.PackageName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

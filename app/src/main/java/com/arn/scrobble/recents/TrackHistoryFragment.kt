@@ -22,7 +22,7 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.MusicEntryLoaderInput
@@ -49,7 +49,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     private val binding
         get() = _binding!!
     private val viewModel by viewModels<TracksVM>()
-    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val mainNotifierViewModel by activityViewModels<MainViewModel>()
     private lateinit var adapter: TrackHistoryAdapter
 
     override fun onCreateView(

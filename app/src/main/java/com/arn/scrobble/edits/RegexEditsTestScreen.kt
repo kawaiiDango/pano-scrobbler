@@ -1,7 +1,5 @@
 package com.arn.scrobble.edits
 
-import android.os.Bundle
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +7,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.Apps
@@ -38,28 +34,23 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.InfoText
-import com.arn.scrobble.ui.ScreenParent
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.Stuff.putSingle
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RegexEditsTestContent(
+fun RegexEditsTestScreen(
     viewModel: RegexEditsTestVM = viewModel(),
+    mainViewModel: MainViewModel,
     onNavigateToAppList: () -> Unit,
     onNavigateToRegexEditsAdd: (RegexEdit) -> Unit,
     modifier: Modifier = Modifier
@@ -72,13 +63,9 @@ fun RegexEditsTestContent(
     var artist by rememberSaveable { mutableStateOf("") }
     var albumArtist by rememberSaveable { mutableStateOf("") }
 
-    val fragment = LocalFragment.current
-
     LaunchedEffect(Unit) {
-        fragment.setFragmentResultListener(Stuff.ARG_ALLOWED_PACKAGES) { key, bundle ->
-            if (key == Stuff.ARG_ALLOWED_PACKAGES) {
-                appItem = bundle.getParcelableArray(key)?.firstOrNull() as? AppItem
-            }
+        mainViewModel.selectedPackages.collectLatest {
+            appItem = it.firstOrNull()
         }
     }
 
@@ -102,7 +89,6 @@ fun RegexEditsTestContent(
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
-            .verticalScroll(rememberScrollState())
     ) {
         OutlinedTextField(
             value = track,
@@ -270,30 +256,5 @@ fun RegexEditsTestContent(
                 }
             }
         }
-    }
-}
-
-@Keep
-@Composable
-fun RegexEditsTestScreen() {
-    ScreenParent {
-        val fragment = LocalFragment.current
-        val viewModel by fragment.viewModels<RegexEditsTestVM>()
-
-        RegexEditsTestContent(
-            viewModel = viewModel,
-            onNavigateToAppList = {
-                val args = bundleOf(
-                    Stuff.ARG_SINGLE_CHOICE to true,
-                    Stuff.ARG_ALLOWED_PACKAGES to emptyArray<String>()
-                )
-                fragment.findNavController().navigate(R.id.appListFragment, args)
-            },
-            onNavigateToRegexEditsAdd = {
-                val args = Bundle().putSingle(it)
-                fragment.findNavController().navigate(R.id.regexEditsAddFragment, args)
-            },
-            modifier = it
-        )
     }
 }

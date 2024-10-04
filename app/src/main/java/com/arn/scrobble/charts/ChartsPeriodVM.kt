@@ -10,6 +10,7 @@ import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import com.arn.scrobble.utils.Stuff.toInverseMap
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -33,12 +33,13 @@ open class ChartsPeriodVM : ViewModel() {
 
     protected val mainPrefs = PlatformStuff.mainPrefs
 
-//    private val _periodType = mainPrefs.data.map { it.lastChartsPeriodType }
-
-    val periodType = if (Scrobblables.current.value is ListenBrainz) {
-        MutableStateFlow(TimePeriodType.LISTENBRAINZ).asStateFlow()
+    private val _periodType = if (Scrobblables.current.value is ListenBrainz) {
+        MutableStateFlow(TimePeriodType.LISTENBRAINZ)
     } else {
-        MutableStateFlow(TimePeriodType.CONTINUOUS).asStateFlow()
+        MutableStateFlow(runBlocking {
+            mainPrefs.data.map { it.lastChartsPeriodType }.first()
+        }
+        )
 //        _periodType.stateIn(
 //            viewModelScope,
 //            SharingStarted.Lazily,
@@ -49,6 +50,8 @@ open class ChartsPeriodVM : ViewModel() {
 //        )
     }
 
+    val periodType = _periodType.asStateFlow()
+
     private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
     val input = _input.asStateFlow()
     val timePeriods: StateFlow<Map<TimePeriod, Int>> = periodType
@@ -56,9 +59,6 @@ open class ChartsPeriodVM : ViewModel() {
         .combine(
             _input.filterNotNull().take(1)
         ) { periodType, input ->
-
-            if (periodType != TimePeriodType.LISTENBRAINZ)
-                mainPrefs.updateData { it.copy(lastChartsPeriodType = periodType) }
 
             val timePeriodsGenerator =
                 TimePeriodsGenerator(
@@ -119,9 +119,6 @@ open class ChartsPeriodVM : ViewModel() {
 //                }
             } else
                 selectedPeriod
-        }.mapLatest { period ->
-            mainPrefs.updateData { it.copy(lastChartsPeriodSelected = period) }
-            period
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
@@ -156,14 +153,14 @@ open class ChartsPeriodVM : ViewModel() {
     }
 
     fun setPeriodType(type: TimePeriodType) {
-        viewModelScope.launch {
-            mainPrefs.updateData { it.copy(lastChartsPeriodType = type) }
-        }
+        _periodType.value = type
+//            mainPrefs.updateData { it.copy(lastChartsPeriodType = type) }
     }
 
     fun setSelectedPeriod(period: TimePeriod) {
+        _selectedPeriod.value = period
         viewModelScope.launch {
-            mainPrefs.updateData { it.copy(lastChartsPeriodSelected = period) }
+//            mainPrefs.updateData { it.copy(lastChartsPeriodSelected = period) }
             _input.value = _input.value?.copy(page = 1)
         }
     }
@@ -178,6 +175,23 @@ open class ChartsPeriodVM : ViewModel() {
                 flow.emit((flow.value ?: emptyList()) + it.entries)
             else
                 flow.emit(it.entries)
+        }
+    }
+
+    override fun onCleared() {
+        // viewModelScope is cancelled
+        val periodType = periodType.value
+        val selectedPeriod = selectedPeriod.value
+
+        if (periodType != TimePeriodType.LISTENBRAINZ && selectedPeriod != null) {
+            GlobalScope.launch {
+                mainPrefs.updateData {
+                    it.copy(
+                        lastChartsPeriodType = periodType,
+                        lastChartsPeriodSelected = selectedPeriod
+                    )
+                }
+            }
         }
     }
 }

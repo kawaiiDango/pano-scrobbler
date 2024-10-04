@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.runBlocking
 
 
@@ -32,7 +33,7 @@ class HomePagerFragment : BasePagerFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runBlocking {
-            if (Scrobblables.current.first() == null) {
+            if (PlatformStuff.mainPrefs.data.mapLatest { it.scrobbleAccounts }.first().isEmpty()) {
                 findNavController().navigate(R.id.onboardingFragment, null, navOptions {
                     popUpTo(R.id.myHomePagerFragment) { inclusive = true }
                 })

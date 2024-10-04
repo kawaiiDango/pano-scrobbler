@@ -37,7 +37,7 @@ import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import kotlinx.coroutines.Dispatchers

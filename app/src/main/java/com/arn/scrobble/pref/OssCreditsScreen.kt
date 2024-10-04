@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.annotation.Keep
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -17,16 +16,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.ui.ExtraBottomSpace
-import com.arn.scrobble.ui.ScreenParent
+import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.Stuff
 import com.mikepenz.aboutlibraries.entity.Library
 
 @Composable
-private fun OssCreditsScreenContents(
+fun OssCreditsScreen(
     viewModel: OssCreditsVM = viewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -34,21 +32,17 @@ private fun OssCreditsScreenContents(
     val libraries = remember { viewModel.libraries }
 
     LazyColumn(
+        contentPadding = panoContentPadding(),
         modifier = modifier
     ) {
         items(libraries) { library ->
             LibraryItem(library)
-        }
-
-        item("spacer") {
-            ExtraBottomSpace()
         }
     }
 }
 
 @Composable
 private fun LibraryItem(library: Library) {
-    val context = LocalContext.current
     val url = remember {
         library.website ?: library.scm?.url ?: library.licenses.firstOrNull()?.url
     }
@@ -67,10 +61,9 @@ private fun LibraryItem(library: Library) {
                         )
                         .focusable(interactionSource = interactionSource)
                 else
-                    Modifier.clickable { url?.let { Stuff.openInBrowser(context, it) } }
+                    Modifier.clickable { url?.let { Stuff.openInBrowser(it) } }
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-
+            .padding(horizontal = horizontalOverscanPadding())
     ) {
         Text(
             text = if (library.name == "\${project.artifactId}") library.uniqueId.split(':')
@@ -88,10 +81,4 @@ private fun LibraryItem(library: Library) {
             modifier = Modifier.padding(start = 16.dp)
         )
     }
-}
-
-@Keep
-@Composable
-fun OssCreditsScreen() {
-    ScreenParent { OssCreditsScreenContents(modifier = it) }
 }

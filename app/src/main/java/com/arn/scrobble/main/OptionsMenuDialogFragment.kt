@@ -28,7 +28,7 @@ import kotlinx.parcelize.Parcelize
 class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
 
     private val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
-    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val mainNotifierViewModel by activityViewModels<MainViewModel>()
     private var _binding: ContentOptionsMenuBinding? = null
     private val binding
         get() = _binding!!

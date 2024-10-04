@@ -14,11 +14,12 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -151,7 +151,7 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
                 Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
             val launchPi = NavDeepLinkBuilder(applicationContext)
-                .setComponentName(MainActivity::class.java)
+                .setComponentName(MainActivityOld::class.java)
                 .setGraph(R.navigation.nav_graph)
                 .setDestination(R.id.myHomePagerFragment)
                 .setArguments(bundleOf(Stuff.ARG_TAB to 2))
@@ -239,7 +239,7 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
             enqueue(WEEKLY)
             enqueue(MONTHLY)
 
-            Timber.i("scheduling ${DigestWorker::class.java.simpleName}")
+            Logger.i { "scheduling ${DigestWorker::class.java.simpleName}" }
         }
 
         private suspend fun getScheduleTimes(): Map<String, Long> {

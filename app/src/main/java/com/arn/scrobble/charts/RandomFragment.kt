@@ -21,7 +21,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
-import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format

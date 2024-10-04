@@ -32,7 +32,7 @@ import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.kumo.compat.MyKBitmap
 import com.arn.scrobble.kumo.compat.MyKGraphicsFactory
-import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.RoundedBarChart
 import com.arn.scrobble.ui.createSkeletonWithFade
@@ -105,7 +105,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         setTitle(R.string.charts)
         if (!listeningActivityChartInited)
             initListeningActivityChart()
-        (activity as MainActivity).binding.appBar.expandToHeroIfNeeded(false)
+        (activity as MainActivityOld).binding.appBar.expandToHeroIfNeeded(false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

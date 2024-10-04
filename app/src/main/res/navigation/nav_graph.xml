@@ -135,17 +135,17 @@
 <!--            android:id="@+id/action_blockedMetadataFragment_to_blockedMetadataAddDialogFragment"-->
 <!--            app:destination="@id/blockedMetadataAddDialogFragment" />-->
 <!--    </fragment>-->
-    <fragment
-        android:id="@+id/onboardingFragment"
-        android:name="com.arn.scrobble.onboarding.OnboardingFragment"
-        android:label=" "
-        tools:layout="@layout/content_onboarding_stepper">
-        <action
-            android:id="@+id/action_onboardingFragment_to_myHomePagerFragment"
-            app:destination="@id/myHomePagerFragment"
-            app:popUpTo="@id/onboardingFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/onboardingFragment"-->
+<!--        android:name="com.arn.scrobble.onboarding.OnboardingFragment"-->
+<!--        android:label=" "-->
+<!--        tools:layout="@layout/content_onboarding_stepper">-->
+<!--        <action-->
+<!--            android:id="@+id/action_onboardingFragment_to_myHomePagerFragment"-->
+<!--            app:destination="@id/myHomePagerFragment"-->
+<!--            app:popUpTo="@id/onboardingFragment"-->
+<!--            app:popUpToInclusive="true" />-->
+<!--    </fragment>-->
 <!--    <dialog-->
 <!--        android:id="@+id/blockedMetadataAddDialogFragment"-->
 <!--        android:name="com.arn.scrobble.edits.BlockedMetadataAddDialogFragment"-->
@@ -213,35 +213,35 @@
     <!--        android:name="com.arn.scrobble.pref.LicensesFragment"-->
     <!--        android:label="@string/pref_oss_credits"-->
     <!--        tools:layout="@layout/content_licenses" />-->
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.arn.scrobble.onboarding.LoginFragment"
-        android:label="{login_title}"
-        tools:layout="@layout/content_login">
-        <argument
-            android:name="login_title"
-            app:argType="string"
-            app:nullable="false" />
-        <argument
-            android:name="textField1"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="textField2"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="textFieldLast"
-            app:argType="string"
-            app:nullable="false" />
-        <argument
-            android:name="infoText"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/loginFragment"-->
+<!--        android:name="com.arn.scrobble.onboarding.LoginFragment"-->
+<!--        android:label="{login_title}"-->
+<!--        tools:layout="@layout/content_login">-->
+<!--        <argument-->
+<!--            android:name="login_title"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="false" />-->
+<!--        <argument-->
+<!--            android:name="textField1"-->
+<!--            android:defaultValue="@null"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
+<!--        <argument-->
+<!--            android:name="textField2"-->
+<!--            android:defaultValue="@null"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
+<!--        <argument-->
+<!--            android:name="textFieldLast"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="false" />-->
+<!--        <argument-->
+<!--            android:name="infoText"-->
+<!--            android:defaultValue="@null"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
+<!--    </fragment>-->
     <fragment
         android:id="@+id/randomFragment"
         android:name="com.arn.scrobble.charts.RandomFragment"
@@ -252,34 +252,34 @@
     <!--        android:name="com.arn.scrobble.pref.DeleteAccountFragment"-->
     <!--        android:label="@string/delete_account"-->
     <!--        tools:layout="@layout/content_delete_account" />-->
-    <dialog
-        android:id="@+id/editDialogFragment"
-        android:name="com.arn.scrobble.edits.EditDialogFragment"
-        android:label="@string/edit"
-        tools:layout="@layout/content_login">
-        <argument
-            android:name="msid"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="packageName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="hash"
-            android:defaultValue="-1"
-            app:argType="integer" />
-        <argument
-            android:name="data"
-            app:argType="com.arn.scrobble.api.lastfm.ScrobbleData" />
-    </dialog>
-    <dialog
-        android:id="@+id/infoFragment"
-        android:name="com.arn.scrobble.info.InfoFragment"
-        android:label="@string/details"
-        tools:layout="@layout/content_info" />
+<!--    <dialog-->
+<!--        android:id="@+id/editDialogFragment"-->
+<!--        android:name="com.arn.scrobble.edits.EditDialogFragment"-->
+<!--        android:label="@string/edit"-->
+<!--        tools:layout="@layout/content_login">-->
+<!--        <argument-->
+<!--            android:name="msid"-->
+<!--            android:defaultValue="@null"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
+<!--        <argument-->
+<!--            android:name="packageName"-->
+<!--            android:defaultValue="@null"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
+<!--        <argument-->
+<!--            android:name="hash"-->
+<!--            android:defaultValue="-1"-->
+<!--            app:argType="integer" />-->
+<!--        <argument-->
+<!--            android:name="data"-->
+<!--            app:argType="com.arn.scrobble.api.lastfm.ScrobbleData" />-->
+<!--    </dialog>-->
+<!--    <dialog-->
+<!--        android:id="@+id/infoFragment"-->
+<!--        android:name="com.arn.scrobble.info.InfoFragment"-->
+<!--        android:label="@string/details"-->
+<!--        tools:layout="@layout/content_info" />-->
     <fragment
         android:id="@+id/infoExtraFullFragment"
         android:name="com.arn.scrobble.info.InfoExtraFullFragment"
@@ -527,6 +527,11 @@
         android:label="@string/add_photo" />
 
     <composable
+        android:id="@+id/onboardingFragment"
+        android:name="com.arn.scrobble.onboarding.OnboardingScreenKt\$OnboardingScreen"
+        android:label=" "/>
+
+    <composable
         android:id="@+id/searchFragment"
         android:name="com.arn.scrobble.search.SearchScreenKt\$SearchScreen"
         android:label="@string/search">
@@ -585,6 +590,16 @@
     </dialog>
 
     <dialog
+        android:id="@+id/infoFragment"
+        android:name="com.arn.scrobble.ui.ComposableBottomSheetDialogFragment"
+        android:label="infoFragment">
+        <argument
+            android:name="composable"
+            android:defaultValue="com.arn.scrobble.info.InfoScreenKt\$InfoScreen"
+            app:argType="string" />
+    </dialog>
+
+    <dialog
         android:id="@+id/tagInfoFragment"
         android:name="com.arn.scrobble.ui.ComposableBottomSheetDialogFragment"
         android:label="tagInfoFragment">
@@ -601,6 +616,16 @@
         <argument
             android:name="composable"
             android:defaultValue="com.arn.scrobble.edits.BlockedMetadataAddScreenKt\$BlockedMetadataAddScreen"
+            app:argType="string" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/editScrobbleDialogFragment"
+        android:name="com.arn.scrobble.ui.ComposableDialogFragment"
+        android:label="BlockedMetadataAddDialogFragment">
+        <argument
+            android:name="composable"
+            android:defaultValue="com.arn.scrobble.edits.EditScrobbleScreenKt\$EditScrobbleScreen"
             app:argType="string" />
     </dialog>
 </navigation>

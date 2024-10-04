@@ -9,9 +9,9 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.dLazy
 import com.arn.scrobble.utils.Stuff.dump
 import com.arn.scrobble.utils.Stuff.isUrlOrDomain
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.Locale
 import java.util.Objects
 
@@ -77,7 +76,7 @@ class SessListener(
     @Synchronized
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         this.platformControllers = controllers
-        Timber.dLazy { "controllers: " + controllers?.joinToString { it.packageName } }
+        Logger.d { "controllers: " + controllers?.joinToString { it.packageName } }
 
         if (!scrobblerEnabled.value || controllers == null)
             return
@@ -152,7 +151,7 @@ class SessListener(
                 AudioManager.ADJUST_MUTE,
                 0
             )
-            Timber.i("mute: done")
+            Logger.i { "mute: done" }
 
             mutedHash = hash
             callback.isMuted = true
@@ -231,12 +230,12 @@ class SessListener(
 
         private suspend fun scrobble() {
             if (hasOtherPlayingControllers(trackInfo) && trackInfo.hasBlockedTag) {
-                Timber.dLazy { "multiple scrobblable controllers for ${trackInfo.packageName}, ignoring ${trackInfo.sessionTag}" }
+                Logger.d { "multiple scrobblable controllers for ${trackInfo.packageName}, ignoring ${trackInfo.sessionTag}" }
                 pause()
                 return
             }
 
-            Timber.dLazy { "playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}" }
+            Logger.d { "playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}" }
 
             trackInfo.playStartTime = System.currentTimeMillis()
             scrobbleHandler.remove(trackInfo.lastScrobbleHash)
@@ -349,10 +348,10 @@ class SessListener(
                         && albumArtist == trackInfo.origAlbumArtist
             val onlyDurationUpdated = sameAsOld && durationMillis != trackInfo.durationMillis
 
-            Timber.i(
+            Logger.i {
                 "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
                         "duration=$durationMillis lastState=$lastPlayingState, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()}}"
-            )
+            }
 
             if (!sameAsOld || onlyDurationUpdated) {
                 trackInfo.putOriginals(artist, title, album, albumArtist)
@@ -402,16 +401,16 @@ class SessListener(
             val playingState = state.state
             val pos = state.position // can be -1
 
-            Timber.i("onPlaybackStateChanged=$playingState laststate=$lastPlayingState pos=$pos cb=${this@ControllerCallback.hashCode()} sl=${this@SessListener.hashCode()}")
+            Logger.i { "onPlaybackStateChanged=$playingState laststate=$lastPlayingState pos=$pos cb=${this@ControllerCallback.hashCode()} sl=${this@SessListener.hashCode()}" }
 
-//            extras?.let { Timber.dLazy { "state extras: " + it.dump() } }
+//            extras?.let { Napier.dLazy { "state extras: " + it.dump() } }
 
             // do not scrobble spotify remote playback
             if (!scrobbleSpotifyRemote.value &&
                 trackInfo.packageName == Stuff.PACKAGE_SPOTIFY
                 && state.extras?.getBoolean("com.spotify.music.extra.ACTIVE_PLAYBACK_LOCAL") == false
             ) {
-                Timber.i("ignoring spotify remote playback")
+                Logger.i { "ignoring spotify remote playback" }
                 ignoreScrobble()
                 return
             }
@@ -424,7 +423,7 @@ class SessListener(
                 trackInfo.durationMillis > 0 &&
                 state.actions and PlaybackState.ACTION_SEEK_TO == 0L
             ) {
-                Timber.i("ignoring youtube music ad")
+                Logger.i { "ignoring youtube music ad" }
                 ignoreScrobble()
                 return
             }
@@ -442,7 +441,7 @@ class SessListener(
                 PlaybackState.STATE_NONE,
                 PlaybackState.STATE_ERROR -> {
                     pause()
-                    Timber.dLazy { "paused timePlayed=${trackInfo.timePlayed}" }
+                    Logger.d { "paused timePlayed=${trackInfo.timePlayed}" }
                 }
 
                 PlaybackState.STATE_PLAYING -> {
@@ -474,7 +473,7 @@ class SessListener(
                 }
 
                 else -> {
-                    Timber.dLazy { "other ($playingState) : ${trackInfo.title}" }
+                    Logger.d { "other ($playingState) : ${trackInfo.title}" }
                 }
             }
             if (playingState != PlaybackState.STATE_BUFFERING)
@@ -483,7 +482,7 @@ class SessListener(
         }
 
         override fun onSessionDestroyed() {
-            Timber.dLazy { "onSessionDestroyed ${trackInfo.packageName}" }
+            Logger.d { "onSessionDestroyed ${trackInfo.packageName}" }
             pause()
             synchronized(this@SessListener) {
                 controllersMap.remove(token)
@@ -518,7 +517,7 @@ class SessListener(
                     AudioManager.ADJUST_UNMUTE,
                     0
                 )
-                Timber.i("unmute: done")
+                Logger.i { "unmute: done" }
                 if (clearMutedHash)
                     mutedHash = null
                 isMuted = false
@@ -526,15 +525,15 @@ class SessListener(
         }
 
         override fun onExtrasChanged(extras: Bundle?) {
-            Timber.dLazy { "extras updated ${trackInfo.packageName}: ${extras.dump()}" }
+            Logger.d { "extras updated ${trackInfo.packageName}: ${extras.dump()}" }
         }
 
         override fun onSessionEvent(event: String, extras: Bundle?) {
-            Timber.dLazy { "onSessionEvent ${trackInfo.packageName}: $event ${extras.dump()}" }
+            Logger.d { "onSessionEvent ${trackInfo.packageName}: $event ${extras.dump()}" }
         }
 
         override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
-            Timber.dLazy { "audioinfo updated ${trackInfo.packageName}: $info" }
+            Logger.d { "audioinfo updated ${trackInfo.packageName}: $info" }
 
             isRemotePlayback =
                 info.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE

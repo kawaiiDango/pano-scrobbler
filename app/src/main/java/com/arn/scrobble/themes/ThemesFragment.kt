@@ -25,8 +25,8 @@ import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentThemesBinding
 import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainActivityOld
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.dp
@@ -57,7 +57,7 @@ class ThemesFragment : Fragment() {
             R.id.chip_auto to DayNightMode.SYSTEM
         )
     }
-    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val mainNotifierViewModel by activityViewModels<MainViewModel>()
 
     private lateinit var themedContext: ContextThemeWrapper
 
@@ -184,7 +184,7 @@ class ThemesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        val act = activity as MainActivity
+        val act = activity as MainActivityOld
         act.binding.ctl.background = ColorDrawable(Color.TRANSPARENT)
         act.binding.ctl.setExpandedTitleColor(
             MaterialColors.getColor(
@@ -254,7 +254,7 @@ class ThemesFragment : Fragment() {
         val styleId = ColorPatchMap.primaryStyles[name]!!
         val colorPrimary =
             themedContext.getStyledColor(styleId, com.google.android.material.R.attr.colorPrimary)
-        val act = activity as MainActivity
+        val act = activity as MainActivityOld
         act.binding.ctl.setExpandedTitleColor(colorPrimary)
         act.binding.ctl.setCollapsedTitleTextColor(colorPrimary)
         if (binding.themeTintBg.isChecked)
@@ -348,7 +348,7 @@ class ThemesFragment : Fragment() {
     private fun previewBackground(@StyleRes styleId: Int) {
         val color = themedContext.getStyledColor(styleId, android.R.attr.colorBackground)
         binding.root.background = ColorDrawable(color)
-        val act = activity as MainActivity
+        val act = activity as MainActivityOld
 //        act.binding.ctl.contentScrim = ColorDrawable(color)
         act.binding.ctl.background = ColorDrawable(color)
     }

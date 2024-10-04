@@ -1,20 +1,19 @@
 package com.arn.scrobble.edits
 
 import android.os.Build
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Lock
@@ -27,7 +26,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,11 +48,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.fragment.compose.LocalFragment
-import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.NLService
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
@@ -61,16 +55,15 @@ import com.arn.scrobble.db.ExtractionPatterns
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.RegexEditsDao.Companion.countNamedCaptureGroups
-import com.arn.scrobble.main.FabData
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainViewModel
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.AppItem
+import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
-import com.arn.scrobble.ui.ExtraBottomSpace
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.getSingle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
@@ -78,17 +71,17 @@ import java.util.regex.PatternSyntaxException
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun RegexEditsAddContent(
+fun RegexEditsAddScreen(
+    mainViewModel: MainViewModel,
     regexEdit: RegexEdit?,
-    onNavigateToAppList: (selectedPackages: List<String>) -> Unit,
-    onDelete: (regexEdit: RegexEdit) -> Unit,
-    onSave: (regexEdit: RegexEdit) -> Unit,
-    onNavigateToBilling: () -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
+    val scope = rememberCoroutineScope()
     var name by rememberSaveable { mutableStateOf(regexEdit?.name ?: "") }
     var appItems by rememberSaveable { mutableStateOf(emptySet<AppItem>()) }
+    val dao = remember { PanoDb.db.getRegexEditsDao() }
 
     var appItemsInited by rememberSaveable { mutableStateOf(false) }
 
@@ -135,7 +128,6 @@ private fun RegexEditsAddContent(
     var errorText by remember { mutableStateOf<String?>(null) }
     val proStatus = Stuff.billingRepository.isLicenseValid
 
-    val fragment = LocalFragment.current
     val context = LocalContext.current
 
     fun buildRegexEdit() = if (extractMode) {
@@ -168,36 +160,13 @@ private fun RegexEditsAddContent(
         )
     }
 
-
     LaunchedEffect(Unit) {
-        val mainNotifierViewModel: MainNotifierViewModel by fragment.activityViewModels()
-
-        val fabData = FabData(
-            fragment.viewLifecycleOwner,
-            R.string.done,
-            R.drawable.vd_check_simple,
-            clickListener = {
-                val re = buildRegexEdit()
-                val validationResult = validate(re)
-
-                if (validationResult.isFailure) {
-                    errorText = validationResult.exceptionOrNull()?.message
-                } else
-                    onSave(re)
-            })
-
-        mainNotifierViewModel.setFabData(fabData)
+        mainViewModel.selectedPackages.collectLatest {
+            appItems = it.toSet()
+        }
     }
 
     LaunchedEffect(Unit) {
-        fragment.setFragmentResultListener(Stuff.ARG_ALLOWED_PACKAGES) { key, bundle ->
-            if (key == Stuff.ARG_ALLOWED_PACKAGES) {
-                val newAppItems = bundle.getParcelableArray(key)?.map { it as AppItem }?.toSet()
-                    ?: emptySet()
-                appItems = newAppItems
-            }
-        }
-
         if (!appItemsInited) {
             val pm = context.packageManager
             appItemsInited = true
@@ -214,7 +183,7 @@ private fun RegexEditsAddContent(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier
     ) {
 
         OutlinedTextField(
@@ -268,7 +237,15 @@ private fun RegexEditsAddContent(
 
         AppSelector(
             appItems = appItems,
-            onNavigateToAppList = onNavigateToAppList,
+            onNavigateToAppList = {
+                onNavigate(
+                    PanoRoute.AppList(
+                        preSelectedPackages = it,
+                        hasPreSelection = true,
+                        isSingleSelect = false
+                    )
+                )
+            },
             onAppItemRemoved = {
                 appItems = appItems - it
             }
@@ -311,7 +288,7 @@ private fun RegexEditsAddContent(
                         if (proStatus)
                             extractMode = true
                         else
-                            onNavigateToBilling()
+                            onNavigate(PanoRoute.Billing)
                     },
                     label = { Text(stringResource(R.string.edit_extract)) }
                 )
@@ -332,25 +309,49 @@ private fun RegexEditsAddContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        if (regexEdit != null) {
-            OutlinedButton(
-                onClick = {
-                    onDelete(regexEdit)
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = null
-                )
-                Text(
-                    stringResource(R.string.delete),
-                    modifier = Modifier.padding(start = 8.dp)
-                )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (regexEdit != null) {
+                OutlinedIconButton(
+                    onClick = {
+                        scope.launch {
+                            withContext(Dispatchers.IO) {
+                                dao.delete(regexEdit)
+                            }
+                            onBack()
+                        }
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = stringResource(R.string.delete)
+                    )
+                }
             }
-        }
 
-        ExtraBottomSpace()
+            Spacer(modifier = Modifier.weight(1f))
+
+            ButtonWithIcon(
+                onClick = {
+                    scope.launch {
+                        val re = buildRegexEdit()
+                        val validationResult = validate(re)
+
+                        if (validationResult.isFailure) {
+                            errorText = validationResult.exceptionOrNull()?.message
+                        } else {
+                            withContext(Dispatchers.IO) {
+                                dao.insert(listOf(re))
+                            }
+                            onBack()
+                        }
+                    }
+                },
+                icon = Icons.Outlined.Check,
+                text = stringResource(R.string.save)
+            )
+        }
     }
 }
 
@@ -708,45 +709,4 @@ private fun validate(regexEdit: RegexEdit): Result<Unit> {
         return Result.failure(IllegalArgumentException(errorText))
     }
     return Result.success(Unit)
-}
-
-@Keep
-@Composable
-fun RegexEditsAddScreen() {
-    val fragment = LocalFragment.current
-    val dao = remember { PanoDb.db.getRegexEditsDao() }
-    val scope = rememberCoroutineScope()
-    val regexEdit = remember { fragment.arguments?.getSingle<RegexEdit>() }
-
-
-    ScreenParent {
-        RegexEditsAddContent(
-            regexEdit = regexEdit,
-            onNavigateToAppList = { selectedPackages ->
-                val args =
-                    bundleOf(Stuff.ARG_ALLOWED_PACKAGES to selectedPackages.toTypedArray())
-                fragment.findNavController().navigate(R.id.appListFragment, args)
-            },
-            onDelete = { regexEdit ->
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        dao.delete(regexEdit)
-                    }
-                    fragment.findNavController().navigateUp()
-                }
-            },
-            onSave = { regexEdit ->
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        dao.insert(listOf(regexEdit))
-                    }
-                    fragment.findNavController().navigateUp()
-                }
-            },
-            onNavigateToBilling = {
-                fragment.findNavController().navigate(R.id.billingFragment)
-            },
-            modifier = it
-        )
-    }
 }

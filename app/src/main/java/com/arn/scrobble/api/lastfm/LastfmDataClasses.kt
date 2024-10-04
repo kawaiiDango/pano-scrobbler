@@ -18,6 +18,7 @@ enum class ImageSize {
     small, medium, large, extralarge
 }
 
+@Serializable
 sealed class MusicEntry : Parcelable {
     abstract val name: String
     abstract val url: String?

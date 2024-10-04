@@ -13,7 +13,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.arn.scrobble.databinding.DialogMonthPickerBinding
-import com.arn.scrobble.main.MainNotifierViewModel
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.toInverseMap
@@ -27,7 +27,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
-    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
+    private val activityViewModel by activityViewModels<MainViewModel>()
     private var _binding: DialogMonthPickerBinding? = null
     private val binding
         get() = _binding!!

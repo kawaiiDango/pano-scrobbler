@@ -39,7 +39,7 @@ dependencies {
 
     implementation(libs.billing)
     implementation(libs.review)
-    implementation(libs.timber)
+    implementation(libs.kermit)
     implementation(platform(libs.firebase.bom))
     implementation(libs.crashlytics)
     implementation(project(":extras-common"))

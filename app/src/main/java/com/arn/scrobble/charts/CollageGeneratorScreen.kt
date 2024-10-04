@@ -1,5 +1,6 @@
 package com.arn.scrobble.charts
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -41,22 +42,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.compose.LocalFragment
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.main.MainNotifierViewModel
 import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.ui.BottomSheetDialogParent
-import com.arn.scrobble.ui.ButtonWithDropdown
+import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.getSingle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -68,6 +65,7 @@ import java.util.Calendar
 @Composable
 private fun CollageGeneratorContent(
     viewModel: CollageGeneratorVM = viewModel(),
+    collageType: Int,
     timePeriod: TimePeriod,
     user: UserCached,
     onAskForReview: suspend () -> Unit,
@@ -75,7 +73,7 @@ private fun CollageGeneratorContent(
 ) {
 //    val collageUri by viewModel.collageUri.collectAsState()
 
-    var collageType by rememberSaveable { mutableIntStateOf(0) }
+    var collageType by rememberSaveable { mutableIntStateOf(collageType) }
     var collageSize by rememberSaveable { mutableIntStateOf(3) }
     var includeCaptions by rememberSaveable { mutableStateOf(false) }
     var collageText by rememberSaveable { mutableStateOf(false) }
@@ -198,7 +196,7 @@ private fun CollageGeneratorContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            ButtonWithDropdown(
+            ButtonWithSpinner(
                 prefixText = null,
                 selected = collageType,
                 itemToTexts = collageTypes,
@@ -206,7 +204,7 @@ private fun CollageGeneratorContent(
                 modifier = Modifier.weight(0.4f),
             )
 
-            ButtonWithDropdown(
+            ButtonWithSpinner(
                 prefixText = stringResource(id = R.string.size),
                 selected = collageSize,
                 itemToTexts = collageSizes,
@@ -345,19 +343,21 @@ private fun shareCollage(context: Context, imageBitmap: ImageBitmap, text: Strin
 
 @Keep
 @Composable
-fun CollageGeneratorScreen() {
-    val fragment = LocalFragment.current
-    val activityViewModel by fragment.activityViewModels<MainNotifierViewModel>()
-    val timePeriod = fragment.requireArguments().getSingle<TimePeriod>()!!
-    val user = remember { activityViewModel.currentUser }
+fun CollageGeneratorScreen(
+    collageType: Int,
+    timePeriod: TimePeriod,
+    user: UserCached,
+) {
+    val context = LocalContext.current
 
     BottomSheetDialogParent {
         CollageGeneratorContent(
+            collageType = collageType,
             timePeriod = timePeriod,
             user = user,
             onAskForReview = {
                 ReviewPrompter(
-                    fragment.requireActivity(),
+                    context as Activity,
                     PlatformStuff.mainPrefs.data.first().lastReviewPromptTime
                 ) { t ->
                     PlatformStuff.mainPrefs.updateData { it.copy(lastReviewPromptTime = t) }

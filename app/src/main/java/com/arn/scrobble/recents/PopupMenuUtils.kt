@@ -1,5 +1,6 @@
 package com.arn.scrobble.recents
 
+import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
@@ -16,7 +17,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobbleWithSource
-import com.arn.scrobble.edits.EditDialogFragmentArgs
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.showWithIcons
@@ -33,7 +33,9 @@ object PopupMenuUtils {
         MaterialAlertDialogBuilder(navController.context)
             .setMessage(R.string.lastfm_reauth)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                LoginDestinations(navController).go(AccountType.LASTFM)
+                LoginDestinations.route(AccountType.LASTFM).let {
+                    navController.navigate(it)
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -53,13 +55,15 @@ object PopupMenuUtils {
                 packageName = null
             )
 
-            val args = EditDialogFragmentArgs(
-                data = sd,
-                msid = track.msid,
-            )
-                .toBundle()
+            val args = Bundle().apply {
+                putParcelable(
+                    "data",
+                    sd
+                )
+                putString("msid", track.msid)
+            }
 
-            navController.navigate(R.id.editDialogFragment, args)
+            navController.navigate(R.id.editScrobbleDialogFragment, args)
         }
     }
 

@@ -23,7 +23,7 @@ import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.databinding.ContentWebviewBinding
 import com.arn.scrobble.friends.UserAccountTemp
-import com.arn.scrobble.main.MainActivity
+import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
@@ -220,7 +220,7 @@ class WebViewFragment : Fragment() {
         }
 
         override fun onPageFinished(view: WebView, url: String?) {
-            (activity as? MainActivity)?.binding?.toolbar?.title = view.title
+            (activity as? MainActivityOld)?.binding?.toolbar?.title = view.title
         }
 
         private fun showErrorMessage(text: String) {

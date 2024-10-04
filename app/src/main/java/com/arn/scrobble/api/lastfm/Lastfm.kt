@@ -1,5 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
@@ -28,7 +29,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.Parameters
 import io.ktor.http.parametersOf
-import timber.log.Timber
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Calendar
@@ -199,7 +199,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         cacheStrategy: CacheStrategy,
         limit: Int,
     ): Result<PageResult<Track>> {
-        Timber.i(this::getLoves.name + " " + page)
+        Logger.i { this::getLoves.name + " " + page }
 
         return client.getPageResult<LovedTracksResponse, Track>(transform = { it.lovedtracks }) {
             parameter("method", "user.getLovedTracks")
@@ -250,7 +250,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     }
 
     override suspend fun loadDrawerData(username: String): DrawerData? {
-        Timber.i(this::loadDrawerData.name)
+        Logger.i { this::loadDrawerData.name }
 
         val user = userGetInfo(username).getOrNull()
         val isSelf = username == userAccount.user.name

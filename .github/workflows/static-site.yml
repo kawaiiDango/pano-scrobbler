@@ -50,11 +50,22 @@ jobs:
           echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > static-site/fdroid/keystore.p12
           echo "${{ secrets.CONFIG_YML }}" | base64 -d - > static-site/fdroid/config.yml
         
+      - name: Generate fdroid metadata
+        run: bash static-site/fdroid/generate_metadata.sh 2>&1
+
       - name: Run update script
         run: cd static-site/fdroid && bash update.sh 2>&1
 
       - name: Remove unneded files and secrets
-        run: rm -r static-site/fdroid/keystore.p12 static-site/fdroid/config.yml static-site/fdroid/tmp static-site/fdroid/srclibs static-site/fdroid/update.sh static-site/fdroid/metadata
+        run: rm -r static-site/fdroid/keystore.p12 static-site/fdroid/config.yml static-site/fdroid/tmp static-site/fdroid/srclibs static-site/fdroid/update.sh static-site/fdroid/generate_metadata.sh static-site/fdroid/metadata
+
+      - name: Copy static site assets
+        run: |
+          cp -r img static-site
+          mkdir -p static-site/app/src/main/play/listings/en-US/icon
+          cp app/src/main/play/listings/en-US/icon/icon.png static-site/app/src/main/play/listings/en-US/icon/
+          mkdir -p static-site/app/src/main/res/raw
+          cp app/src/main/res/raw/crowdin_members.txt static-site/app/src/main/res/raw/
 
       - name: Fix permissions
         run: |

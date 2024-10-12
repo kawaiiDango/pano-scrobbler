@@ -4,6 +4,10 @@
 
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
 
+[github]: img/github.svg
+
+[github-link]: https://github.com/kawaiiDango/pano-scrobbler/releases
+
 [ko-fi]: img/ko-fi.svg
 
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
@@ -12,9 +16,15 @@
 
 [crowdin-link]: https://crowdin.com/project/pscrobbler
 
-[![download][play-store]][play-store-link] [![translate][crowdin]][crowdin-link]
-
 <img src="https://i.imgur.com/pgETfhc.png" alt="scrobbles" width="150"/> <img src="https://i.imgur.com/Q7yPi2z.png" alt="friends" width="150"/> <img src="https://i.imgur.com/MUhcyBw.png" alt="charts" width="150"/> <img src="https://i.imgur.com/aikbtGR.png" alt="random" width="150"/>
+
+### Download
+[![play-store][play-store]][play-store-link] [![github][github]][github-link]
+
+### Translate
+[![translate][crowdin]][crowdin-link]
+
+## [FAQ](faq.md) • [Privacy](privacy-policy.md) • [Compiling](instructions.md) • [TV](tv.md)
 
 ### Features:
 
@@ -22,7 +32,7 @@
 - No ads ever
 - Scrobbles to Lastfm, Librefm, GNUfm, ListenBrainz, Maloja, Pleroma
 - \* Scrobble to a CSV or JSONL file locally
-- \* Interactive notification: View song info, edit, love, cancel, or block songs directly from the
+- \* Interactive notification- view song info, edit, love, cancel, or block songs directly from the
   notification
 - View song, album, artist, album artist, and tag details
 - View scrobbles from a specific time, such as last year or last month
@@ -48,22 +58,6 @@
 
 Features marked with * are not available on TV due to OS limitations.
 
-### FAQ
-
-See [faq.md](faq.md)
-
-### Privacy Policy
-
-See [privacy-policy.md](privacy-policy.md)
-
-### Enabling notification access on old TVs
-
-See [tv.md](tv.md)
-
-### Compiling
-
-See [instructions.md](instructions.md)
-
 ### F-droid repo
 ```
 https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
@@ -80,3 +74,9 @@ https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F
 
 Thanks to the amazing [translators](app/src/main/res/raw/crowdin_members.txt) and everyone who
 reported bugs and helped me with this project.
+
+### Disclaimer
+This project is not affiliated with Last.fm, or any other scrobbling service.
+
+### License
+[GPL-3.0](LICENSE.txt)

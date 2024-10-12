@@ -23,7 +23,6 @@ title: Pano Scrobbler
 # Build settings
 
 include:
-  - "img/*"
   - "*.md"
 
 exclude:
@@ -31,6 +30,13 @@ exclude:
   - "gradlew*"
   - "*.kts"
   - "*.properties"
+  - "Gemfile"
+  - "Gemfile.lock"
+
+keep_files:
+  - fdroid
+  - img
+  - app
 
 plugins:
   - jekyll-relative-links
@@ -45,11 +51,10 @@ plugins:
 
 remote_theme: jekyll/minima
 
-keep_files:
-  - fdroid
-
 minima:
-  skin: dark
+  skin: auto
+  social_links:
+    - { platform: github,  user_url: "https://github.com/kawaiiDango/pano-scrobbler" }
 
 author:
   name: kawaiiDango
@@ -59,6 +64,16 @@ header_pages:
 
 optional_front_matter:
   remove_originals: true
+
+readme_index:
+  enabled:          true
+  remove_originals: false
+  with_frontmatter: true
+
+titles_from_headings:
+  enabled:     true
+  strip_title: true
+  collections: false
 
 #defaults:
 #  -

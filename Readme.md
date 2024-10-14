@@ -8,6 +8,10 @@
 
 [github-link]: https://github.com/kawaiiDango/pano-scrobbler/releases
 
+[fdroid]: img/fdroid.svg
+
+[fdroid-link]: https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
+
 [ko-fi]: img/ko-fi.svg
 
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
@@ -19,7 +23,7 @@
 <img src="https://i.imgur.com/pgETfhc.png" alt="scrobbles" width="150"/> <img src="https://i.imgur.com/Q7yPi2z.png" alt="friends" width="150"/> <img src="https://i.imgur.com/MUhcyBw.png" alt="charts" width="150"/> <img src="https://i.imgur.com/aikbtGR.png" alt="random" width="150"/>
 
 ### Download
-[![play-store][play-store]][play-store-link] [![github][github]][github-link]
+[![play-store][play-store]][play-store-link] [![github][github]][github-link] [![fdroid][fdroid]][fdroid-link]
 
 ### Translate
 [![translate][crowdin]][crowdin-link]
@@ -58,14 +62,6 @@
 
 Features marked with * are not available on TV due to OS limitations.
 
-### F-droid repo
-```
-https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
-```
-
-<img src="https://kawaiidango.github.io/pano-scrobbler/fdroid/repo/index.png" alt="QR code of the fdroid repo" width="200"/>
-
-
 ### Credits
 - Inspiration from Musixmatch's FloatingLyrics
 - YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler) and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
@@ -79,4 +75,10 @@ reported bugs and helped me with this project.
 This project is not affiliated with Last.fm, or any other scrobbling service.
 
 ### License
-[GPL-3.0](LICENSE.txt)
+Pano Scrobbler is licensed under the GNU General Public License v3 (GPL-3) (http://www.gnu.org/copyleft/gpl.html).
+
+#### Exceptions
+* You are FORBIDDEN to use the Pano Scrobbler logo in any way (unless for displaying Pano Scrobbler itself).
+* For the project as a whole, you are FORBIDDEN to publish the builds compiled by you
+  (including modified, e.g., rename app name "Pano Scrobbler" to something else)
+  to any app store (IBNLT Google Play Store, F-Droid, Amazon Appstore etc.).

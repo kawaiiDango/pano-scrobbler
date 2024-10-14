@@ -196,7 +196,7 @@
     <string name="following" comment="accounts you are following on lastfm">Sekama</string>
     <string name="followers" comment="your lastfm followers">Sekėjai</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblai (-ų), nuo %2$s</string>
-    <string name="allow_background">Leisti skrobalinimą fone</string>
+    <string name="allow_background">Leisti skrobuolinimą fone</string>
     <string name="grant_notification_access">Suteikti prieigą prie pranešimų</string>
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
     <string name="send_notifications">Leisti pranešimus</string>
@@ -207,7 +207,7 @@
 - Kiekvieną savaitę gauti geriausius skroblus.
 - Ir daugiau.
 - Pranešimai nedaro garso.\"\""</string>
-    <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobalinimas</string>
+    <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobuolinimas</string>
     <string name="swap" comment="(Swap title and artist)">Apkeisti</string>
     <string name="rate_msg">Patinka ši programėlė?</string>
     <string name="time_just_now">ką tik</string>
@@ -365,7 +365,7 @@
     <string name="pref_spotify_remote">Skrobuolinti „Spotify“ leidžiant kituose įrenginiuose</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Naudoti apytikslę atlikėjo vaizdų paiešką</string>
     <string name="pref_link_heart_button_rating">Naudoti širdelės mygtuką pranešime, kad jį taip pat pamėgti medijos leistuve</string>
-    <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobalinimą, kai įrenginys leidžia muziką</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobuolinimą, kai įrenginys leidžia muziką</string>
     <string name="pref_delay">Skroblo delsa (priklausomai nuo to, kuri ankstesnė)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutės</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procentas</string>
@@ -448,7 +448,7 @@
     <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Užsiregistruok adresu https://console.acrcloud.com.
 • Naršyk į „Projects“ &gt; „“Audio &amp; „video recognition“.
 • Sukurk naują projektą, pasirink „Recorded Audio“ ir „ACRCloud Music“ kaušas."</string>
-    <string name="shazam_scrobbling">Jei nori nuolat skrobuolinti, vietoj to atidaryk „<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>“ ir įjunk „Auto Shazam“. Taip pat įsitikink, kad „Shazam“ įjungtas skrobalinimui.</string>
+    <string name="shazam_scrobbling">Jei nori nuolat skrobuolinti, vietoj to atidaryk „<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>“ ir įjunk „Auto Shazam“. Taip pat įsitikink, kad „Shazam“ įjungtas skrobuolinimui.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d likusių</string>
     <string name="submitting_loves" formatted="true">Siunčiami mėgstami. Liko %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Siunčiamas paketas</string>

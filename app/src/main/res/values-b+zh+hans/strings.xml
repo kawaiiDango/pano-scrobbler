@@ -285,6 +285,8 @@
     <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
+    <string name="duration">持续时间</string>
+    <string name="total_listen_time">总监听时间</string>
     <string name="acoustic" comment="(Acoustic music)">原声</string>
     <string name="instrumental">纯音乐</string>
     <string name="energetic" comment="(Energetic music)">活跃</string>
@@ -313,6 +315,7 @@
     <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect">为新应用自动开启记录</string>
     <string name="pref_spotify_remote">记录其他设备上的 Spotify 播放</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">使用近似搜索艺术家图像</string>
     <string name="pref_link_heart_button_rating">将通知中的爱心图标与媒体播放器中的收藏操作关联</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">当设备正在播放音乐时禁用从麦克风进行连续记录</string>
     <string name="pref_delay">记录延迟（以较早者为准）</string>

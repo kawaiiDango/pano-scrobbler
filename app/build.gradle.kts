@@ -323,7 +323,8 @@ githubRelease {
     body = changelog
     tagName = android.defaultConfig.versionCode.toString()
     releaseName = android.defaultConfig.versionName
-    targetCommitish = "main"
+//    targetCommitish = "main"
+    targetCommitish = "stable"
     releaseAssets("build/outputs/apk/release/pano-scrobbler-release.apk")
 
     // by default this is true

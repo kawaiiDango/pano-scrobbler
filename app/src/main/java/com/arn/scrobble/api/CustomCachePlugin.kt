@@ -44,7 +44,7 @@ class CustomCachePlugin(
 
                     proceedWith(object : HttpResponse() {
                         override val call = response.call
-                        override val content = response.content
+                        override val rawContent = response.rawContent
                         override val coroutineContext = response.coroutineContext
                         override val headers: Headers = HeadersBuilder().apply {
                             appendAll(response.headers)

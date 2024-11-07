@@ -182,9 +182,7 @@ class SessListener(
         playbackState?.state in arrayOf(
             PlaybackState.STATE_PLAYING,
             PlaybackState.STATE_BUFFERING
-        ) &&
-                !metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST).isNullOrEmpty() &&
-                !metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
+        ) && !metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
 
 
     fun hasOtherPlayingControllers(thisTrackInfo: PlayingTrackInfo): Boolean {
@@ -337,6 +335,11 @@ class SessListener(
                         !MetadataUtils.isVariousArtists(albumArtist)
                     )
                         artist = albumArtist
+                }
+
+                Stuff.PACKAGE_NINTENDO_MUSIC -> {
+                    if (artist.isEmpty())
+                        artist = Stuff.ARTIST_NINTENDO_MUSIC
                 }
             }
 

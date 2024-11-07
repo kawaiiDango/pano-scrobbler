@@ -201,6 +201,8 @@ object Stuff {
     const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
     const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
     const val PACKAGE_NEWPIPE = "org.schabi.newpipe"
+    const val PACKAGE_NINTENDO_MUSIC = "com.nintendo.znba"
+    const val ARTIST_NINTENDO_MUSIC = "Nintendo Co., Ltd."
 
     const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
     const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"

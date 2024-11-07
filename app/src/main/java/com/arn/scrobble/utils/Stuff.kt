@@ -185,6 +185,8 @@ object Stuff {
     const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
     const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
     const val PACKAGE_NEWPIPE = "org.schabi.newpipe"
+    const val PACKAGE_NINTENDO_MUSIC = "com.nintendo.znba"
+    const val ARTIST_NINTENDO_MUSIC = "Nintendo Co., Ltd."
 
     val IGNORE_ARTIST_META = setOf(
         "com.google.android.youtube",

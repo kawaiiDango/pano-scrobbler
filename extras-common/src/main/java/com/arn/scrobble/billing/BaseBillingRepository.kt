@@ -70,6 +70,19 @@ abstract class BaseBillingRepository(
         handler.postDelayed(::startDataSourceConnections, reconnectMilliseconds)
     }
 
+    // tmp fix
+
+    fun refreshLicenseState() {
+        val (r, s) = clientData.getReceipt()
+        _licenseState.value =
+            if (r == null)
+                LicenseState.NO_LICENSE
+            else if (verifyPurchase(r, s ?: ""))
+                LicenseState.VALID
+            else
+                LicenseState.NO_LICENSE
+    }
+
     companion object {
         const val RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L
         private const val RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L // 15 minutes

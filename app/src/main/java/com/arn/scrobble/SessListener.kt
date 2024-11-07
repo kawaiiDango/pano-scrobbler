@@ -211,6 +211,12 @@ class SessListener(
             MainPrefs.PREF_SCROBBLE_ACCOUNTS -> {
                 Scrobblables.updateScrobblables()
             }
+
+            // tmp fix
+            MainPrefs.PREF_RECEIPT,
+            MainPrefs.PREF_RECEIPT_SIGNATURE -> {
+                App.billingRepository.refreshLicenseState()
+            }
         }
         if (key == MainPrefs.PREF_ALLOWED_PACKAGES ||
             key == MainPrefs.PREF_BLOCKED_PACKAGES ||

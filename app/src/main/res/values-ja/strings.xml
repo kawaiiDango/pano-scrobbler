@@ -285,6 +285,7 @@
     <string name="persistent_noti_desc">長押しで非表示</string>
     <string name="scrobbler_off">Scrobbler停止中</string>
     <string name="scrobbler_on">Scrobbler稼働中</string>
+    <string name="total_listen_time">合計リスニング時間</string>
     <string name="acoustic" comment="(Acoustic music)">アコースティックらしさ</string>
     <string name="instrumental">インストらしさ</string>
     <string name="energetic" comment="(Energetic music)">激しさ</string>
@@ -313,6 +314,7 @@
     <string name="pref_enabled_apps_title">アプリを選択</string>
     <string name="pref_auto_detect">新規アプリから自動的にScrobbleする</string>
     <string name="pref_spotify_remote">他のデバイスで再生中のSpotifyをScrobbleする</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">アーティスト画像に近似検索を使用する</string>
     <string name="pref_link_heart_button_rating">通知のハートボタンを使用し、メディアプレーヤーでもお気に入りにする</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">音楽再生中はマイクからScrobbleしない</string>
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>

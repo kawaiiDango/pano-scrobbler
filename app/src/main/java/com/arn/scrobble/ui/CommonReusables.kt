@@ -434,7 +434,7 @@ fun IconButtonWithTooltip(
     modifier: Modifier = Modifier
 ) {
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
         tooltip = { PlainTooltip { Text(contentDescription) } },
         state = rememberTooltipState(),
         modifier = modifier,

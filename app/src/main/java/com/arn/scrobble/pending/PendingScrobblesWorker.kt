@@ -294,10 +294,10 @@ class PendingScrobblesWorker(
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     NAME,
-                    if (force)
-                        ExistingWorkPolicy.REPLACE
-                    else
-                        ExistingWorkPolicy.KEEP,
+//                    if (force)
+//                        ExistingWorkPolicy.REPLACE
+//                    else
+                    ExistingWorkPolicy.KEEP,
                     workRequest
                 )
         }

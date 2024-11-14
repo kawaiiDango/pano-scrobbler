@@ -1,4 +1,4 @@
-name: Generate F-Droid repo on GitHub Pages
+name: Generate F-droid repo and static site
 
 on:
   release:
@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: "Generate fdroid repo and static site"
+    name: "Generate F-droid repo and static site"
 
     environment:
       name: github-pages

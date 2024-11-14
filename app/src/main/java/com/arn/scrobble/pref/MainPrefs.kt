@@ -147,6 +147,9 @@ class MainPrefs : Krate {
     var gridPinchLearnt by booleanPref(PREF_ACTIVITY_GRID_PINCH_LEARNT).withDefault(false)
     var squarePhotoLearnt by booleanPref(PREF_SQUARE_PHOTO_LEARNT).withDefault(false)
     var changelogSeenHashcode by intPref(PREF_ACTIVITY_CHANGELOG_SEEN_HASHCODE).withDefault(0)
+    var lastPendingScrobblesFailureTime by longPref(PREF_LAST_PENDING_SCROBBLES_FAILURE_TIME).withDefault(
+        -1
+    )
 
     var searchHistory by stringSetPref(PREF_ACTIVITY_SEARCH_HISTORY)
     var tagHistory by stringSetPref(PREF_ACTIVITY_TAG_HISTORY)
@@ -365,6 +368,8 @@ class MainPrefs : Krate {
         const val PREF_SQUARE_PHOTO_LEARNT = "square_photo_learnt"
         const val PREF_ACTIVITY_DEMO_MODE = "demo_mode"
         const val PREF_ACTIVITY_CHANGELOG_SEEN_HASHCODE = "changelog_seen_hashcode"
+        const val PREF_LAST_PENDING_SCROBBLES_FAILURE_TIME =
+            "last_pending_scrobbles_failure_time"
 
         const val PREF_COLLAGE_SIZE = "collage_size"
         const val PREF_COLLAGE_CAPTIONS = "collage_captions"

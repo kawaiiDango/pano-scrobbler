@@ -297,10 +297,6 @@ class SessListener(
                 metadata.getLong("com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX")
 
             when (trackInfo.packageName) {
-                Stuff.PACKAGE_XIAMI -> {
-                    artist = artist.replace(";", "; ")
-                }
-
                 Stuff.PACKAGE_PANDORA -> {
                     artist = artist.replace("^Ofln - ".toRegex(), "")
                     albumArtist = ""

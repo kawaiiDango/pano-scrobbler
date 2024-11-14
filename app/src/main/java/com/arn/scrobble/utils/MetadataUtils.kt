@@ -349,10 +349,7 @@ object MetadataUtils {
     fun sanitizeArtist(artist: String): String {
         if (artist.lowercase(Locale.ENGLISH) in artistSpam)
             return ""
-        val splits = artist.split("; ").filter { it.isNotBlank() }
-        if (splits.isEmpty())
-            return ""
-        return splits[0]
+        return artist
     }
 
     fun sanitizeAlbumArtist(artistOrig: String): String {

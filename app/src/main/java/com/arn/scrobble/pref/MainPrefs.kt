@@ -101,6 +101,7 @@ data class MainPrefs(
     val receipt: String? = null,
     val receiptSignature: String? = null,
     val lastLicenseCheckTime: Long = -1,
+    val lastPendingScrobblesFailureTime: Long = -1,
     val cookies: Map<String, CookieSerializable> = emptyMap()
 ) {
 

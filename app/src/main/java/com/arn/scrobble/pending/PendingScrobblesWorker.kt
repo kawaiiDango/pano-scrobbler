@@ -14,6 +14,7 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
@@ -25,12 +26,14 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
@@ -52,6 +55,16 @@ class PendingScrobblesWorker(
     )
 
     override suspend fun doWork(): Result {
+        // do not retry if recently failed
+        val lastFailureTime =
+            PlatformStuff.mainPrefs.data.map { it.lastPendingScrobblesFailureTime }.first()
+        if (System.currentTimeMillis() - lastFailureTime < 1 * 60 * 60 * 1000)
+            return Result.failure()
+
+        // do not run if offline, I was unable to infer from the docs whether this constraint is applied to expedited work
+        if (!Stuff.isOnline)
+            return Result.failure()
+
         var errored: Boolean
 
         val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
@@ -64,6 +77,9 @@ class PendingScrobblesWorker(
         }
 
         return if (errored) {
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(lastPendingScrobblesFailureTime = System.currentTimeMillis())
+            }
             Result.retry()
         } else {
             Result.success()
@@ -258,6 +274,7 @@ class PendingScrobblesWorker(
         private const val DELAY = 400L
         const val PROGRESS_KEY = "progress"
         const val NAME = "pending_scrobbles"
+        const val RETRY_DELAY_HOURS = 3L
 
         fun checkAndSchedule(context: Context, force: Boolean = false) {
             val constraints = Constraints.Builder()
@@ -268,8 +285,8 @@ class PendingScrobblesWorker(
                 .setConstraints(constraints)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
-                    5,
-                    TimeUnit.MINUTES
+                    RETRY_DELAY_HOURS,
+                    TimeUnit.HOURS
                 )
                 .apply {
                     if (force) {
@@ -283,10 +300,10 @@ class PendingScrobblesWorker(
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     NAME,
-//                    if (force)
-//                        ExistingWorkPolicy.REPLACE
-//                    else
-                    ExistingWorkPolicy.KEEP,
+                    if (force)
+                        ExistingWorkPolicy.REPLACE
+                    else
+                        ExistingWorkPolicy.KEEP,
                     workRequest
                 )
         }

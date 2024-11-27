@@ -56,6 +56,7 @@ data class MainPrefs(
     val lastHomePagerTab: Int = 0,
     val lastChartsPeriodType: TimePeriodType = TimePeriodType.CONTINUOUS,
     val lastChartsPeriodSelected: TimePeriod = TimePeriod(Period.MONTH),
+    val lastChartsCustomPeriod: TimePeriod = TimePeriod(1577836800000L, 1609459200000L), // 2020
     val currentAccountType: AccountType = AccountType.LASTFM,
     val scrobbleAccounts: List<UserAccountSerializable> = emptyList(),
     val drawerData: Map<AccountType, DrawerData> = emptyMap(),
@@ -102,7 +103,7 @@ data class MainPrefs(
     val receiptSignature: String? = null,
     val lastLicenseCheckTime: Long = -1,
     val lastPendingScrobblesFailureTime: Long = -1,
-    val cookies: Map<String, CookieSerializable> = emptyMap()
+    val cookies: Map<String, CookieSerializable> = emptyMap(),
 ) {
 
     val autoDetectAppsP
@@ -198,7 +199,7 @@ object MainPrefsSerializer : Serializer<MainPrefs> {
 
     override suspend fun writeTo(
         t: MainPrefs,
-        output: OutputStream
+        output: OutputStream,
     ) = Stuff.myJson.encodeToStream(t, output)
 }
 
@@ -224,5 +225,5 @@ data class MainPrefsPublic(
     val spotifyArtistSearchApproximate: Boolean,
     val preventDuplicateAmbientScrobbles: Boolean,
     val firstDayOfWeek: Int,
-    val allowedPackages: Set<String>
+    val allowedPackages: Set<String>,
 )

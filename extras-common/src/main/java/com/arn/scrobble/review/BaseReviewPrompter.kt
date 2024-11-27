@@ -1,13 +1,12 @@
 package com.arn.scrobble.review
 
-import android.app.Activity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 abstract class BaseReviewPrompter(
-    private val activity: Activity,
+    private val activity: Any?,
     private val lastReviewPromptTime: Long?,
-    protected open val setReviewPromptTime: suspend (Long?) -> Unit
+    protected open val setReviewPromptTime: suspend (Long?) -> Unit,
 ) {
     fun showIfNeeded(): Boolean {
         if (lastReviewPromptTime == null) {

@@ -9,6 +9,9 @@
     <string name="privacy_policy_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/privacy-policy</string>
     <string name="faq_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/faq</string>
     <string name="ko_fi_link" translatable="false">https://ko-fi.com/kawaiiDango</string>
+    <string name="bmc_link" translatable="false">https://buymeacoffee.com/kawaiidango</string>
+    <string name="ko_fi" translatable="false">Ko-fi (Uses Paypal)</string>
+    <string name="bmc" translatable="false">BuyMeACoffee (Uses Stripe)</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
     <string name="gnufm" translatable="false">GNU FM</string>
@@ -51,6 +54,12 @@ According to Google Play's policy, purchases made through Google Play cannot be 
     <string name="contrast" translatable="false" comment="Color contrast">Contrast</string>
     <string name="reorder_dpad" translatable="false">Use the direction keys to reorder</string>
     <string name="back" translatable="false">Back</string>
+    <string name="use_browser" translatable="false">Please use a browser on a supported device for this.</string>
+    <string name="retry" translatable="false">Retry</string>
+    <string name="move_left" translatable="false">Move left</string>
+    <string name="move_right" translatable="false">Move right</string>
+    <string name="cannot_move" translatable="false">Cannot move</string>
+    <string name="date_range" translatable="false">Select date range</string>
 
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>

@@ -34,6 +34,10 @@ private fun ChangelogContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChangelogScreen() {
-    BottomSheetDialogParent { ChangelogContent(it) }
+fun ChangelogScreen(
+    onDismiss: () -> Unit
+) {
+    BottomSheetDialogParent(
+        onDismiss = onDismiss
+    ) { ChangelogContent(it) }
 }

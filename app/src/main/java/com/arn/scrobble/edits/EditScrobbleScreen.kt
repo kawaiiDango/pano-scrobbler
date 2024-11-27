@@ -150,10 +150,10 @@ private fun EditScrobbleContent(
             label = { Text(stringResource(R.string.artist)) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction =
-                if (albumArtistVisible)
-                    ImeAction.Next
-                else
-                    ImeAction.Done
+                    if (albumArtistVisible)
+                        ImeAction.Next
+                    else
+                        ImeAction.Done
             ),
             keyboardActions = if (albumArtistVisible)
                 KeyboardActions.Default
@@ -280,33 +280,24 @@ private fun ShowRegexRecommendation(
 
 @Composable
 fun EditScrobbleDialog(
-    mainViewModel: MainViewModel,
     scrobbleData: ScrobbleData,
     msid: String?,
     hash: Int,
-    onBack: () -> Unit,
+    onDone: (ScrobbleData) -> Unit,
+    onDismiss: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
 ) {
 
-    DialogParent {
+    DialogParent(
+        onDismiss = onDismiss
+    ) {
         EditScrobbleContent(
             onDone = {
-                // notify the edit
-                val _artist = Artist(it.artist)
-                val _album = it.album?.let { Album(it, _artist) }
-
-                mainViewModel.notifyEdit(
-                    Track(
-                        it.track,
-                        _album,
-                        _artist,
-                        date = it.timestamp.takeIf { it > 0L }
-                    )
-                )
-                onBack()
+                onDone(it)
+                onDismiss()
             },
             onReauthenticate = {
-                onBack()
+                onDismiss()
                 val route = LoginDestinations.route(AccountType.LASTFM)
                 onNavigate(route)
             },
@@ -314,7 +305,7 @@ fun EditScrobbleDialog(
             msid = msid,
             hash = hash,
             onNavigateToRegexEdits = {
-                onBack()
+                onDismiss()
                 onNavigate(PanoRoute.RegexEdits)
             },
             modifier = it

@@ -41,7 +41,7 @@ object NavUtils {
 
     fun updateHeaderWithDrawerData(
         headerNavBinding: HeaderNavBinding,
-        mainNotifierViewModel: MainViewModel
+        mainNotifierViewModel: MainViewModel,
     ) {
         val accountType = Scrobblables.current.value?.userAccount?.type
 
@@ -51,11 +51,11 @@ object NavUtils {
             return
         }
 
-        Scrobblables.currentScrobblableUser?.let {
-            mainNotifierViewModel.initializeCurrentUser(it)
-        }
+//        Scrobblables.currentScrobblableUser?.let {
+//            mainNotifierViewModel.initializeCurrentUser(it)
+//        }
 
-        val currentUser = mainNotifierViewModel.currentUser
+        val currentUser = mainNotifierViewModel.currentUserOld
         val username = currentUser.name
         val navNumEntriesList = listOf(
             headerNavBinding.navNumArtists,
@@ -101,7 +101,7 @@ object NavUtils {
         }
 
         val profilePicUrl =
-            if (mainNotifierViewModel.currentUser.isSelf)
+            if (mainNotifierViewModel.currentUserOld.isSelf)
                 drawerData.profilePicUrl
             else
                 currentUser.largeImage
@@ -134,7 +134,7 @@ object NavUtils {
     fun setProfileSwitcher(
         headerNavBinding: HeaderNavBinding,
         navController: NavController,
-        mainNotifierViewModel: MainViewModel
+        mainNotifierViewModel: MainViewModel,
     ) {
         headerNavBinding.navProfileLinks.setOnClickListener { anchor ->
             val currentAccount = Scrobblables.current.value?.userAccount
@@ -162,11 +162,11 @@ object NavUtils {
                 return@setOnClickListener
             }
 
-            Scrobblables.currentScrobblableUser?.let {
-                mainNotifierViewModel.initializeCurrentUser(it)
-            }
+//            Scrobblables.currentScrobblableUser?.let {
+//                mainNotifierViewModel.initializeCurrentUser(it)
+//            }
 
-            val currentUser = mainNotifierViewModel.currentUser
+            val currentUser = mainNotifierViewModel.currentUserOld
 
             val popup = PopupMenu(headerNavBinding.root.context, anchor)
 
@@ -186,7 +186,7 @@ object NavUtils {
 //                    .apply { setIcon(R.drawable.vd_accounts) }
 //            }
 
-            if (mainNotifierViewModel.currentUser.isSelf) {
+            if (mainNotifierViewModel.currentUserOld.isSelf) {
                 Scrobblables.all.value.forEach {
                     if (it != Scrobblables.current.value)
                         popup.menu.add(
@@ -218,7 +218,8 @@ object NavUtils {
                             AccountType.CUSTOM_LISTENBRAINZ -> "${currentAccount.apiRoot}user/${currentUser.name}/reports"
                             AccountType.PLEROMA -> "${currentAccount.apiRoot}/users/${currentUser.name}"
                             AccountType.MALOJA,
-                            AccountType.FILE -> currentAccount.apiRoot!!
+                            AccountType.FILE,
+                                -> currentAccount.apiRoot!!
                         }
 
                         Stuff.openInBrowser(url)
@@ -332,7 +333,7 @@ object NavUtils {
                                 } else {
                                     UiUtils.loadSmallUserPic(
                                         activityBinding.bottomNav.context,
-                                        mainNotifierViewModel.currentUser,
+                                        mainNotifierViewModel.currentUserOld,
                                         activityViewModel.drawerData.value,
                                     ) {
                                         it.colorFilter =
@@ -426,7 +427,7 @@ object NavUtils {
                             override fun onPageScrolled(
                                 position: Int,
                                 positionOffset: Float,
-                                positionOffsetPixels: Int
+                                positionOffsetPixels: Int,
                             ) {
                             }
 

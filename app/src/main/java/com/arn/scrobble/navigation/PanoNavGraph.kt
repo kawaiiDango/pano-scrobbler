@@ -1,42 +1,56 @@
 package com.arn.scrobble.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
-import com.arn.scrobble.PlaceholderScreen
+import com.arn.scrobble.HomePagerScreen
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.api.lastfm.MusicEntry
-import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.api.lastfm.Tag
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.billing.BillingScreen
 import com.arn.scrobble.billing.BillingTroubleshootScreen
-import com.arn.scrobble.charts.CollageGeneratorScreen
-import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.charts.ChartsLegendScreen
+import com.arn.scrobble.charts.ChartsPagerScreen
+import com.arn.scrobble.charts.HiddenTagsScreen
+import com.arn.scrobble.charts.RandomScreen
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.SimpleEdit
-import com.arn.scrobble.edits.BlockedMetadataAddScreen
 import com.arn.scrobble.edits.BlockedMetadatasScreen
-import com.arn.scrobble.edits.EditScrobbleDialog
 import com.arn.scrobble.edits.RegexEditsAddScreen
 import com.arn.scrobble.edits.RegexEditsScreen
 import com.arn.scrobble.edits.RegexEditsTestScreen
 import com.arn.scrobble.edits.SimpleEditsAddScreen
 import com.arn.scrobble.edits.SimpleEditsScreen
+import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserCached
-import com.arn.scrobble.info.MusicEntryInfoScreen
-import com.arn.scrobble.info.TagInfoScreen
+import com.arn.scrobble.help.HelpScreen
+import com.arn.scrobble.info.InfoPagerScreen
+import com.arn.scrobble.info.SimilarTracksScreen
 import com.arn.scrobble.main.MainViewModel
+import com.arn.scrobble.mic.MicScrobbleScreen
+import com.arn.scrobble.onboarding.ChangelogScreen
 import com.arn.scrobble.onboarding.FileLoginScreen
+import com.arn.scrobble.onboarding.FixItScreen
 import com.arn.scrobble.onboarding.GnufmLoginScreen
 import com.arn.scrobble.onboarding.ListenBrainzLoginScreen
 import com.arn.scrobble.onboarding.MalojaLoginScreen
 import com.arn.scrobble.onboarding.OnboardingScreen
 import com.arn.scrobble.onboarding.PleromaLoginScreen
+import com.arn.scrobble.onboarding.WebViewScreen
 import com.arn.scrobble.pref.AppListScreen
 import com.arn.scrobble.pref.DeleteAccountScreen
 import com.arn.scrobble.pref.ExportScreen
@@ -44,38 +58,89 @@ import com.arn.scrobble.pref.ImportScreen
 import com.arn.scrobble.pref.OssCreditsScreen
 import com.arn.scrobble.pref.PrefsScreen
 import com.arn.scrobble.pref.TranslatorsScreen
+import com.arn.scrobble.recents.TrackHistoryScreen
 import com.arn.scrobble.search.ImageSearchScreen
+import com.arn.scrobble.search.IndexingScreen
 import com.arn.scrobble.search.SearchScreen
 import com.arn.scrobble.themes.ThemeChooserScreen
 import com.arn.scrobble.ui.addColumnPadding
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
+import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.panoNavGraph(
-    onSetTitle: (Int?) -> Unit,
+    onSetTitle: (String?) -> Unit,
+    onSetOtherUser: (UserCached?) -> Unit,
+    navMetadataList: () -> List<PanoNavMetadata>?,
+    onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
+    tabIdxFlow: Flow<Int>,
+    onSetTabIdx: (Int) -> Unit,
     navigate: (PanoRoute) -> Unit,
+    onLoginChanged: () -> Unit,
     goBack: () -> Unit,
+    goUp: () -> Unit,
     mainViewModel: MainViewModel,
-    modifier: Modifier = Modifier.fillMaxSize()
 ) {
 
-    composable<PanoRoute.Placeholder> {
-        onSetTitle(R.string.edit_regex_test)
-        PlaceholderScreen(
-            modifier = modifier
+    fun onSetTitleRes(resId: Int?) {
+        onSetTitle(resId?.let { PlatformStuff.application.getString(it) })
+    }
+
+    @Composable
+    fun modifier() = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+
+    composable<PanoRoute.HomePager>(
+        typeMap = mapOf(
+            typeOf<UserCached>() to serializableType<UserCached>()
+        )
+    ) {
+        val tabIdx by tabIdxFlow.collectAsStateWithLifecycle(null)
+        val arguments = it.toRoute<PanoRoute.HomePager>()
+
+        if (tabIdx != null) {
+            HomePagerScreen(
+                user = arguments.user,
+                onSetOtherUser = onSetOtherUser,
+                tabsList = getTabData(it.destination) ?: emptyList(),
+                onTitleChange = onSetTitle,
+                tabIdx = tabIdx!!,
+                onSetTabIdx = onSetTabIdx,
+                onSetNavMetadataList = onSetNavMetadataList,
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+    }
+
+    composable<PanoRoute.Random>(
+        typeMap = mapOf(
+            typeOf<UserCached>() to serializableType<UserCached>()
+        )
+    ) {
+        onSetTitleRes(R.string.random)
+        val arguments = it.toRoute<PanoRoute.Random>()
+
+        RandomScreen(
+            user = arguments.user,
+            onNavigate = navigate,
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.OssCredits> {
-        onSetTitle(R.string.pref_oss_credits)
+        onSetTitleRes(R.string.pref_oss_credits)
         OssCreditsScreen(
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.AppList> {
         val arguments = it.toRoute<PanoRoute.AppList>()
-        onSetTitle(
+        onSetTitleRes(
             if (arguments.isSingleSelect)
                 R.string.choose_an_app
             else
@@ -87,30 +152,30 @@ fun NavGraphBuilder.panoNavGraph(
             hasPreSelection = arguments.hasPreSelection,
             preSelectedPackages = arguments.preSelectedPackages.toSet(),
             onSetSelectedPackages = { mainViewModel.setSelectedPackages(it) },
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.ThemeChooser> {
-        onSetTitle(R.string.pref_themes)
+        onSetTitleRes(R.string.pref_themes)
         ThemeChooserScreen(
             onNavigateToBilling = { navigate(PanoRoute.Billing) },
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.DeleteAccount> {
-        onSetTitle(R.string.delete_account)
+        onSetTitleRes(R.string.delete_account)
         DeleteAccountScreen(
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.BillingTroubleshoot> {
-        onSetTitle(R.string.billing_troubleshoot)
+        onSetTitleRes(R.string.billing_troubleshoot)
         BillingTroubleshootScreen(
             onBack = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
@@ -119,58 +184,62 @@ fun NavGraphBuilder.panoNavGraph(
         BillingScreen(
             onBack = goBack,
             onNavigateToTroubleshoot = { navigate(PanoRoute.BillingTroubleshoot) },
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.Prefs>(
         deepLinks = listOf(
             navDeepLink {
-                uriPattern = Stuff.DEEPLINK_PROTOCOL_NAME + "://screen/settings"
-            })
+                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Prefs::class.simpleName
+            },
+            navDeepLink {
+                action = "android.service.quicksettings.action.QS_TILE_PREFERENCES"
+            }
+        )
     ) {
-        onSetTitle(R.string.settings)
+        onSetTitleRes(R.string.settings)
         PrefsScreen(
             onNavigate = navigate,
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.SimpleEdits> {
-        onSetTitle(R.string.simple_edits)
+        onSetTitleRes(R.string.simple_edits)
         SimpleEditsScreen(
             onEdit = { navigate(PanoRoute.SimpleEditsAdd(it)) },
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.SimpleEditsAdd>(
-        typeMap = mapOf(typeOf<SimpleEdit?>() to serializableType<SimpleEdit?>(nullable = true))
+        typeMap = mapOf(typeOf<SimpleEdit?>() to serializableType<SimpleEdit?>())
     ) {
-        onSetTitle(R.string.edit)
+        onSetTitleRes(R.string.edit)
 
         val arguments = it.toRoute<PanoRoute.SimpleEditsAdd>()
 
         SimpleEditsAddScreen(
             simpleEdit = arguments.simpleEdit,
             onBack = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.RegexEdits> {
-        onSetTitle(R.string.pref_regex_edits)
+        onSetTitleRes(R.string.pref_regex_edits)
         RegexEditsScreen(
             onNavigateToTest = { navigate(PanoRoute.RegexEditsTest) },
             onNavigateToEdit = { navigate(PanoRoute.RegexEditsAdd(it)) },
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.RegexEditsAdd>(
-        typeMap = mapOf(typeOf<RegexEdit?>() to serializableType<RegexEdit?>(nullable = true))
+        typeMap = mapOf(typeOf<RegexEdit?>() to serializableType<RegexEdit?>())
     ) {
-        onSetTitle(R.string.edit_regex)
+        onSetTitleRes(R.string.edit_regex)
 
         val arguments = it.toRoute<PanoRoute.RegexEditsAdd>()
 
@@ -179,12 +248,12 @@ fun NavGraphBuilder.panoNavGraph(
             regexEdit = arguments.regexEdit,
             onNavigate = navigate,
             onBack = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.RegexEditsTest> {
-        onSetTitle(R.string.edit_regex_test)
+        onSetTitleRes(R.string.edit_regex_test)
 
         RegexEditsTestScreen(
             mainViewModel = mainViewModel,
@@ -198,12 +267,12 @@ fun NavGraphBuilder.panoNavGraph(
                 )
             },
             onNavigateToRegexEditsAdd = { navigate(PanoRoute.RegexEditsAdd(it)) },
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.BlockedMetadatas> {
-        onSetTitle(R.string.pref_blocked_metadata)
+        onSetTitleRes(R.string.pref_blocked_metadata)
 
         BlockedMetadatasScreen(
             onEdit = {
@@ -215,123 +284,157 @@ fun NavGraphBuilder.panoNavGraph(
                     )
                 )
             },
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.ImageSearch>(
+        deepLinks = listOf(
+            navDeepLink<PanoRoute.ImageSearch>(
+                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.ImageSearch::class.simpleName,
+                typeMap = mapOf(
+                    typeOf<Artist?>() to serializableType<Artist?>(),
+                    typeOf<Album?>() to serializableType<Album?>(),
+                )
+            )
+        ),
         typeMap = mapOf(
-            typeOf<MusicEntry>() to serializableType<MusicEntry>(),
-            typeOf<MusicEntry?>() to serializableType<MusicEntry?>(nullable = true),
+            typeOf<Artist?>() to serializableType<Artist?>(),
+            typeOf<Album?>() to serializableType<Album?>(),
         )
     ) {
-        onSetTitle(R.string.search)
+        onSetTitleRes(R.string.search)
 
         val arguments = it.toRoute<PanoRoute.ImageSearch>()
 
         ImageSearchScreen(
             onBack = goBack,
-            musicEntry = arguments.musicEntry,
-            originalMusicEntry = arguments.originalMusicEntry,
-            modifier = modifier
+            artist = arguments.artist,
+            originalArtist = arguments.originalArtist,
+            album = arguments.album,
+            originalAlbum = arguments.originalAlbum,
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.Translators> {
-        onSetTitle(R.string.pref_translate_credits)
+        onSetTitleRes(R.string.pref_translate_credits)
 
         TranslatorsScreen(
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
     composable<PanoRoute.Import> {
-        onSetTitle(R.string.pref_import)
+        onSetTitleRes(R.string.pref_import)
 
         ImportScreen(
             onBack = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.Export> {
-        onSetTitle(R.string.pref_export)
+        onSetTitleRes(R.string.pref_export)
 
         ExportScreen(
             onBack = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.LoginFile> {
-        onSetTitle(R.string.scrobble_to_file)
+        onSetTitleRes(R.string.scrobble_to_file)
 
         FileLoginScreen(
             onBack = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.LoginGnufm> {
-        onSetTitle(R.string.gnufm)
+        onSetTitleRes(R.string.gnufm)
 
         GnufmLoginScreen(
             onDone = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.LoginListenBrainz> {
-        onSetTitle(R.string.listenbrainz)
+        onSetTitleRes(R.string.listenbrainz)
 
         ListenBrainzLoginScreen(
             onDone = goBack,
             hasCustomApiRoot = false,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.LoginCustomListenBrainz> {
-        onSetTitle(R.string.custom_listenbrainz)
+        onSetTitleRes(R.string.custom_listenbrainz)
 
         ListenBrainzLoginScreen(
             onDone = goBack,
             hasCustomApiRoot = true,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.LoginMaloja> {
-        onSetTitle(R.string.maloja)
+        onSetTitleRes(R.string.maloja)
 
         MalojaLoginScreen(
             onDone = goBack,
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.LoginPleroma> {
-        onSetTitle(R.string.pleroma)
+        onSetTitleRes(R.string.pleroma)
 
         PleromaLoginScreen(
             onNavigateToWebview = { url, userAccountTemp, creds ->
                 navigate(PanoRoute.WebView(url, userAccountTemp, creds))
             },
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
+        )
+    }
+
+    composable<PanoRoute.WebView>(
+        typeMap = mapOf(
+            typeOf<UserAccountTemp?>() to serializableType<UserAccountTemp?>(),
+            typeOf<PleromaOauthClientCreds?>() to serializableType<PleromaOauthClientCreds?>()
+        )
+    ) {
+        val arguments = it.toRoute<PanoRoute.WebView>()
+
+        WebViewScreen(
+            initialUrl = arguments.url,
+            userAccountTemp = arguments.userAccountTemp,
+            creds = arguments.creds,
+            onTitleChange = onSetTitle,
+            onBack = goBack,
+            modifier = modifier().padding(panoContentPadding())
+            // webview has issues with nested scroll
         )
     }
 
     composable<PanoRoute.Search>(
-        typeMap = mapOf(
-            typeOf<UserCached>() to serializableType<UserCached>()
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Search::class.simpleName
+            },
+            navDeepLink {
+                action = "android.intent.action.SEARCH"
+            }
         )
     ) {
-        val arguments = it.toRoute<PanoRoute.Search>()
+        onSetTitleRes(R.string.search)
 
         SearchScreen(
-            user = arguments.user,
             onNavigate = navigate,
-            modifier = modifier
+            modifier = modifier()
         )
     }
 
@@ -342,85 +445,237 @@ fun NavGraphBuilder.panoNavGraph(
         OnboardingScreen(
             onNavigate = navigate,
             onDone = {
-                // todo make home the first screen
+                onLoginChanged()
             },
-            modifier = modifier.addColumnPadding()
+            modifier = modifier().addColumnPadding()
         )
     }
 
-    // dialogs
-
-    dialog<PanoRoute.BlockedMetadataAdd>(
-        typeMap = mapOf(typeOf<BlockedMetadata>() to serializableType<BlockedMetadata>())
+    composable<PanoRoute.MicScrobble>(
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern =
+                    Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MicScrobble::class.simpleName
+            },
+        )
     ) {
-        val arguments = it.toRoute<PanoRoute.BlockedMetadataAdd>()
+        onSetTitleRes(R.string.scrobble_from_mic)
 
-        BlockedMetadataAddScreen(
-            blockedMetadata = arguments.blockedMetadata,
-            ignoredArtist = arguments.ignoredArtist,
-            hash = arguments.hash,
-            onNavigateToBilling = { navigate(PanoRoute.Billing) },
-            onBack = goBack,
+        MicScrobbleScreen(
+            modifier = modifier().addColumnPadding()
         )
     }
 
-    dialog<PanoRoute.EditScrobble>(
-        typeMap = mapOf(typeOf<ScrobbleData>() to serializableType<ScrobbleData>())
-    ) {
-        val arguments = it.toRoute<PanoRoute.EditScrobble>()
+    composable<PanoRoute.Help> {
+        onSetTitleRes(R.string.help)
 
-        EditScrobbleDialog(
-            mainViewModel = mainViewModel,
-            scrobbleData = arguments.scrobbleData,
-            msid = arguments.msid,
-            hash = arguments.hash,
-            onNavigate = navigate,
-            onBack = goBack,
+        HelpScreen(
+            modifier = modifier().padding(panoContentPadding())
+            // webview has issues with nested scroll
         )
     }
 
-    dialog<PanoRoute.TagInfo>(
-        typeMap = mapOf(typeOf<Tag>() to serializableType<Tag>())
-    ) {
-        val arguments = it.toRoute<PanoRoute.TagInfo>()
-
-        TagInfoScreen(
-            tag = arguments.tag
-        )
-    }
-
-    dialog<PanoRoute.MusicEntryInfo>(
+    composable<PanoRoute.MusicEntryInfoPager>(
+        deepLinks = listOf(
+            navDeepLink<PanoRoute.MusicEntryInfoPager>(
+                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfoPager::class.simpleName,
+                typeMap = mapOf(
+                    typeOf<Artist>() to serializableType<Artist>(),
+                    typeOf<UserCached>() to serializableType<UserCached>()
+                )
+            )
+        ),
         typeMap = mapOf(
-            typeOf<MusicEntry>() to serializableType<MusicEntry>(),
+            typeOf<Artist>() to serializableType<Artist>(),
             typeOf<UserCached>() to serializableType<UserCached>()
         )
     ) {
-        val arguments = it.toRoute<PanoRoute.MusicEntryInfo>()
+        val tabIdx by tabIdxFlow.collectAsStateWithLifecycle(null)
 
-        MusicEntryInfoScreen(
-            musicEntry = arguments.musicEntry,
+        val arguments = it.toRoute<PanoRoute.MusicEntryInfoPager>()
+
+        onSetTitle(arguments.artist.name)
+
+        tabIdx?.let { tabIdx ->
+            InfoPagerScreen(
+                musicEntry = arguments.artist,
+                user = arguments.user,
+                pkgName = arguments.pkgName,
+                tabIdx = tabIdx,
+                tabsList = getTabData(it.destination) ?: emptyList(),
+                onSetTabIdx = onSetTabIdx,
+                initialTabIdx = when (arguments.type) {
+                    Stuff.TYPE_TRACKS -> 0
+                    Stuff.TYPE_ALBUMS -> 1
+                    Stuff.TYPE_ARTISTS -> 2
+                    else -> 0
+                },
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+    }
+
+
+    composable<PanoRoute.ChartsPager>(
+        typeMap = mapOf(
+            typeOf<UserCached>() to serializableType<UserCached>()
+        )
+    ) {
+        val tabIdx by tabIdxFlow.collectAsStateWithLifecycle(null)
+
+        val arguments = it.toRoute<PanoRoute.ChartsPager>()
+
+        tabIdx?.let { tabIdx ->
+            ChartsPagerScreen(
+                user = arguments.user,
+                tabIdx = tabIdx,
+                onSetTabIdx = onSetTabIdx,
+                tabsList = getTabData(it.destination) ?: emptyList(),
+                initialTabIdx = when (arguments.type) {
+                    Stuff.TYPE_ARTISTS -> 0
+                    Stuff.TYPE_ALBUMS -> 1
+                    Stuff.TYPE_TRACKS -> 2
+                    else -> 0
+                },
+                onTitleChange = onSetTitle,
+                onSetNavMetadataList = onSetNavMetadataList,
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+    }
+
+    composable<PanoRoute.SimilarTracks>(
+        deepLinks = listOf(
+            navDeepLink<PanoRoute.SimilarTracks>(
+                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.SimilarTracks::class.simpleName,
+                typeMap = mapOf(
+                    typeOf<Track>() to serializableType<Track>(),
+                    typeOf<UserCached>() to serializableType<UserCached>()
+                )
+            )
+        ),
+        typeMap = mapOf(
+            typeOf<Track>() to serializableType<Track>(),
+            typeOf<UserCached>() to serializableType<UserCached>(),
+        )
+    ) {
+        val arguments = it.toRoute<PanoRoute.SimilarTracks>()
+        val entry = arguments.track
+        val title = stringResource(
+            R.string.artist_title,
+            entry.artist.name,
+            entry.name
+        )
+
+        onSetTitle(title)
+
+        SimilarTracksScreen(
+            musicEntry = arguments.track,
+            user = arguments.user,
             pkgName = arguments.pkgName,
-            user = arguments.user,
             onNavigate = navigate,
+            modifier = modifier()
         )
     }
 
-    dialog<PanoRoute.CollageGenerator>(
+    composable<PanoRoute.Help> {
+        onSetTitleRes(R.string.help)
+
+        HelpScreen(
+            modifier = modifier().padding(panoContentPadding())
+            // webview has issues with nested scroll
+        )
+    }
+
+    composable<PanoRoute.TrackHistory>(
+        deepLinks = listOf(
+            navDeepLink<PanoRoute.TrackHistory>(
+                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.TrackHistory::class.simpleName,
+                typeMap = mapOf(
+                    typeOf<Track>() to serializableType<Track>(),
+                    typeOf<UserCached>() to serializableType<UserCached>()
+                )
+            )
+        ),
         typeMap = mapOf(
-            typeOf<TimePeriod>() to serializableType<TimePeriod>(),
-            typeOf<UserCached>() to serializableType<UserCached>()
+            typeOf<Track>() to serializableType<Track>(),
+            typeOf<UserCached>() to serializableType<UserCached>(),
         )
     ) {
-        val arguments = it.toRoute<PanoRoute.CollageGenerator>()
+        val arguments = it.toRoute<PanoRoute.TrackHistory>()
+        val track = arguments.track
+        val user = arguments.user
 
-        CollageGeneratorScreen(
-            collageType = arguments.collageType,
-            timePeriod = arguments.timePeriod,
-            user = arguments.user,
+        val formattedCount = track.userplaycount?.format() ?: "0"
+        val title = if (user.isSelf) {
+            stringResource(R.string.my_scrobbles) + ": " + formattedCount
+        } else {
+            "${user.name}: $formattedCount"
+        }
+        onSetTitle(title)
+
+        TrackHistoryScreen(
+            track = track,
+            user = user,
+            onNavigate = navigate,
+            modifier = modifier()
         )
     }
 
+    dialog<PanoRoute.NavPopup>(
+        typeMap = mapOf(
+            typeOf<UserCached?>() to serializableType<UserCached?>(),
+        )
+    ) {
+        val arguments = it.toRoute<PanoRoute.NavPopup>()
 
-//    }
+        NavPopupScreen(
+            onDismiss = goUp,
+            otherUser = arguments.otherUser,
+            drawerDataFlow = mainViewModel.drawerDataFlow,
+            drawSnowfall = mainViewModel.isItChristmas,
+            loadOtherUserDrawerData = mainViewModel::loadOtherUserDrawerData,
+            navMetadataList = navMetadataList() ?: emptyList(),
+            onNavigate = navigate
+        )
+    }
 
+    dialog<PanoRoute.Changelog> {
+        ChangelogScreen(
+            onDismiss = goUp
+        )
+    }
+
+    dialog<PanoRoute.FixIt> {
+        FixItScreen(
+            onDismiss = goUp
+        )
+    }
+
+    dialog<PanoRoute.Index> {
+        IndexingScreen(
+            onDismiss = goUp
+        )
+    }
+
+    dialog<PanoRoute.HiddenTags> {
+        HiddenTagsScreen(
+            onDismiss = goUp
+        )
+    }
+
+    dialog<PanoRoute.ChartsLegend> {
+        ChartsLegendScreen(
+            onDismiss = goUp
+        )
+    }
+
+    panoDialogNavGraph(
+        navigate = navigate,
+        goUp = goUp,
+        usingInDialogActivity = false,
+        mainViewModel = mainViewModel,
+    )
 }

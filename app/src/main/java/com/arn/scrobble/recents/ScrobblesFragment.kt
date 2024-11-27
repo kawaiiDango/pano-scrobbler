@@ -74,6 +74,7 @@ import com.arn.scrobble.ui.createSkeletonWithFade
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.Stuff.putSingle
+import com.arn.scrobble.utils.Stuff.timeToLocal
 import com.arn.scrobble.utils.UiUtils
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.expandToHeroIfNeeded
@@ -114,7 +115,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     private var _binding: ContentScrobblesBinding? = null
     private val binding
         get() = _binding!!
-    private val viewModel by viewModels<TracksVM>()
+    private val viewModel by viewModels<TracksVMOld>()
     private val billingViewModel by activityViewModels<BillingViewModel>()
     private val activityViewModel by activityViewModels<MainViewModel>()
     private var animSet: AnimatorSet? = null
@@ -126,7 +127,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = ContentScrobblesBinding.inflate(inflater, container, false)
         binding.scrobblesList.setupInsets()
@@ -203,7 +204,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 adapter.notifyItemChanged(pos)
             },
             viewModel = viewModel,
-            userIsSelf = activityViewModel.currentUser.isSelf,
+            userIsSelf = activityViewModel.currentUserOld.isSelf,
         )
 
         // todo make async
@@ -215,7 +216,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
 
         adapter.isShowingAlbums = showAlbumsInRecents
         adapter.isShowingPlayers =
-            !viewModel.isShowingLoves && activityViewModel.currentUser.isSelf &&
+            !viewModel.isShowingLoves && activityViewModel.currentUserOld.isSelf &&
                     Stuff.billingRepository.isLicenseValid && showScrobbleSources
 
         adapter.themeTintBackground = themeTintBackground
@@ -268,7 +269,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         }
 
         collectLatestLifecycleFlow(viewModel.pendingScrobbles) {
-            adapter.updatePendingScrobbles(it)
+//            adapter.updatePendingScrobbles(it)
             collectPendingScrobblesProgress()
         }
 
@@ -369,66 +370,66 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
         }
 
         binding.timeJumpChip.setOnClickListener { v ->
-            val anchorTime = viewModel.input.value?.timePeriod?.end ?: System.currentTimeMillis()
-            val timePeriodsToIcons =
-                TimePeriodsGenerator(
-                    activityViewModel.currentUser.registeredTime,
-                    anchorTime,
-                    requireContext()
-                ).recentsTimeJumps
-
-            val popupMenu = PopupMenu(requireContext(), v)
-            timePeriodsToIcons.forEachIndexed { index, (timePeriod, iconRes) ->
-                popupMenu.menu.add(Menu.NONE, index, Menu.NONE, timePeriod.name)
-                    .apply {
-                        setIcon(iconRes)
-                    }
-            }
-            val customId = -1
-
-            if (!Stuff.isTv) {
-                popupMenu.menu.add(
-                    Menu.NONE,
-                    customId,
-                    Menu.NONE,
-                    getString(R.string.charts_custom)
-                )
-                    .apply {
-                        setIcon(R.drawable.vd_calendar_today)
-                    }
-            }
-
-            popupMenu.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    customId -> {
-                        openCalendar()
-                    }
-
-                    else -> {
-
-                        binding.timeJumpChip.isCheckable = true
-                        binding.timeJumpChip.isChecked = true
-                        binding.scrobblesList.scheduleLayoutAnimation()
-
-                        val timePeriod = timePeriodsToIcons[item.itemId].first
-                        viewModel.setInput(
-                            viewModel.input.value!!.copy(
-                                type = Stuff.TYPE_TRACKS,
-                                page = 1,
-                                timePeriod = timePeriod,
-                            )
-                        )
-                    }
-                }
-                true
-            }
-            popupMenu.showWithIcons(
-                iconTintColor = MaterialColors.getColor(
-                    requireContext(),
-                    com.google.android.material.R.attr.colorSecondary,
-                    null
-                )
-            )
+//            val anchorTime = viewModel.input.value?.timePeriod?.end ?: System.currentTimeMillis()
+//            val timePeriodsToIcons =
+//                TimePeriodsGenerator(
+//                    activityViewModel.currentUserOld.registeredTime,
+//                    anchorTime,
+//                    requireContext()
+//                ).recentsTimeJumps
+//
+//            val popupMenu = PopupMenu(requireContext(), v)
+//            timePeriodsToIcons.forEachIndexed { index, (timePeriod, iconRes) ->
+//                popupMenu.menu.add(Menu.NONE, index, Menu.NONE, timePeriod.name)
+//                    .apply {
+//                        setIcon(iconRes)
+//                    }
+//            }
+//            val customId = -1
+//
+//            if (!Stuff.isTv) {
+//                popupMenu.menu.add(
+//                    Menu.NONE,
+//                    customId,
+//                    Menu.NONE,
+//                    getString(R.string.charts_custom)
+//                )
+//                    .apply {
+//                        setIcon(R.drawable.vd_calendar_today)
+//                    }
+//            }
+//
+//            popupMenu.setOnMenuItemClickListener { item ->
+//                when (item.itemId) {
+//                    customId -> {
+//                        openCalendar()
+//                    }
+//
+//                    else -> {
+//
+//                        binding.timeJumpChip.isCheckable = true
+//                        binding.timeJumpChip.isChecked = true
+//                        binding.scrobblesList.scheduleLayoutAnimation()
+//
+//                        val timePeriod = timePeriodsToIcons[item.itemId].first
+//                        viewModel.setInput(
+//                            viewModel.input.value!!.copy(
+//                                type = Stuff.TYPE_TRACKS,
+//                                page = 1,
+//                                timePeriod = timePeriod,
+//                            )
+//                        )
+//                    }
+//                }
+//                true
+//            }
+//            popupMenu.showWithIcons(
+//                iconTintColor = MaterialColors.getColor(
+//                    requireContext(),
+//                    com.google.android.material.R.attr.colorSecondary,
+//                    null
+//                )
+//            )
         }
 
         // old value found, could be a uiMode change
@@ -493,7 +494,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     MusicEntryLoaderInput(
                         type = Stuff.TYPE_TRACKS,
                         page = 1,
-                        user = activityViewModel.currentUser,
+                        user = activityViewModel.currentUserOld,
                         timePeriod = null,
                     ), true
                 )
@@ -512,7 +513,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                 else -> ""
             }
 
-            var shareText = if (activityViewModel.currentUser.isSelf)
+            var shareText = if (activityViewModel.currentUserOld.isSelf)
                 getString(
                     R.string.recents_share,
                     heart + getString(R.string.artist_title, track.artist.name, track.name),
@@ -523,7 +524,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                     R.string.recents_share_username,
                     heart + getString(R.string.artist_title, track.artist.name, track.name),
                     Stuff.myRelativeTime(requireContext(), track.date, true),
-                    activityViewModel.currentUser.name
+                    activityViewModel.currentUserOld.name
                 )
 
             if (!Stuff.billingRepository.isLicenseValid)
@@ -714,7 +715,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
     private fun openTrackPopupMenu(anchor: View, track: Track) {
         val popup = PopupMenu(requireContext(), anchor)
 
-        if (activityViewModel.currentUser.isSelf && args.showAllMenuItems) {
+        if (activityViewModel.currentUserOld.isSelf && args.showAllMenuItems) {
             popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
             val loveMenu = popup.menu.findItem(R.id.menu_love)
 
@@ -840,7 +841,7 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
             .setTitleText(R.string.time_jump)
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
-                    .setStart(activityViewModel.currentUser.registeredTime)
+                    .setStart(activityViewModel.currentUserOld.registeredTime)
                     .setEnd(endTime)
                     .setOpenAt(time)
                     .setValidator(object : CalendarConstraints.DateValidator {
@@ -849,14 +850,14 @@ class ScrobblesFragment : Fragment(), ItemClickListener<Any>, ScrobblesAdapter.S
                         override fun writeToParcel(p0: Parcel, p1: Int) {}
 
                         override fun isValid(date: Long) =
-                            date in activityViewModel.currentUser.registeredTime..endTime
+                            date in activityViewModel.currentUserOld.registeredTime..endTime
                     })
                     .build()
             )
             .setSelection(time)
             .build()
         dpd.addOnPositiveButtonClickListener {
-            val toTime = Stuff.timeToLocal(it) + (24 * 60 * 60 - 1) * 1000
+            val toTime = it.timeToLocal() + (24 * 60 * 60 - 1) * 1000
 //                Napier.i("time=" + Date(viewModel.toTime))
 
             binding.timeJumpChip.isCheckable = true

@@ -37,7 +37,7 @@ import java.util.Objects
  */
 
 class TrackHistoryAdapter(
-    private val viewModel: TracksVM,
+    private val viewModel: TracksVMOld,
     private val itemClickListener: MusicEntryItemClickListener,
     private val isShowingAlbums: Boolean,
     private val isShowingPlayers: Boolean,

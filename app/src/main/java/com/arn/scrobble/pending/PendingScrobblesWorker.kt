@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit
 
 class PendingScrobblesWorker(
     context: Context,
-    workerParameters: WorkerParameters
+    workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters) {
 
     private val scrobblesDao by lazy { PanoDb.db.getPendingScrobblesDao() }
@@ -114,15 +114,16 @@ class PendingScrobblesWorker(
         val scrobbleDataToEntry = mutableMapOf<ScrobbleData, PendingScrobble>()
         entries.forEach {
             val sd = ScrobbleData(
-                artist = it.pendingScrobble.artist,
-                album = it.pendingScrobble.album,
-                track = it.pendingScrobble.track,
-                albumArtist = it.pendingScrobble.albumArtist,
-                timestamp = it.pendingScrobble.timestamp,
-                duration = it.pendingScrobble.duration.takeIf { it > 30 * 1000 },
-                packageName = it.pkg
+                artist = it.artist,
+                album = it.album,
+                track = it.track,
+                albumArtist = it.albumArtist,
+                timestamp = it.timestamp,
+                duration = it.duration.takeIf { it > 30 * 1000 },
+                packageName = null // it.pkg
+                // todo reimplement if needed
             )
-            scrobbleDataToEntry[sd] = it.pendingScrobble
+            scrobbleDataToEntry[sd] = it
         }
         if (scrobbleDataToEntry.isNotEmpty()) {
             try {
@@ -162,8 +163,8 @@ class PendingScrobblesWorker(
                     if (state == 0)
                         idsToDelete += pendingScrobble._id
                     else if (state != pendingScrobble.state) {
-                        pendingScrobble.state = state
-                        scrobblesDao.update(pendingScrobble)
+                        val newPendingScrobble = pendingScrobble.copy(state = state)
+                        scrobblesDao.update(newPendingScrobble)
                     }
                 }
 
@@ -227,8 +228,8 @@ class PendingScrobblesWorker(
                 if (state == 0 && !MOCK)
                     lovesDao.delete(entry)
                 else if (state != entry.state) {
-                    entry.state = state
-                    lovesDao.update(entry)
+                    val newPendingLove = entry.copy(state = state)
+                    lovesDao.update(newPendingLove)
                 }
                 delay(DELAY)
             }
@@ -245,7 +246,7 @@ class PendingScrobblesWorker(
 
     private fun filterForService(
         scrobblable: Scrobblable,
-        scrobbleDataToEntry: MutableMap<ScrobbleData, PendingScrobble>
+        scrobbleDataToEntry: MutableMap<ScrobbleData, PendingScrobble>,
     ): MutableList<ScrobbleData> {
         val filtered = mutableListOf<ScrobbleData>()
         scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->

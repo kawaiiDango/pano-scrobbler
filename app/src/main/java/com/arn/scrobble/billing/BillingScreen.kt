@@ -1,7 +1,7 @@
 package com.arn.scrobble.billing
 
-import android.app.Activity
-import android.content.Context
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +19,8 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwipeLeftAlt
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +35,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,8 +46,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
+import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.UiUtils.toast
 
 @Composable
 fun BillingScreen(
@@ -55,7 +56,7 @@ fun BillingScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
+    val activity = LocalActivity.current
     val proProductDetails by viewModel.proProductDetails.collectAsStateWithLifecycle()
     val licenseState by viewModel.licenseState.collectAsStateWithLifecycle()
     var noticeText by rememberSaveable { mutableStateOf<String?>(null) }
@@ -64,6 +65,8 @@ fun BillingScreen(
     val purchasePendingText = stringResource(R.string.purchase_pending)
     val maxDevicesReachedText = stringResource(R.string.billing_max_devices_reached, 4)
     val notFoundText = stringResource(R.string.not_found)
+    val koFiLink = stringResource(R.string.ko_fi_link)
+    val bmcLink = stringResource(R.string.bmc_link)
 
     val bulletStrings = listOfNotNull(
         Icons.Outlined.Palette to stringResource(R.string.pref_themes),
@@ -75,6 +78,7 @@ fun BillingScreen(
         if (!Stuff.isTv) Icons.Outlined.Share to stringResource(R.string.billing_sharing) else null,
     )
 
+    var purchaseOptionsExpanded by rememberSaveable { mutableStateOf(false) }
     var code by rememberSaveable { mutableStateOf("") }
     var codeError by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -127,38 +131,74 @@ fun BillingScreen(
             }
         }
 
-        ExtendedFloatingActionButton(
-            onClick = {
-                if (proProductDetails != null) {
-                    makePurchase(context, viewModel)
-                } else {
-                    context.toast(R.string.loading)
-                }
-            },
-            text = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(R.string.get_pro),
-                    )
-
-                    Text(
-                        text = proProductDetails?.formattedPrice ?: "",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            },
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.FavoriteBorder,
-                    contentDescription = null
-                )
-            },
+        Box(
             modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        ) {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    if (proProductDetails != null) {
+                        if (ExtrasConsts.isNonPlayBuild) {
+                            purchaseOptionsExpanded = true
+                        } else if (activity != null) {
+                            viewModel.makePlayPurchase(activity)
+                        }
+                    } else {
+                        val failSnackbarData = PanoSnackbarVisuals(
+                            message = "...",
+                            isError = false,
+                        )
+                        Stuff.globalSnackbarFlow.tryEmit(failSnackbarData)
+                    }
+                },
+                text = {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.get_pro),
+                        )
 
-        if (ExtrasConsts.isFossBuild) {
+                        Text(
+                            text = proProductDetails?.formattedPrice ?: "",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.FavoriteBorder,
+                        contentDescription = null
+                    )
+                },
+            )
+
+            DropdownMenu(
+                expanded = purchaseOptionsExpanded,
+                onDismissRequest = { purchaseOptionsExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        Stuff.openInBrowser(koFiLink)
+                        purchaseOptionsExpanded = false
+                    },
+                    text = {
+                        Text(stringResource(R.string.ko_fi))
+                    }
+                )
+
+                DropdownMenuItem(
+                    onClick = {
+                        Stuff.openInBrowser(bmcLink)
+                        purchaseOptionsExpanded = false
+                    },
+                    text = {
+                        Text(stringResource(R.string.bmc))
+                    }
+                )
+            }
+        }
+
+        if (ExtrasConsts.isNonPlayBuild) {
             OutlinedTextField(
                 value = code,
                 onValueChange = {
@@ -211,7 +251,11 @@ fun BillingScreen(
     LaunchedEffect(licenseState) {
         when (licenseState) {
             LicenseState.VALID -> {
-                context.toast(thankYouText)
+                val thankYouSnackbarData = PanoSnackbarVisuals(
+                    message = thankYouText,
+                    isError = false,
+                )
+                Stuff.globalSnackbarFlow.emit(thankYouSnackbarData)
                 onBack()
             }
 
@@ -236,13 +280,5 @@ fun BillingScreen(
             text = noticeText!!,
             onConfirmation = { noticeText = null },
         )
-    }
-}
-
-private fun makePurchase(context: Context, viewModel: BillingViewModel) {
-    if (ExtrasConsts.isFossBuild) {
-        Stuff.openInBrowser(context.getString(R.string.ko_fi_link))
-    } else {
-        viewModel.makePlayPurchase(context as Activity)
     }
 }

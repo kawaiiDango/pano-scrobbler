@@ -10,10 +10,11 @@ import com.google.firebase.initialize
 
 object CrashReporter {
     fun init(
-        application: Application,
+        application: Any?,
         collectionEnabled: Boolean,
-        keysMap: Map<String, String> = emptyMap()
+        keysMap: Map<String, String> = emptyMap(),
     ) {
+        application as Application
         Firebase.initialize(application)
 
         keysMap.forEach { (key, value) ->

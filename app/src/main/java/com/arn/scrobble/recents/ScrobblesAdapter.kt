@@ -24,10 +24,8 @@ import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
-import com.arn.scrobble.db.PendingScrobbleWithSource
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.pending.VHPendingLove
-import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.ItemClickListener
@@ -57,7 +55,7 @@ class ScrobblesAdapter(
     private val itemClickListener: ItemClickListener<Any>,
     private val onFocusChange: (Int) -> Unit,
     private val setHeroListener: SetHeroTrigger,
-    private val viewModel: TracksVM,
+    private val viewModel: TracksVMOld,
     private val userIsSelf: Boolean,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), LoadMoreGetter {
 
@@ -84,11 +82,11 @@ class ScrobblesAdapter(
                 ListItemRecentsBinding.inflate(inflater, parent, false)
             )
 
-            Section.PENDING_SCROBBLES.ordinal -> VHPendingScrobble(
-                ListItemRecentsBinding.inflate(inflater, parent, false),
-                isShowingAlbums,
-                itemClickListener
-            )
+//            Section.PENDING_SCROBBLES.ordinal -> VHPendingScrobble(
+//                ListItemRecentsBinding.inflate(inflater, parent, false),
+//                isShowingAlbums,
+//                itemClickListener
+//            )
 
             Section.PENDING_LOVES.ordinal -> VHPendingLove(
                 ListItemRecentsBinding.inflate(inflater, parent, false),
@@ -103,7 +101,7 @@ class ScrobblesAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is VHScrobble -> holder.setItemData(viewModel.virtualList[position] as Track)
-            is VHPendingScrobble -> holder.setItemData(viewModel.virtualList[position] as PendingScrobbleWithSource)
+//            is VHPendingScrobble -> holder.setItemData(viewModel.virtualList[position] as PendingScrobbleWithSource)
             is VHPendingLove -> holder.setItemData(viewModel.virtualList[position] as PendingLove)
             is VHHeader -> holder.setItemData(viewModel.virtualList[position] as ExpandableHeader)
             else -> throw ClassCastException("Invalid view type $holder")
@@ -130,7 +128,7 @@ class ScrobblesAdapter(
     fun updateScrobblerDisabledNotice(
         scrobblerEnabled: Boolean?,
         scrobblerServiceRunning: Boolean?,
-        notify: Boolean = true
+        notify: Boolean = true,
     ) {
         val oldVirtualList = viewModel.virtualList.copy()
         val showFixit = scrobblerEnabled == true && scrobblerServiceRunning == false
@@ -160,33 +158,33 @@ class ScrobblesAdapter(
             notify(oldVirtualList)
     }
 
-    fun updatePendingScrobbles(
-        pendingScrobbles: List<PendingScrobbleWithSource>,
-        notify: Boolean = true
-    ) {
-        val list = if (!viewModel.isShowingLoves && userIsSelf)
-            pendingScrobbles
-        else
-            emptyList()
-
-        val oldVirtualList = viewModel.virtualList.copy()
-
-        viewModel.virtualList.addSection(
-            SectionWithHeader(
-                Section.PENDING_SCROBBLES,
-                list,
-                Section.PENDING_SCROBBLES.ordinal,
-                header = ExpandableHeader(
-                    R.drawable.vd_hourglass,
-                    R.string.scrobbles,
-                    maxCollapsedItems = 2
-                )
-            )
-        )
-
-        if (notify)
-            notify(oldVirtualList)
-    }
+//    fun updatePendingScrobbles(
+//        pendingScrobbles: List<PendingScrobbleWithSource>,
+//        notify: Boolean = true,
+//    ) {
+//        val list = if (!viewModel.isShowingLoves && userIsSelf)
+//            pendingScrobbles
+//        else
+//            emptyList()
+//
+//        val oldVirtualList = viewModel.virtualList.copy()
+//
+//        viewModel.virtualList.addSection(
+//            SectionWithHeader(
+//                Section.PENDING_SCROBBLES,
+//                list,
+//                Section.PENDING_SCROBBLES.ordinal,
+//                header = ExpandableHeader(
+//                    R.drawable.vd_hourglass,
+//                    R.string.scrobbles,
+//                    maxCollapsedItems = 2
+//                )
+//            )
+//        )
+//
+//        if (notify)
+//            notify(oldVirtualList)
+//    }
 
     fun updatePendingLoves(pendingLoves: List<PendingLove>, notify: Boolean = true) {
         val list = if (!viewModel.isShowingLoves && userIsSelf)
@@ -229,7 +227,7 @@ class ScrobblesAdapter(
             viewModel.scrobblerServiceRunning.value,
             false
         )
-        updatePendingScrobbles(viewModel.pendingScrobbles.value, false)
+//        updatePendingScrobbles(viewModel.pendingScrobbles.value, false)
         updatePendingLoves(viewModel.pendingLoves.value, false)
         updateTracks(tracks)
 
@@ -256,14 +254,15 @@ class ScrobblesAdapter(
     private fun notify(
         oldVirtualList: SectionedVirtualList,
         allHaveChanged: Boolean = false,
-        prevSelectedItem: Any? = null
+        prevSelectedItem: Any? = null,
     ) {
-        autoNotify(oldVirtualList,
+        autoNotify(
+            oldVirtualList,
             viewModel.virtualList,
             compare = { oldItem, newItem ->
                 when {
                     oldItem is ExpandableHeader && newItem is ExpandableHeader -> oldItem.title == newItem.title
-                    oldItem is PendingScrobbleWithSource && newItem is PendingScrobbleWithSource -> oldItem.pendingScrobble._id == newItem.pendingScrobble._id
+//                    oldItem is PendingScrobbleWithSource && newItem is PendingScrobbleWithSource -> oldItem.pendingScrobble._id == newItem.pendingScrobble._id
                     oldItem is PendingLove && newItem is PendingLove -> oldItem._id == newItem._id
                     oldItem is Track && newItem is Track -> oldItem.date == newItem.date
                     else -> false
@@ -275,7 +274,7 @@ class ScrobblesAdapter(
                     oldItem === prevSelectedItem -> false // clears the previous selection
                     System.currentTimeMillis() - lastPopulateTime > 60 * 60 * 1000 -> false
                     oldItem is ExpandableHeader && newItem is ExpandableHeader -> oldItem == newItem
-                    oldItem is PendingScrobbleWithSource && newItem is PendingScrobbleWithSource -> oldItem == newItem
+//                    oldItem is PendingScrobbleWithSource && newItem is PendingScrobbleWithSource -> oldItem == newItem
                     oldItem is PendingLove && newItem is PendingLove -> oldItem == newItem
                     oldItem is Track && newItem is Track -> oldItem == newItem
                     else -> false
@@ -329,7 +328,7 @@ class ScrobblesAdapter(
 
         private fun setSelected(
             selected: Boolean,
-            item: Any = viewModel.virtualList[viewModel.selectedPos]
+            item: Any = viewModel.virtualList[viewModel.selectedPos],
         ) {
             if (item is Track) {
                 itemView.isActivated = selected
@@ -453,7 +452,8 @@ class ScrobblesAdapter(
         fun setItemData(headerData: ExpandableHeader) {
             when (headerData.section.itemType) {
                 Section.PENDING_SCROBBLES.ordinal,
-                Section.PENDING_LOVES.ordinal -> {
+                Section.PENDING_LOVES.ordinal,
+                    -> {
                     val listSize = headerData.section.listSize
                     binding.headerText.text = headerData.title + ": " +
                             itemView.context.resources.getQuantityString(

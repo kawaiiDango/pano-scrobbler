@@ -48,14 +48,14 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     private var _binding: ContentTrackHistoryBinding? = null
     private val binding
         get() = _binding!!
-    private val viewModel by viewModels<TracksVM>()
+    private val viewModel by viewModels<TracksVMOld>()
     private val mainNotifierViewModel by activityViewModels<MainViewModel>()
     private lateinit var adapter: TrackHistoryAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
 
@@ -76,13 +76,13 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun setTitleWithCount(
-        count: Int = requireArguments().getData<Track>()!!.userplaycount ?: 0
+        count: Int = requireArguments().getData<Track>()!!.userplaycount ?: 0,
     ) {
         val formattedCount = count.format()
-        val title = if (mainNotifierViewModel.currentUser.isSelf) {
+        val title = if (mainNotifierViewModel.currentUserOld.isSelf) {
             getString(R.string.my_scrobbles) + ": " + formattedCount
         } else {
-            val username = mainNotifierViewModel.currentUser.name
+            val username = mainNotifierViewModel.currentUserOld.name
             "$username: $formattedCount"
         }
         setTitle(title)
@@ -98,7 +98,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
             runBlocking { mainPrefs.data.map { it.showAlbumsInRecents }.first() }
 
         val isShowingPlayers =
-            mainNotifierViewModel.currentUser.isSelf && Stuff.billingRepository.isLicenseValid && showScrobbleSources
+            mainNotifierViewModel.currentUserOld.isSelf && Stuff.billingRepository.isLicenseValid && showScrobbleSources
 
         adapter = TrackHistoryAdapter(
             viewModel,
@@ -174,7 +174,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
 
         viewModel.setInput(
             MusicEntryLoaderInput(
-                user = mainNotifierViewModel.currentUser,
+                user = mainNotifierViewModel.currentUserOld,
                 timePeriod = null,
                 type = Stuff.TYPE_TRACKS,
                 entry = trackInput,
@@ -193,7 +193,7 @@ class TrackHistoryFragment : Fragment(), MusicEntryItemClickListener {
         val track = entry as Track
 
         val popup = PopupMenu(requireContext(), anchor)
-        val menuRes = if (mainNotifierViewModel.currentUser.isSelf)
+        val menuRes = if (mainNotifierViewModel.currentUserOld.isSelf)
             R.menu.recents_item_menu
         else
             R.menu.recents_item_friends_menu

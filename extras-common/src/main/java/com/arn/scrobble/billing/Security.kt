@@ -1,7 +1,5 @@
 package com.arn.scrobble.billing
 
-import android.content.Context
-import android.content.pm.PackageManager
 import io.ktor.util.decodeBase64Bytes
 import java.io.IOException
 import java.security.InvalidKeyException
@@ -94,20 +92,5 @@ object Security {
         } catch (_: SignatureException) {
         }
         return false
-    }
-
-    fun signature(context: Context, signatureBase64: String): String? {
-        try {
-            val signatures = context.packageManager.getPackageInfo(
-                context.packageName,
-                PackageManager.GET_SIGNATURES
-            ).signatures
-            val signature = signatures?.get(0)?.toCharsString()
-            if (signature == signatureBase64)
-                return signature
-        } catch (ex: Exception) {
-        }
-        android.os.Process.killProcess(android.os.Process.myPid())
-        return null
     }
 }

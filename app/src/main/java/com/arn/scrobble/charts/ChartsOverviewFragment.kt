@@ -72,7 +72,7 @@ import kotlinx.coroutines.withContext
 
 open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
-    override val viewModel by viewModels<ChartsOverviewVM>()
+    override val viewModel by viewModels<ChartsOverviewVMOld>()
 
     private var listeningActivityChartInited = false
     private var _binding: ContentChartsOverviewBinding? = null
@@ -85,7 +85,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = ContentChartsOverviewBinding.inflate(inflater, container, false)
         binding.chartsOverviewScrollview.setupInsets()
@@ -118,7 +118,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             type = 0,
             page = 1,
             timePeriod = viewModel.selectedPeriod.value,
-            user = activityViewModel.currentUser,
+            user = activityViewModel.currentUserOld,
         )
 
         viewModel.setInput(input)
@@ -480,7 +480,8 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         findNavController().navigate(R.id.chartsPagerFragment, args)
     }
 
-    private fun initListeningActivityChart() {
+    private fun
+            initListeningActivityChart() {
 
         val chart = binding.chartsListeningActivityChart
         listeningActivityChartInited = true

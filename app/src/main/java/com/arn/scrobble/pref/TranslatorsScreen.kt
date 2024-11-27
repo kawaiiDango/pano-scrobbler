@@ -4,6 +4,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,13 +18,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.ui.panoContentPadding
 
 @Preview(showBackground = true)
 @Composable
 fun TranslatorsScreen(
     viewModel: TranslatorsVM = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val translators = remember { viewModel.translators }
 
@@ -52,7 +54,7 @@ private fun TranslatorItem(translator: String) {
                 indication = LocalIndication.current
             )
             .focusable(interactionSource = interactionSource)
-            .padding(16.dp)
+            .padding(horizontal = horizontalOverscanPadding(), vertical = 16.dp)
 
     )
 }

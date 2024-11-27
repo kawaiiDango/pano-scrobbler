@@ -10,8 +10,8 @@ import com.arn.scrobble.ui.GenericDiffCallback
 import com.google.android.material.chip.Chip
 
 class PeriodChipsAdapter(
-    private val viewModel: ChartsPeriodVM,
-    private val onClick: (Int, TimePeriod) -> Unit
+    private val viewModel: ChartsPeriodVMOld,
+    private val onClick: (Int, TimePeriod) -> Unit,
 ) : ListAdapter<TimePeriod, PeriodChipsAdapter.PeriodChipVH>(
     GenericDiffCallback { old, new -> old.start == new.start && old.end == new.end }
 ) {

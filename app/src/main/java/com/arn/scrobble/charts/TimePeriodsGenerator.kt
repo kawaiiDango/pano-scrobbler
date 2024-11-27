@@ -3,8 +3,6 @@ package com.arn.scrobble.charts
 import android.content.Context
 import android.os.Parcelable
 import android.text.format.DateUtils
-import androidx.annotation.DrawableRes
-import androidx.annotation.PluralsRes
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Period
@@ -20,13 +18,12 @@ import java.util.Date
 import java.util.Formatter
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import kotlin.math.abs
 import kotlin.math.min
 
 class TimePeriodsGenerator(
     private val beginTime: Long,
     private val anchorTime: Long,
-    private val contextForFormatter: Context?
+    private val contextForFormatter: Context?,
 ) {
     private val cal by lazy { runBlocking { Calendar.getInstance().setUserFirstDayOfWeek() } }
 
@@ -137,44 +134,35 @@ class TimePeriodsGenerator(
         }
 
     val recentsTimeJumps
-        get(): List<Pair<TimePeriod, Int>> {
+        get(): List<TimeJumpEntry> {
 
-            val timePeriods = mutableListOf<Pair<TimePeriod, Int>>()
+            val timeJumpEntries = mutableListOf<TimeJumpEntry>()
             val endTime = System.currentTimeMillis()
 
             fun addTimePeriod(
                 calendarField: Int,
-                valueToAdd: Int,
-                @PluralsRes pluralsRes: Int,
-                @DrawableRes iconRes: Int
+                addsTime: Boolean,
+                type: TimePeriodType,
             ) {
                 cal.timeInMillis = anchorTime
-                cal.add(calendarField, valueToAdd)
+                cal.add(calendarField, if (addsTime) 1 else -1)
                 if (cal.timeInMillis in beginTime..endTime) {
-
-                    val name = contextForFormatter?.resources?.getQuantityString(
-                        pluralsRes,
-                        abs(valueToAdd),
-                        (if (valueToAdd > 0) "+" else "") + valueToAdd
+                    timeJumpEntries += TimeJumpEntry(
+                        timeMillis = cal.timeInMillis,
+                        type = type,
+                        addsTime = addsTime
                     )
-                        ?: ""
-
-                    timePeriods += TimePeriod(
-                        beginTime,
-                        cal.timeInMillis,
-                        name = name
-                    ) to iconRes
                 }
             }
 
-            addTimePeriod(Calendar.WEEK_OF_YEAR, -1, R.plurals.num_weeks, R.drawable.vd_week)
-            addTimePeriod(Calendar.WEEK_OF_YEAR, 1, R.plurals.num_weeks, R.drawable.vd_week)
-            addTimePeriod(Calendar.MONTH, -1, R.plurals.num_months, R.drawable.vd_month)
-            addTimePeriod(Calendar.MONTH, 1, R.plurals.num_months, R.drawable.vd_month)
-            addTimePeriod(Calendar.YEAR, -1, R.plurals.num_years, R.drawable.vd_calendar)
-            addTimePeriod(Calendar.YEAR, 1, R.plurals.num_years, R.drawable.vd_calendar)
+            addTimePeriod(Calendar.WEEK_OF_YEAR, false, TimePeriodType.WEEK)
+            addTimePeriod(Calendar.WEEK_OF_YEAR, true, TimePeriodType.WEEK)
+            addTimePeriod(Calendar.MONTH, false, TimePeriodType.MONTH)
+            addTimePeriod(Calendar.MONTH, true, TimePeriodType.MONTH)
+            addTimePeriod(Calendar.YEAR, false, TimePeriodType.YEAR)
+            addTimePeriod(Calendar.YEAR, true, TimePeriodType.YEAR)
 
-            return timePeriods
+            return timeJumpEntries
         }
 
     val listenBrainzPeriods
@@ -324,7 +312,7 @@ class TimePeriodsGenerator(
 
         fun Period.toDuration(
             registeredTime: Long = 0,
-            endTime: Long = System.currentTimeMillis()
+            endTime: Long = System.currentTimeMillis(),
         ) = when (this) {
             Period.WEEK -> TimeUnit.DAYS.toMillis(7)
             Period.MONTH -> TimeUnit.DAYS.toMillis(30)
@@ -339,12 +327,12 @@ class TimePeriodsGenerator(
 
         fun Period.toTimePeriod(
             registeredTime: Long = 0,
-            endTime: Long = System.currentTimeMillis()
+            endTime: Long = System.currentTimeMillis(),
         ) = TimePeriod(endTime - toDuration(registeredTime, endTime), endTime, name = "")
 
         fun getScrobblingActivityPeriods(
             timePeriodp: TimePeriod,
-            registeredTime: Long
+            registeredTime: Long,
         ): List<TimePeriod> {
 
             var timePeriod = timePeriodp.copy()
@@ -424,7 +412,7 @@ data class TimePeriod(
         end - 1,
         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
     ),
-    var tag: String? = null
+    var tag: String? = null,
 ) : Parcelable {
 
     constructor(period: Period) : this(
@@ -446,6 +434,12 @@ data class TimePeriod(
     override fun toString() =
         "TimePeriod(start=${Date(start)}, end=${Date(end)}, period=$period, name=\"$name\")"
 }
+
+data class TimeJumpEntry(
+    val timeMillis: Long,
+    val type: TimePeriodType,
+    val addsTime: Boolean,
+)
 
 enum class TimePeriodType {
     DAY,

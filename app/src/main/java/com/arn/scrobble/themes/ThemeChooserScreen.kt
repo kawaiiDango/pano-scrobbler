@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +13,20 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconButtonShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -48,7 +61,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ThemeChooserScreen(
     onNavigateToBilling: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val licenseState by Stuff.billingRepository.licenseState.collectAsStateWithLifecycle()
     var themeName: String? by remember { mutableStateOf(null) }
@@ -180,6 +193,7 @@ private fun ContrastMode.label() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ThemeSwatch(
     themeVariants: ThemeVariants,
@@ -187,7 +201,7 @@ private fun ThemeSwatch(
     selected: Boolean,
     enabled: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val primaryColor = remember(isDark) {
         if (isDark)
@@ -210,41 +224,76 @@ private fun ThemeSwatch(
             themeVariants.light.tertiary
     }
 
-    Box(
+    var interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    OutlinedIconToggleButton(
+        checked = selected,
+        onCheckedChange = { onClick() },
+        shapes = IconButtonShapes(
+            shape = IconButtonDefaults.smallRoundShape,
+            pressedShape = IconButtonDefaults.smallPressedShape,
+            checkedShape = IconButtonDefaults.smallSquareShape,
+        ),
+        interactionSource = interactionSource,
         modifier = modifier
-            .size(48.dp)
-            .clip(MaterialTheme.shapes.extraLarge)
-            .clickable(onClickLabel = themeVariants.name, enabled = enabled) { onClick() }
-            .border(
-                width = 3.dp,
-                color = if (selected) {
-                    if (isDark) Color.White else Color.Black
-                } else Color.Transparent,
-                shape = MaterialTheme.shapes.extraLarge
+            .then(
+                if (isFocused) {
+                    Modifier
+                        .border(
+                            width = 3.dp,
+                            color = Color.Black,
+                            shape = IconButtonDefaults.smallRoundShape
+                        )
+                        .padding(3.dp)
+                        .border(
+                            width = 3.dp,
+                            color = Color.White,
+                            shape = IconButtonDefaults.smallRoundShape
+                        )
+                } else Modifier.padding(3.dp)
             )
+//            .size(48.dp)
+//            .clip(MaterialTheme.shapes.extraLarge)
+//            .clickable(onClickLabel = themeVariants.name, enabled = enabled) { onClick() }
+//            .onFocusChanged { isFocused = it.isFocused }
             .alpha(if (enabled) 1f else 0.5f)
     ) {
         Box(
             modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.5f)
-                .align(Alignment.TopStart)
-                .background(primaryColor)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxHeight(0.5f)
-                .fillMaxWidth(0.5f)
-                .align(Alignment.TopEnd)
-                .background(secondaryColor)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxHeight(0.5f)
-                .fillMaxWidth(0.5f)
-                .align(Alignment.BottomEnd)
-                .background(tertiaryColor)
-        )
+                .fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(0.5f)
+                    .align(Alignment.TopStart)
+                    .background(primaryColor)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(0.5f)
+                    .fillMaxWidth(0.5f)
+                    .align(Alignment.TopEnd)
+                    .background(secondaryColor)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(0.5f)
+                    .fillMaxWidth(0.5f)
+                    .align(Alignment.BottomEnd)
+                    .background(tertiaryColor)
+            )
+
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Outlined.Check,
+                    contentDescription = null,
+//                    tint = if (isDark) Color.White else Color.Black,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
     }
 }
 

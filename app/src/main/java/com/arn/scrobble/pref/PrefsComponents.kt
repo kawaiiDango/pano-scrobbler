@@ -11,12 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,15 +71,15 @@ fun SwitchPref(
     text: String,
     summary: String? = null,
     enabled: Boolean = true,
-    needsPremium: Boolean = false,
-    onNavigateToBilling: () -> Unit = {},
+    onNavigateToBilling: (() -> Unit)? = null,
     value: Boolean,
     copyToSave: MainPrefs.(Boolean) -> MainPrefs,
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
-    val enabled = if (needsPremium) Stuff.billingRepository.isLicenseValid else enabled
-    val locked = needsPremium && !Stuff.billingRepository.isLicenseValid
+    val enabled =
+        if (onNavigateToBilling != null) Stuff.billingRepository.isLicenseValid else enabled
+    val locked = onNavigateToBilling != null && !Stuff.billingRepository.isLicenseValid
 
     Row(
         modifier = modifier
@@ -91,7 +97,7 @@ fun SwitchPref(
                     )
                 else if (locked)
                     Modifier.clickable {
-                        onNavigateToBilling()
+                        onNavigateToBilling.invoke()
                     }
                 else
                     Modifier
@@ -132,13 +138,13 @@ fun TextPref(
     text: String,
     summary: String? = null,
     enabled: Boolean = true,
-    needsPremium: Boolean = false,
-    onNavigateToBilling: () -> Unit = {},
+    onNavigateToBilling: (() -> Unit)? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val enabled = if (needsPremium) Stuff.billingRepository.isLicenseValid else enabled
-    val locked = needsPremium && !Stuff.billingRepository.isLicenseValid
+    val enabled =
+        if (onNavigateToBilling != null) Stuff.billingRepository.isLicenseValid else enabled
+    val locked = onNavigateToBilling != null && !Stuff.billingRepository.isLicenseValid
 
     Column(
         modifier = modifier
@@ -150,7 +156,7 @@ fun TextPref(
                     Modifier.clickable(onClick = onClick)
                 else if (locked)
                     Modifier.clickable {
-                        onNavigateToBilling()
+                        onNavigateToBilling.invoke()
                     }
                 else Modifier
             )
@@ -244,7 +250,7 @@ fun <T> DropdownPref(
 fun AppIconsPref(
     packageNames: Set<String>,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val packageNamesFiltered = remember(packageNames) { mutableStateListOf<String>() }
 
@@ -288,6 +294,7 @@ fun AppIconsPref(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SliderPref(
     text: String,
@@ -297,7 +304,7 @@ fun SliderPref(
     max: Int,
     increments: Int,
     stringRepresentation: (Int) -> String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
     var internalValue by remember(value) { mutableFloatStateOf(value) }
@@ -316,6 +323,7 @@ fun SliderPref(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Slider(
                 value = internalValue.coerceIn(min.toFloat(), max.toFloat()),
                 onValueChange = { internalValue = it },
@@ -324,22 +332,43 @@ fun SliderPref(
                 },
                 valueRange = min.toFloat()..max.toFloat(),
                 steps = (max - min) / increments,
+                enabled = !Stuff.isTv,
                 modifier = Modifier
                     .weight(1f)
-                    .onKeyEvent { keyEvent ->
-                        if (keyEvent.type == KeyEventType.KeyDown) {
-                            val incrementValue = when (keyEvent.key) {
-                                Key.DirectionLeft -> -increments
-                                Key.DirectionRight -> increments
-                                else -> return@onKeyEvent false
-                            }
-                            internalValue += incrementValue
-                            scope.launch {
-                                mainPrefs.updateData { it.copyToSave(internalValue.toInt()) }
-                            }
-                            true
-                        } else false
-                    })
+            )
+
+            if (Stuff.isTv) {
+                SplitButtonLayout(
+                    leadingButton = {
+                        SplitButtonDefaults.OutlinedLeadingButton(
+                            onClick = {
+                                internalValue -= increments
+                                scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                                contentDescription = stringResource(R.string.move_left),
+                            )
+                        }
+                    },
+                    trailingButton = {
+                        SplitButtonDefaults.OutlinedTrailingButton(
+                            checked = false,
+                            onCheckedChange = {
+                                internalValue += increments
+                                scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                contentDescription = stringResource(R.string.move_right),
+                            )
+                        }
+                    },
+                )
+            }
+
             Text(
                 text = stringRepresentation(internalValue.toInt()),
                 modifier = Modifier.padding(start = 16.dp)
@@ -354,7 +383,7 @@ fun AccountPref(
     type: AccountType,
     usernamesMap: Map<AccountType, String>,
     onNavigate: (PanoRoute) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val label = accountTypeLabel(type)
     val logoutString = stringResource(R.string.pref_logout)
@@ -410,7 +439,8 @@ fun SwitchPrefPreview() {
         SwitchPref(
             text = "Master switch",
             value = true,
-            copyToSave = { copy(scrobblerEnabled = it) }
+            copyToSave = { copy(scrobblerEnabled = it) },
+            onNavigateToBilling = { },
         )
     }
 }
@@ -421,7 +451,8 @@ fun TextPrefPreview() {
     AppPreviewTheme {
         TextPref(
             text = "Add to Quick Settings",
-            onClick = { }
+            onClick = { },
+            onNavigateToBilling = { }
         )
     }
 }

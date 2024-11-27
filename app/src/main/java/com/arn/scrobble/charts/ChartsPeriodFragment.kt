@@ -27,6 +27,8 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.putData
+import com.arn.scrobble.utils.Stuff.timeToLocal
+import com.arn.scrobble.utils.Stuff.timeToUTC
 import com.arn.scrobble.utils.UiUtils.collectLatestLifecycleFlow
 import com.arn.scrobble.utils.UiUtils.mySmoothScrollToPosition
 import com.arn.scrobble.utils.UiUtils.showWithIcons
@@ -37,7 +39,7 @@ import java.util.Calendar
 
 
 abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
-    protected open val viewModel by viewModels<ChartsPeriodVM>()
+    protected open val viewModel by viewModels<ChartsPeriodVMOld>()
     protected open val chartsType = 0
     protected abstract val periodChipsBinding: ChipsChartsPeriodBinding
     private lateinit var periodChipsAdapter: PeriodChipsAdapter
@@ -141,16 +143,15 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         val timePeriods = viewModel.timePeriods.value.keys
 
-        val startTime = Stuff.timeToUTC(timePeriods.last().start)
-        val endTime = Stuff.timeToUTC(timePeriods.first().end)
-        var openAtTime = Stuff.timeToUTC(
-            selectedPeriod.start
-        )
+        val startTime = timePeriods.last().start.timeToUTC()
+        val endTime = timePeriods.first().end.timeToUTC()
+        var openAtTime = selectedPeriod.start.timeToUTC()
+
         if (openAtTime !in startTime..endTime)
             openAtTime = System.currentTimeMillis()
 
         val validTimesUTC = viewModel.timePeriods.value.keys
-            .associateBy { Stuff.timeToUTC(it.start) }
+            .associateBy { it.start.timeToUTC() }
 
         val dpd = MaterialDatePicker.Builder.datePicker()
             .setTitleText(periodChipsBinding.chartsPeriodType.text)
@@ -185,15 +186,15 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     private fun showDateRangePicker() {
         val selectedPeriod = viewModel.selectedPeriod.value ?: return
         val time = System.currentTimeMillis()
-        var openAtTime = Stuff.timeToUTC(selectedPeriod.start)
-        if (openAtTime !in activityViewModel.currentUser.registeredTime..time)
+        var openAtTime = selectedPeriod.start.timeToUTC()
+        if (openAtTime !in activityViewModel.currentUserOld.registeredTime..time)
             openAtTime = System.currentTimeMillis()
 
         val dpd = MaterialDatePicker.Builder.dateRangePicker()
             .setTitleText(periodChipsBinding.chartsPeriodType.text)
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
-                    .setStart(activityViewModel.currentUser.registeredTime)
+                    .setStart(activityViewModel.currentUserOld.registeredTime)
                     .setEnd(time)
                     .setOpenAt(openAtTime)
                     .setValidator(object : CalendarConstraints.DateValidator {
@@ -202,7 +203,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                         override fun writeToParcel(p0: Parcel, p1: Int) {}
 
                         override fun isValid(date: Long) =
-                            date in activityViewModel.currentUser.registeredTime..time
+                            date in activityViewModel.currentUserOld.registeredTime..time
                     })
                     .build()
             )
@@ -210,8 +211,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         dpd.addOnPositiveButtonClickListener {
             TimePeriod(
-                Stuff.timeToLocal(it.first),
-                Stuff.timeToLocal(it.second + 24 * 60 * 60 * 1000),
+                it.first.timeToLocal(),
+                (it.second + 24 * 60 * 60 * 1000).timeToLocal(),
             ).let {
                 viewModel.setSelectedPeriod(it)
                 viewModel.setPeriodType(TimePeriodType.CUSTOM) // re emit to fire the flow

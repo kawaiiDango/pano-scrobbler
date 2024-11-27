@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,12 +27,13 @@ import com.mikepenz.aboutlibraries.entity.Library
 @Composable
 fun OssCreditsScreen(
     viewModel: OssCreditsVM = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-
+//    val libraries by rememberLibraries()
     val libraries = remember { viewModel.libraries }
 
     LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = panoContentPadding(),
         modifier = modifier
     ) {

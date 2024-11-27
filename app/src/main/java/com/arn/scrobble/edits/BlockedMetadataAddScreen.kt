@@ -1,7 +1,6 @@
 package com.arn.scrobble.edits
 
 import android.content.Intent
-import androidx.annotation.Keep
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,7 +46,7 @@ private fun BlockedMetadataAddContent(
     ignoredArtist: String?,
     onSave: (BlockedMetadata) -> Unit,
     onNavigateToBilling: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var artist by remember { mutableStateOf(blockedMetadata.artist) }
     var albumArtist by remember { mutableStateOf(blockedMetadata.albumArtist) }
@@ -196,18 +195,19 @@ private fun BlockedMetadataAddContent(
     }
 }
 
-@Keep
 @Composable
 fun BlockedMetadataAddScreen(
     blockedMetadata: BlockedMetadata,
     ignoredArtist: String?,
     hash: Int?,
-    onBack: () -> Unit,
+    onDismiss: () -> Unit,
     onNavigateToBilling: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
-    DialogParent {
+    DialogParent(
+        onDismiss = onDismiss
+    ) {
         BlockedMetadataAddContent(
             blockedMetadata = blockedMetadata,
             ignoredArtist = ignoredArtist,
@@ -227,7 +227,7 @@ fun BlockedMetadataAddScreen(
                         PlatformStuff.application.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
 
-                    onBack()
+                    onDismiss()
                 }
             },
             onNavigateToBilling = onNavigateToBilling,

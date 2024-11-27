@@ -11,11 +11,11 @@ import androidx.room.PrimaryKey
 @Entity(tableName = PendingLovesDao.tableName)
 data class PendingLove(
     @PrimaryKey(autoGenerate = true)
-    var _id: Int = 0,
+    val _id: Int = 0,
 
-    var track: String = "",
-    var artist: String = "",
-    var shouldLove: Boolean = true,
-    var state: Int = 0,
-    var state_timestamp: Long = System.currentTimeMillis()
-)
+    val track: String = "",
+    val artist: String = "",
+    val shouldLove: Boolean = true,
+    override val state: Int = 0,
+    override val state_timestamp: Long = System.currentTimeMillis(),
+) : PendingScrobbleState

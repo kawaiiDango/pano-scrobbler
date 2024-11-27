@@ -1,6 +1,5 @@
 package com.arn.scrobble.search
 
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,7 +37,7 @@ import kotlinx.coroutines.flow.map
 @Composable
 private fun IndexingContent(
     modifier: Modifier = Modifier,
-    viewModel: IndexingVM = viewModel()
+    viewModel: IndexingVM = viewModel(),
 ) {
     var progress by remember { mutableFloatStateOf(1f) }
     var indexingMessage by remember { mutableStateOf("") }
@@ -109,7 +108,7 @@ private fun IndexingContent(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.indexingProgress.collect { progressList ->
+        viewModel.indexingProgress.collectLatest { progressList ->
             if (progressList.isNotEmpty()) {
                 val workInfo = progressList.first()
 
@@ -139,10 +138,13 @@ private fun IndexingContent(
     }
 }
 
-@Keep
 @Composable
-fun IndexingScreen() {
-    BottomSheetDialogParent {
+fun IndexingScreen(
+    onDismiss: () -> Unit,
+) {
+    BottomSheetDialogParent(
+        onDismiss = onDismiss
+    ) {
         IndexingContent(it)
     }
 }

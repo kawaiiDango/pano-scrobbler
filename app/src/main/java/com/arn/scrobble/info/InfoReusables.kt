@@ -4,13 +4,12 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -35,12 +34,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
@@ -52,7 +51,7 @@ fun InfoWikiText(
     maxLinesWhenCollapsed: Int,
     expanded: Boolean,
     onExpandToggle: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var displayText = text
     val idx =
@@ -62,7 +61,9 @@ fun InfoWikiText(
         displayText = displayText.substring(0, idx).trim()
     }
     if (displayText.isNotBlank()) {
-        displayText = displayText.replace("\n", "<br>")
+        if (!Stuff.isTv) {
+            displayText = displayText.replace("<br>", "\n")
+        }
         Row(
             modifier = modifier
                 .border(
@@ -106,9 +107,11 @@ fun InfoWikiText(
 fun InfoCounts(
     countPairs: List<Pair<String, Int?>>,
     avatarUrl: String? = null,
+    avatarInitialLetter: Char? = null,
+    firstItemIsUsers: Boolean,
     onClickFirstItem: (() -> Unit)? = null,
     forShimmer: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     Row(
@@ -153,22 +156,21 @@ fun InfoCounts(
                     fontWeight = if (index == 0 && onClickFirstItem != null) FontWeight.Bold else null,
                     modifier = Modifier.backgroundForShimmer(forShimmer)
                 )
-                Row {
-                    if (avatarUrl != null && index == 0) {
-                        AsyncImage(
-                            model = avatarUrl,
-                            contentDescription = stringResource(id = R.string.profile_pic),
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape),
+                Box(
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (index == 0 && firstItemIsUsers) {
+                        AvatarOrInitials(
+                            avatarUrl = avatarUrl,
+                            avatarInitialLetter = avatarInitialLetter,
+                        )
+                    } else {
+                        Text(
+                            text = text.takeIf { !forShimmer } ?: "",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
                         )
                     }
-                    Text(
-                        text = text,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        fontWeight = if (index == 0 && onClickFirstItem != null) FontWeight.Bold else null
-                    )
                 }
             }
         }
@@ -182,7 +184,7 @@ fun InfoSimpleHeader(
     onClick: (() -> Unit)?,
     leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -191,9 +193,7 @@ fun InfoSimpleHeader(
             .clip(MaterialTheme.shapes.medium)
             .then(
                 if (onClick != null)
-                    Modifier.clickable(enabled = !Stuff.isTv) {
-                        onClick()
-                    }
+                    Modifier.clickable(onClick = onClick)
                 else
                     Modifier
             ),
@@ -232,14 +232,10 @@ fun InfoCountsPreview() {
             "Artists" to 789
         ),
         onClickFirstItem = {},
-        avatarUrl = "https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png"
+        avatarUrl = null,
+        firstItemIsUsers = true,
+        avatarInitialLetter = 'L'
     )
-}
-
-fun getMusicEntryIcon(entry: MusicEntry) = when (entry) {
-    is Track -> Icons.Outlined.MusicNote
-    is Album -> Icons.Outlined.Album
-    is Artist -> Icons.Outlined.Mic
 }
 
 @Composable

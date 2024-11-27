@@ -18,19 +18,19 @@ import com.arn.scrobble.api.lastfm.Track
 )
 data class CachedAlbum(
     @PrimaryKey(autoGenerate = true)
-    var _id: Int = 0,
+    val _id: Int = 0,
 
-    var albumName: String = "",
-    var albumMbid: String = "",
-    var albumUrl: String = "",
-    var artistName: String = "",
-    var artistMbid: String = "",
-    var artistUrl: String = "",
-    var largeImageUrl: String? = null,
-    var userPlayCount: Int = -1,
+    val albumName: String = "",
+    val albumMbid: String = "",
+    val albumUrl: String = "",
+    val artistName: String = "",
+    val artistMbid: String = "",
+    val artistUrl: String = "",
+    val largeImageUrl: String? = null,
+    val userPlayCount: Int = -1,
 
     @ColumnInfo(defaultValue = "-1")
-    var userPlayCountDirty: Int = -1,
+    val userPlayCountDirty: Int = -1,
 ) {
     companion object {
         fun CachedAlbum.toAlbum() = Album(

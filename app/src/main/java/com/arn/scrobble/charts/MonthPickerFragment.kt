@@ -35,7 +35,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     private val timePeriods by lazy {
         TimePeriodsGenerator(
-            activityViewModel.currentUser.registeredTime,
+            activityViewModel.currentUserOld.registeredTime,
             System.currentTimeMillis(),
             context
         ).months.toInverseMap()

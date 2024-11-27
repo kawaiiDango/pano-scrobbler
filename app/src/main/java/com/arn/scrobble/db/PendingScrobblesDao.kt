@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PendingScrobblesDao {
-    @Query("SELECT $tableName.*, ${ScrobbleSourcesDao.tableName}.pkg FROM $tableName LEFT JOIN ${ScrobbleSourcesDao.tableName} ON $tableName.timestamp = ${ScrobbleSourcesDao.tableName}.timeMillis ORDER BY _id DESC LIMIT :limit")
-    fun allFlow(limit: Int): Flow<List<PendingScrobbleWithSource>>
+    @Query("SELECT * FROM $tableName ORDER BY timestamp DESC LIMIT :limit")
+    fun allFlow(limit: Int): Flow<List<PendingScrobble>>
 
     @Query("SELECT count(1) FROM $tableName")
     fun count(): Int

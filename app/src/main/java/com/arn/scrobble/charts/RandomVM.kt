@@ -1,5 +1,6 @@
 package com.arn.scrobble.charts
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
@@ -10,23 +11,25 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
-import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 
-class RandomVM : ChartsPeriodVM() {
-    private val _musicEntry = MutableSharedFlow<MusicEntry?>(replay = 1)
-    val musicEntry = _musicEntry.asSharedFlow()
+class RandomVM : ViewModel() {
+    private val _musicEntry = MutableStateFlow<MusicEntry?>(null)
+    private val _input = MutableStateFlow<RandomLoaderInput?>(null)
+    private val _refreshTrigger = MutableSharedFlow<Unit>()
+    val musicEntry = _musicEntry.asStateFlow()
     private val _error = MutableStateFlow<Throwable?>(null)
     val error = _error.asStateFlow()
     private val _hasLoaded = MutableStateFlow(false)
@@ -35,24 +38,25 @@ class RandomVM : ChartsPeriodVM() {
     private var totalLoves = -1
     private var totalArtists = -1
     private var totalAlbums = -1
+    private var totalsLoadedForTimePeriod: TimePeriod? = null
+    private val mainPrefs = PlatformStuff.mainPrefs
 
     init {
         viewModelScope.launch {
-            input.filterNotNull()
-                .combine(selectedPeriod) { inp, period ->
-                    if (inp.timePeriod != period) {
-                        resetTotals()
-                    }
-
-                    inp.copy(timePeriod = period)
-                }
+            _input
+                .filterNotNull()
+                .debounce(300)
+                .combine(_refreshTrigger.onStart { emit(Unit) }
+                ) { input, _ -> input }
                 .mapLatest { input ->
                     _hasLoaded.emit(false)
                     mainPrefs.updateData { it.copy(lastRandomType = input.type) }
-                    loadRandom(input)
+                    val result = loadRandom(input)
+                    setTotal(input.type, result.second)
+                    result
                 }
                 .catch { exception ->
-                    emit(null to input.value!!.type)
+                    emit(null to -1)
                 }
                 .collectLatest { (entry, total) ->
                     _hasLoaded.emit(true)
@@ -63,14 +67,20 @@ class RandomVM : ChartsPeriodVM() {
                         _musicEntry.emit(null)
                         _error.emit(IllegalStateException(PlatformStuff.application.getString(R.string.charts_no_data)))
                     }
-                    input.value?.type?.let { type ->
-                        setTotal(type, total)
-                    }
                 }
         }
     }
 
-    private fun getTotal(type: Int = input.value?.type ?: -1): Int {
+    fun setRandomInput(input: RandomLoaderInput, refresh: Boolean) {
+        viewModelScope.launch {
+            _input.emit(input)
+            if (refresh) {
+                _refreshTrigger.emit(Unit)
+            }
+        }
+    }
+
+    private fun getTotal(type: Int): Int {
         return when (type) {
             Stuff.TYPE_TRACKS -> totalScrobbles
             Stuff.TYPE_LOVES -> totalLoves
@@ -90,8 +100,7 @@ class RandomVM : ChartsPeriodVM() {
         }
     }
 
-    private suspend fun loadRandom(input: MusicEntryLoaderInput): Pair<MusicEntry?, Int> {
-        input.timePeriod!!
+    private suspend fun loadRandom(input: RandomLoaderInput): Pair<MusicEntry?, Int> {
         var isCharts = false
 
         suspend fun getOne(page: Int): Pair<MusicEntry?, Int> {
@@ -115,7 +124,7 @@ class RandomVM : ChartsPeriodVM() {
 
                     Scrobblables.current.value!!.getRecents(
                         page,
-                        input.user.name,
+                        input.username,
                         from = from,
                         to = to,
                         limit = 1,
@@ -129,7 +138,7 @@ class RandomVM : ChartsPeriodVM() {
                     isCharts = false
                     Scrobblables.current.value!!.getLoves(
                         page,
-                        input.user.name,
+                        input.username,
                         limit = 1,
                     ).getOrThrow().let {
                         _entry = it.entries.firstOrNull()
@@ -143,7 +152,7 @@ class RandomVM : ChartsPeriodVM() {
                         input.type,
                         input.timePeriod,
                         page,
-                        input.user.name,
+                        input.username,
                         limit = if (input.timePeriod.period == null && Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM)
                             -1
                         else
@@ -160,7 +169,13 @@ class RandomVM : ChartsPeriodVM() {
                 }
             }
 
+            totalsLoadedForTimePeriod = input.timePeriod
+
             return Pair(_entry, _total)
+        }
+
+        if (totalsLoadedForTimePeriod != input.timePeriod) {
+            resetTotals()
         }
 
         var total = getTotal(input.type)
@@ -186,7 +201,7 @@ class RandomVM : ChartsPeriodVM() {
                 val track = result.first as Track
 
                 Requesters.lastfmUnauthedRequester
-                    .getInfo(track, username = input.user.name)
+                    .getInfo(track, username = input.username)
                     .onSuccess {
                         val t = track.copy(
                             userplaycount = it.userplaycount,

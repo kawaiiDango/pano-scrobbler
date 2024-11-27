@@ -12,21 +12,15 @@ import androidx.room.PrimaryKey
 @Entity(tableName = PendingScrobblesDao.tableName)
 data class PendingScrobble(
     @PrimaryKey(autoGenerate = true)
-    var _id: Int = 0,
+    val _id: Int = 0,
 
-    var track: String = "",
-    var album: String = "",
-    var artist: String = "",
-    var albumArtist: String = "",
-    var duration: Long = 0,
-    var timestamp: Long = System.currentTimeMillis(),
-    var autoCorrected: Int = 0,
-    var state: Int = 0,
-    var state_timestamp: Long = System.currentTimeMillis(),
-)
-
-data class PendingScrobbleWithSource(
-    @Embedded
-    val pendingScrobble: PendingScrobble,
-    val pkg: String?,
-)
+    val track: String = "",
+    val album: String = "",
+    val artist: String = "",
+    val albumArtist: String = "",
+    val duration: Long = 0,
+    val timestamp: Long = System.currentTimeMillis(),
+    val autoCorrected: Int = 0,
+    override val state: Int = 0,
+    override val state_timestamp: Long = System.currentTimeMillis(),
+) : PendingScrobbleState

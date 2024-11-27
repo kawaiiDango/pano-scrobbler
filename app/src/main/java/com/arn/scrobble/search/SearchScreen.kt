@@ -32,30 +32,30 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ExpandableHeaderMenu
-import com.arn.scrobble.ui.ExpandableSublist
-import com.arn.scrobble.ui.ExtraBottomSpace
+import com.arn.scrobble.ui.expandableSublist
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.SearchBox
+import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.flow.mapLatest
 
 @Composable
 fun SearchScreen(
     viewModel: SearchVM = viewModel(),
-    user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle(null)
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
@@ -68,14 +68,25 @@ fun SearchScreen(
     var tracksExpanded by rememberSaveable { mutableStateOf(false) }
     var lovedExpanded by rememberSaveable { mutableStateOf(false) }
 
+    val artistsText = stringResource(R.string.artists)
+    val albumsText = stringResource(R.string.albums)
+    val tracksText = stringResource(R.string.tracks)
+    val lovedText = stringResource(R.string.loved)
+
+    val userSelf by Scrobblables.current.mapLatest { it?.userAccount?.user }
+        .collectAsStateWithLifecycle(null)
+
     fun onItemClick(item: MusicEntry) {
-        onNavigate(
-            PanoRoute.MusicEntryInfo(
-                musicEntry = item,
-                pkgName = null,
-                user = user,
+        userSelf?.let { userSelf ->
+            onNavigate(
+                PanoRoute.MusicEntryInfo(
+                    track = item as? Track,
+                    album = item as? Album,
+                    artist = item as? Artist,
+                    user = userSelf,
+                )
             )
-        )
+        }
     }
 
     LaunchedEffect(searchTerm, searchType) {
@@ -125,8 +136,8 @@ fun SearchScreen(
                 contentPadding = panoContentPadding(),
                 modifier = Modifier.fillMaxSize()
             ) {
-                ExpandableSublist(
-                    headerRes = R.string.artists,
+                expandableSublist(
+                    headerText = artistsText,
                     headerIcon = Icons.Outlined.Mic,
                     items = searchResults?.artists ?: emptyList(),
                     expanded = artistsExpanded,
@@ -134,8 +145,8 @@ fun SearchScreen(
                     onItemClick = ::onItemClick,
                 )
 
-                ExpandableSublist(
-                    headerRes = R.string.albums,
+                expandableSublist(
+                    headerText = albumsText,
                     headerIcon = Icons.Outlined.Album,
                     items = searchResults?.albums ?: emptyList(),
                     expanded = albumsExpanded,
@@ -143,8 +154,8 @@ fun SearchScreen(
                     onItemClick = ::onItemClick,
                 )
 
-                ExpandableSublist(
-                    headerRes = R.string.tracks,
+                expandableSublist(
+                    headerText = tracksText,
                     headerIcon = Icons.Outlined.MusicNote,
                     items = searchResults?.tracks ?: emptyList(),
                     expanded = tracksExpanded,
@@ -153,8 +164,8 @@ fun SearchScreen(
                     fetchAlbumImageIfMissing = true,
                 )
 
-                ExpandableSublist(
-                    headerRes = R.string.loved,
+                expandableSublist(
+                    headerText = lovedText,
                     headerIcon = Icons.Outlined.FavoriteBorder,
                     items = searchResults?.lovedTracks ?: emptyList(),
                     expanded = lovedExpanded,
@@ -172,15 +183,11 @@ fun SearchScreen(
                             ),
                             icon = Icons.Outlined.Info,
                             menuItemText = stringResource(R.string.reindex),
-                            onMenuClick = {
+                            onMenuItemClick = {
                                 onNavigate(PanoRoute.Index)
                             }
                         )
                     }
-                }
-
-                item("extraBottomSpace") {
-                    ExtraBottomSpace()
                 }
             }
         }
@@ -200,13 +207,9 @@ fun SearchScreen(
                     key = { it }
                 ) {
                     MusicEntryListItem(
-                        Track(
-                            name = "",
-                            artist = Artist(""),
-                            album = Album(""),
-                        ),
+                        getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS),
                         forShimmer = true,
-                        onTrackClick = {},
+                        onEntryClick = {},
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

@@ -1,127 +1,97 @@
 package com.arn.scrobble.friends
 
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.LastFm
-import com.arn.scrobble.api.lastfm.PageResult
-import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.friends.UserCached.Companion.toUserCached
-import com.arn.scrobble.recents.PaletteColors
-import com.arn.scrobble.ui.MusicEntryLoaderInput
+import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.doOnSuccessLoggingFaliure
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import kotlin.math.max
 
 
 class FriendsVM : ViewModel() {
     private val mainPrefs = PlatformStuff.mainPrefs
-    private val lastPlayedTracksMap = mutableMapOf<String, Result<Track>>()
-    private val playCountsMap = mutableMapOf<String, Int>()
-    val urlToPaletteMap = mutableMapOf<String, PaletteColors>()
-    private val _input = MutableStateFlow<MusicEntryLoaderInput?>(null)
-    val input = _input.asStateFlow()
-    var showsPins = false
-        private set
-    private val _pinnedFriends = combine(input.filterNotNull(),
-        mainPrefs.data.map { it.pinnedFriends.sortedBy { it.order } }) { input, pinnedFriends ->
-        showsPins = input.user.isSelf &&
-                Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
-                Stuff.billingRepository.isLicenseValid
+    private val _friendsExtraDataMap =
+        MutableStateFlow<Map<String, Result<FriendExtraData>>>(emptyMap())
+    val friendsExtraDataMap = _friendsExtraDataMap.asStateFlow()
+    private val _totalCount = MutableStateFlow(0)
+    val totalFriends = _totalCount.asStateFlow()
 
-        if (showsPins)
-            pinnedFriends
-        else
-            emptyList()
-    }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-    private val _pinnedUsernamesSet = _pinnedFriends
+    private val user = MutableStateFlow<UserCached?>(null)
+    var showsPins = Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
+            Stuff.billingRepository.isLicenseValid // && user.isSelf
+    val pinnedFriends =
+        mainPrefs.data.map { it.pinnedFriends.sortedBy { it.order } }.mapLatest {
+            if (showsPins)
+                it
+            else
+                emptyList()
+        }
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val pinnedUsernamesSet = pinnedFriends
         .map { it.map { it.name }.toSet() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
-    private val _friends = MutableStateFlow<List<UserCached>?>(null) // from network
-    private val _tracksReceiver = MutableStateFlow<Pair<String, Result<PageResult<Track>>>?>(null)
-    val friendsCombined = combine(
-        _friends.filterNotNull(),
-        _pinnedFriends,
-        _tracksReceiver
-    ) { friends, pinnedFriends, tracksReceiver ->
-
-        if (tracksReceiver != null) {
-            val (usernameForTrack, trackPageResult) = tracksReceiver
-
-            lastPlayedTracksMap[usernameForTrack] = trackPageResult.map { it.entries.first() }
-            playCountsMap[usernameForTrack] = trackPageResult.getOrNull()?.attr?.total ?: 0
-
-            delay(100)
-        }
-
-        (pinnedFriends + friends.filter { it.name !in _pinnedUsernamesSet.value }).map { user ->
-            FriendsItemHolder(
-                user,
-                lastPlayedTracksMap[user.name],
-                playCountsMap[user.name] ?: 0,
-                user.name in _pinnedUsernamesSet.value
-            )
-        }
-    }
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     private val friendsRecentsSemaphore = Semaphore(2)
 
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
 
-    var totalPages = 1
-        private set
-    private val _total = MutableStateFlow(0)
-    val total = _total.asStateFlow()
-    var sorted = false
-        private set
-    var lastFriendsLoadTime = System.currentTimeMillis()
-        private set
+    val friends = user.filterNotNull().flatMapLatest { user ->
+        Pager(
+            config = PagingConfig(
+                pageSize = Stuff.DEFAULT_PAGE_SIZE,
+                initialLoadSize = Stuff.DEFAULT_PAGE_SIZE,
+                prefetchDistance = 4,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = { FriendsPagingSource(user.name) { _totalCount.value = it } }
+        ).flow
+    }
+        .cachedIn(viewModelScope)
+
     private var loadedInitialCachedVersion = false
+    private val _sortedFriends = MutableStateFlow<List<UserCached>?>(null)
+    val sortedFriends = _sortedFriends.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _input.filterNotNull()
-                .collectLatest { input ->
-                    loadFriends(input.page, input.user.name)
-                }
-        }
         viewModelScope.launch {
             refreshPins()
         }
     }
 
-
-    fun setInput(input: MusicEntryLoaderInput, initial: Boolean = false) {
-        if (initial && _input.value == null || !initial)
-            _input.value = input
+    fun setUser(userp: UserCached) {
+        user.value = userp
     }
 
     suspend fun loadFriendsRecents(username: String) {
-        if (lastPlayedTracksMap[username]?.isFailure == true) return
+        if (friendsExtraDataMap.value[username]?.isFailure == true) return
 
-        friendsRecentsSemaphore.withPermit {
+        delay(Stuff.FRIENDS_RECENTS_DELAY)
+        _friendsExtraDataMap.value += username to friendsRecentsSemaphore.withPermit {
             Scrobblables.current.value!!.getRecents(
                 1,
                 username,
@@ -133,103 +103,92 @@ class FriendsVM : ViewModel() {
             if (pr.entries.isEmpty())
                 throw ApiException(-1, PlatformStuff.application.getString(R.string.no_scrobbles))
 
-            pr
-        }
-            .let { result ->
-                _tracksReceiver.emit(username to result)
-            }
-    }
-
-
-    private suspend fun loadFriends(
-        page: Int,
-        username: String,
-        setLoading: Boolean = true
-    ) {
-        if (setLoading)
-            _hasLoaded.emit(false)
-
-        val pr = Scrobblables.current.value!!.getFriends(
-            page, username, cached = !loadedInitialCachedVersion
-        )
-
-        if (!loadedInitialCachedVersion) {
-            loadedInitialCachedVersion = true
-            viewModelScope.launch {
-                loadFriends(page, username, setLoading = false)
-            }
-        }
-
-        pr.onSuccess {
-            totalPages = max(1, it.attr.totalPages) //dont let totalpages be 0
-            _total.emit(it.attr.total!!)
-            sorted = false
-            lastFriendsLoadTime = System.currentTimeMillis()
-        }.onFailure {
-            if ((it as? ApiException)?.code == 504)
-                return
-        }
-
-        emitUsers(pr, page > 1)
-
-//        if (setLoading)
-        _hasLoaded.emit(true)
-    }
-
-
-    private suspend fun emitUsers(result: Result<PageResult<User>>, concat: Boolean) {
-        result.map {
-            if (concat)
-                (_friends.value ?: emptyList()) + it.entries.map { it.toUserCached() }
-            else
-                it.entries.map { it.toUserCached() }
-        }.doOnSuccessLoggingFaliure {
-            _friends.emit(it)
+            FriendExtraData(
+                track = pr.entries.first(),
+                playCount = pr.attr.total,
+                lastUpdated = System.currentTimeMillis()
+            )
         }
     }
 
-    suspend fun addPinAndSave(user: UserCached): Boolean {
-        if (!Stuff.billingRepository.isLicenseValid || _pinnedFriends.value.size >= Stuff.MAX_PINNED_FRIENDS) return false
+    fun addPinAndSave(user: UserCached): Boolean {
+        if (!Stuff.billingRepository.isLicenseValid || pinnedFriends.value.size >= Stuff.MAX_PINNED_FRIENDS) return false
 
-        val newUser = user.copy(order = _pinnedFriends.value.size)
+        val newUser = user.copy(order = pinnedFriends.value.size)
 
-        val willBeAdded = newUser.name !in _pinnedUsernamesSet.value
+        val willBeAdded = newUser.name !in pinnedUsernamesSet.value
+
+        if (!willBeAdded) {
+            val snackbarData = PanoSnackbarVisuals(
+                PlatformStuff.application.getString(
+                    R.string.pin_limit_reached,
+                    Stuff.MAX_PINNED_FRIENDS
+                ),
+                isError = true
+            )
+            Stuff.globalSnackbarFlow.tryEmit(snackbarData)
+        }
 
         if (willBeAdded) {
-            mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends + newUser) }
+            viewModelScope.launch {
+                mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends + newUser) }
+            }
         }
         return willBeAdded
     }
 
-    suspend fun removePinAndSave(user: UserCached): Boolean {
-        val willBeRemoved = user.name in _pinnedUsernamesSet.value
+    fun removePinAndSave(user: UserCached): Boolean {
+        val willBeRemoved = user.name in pinnedUsernamesSet.value
 
         if (willBeRemoved) {
-            mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends - user) }
+            viewModelScope.launch {
+                mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends - user) }
+            }
         }
+
         return willBeRemoved
     }
 
-    fun isPinned(username: String) = username in _pinnedUsernamesSet.value
 
-    fun savePinnedFriends(newList: List<UserCached>) {
+    fun movePinAndSave(username: String, right: Boolean): Boolean {
+        val from = pinnedFriends.value.indexOfFirst { it.name == username }
+        if (from == -1) return false
+        val to = (if (right) from + 1 else from - 1).coerceIn(0, pinnedFriends.value.size - 1)
+        if (from == to) return false
+
         viewModelScope.launch {
-            mainPrefs.updateData { it.copy(pinnedFriends = newList) }
+            val newList = pinnedFriends.value.toMutableList()
+            val friend = newList.removeAt(from)
+            newList.add(to, friend)
+            mainPrefs.updateData {
+                it.copy(pinnedFriends = newList.mapIndexed { index, it ->
+                    it.copy(order = index)
+                })
+            }
+        }
+
+        return true
+    }
+
+    fun sortByTime(friends: List<UserCached>) {
+        val now = System.currentTimeMillis()
+        _sortedFriends.value = friends.sortedByDescending {
+            if (friendsExtraDataMap.value[it.name]?.isSuccess == true)
+                friendsExtraDataMap.value[it.name]!!.getOrNull()!!.track.date ?: now
+            else
+                0 //put users with errors at the end
         }
     }
 
-    fun sortByTime() {
-        viewModelScope.launch {
-            val newList = _friends.value!!.sortedByDescending {
-                if (lastPlayedTracksMap[it.name]?.isSuccess == true) //put users with no tracks at the end
-                    lastPlayedTracksMap[it.name]!!.getOrNull()?.date
-                        ?: System.currentTimeMillis()
-                else
-                    0
-            }
-            sorted = true
+    fun clearSortedFriends() {
+        _sortedFriends.value = null
+    }
 
-            _friends.emit(newList)
+    fun markExtraDataAsStale() {
+        _friendsExtraDataMap.value = _friendsExtraDataMap.value.mapValues { (key, value) ->
+            value.map {
+                it.copy(lastUpdated = 0)
+            }
         }
     }
 
@@ -241,7 +200,7 @@ class FriendsVM : ViewModel() {
                     ?: return@supervisorScope
             var modifiedCount = 0
             val now = System.currentTimeMillis()
-            val newPinnedFriends = _pinnedFriends.value
+            val newPinnedFriends = pinnedFriends.value
                 .filter { now - it.lastUpdated > Stuff.PINNED_FRIENDS_CACHE_TIME }
                 .mapConcurrently(2) { userSerializable ->
 
@@ -253,15 +212,8 @@ class FriendsVM : ViewModel() {
                 }
 
             if (modifiedCount > 0) {
-                savePinnedFriends(newPinnedFriends)
+                mainPrefs.updateData { it.copy(pinnedFriends = newPinnedFriends) }
             }
         }
     }
-
-    data class FriendsItemHolder(
-        val user: UserCached,
-        val trackResult: Result<Track>?,
-        val playCount: Int,
-        val isPinned: Boolean
-    )
 }

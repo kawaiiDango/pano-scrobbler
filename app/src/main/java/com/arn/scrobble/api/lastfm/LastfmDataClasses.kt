@@ -55,7 +55,7 @@ val IHasImage.webp600
 
 @Serializable
 data class Wiki(
-    val content: String
+    val content: String,
 )
 
 @Parcelize
@@ -85,7 +85,7 @@ data class Stats(
     @Serializable(with = StringOrIntSerializer::class)
     val playcount: Int,
     @Serializable(with = StringOrIntSerializer::class)
-    val userplaycount: Int?
+    val userplaycount: Int?,
 )
 
 @Parcelize
@@ -93,7 +93,7 @@ data class Stats(
 data class LastFmImage(
     val size: String,
     @SerialName("#text")
-    val url: String
+    val url: String,
 ) : Parcelable
 
 @Parcelize
@@ -203,10 +203,10 @@ data class Track(
     override val wiki: Wiki? = null,
     @SerialName("@attr")
     override val _attr: MusicEntryAttr? = null,
-    val isNowPlaying: Boolean = _attr?.nowplaying == true
+    val isNowPlaying: Boolean = _attr?.nowplaying == true,
 ) : MusicEntry(), IHasImage {
-    @IgnoredOnParcel
-    val feedbackScore = if (userloved == true) 1 else if (userHated == true) -1 else 0
+//    @IgnoredOnParcel
+//    val feedbackScore = if (userloved == true) 1 else if (userHated == true) -1 else 0
 
     // album?.image has more priority since _image can be a white star
     @IgnoredOnParcel
@@ -237,7 +237,7 @@ data class PageEntries<T>(
 @Serializable
 data class Tags(
     @Serializable(with = ArrayOrObjectTagSerializer::class)
-    val tag: List<Tag>
+    val tag: List<Tag>,
 )
 
 @Serializable
@@ -318,12 +318,12 @@ enum class Period(val value: String) {
 @Serializable
 data class Session(
     val name: String?,
-    val key: String
+    val key: String,
 )
 
 @Serializable
 data class SessionResponse(
-    val session: Session
+    val session: Session,
 )
 
 @Serializable
@@ -335,7 +335,7 @@ data class LastfmResult(
 
 @Serializable
 data class GnuFmResult(
-    val lfm: LastfmResult
+    val lfm: LastfmResult,
 )
 
 @Serializable
@@ -346,13 +346,13 @@ data class TopTracksResponse(
 
 @Serializable
 data class TopArtistsResponse(
-    val topartists: PageEntries<Artist>
+    val topartists: PageEntries<Artist>,
 )
 
 
 @Serializable
 data class TopAlbumsResponse(
-    val topalbums: PageEntries<Album>
+    val topalbums: PageEntries<Album>,
 )
 
 
@@ -363,18 +363,18 @@ data class WeeklyTrackChartResponse(
 
 @Serializable
 data class WeeklyArtistChartResponse(
-    val weeklyartistchart: Artists
+    val weeklyartistchart: Artists,
 )
 
 @Serializable
 data class WeeklyAlbumChartResponse(
-    val weeklyalbumchart: Albums
+    val weeklyalbumchart: Albums,
 )
 
 @Serializable
 data class TagsResponse(
     @JsonNames("tags")
-    val toptags: Tags
+    val toptags: Tags,
 )
 
 @Serializable
@@ -392,7 +392,7 @@ data class LovedTracksResponse(
 @Serializable(with = ApiErrorDeserializer::class)
 data class ApiErrorResponse(
     val code: Int,
-    val message: String
+    val message: String,
 )
 
 @Serializable
@@ -458,7 +458,7 @@ data class TrackScrobblesResponse(
 
 @Serializable
 data class NowPlayingResponse(
-    val nowplaying: ScrobbleDetails
+    val nowplaying: ScrobbleDetails,
 )
 
 @Serializable
@@ -475,7 +475,7 @@ data class CorrectedDetails(
     @Serializable(with = StringOrBoolSerializer::class)
     val corrected: Boolean,
     @SerialName("#text")
-    val name: String?
+    val name: String?,
 )
 
 @Serializable
@@ -483,7 +483,7 @@ data class IgnoredDetails(
     @Serializable(with = StringOrIntSerializer::class)
     val code: Int,
     @SerialName("#text")
-    val message: String
+    val message: String,
 )
 
 @Serializable

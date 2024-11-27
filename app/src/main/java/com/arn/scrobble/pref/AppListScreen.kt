@@ -157,7 +157,8 @@ private fun AppListItem(
     label: String,
     isSelected: Boolean,
     forShimmer: Boolean = false,
-    onToggle: (Boolean) -> Unit, modifier: Modifier = Modifier
+    onToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier

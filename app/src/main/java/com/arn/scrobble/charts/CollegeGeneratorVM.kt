@@ -64,8 +64,8 @@ class CollageGeneratorVM : ViewModel() {
         fontSize = 18.sp,
         shadow = Shadow(
             color = Color.Black,
-            offset = Offset(2f, 2f),
-            blurRadius = 2f
+            offset = Offset.Zero,
+            blurRadius = 5f
         )
     )
 
@@ -81,7 +81,7 @@ class CollageGeneratorVM : ViewModel() {
         captions: Boolean,
         skipMissing: Boolean,
         username: Boolean,
-        textMeasurer: TextMeasurer
+        textMeasurer: TextMeasurer,
     ) {
         viewModelScope.launch {
             _generateCollage(
@@ -109,7 +109,7 @@ class CollageGeneratorVM : ViewModel() {
         captions: Boolean,
         username: Boolean,
         skipMissing: Boolean,
-        textMeasurer: TextMeasurer
+        textMeasurer: TextMeasurer,
     ) {
 
         _progress.value = 0f
@@ -220,7 +220,7 @@ class CollageGeneratorVM : ViewModel() {
         rows: Int,
         skipMissing: Boolean,
         captions: Boolean,
-        textMeasurer: TextMeasurer
+        textMeasurer: TextMeasurer,
     ): ImageBitmap {
         val limit = cols * rows
         val cellSize = 300
@@ -424,7 +424,7 @@ class CollageGeneratorVM : ViewModel() {
         type: Int,
         timePeriod: TimePeriod,
         username: String?,
-        textMeasurer: TextMeasurer
+        textMeasurer: TextMeasurer,
     ): ImageBitmap {
 
         val artistsStr = "🎙️ " + context.getString(R.string.top_artists)
@@ -603,7 +603,7 @@ class CollageGeneratorVM : ViewModel() {
     private suspend fun fetchCharts(
         type: Int,
         timePeriod: TimePeriod,
-        username: String
+        username: String,
     ): Result<PageResult<out MusicEntry>> {
         return Scrobblables.current.value!!.getCharts(
             type,

@@ -54,7 +54,7 @@ interface CachedTracksDao {
         fun CachedTracksDao.deltaUpdate(
             track: CachedTrack,
             deltaCount: Int,
-            dirty: DirtyUpdate = DirtyUpdate.CLEAN
+            dirty: DirtyUpdate = DirtyUpdate.CLEAN,
         ) {
             val foundTrack = findExact(track.artistName, track.trackName) ?: track
 
@@ -69,40 +69,47 @@ interface CachedTracksDao {
                             + deltaCount
                     ).coerceAtLeast(0)
 
+            val newUserPlayCountDirty: Int
+            val newUserPlayCount: Int
             when (dirty) {
                 DirtyUpdate.BOTH -> {
-                    foundTrack.userPlayCountDirty = userPlayCount
-                    foundTrack.userPlayCount = userPlayCountDirty
+                    newUserPlayCountDirty = userPlayCount
+                    newUserPlayCount = userPlayCountDirty
                 }
 
                 DirtyUpdate.DIRTY -> {
-                    foundTrack.userPlayCountDirty = userPlayCountDirty
+                    newUserPlayCountDirty = userPlayCountDirty
+                    newUserPlayCount = userPlayCount
                 }
 
                 DirtyUpdate.DIRTY_ABSOLUTE -> {
-                    foundTrack.userPlayCountDirty = track.userPlayCount
+                    newUserPlayCountDirty = track.userPlayCount
+                    newUserPlayCount = userPlayCount
                 }
 
                 DirtyUpdate.CLEAN -> {
-                    foundTrack.userPlayCount = userPlayCount
-                    foundTrack.userPlayCountDirty = -1
+                    newUserPlayCount = userPlayCount
+                    newUserPlayCountDirty = -1
                 }
             }
 
-            if (track.lastPlayed > -1) {
-                foundTrack.lastPlayed = track.lastPlayed
-                foundTrack.isLoved = track.isLoved
-            }
+            val newTrack = foundTrack.copy(
+                userPlayCount = newUserPlayCount,
+                userPlayCountDirty = newUserPlayCountDirty,
+                lastPlayed = if (track.lastPlayed > -1) track.lastPlayed else foundTrack.lastPlayed,
+                isLoved = if (track.lastPlayed > -1) track.isLoved else foundTrack.isLoved
+            )
 
-            insert(listOf(foundTrack))
+            insert(listOf(newTrack))
         }
 
         suspend fun deltaUpdateAll(
             track: Track,
             deltaCount: Int,
-            mode: DirtyUpdate = DirtyUpdate.CLEAN
+            mode: DirtyUpdate = DirtyUpdate.CLEAN,
         ) {
-            val lastMaxIndexedScrobbleTime = PlatformStuff.mainPrefs.data.map { it.lastMaxIndexedScrobbleTime }.first()
+            val lastMaxIndexedScrobbleTime =
+                PlatformStuff.mainPrefs.data.map { it.lastMaxIndexedScrobbleTime }.first()
 
             val maxIndexedScrobbleTime = lastMaxIndexedScrobbleTime ?: -1
             val wasIndexed =

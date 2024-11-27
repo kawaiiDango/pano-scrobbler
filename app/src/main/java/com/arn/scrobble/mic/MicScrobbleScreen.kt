@@ -5,9 +5,7 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GraphicEq
+import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,16 +40,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
-import com.arn.scrobble.ui.ExtraBottomSpace
-import com.arn.scrobble.ui.ScreenParent
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-private fun MicIdentifyContent(
+fun MicScrobbleScreen(
     viewModel: MicScrobbleVM = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val grantMicPermText = stringResource(R.string.grant_rec_perm)
     val micPermRequest = rememberLauncherForActivityResult(
@@ -91,11 +89,13 @@ private fun MicIdentifyContent(
     Box(
         modifier = modifier
     ) {
-        Text(
-            text = stringResource(R.string.shazam_scrobbling).replace("Shazam", "S app"),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
-        )
+        if (!Stuff.isTv) {
+            Text(
+                text = stringResource(R.string.shazam_scrobbling).replace("Shazam", "S app"),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -128,8 +128,8 @@ private fun MicIdentifyContent(
                     progress = { progressValue / 1000f },
                     modifier = Modifier.size(200.dp),
                 )
-                Image(
-                    imageVector = Icons.Outlined.GraphicEq,
+                Icon(
+                    imageVector = Icons.Rounded.GraphicEq,
                     contentDescription = null,
                     modifier = Modifier
                         .size(150.dp)
@@ -156,14 +156,13 @@ private fun MicIdentifyContent(
                     Text(text = stringResource(id = R.string.cancel))
                 }
             }
-            ExtraBottomSpace()
         }
     }
 }
 
 private fun startListening(
     micPermRequest: ActivityResultLauncher<String>,
-    viewModel: MicScrobbleVM
+    viewModel: MicScrobbleVM,
 ) {
     if (ContextCompat.checkSelfPermission(
             PlatformStuff.application,
@@ -174,10 +173,4 @@ private fun startListening(
     } else if (!viewModel.started) {
         viewModel.start()
     }
-}
-
-@Keep
-@Composable
-fun MicScrobbleScreen() {
-    ScreenParent { MicIdentifyContent(modifier = it) }
 }

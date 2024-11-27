@@ -13,9 +13,11 @@ import androidx.datastore.core.MultiProcessDataStoreFactory
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsMigration5
 import com.arn.scrobble.pref.MainPrefsSerializer
+import io.ktor.util.encodeBase64
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
+import java.security.MessageDigest
 
 object PlatformStuff {
     // not a leak
@@ -45,12 +47,22 @@ object PlatformStuff {
 
     val cacheDir by lazy { application.cacheDir!! }
 
+    fun getDeviceIdentifier(): String {
+        val name = Build.BRAND + "|" + Build.MODEL + "|" + Build.DEVICE + "|" + Build.BOARD
+        return name.sha256()
+    }
+
+    private fun String.sha256() =
+        MessageDigest.getInstance("SHA-256")
+            .digest(toByteArray())
+            .encodeBase64()
+
     @RequiresApi(Build.VERSION_CODES.Q)
     @Throws(IOException::class)
     fun savePictureQ(
         displayName: String,
         mimeType: String,
-        block: (OutputStream) -> Unit
+        block: (OutputStream) -> Unit,
     ) {
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)

@@ -43,7 +43,7 @@ object ScrobbleEverywhere {
     suspend fun scrobble(
         nowPlaying: Boolean,
         trackInfo: PlayingTrackInfo,
-        parseTitle: Boolean = trackInfo.ignoreOrigArtist
+        parseTitle: Boolean = trackInfo.ignoreOrigArtist,
     ) {
         Logger.i {
             this::scrobble.name + " " + (if (nowPlaying) "np" else "submit") + " " + trackInfo.artist + " - " + trackInfo.title
@@ -290,31 +290,30 @@ object ScrobbleEverywhere {
                 scrobbleResults.values.any { !it.isSuccess }
             ) {
                 // failed
-                val dao = PanoDb.db.getPendingScrobblesDao()
-                val entry = PendingScrobble().apply {
-                    artist = scrobbleData.artist
-                    album = scrobbleData.album ?: ""
-                    track = scrobbleData.track
-                    if (scrobbleData.albumArtist != null)
-                        albumArtist = scrobbleData.albumArtist ?: ""
-                    timestamp = scrobbleData.timestamp
-                    duration = scrobbleData.duration ?: -1
-                }
-
+                var state = 0
                 if (scrobbleResults.isEmpty())
                     allScrobblables.forEach {
-                        entry.state =
-                            entry.state or (1 shl it.userAccount.type.ordinal)
+                        state = state or (1 shl it.userAccount.type.ordinal)
                     }
                 else
                     scrobbleResults.forEach { (scrobblable, result) ->
                         if (!result.isSuccess) {
-                            entry.state =
-                                entry.state or (1 shl scrobblable.userAccount.type.ordinal)
+                            state = state or (1 shl scrobblable.userAccount.type.ordinal)
                         }
                     }
-                if (scrobbleResults.isNotEmpty())
-                    entry.autoCorrected = 1
+
+                val dao = PanoDb.db.getPendingScrobblesDao()
+                val entry = PendingScrobble(
+                    artist = scrobbleData.artist,
+                    album = scrobbleData.album ?: "",
+                    track = scrobbleData.track,
+                    albumArtist = scrobbleData.albumArtist ?: "",
+                    timestamp = scrobbleData.timestamp,
+                    duration = scrobbleData.duration ?: -1,
+                    autoCorrected = if (scrobbleResults.isNotEmpty()) 1 else 0,
+                    state = state
+                )
+
                 dao.insert(entry)
                 savedAsPending = true
                 PendingScrobblesWorker.checkAndSchedule(context)
@@ -401,8 +400,8 @@ object ScrobbleEverywhere {
         // update the cache
         PanoDb.db.getCachedTracksDao().apply {
             val tr = findExact(track.artist.name, track.name) ?: track.toCachedTrack()
-            tr.isLoved = love
-            insert(listOf(tr))
+            val newTr = tr.copy(isLoved = love)
+            insert(listOf(newTr))
         }
 
         val dao = PanoDb.db.getPendingLovesDao()
@@ -410,11 +409,12 @@ object ScrobbleEverywhere {
         val allScrobblables = Scrobblables.all.value
         if (pl != null) {
             if (pl.shouldLove == !love) {
-                pl.shouldLove = love
+                var state = pl.state
                 allScrobblables.forEach {
-                    pl.state = pl.state or (1 shl it.userAccount.type.ordinal)
+                    state = state or (1 shl it.userAccount.type.ordinal)
                 }
-                dao.update(pl)
+                val newPl = pl.copy(state = state, shouldLove = love)
+                dao.update(newPl)
             }
         } else {
             val successes = allScrobblables.mapConcurrently(5) {
@@ -422,15 +422,19 @@ object ScrobbleEverywhere {
             }.toMap()
 
             if (successes.values.any { !it }) {
-                val entry = PendingLove()
-                entry.artist = track.artist.name
-                entry.track = track.name
-                entry.shouldLove = love
+                var state = 0
                 successes.forEach { (scrobblable, success) ->
                     if (!success)
-                        entry.state =
-                            entry.state or (1 shl scrobblable.userAccount.type.ordinal)
+                        state = state or (1 shl scrobblable.userAccount.type.ordinal)
                 }
+
+                val entry = PendingLove(
+                    artist = track.artist.name,
+                    track = track.name,
+                    shouldLove = love,
+                    state = state
+                )
+
                 if (entry.state != 0) {
                     dao.insert(entry)
                     PendingScrobblesWorker.checkAndSchedule(PlatformStuff.application)

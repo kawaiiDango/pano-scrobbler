@@ -47,7 +47,7 @@ import com.valentinilk.shimmer.shimmer
 fun BlockedMetadatasScreen(
     viewModel: BlockedMetadataVM = viewModel(),
     onEdit: (BlockedMetadata) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val blockedMetadatas by viewModel.blockedMetadataFiltered.collectAsStateWithLifecycle()
     val count by viewModel.count.collectAsStateWithLifecycle(0)
@@ -83,14 +83,15 @@ fun BlockedMetadatasScreen(
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
-            val shimmerEdits = remember { List(10) { BlockedMetadata(track = "a", _id = it) } }
+            val shimmerEdits = remember { List(10) { BlockedMetadata(track = " ", _id = it) } }
             LazyColumn(
                 contentPadding = panoContentPadding(),
                 modifier = Modifier
                     .fillMaxSize()
                     .shimmer()
             ) {
-                items(shimmerEdits,
+                items(
+                    shimmerEdits,
                     key = { it._id }
                 ) {
                     BlockedMetadataItem(it, forShimmer = true, onEdit = {}, onDelete = {})
@@ -108,7 +109,8 @@ fun BlockedMetadatasScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                items(blockedMetadatas!!,
+                items(
+                    blockedMetadatas!!,
                     key = { it._id }
                 ) { edit ->
                     BlockedMetadataItem(
@@ -129,7 +131,7 @@ private fun BlockedMetadataItem(
     onEdit: (BlockedMetadata) -> Unit,
     onDelete: (BlockedMetadata) -> Unit,
     forShimmer: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -150,6 +152,7 @@ private fun BlockedMetadataItem(
                     text = blockedMetadata.track,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .backgroundForShimmer(forShimmer)
                 )
             }
@@ -158,6 +161,7 @@ private fun BlockedMetadataItem(
                     text = blockedMetadata.artist,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(start = 16.dp)
                 )
             }
@@ -166,6 +170,7 @@ private fun BlockedMetadataItem(
                     text = blockedMetadata.album,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(start = 16.dp)
                 )
             }
@@ -174,6 +179,7 @@ private fun BlockedMetadataItem(
                     text = blockedMetadata.albumArtist,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(start = 16.dp)
                 )
             }

@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
@@ -319,8 +319,9 @@ fun OnboardingScreen(
 
     var currentStep by remember { mutableStateOf(steps.first()) }
 
-    val isLoggedIn by Scrobblables.current.map { it != null }.collectAsState(false)
-    val appListWasRun by PlatformStuff.mainPrefs.data.map { it.appListWasRun }.collectAsState(false)
+    val isLoggedIn by Scrobblables.current.map { it != null }.collectAsStateWithLifecycle(false)
+    val appListWasRun by PlatformStuff.mainPrefs.data.map { it.appListWasRun }
+        .collectAsStateWithLifecycle(false)
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {

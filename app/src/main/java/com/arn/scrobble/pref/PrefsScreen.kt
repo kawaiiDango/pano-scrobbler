@@ -72,8 +72,10 @@ import java.util.Locale
 @Composable
 fun PrefsScreen(
     onNavigate: (PanoRoute) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val onNavigateToBilling = { onNavigate(PanoRoute.Billing) }
+
     val mainPrefs = remember { PlatformStuff.mainPrefs }
     val context = LocalContext.current
     val nlsEnabled = remember { Stuff.isNotificationListenerEnabled() }
@@ -258,7 +260,7 @@ fun PrefsScreen(
         item(MainPrefs::themeName.name) {
             TextPref(
                 text = stringResource(R.string.pref_themes),
-                needsPremium = true,
+                onNavigateToBilling = onNavigateToBilling,
                 onClick = {
                     onNavigate(PanoRoute.ThemeChooser)
                 }
@@ -276,21 +278,21 @@ fun PrefsScreen(
             }
         }
 
-        item(MainPrefs::showAlbumsInRecents.name) {
-            SwitchPref(
-                text = stringResource(R.string.pref_show_albums),
-                summary = stringResource(R.string.pref_show_albums_desc),
-                value = showAlbumsInRecents,
-                copyToSave = { copy(showAlbumsInRecents = it) }
-            )
-        }
+//        item(MainPrefs::showAlbumsInRecents.name) {
+//            SwitchPref(
+//                text = stringResource(R.string.pref_show_albums),
+//                summary = stringResource(R.string.pref_show_albums_desc),
+//                value = showAlbumsInRecents,
+//                copyToSave = { copy(showAlbumsInRecents = it) }
+//            )
+//        }
 
         item(MainPrefs::showScrobbleSources.name) {
             SwitchPref(
                 text = stringResource(R.string.pref_show_scrobble_sources),
                 summary = stringResource(R.string.pref_show_scrobble_sources_desc),
                 value = showScrobbleSources,
-                needsPremium = true,
+                onNavigateToBilling = onNavigateToBilling,
                 copyToSave = { copy(showScrobbleSources = it) }
             )
         }
@@ -300,8 +302,8 @@ fun PrefsScreen(
                 text = stringResource(R.string.pref_search_in_source),
                 summary = stringResource(R.string.pref_search_in_source_desc),
                 value = searchInSource,
-                needsPremium = true,
-                enabled = showScrobbleSources, // Add logic to enable/disable based on show_scrobble_sources
+                onNavigateToBilling = onNavigateToBilling,
+                enabled = showScrobbleSources,
                 copyToSave = { copy(searchInSource = it) }
             )
         }
@@ -312,7 +314,7 @@ fun PrefsScreen(
                     text = stringResource(R.string.pref_link_heart_button_rating),
                     summary = stringResource(R.string.pref_search_in_source_desc),
                     value = linkHeartButtonToRating,
-                    needsPremium = true,
+                    onNavigateToBilling = onNavigateToBilling,
                     copyToSave = { copy(linkHeartButtonToRating = it) }
                 )
             }
@@ -348,7 +350,7 @@ fun PrefsScreen(
             )
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !Stuff.isWindows11) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !Stuff.isTv) {
             item("notifications") {
                 TextPref(
                     text = stringResource(R.string.pref_noti),
@@ -521,7 +523,7 @@ fun PrefsScreen(
             }
         }
 
-        if (!ExtrasConsts.isFossBuild) {
+        if (!ExtrasConsts.isNonPlayBuild) {
             item(MainPrefs::crashReporterEnabled.name) {
                 SwitchPref(
                     text = stringResource(R.string.pref_crashlytics_enabled),
@@ -612,11 +614,7 @@ fun PrefsScreen(
             TextPref(
                 text = stringResource(R.string.pref_privacy_policy),
                 onClick = {
-                    // todo: implement WebViewFragment
-//                    val args = Bundle().apply {
-//                        putString(Stuff.ARG_URL, privacyPolicyLink)
-//                    }
-//                    fragment.findNavController().navigate(R.id.webViewFragment, args)
+                    onNavigate(PanoRoute.WebView(privacyPolicyLink))
                 }
             )
         }

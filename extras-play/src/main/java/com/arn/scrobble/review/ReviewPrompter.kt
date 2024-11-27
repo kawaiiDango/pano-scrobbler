@@ -6,12 +6,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ReviewPrompter(
-    private val activity: Activity,
+    private val activity: Any?,
     lastReviewPromptTime: Long?,
-    override val setReviewPromptTime: suspend (Long?) -> Unit
+    override val setReviewPromptTime: suspend (Long?) -> Unit,
 
-) : BaseReviewPrompter(activity, lastReviewPromptTime, setReviewPromptTime) {
+    ) : BaseReviewPrompter(activity, lastReviewPromptTime, setReviewPromptTime) {
     override fun launchReviewFlow() {
+        activity as Activity
         val manager = ReviewManagerFactory.create(activity)
 
         manager.requestReviewFlow().addOnCompleteListener { task ->

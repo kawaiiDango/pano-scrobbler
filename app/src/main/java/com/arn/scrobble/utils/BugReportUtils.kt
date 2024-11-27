@@ -66,50 +66,77 @@ object BugReportUtils {
                 logFile
             )
 
-        val emailIntent = Intent(
-            Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", "huh@huh.com", null
-            )
-        )
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "huh?")
-        val resolveInfos =
-            PlatformStuff.application.packageManager.queryIntentActivities(emailIntent, 0)
-        val intents = arrayListOf<LabeledIntent>()
-        for (info in resolveInfos) {
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                component = ComponentName(info.activityInfo.packageName, info.activityInfo.name)
-                putExtra(
-                    Intent.EXTRA_EMAIL,
-                    arrayOf(PlatformStuff.application.getString(R.string.email))
-                )
+        val emailAddress = PlatformStuff.application.getString(R.string.email)
+        val emailIntent =
+            Intent(
+                Intent.ACTION_SEND_MULTIPLE,
+//                Uri.fromParts("mailto", emailAddress, null)
+            ).apply {
+                // https://stackoverflow.com/questions/33098280/how-to-choose-email-app-with-action-sendto-also-support-attachment
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, emailAddress)
                 putExtra(
                     Intent.EXTRA_SUBJECT,
                     PlatformStuff.application.getString(R.string.app_name) + " - Bug report"
                 )
                 putExtra(Intent.EXTRA_TEXT, text)
-                putExtra(Intent.EXTRA_STREAM, logUri)
+//                putExtra(Intent.EXTRA_STREAM, logUri)
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, arrayListOf(logUri))
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-            intents.add(
-                LabeledIntent(
-                    intent,
-                    info.activityInfo.packageName,
-                    info.loadLabel(PlatformStuff.application.packageManager),
-                    info.icon
-                )
-            )
-        }
-        if (intents.size > 0) {
-            val chooser = Intent.createChooser(
-                intents.removeAt(intents.size - 1),
-                PlatformStuff.application.getString(R.string.bug_report)
-            ).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
-            }
-            PlatformStuff.application.startActivity(chooser)
-        } else
+
+        try {
+            PlatformStuff.application.startActivity(emailIntent)
+        } catch (e: Exception) {
+            e.printStackTrace()
             PlatformStuff.application.toast(R.string.no_mail_apps)
+        }
+
+//        val emailIntent = Intent(
+//            Intent.ACTION_SENDTO, Uri.fromParts(
+//                "mailto", "huh@huh.com", null
+//            )
+//        )
+//        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "huh?")
+//        val resolveInfos =
+//            PlatformStuff.application.packageManager.queryIntentActivities(emailIntent, 0)
+//        val intents = arrayListOf<LabeledIntent>()
+//        for (info in resolveInfos) {
+//            val intent = Intent(Intent.ACTION_SEND).apply {
+//                component = ComponentName(info.activityInfo.packageName, info.activityInfo.name)
+//                putExtra(
+//                    Intent.EXTRA_EMAIL,
+//                    arrayOf(PlatformStuff.application.getString(R.string.email))
+//                )
+//                putExtra(
+//                    Intent.EXTRA_SUBJECT,
+//                    PlatformStuff.application.getString(R.string.app_name) + " - Bug report"
+//                )
+//                putExtra(Intent.EXTRA_TEXT, text)
+//                putExtra(Intent.EXTRA_STREAM, logUri)
+//                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//            }
+//            intents.add(
+//                LabeledIntent(
+//                    intent,
+//                    info.activityInfo.packageName,
+//                    info.loadLabel(PlatformStuff.application.packageManager),
+//                    info.icon
+//                )
+//            )
+//        }
+//        if (intents.isNotEmpty()) {
+//            val chooser = Intent.createChooser(
+//                intents.removeAt(intents.size - 1),
+//                PlatformStuff.application.getString(R.string.bug_report)
+//            ).apply {
+//                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
+//            }
+//            PlatformStuff.application.startActivity(chooser)
+//        } else
+//            PlatformStuff.application.toast(R.string.no_mail_apps)
     }
 }

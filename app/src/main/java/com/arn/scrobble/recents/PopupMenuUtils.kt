@@ -16,7 +16,7 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
-import com.arn.scrobble.db.PendingScrobbleWithSource
+import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils.showWithIcons
@@ -71,7 +71,7 @@ object PopupMenuUtils {
         navController: NavController,
         scope: CoroutineScope,
         track: Track,
-        deleteAction: suspend (Boolean) -> Unit
+        deleteAction: suspend (Boolean) -> Unit,
     ) {
         scope.launch {
             val results = withContext(Dispatchers.IO) {
@@ -99,7 +99,7 @@ object PopupMenuUtils {
 
         @StringRes
         val state = when (p) {
-            is PendingScrobbleWithSource -> p.pendingScrobble.state
+            is PendingScrobble -> p.state
             is PendingLove -> p.state
             else -> throw RuntimeException("Not a Pending Item")
         }
@@ -130,8 +130,8 @@ object PopupMenuUtils {
                 R.id.menu_delete -> {
                     scope.launch(Dispatchers.IO) {
                         try {
-                            if (p is PendingScrobbleWithSource)
-                                PanoDb.db.getPendingScrobblesDao().delete(p.pendingScrobble)
+                            if (p is PendingScrobble)
+                                PanoDb.db.getPendingScrobblesDao().delete(p)
                             else if (p is PendingLove)
                                 PanoDb.db.getPendingLovesDao().delete(p)
                         } catch (e: Exception) {
@@ -140,18 +140,18 @@ object PopupMenuUtils {
                 }
 
                 R.id.menu_love -> {
-                    if (p is PendingScrobbleWithSource) {
+                    if (p is PendingScrobble) {
                         scope.launch(Dispatchers.IO) {
                             ScrobbleEverywhere.loveOrUnlove(
                                 Track(
-                                    p.pendingScrobble.track,
-                                    p.pendingScrobble.album.ifEmpty { null }?.let {
+                                    p.track,
+                                    p.album.ifEmpty { null }?.let {
                                         Album(
                                             it,
-                                            p.pendingScrobble.albumArtist.ifEmpty { null }
+                                            p.albumArtist.ifEmpty { null }
                                                 ?.let { Artist(it) })
                                     },
-                                    Artist(p.pendingScrobble.artist)
+                                    Artist(p.artist)
                                 ),
                                 true
                             )

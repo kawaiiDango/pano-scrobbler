@@ -13,19 +13,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.arn.scrobble.R
 
 enum class PanoTabType {
-    TAB, BUTTON
+    TAB, MENU, PROFILE
 }
 
 sealed class PanoTabs(
     val titleRes: Int,
     val icon: ImageVector,
-    val type: PanoTabType = PanoTabType.TAB
+    val type: PanoTabType = PanoTabType.TAB,
 ) {
     data object Scrobbles : PanoTabs(titleRes = R.string.scrobbles, icon = Icons.Outlined.History)
     data object Following : PanoTabs(titleRes = R.string.following, icon = Icons.Outlined.Group)
     data object Charts : PanoTabs(titleRes = R.string.charts, icon = Icons.Outlined.InsertChart)
     data object Profile :
-        PanoTabs(titleRes = R.string.more, icon = Icons.Outlined.Person, type = PanoTabType.BUTTON)
+        PanoTabs(
+            titleRes = R.string.pref_user_label,
+            icon = Icons.Outlined.Person,
+            type = PanoTabType.PROFILE
+        )
 
     data object TopArtists : PanoTabs(titleRes = R.string.artists, icon = Icons.Outlined.Mic)
     data object TopAlbums : PanoTabs(titleRes = R.string.albums, icon = Icons.Outlined.Album)
@@ -33,9 +37,6 @@ sealed class PanoTabs(
     data object MoreOptions : PanoTabs(
         titleRes = R.string.more,
         icon = Icons.Outlined.MoreHoriz,
-        type = PanoTabType.BUTTON
+        type = PanoTabType.MENU
     )
-
-    data object SimilarArtists :
-        PanoTabs(titleRes = R.string.similar_artists, icon = Icons.Outlined.Mic)
 }

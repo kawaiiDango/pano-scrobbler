@@ -81,7 +81,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         page: Int,
         username: String = userAccount.user.name,
         cacheStrategy: CacheStrategy = CacheStrategy.CACHE_FIRST,
-        limit: Int = if (timePeriod.period != null || timePeriod.tag != null) 50 else -1
+        limit: Int = if (timePeriod.period != null || timePeriod.tag != null) 50 else -1,
     ): Result<PageResult<out MusicEntry>>
 
     abstract suspend fun getListeningActivity(
@@ -98,35 +98,20 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         page: Int,
         username: String = userAccount.user.name,
         networkOnly: Boolean = false,
-        limit: Int = if (timePeriod.period != null) 50 else -1
+        limit: Int = if (timePeriod.period != null) 50 else -1,
     ): Result<PageResult<out MusicEntry>> {
         Logger.i { this::getChartsWithStonks.name + " $type timePeriod: $timePeriod prevTimePeriod: $prevTimePeriod" }
 
-        fun toHashableEntry(entry: MusicEntry): Any = when (type) {
-            Stuff.TYPE_ARTISTS -> {
-                (entry as Artist).toCachedArtist().apply {
-                    userPlayCount = 0
-                }
-            }
+        // remove play counts and all the extra data
+        fun toHashableEntry(entry: MusicEntry): MusicEntry = when (entry) {
+            is Artist -> Artist(entry.name)
 
-            Stuff.TYPE_ALBUMS -> {
-                (entry as Album).toCachedAlbum().apply {
-                    userPlayCount = 0
-                    largeImageUrl = null
-                    artistUrl = ""
-                }
-            }
+            is Album -> Album(entry.name, artist = Artist(entry.artist!!.name))
 
-            Stuff.TYPE_TRACKS -> {
-                (entry as Track).toCachedTrack().apply {
-                    userPlayCount = 0
-                    durationSecs = 0
-                    isLoved = false
-                    artistUrl = ""
-                }
-            }
-
-            else -> throw IllegalArgumentException("Unknown type")
+            is Track -> Track(
+                entry.name,
+                artist = Artist(entry.artist.name),
+                album = entry.album?.let { Album(it.name) })
         }
 
         val prevCharts =

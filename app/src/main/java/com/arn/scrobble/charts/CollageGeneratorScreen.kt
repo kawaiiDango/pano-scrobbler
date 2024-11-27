@@ -5,16 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Keep
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Share
@@ -177,7 +179,7 @@ private fun CollageGeneratorContent(
     }
 
     Column(
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState()),
     ) {
 
         collagePreview?.let {
@@ -268,10 +270,10 @@ private fun CollageGeneratorContent(
                     Text(
                         stringResource(
                             id =
-                            if (showSavedMessage)
-                                R.string.saved_to_gallery
-                            else
-                                R.string.save
+                                if (showSavedMessage)
+                                    R.string.saved_to_gallery
+                                else
+                                    R.string.save
                         )
                     )
                 }
@@ -341,27 +343,31 @@ private fun shareCollage(context: Context, imageBitmap: ImageBitmap, text: Strin
     context.startActivity(intent)
 }
 
-@Keep
 @Composable
 fun CollageGeneratorScreen(
     collageType: Int,
     timePeriod: TimePeriod,
     user: UserCached,
+    onDismiss: () -> Unit,
 ) {
-    val context = LocalContext.current
+    val activity = LocalActivity.current
 
-    BottomSheetDialogParent {
+    BottomSheetDialogParent(
+        onDismiss = onDismiss,
+    ) {
         CollageGeneratorContent(
             collageType = collageType,
             timePeriod = timePeriod,
             user = user,
             onAskForReview = {
-                ReviewPrompter(
-                    context as Activity,
-                    PlatformStuff.mainPrefs.data.first().lastReviewPromptTime
-                ) { t ->
-                    PlatformStuff.mainPrefs.updateData { it.copy(lastReviewPromptTime = t) }
-                }.showIfNeeded()
+                if (activity != null) {
+                    ReviewPrompter(
+                        activity,
+                        PlatformStuff.mainPrefs.data.first().lastReviewPromptTime
+                    ) { t ->
+                        PlatformStuff.mainPrefs.updateData { it.copy(lastReviewPromptTime = t) }
+                    }.showIfNeeded()
+                }
             },
             modifier = it
         )

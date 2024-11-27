@@ -1,33 +1,16 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("java-library")
+    alias(libs.plugins.jetbrains.kotlin.jvm)
 }
-
-android {
-    namespace = "com.arn.scrobble.extras.common"
-    compileSdk = libs.versions.targetSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        create("releaseGithub") {
-            matchingFallbacks += listOf("release")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
-
 dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(platform(libs.ktor.bom))

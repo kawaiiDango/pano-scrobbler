@@ -7,7 +7,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Random
 
 plugins {
     alias(libs.plugins.android.application)
@@ -225,13 +224,14 @@ dependencies {
     implementation(libs.nanohttpd)
 
     implementation(libs.aboutlibraries.core)
+    implementation(libs.compose.webview)
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
     implementation(project(":extras-common"))
     releaseImplementation(project(":extras-play"))
 //    debugImplementation(project(":extras-play"))
-    debugImplementation(project(":extras-foss"))
-    "releaseGithubImplementation"(project(":extras-foss"))
+    debugImplementation(project(":extras-non-play"))
+    "releaseGithubImplementation"(project(":extras-non-play"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.uiautomator)
@@ -239,54 +239,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
 }
-
-// https://yrom.net/blog/2019/06/19/simple-codes-to-generate-obfuscation-dictionary/
-
-tasks.register("genDict") {
-    val dictFile = file("build/tmp/dict.txt")
-    outputs.file(dictFile)
-    doLast {
-        val r = Random()
-//        val start = r.nextInt(1000) + 0x0100
-//        val end = start + 0x4000
-        val start = 'A'.code
-        val end = 'z'.code
-        val chars = (start..end)
-            .filter { Character.isValidCodePoint(it) && Character.isJavaIdentifierPart(it) }
-            .map { it.toChar().toString() }
-            .toMutableList()
-        val max = chars.size
-        val startChars = mutableListOf<String>()
-        val dict = mutableListOf<String>()
-
-        for (i in 0 until max) {
-            val c = chars[i][0]
-            if (Character.isJavaIdentifierStart(c)) {
-                startChars.add(c.toString())
-            }
-        }
-        val startSize = startChars.size
-
-        chars.shuffle(r)
-        startChars.shuffle(r)
-
-        for (i in 0 until max) {
-            val m = r.nextInt(startSize - 2)
-            val n = m + 2
-            for (j in m..n) {
-                dict.add(startChars[j] + chars[i])
-            }
-        }
-
-        dictFile.parentFile.mkdirs()
-        dictFile.writeText(
-            startChars.joinToString(System.lineSeparator()) + dict.joinToString(
-                System.lineSeparator()
-            )
-        )
-    }
-}
-
 
 // play store and github publishing scripts
 // remove if not needed
@@ -396,7 +348,7 @@ data class CrowdinLanguageProps(val twoLettersCode: String)
 data class CrowdinLanguage(
     val languageId: String,
     val language: CrowdinLanguageProps,
-    val translationProgress: Int
+    val translationProgress: Int,
 )
 
 data class CrowdinLanguageData(val data: CrowdinLanguage)

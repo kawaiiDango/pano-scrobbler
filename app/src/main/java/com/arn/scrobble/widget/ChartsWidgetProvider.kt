@@ -7,11 +7,16 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
+import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.runBlocking
 import java.util.Objects
 
@@ -20,11 +25,17 @@ class ChartsWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
+        appWidgetIds: IntArray,
     ) {
         val prefs = runBlocking {
             Stuff.widgetPrefs.data.first()
         }
+
+        val user = runBlocking {
+            PlatformStuff.mainPrefs.data.mapLatest { mainPrefs ->
+                mainPrefs.scrobbleAccounts.find { it.type == mainPrefs.currentAccountType }?.user
+            }.first()
+        } ?: return
 
         // There may be multiple widgets active, so update all of them
         appWidgetIds.forEach { appWidgetId ->
@@ -37,7 +48,8 @@ class ChartsWidgetProvider : AppWidgetProvider() {
                 appWidgetManager,
                 appWidgetId,
                 specificWidgetPrefs,
-                chartsData
+                chartsData,
+                user
             )
         }
     }
@@ -92,7 +104,8 @@ internal fun updateAppWidget(
     appWidgetId: Int,
     prefs: SpecificWidgetPrefs,
     chartsData: List<ChartsWidgetListItem>?,
-    scrollToTop: Boolean = false
+    user: UserCached,
+    scrollToTop: Boolean = false,
 ) {
 
     val tab = prefs.tab
@@ -117,7 +130,7 @@ internal fun updateAppWidget(
             .forEachIndexed { i, item ->
                 addItem(
                     item.hashCode().toLong(),
-                    ChartsListUtils.createMusicItem(tab, i, item)
+                    ChartsListUtils.createMusicItem(tab, i, item, user)
                 )
             }
     }.build()
@@ -144,7 +157,6 @@ internal fun updateAppWidget(
     // to create unique before on an item to item basis.
     val infoIntent = Intent(context, MainDialogActivity::class.java).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        putExtra(MainDialogActivity.ARG_DESTINATION, R.id.infoFragment)
     }
 
     val infoPendingIntent = PendingIntent.getActivity(

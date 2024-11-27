@@ -30,7 +30,6 @@ import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
@@ -41,6 +40,7 @@ import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.SearchBox
 import com.arn.scrobble.ui.panoContentPadding
+import com.arn.scrobble.utils.Stuff
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -49,14 +49,22 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ImageSearchScreen(
-    viewModel: ImageSearchVM = viewModel(),
-    musicEntry: MusicEntry,
-    originalMusicEntry: MusicEntry? = null,
+    artist: Artist?,
+    originalArtist: Artist?,
+    album: Album?,
+    originalAlbum: Album?,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    viewModel: ImageSearchVM = viewModel(),
+    modifier: Modifier = Modifier,
 ) {
+    val musicEntry = artist ?: album!!
+    val originalMusicEntry = originalArtist ?: originalAlbum
+
     fun onDone() {
         clearMusicEntryImageCache(entry = musicEntry)
+        originalMusicEntry?.let {
+            clearMusicEntryImageCache(entry = it)
+        }
         onBack()
     }
 
@@ -161,16 +169,19 @@ fun ImageSearchScreen(
                             Text(stringResource(R.string.reset))
                         }
                     }
-                    OutlinedButton(
-                        onClick = {
-                            if (!squarePhotoLearnt) {
-                                showSquarePhotoDialog = true
-                            } else {
-                                launchImagePickerCompat()
+
+                    if (!Stuff.isTv) {
+                        OutlinedButton(
+                            onClick = {
+                                if (!squarePhotoLearnt) {
+                                    showSquarePhotoDialog = true
+                                } else {
+                                    launchImagePickerCompat()
+                                }
                             }
+                        ) {
+                            Text(stringResource(R.string.from_gallery))
                         }
-                    ) {
-                        Text(stringResource(R.string.from_gallery))
                     }
                 }
             }
@@ -205,7 +216,7 @@ fun ImageSearchScreen(
                             else -> ""
                         },
                         forShimmer = false,
-                        onTrackClick = {
+                        onEntryClick = {
                             viewModel.insertCustomMappings(it, null)
                             onDone()
                         },
@@ -231,7 +242,7 @@ fun ImageSearchScreen(
                             album = Album(""),
                         ),
                         forShimmer = true,
-                        onTrackClick = {},
+                        onEntryClick = {},
                         modifier = Modifier.shimmer()
                     )
                 }
@@ -253,7 +264,7 @@ fun ImageSearchScreen(
                             album = Album(""),
                         ),
                         forShimmer = true,
-                        onTrackClick = {},
+                        onEntryClick = {},
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

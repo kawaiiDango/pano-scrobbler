@@ -69,12 +69,14 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLParserException
 import io.ktor.http.maxAge
 import io.ktor.http.takeFrom
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -100,22 +102,17 @@ import kotlin.math.pow
 object Stuff {
     const val SCROBBLER_PROCESS_NAME = "bgScrobbler"
     const val DEEPLINK_PROTOCOL_NAME = "pano-scrobbler"
+    const val DEEPLINK_BASE_PATH = "$DEEPLINK_PROTOCOL_NAME://screen"
     const val ARG_URL = "url"
-    const val ARG_SAVE_COOKIES = "cookies"
-    const val ARG_ORIGINAL = "original"
     const val ARG_TYPE = "type"
     const val ARG_TAB = "tab"
     const val ARG_TITLE = "title"
-    const val ARG_SHOW_DIALOG = "dialog"
     const val ARG_PKG = "pkg"
     const val ARG_ACTION = "action"
-    const val ARG_ALLOWED_PACKAGES = "allowed_packages"
-    const val ARG_SINGLE_CHOICE = "single_choice"
     const val ARG_MONTH_PICKER_PERIOD = "month_picker_period"
     const val ARG_SELECTED_YEAR = "selected_year"
     const val ARG_SELECTED_MONTH = "selected_month"
     const val ARG_CUSTOM_REQUEST_KEY = "custom_request_key"
-    const val ARG_EDIT = "edit"
     const val MIME_TYPE_JSON = "application/json"
     const val PRO_PRODUCT_ID = "pscrobbler_pro"
     const val TYPE_ALL = 0
@@ -124,7 +121,6 @@ object Stuff {
     const val TYPE_TRACKS = 3
     const val TYPE_ALBUM_ARTISTS = 4
     const val TYPE_LOVES = 5
-    const val TYPE_FRIENDS = 6
     const val LIBREFM_KEY = "panoScrobbler"
     val LAST_KEY = Tokens.LAST_KEY
     val LAST_SECRET = Tokens.LAST_SECRET
@@ -141,7 +137,7 @@ object Stuff {
 
     const val EXTRA_PINNED = "pinned"
 
-    const val RECENTS_REFRESH_INTERVAL = 60 * 1000L
+    const val RECENTS_REFRESH_INTERVAL = 40 * 1000L
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
@@ -153,6 +149,9 @@ object Stuff {
     const val SCROBBLE_FROM_MIC_DELAY = 3 * 1000L
     const val MIN_LISTENER_COUNT = 5
     const val MAX_HISTORY_ITEMS = 20
+    const val DEFAULT_PAGE_SIZE = 100
+    const val GRID_MIN_SIZE = 170
+    const val SCROBBLE_SOURCE_THRESHOLD = 1000L
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
@@ -341,7 +340,7 @@ object Stuff {
         val billingClientData = BillingClientData(
             proProductId = PRO_PRODUCT_ID,
             appName = PlatformStuff.application.getString(R.string.app_name),
-            publicKeyBase64 = if (ExtrasConsts.isFossBuild)
+            publicKeyBase64 = if (ExtrasConsts.isNonPlayBuild)
                 Tokens.LICENSE_PUBLIC_KEY_BASE64
             else
                 Tokens.PLAY_BILLING_PUBLIC_KEY_BASE64,
@@ -349,6 +348,7 @@ object Stuff {
             httpClient = Requesters.genericKtorClient,
             serverUrl = Tokens.LICENSE_CHECKING_SERVER,
             lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
+            deviceIdentifier = PlatformStuff.getDeviceIdentifier(),
             setLastcheckTime = {
                 PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = it.lastLicenseCheckTime) }
             },
@@ -376,6 +376,8 @@ object Stuff {
     val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
 
     val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>() }
+
+    val globalEditsFlow by lazy { MutableSharedFlow<Pair<Track, Track>>() }
 
     val browserPackages = mutableSetOf<String>()
 
@@ -510,7 +512,7 @@ object Stuff {
     fun myRelativeTime(
         context: Context = PlatformStuff.application,
         millis: Long?,
-        withPreposition: Boolean = false
+        withPreposition: Boolean = false,
     ): String {
         val millis = millis ?: 0
         val diff = System.currentTimeMillis() - millis
@@ -596,7 +598,7 @@ object Stuff {
         @StringRes zeroStrRes: Int,
         @PluralsRes pluralRes: Int,
         count: Int,
-        periodType: TimePeriodType?
+        periodType: TimePeriodType?,
     ): String {
         val plus = if (count == 1000 && periodType != TimePeriodType.CONTINUOUS) "+" else ""
 
@@ -612,7 +614,7 @@ object Stuff {
 
     fun launchSearchIntent(
         musicEntry: MusicEntry,
-        pkgName: String?
+        pkgName: String?,
     ) {
 
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
@@ -681,13 +683,15 @@ object Stuff {
 
     fun openInBrowser(url: String) {
         if (isTv) {
-            globalSnackbarFlow.tryEmit(
-                PanoSnackbarVisuals(
-                    message = PlatformStuff.application.getString(R.string.tv_url_notice) + "\n" + url,
-                    isError = false,
-                    duration = SnackbarDuration.Long
+            GlobalScope.launch {
+                globalSnackbarFlow.emit(
+                    PanoSnackbarVisuals(
+                        message = PlatformStuff.application.getString(R.string.tv_url_notice) + "\n" + url,
+                        isError = false,
+                        duration = SnackbarDuration.Long
+                    )
                 )
-            )
+            }
             return
         }
 
@@ -755,9 +759,9 @@ object Stuff {
             else -> true
         }
 
-    fun timeToUTC(time: Long) = time + TimeZone.getDefault().getOffset(System.currentTimeMillis())
+    fun Long.timeToUTC() = this + TimeZone.getDefault().getOffset(System.currentTimeMillis())
 
-    fun timeToLocal(time: Long) = time - TimeZone.getDefault().getOffset(System.currentTimeMillis())
+    fun Long.timeToLocal() = this - TimeZone.getDefault().getOffset(System.currentTimeMillis())
 
     fun getCountryFlag(countryName: String): String {
         val isoCode = countryCodesMap[countryName] ?: return ""
@@ -775,7 +779,7 @@ object Stuff {
         icon: Int,
         emoji: String,
         text: String,
-        pIntent: PendingIntent
+        pIntent: PendingIntent,
     ): NotificationCompat.Action {
         val emojiText = if (isWindows11)
             "$emoji $text"
@@ -971,7 +975,7 @@ object Stuff {
     @RequiresApi(Build.VERSION_CODES.R)
     fun getScrobblerExitReasons(
         afterTime: Long = -1,
-        printAll: Boolean = false
+        printAll: Boolean = false,
     ): List<ApplicationExitInfo> {
         return try {
             val activityManager =

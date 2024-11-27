@@ -20,11 +20,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
@@ -35,6 +42,8 @@ class MainViewModel : ViewModel() {
 
     var prevDestinationId: Int? = null
     private var lastDrawerDataRefreshTime = 0L
+    private var lastDrawerDataFetchUser: UserCached? = null
+    private var lastDrawerDataOthersCached: DrawerData? = null
     private val mainPrefs = PlatformStuff.mainPrefs
 
     val canIndex = mainPrefs.data.map { it.lastMaxIndexTime }.map {
@@ -49,7 +58,8 @@ class MainViewModel : ViewModel() {
     val updateAvailability = _updateAvailablity.asSharedFlow()
 
     private val _currentUser = MutableStateFlow<UserCached?>(null)
-    val currentUser get() = _currentUser.value!!
+    val currentUser = _currentUser.asStateFlow()
+    val currentUserOld get() = _currentUser.value!!
 
     private val _selectedPackages = MutableSharedFlow<List<AppItem>>()
     val selectedPackages = _selectedPackages.asSharedFlow()
@@ -75,10 +85,63 @@ class MainViewModel : ViewModel() {
 
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
-//        BuildConfig.DEBUG ||
-        (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
+        BuildConfig.DEBUG ||
+                (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
                 (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
     }
+
+    // A flow to represent trigger signals for refreshing
+    private val otherUserTrigger = MutableSharedFlow<UserCached?>(extraBufferCapacity = 1)
+
+    // The main flow that handles caching, network calls, and emits values
+    val drawerDataFlow: StateFlow<DrawerData> =
+        combine(
+            Scrobblables.current.map { it?.userAccount?.user },
+            otherUserTrigger
+        )
+        { userSelf, userOther -> userSelf to userOther }
+            .flatMapLatest { (userSelf, userOther) ->
+                val user = userOther ?: userSelf
+                if (user == null) {
+                    flowOf(DrawerData(0))
+                } else {
+                    val now = System.currentTimeMillis()
+                    val lastCall = lastDrawerDataRefreshTime
+                    if (now - lastCall >= 5 * 60 * 1000 || user != lastDrawerDataFetchUser) {
+                        flow {
+                            // Fetch fresh data
+                            val freshData = Scrobblables.current.value
+                                ?.loadDrawerData(user.name)
+                            lastDrawerDataRefreshTime = System.currentTimeMillis()
+                            lastDrawerDataFetchUser = user
+
+                            if (freshData != null) {
+                                emit(freshData)
+                            }
+                        }
+                    } else if (user.isSelf) {
+                        PlatformStuff.mainPrefs.data.map { it.drawerData }
+                            .map {
+                                it[Scrobblables.current.value?.userAccount?.type] ?: DrawerData(0)
+                            }
+                    } else {
+                        flowOf(lastDrawerDataOthersCached ?: DrawerData(0))
+                    }
+
+                }
+            }
+            .onStart {
+                emit(
+                    PlatformStuff.mainPrefs.data.map { it.drawerData }
+                        .map { it[Scrobblables.current.value?.userAccount?.type] ?: DrawerData(0) }
+                        .first()
+                )
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue = DrawerData(0)
+            )
 
     init {
         Stuff.globalExceptionFlow.mapLatest { e ->
@@ -100,9 +163,11 @@ class MainViewModel : ViewModel() {
         }.launchIn(viewModelScope)
     }
 
-    fun initializeCurrentUser(user: UserCached) {
-        if (_currentUser.value == null)
-            _currentUser.value = user
+    // pass null to load self user
+    fun loadOtherUserDrawerData(user: UserCached?) {
+        viewModelScope.launch {
+            otherUserTrigger.emit(user)
+        }
     }
 
     fun setCurrentUser(user: UserCached) {

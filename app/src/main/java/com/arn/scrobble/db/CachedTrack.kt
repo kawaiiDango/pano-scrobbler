@@ -16,24 +16,24 @@ import com.arn.scrobble.api.lastfm.Track
 )
 data class CachedTrack(
     @PrimaryKey(autoGenerate = true)
-    var _id: Int = 0,
+    val _id: Int = 0,
 
-    var trackName: String = "",
-    var trackMbid: String = "",
-    var trackUrl: String = "",
+    val trackName: String = "",
+    val trackMbid: String = "",
+    val trackUrl: String = "",
 
-    var artistName: String = "",
-    var artistMbid: String = "",
-    var artistUrl: String = "",
+    val artistName: String = "",
+    val artistMbid: String = "",
+    val artistUrl: String = "",
 
     // optional
-    var durationSecs: Int = -1,
-    var userPlayCount: Int = -1,
+    val durationSecs: Int = -1,
+    val userPlayCount: Int = -1,
 
     @ColumnInfo(defaultValue = "-1")
-    var userPlayCountDirty: Int = -1,
-    var isLoved: Boolean = false,
-    var lastPlayed: Long = -1,
+    val userPlayCountDirty: Int = -1,
+    val isLoved: Boolean = false,
+    val lastPlayed: Long = -1,
 ) {
     val plays get() = if (userPlayCountDirty != -1) userPlayCountDirty else userPlayCount
 

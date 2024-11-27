@@ -14,10 +14,10 @@ import java.util.*
 
 
 class BillingRepository(
-    application: Application,
+    androidApplication: Application,
     clientData: BillingClientData,
 ) : BaseBillingRepository(
-    application,
+    androidApplication,
     clientData
 ),
     PurchasesUpdatedListener, BillingClientStateListener {
@@ -34,7 +34,7 @@ class BillingRepository(
 
 
     override fun initBillingClient() {
-        playStoreBillingClient = BillingClient.newBuilder(application.applicationContext)
+        playStoreBillingClient = BillingClient.newBuilder(androidApplication as Application)
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
             ) // required or app will crash
@@ -172,8 +172,7 @@ class BillingRepository(
             data,
             s,
             clientData.publicKeyBase64,
-        ) &&
-                Security.signature(application, clientData.apkSignature) != null
+        )
     }
 
 
@@ -235,7 +234,7 @@ class BillingRepository(
 
 
     private fun fetchProductDetails(
-        productId: String
+        productId: String,
     ) {
         val queryProductDetailsParams = QueryProductDetailsParams.newBuilder()
             .setProductList(
@@ -277,7 +276,7 @@ class BillingRepository(
      * launch the Google Play Billing flow. The response to this call is returned in
      * [onPurchasesUpdated]
      */
-    override fun launchPlayBillingFlow(activity: Activity) {
+    override fun launchPlayBillingFlow(activity: Any) {
         findProProduct()?.let { productDetails ->
             val flowParams = BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(
@@ -289,7 +288,7 @@ class BillingRepository(
                 )
                 .build()
 
-            playStoreBillingClient.launchBillingFlow(activity, flowParams)
+            playStoreBillingClient.launchBillingFlow(activity as Activity, flowParams)
         }
     }
 
@@ -308,7 +307,7 @@ class BillingRepository(
      */
     override fun onPurchasesUpdated(
         billingResult: BillingResult,
-        purchases: MutableList<Purchase>?
+        purchases: MutableList<Purchase>?,
     ) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {

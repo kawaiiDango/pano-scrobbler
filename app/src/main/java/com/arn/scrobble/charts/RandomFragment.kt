@@ -42,7 +42,7 @@ import kotlin.random.Random
  */
 class RandomFragment : ChartsPeriodFragment() {
 
-    override val viewModel by viewModels<RandomVM>()
+    override val viewModel by viewModels<RandomVMOld>()
     private var _binding: ContentRandomBinding? = null
     private val binding get() = _binding!!
 
@@ -53,7 +53,7 @@ class RandomFragment : ChartsPeriodFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         setupAxisTransitions(MaterialSharedAxis.X)
 
@@ -73,10 +73,10 @@ class RandomFragment : ChartsPeriodFragment() {
 
         postInit()
 
-        if (!activityViewModel.currentUser.isSelf) {
+        if (!activityViewModel.currentUserOld.isSelf) {
             UiUtils.loadSmallUserPic(
                 requireContext(),
-                activityViewModel.currentUser,
+                activityViewModel.currentUserOld,
                 activityViewModel.drawerData.value,
             ) {
                 binding.randomType.iconTint = null
@@ -136,7 +136,7 @@ class RandomFragment : ChartsPeriodFragment() {
                 }
                 binding.randomType.text = getString(stringRes) + " ▾"
 
-                if (activityViewModel.currentUser.isSelf)
+                if (activityViewModel.currentUserOld.isSelf)
                     binding.randomType.setIconResource(iconRes)
 
                 if (viewModel.error.value == null) {
@@ -170,7 +170,7 @@ class RandomFragment : ChartsPeriodFragment() {
         } else {
             viewModel.setInput(
                 MusicEntryLoaderInput(
-                    user = activityViewModel.currentUser,
+                    user = activityViewModel.currentUserOld,
                     timePeriod = null,
                     type = type,
                     cacheBuster = if (force)

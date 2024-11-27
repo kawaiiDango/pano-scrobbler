@@ -5,12 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.net.toUri
 import com.arn.scrobble.PlatformStuff
 import com.arn.scrobble.R
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.MainDialogActivity
+import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.serializableType
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
@@ -28,7 +33,12 @@ object ChartsListUtils {
         return headerView
     }
 
-    fun createMusicItem(tab: Int, idx: Int, item: ChartsWidgetListItem): RemoteViews {
+    fun createMusicItem(
+        tab: Int,
+        idx: Int,
+        item: ChartsWidgetListItem,
+        user: UserCached,
+    ): RemoteViews {
         val rv = RemoteViews(PlatformStuff.application.packageName, R.layout.appwidget_charts_item)
         rv.setTextViewText(
             R.id.appwidget_charts_serial, (idx + 1).format() + "."
@@ -52,25 +62,51 @@ object ChartsListUtils {
         )
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
-        val navArgs = Bundle()
+
+        var deepLinkUri: String? = null
+
         when (tab) {
             Stuff.TYPE_ARTISTS -> {
-                navArgs.putData(Artist(item.title))
+                val artist = Artist(item.title)
+
+                deepLinkUri =
+                    Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
+                            serializableType<UserCached>().serializeAsValue(user) + "?" +
+                            PanoRoute.MusicEntryInfo::artist.name + "=" +
+                            serializableType<Artist>().serializeAsValue(artist)
             }
 
             Stuff.TYPE_ALBUMS -> {
-                if (item.subtitle != null)
-                    navArgs.putData(Album(item.title, Artist(item.subtitle)))
+                if (item.subtitle != null) {
+                    val album = Album(item.title, Artist(item.subtitle))
+
+                    deepLinkUri =
+                        Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
+                                serializableType<UserCached>().serializeAsValue(user) + "?" +
+                                PanoRoute.MusicEntryInfo::album.name + "=" +
+                                serializableType<Album>().serializeAsValue(album)
+                }
             }
 
             Stuff.TYPE_TRACKS -> {
-                if (item.subtitle != null)
-                    navArgs.putData(Track(item.title, null, Artist(item.subtitle)))
+                if (item.subtitle != null) {
+                    val track = Track(item.title, null, Artist(item.subtitle))
+
+                    deepLinkUri =
+                        Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
+                                serializableType<UserCached>().serializeAsValue(user) + "?" +
+                                PanoRoute.MusicEntryInfo::track.name + "=" + serializableType<Track>().serializeAsValue(
+                            track
+                        )
+                }
             }
         }
-        val fillInIntent = Intent().putExtra(MainDialogActivity.ARG_NAV_ARGS, navArgs)
 
-        rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
+        if (deepLinkUri != null) {
+            val fillInIntent = Intent().setData(deepLinkUri.toUri())
+            rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
+        }
+
         return rv
     }
 

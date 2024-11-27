@@ -42,7 +42,7 @@ interface CachedArtistsDao {
         fun CachedArtistsDao.deltaUpdate(
             artist: CachedArtist,
             deltaCount: Int,
-            dirty: DirtyUpdate = DirtyUpdate.CLEAN
+            dirty: DirtyUpdate = DirtyUpdate.CLEAN,
         ) {
             val foundArtist = findExact(artist.artistName) ?: artist
 
@@ -56,26 +56,35 @@ interface CachedArtistsDao {
                             + deltaCount
                     ).coerceAtLeast(0)
 
+            val newUserPlayCountDirty: Int
+            val newUserPlayCount: Int
             when (dirty) {
                 DirtyUpdate.BOTH -> {
-                    foundArtist.userPlayCountDirty = userPlayCount
-                    foundArtist.userPlayCount = userPlayCountDirty
+                    newUserPlayCountDirty = userPlayCount
+                    newUserPlayCount = userPlayCountDirty
                 }
 
                 DirtyUpdate.DIRTY -> {
-                    foundArtist.userPlayCountDirty = userPlayCountDirty
+                    newUserPlayCountDirty = userPlayCountDirty
+                    newUserPlayCount = userPlayCount
                 }
 
                 DirtyUpdate.DIRTY_ABSOLUTE -> {
-                    foundArtist.userPlayCountDirty = artist.userPlayCount
+                    newUserPlayCountDirty = artist.userPlayCount
+                    newUserPlayCount = userPlayCount
                 }
 
                 DirtyUpdate.CLEAN -> {
-                    foundArtist.userPlayCount = userPlayCount
-                    foundArtist.userPlayCountDirty = -1
+                    newUserPlayCount = userPlayCount
+                    newUserPlayCountDirty = -1
                 }
             }
-            insert(listOf(foundArtist))
+
+            val newArtist = foundArtist.copy(
+                userPlayCount = newUserPlayCount,
+                userPlayCountDirty = newUserPlayCountDirty
+            )
+            insert(listOf(newArtist))
         }
 
     }

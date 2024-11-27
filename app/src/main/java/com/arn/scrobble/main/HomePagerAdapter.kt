@@ -4,7 +4,6 @@ package com.arn.scrobble.main
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.charts.ChartsOverviewFragment
-import com.arn.scrobble.friends.FriendsFragment
 import com.arn.scrobble.recents.ScrobblesFragment
 import com.arn.scrobble.recents.ScrobblesFragmentArgs
 
@@ -13,18 +12,19 @@ class HomePagerAdapter(fragment: BasePagerFragment, accountType: AccountType) :
     override val tabMetadata = when (accountType) {
         AccountType.LASTFM,
         AccountType.LISTENBRAINZ,
-        AccountType.CUSTOM_LISTENBRAINZ ->
+        AccountType.CUSTOM_LISTENBRAINZ,
+            ->
             listOf(
                 TabMetadata(R.string.scrobbles, R.drawable.vd_history) {
                     ScrobblesFragment()
                         .apply { arguments = ScrobblesFragmentArgs().toBundle() }
                 },
-                TabMetadata(R.string.following, R.drawable.vd_friends) { FriendsFragment() },
                 TabMetadata(R.string.charts, R.drawable.vd_charts) { ChartsOverviewFragment() },
             )
 
         AccountType.LIBREFM,
-        AccountType.GNUFM -> listOf(
+        AccountType.GNUFM,
+            -> listOf(
             TabMetadata(R.string.scrobbles, R.drawable.vd_history) {
                 ScrobblesFragment()
                     .apply { arguments = ScrobblesFragmentArgs().toBundle() }
@@ -34,7 +34,8 @@ class HomePagerAdapter(fragment: BasePagerFragment, accountType: AccountType) :
 
         AccountType.MALOJA,
         AccountType.PLEROMA,
-        AccountType.FILE -> listOf(
+        AccountType.FILE,
+            -> listOf(
             TabMetadata(R.string.scrobbles, R.drawable.vd_history) {
                 val args = ScrobblesFragmentArgs(
                     showChips = false,

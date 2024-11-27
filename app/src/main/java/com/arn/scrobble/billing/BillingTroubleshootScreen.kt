@@ -14,12 +14,12 @@ import com.arn.scrobble.R
 @Composable
 fun BillingTroubleshootScreen(
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
     ) {
-        val text = if (ExtrasConsts.isFossBuild) {
+        val text = if (ExtrasConsts.isNonPlayBuild) {
             stringResource(id = R.string.billing_troubleshoot_github, 6, "November 2024")
         } else {
             stringResource(id = R.string.billing_troubleshoot)

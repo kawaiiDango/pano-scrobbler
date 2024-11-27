@@ -42,7 +42,7 @@ interface CachedAlbumsDao {
         fun CachedAlbumsDao.deltaUpdate(
             album: CachedAlbum,
             deltaCount: Int,
-            dirty: DirtyUpdate = DirtyUpdate.CLEAN
+            dirty: DirtyUpdate = DirtyUpdate.CLEAN,
         ) {
             val foundAlbum = findExact(album.artistName, album.albumName) ?: album
 
@@ -56,30 +56,36 @@ interface CachedAlbumsDao {
                             + deltaCount
                     ).coerceAtLeast(0)
 
+            val newUserPlayCountDirty: Int
+            val newUserPlayCount: Int
             when (dirty) {
                 DirtyUpdate.BOTH -> {
-                    foundAlbum.userPlayCountDirty = userPlayCount
-                    foundAlbum.userPlayCount = userPlayCountDirty
+                    newUserPlayCountDirty = userPlayCount
+                    newUserPlayCount = userPlayCountDirty
                 }
 
                 DirtyUpdate.DIRTY -> {
-                    foundAlbum.userPlayCountDirty = userPlayCountDirty
+                    newUserPlayCountDirty = userPlayCountDirty
+                    newUserPlayCount = userPlayCount
                 }
 
                 DirtyUpdate.DIRTY_ABSOLUTE -> {
-                    foundAlbum.userPlayCountDirty = album.userPlayCount
+                    newUserPlayCountDirty = album.userPlayCount
+                    newUserPlayCount = userPlayCount
                 }
 
                 DirtyUpdate.CLEAN -> {
-                    foundAlbum.userPlayCount = userPlayCount
-                    foundAlbum.userPlayCountDirty = -1
+                    newUserPlayCount = userPlayCount
+                    newUserPlayCountDirty = -1
                 }
             }
 
-            if (foundAlbum.largeImageUrl == null) {
-                foundAlbum.largeImageUrl = album.largeImageUrl
-            }
-            insert(listOf(foundAlbum))
+            val newAlbum = foundAlbum.copy(
+                userPlayCount = newUserPlayCount,
+                userPlayCountDirty = newUserPlayCountDirty,
+                largeImageUrl = foundAlbum.largeImageUrl ?: album.largeImageUrl
+            )
+            insert(listOf(newAlbum))
         }
     }
 }

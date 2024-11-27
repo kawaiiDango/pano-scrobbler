@@ -14,6 +14,7 @@ class StringOrIntSerializer : KSerializer<Int> {
     override val descriptor = Int.serializer().descriptor
 
     override fun serialize(encoder: Encoder, value: Int) {
+        encoder.encodeInt(value)
     }
 
     override fun deserialize(decoder: Decoder): Int {
@@ -30,6 +31,7 @@ class StringSecsToMsSerializer : KSerializer<Long> {
     override val descriptor = Int.serializer().descriptor
 
     override fun serialize(encoder: Encoder, value: Long) {
+        encoder.encodeLong(value)
     }
 
     override fun deserialize(decoder: Decoder): Long {
@@ -46,6 +48,7 @@ class StringOrBoolSerializer : KSerializer<Boolean> {
     override val descriptor = Int.serializer().descriptor
 
     override fun serialize(encoder: Encoder, value: Boolean) {
+        encoder.encodeBoolean(value)
     }
 
     override fun deserialize(decoder: Decoder): Boolean {
@@ -66,6 +69,7 @@ class StringOrFloatSerializer : KSerializer<Float> {
     override val descriptor = Float.serializer().descriptor
 
     override fun serialize(encoder: Encoder, value: Float) {
+        encoder.encodeFloat(value)
     }
 
     override fun deserialize(decoder: Decoder): Float {

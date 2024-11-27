@@ -1,5 +1,5 @@
 package com.arn.scrobble
 
 object ExtrasConsts {
-    const val isFossBuild = false
+    const val isNonPlayBuild = false
 }

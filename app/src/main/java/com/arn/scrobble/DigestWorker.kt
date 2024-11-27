@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.content.Context
+import android.net.Uri
 import android.text.Html
 import androidx.core.app.NotificationCompat
 import androidx.core.os.bundleOf
@@ -19,8 +20,12 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Period
 import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
 import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.main.MainDialogActivity
+import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.serializableType
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
@@ -61,7 +66,8 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
             }
             val period = when (workerParameters.inputData.getString(Stuff.ARG_ACTION)) {
                 DAILY,
-                WEEKLY -> Period.WEEK
+                WEEKLY,
+                    -> Period.WEEK
 
                 MONTHLY -> Period.MONTH
                 else -> throw IllegalArgumentException("Unknown action")
@@ -150,20 +156,19 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
             else
                 Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
-            val launchPi = NavDeepLinkBuilder(applicationContext)
-                .setComponentName(MainActivityOld::class.java)
-                .setGraph(R.navigation.nav_graph)
-                .setDestination(R.id.myHomePagerFragment)
-                .setArguments(bundleOf(Stuff.ARG_TAB to 2))
-                .createPendingIntent()
-
-            val collageArgs = bundleOf(Stuff.ARG_TYPE to Stuff.TYPE_ALL)
-                .putSingle(timePeriod)
-
-            val collagePi = MainDialogActivity.createDestinationPendingIntent(
-                R.id.collageGeneratorFragment,
-                collageArgs
+            val route = PanoRoute.CollageGenerator(
+                collageType = Stuff.TYPE_ALL,
+                timePeriod = timePeriod,
+                user = Scrobblables.currentScrobblableUser ?: return@supervisorScope
             )
+
+            val deepLinkUri =
+                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.CollageGenerator::class.simpleName + "/" +
+                        route.collageType + "/" + route.timePeriod + "/" +
+                        serializableType<UserCached>().serializeAsValue(route.user)
+
+            val launchPi =
+                MainDialogActivity.createDestinationPendingIntent(deepLinkUri)
 
             val nb = NotificationCompat.Builder(applicationContext, channelId)
                 .apply {
@@ -178,7 +183,7 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
                         R.drawable.vd_mosaic,
                         "🖼️",
                         applicationContext.getString(R.string.create_collage),
-                        collagePi
+                        launchPi
                     )
                 )
                 .setContentText(notificationText)
@@ -206,7 +211,7 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
 
         fun schedule(
             context: Context,
-            existingWorkPolicy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE
+            existingWorkPolicy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE,
         ) {
             val workManager = WorkManager.getInstance(context)
 

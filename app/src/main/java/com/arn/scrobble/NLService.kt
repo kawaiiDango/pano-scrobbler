@@ -13,8 +13,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.MediaSessionManager
+import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.SystemClock
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -29,13 +29,18 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.PlayerActions.love
 import com.arn.scrobble.PlayerActions.skip
 import com.arn.scrobble.PlayerActions.unlove
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.friends.UserCached
 import com.arn.scrobble.main.MainActivityOld
 import com.arn.scrobble.main.MainDialogActivity
+import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.serializableType
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.utils.LocaleUtils.getStringInDeviceLocale
 import com.arn.scrobble.utils.LocaleUtils.setLocaleCompat
@@ -45,7 +50,6 @@ import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.utils.Stuff.getSingle
 import com.arn.scrobble.utils.Stuff.isChannelEnabled
-import com.arn.scrobble.utils.Stuff.putData
 import com.arn.scrobble.utils.Stuff.putSingle
 import com.arn.scrobble.utils.UiUtils.toast
 import kotlinx.coroutines.CoroutineScope
@@ -53,6 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -114,7 +119,7 @@ class NLService : NotificationListenerService() {
             }
 
             coroutineScope.launch {
-                mainPrefs.data.map { it.notificationsOnLockscreen }.collect {
+                mainPrefs.data.map { it.notificationsOnLockscreen }.collectLatest {
                     notificationsOnLockscreen = it
                 }
             }
@@ -328,7 +333,7 @@ class NLService : NotificationListenerService() {
     override fun onNotificationRemoved(
         sbn: StatusBarNotification?,
         rankingMap: RankingMap?,
-        reason: Int
+        reason: Int,
     ) { //only for >26
         if (!shouldCheckNoti(sbn) ||
             !(reason == REASON_APP_CANCEL || reason == REASON_APP_CANCEL_ALL || reason == REASON_TIMEOUT || reason == REASON_ERROR)
@@ -439,10 +444,6 @@ class NLService : NotificationListenerService() {
             )
         }
 
-        val infoArgs = trackInfo.toTrack().let { Bundle().putData(it) }
-        val launchPi =
-            MainDialogActivity.createDestinationPendingIntent(R.id.infoFragment, infoArgs)
-
         i = Intent(iCANCEL)
             .setPackage(packageName)
             .putExtra(B_HASH, trackInfo.hash)
@@ -459,27 +460,6 @@ class NLService : NotificationListenerService() {
             Stuff.updateCurrentOrImmutable
         )
 
-        val editArgs = Bundle().apply {
-            putParcelable("data", trackInfo.toScrobbleData())
-            putInt("hash", trackInfo.hash)
-        }
-
-        val editPi =
-            MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
-
-        val editAction = Stuff.getNotificationAction(
-            R.drawable.vd_edit,
-            "✏️",
-            getString(R.string.edit),
-            editPi
-        )
-
-        val unscrobbleAction = Stuff.getNotificationAction(
-            R.drawable.vd_remove,
-            "⛔️",
-            getString(R.string.unscrobble),
-            cancelToastIntent
-        )
 
         val state =
             if (nowPlaying)
@@ -493,10 +473,30 @@ class NLService : NotificationListenerService() {
             .setAutoCancel(false)
             .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
             .setSmallIcon(R.drawable.vd_noti)
-            .setContentIntent(launchPi)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setStyleCompat(style)
             .addAction(loveAction)
+            .apply {
+                val user = Scrobblables.currentScrobblableUser
+                if (user != null) {
+                    val route = PanoRoute.MusicEntryInfo(
+                        track = trackInfo.toTrack(),
+                        pkgName = null,
+                        user = user
+                    )
+
+                    val deepLinkUri =
+                        Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
+                                serializableType<UserCached>().serializeAsValue(route.user) + "?" +
+                                route::track.name + "=" + serializableType<Track>().serializeAsValue(
+                            route.track!!
+                        )
+                    val launchPi =
+                        MainDialogActivity.createDestinationPendingIntent(deepLinkUri)
+
+                    setContentIntent(launchPi)
+                }
+            }
 
         if (trackInfo.userPlayCount > 0)
             nb.setContentTitle(
@@ -518,6 +518,33 @@ class NLService : NotificationListenerService() {
                 .setContentText(trackInfo.artist)
 
         if (nowPlaying) {
+            val editRoute = PanoRoute.EditScrobble(
+                scrobbleData = trackInfo.toScrobbleData(),
+                hash = trackInfo.hash
+            )
+
+            val editDeepLinkUri =
+                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.EditScrobble::class.simpleName + "/" +
+                        serializableType<ScrobbleData>().serializeAsValue(editRoute.scrobbleData) +
+                        "?" + editRoute::hash.name + "=" + editRoute.hash
+
+            val editPi =
+                MainDialogActivity.createDestinationPendingIntent(editDeepLinkUri)
+
+            val editAction = Stuff.getNotificationAction(
+                R.drawable.vd_edit,
+                "✏️",
+                getString(R.string.edit),
+                editPi
+            )
+
+            val unscrobbleAction = Stuff.getNotificationAction(
+                R.drawable.vd_remove,
+                "⛔️",
+                getString(R.string.unscrobble),
+                cancelToastIntent
+            )
+
             nb.addAction(editAction)
             nb.addAction(unscrobbleAction)
             if (resources.getBoolean(R.bool.is_rtl))
@@ -539,13 +566,18 @@ class NLService : NotificationListenerService() {
     }
 
     private fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val editArgs = Bundle().apply {
-            putParcelable("data", trackInfo.toScrobbleData())
-            putInt("hash", trackInfo.hash)
-        }
+        val editRoute = PanoRoute.EditScrobble(
+            scrobbleData = trackInfo.toScrobbleData(),
+            hash = trackInfo.hash
+        )
+
+        val editDeepLinkUri =
+            Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.EditScrobble::class.simpleName + "/" +
+                    serializableType<ScrobbleData>().serializeAsValue(editRoute.scrobbleData) +
+                    "?" + editRoute::hash.name + "=" + editRoute.hash
 
         val editPi =
-            MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
+            MainDialogActivity.createDestinationPendingIntent(editDeepLinkUri)
 
         val subtitleSpanned = if (scrobbleError.description != null)
             Html.fromHtml(scrobbleError.description)
@@ -614,16 +646,20 @@ class NLService : NotificationListenerService() {
             skip = true,
         )
 
-        val args = Bundle().apply {
-            putSingle(blockedMetadata)
-            putString(B_IGNORED_ARTIST, trackInfo.origArtist)
-            putInt(B_HASH, hash)
-        }
-
-        val blockPi = MainDialogActivity.createDestinationPendingIntent(
-            R.id.blockedMetadataAddDialogFragment,
-            args
+        val route = PanoRoute.BlockedMetadataAdd(
+            blockedMetadata = blockedMetadata,
+            ignoredArtist = trackInfo.origArtist,
+            hash = trackInfo.hash
         )
+
+        val deepLinkUri =
+            Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.BlockedMetadataAdd::class.simpleName + "?" +
+                    route::blockedMetadata.name + "=" +
+                    serializableType<BlockedMetadata>().serializeAsValue(route.blockedMetadata) +
+                    "&" + route::ignoredArtist.name + "=" + Uri.encode(route.ignoredArtist) + "&hash=" + route.hash
+
+        val blockPi =
+            MainDialogActivity.createDestinationPendingIntent(deepLinkUri)
 
         val nb = buildNotification()
             .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)

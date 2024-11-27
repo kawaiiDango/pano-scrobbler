@@ -188,8 +188,11 @@ private fun FixItContent(
     }
 }
 
-@Keep
 @Composable
-fun FixItScreen() {
-    BottomSheetDialogParent { FixItContent(it) }
+fun FixItScreen(
+    onDismiss: () -> Unit
+) {
+    BottomSheetDialogParent(
+        onDismiss = onDismiss
+    ) { FixItContent(it) }
 }

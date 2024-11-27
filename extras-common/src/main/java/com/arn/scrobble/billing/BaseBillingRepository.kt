@@ -1,12 +1,8 @@
 package com.arn.scrobble.billing
 
-import android.app.Activity
-import android.app.Application
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,21 +13,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
-data class BillingClientData(
-    val proProductId: String,
-    val appName: String,
-    val publicKeyBase64: String,
-    val apkSignature: String,
-    val httpClient: HttpClient,
-    val serverUrl: String,
-    val lastcheckTime: Flow<Long>,
-    val setLastcheckTime: suspend (Long) -> Unit,
-    val receipt: Flow<Pair<String?, String?>>,
-    val setReceipt: suspend (String?, String?) -> Unit,
-)
 
 abstract class BaseBillingRepository(
-    protected val application: Application,
+    protected val androidApplication: Any?,
     protected val clientData: BillingClientData,
 ) {
     private var reconnectCount = 0
@@ -74,7 +58,7 @@ abstract class BaseBillingRepository(
     abstract suspend fun queryPurchasesAsync()
     abstract suspend fun checkAndStoreLicense(receipt: String)
     protected abstract fun verifyPurchase(data: String, signature: String?): Boolean
-    abstract fun launchPlayBillingFlow(activity: Activity)
+    abstract fun launchPlayBillingFlow(activity: Any)
 
     @Synchronized
     protected fun retryBillingConnectionWithExponentialBackoff() {

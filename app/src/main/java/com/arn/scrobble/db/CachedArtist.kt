@@ -15,15 +15,15 @@ import com.arn.scrobble.api.lastfm.Track
 )
 data class CachedArtist(
     @PrimaryKey(autoGenerate = true)
-    var _id: Int = 0,
+    val _id: Int = 0,
 
-    var artistName: String = "",
-    var artistMbid: String = "",
-    var artistUrl: String = "",
-    var userPlayCount: Int = -1,
+    val artistName: String = "",
+    val artistMbid: String = "",
+    val artistUrl: String = "",
+    val userPlayCount: Int = -1,
 
     @ColumnInfo(defaultValue = "-1")
-    var userPlayCountDirty: Int = -1,
+    val userPlayCountDirty: Int = -1,
 ) {
     companion object {
         fun CachedArtist.toArtist() = Artist(

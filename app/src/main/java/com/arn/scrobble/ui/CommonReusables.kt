@@ -18,38 +18,40 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,31 +62,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.arn.scrobble.R
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.pref.EditsMode
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
-
-@Composable
-fun ExtraBottomSpace(modifier: Modifier = Modifier) {
-    Spacer(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(96.dp)
-    )
-}
 
 @Composable
 fun AlertDialogOk(
@@ -131,47 +130,18 @@ fun OutlinedToggleButtons(
     items: List<String>,
     selectedIndex: Int,
     onSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy((-1).dp),
-        modifier = modifier,
-    ) {
+    SingleChoiceSegmentedButtonRow(modifier = modifier) {
         items.forEachIndexed { index, item ->
-            OutlinedButton(
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = items.size),
+                selected = selectedIndex == index,
                 onClick = {
                     if (selectedIndex != index) {
                         onSelected(index)
                     }
                 },
-                shape = when (index) {
-                    items.size - 1 -> {
-                        CircleShape.copy(
-                            topStart = ZeroCornerSize,
-                            bottomStart = ZeroCornerSize
-                        )
-                    }
-
-                    0 -> {
-                        CircleShape.copy(
-                            topEnd = ZeroCornerSize,
-                            bottomEnd = ZeroCornerSize
-                        )
-                    }
-
-                    else -> {
-                        CircleShape.copy(ZeroCornerSize)
-                    }
-                },
-                colors = if (selectedIndex == index) {
-                    ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    ButtonDefaults.outlinedButtonColors()
-                }
             ) {
                 Text(text = item)
             }
@@ -194,7 +164,7 @@ fun <E : Enum<*>> RadioButtonGroup(
     enumToTexts: Map<E, String>,
     selected: E?,
     onSelected: (E) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         enumToTexts.forEach { (enu, text) ->
@@ -298,7 +268,7 @@ fun SearchBox(
     searchTerm: String,
     label: String = stringResource(R.string.search),
     onSearchTermChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         value = searchTerm,
@@ -332,7 +302,7 @@ fun <T> ButtonWithSpinner(
     itemToTexts: Map<T, String>,
     selected: T,
     onItemSelected: (T) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var dropDownShown by remember { mutableStateOf(false) }
 
@@ -369,58 +339,52 @@ fun <T> ButtonWithSpinner(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun <T> ButtonWithDropdown(
     text: String,
     itemToTexts: Map<T, String>,
     onMainButtonClick: () -> Unit,
     onItemClick: (T) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var dropDownShown by remember { mutableStateOf(false) }
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy((-5).dp),
-        modifier = modifier
-    ) {
-        OutlinedButton(
-            onClick = onMainButtonClick,
-            shape = CircleShape.copy(
-                topEnd = ZeroCornerSize,
-                bottomEnd = ZeroCornerSize
-            ),
-        ) {
-            Text(text)
-        }
-
-        OutlinedIconButton(
-            onClick = { dropDownShown = true },
-            border = ButtonDefaults.outlinedButtonBorder(true),
-            shape = CircleShape.copy(
-                topStart = ZeroCornerSize,
-                bottomStart = ZeroCornerSize
-            ),
-        ) {
-            Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
-
-            DropdownMenu(
-                expanded = dropDownShown,
-                onDismissRequest = { dropDownShown = false }
+    SplitButtonLayout(
+        leadingButton = {
+            SplitButtonDefaults.OutlinedLeadingButton(
+                onClick = onMainButtonClick,
             ) {
-                itemToTexts.forEach { (item, text) ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onItemClick(item)
-                            dropDownShown = false
-                        },
-                        text = {
-                            Text(text)
-                        }
-                    )
+                Text(text)
+            }
+        },
+        trailingButton = {
+            SplitButtonDefaults.OutlinedTrailingButton(
+                checked = dropDownShown,
+                onCheckedChange = { dropDownShown = it },
+            ) {
+                Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+
+                DropdownMenu(
+                    expanded = dropDownShown,
+                    onDismissRequest = { dropDownShown = false }
+                ) {
+                    itemToTexts.forEach { (item, text) ->
+                        DropdownMenuItem(
+                            onClick = {
+                                onItemClick(item)
+                                dropDownShown = false
+                            },
+                            text = {
+                                Text(text)
+                            }
+                        )
+                    }
                 }
             }
-        }
-    }
+        },
+        modifier = modifier
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -431,25 +395,27 @@ fun IconButtonWithTooltip(
     contentDescription: String,
     enabled: Boolean = true,
     tint: Color = MaterialTheme.colorScheme.secondary,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-        tooltip = { PlainTooltip { Text(contentDescription) } },
-        state = rememberTooltipState(),
+    // todo find out why this freezes
+//    TooltipBox(
+//        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+//        tooltip = { PlainTooltip { Text(contentDescription) } },
+//        state = rememberTooltipState(),
+//        modifier = modifier,
+//    ) {
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
         modifier = modifier,
     ) {
-        IconButton(
-            onClick = onClick,
-            enabled = enabled,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDescription,
-                tint = tint
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = tint
+        )
     }
+//    }
 }
 
 @Composable
@@ -457,7 +423,7 @@ fun ButtonWithIcon(
     onClick: () -> Unit,
     icon: ImageVector,
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -526,7 +492,7 @@ private fun RadioButtonGroupPreview() {
 
 @Composable
 fun ScreenParent(
-    content: @Composable (modifier: Modifier) -> Unit
+    content: @Composable (modifier: Modifier) -> Unit,
 ) {
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
     content(
@@ -541,71 +507,60 @@ fun ScreenParent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetDialogParent(
+    onDismiss: () -> Unit,
     padding: Boolean = true,
-    content: @Composable (modifier: Modifier) -> Unit
+    content: @Composable (modifier: Modifier) -> Unit,
 ) {
-//    val fragment = LocalFragment.current as DialogFragment
     val sheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = Stuff.isTv || UiUtils.isTabletUi)
-    var showSheet by remember { mutableStateOf(true) }
-//    val nestedScrollConnection = rememberNestedScrollInteropConnection()
 
-    if (showSheet) {
-//        AppTheme {
-        ModalBottomSheet(
-            onDismissRequest = {
-                showSheet = false
-//                    fragment.dismiss()
-            },
-//                dragHandle = null,
-            sheetState = sheetState,
-        ) {
-            content(
-                Modifier
-                    .fillMaxWidth()
-//                        .nestedScroll(nestedScrollConnection)
-                    .then(
-                        if (padding)
-                            Modifier.padding(horizontal = 24.dp)
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = if (!Stuff.isTv) {
+            { BottomSheetDefaults.DragHandle() }
+        } else null,
+        sheetGesturesEnabled = !Stuff.isTv,
+        sheetState = sheetState,
+    ) {
+        content(
+            Modifier
+                .fillMaxWidth()
+                .then(
+                    if (padding)
+                        if (Stuff.isTv)
+                            Modifier.padding(24.dp)
                         else
-                            Modifier
-                    )
-            )
-        }
-//        }
+                            Modifier.padding(horizontal = 24.dp)
+                    else
+                        Modifier
+                )
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialogParent(
-    content: @Composable (modifier: Modifier) -> Unit
+    onDismiss: () -> Unit,
+    content: @Composable (modifier: Modifier) -> Unit,
 ) {
-    var showDialog by remember { mutableStateOf(true) }
-
-    if (showDialog) {
-//        AppTheme {
-        BasicAlertDialog(
-            onDismissRequest = {
-                showDialog = false
-            },
-            content = {
-                Surface(
-                    shape = MaterialTheme.shapes.extraLarge,
-                ) {
-                    content(Modifier.padding(24.dp))
-                }
+    BasicAlertDialog(
+        onDismissRequest = onDismiss,
+        content = {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+            ) {
+                content(Modifier.padding(24.dp))
             }
-        )
-//        }
-    }
+        }
+    )
 }
 
 @Composable
 fun EmptyText(
     visible: Boolean,
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
         visible = visible,
@@ -629,7 +584,7 @@ fun EmptyText(
 fun SimpleHeaderItem(
     text: String,
     icon: ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -729,10 +684,110 @@ fun VerifyButton(
 }
 
 @Composable
-fun Modifier.backgroundForShimmer(isShimmer: Boolean): Modifier {
+fun AvatarOrInitials(
+    avatarUrl: String?,
+    avatarInitialLetter: Char?,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    modifier: Modifier = Modifier
+        .padding(8.dp)
+        .size(24.dp)
+        .clip(CircleShape),
+) {
+    if (!avatarUrl.isNullOrEmpty()) {
+        AsyncImage(
+            model = avatarUrl,
+            contentDescription = stringResource(id = R.string.profile_pic),
+            modifier = modifier,
+        )
+    } else if (avatarInitialLetter != null) {
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.primaryContainer)
+        ) {
+            Text(
+                text = avatarInitialLetter.uppercase(),
+                style = textStyle,
+                softWrap = false,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+        }
+    }
+}
+
+@Composable
+fun ListLoadError(
+    throwable: Throwable,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val genericErrorText = stringResource(R.string.network_error)
+    val errorText = remember(throwable) {
+        if (throwable is ApiException)
+            genericErrorText + ": " + throwable.code
+        else
+            throwable.localizedMessage!!
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.ErrorOutline,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+        )
+        Text(
+            text = errorText,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.error,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        )
+        IconButton(
+            onClick = onRetry,
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Refresh,
+                contentDescription = stringResource(id = R.string.retry)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AvatarOrInitialsPreview() {
+    MaterialTheme {
+        AvatarOrInitials(
+            avatarUrl = null,
+            avatarInitialLetter = 'A',
+            textStyle = MaterialTheme.typography.displayLarge,
+            modifier = Modifier
+                .padding(8.dp)
+                .size(100.dp)
+                .clip(CircleShape)
+        )
+    }
+}
+
+@Composable
+fun Modifier.backgroundForShimmer(
+    isShimmer: Boolean,
+    shape: Shape = MaterialTheme.shapes.medium,
+): Modifier {
     if (!isShimmer) return this
 
-    return clip(MaterialTheme.shapes.medium)
+    return clip(shape)
         .background(Color.Gray.copy(alpha = 0.3f))
 }
 
@@ -752,7 +807,8 @@ fun verticalOverscanPadding(): Dp {
     val navigationType = LocalNavigationType.current
     return when (navigationType) {
         PanoNavigationType.BOTTOM_NAVIGATION,
-        PanoNavigationType.NAVIGATION_RAIL -> 0.dp
+        PanoNavigationType.NAVIGATION_RAIL,
+            -> 0.dp
 
         PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 27.dp
     }

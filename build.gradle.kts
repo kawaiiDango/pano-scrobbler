@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.detekt)
+    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
 }
 
 detekt {

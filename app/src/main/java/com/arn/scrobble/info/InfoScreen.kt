@@ -75,6 +75,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.error
@@ -91,9 +92,9 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.EntriesHorizontal
 import com.arn.scrobble.ui.IconButtonWithTooltip
-import com.arn.scrobble.ui.MusicEntryLoaderInput
 import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.backgroundForShimmer
+import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import com.valentinilk.shimmer.shimmer
@@ -120,7 +121,8 @@ private fun InfoContent(
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
     viewModel: InfoVM = viewModel(),
-    modifier: Modifier = Modifier
+    miscVM: InfoMiscVM = viewModel(),
+    modifier: Modifier = Modifier,
 ) {
     val infoMap by viewModel.infoMap.collectAsStateWithLifecycle()
     val infoLoaded by viewModel.infoLoaded.collectAsStateWithLifecycle()
@@ -140,18 +142,20 @@ private fun InfoContent(
 
     val trackWithFeatures by viewModel.spotifyTrackWithFeatures.collectAsStateWithLifecycle()
     val trackFeaturesLoaded by viewModel.trackFeaturesLoaded.collectAsStateWithLifecycle()
-    val similarTracks by viewModel.similarTracksVM.entries.collectAsStateWithLifecycle()
-    val similarTracksLoaded by viewModel.similarTracksVM.hasLoaded.collectAsStateWithLifecycle()
+    val similarTracks = miscVM.similarTracks.collectAsLazyPagingItems()
 
-    val artistTopTracks by viewModel.artistTopTracksVM.entries.collectAsStateWithLifecycle()
-    val artistTopTracksLoaded by viewModel.artistTopTracksVM.hasLoaded.collectAsStateWithLifecycle()
-    val artistTopAlbums by viewModel.artistTopAlbumsVM.entries.collectAsStateWithLifecycle()
-    val artistTopAlbumsLoaded by viewModel.artistTopAlbumsVM.hasLoaded.collectAsStateWithLifecycle()
-    val similarArtists by viewModel.similarArtistsVM.entries.collectAsStateWithLifecycle()
-    val similarArtistsLoaded by viewModel.similarArtistsVM.hasLoaded.collectAsStateWithLifecycle()
-
-    val entriesForShimmer = remember {
-        (0..4).map { Artist(" ", listeners = it) }
+    val artistTopTracks = miscVM.topTracks.collectAsLazyPagingItems()
+    val artistTopAlbums = miscVM.topAlbums.collectAsLazyPagingItems()
+    val similarArtists = miscVM.similarArtists.collectAsLazyPagingItems()
+    val entries = remember(infoMap) {
+        allTypes.mapNotNull { type ->
+            val entry = infoMap?.get(type)
+            if (entry != null) {
+                type to entry
+            } else {
+                null
+            }
+        }
     }
 
     val context = LocalContext.current
@@ -159,7 +163,9 @@ private fun InfoContent(
     val onHorizontalEntryItemClick: (MusicEntry) -> Unit = {
         onNavigate(
             PanoRoute.MusicEntryInfo(
-                musicEntry = it,
+                track = it as? Track,
+                album = it as? Album,
+                artist = it as? Artist,
                 pkgName = pkgName,
                 user = user
             )
@@ -177,25 +183,19 @@ private fun InfoContent(
     }
 
     LaunchedEffect(expandedHeaderType) {
-        val expandedEntry = infoMap?.get(expandedHeaderType) ?: return@LaunchedEffect
-        val input = MusicEntryLoaderInput(
-            user = user,
-            type = -1,
-            entry = expandedEntry,
-            timePeriod = null,
-            page = 1
-        )
-        when (expandedHeaderType) {
-            Stuff.TYPE_TRACKS -> {
+        val expandedEntry = infoMap?.get(expandedHeaderType)
+
+        when (expandedEntry) {
+            is Track -> {
+                miscVM.setTrack(expandedEntry)
                 viewModel.loadTrackFeaturesIfNeeded()
-                viewModel.similarTracksVM.setInput(input.copy(type = Stuff.TYPE_TRACKS))
             }
 
-            Stuff.TYPE_ARTISTS -> {
-                viewModel.artistTopTracksVM.setInput(input.copy(type = Stuff.TYPE_TRACKS))
-                viewModel.artistTopAlbumsVM.setInput(input.copy(type = Stuff.TYPE_ALBUMS))
-                viewModel.similarArtistsVM.setInput(input.copy(type = Stuff.TYPE_ARTISTS))
+            is Artist -> {
+                miscVM.setArtist(expandedEntry)
             }
+
+            else -> Unit
         }
     }
 
@@ -210,215 +210,250 @@ private fun InfoContent(
                     Modifier.shimmer()
             )
     ) {
+        entries.forEachIndexed { index, (type, entry) ->
+            val imgRequest = remember {
+                ImageRequest.Builder(context)
+                    .data(MusicEntryImageReq(entry, fetchAlbumInfoIfMissing = true))
+                    .error(R.drawable.vd_no_image)
+                    .build()
+            }
 
-        allTypes.forEach { type ->
-            infoMap?.get(type)?.let { entry ->
-
-                val imgRequest = remember {
-                    ImageRequest.Builder(context)
-                        .data(MusicEntryImageReq(entry, fetchAlbumInfoIfMissing = true))
-                        .error(R.drawable.vd_no_image)
-                        .build()
-                }
-
-                InfoSimpleHeader(
-                    text = entry.name,
-                    icon = getMusicEntryIcon(type),
-                    onClick = { expandedHeaderType = if (expandedHeaderType == type) -1 else type },
-                    leadingContent = {
-                        AnimatedVisibility(expandedHeaderType != type) {
-                            if (entry is Album || entry is Artist) {
-                                AsyncImage(
-                                    model = imgRequest,
-                                    contentDescription = when (entry) {
-                                        is Album -> stringResource(R.string.album_art)
-                                        is Artist -> stringResource(R.string.artist_image)
-                                        else -> null
-                                    },
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(MaterialTheme.shapes.small)
-                                )
-                            }
-                        }
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = if (expandedHeaderType == type) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
-                            contentDescription = stringResource(if (expandedHeaderType == type) R.string.collapse else R.string.expand),
-                        )
-                    },
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-
-                InfoActionsRow(
-                    entry = entry,
-                    originalEntry = viewModel.originalEntriesMap[type],
-                    pkgName = pkgName,
-                    user = user,
-                    showUserTagsButton = userTags[type] == null,
-                    onUserTagsClick = { viewModel.loadTagsIfNeeded(type) },
-                    isLoved = isLoved,
-                    onLoveClick = if ((entry as? Track)?.userloved != null) {
-                        {
-                            viewModel.setLoved(entry, isLoved != true)
-                            isLoved = isLoved != true
-                        }
-                    } else null,
-                    onNavigate = onNavigate,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-
-                InfoTags(
-                    tags = entry.tags?.tag ?: emptyList(),
-                    userTags = userTags[type],
-                    userTagsHistory = userTagsHistory,
-                    onTagClick = {
-                        onNavigate(
-                            PanoRoute.TagInfo(it)
-                        )
-                    },
-                    onUserTagAdd = {
-                        viewModel.addTag(type, it)
-                    },
-                    onUserTagDelete = {
-                        viewModel.deleteTag(type, it)
-                    },
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-
-                AnimatedVisibility(expandedHeaderType == type) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
+            InfoSimpleHeader(
+                text = entry.name,
+                icon = getMusicEntryIcon(type),
+                onClick = { expandedHeaderType = if (expandedHeaderType == type) -1 else type },
+                leadingContent = {
+                    AnimatedVisibility(expandedHeaderType != type) {
                         if (entry is Album || entry is Artist) {
-                            InfoBigPicture(
-                                entry = entry,
-                                imgRequest = imgRequest,
-                                modifier = Modifier.padding(horizontal = 24.dp)
+                            AsyncImage(
+                                model = imgRequest,
+                                contentDescription = when (entry) {
+                                    is Album -> stringResource(R.string.album_art)
+                                    is Artist -> stringResource(R.string.artist_image)
+                                    else -> null
+                                },
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(MaterialTheme.shapes.small)
                             )
+                        }
+                    }
+                },
+                trailingContent = {
+                    Icon(
+                        imageVector = if (expandedHeaderType == type) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = stringResource(if (expandedHeaderType == type) R.string.collapse else R.string.expand),
+                    )
+                },
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
 
-                            if (entry is Album) {
-                                if (entry.tracks?.track != null) {
-                                    InfoTrackList(
-                                        tracks = entry.tracks.track,
-                                        onTrackClick = {
-                                            onNavigate(
-                                                PanoRoute.MusicEntryInfo(
-                                                    musicEntry = it,
-                                                    pkgName = pkgName,
-                                                    user = user
-                                                )
+            InfoActionsRow(
+                entry = entry,
+                originalEntry = remember { viewModel.originalEntriesMap[type] },
+                pkgName = pkgName,
+                user = user,
+                showUserTagsButton = userTags[type] == null,
+                onUserTagsClick = { viewModel.loadTagsIfNeeded(type) },
+                isLoved = isLoved,
+                onLoveClick = if ((entry as? Track)?.userloved != null) {
+                    {
+                        viewModel.setLoved(entry, isLoved != true)
+                        isLoved = isLoved != true
+                    }
+                } else null,
+                onNavigate = onNavigate,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            InfoTags(
+                tags = entry.tags?.tag ?: emptyList(),
+                userTags = userTags[type],
+                userTagsHistory = userTagsHistory,
+                onTagClick = {
+                    onNavigate(
+                        PanoRoute.TagInfo(it)
+                    )
+                },
+                onUserTagAdd = {
+                    viewModel.addTag(type, it)
+                },
+                onUserTagDelete = {
+                    viewModel.deleteTag(type, it)
+                },
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            AnimatedVisibility(expandedHeaderType == type) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    if (entry is Album || entry is Artist) {
+                        InfoBigPicture(
+                            entry = entry,
+                            imgRequest = imgRequest,
+                            modifier = Modifier.padding(horizontal = 24.dp)
+                        )
+
+                        if (entry is Album) {
+                            if (entry.tracks?.track != null) {
+                                InfoTrackList(
+                                    tracks = entry.tracks.track,
+                                    onTrackClick = {
+                                        onNavigate(
+                                            PanoRoute.MusicEntryInfo(
+                                                track = it,
+                                                pkgName = pkgName,
+                                                user = user
                                             )
-                                        },
-                                    )
-                                }
-                            } else {
-                                EntriesHorizontal(
-                                    title = stringResource(R.string.top_tracks),
-                                    entries = artistTopTracks ?: entriesForShimmer,
-                                    showArtists = false,
-                                    shimmer = !artistTopTracksLoaded,
-                                    headerIcon = Icons.Outlined.MusicNote,
-                                    emptyStringRes = R.string.not_found,
-                                    onHeaderClick = {
-                                        // todo implement
-//                                        val args = Bundle().putData(entry)
-//                                        onNavigate(R.id.infoExtraFullFragment, args)
+                                        )
                                     },
-                                    onItemClick = onHorizontalEntryItemClick,
-                                )
-
-                                EntriesHorizontal(
-                                    title = stringResource(R.string.top_albums),
-                                    entries = artistTopAlbums ?: entriesForShimmer,
-                                    showArtists = false,
-                                    shimmer = !artistTopAlbumsLoaded,
-                                    headerIcon = Icons.Outlined.Album,
-                                    emptyStringRes = R.string.not_found,
-                                    onHeaderClick = {
-                                        // todo implement
-                                    },
-                                    onItemClick = onHorizontalEntryItemClick,
-                                )
-
-                                EntriesHorizontal(
-                                    title = stringResource(R.string.similar_artists),
-                                    entries = similarArtists ?: entriesForShimmer,
-                                    showArtists = true,
-                                    shimmer = !similarArtistsLoaded,
-                                    headerIcon = Icons.Outlined.Mic,
-                                    emptyStringRes = R.string.not_found,
-                                    onHeaderClick = {
-                                        // todo implement
-                                    },
-                                    onItemClick = onHorizontalEntryItemClick,
                                 )
                             }
-
-                        } else if (entry is Track) {
-                            if (entry.duration != null && entry.duration > 0) {
-                                Text(
-                                    text = Stuff.humanReadableDuration(entry.duration),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier
-                                        .padding(horizontal = 48.dp)
-                                )
-                            }
-
-                            if (trackFeaturesLoaded && trackWithFeatures != null) {
-                                TrackFeaturesPlot(
-                                    trackWithFeatures = trackWithFeatures!!,
-                                    modifier = Modifier.padding(horizontal = 24.dp)
-                                )
-                            }
-
-                            if (!trackFeaturesLoaded) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(200.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                        .clip(MaterialTheme.shapes.extraLarge)
-                                        .shimmer()
-                                        .backgroundForShimmer(true)
-                                )
-                            }
-
+                        } else {
                             EntriesHorizontal(
-                                title = stringResource(R.string.similar_tracks),
-                                entries = similarTracks ?: entriesForShimmer,
-                                shimmer = !similarTracksLoaded,
-                                showArtists = true,
+                                title = stringResource(R.string.top_tracks),
+                                entries = artistTopTracks,
+                                fetchAlbumImageIfMissing = true,
+                                showArtists = false,
                                 headerIcon = Icons.Outlined.MusicNote,
                                 emptyStringRes = R.string.not_found,
+                                placeholderItem = remember {
+                                    getMusicEntryPlaceholderItem(type)
+                                },
                                 onHeaderClick = {
-                                    // todo implement
+                                    onNavigate(
+                                        PanoRoute.MusicEntryInfoPager(
+                                            artist = entry as Artist,
+                                            pkgName = pkgName,
+                                            user = user,
+                                            type = Stuff.TYPE_TRACKS
+                                        )
+                                    )
+                                },
+                                onItemClick = onHorizontalEntryItemClick,
+                            )
+
+                            EntriesHorizontal(
+                                title = stringResource(R.string.top_albums),
+                                entries = artistTopAlbums,
+                                fetchAlbumImageIfMissing = false,
+                                showArtists = false,
+                                headerIcon = Icons.Outlined.Album,
+                                placeholderItem = remember {
+                                    getMusicEntryPlaceholderItem(type)
+                                },
+                                emptyStringRes = R.string.not_found,
+                                onHeaderClick = {
+                                    onNavigate(
+                                        PanoRoute.MusicEntryInfoPager(
+                                            artist = entry as Artist,
+                                            pkgName = pkgName,
+                                            user = user,
+                                            type = Stuff.TYPE_ALBUMS
+                                        )
+                                    )
+                                },
+                                onItemClick = onHorizontalEntryItemClick,
+                            )
+
+                            EntriesHorizontal(
+                                title = stringResource(R.string.similar_artists),
+                                entries = similarArtists,
+                                fetchAlbumImageIfMissing = false,
+                                showArtists = true,
+                                headerIcon = Icons.Outlined.Mic,
+                                emptyStringRes = R.string.not_found,
+                                placeholderItem = remember {
+                                    getMusicEntryPlaceholderItem(type, showScrobbleCount = false)
+                                },
+                                onHeaderClick = {
+                                    onNavigate(
+                                        PanoRoute.MusicEntryInfoPager(
+                                            artist = entry as Artist,
+                                            pkgName = pkgName,
+                                            user = user,
+                                            type = Stuff.TYPE_ARTISTS
+                                        )
+                                    )
                                 },
                                 onItemClick = onHorizontalEntryItemClick,
                             )
                         }
+
+                    } else if (entry is Track) {
+                        if (entry.duration != null && entry.duration > 0) {
+                            Text(
+                                text = Stuff.humanReadableDuration(entry.duration),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier
+                                    .padding(horizontal = 48.dp)
+                            )
+                        }
+
+                        if (trackFeaturesLoaded && trackWithFeatures != null) {
+                            TrackFeaturesPlot(
+                                trackWithFeatures = trackWithFeatures!!,
+                                modifier = Modifier.padding(horizontal = 24.dp)
+                            )
+                        }
+
+                        if (!trackFeaturesLoaded) {
+                            Box(
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .clip(MaterialTheme.shapes.extraLarge)
+                                    .shimmer()
+                                    .backgroundForShimmer(true)
+                            )
+                        }
+
+                        EntriesHorizontal(
+                            title = stringResource(R.string.similar_tracks),
+                            entries = similarTracks,
+                            fetchAlbumImageIfMissing = true,
+                            showArtists = true,
+                            headerIcon = Icons.Outlined.MusicNote,
+                            emptyStringRes = R.string.not_found,
+                            placeholderItem = remember {
+                                getMusicEntryPlaceholderItem(type)
+                            },
+                            onHeaderClick = {
+                                onNavigate(
+                                    PanoRoute.SimilarTracks(
+                                        track = entry,
+                                        pkgName = pkgName,
+                                        user = user
+                                    )
+                                )
+                            },
+                            onItemClick = onHorizontalEntryItemClick,
+                        )
                     }
                 }
+            }
 
-                InfoCountsForMusicEntry(
-                    entry = entry,
-                    user = user,
-                    onNavigate = onNavigate,
+            InfoCountsForMusicEntry(
+                entry = entry,
+                user = user,
+                onNavigate = onNavigate,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            entry.wiki?.content?.let {
+                InfoWikiText(
+                    text = it,
+                    maxLinesWhenCollapsed = 2,
+                    expanded = expandedWikiType == type,
+                    onExpandToggle = {
+                        expandedWikiType = if (expandedWikiType == type) -1 else type
+                    },
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
+            }
 
-                entry.wiki?.content?.let {
-                    InfoWikiText(
-                        text = it,
-                        maxLinesWhenCollapsed = 2,
-                        expanded = expandedWikiType == type,
-                        onExpandToggle = {
-                            expandedWikiType = if (expandedWikiType == type) -1 else type
-                        },
-                        modifier = Modifier.padding(horizontal = 24.dp)
-                    )
-                }
-
+            if (index < entries.size - 1) {
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
@@ -431,7 +466,7 @@ private fun InfoContent(
 private fun ColumnScope.InfoBigPicture(
     entry: MusicEntry,
     imgRequest: ImageRequest,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     AsyncImage(
         model = imgRequest,
@@ -453,47 +488,41 @@ private fun InfoCountsForMusicEntry(
     entry: MusicEntry,
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     InfoCounts(
         countPairs = listOfNotNull(
             if (entry.playcount != null) {
-                stringResource(
-                    if (user.isSelf)
-                        R.string.my_scrobbles
-                    else
-                        R.string.their_scrobbles
-                ) to entry.userplaycount
+                "" to entry.userplaycount
             } else {
                 null
             },
             stringResource(R.string.listeners) to entry.listeners,
             stringResource(R.string.scrobbles) to entry.playcount,
         ),
-        avatarUrl = user.largeImage.takeIf { !user.isSelf && it.isNotEmpty() },
-        onClickFirstItem = if (entry.userplaycount != null && entry.userplaycount!! > 0) {
+        avatarUrl = user.largeImage.takeIf { it.isNotEmpty() },
+        avatarInitialLetter = user.name.first(),
+        firstItemIsUsers = entry.userplaycount != null,
+        onClickFirstItem = if ((entry.userplaycount ?: 0) > 0 && entry is Track) {
             {
-                when (entry) {
-                    is Track -> {
-                        onNavigate(
-                            PanoRoute.TrackHistory(
-                                track = entry,
-                                user = user
-                            )
-                        )
-                    }
-
-                    else -> {
-                        val _username = user.name
-                        entry.url
-                            ?.replace("/music/", "/user/$_username/library/music/")
-                            ?.let {
-                                Stuff.openInBrowser(it)
-                            }
-                    }
-                }
+                onNavigate(
+                    PanoRoute.TrackHistory(
+                        track = entry,
+                        user = user
+                    )
+                )
             }
-        } else null,
+        } else if ((entry.userplaycount ?: 0) > 0 && !Stuff.isTv) {
+            {
+                val _username = user.name
+                entry.url
+                    ?.replace("/music/", "/user/$_username/library/music/")
+                    ?.let {
+                        Stuff.openInBrowser(it)
+                    }
+            }
+        } else
+            null,
         modifier = modifier
     )
 }
@@ -509,9 +538,9 @@ private fun InfoActionsRow(
     isLoved: Boolean?,
     onLoveClick: (() -> Unit)?,
     onNavigate: (PanoRoute) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier) {
+    Row(modifier = modifier.fillMaxWidth()) {
         if (showUserTagsButton) {
             IconButtonWithTooltip(
                 icon = ImageVector.vectorResource(R.drawable.vd_user_tag),
@@ -540,8 +569,10 @@ private fun InfoActionsRow(
                 onClick = {
                     onNavigate(
                         PanoRoute.ImageSearch(
-                            musicEntry = entry,
-                            originalMusicEntry = originalEntry
+                            artist = entry as? Artist,
+                            originalArtist = originalEntry as? Artist,
+                            album = entry as? Album,
+                            originalAlbum = originalEntry as? Album
                         )
                     )
                 },
@@ -579,7 +610,7 @@ private fun ColumnScope.InfoTags(
     onTagClick: (Tag) -> Unit,
     onUserTagAdd: (String) -> Unit,
     onUserTagDelete: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (tags.isEmpty() && userTags == null) {
         return
@@ -642,8 +673,12 @@ private fun ColumnScope.InfoTags(
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        onUserTagAdd(userTagInput)
-                        userTagInput = ""
+                        if (userTagInput.isNotBlank() &&
+                            userTagInput.split(",").all { it.isNotBlank() }
+                        ) {
+                            onUserTagAdd(userTagInput)
+                            userTagInput = ""
+                        }
                     }
                 ),
                 singleLine = true,
@@ -671,7 +706,7 @@ private fun ColumnScope.InfoTags(
 @Suppress("MagicNumber")
 private fun TrackFeaturesPlot(
     trackWithFeatures: TrackWithFeatures,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val features = trackWithFeatures.features ?: return
 
@@ -824,7 +859,7 @@ private fun TrackListTrack(idx: Int, track: Track, modifier: Modifier = Modifier
 private fun InfoTrackList(
     tracks: List<Track>,
     onTrackClick: (Track) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (tracks.isEmpty()) {
         return
@@ -879,9 +914,13 @@ fun MusicEntryInfoScreen(
     musicEntry: MusicEntry,
     pkgName: String?,
     user: UserCached,
-    onNavigate: (PanoRoute) -> Unit
+    onNavigate: (PanoRoute) -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    BottomSheetDialogParent(padding = false) {
+    BottomSheetDialogParent(
+        onDismiss = onDismiss,
+        padding = false
+    ) {
         InfoContent(
             musicEntry = musicEntry,
             pkgName = pkgName,

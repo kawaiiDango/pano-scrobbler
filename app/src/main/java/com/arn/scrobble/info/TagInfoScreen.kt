@@ -1,6 +1,5 @@
 package com.arn.scrobble.info
 
-import androidx.annotation.Keep
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Tag
@@ -33,9 +32,9 @@ fun TagInfoContent(
     tag: Tag,
     onOpenUrl: (String) -> Unit,
     viewModel: TagInfoVM = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val info by viewModel.info.collectAsState(initial = null)
+    val info by viewModel.info.collectAsStateWithLifecycle()
     var wikiExpanded by rememberSaveable { mutableStateOf(false) }
 
 
@@ -72,6 +71,7 @@ fun TagInfoContent(
                 stringResource(R.string.taggers) to info?.reach,
                 stringResource(R.string.taggings) to info?.count
             ),
+            firstItemIsUsers = false,
             forShimmer = info == null
         )
 
@@ -89,12 +89,14 @@ fun TagInfoContent(
     }
 }
 
-@Keep
 @Composable
 fun TagInfoScreen(
     tag: Tag,
+    onDismiss: () -> Unit,
 ) {
-    BottomSheetDialogParent {
+    BottomSheetDialogParent(
+        onDismiss = onDismiss
+    ) {
         TagInfoContent(
             tag = tag,
             onOpenUrl = { Stuff.openInBrowser(it) },

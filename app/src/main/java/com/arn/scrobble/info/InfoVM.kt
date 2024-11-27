@@ -60,11 +60,6 @@ class InfoVM : ViewModel() {
     private val _trackFeaturesLoaded = MutableStateFlow(false)
     val trackFeaturesLoaded = _trackFeaturesLoaded.asStateFlow()
 
-    val artistTopTracksVM by lazy { InfoExtraFullVM() }
-    val artistTopAlbumsVM by lazy { InfoExtraFullVM() }
-    val similarArtistsVM by lazy { InfoExtraFullVM() }
-    val similarTracksVM by lazy { InfoExtraFullVM() }
-
     init {
         viewModelScope.launch {
             initialEntryAndUsername
@@ -130,7 +125,7 @@ class InfoVM : ViewModel() {
 
     private suspend fun getInfos(
         infoMapp: Map<Int, MusicEntry>,
-        username: String?
+        username: String?,
     ) = supervisorScope {
         val db = PanoDb.db
         val infoMap = infoMapp.toMutableMap()
@@ -139,7 +134,7 @@ class InfoVM : ViewModel() {
             artist: Artist?,
             album: Album?,
             track: Track?,
-            albumArtist: Artist?
+            albumArtist: Artist?,
         ) {
             if (username == null)
                 return
@@ -148,8 +143,7 @@ class InfoVM : ViewModel() {
                 if (it.userplaycount != null)
                     db.getCachedTracksDao()
                         .deltaUpdate(
-                            it.toCachedTrack()
-                                .apply { userPlayCount = it.userplaycount },
+                            it.toCachedTrack().copy(userPlayCount = it.userplaycount),
                             0,
                             DirtyUpdate.DIRTY_ABSOLUTE
                         )
@@ -158,7 +152,7 @@ class InfoVM : ViewModel() {
                 if (it.userplaycount != null)
                     db.getCachedAlbumsDao()
                         .deltaUpdate(
-                            it.toCachedAlbum().apply { userPlayCount = it.userplaycount },
+                            it.toCachedAlbum().copy(userPlayCount = it.userplaycount),
                             0, DirtyUpdate.DIRTY_ABSOLUTE
                         )
             }
@@ -166,7 +160,7 @@ class InfoVM : ViewModel() {
                 if (it.userplaycount != null)
                     db.getCachedArtistsDao()
                         .deltaUpdate(
-                            it.toCachedArtist().apply { userPlayCount = it.userplaycount },
+                            it.toCachedArtist().copy(userPlayCount = it.userplaycount),
                             0,
                             DirtyUpdate.DIRTY_ABSOLUTE
                         )
@@ -175,7 +169,7 @@ class InfoVM : ViewModel() {
                 if (it.userplaycount != null)
                     db.getCachedArtistsDao()
                         .deltaUpdate(
-                            it.toCachedArtist().apply { userPlayCount = it.userplaycount },
+                            it.toCachedArtist().copy(userPlayCount = it.userplaycount),
                             0,
                             DirtyUpdate.DIRTY_ABSOLUTE
                         )

@@ -2,6 +2,7 @@ package com.arn.scrobble.kumo.compat
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.asImageBitmap
 import com.kennycason.kumo.compat.KumoBitmap
 import java.io.InputStream
 
@@ -27,7 +28,7 @@ class MyKBitmap : KumoBitmap {
         x: Int,
         y: Int,
         width: Int,
-        height: Int
+        height: Int,
     ) {
         bitmap.getPixels(pixels, offset, stride, x, y, width, height)
     }
@@ -37,6 +38,6 @@ class MyKBitmap : KumoBitmap {
     }
 
     override fun convertTo(): Any {
-        return bitmap
+        return bitmap.asImageBitmap()
     }
 }

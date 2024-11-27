@@ -11,7 +11,7 @@
         android:shortcutShortLabel="@string/settings">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="pano-scrobbler://screen/settings"
+            android:data="pano-scrobbler://screen/Prefs"
             android:targetClass="com.arn.scrobble.main.MainActivity"
             android:targetPackage="com.arn.scrobble" />
     </shortcut>
@@ -24,7 +24,7 @@
         android:shortcutShortLabel="@string/from_mic">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="pano-scrobbler://screen/identify"
+            android:data="pano-scrobbler://screen/MicScrobble"
             android:targetClass="com.arn.scrobble.main.MainActivity"
             android:targetPackage="com.arn.scrobble" />
     </shortcut>
@@ -37,7 +37,7 @@
         android:shortcutShortLabel="@string/search">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="pano-scrobbler://screen/search"
+            android:data="pano-scrobbler://screen/Search"
             android:targetClass="com.arn.scrobble.main.MainActivity"
             android:targetPackage="com.arn.scrobble" />
     </shortcut>

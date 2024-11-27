@@ -45,7 +45,7 @@ import kotlinx.coroutines.withContext
 
 class IndexingWorker(
     context: Context,
-    private val workerParams: WorkerParameters
+    private val workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
 
     private val db = PanoDb.db
@@ -288,7 +288,7 @@ class IndexingWorker(
         val artistCounts = mutableMapOf<CachedArtist, Int>()
 
         tracks.forEach {
-            val cachedTrack = it.toCachedTrack().apply { lastPlayed = -1 }
+            val cachedTrack = it.toCachedTrack().copy(lastPlayed = -1)
             val cachedAlbum = if (it.album != null) it.toCachedAlbum() else null
             val cachedArtist = it.toCachedArtist()
 
@@ -306,8 +306,8 @@ class IndexingWorker(
 
 
         trackCounts.forEach { (track, count) ->
-            track.lastPlayed = tracksLastPlayedMap[track] ?: -1
-            db.getCachedTracksDao().deltaUpdate(track, count)
+            val newTrack = track.copy(lastPlayed = tracksLastPlayedMap[track] ?: -1)
+            db.getCachedTracksDao().deltaUpdate(newTrack, count)
         }
 
         albumCounts.forEach { (album, count) ->

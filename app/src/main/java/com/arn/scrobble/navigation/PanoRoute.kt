@@ -1,5 +1,7 @@
 package com.arn.scrobble.navigation
 
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Tag
@@ -19,7 +21,7 @@ sealed interface PanoRoute {
     data object SpecialGoBack : PanoRoute
 
     @Serializable
-    data object Placeholder : PanoRoute
+    data class HomePager(val user: UserCached) : PanoRoute
 
     @Serializable
     data object OssCredits : PanoRoute
@@ -67,7 +69,7 @@ sealed interface PanoRoute {
     data class AppList(
         val hasPreSelection: Boolean,
         val preSelectedPackages: List<String>,
-        val isSingleSelect: Boolean
+        val isSingleSelect: Boolean,
     ) : PanoRoute
 
     @Serializable
@@ -91,8 +93,8 @@ sealed interface PanoRoute {
     @Serializable
     data class BlockedMetadataAdd(
         val blockedMetadata: BlockedMetadata = BlockedMetadata(skip = true),
-        val ignoredArtist: String?,
-        val hash: Int?
+        val ignoredArtist: String? = null,
+        val hash: Int? = null,
     ) : PanoRoute
 
     @Serializable
@@ -100,38 +102,66 @@ sealed interface PanoRoute {
 
     @Serializable
     data class ImageSearch(
-        val musicEntry: MusicEntry,
-        val originalMusicEntry: MusicEntry?
+        val artist: Artist? = null,
+        val originalArtist: Artist? = null,
+        val album: Album? = null,
+        val originalAlbum: Album? = null,
     ) : PanoRoute
 
     @Serializable
     data object Onboarding : PanoRoute
 
     @Serializable
-    data class Search(val user: UserCached) : PanoRoute
+    data object Search : PanoRoute
 
     @Serializable
-    data object Rec : PanoRoute
+    data object MicScrobble : PanoRoute
 
     @Serializable
     data class WebView(
         val url: String,
         val userAccountTemp: UserAccountTemp? = null,
-        val creds: PleromaOauthClientCreds? = null
+        val creds: PleromaOauthClientCreds? = null,
     ) : PanoRoute
 
     @Serializable
-    data class EditScrobble(val scrobbleData: ScrobbleData, val msid: String?, val hash: Int) :
-        PanoRoute
+    data class EditScrobble(
+        val scrobbleData: ScrobbleData,
+        val msid: String? = null,
+        val hash: Int = 0,
+    ) : PanoRoute
 
     @Serializable
     data class TagInfo(val tag: Tag) : PanoRoute
 
     @Serializable
     data class MusicEntryInfo(
-        val musicEntry: MusicEntry,
-        val pkgName: String?,
-        val user: UserCached
+        val artist: Artist? = null,
+        val album: Album? = null,
+        val track: Track? = null,
+        val user: UserCached,
+        val pkgName: String? = null,
+    ) : PanoRoute
+
+    @Serializable
+    data class MusicEntryInfoPager(
+        val artist: Artist,
+        val user: UserCached,
+        val type: Int,
+        val pkgName: String? = null,
+    ) : PanoRoute
+
+    @Serializable
+    data class ChartsPager(
+        val user: UserCached,
+        val type: Int,
+    ) : PanoRoute
+
+    @Serializable
+    data class SimilarTracks(
+        val track: Track,
+        val user: UserCached,
+        val pkgName: String? = null,
     ) : PanoRoute
 
     @Serializable
@@ -142,8 +172,34 @@ sealed interface PanoRoute {
     ) : PanoRoute
 
     @Serializable
+    data class Random(val user: UserCached) : PanoRoute
+
+    @Serializable
+    data object HiddenTags : PanoRoute
+
+    @Serializable
     data class TrackHistory(val track: Track, val user: UserCached) : PanoRoute
 
     @Serializable
     data object Index : PanoRoute
+
+    @Serializable
+    data class NavPopup(
+        val otherUser: UserCached?,
+    ) : PanoRoute
+
+    @Serializable
+    data object Changelog : PanoRoute
+
+    @Serializable
+    data object FixIt : PanoRoute
+
+    @Serializable
+    data object Help : PanoRoute
+
+    @Serializable
+    data object ChartsLegend : PanoRoute
+
+    @Serializable
+    data object BlankScreen : PanoRoute
 }

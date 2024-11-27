@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.filterNotNull
 
 open class ChartsBaseFragment : ChartsPeriodFragment() {
 
-    override val viewModel by viewModels<ChartsVM>()
+    override val viewModel by viewModels<ChartsVMOld>()
 
     private val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
     private lateinit var adapter: ChartsAdapter
@@ -47,7 +47,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         val binding = ContentChartsBinding.inflate(inflater, container, false)
 
@@ -122,7 +122,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
                 page = 1,
                 timePeriod = viewModel.selectedPeriod.value,
                 type = chartsType,
-                user = activityViewModel.currentUser,
+                user = activityViewModel.currentUserOld,
             )
         )
     }

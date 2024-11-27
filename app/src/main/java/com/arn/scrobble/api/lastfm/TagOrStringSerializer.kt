@@ -21,6 +21,7 @@ object TagsOrStringSerializer : KSerializer<Tags> {
     override val descriptor = Tags.serializer().descriptor
 
     override fun serialize(encoder: Encoder, value: Tags) {
+        encoder.encodeSerializableValue(Tags.serializer(), value)
     }
 
     override fun deserialize(decoder: Decoder): Tags {

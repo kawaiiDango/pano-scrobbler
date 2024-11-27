@@ -142,11 +142,11 @@ class MainActivityOld : AppCompatActivity(),
             canShowNotices = true
 
             // todo make async and move to viewmodel
-            runBlocking {
-                Scrobblables.current.filterNotNull().first().let {
-                    mainNotifierViewModel.initializeCurrentUser(it.userAccount.user)
-                }
-            }
+//            runBlocking {
+//                Scrobblables.current.filterNotNull().first().let {
+//                    mainNotifierViewModel.initializeCurrentUser(it.userAccount.user)
+//                }
+//            }
             handleIntent(intent, false)
         }
 
@@ -319,7 +319,7 @@ class MainActivityOld : AppCompatActivity(),
     override fun onDestinationChanged(
         controller: NavController,
         destination: NavDestination,
-        arguments: Bundle?
+        arguments: Bundle?,
     ) {
         val showBottomNavOn = setOf(
             R.id.myHomePagerFragment,

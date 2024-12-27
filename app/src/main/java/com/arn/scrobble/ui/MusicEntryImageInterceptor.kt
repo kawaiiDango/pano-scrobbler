@@ -21,9 +21,9 @@ import kotlinx.coroutines.withContext
 
 class MusicEntryImageInterceptor : Interceptor {
 
-    private val delayMs = 200L
+    private val delayMs = 400L
     private val musicEntryCache by lazy { LruCache<String, OptionalString>(500) }
-    private val semaphore = Semaphore(3)
+    private val semaphore = Semaphore(2)
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {

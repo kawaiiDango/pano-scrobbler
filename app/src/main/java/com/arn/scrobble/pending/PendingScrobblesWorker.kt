@@ -24,6 +24,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobbleWithSource
 import com.arn.scrobble.main.App
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.UiUtils
@@ -55,7 +56,7 @@ class PendingScrobblesWorker(
 
     override suspend fun doWork(): Result {
         // do not retry if recently failed
-        if (System.currentTimeMillis() - App.prefs.lastPendingScrobblesFailureTime < 1 * 60 * 60 * 1000)
+        if (System.currentTimeMillis() - App.prefs.lastPendingScrobblesFailureTime < 2 * 60 * 60 * 1000)
             return Result.failure()
 
         // do not run if offline, I was unable to infer from the docs whether this constraint is applied to expedited work
@@ -81,24 +82,31 @@ class PendingScrobblesWorker(
         }
     }
 
+
     private suspend fun run(): Boolean {
         deleteForLoggedOutServices()
 
-        var done = submitLoves()
+        if (!submitLoves())
+            return false
 
-        while (scrobblesDao.count() > 0) {
-            done = submitScrobbleBatch()
-            if (!done) //err
-                break
-        }
+        if (!submitScrobbles())
+            return false
 
-        return done
+        return true
     }
 
-    private suspend fun submitScrobbleBatch(): Boolean {
-        var done = true
-        val entries = scrobblesDao.allFlow(BATCH_SIZE).first()
+    private suspend fun submitScrobbles(): Boolean {
+        val entries = scrobblesDao.allFlow(HARD_LIMIT).first()
 
+        for (chunk in entries.chunked(BATCH_SIZE)) {
+            if (!submitScrobbleBatch(chunk))
+                return false
+        }
+
+        return true
+    }
+
+    private suspend fun submitScrobbleBatch(entries: List<PendingScrobbleWithSource>): Boolean {
         setProgress(
             workDataOf(
                 PROGRESS_KEY to
@@ -132,7 +140,7 @@ class PendingScrobblesWorker(
                         if (result.isFailure) {
                             // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
                             if ((result.exceptionOrNull() as? ApiException)?.code == 29)
-                                return true
+                                return false
                         }
 
                         scrobbleResults[it] = result
@@ -171,7 +179,7 @@ class PendingScrobblesWorker(
                             "PendingScrobblesWorker: err for " + scrobblable.userAccount.type.ordinal +
                                     ": " + result
                         )
-                        done = false
+                        return false
                     }
                 }
 
@@ -180,11 +188,10 @@ class PendingScrobblesWorker(
             } catch (e: Exception) {
                 Timber.w("PendingScrobblesWorker: n/w err - ")
                 Timber.tag(Stuff.TAG).w(e)
-                done = false
-                return done
+                return false
             }
         }
-        return done
+        return true
     }
 
     private suspend fun submitLoves(): Boolean {
@@ -209,7 +216,16 @@ class PendingScrobblesWorker(
                             album = null // todo fix
 //                            album = entry.album?.let { Album(it) }
                         )
-                        results[it] = it.loveOrUnlove(track, entry.shouldLove).isSuccess
+
+                        val result = it.loveOrUnlove(track, entry.shouldLove)
+
+                        if (result.isFailure) {
+                            // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
+                            if ((result.exceptionOrNull() as? ApiException)?.code == 29)
+                                return false
+                        }
+
+                        results[it] = result.isSuccess
                     }
                 }
 
@@ -228,11 +244,11 @@ class PendingScrobblesWorker(
                 }
                 delay(DELAY)
             }
-            return true
         } catch (e: Exception) {
-            Timber.w("OfflineScrobble: n/w err submitLoves - " + e.message)
+            Timber.w("PendingScrobblesWorker: n/w err submitLoves - " + e.message)
             return false
         }
+        return true
     }
 
     private fun filterOneForService(scrobblable: Scrobblable, pl: PendingLove): Boolean {
@@ -267,6 +283,7 @@ class PendingScrobblesWorker(
     companion object {
         private val MOCK = BuildConfig.DEBUG && false
         private var BATCH_SIZE = 40 //max 50
+        private const val HARD_LIMIT = 2500 //max 50
         private const val DELAY = 400L
         const val PROGRESS_KEY = "progress"
         const val NAME = "pending_scrobbles"

@@ -123,7 +123,6 @@
     <string name="more" comment="More options menu in short">Mehr</string>
     <string name="learn" comment="(Learn java regex syntax)">Mehr erfahren</string>
     <string name="hide">Ausblenden</string>
-    <string name="rank_change" comment="%1= delta change">Rangänderung: %s</string>
     <string name="rank_change_no_change">Keine Änderung</string>
     <string name="rank_change_new">Nicht gescrobbelt innerhalb des vorherigen Zeitraums</string>
     <string name="search">Suchen</string>
@@ -394,7 +393,6 @@
     <string name="no_browser">Kein Browser installiert</string>
     <string name="no_player">Kein Musikplayer installiert</string>
     <string name="not_running">⚠ Der Scrobbler wurde von deinem System gestoppt</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Vom System angegebener Abstürzgrund: %s</string>
     <string name="not_running_fix_action">Reparieren</string>
     <string name="login_submit" comment="Verifies the login details">Bestätigen</string>
     <string name="acr_host" comment="Web hostname">Host</string>

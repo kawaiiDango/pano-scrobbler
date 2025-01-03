@@ -108,7 +108,6 @@
     <string name="grid_size">Αλλαγή μεγέθους πλέγματος</string>
     <string name="pinch_to_zoom">Τσιμπήστε για μεγέθυνση</string>
     <string name="more_info">Περισσότερες πληροφορίες</string>
-    <string name="rank_change" comment="%1= delta change">Αλλαγή κατάταξης: %s</string>
     <string name="rank_change_no_change">Καμία αλλαγή</string>
     <string name="rank_change_new">Μη scrobbled εντός της προηγούμενης περιόδου</string>
     <string name="search">Αναζήτηση</string>
@@ -345,7 +344,6 @@
     <string name="no_browser">Δεν υπάρχει εγκατεστημένος φυλλομετρητής</string>
     <string name="no_player">Δεν υπάρχει εγκατεστημένη εφαρμογή αναπαραγωγής μουσικής</string>
     <string name="not_running">⚠ Το scrobbler σκοτώθηκε από το σύστημά σας</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Λόγος που έκλεισε η εφαρμογή απο το σύστημα: %s</string>
     <string name="not_running_fix_action">Διόρθωσέ το</string>
     <string name="login_submit" comment="Verifies the login details">Επαλήθευση</string>
     <string name="acr_host" comment="Web hostname">Διακομιστής</string>

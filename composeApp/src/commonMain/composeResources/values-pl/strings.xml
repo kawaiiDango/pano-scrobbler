@@ -150,7 +150,6 @@
     <string name="more" comment="More options menu in short">Więcej</string>
     <string name="learn" comment="(Learn java regex syntax)">Naucz się</string>
     <string name="hide">Ukryj</string>
-    <string name="rank_change" comment="%1= delta change">Zmiana rangi: %s</string>
     <string name="rank_change_no_change">Bez zmian</string>
     <string name="rank_change_new">Nie scrobblowano w poprzednim okresie</string>
     <string name="search">Szukaj</string>
@@ -422,7 +421,6 @@
     <string name="no_browser">Brak zainstalowanej przeglądarki</string>
     <string name="no_player">Brak zainstalowanego odtwarzacza muzyki</string>
     <string name="not_running">⚠ Scrobbler został zabity przez twój system</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Powód zabicia podany przez system: %s</string>
     <string name="not_running_fix_action">Napraw to</string>
     <string name="login_submit" comment="Verifies the login details">Weryfikuj</string>
     <string name="acr_host" comment="Web hostname">Host</string>

@@ -108,7 +108,6 @@
     <string name="more" comment="More options menu in short">詳細</string>
     <string name="learn" comment="(Learn java regex syntax)">正規表現を学ぶ</string>
     <string name="hide">非表示</string>
-    <string name="rank_change" comment="%1= delta change">順位の変更: %s</string>
     <string name="rank_change_no_change">変更なし</string>
     <string name="rank_change_new">前回期間でのScrobbleなし</string>
     <string name="search">検索</string>
@@ -386,7 +385,6 @@
     <string name="no_browser">ブラウザがインストールされていません</string>
     <string name="no_player">音楽プレーヤーがインストールされていません</string>
     <string name="not_running">⚠ Scrobblerはシステムによってタスクが終了されました</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">システムによるタスクキル理由: %s</string>
     <string name="not_running_fix_action">修正</string>
     <string name="login_submit" comment="Verifies the login details">認証</string>
     <string name="acr_host" comment="Web hostname">Host</string>

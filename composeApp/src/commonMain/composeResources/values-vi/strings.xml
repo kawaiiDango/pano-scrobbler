@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="yes">Có</string>
-    <string name="no">Không</string>
-    <string name="album_art">Ảnh bìa</string>
-    <string name="artist_image">Ảnh bìa nghệ sĩ</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Yêu cầu ô này là trống</string>
-    <string name="track">Bài hát</string>
-    <string name="tracks">Bài hát</string>
-    <string name="similar_tracks">Bài hát phổ biến</string>
     <!--  pro  -->
 </resources>

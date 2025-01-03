@@ -144,7 +144,6 @@
     <string name="more" comment="More options menu in short">Більше</string>
     <string name="learn" comment="(Learn java regex syntax)">Детальніше</string>
     <string name="hide">Сховати</string>
-    <string name="rank_change" comment="%1= delta change">Зміна рангу: %s</string>
     <string name="rank_change_no_change">Без змін</string>
     <string name="rank_change_new">Не скроблено за попередній період</string>
     <string name="search">Пошук</string>
@@ -423,7 +422,6 @@
     <string name="no_browser">Браузер не встановлено</string>
     <string name="no_player">Не встановлено жодного музичного плеєра</string>
     <string name="not_running">⚠ Скроблер був вбитий вашою системою</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина вбивства, надана системою: %s</string>
     <string name="not_running_fix_action">Виправити</string>
     <string name="login_submit" comment="Verifies the login details">Підтвердити</string>
     <string name="acr_host" comment="Web hostname">Хост</string>

@@ -114,7 +114,6 @@
     <string name="more" comment="More options menu in short">अधिक</string>
     <string name="learn" comment="(Learn java regex syntax)">सीखें</string>
     <string name="hide">छिपाएं</string>
-    <string name="rank_change" comment="%1= delta change">पद में बदलाव: %s</string>
     <string name="rank_change_no_change">कोई परिवर्तन नहीं</string>
     <string name="rank_change_new">पिछली अवधि के भीतर स्क्रॉबल नहीं किया गया</string>
     <string name="search">ढुंढे</string>

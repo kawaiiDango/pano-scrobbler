@@ -140,7 +140,6 @@
     <string name="more" comment="More options menu in short">Više</string>
     <string name="learn" comment="(Learn java regex syntax)">Saznaj</string>
     <string name="hide">Sakrij</string>
-    <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
     <string name="rank_change_no_change">Nema promjene</string>
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
     <string name="search">Traži</string>
@@ -419,7 +418,6 @@
     <string name="no_browser">Nema instaliranih preglednika</string>
     <string name="no_player">Nema instaliranih reproduktora glazbe</string>
     <string name="not_running">⚠ Vaš sustav je zaustavio pokretanje scrobblera</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razlog za prekidanje rada kojeg je dao sustav: %s</string>
     <string name="not_running_fix_action">Popravi</string>
     <string name="login_submit" comment="Verifies the login details">Potvrdi</string>
     <string name="acr_host" comment="Web hostname">Poslužitelj</string>

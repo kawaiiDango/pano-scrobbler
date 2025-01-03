@@ -124,7 +124,6 @@
     <string name="more" comment="More options menu in short">Mais</string>
     <string name="learn" comment="(Learn java regex syntax)">Aprenda sobre</string>
     <string name="hide">Ocultar</string>
-    <string name="rank_change" comment="%1= delta change">Mudança de classificação: %s</string>
     <string name="rank_change_no_change">Sem mudança</string>
     <string name="rank_change_new">Não há scrobbles no período anterior</string>
     <string name="search">Pesquisar</string>
@@ -400,7 +399,6 @@
     <string name="no_browser">Nenhum browser instalado</string>
     <string name="no_player">Nenhum reprodutor de música instalado</string>
     <string name="not_running">⚠ O scrobbler foi terminado abruptamente pelo seu sistema</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo de morte dado pelo sistema: %s</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit" comment="Verifies the login details">Verificar</string>
     <string name="acr_host" comment="Web hostname">Servidor</string>

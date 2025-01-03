@@ -76,7 +76,6 @@
     <string name="more" comment="More options menu in short">المزيد</string>
     <string name="learn" comment="(Learn java regex syntax)">تعلّم</string>
     <string name="hide">إخفاء</string>
-    <string name="rank_change" comment="%1= delta change">تغيير الترتيب: %s</string>
     <string name="rank_change_no_change">لا تغيير</string>
     <string name="rank_change_new">لم تمسح خلال المدّة السابقة</string>
     <string name="search">البحث</string>

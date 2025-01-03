@@ -108,7 +108,6 @@
     <string name="grid_size">Canvia la quadrícula</string>
     <string name="pinch_to_zoom">Pessiga per a ampliar</string>
     <string name="more_info">Més informació</string>
-    <string name="rank_change" comment="%1= delta change">Canvi de posició: %s</string>
     <string name="rank_change_no_change">Sense canvis</string>
     <string name="rank_change_new">No s\'ha fet scribbling en el període anterior</string>
     <string name="search">Cerca</string>
@@ -301,7 +300,6 @@
     <string name="no_browser">No hi ha cap navegador instal·lat</string>
     <string name="no_player">No hi ha cap reproductor de música instal·lat</string>
     <string name="not_running">⚠ El sistema ha tancat l\'scrobbler</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raó del tancament: %s</string>
     <string name="not_running_fix_action">Arregla-ho</string>
     <string name="login_submit" comment="Verifies the login details">Verifica</string>
     <string name="acr_key" comment="API key">Clau d\'accés</string>

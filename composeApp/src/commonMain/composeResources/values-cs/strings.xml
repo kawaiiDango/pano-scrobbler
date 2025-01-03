@@ -155,7 +155,6 @@
     <string name="more" comment="More options menu in short">Další</string>
     <string name="learn" comment="(Learn java regex syntax)">Více informací</string>
     <string name="hide">Skrýt</string>
-    <string name="rank_change" comment="%1= delta change">Změna pořadí: %s</string>
     <string name="rank_change_no_change">Beze změn</string>
     <string name="rank_change_new">Nebylo scrobblováno v předchozím období</string>
     <string name="search">Hledat</string>
@@ -417,7 +416,6 @@
     <string name="no_browser">Není nainstalován žádný prohlížeč</string>
     <string name="no_player">Není nainstalován žádný hudební přehrávač</string>
     <string name="not_running">⚠ Skrobbler byl vypnut vaším systémem</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Důvod vypnutí uvedený systémem: %s</string>
     <string name="not_running_fix_action">Opravit</string>
     <string name="login_submit" comment="Verifies the login details">Ověřit</string>
     <string name="acr_host" comment="Web hostname">Host</string>

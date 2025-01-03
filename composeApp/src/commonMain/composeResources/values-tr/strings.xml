@@ -123,7 +123,6 @@
     <string name="more" comment="More options menu in short">Dahası</string>
     <string name="learn" comment="(Learn java regex syntax)">Öğren</string>
     <string name="hide">Gizle</string>
-    <string name="rank_change" comment="%1= delta change">Sıralama değişikliği: %s</string>
     <string name="rank_change_no_change">Değişiklik yok</string>
     <string name="rank_change_new">Bir önceki dönemde skroplanmamış</string>
     <string name="search">Ara</string>
@@ -394,7 +393,6 @@
     <string name="no_browser">Yüklü tarayıcı yok</string>
     <string name="no_player">Yüklü müzik oynatıcı yok</string>
     <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından sonlandırıldı</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sistem tarafından verilen sonlarılma sebebi: %s</string>
     <string name="not_running_fix_action">Düzelt</string>
     <string name="login_submit" comment="Verifies the login details">Doğrula</string>
     <string name="acr_host" comment="Web hostname">Sunucu</string>

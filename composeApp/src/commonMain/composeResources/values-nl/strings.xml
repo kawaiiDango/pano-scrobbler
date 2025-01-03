@@ -121,7 +121,6 @@
     <string name="more" comment="More options menu in short">Meer</string>
     <string name="learn" comment="(Learn java regex syntax)">Leren</string>
     <string name="hide">Verbergen</string>
-    <string name="rank_change" comment="%1= delta change">Rang verandering: %s</string>
     <string name="rank_change_no_change">Geen verandering</string>
     <string name="rank_change_new">Niet gescrobbeld in de vorige periode</string>
     <string name="search">Zoeken</string>
@@ -381,7 +380,6 @@
     <string name="no_browser">Er is geen browser geïnstalleerd</string>
     <string name="no_player">Er is geen muziekspeler geïnstalleerd</string>
     <string name="not_running">⚠ De scrobbler is gesloten door uw systeem</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Reden voor sluiting gegeven door het systeem: %s</string>
     <string name="not_running_fix_action">Maak het</string>
     <string name="login_submit" comment="Verifies the login details">Verifieer</string>
     <string name="acr_host" comment="Web hostname">Host</string>

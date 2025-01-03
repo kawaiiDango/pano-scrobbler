@@ -123,7 +123,6 @@
     <string name="more" comment="More options menu in short">Altro</string>
     <string name="learn" comment="(Learn java regex syntax)">Impara</string>
     <string name="hide">Nascondi</string>
-    <string name="rank_change" comment="%1= delta change">Spostamento in classifica: %s</string>
     <string name="rank_change_no_change">Nessuno spostamento</string>
     <string name="rank_change_new">Nessuno scrobbling nel periodo precedente</string>
     <string name="search">Cerca</string>
@@ -392,7 +391,6 @@
     <string name="no_browser">Nessun browser installato</string>
     <string name="no_player">Nessun lettore musicale installato</string>
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Movente dato dal sistema: %s</string>
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit" comment="Verifies the login details">Verifica</string>
     <string name="acr_host" comment="Web hostname">Host</string>

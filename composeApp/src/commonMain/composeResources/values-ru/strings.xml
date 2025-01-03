@@ -156,7 +156,6 @@
     <string name="more" comment="More options menu in short">Ещё</string>
     <string name="learn" comment="(Learn java regex syntax)">Узнать больше</string>
     <string name="hide">Скрыть</string>
-    <string name="rank_change" comment="%1= delta change">Изменение рейтинга: %s</string>
     <string name="rank_change_no_change">Без изменений</string>
     <string name="rank_change_new">Не заскробблено за предыдущий период</string>
     <string name="search">Поиск</string>
@@ -435,7 +434,6 @@
     <string name="no_browser">Браузер не установлен</string>
     <string name="no_player">Музыкальный плеер не установлен</string>
     <string name="not_running">⚠ Скробблер был остановлен вашей системой</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина закрытия, указанная системой: %s</string>
     <string name="not_running_fix_action">Исправить это</string>
     <string name="login_submit" comment="Verifies the login details">Проверить</string>
     <string name="acr_host" comment="Web hostname">Хост</string>

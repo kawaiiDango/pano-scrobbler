@@ -108,7 +108,6 @@
     <string name="more" comment="More options menu in short">Selengkapnya</string>
     <string name="learn" comment="(Learn java regex syntax)">Pelajari</string>
     <string name="hide">Sembunyikan</string>
-    <string name="rank_change" comment="%1= delta change">Perubahan peringkat: %s</string>
     <string name="rank_change_no_change">Tidak ada perubahan</string>
     <string name="rank_change_new">Tidak di-scrobble pada periode sebelumnya</string>
     <string name="search">Cari</string>
@@ -387,7 +386,6 @@
     <string name="no_browser">Tidak ada browser yang diinstal</string>
     <string name="no_player">Tidak ada pemutar musik yang dipasang</string>
     <string name="not_running">⚠ Scrobbler dimatikan oleh sistem Anda</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Matikan alasan yang diberikan oleh sistem: %s</string>
     <string name="not_running_fix_action">Perbaiki</string>
     <string name="login_submit" comment="Verifies the login details">Verifikasi</string>
     <string name="acr_host" comment="Web hostname">Penyedia</string>

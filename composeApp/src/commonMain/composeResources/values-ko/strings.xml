@@ -107,7 +107,6 @@
     <string name="more" comment="More options menu in short">더보기</string>
     <string name="learn" comment="(Learn java regex syntax)">배우기</string>
     <string name="hide">숨기기</string>
-    <string name="rank_change" comment="%1= delta change">순위 변경: %s</string>
     <string name="rank_change_no_change">변경사항 없음</string>
     <string name="rank_change_new">이전 기간 내에 스크로블되지 않음</string>
     <string name="search">검색</string>
@@ -369,7 +368,6 @@
     <string name="no_browser">브라우저가 설치되어 있지 않습니다</string>
     <string name="no_player">음악 플레이어가 설치되어 있지 않습니다</string>
     <string name="not_running">⚠ 스크로블러가 시스템에 의해 종료되었습니다</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">시스템에 의한 종료 이유: %s</string>
     <string name="not_running_fix_action">해결하기</string>
     <string name="login_submit" comment="Verifies the login details">인증</string>
     <string name="acr_host" comment="Web hostname">호스트</string>

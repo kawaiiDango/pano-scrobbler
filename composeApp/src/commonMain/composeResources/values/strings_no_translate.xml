@@ -42,23 +42,10 @@ Already purchased through Google Play?
 
 According to Google Play's policies, purchases made through Google Play cannot be used for apps downloaded outside of Google Play.
 </string>
-    <string name="billing_max_devices_reached" translatable="false" formatted="true">This code has already been used on maximum (%1$d) devices</string>
-    <string name="done" translatable="false">Done</string>
-    <string name="ok" translatable="false">OK</string>
-    <string name="cancel" translatable="false">Cancel</string>
-    <string name="high" translatable="false" comment="As in high/medium/low">High</string>
-    <string name="medium" translatable="false" comment="As in high/medium/low">Medium</string>
-    <string name="low" translatable="false" comment="As in high/medium/low">Low</string>
-    <string name="contrast" translatable="false" comment="Color contrast">Contrast</string>
     <string name="reorder_dpad" translatable="false">Use the direction keys to reorder</string>
-    <string name="back" translatable="false">Back</string>
-    <string name="use_browser" translatable="false">Please use a browser on a supported device for this.</string>
-    <string name="retry" translatable="false">Retry</string>
     <string name="move_left" translatable="false">Move left</string>
     <string name="move_right" translatable="false">Move right</string>
     <string name="date_range" translatable="false">Select date range</string>
-    <string name="save_logs" translatable="false">Save logs</string>
-    <string name="run_on_start" translatable="false">Run when the computer starts</string>
 
     <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>

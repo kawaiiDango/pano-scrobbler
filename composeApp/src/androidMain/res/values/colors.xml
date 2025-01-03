@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mdcolor_sakurapink_10">#FFFBFA</color>
+    <color name="mdcolor_sakurapink_100">#FFD8E5</color>
+    <color name="mdcolor_green_500">#3E8456</color>
+    <color name="mdcolor_blue_500">#5776B2</color>
+    <color name="mdcolor_red_500">#B05D62</color>
+    <color name="mdcolor_blue_200">#ACC7FF</color>
+    <color name="mdcolor_red_200">#FFB2B6</color>
+    <color name="mdcolor_green_200">#8FD6A2</color>
+
+    <color name="pinkLightStart">@color/mdcolor_sakurapink_10</color>
+    <color name="pinkLight">@color/mdcolor_sakurapink_100</color>
+    <color name="pinkDark">#AB2C5D</color>
+    <color name="pinkExtraDark">#66002E</color>
+    <color name="gradient_launcher_fg">@color/pinkLight</color>
+    <color name="gradient_shortcut_fg">@color/pinkLight</color>
+    <color name="splash_fg">@color/pinkDark</color>
+
+    <color name="pinkNoti">#EC5F8F</color>
+    <color name="pinkPrimary">#FFB1C7</color>
+
+    <color name="stonks_up">@color/mdcolor_green_500</color>
+    <color name="stonks_down">@color/mdcolor_red_500</color>
+    <color name="stonks_new">@color/mdcolor_blue_500</color>
+    <color name="stonks_neutral">#757575</color>
+
+    <!-- Copied from jetpack glance -->
+    <color name="widgetBg">#ffe0f3ff</color>
+    <color name="widgetFg">#ff21005d</color> <!-- glance_colorOnPrimaryContainer -->
+    <color name="widgetPrimary">#ff6750a4</color>
+</resources>

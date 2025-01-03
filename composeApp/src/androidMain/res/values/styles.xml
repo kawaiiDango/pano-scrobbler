@@ -1,0 +1,52 @@
+<resources>
+    <style name="ParentTheme" parent="android:Theme.DeviceDefault.NoActionBar"/>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="ParentTheme">
+        <item name="android:colorPrimary">@color/pinkPrimary</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:textDirection">locale</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
+        <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+<!--        <item name="android:enforceStatusBarContrast">true</item>-->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!--   For android tv     -->
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <!-- bug https://stackoverflow.com/a/48328471/1067596-->
+ </style>
+
+    <style name="AppThemeWithWallpaper" parent="ParentTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowShowWallpaper">true</item>
+    </style>
+
+
+    <style name="AppThemeDialog" parent="android:Theme.DeviceDefault.Dialog.Alert">
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowMinWidthMajor">60%</item>
+        <item name="android:windowMinWidthMinor">95%</item>
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/fade</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
+
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <item name="android:windowIsFloating">true</item>
+        <!--<item name="android:backgroundDimEnabled">true</item>-->
+    </style>
+
+</resources>

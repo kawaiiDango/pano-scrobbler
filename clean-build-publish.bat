@@ -1,0 +1,2 @@
+wsl ./gradlew packageReleaseDistributionForCurrentOS
+./gradlew clean fetchCrowdinMembers assembleReleaseGithub packageReleaseDistributionForCurrentOS githubRelease

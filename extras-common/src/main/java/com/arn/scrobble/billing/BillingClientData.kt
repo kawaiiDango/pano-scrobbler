@@ -7,7 +7,6 @@ data class BillingClientData(
     val proProductId: String,
     val appName: String,
     val publicKeyBase64: String,
-    val apkSignature: String,
     val httpClient: HttpClient,
     val serverUrl: String,
     val deviceIdentifier: String,

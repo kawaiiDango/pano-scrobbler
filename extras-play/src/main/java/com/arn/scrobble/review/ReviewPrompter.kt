@@ -12,7 +12,7 @@ class ReviewPrompter(
 
     ) : BaseReviewPrompter(activity, lastReviewPromptTime, setReviewPromptTime) {
     override fun launchReviewFlow() {
-        activity as Activity
+        activity as? Activity ?: return
         val manager = ReviewManagerFactory.create(activity)
 
         manager.requestReviewFlow().addOnCompleteListener { task ->

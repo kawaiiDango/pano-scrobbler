@@ -22,14 +22,14 @@ This may also work on devices that do not allow notification access, such as WSA
 ```
 - On Android 8.1 or higher:
 ```
-    cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.NLService
+    cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.media.NLService
 ```
 - If the above command didn't work or you are on Android 8.0 and below:
 ```
     n=$(settings get secure enabled_notification_listeners)
 ```
 ```
-    settings put secure enabled_notification_listeners $n:com.arn.scrobble/com.arn.scrobble.NLService
+    settings put secure enabled_notification_listeners $n:com.arn.scrobble/com.arn.scrobble.media.NLService
 ```
 - Do not add any additional spaces
 

@@ -1,4 +1,4 @@
-## <img src="app/src/main/play/listings/en-US/icon/icon.png" alt="app icon" width="32"/> Pano Scrobbler
+## <img src="composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg" alt="app icon" width="32"/> Pano Scrobbler
 
 [play-store]: img/play-store.svg
 
@@ -68,7 +68,7 @@ Features marked with * are not available on TV due to OS limitations.
 - Icons from [pictogrammers.com](https://pictogrammers.com) and [material.io](https://material.io)
 - Genres filter from [everynoise.com](https://everynoise.com)
 
-Thanks to the amazing [translators](app/src/main/res/raw/crowdin_members.txt) and everyone who
+Thanks to the amazing [translators](composeApp/src/commonMain/composeResources/files/crowdin_members.txt) and everyone who
 reported bugs and helped me with this project.
 
 ### Disclaimer

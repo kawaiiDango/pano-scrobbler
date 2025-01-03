@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/nav_faq"
-        android:icon="@drawable/vd_help"
-        app:iconTint="?colorControlNormal"
-        android:title="@string/faq" />
-</menu>

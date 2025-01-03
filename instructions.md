@@ -2,7 +2,7 @@
 
 Welcome to my spaghetti
 
-- Create /app/src/main/java/com/arn/scrobble/Tokens.kt
+- Create composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
 ```
 package com.arn.scrobble
 object Tokens {
@@ -17,21 +17,18 @@ object Tokens {
     const val LICENSE_CHECKING_SERVER = "https://"
     // used to verify the license
     const val LICENSE_PUBLIC_KEY_BASE64 = ""
-    const val APK_SIGNATURE = ""
     const val PLAY_BILLING_PUBLIC_KEY_BASE64 = ""
     const val EMBEDDED_SERVER_KEYSTORE_PASSWORD = "" // password for the embedded https server BKS keystore, used for importing settings over local network
 }
 ```
-- Remove or comment out the lines below `// remove if not needed` in app/build.gradle.kts and /build.gradle.kts
-
-- Create app/version.txt and put a positive integer in it. This will be your app version code.
-The version name will be derived from this.
+- Remove or comment out the lines below `// remove if not needed` in composeApp/build.gradle.kts and /build.gradle.kts
 
 - Create a Firebase project for Crashlytics and add google-services.json.
 See https://firebase.google.com/docs/android/setup
 
-- Create a BKS keystore for the embedded https server with the password EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
-Put it in /app/src/main/res/raw/embedded_server_bks.bks
+- Create a BKS keystore for the embedded https server used for the import/export feature over local network,
+with the password EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
+Put it in composeApp/src/commonMain/composeResources/files/embedded_server.bks
 
 - Obtain now playing notification strings and their translations by decompiling the resources of
 the Android System Intelligence apk with ApkTool and then running [py-scripts/np-strings-extract.py](py-scripts/np-strings-extract.py) on them.
@@ -42,6 +39,11 @@ Alternatively, you can use this as a stub in `strings.xml`:
 ```
 <string name="song_format_string">%1$s by %2$s</string>
 ```
+
+- To generate the licenses file, run
+  `composeApp:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/composeResources/files/ -PaboutLibraries.exportVariant=release`
+
+- To copy some android specific strings to android resources, from common resources, run the gradle task `copyStringsToAndroid`
 
 - If you want to generate the optional baseline profile for the app, which can improve its startup time,
 create a file `/baselineprofile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt`:
@@ -54,4 +56,4 @@ object Secrets {
 ```
 
 sessionKey can be obtained by logging in to LastFM with a debug build of this app
-and tapping on the "Copy last.fm session key" in the settings.
+and tapping on the "Copy last.fm session key" in the settings screen.

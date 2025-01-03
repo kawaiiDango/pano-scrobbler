@@ -1,0 +1,43 @@
+package com.arn.scrobble.friends
+
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.UserCached.Companion.toUserCached
+
+class FriendsPagingSource(
+    private val username: String,
+    private val setTotal: (Int) -> Unit,
+) : PagingSource<Int, UserCached>() {
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UserCached> {
+        val result = Scrobblables.current.value!!.getFriends(
+            params.key ?: 1,
+            username,
+//                cached = !loadedInitialCachedVersion
+        )
+
+        return if (result.isSuccess) {
+            val pr = result.getOrNull()!!
+            val prevKey = if (pr.attr.page == 1) null else pr.attr.page - 1
+            val nextKey = if (pr.attr.totalPages <= pr.attr.page) null else pr.attr.page + 1
+            val total = pr.attr.total ?: 0
+            setTotal(total)
+
+            LoadResult.Page(
+                data = pr.entries.map { it.toUserCached() },
+                prevKey = prevKey,
+                nextKey = nextKey,
+                itemsAfter = if (nextKey == null) 0 else 2
+            )
+        } else {
+            LoadResult.Error(result.exceptionOrNull()!!)
+        }
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, UserCached>): Int {
+        return 1
+    }
+
+}

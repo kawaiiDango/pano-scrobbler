@@ -62,10 +62,9 @@ jobs:
       - name: Copy static site assets
         run: |
           cp -r img static-site
-          mkdir -p static-site/app/src/main/play/listings/en-US/icon
-          cp app/src/main/play/listings/en-US/icon/icon.png static-site/app/src/main/play/listings/en-US/icon/
-          mkdir -p static-site/app/src/main/res/raw
-          cp app/src/main/res/raw/crowdin_members.txt static-site/app/src/main/res/raw/
+          cp -r composeApp/icons static-site/composeApp/
+          mkdir -p composeApp/src/commonMain/composeResources/files/
+          cp composeApp/src/commonMain/composeResources/files/crowdin_members.txt static-site/composeApp/src/commonMain/composeResources/files/crowdin_members.txt
 
       - name: Fix permissions
         run: |

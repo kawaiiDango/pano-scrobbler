@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="sidebar_width">280dp</dimen>
-    <dimen name="grid_size">300dp</dimen>
-    <dimen name="overscan_padding_horiz">48dp</dimen>
-    <dimen name="overscan_padding_vert">27dp</dimen>
-</resources>

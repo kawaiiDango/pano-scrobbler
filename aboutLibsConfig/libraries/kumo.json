@@ -1,0 +1,12 @@
+{
+    "uniqueId": "com.kennycason:kumo-core",
+    "artifactVersion": "[imported]",
+    "scm": {
+        "url": "https://github.com/kennycason/kumo"
+    },
+    "name": "Kumo",
+    "website": "https://github.com/kennycason/kumo",
+    "licenses": [
+        "MIT"
+    ]
+}

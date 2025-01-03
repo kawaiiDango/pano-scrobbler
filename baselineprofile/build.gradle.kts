@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.ManagedVirtualDevice
-
 plugins {
     alias(libs.plugins.test)
     alias(libs.plugins.kotlin.android)
@@ -11,12 +9,12 @@ android {
     compileSdk = libs.versions.targetSdk.get().toInt()
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
 
     defaultConfig {
@@ -27,7 +25,7 @@ android {
         testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
     }
 
-    targetProjectPath = ":app"
+    targetProjectPath = ":composeApp"
 
     buildTypes {
         create("releaseGithub") {
@@ -43,8 +41,18 @@ baselineProfile {
 }
 
 dependencies {
-    implementation(libs.androidx.test.ext.junit)
+    implementation(libs.androidx.test.junit)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.uiautomator)
     implementation(libs.benchmark.macro.junit4)
+}
+
+androidComponents {
+    onVariants { v ->
+        val artifactsLoader = v.artifacts.getBuiltArtifactsLoader()
+        v.instrumentationRunnerArguments.put(
+            "targetAppId",
+            v.testedApks.map { artifactsLoader.load(it)!!.applicationId }
+        )
+    }
 }

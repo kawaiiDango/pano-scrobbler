@@ -1,0 +1,27 @@
+<resources>
+
+    <style name="AppWidgetTheme" />
+
+    <style name="AppWidgetTheme.Dynamic" parent="ParentTheme">
+        <item name="fakeShadowAlpha">0</item>
+        <item name="android:textViewStyle">@style/WidgetText</item>
+        <item name="android:colorBackground">@color/widgetBg</item>
+    </style>
+
+    <style name="AppWidgetTheme.Dynamic.Shadow">
+        <item name="fakeShadowAlpha">1</item>
+        <item name="android:textViewStyle">@style/WidgetText.Shadow</item>
+    </style>
+
+    <style name="WidgetText">
+        <item name="android:textColor">@color/widgetFg</item>
+    </style>
+
+    <style name="WidgetText.Shadow">
+        <item name="android:shadowColor">?android:colorBackground</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">6</item>
+    </style>
+
+</resources>

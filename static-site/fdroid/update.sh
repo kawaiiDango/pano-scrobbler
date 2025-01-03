@@ -35,10 +35,10 @@ curl -L -o "metadata/${PACKAGE}/en-US/phoneScreenshots/3charts.png" "https://i.i
 curl -L -o "metadata/${PACKAGE}/en-US/phoneScreenshots/4random.png" "https://i.imgur.com/aikbtGR.png"
 
 # copy icon
-cp ../../app/src/main/play/listings/en-US/icon/icon.png "metadata/${PACKAGE}/en-US/icon.png"
+cp ../../composeApp/icons/ic_launcher_with_bg.png "metadata/${PACKAGE}/en-US/icon.png"
 
 # Run fdroid update
 fdroid update --create-metadata --use-date-from-apk
 
 # Replace the default icon
-cp ../../app/src/main/play/listings/en-US/icon/icon.png repo/icons/icon.png
+cp ../../composeApp/icons/ic_launcher_with_bg.png repo/icons/icon.png

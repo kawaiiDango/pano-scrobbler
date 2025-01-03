@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="widgetBackgroundRadius">30dp</dimen>
+    <dimen name="stonks_icon_size">16dp</dimen>
+    <integer name="splash_screen_duration">600</integer>
+</resources>

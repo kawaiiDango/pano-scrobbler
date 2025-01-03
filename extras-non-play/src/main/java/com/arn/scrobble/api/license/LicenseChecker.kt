@@ -94,14 +94,10 @@ object LicenseChecker {
         signature: ByteArray,
         publicKey: PublicKey,
     ): Boolean {
-        return try {
-            val sig = Signature.getInstance(JWT_SIGNATURE_ALGORITHM)
-            sig.initVerify(publicKey)
-            sig.update(data)
-            sig.verify(signature)
-        } catch (e: Exception) {
-            false
-        }
+        val sig = Signature.getInstance(JWT_SIGNATURE_ALGORITHM)
+        sig.initVerify(publicKey)
+        sig.update(data)
+        return sig.verify(signature)
     }
 
 }

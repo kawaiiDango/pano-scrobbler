@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.arn.scrobble.ui.LeanbackViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:transitionGroup="true"/>

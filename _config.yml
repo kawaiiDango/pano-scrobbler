@@ -36,7 +36,7 @@ exclude:
 keep_files:
   - fdroid
   - img
-  - app
+  - composeApp
 
 plugins:
   - jekyll-relative-links

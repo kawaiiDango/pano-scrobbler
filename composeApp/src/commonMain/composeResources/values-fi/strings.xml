@@ -120,7 +120,6 @@
     <string name="more" comment="More options menu in short">Lisää</string>
     <string name="learn" comment="(Learn java regex syntax)">Opi</string>
     <string name="hide">Piilota</string>
-    <string name="rank_change" comment="%1= delta change">Sijoituksen muutos: %s</string>
     <string name="rank_change_no_change">Ei muutosta</string>
     <string name="rank_change_new">Ei scrobblattu edellisessä jaksossa</string>
     <string name="search">Hae</string>
@@ -331,7 +330,7 @@
     <string name="pref_change_locale">Vaihda kieli</string>
     <string name="pref_crashlytics_enabled">Ilmoita virheistä automaattisesti</string>
     <string name="pref_misc">Sekalaista</string>
-    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Vikko alkaa</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Viikko alkaa</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Tuonti &amp; vienti</string>
     <string name="pref_export">Vie</string>
     <string name="pref_export_desc">Varmuuskopioi asetukset, muokkaukset ja estettyjen listan. Ei tallenna kirjautumistietoja turvallisuussyistä. Hyödyllinen laitteiden välillä siirtymisessä tai kavereille jaettaessa.</string>
@@ -377,7 +376,6 @@
     <string name="no_browser">Ei asennettua selainta</string>
     <string name="no_player">Ei asennettua musiikkisoitinta</string>
     <string name="not_running">⚠ Järjestelmäsi tappoi scrobblerin</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Järjestelmän antama tapon syy: %s</string>
     <string name="not_running_fix_action">Korjaa</string>
     <string name="login_submit" comment="Verifies the login details">Vahvista</string>
     <string name="acr_host" comment="Web hostname">Isäntä</string>

@@ -221,5 +221,29 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">निरन्तर</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s पर आधारित</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">पर्याप्त डेटा नहीं हैं</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">कुछभी</string>
+    <string name="random_not_found">कोई ट्रैक नहीं मिला</string>
+    <string name="loved_track">पसंदीदा ट्रैक</string>
+    <string name="randomize" comment="(To randomize or fetch a new random item)">रैंडम करें</string>
+    <string name="edit_presets_available">प्रीसेट उपलब्द हैं</string>
+    <string name="edit_no_presets_available">सभी प्रीसेट उपयोग में हैं</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">प्रीसेट: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">पैटर्न सीमा (%1$d) तक पहुंच गई</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">ड्रग हैंडल</string>
+    <string name="text" comment="text to test regex rules with">टैक्स्ट</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ यह उपयोग करने से पहले, <a href="https://www.google.com/search?q=regex+tutorial">जावा रेगुलर एक्सप्रेशन</a> को समझना सुनिश्चित करें या दिए गए <b>प्रीसेट</b> मे से एक का उपयोग करें। रेगुलर एक्सप्रेशन के मेल का प्रयास ऊपर से नीचे के क्रम में किया जाता है।</string>
+    <string name="blocked_metadata_info">ℹ️ इन में से एक से अधिक क्षेत्र भरने पर AND संचालक उनके बीच लगेगा</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">टैप करें ब्लॉक या स्किप करने के लिए</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">प्लेयर क्रिया</string>
+    <string name="skip" comment="skip to next track">स्किप</string>
+    <string name="mute" comment="mute the music">शांत करें</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">अनदेखा करें</string>
+    <string name="block" comment="block the track from scrobbling">ब्लॉक करें</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">गुप्त टैग</string>
+    <string name="pin" comment="pin a friend to the top">पिन करें</string>
+    <string name="unpin" comment="unpin a friend to the top">अनपिन करें</string>
+    <string name="pin_limit_reached" formatted="true">पिन करने की सीमा पहुंच गई (%1$d)</string>
+    <string name="pin_help">पिन किए गए वस्तु का क्रम बदलने के लिए दबाए रखे</string>
+    <string name="use_channel" comment="(Use youtube channel name)">यूट्यूब चैनल के नाम का उपयोग करें</string>
     <!--  pro  -->
 </resources>

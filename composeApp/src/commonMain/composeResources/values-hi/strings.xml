@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s स्क्रोबल</item>
-        <item quantity="other">%1$s स्क्रोबल</item>
+        <item quantity="one">%1$s सक्रौब्ल</item>
+        <item quantity="other">%1$s सक्रौब्ल</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
         <item quantity="one">%1$s आज</item>
@@ -67,7 +67,7 @@
     <string name="yes">हां</string>
     <string name="no">नहीं</string>
     <string name="reset">रीसेट</string>
-    <string name="settings">स्वानुसार करें</string>
+    <string name="settings">सेटिंग</string>
     <string name="bug_report">समस्या रिपोर्ट करें</string>
     <string name="faq">अधिकतर पूछे जाने वाले प्रश्न</string>
     <string name="album_art">एल्बम चित्र</string>
@@ -75,8 +75,8 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक नही मिला</string>
     <string name="network_error">नेटवर्क में समस्या</string>
     <string name="disable_tls_verify">TSL तृतीया अनदेखा करो</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रॉबल अनदेखा करें</string>
-    <string name="scrobble_ignored_save_edit">लास्ट एफएम ने इस सुधार को अनदेखा लिया है, क्योंकि शम्भवता यह स्क्रॉबल बोहोत पुराना है। क्या आप इस सुधार को भविष्य के स्क्रॉबल्स के लिए रखना चाहेंगे?</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">सक्रौब्ल अनदेखा करें</string>
+    <string name="scrobble_ignored_save_edit">लास्ट एफएम ने इस सुधार को अनदेखा किया है, क्योंकि संभवताह यह सक्रौब्ल बोहोत पुराना है। क्या आप इस सुधार को भविष्य के सक्रौब्ल के लिए रखना चाहेंगे?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्र खाली हैं</string>
     <string name="artist">कलाकार</string>
     <string name="artists">कलाकार</string>
@@ -194,13 +194,13 @@
     <string name="recording_failed">रिकॉर्डिंग प्रारंभ करने में असफल।इस डिवाइस का माइक संभवतः व्यस्त है या उपलब्ध नहीं हैं</string>
     <string name="press_back">हो जाने पर बैक दबाएं</string>
     <string name="details">विवरण</string>
-    <string name="saved_as_pending">लंबित स्क्रोबल की तरह रखा है</string>
+    <string name="saved_as_pending">लंबित सक्रौब्ल की तरह रखा है</string>
     <string name="sort">क्रम</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">अन्य समय</string>
-    <string name="my_scrobbles">मेरे स्क्रोबल</string>
-    <string name="their_scrobbles">उनके स्क्रोबल</string>
+    <string name="my_scrobbles">मेरे सक्रौब्ल</string>
+    <string name="their_scrobbles">उनके सक्रौब्ल</string>
     <string name="listeners">श्रोता</string>
-    <string name="scrobbles">स्क्रोबल</string>
+    <string name="scrobbles">सक्रौब्ल</string>
     <string name="collapse" comment="(view only a few items)">कम</string>
     <string name="expand" comment="(view all items)">अधिक</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s को यह प्रिय हैं</string>
@@ -245,5 +245,6 @@
     <string name="pin_limit_reached" formatted="true">पिन करने की सीमा पहुंच गई (%1$d)</string>
     <string name="pin_help">पिन किए गए वस्तु का क्रम बदलने के लिए दबाए रखे</string>
     <string name="use_channel" comment="(Use youtube channel name)">यूट्यूब चैनल के नाम का उपयोग करें</string>
+    <string name="pref_master">संगीत सक्रौब्ल करें</string>
     <!--  pro  -->
 </resources>

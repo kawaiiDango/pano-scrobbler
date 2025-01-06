@@ -52,9 +52,17 @@
         <item quantity="one">%1$s पैटर्न सुधार</item>
         <item quantity="other">%1$s पैटर्न सुधार</item>
     </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s अवरोधित मेटादेटा</item>
+        <item quantity="other">%1$s अवरोधित मेटादेटा</item>
+    </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d मिनट</item>
         <item quantity="other">%1$d मिनट</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s शेष हैं</item>
+        <item quantity="other">%1$s शेष हैं</item>
     </plurals>
     <string name="yes">हां</string>
     <string name="no">नहीं</string>
@@ -66,6 +74,7 @@
     <string name="artist_image">कलाकार का चित्र</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक नही मिला</string>
     <string name="network_error">नेटवर्क में समस्या</string>
+    <string name="disable_tls_verify">TSL तृतीया अनदेखा करो</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रॉबल अनदेखा करें</string>
     <string name="scrobble_ignored_save_edit">लास्ट एफएम ने इस सुधार को अनदेखा लिया है, क्योंकि शम्भवता यह स्क्रॉबल बोहोत पुराना है। क्या आप इस सुधार को भविष्य के स्क्रॉबल्स के लिए रखना चाहेंगे?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्र खाली हैं</string>
@@ -102,6 +111,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">एप्लिकेशन</string>
     <string name="offline">नेट बांध है। दिखाया गया डेटा नया नहीं है</string>
     <string name="unavailable_offline">नेट बंध होने पर यह उपलब्द नहीं है</string>
+    <string name="tv_url_notice">दूसरे डिवाइस पे यह URL ब्राउसर मे खोले</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">सेवाएं</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\n %2$s को सुन रहा था</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s, %1$s\n %2$s को सुन रहा था</string>
@@ -114,6 +124,7 @@
     <string name="more" comment="More options menu in short">अधिक</string>
     <string name="learn" comment="(Learn java regex syntax)">सीखें</string>
     <string name="hide">छिपाएं</string>
+    <string name="rank_change" comment="%1= delta change">श्रेणी परिवर्तन: %1$s</string>
     <string name="rank_change_no_change">कोई परिवर्तन नहीं</string>
     <string name="rank_change_new">पिछली अवधि के भीतर स्क्रॉबल नहीं किया गया</string>
     <string name="search">ढुंढे</string>
@@ -150,6 +161,8 @@
     <string name="pending_scrobbles">बाकी स्क्रॉबल्स</string>
     <string name="pending_scrobble">बाकी स्क्रॉबल</string>
     <string name="pending_scrobbles_noti">बाकी स्क्रॉबल्स को प्रोसेस किया जा रहा है</string>
+    <string name="following" comment="accounts you are following on lastfm">फॉलोइंग</string>
+    <string name="followers" comment="your lastfm followers">फ़ॉलोअर्स</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रॉबल्स, %2$s से</string>
     <string name="allow_background">बैकग्राउंड में स्क्रॉबल करे</string>
     <string name="grant_notification_access">सूचनाएं के लिए अनुमति प्रदान करें</string>
@@ -170,5 +183,43 @@
     <string name="loved" comment="Its a noun">प्रिय</string>
     <string name="unloved" comment="Its a noun">अप्रिय</string>
     <string name="simple_edits">सुधार</string>
+    <string name="grant_rec_perm">कृपया करके माइक्रोफोन उपयोग करने की अनुमति प्रदान करें</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्ट</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">टैग क्लाउड</string>
+    <string name="scrobble_from_mic" comment="Its a verb">माइक से स्क्रोबल करें</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">माइक से</string>
+    <string name="add_to_hs">होम स्क्रीन पर स्थापित करें</string>
+    <string name="listening">आपके आस−पास बज रहे संगीत को सुन रहा हूं…</string>
+    <string name="uploading">अपलोड हो रहा है…</string>
+    <string name="recording_failed">रिकॉर्डिंग प्रारंभ करने में असफल।इस डिवाइस का माइक संभवतः व्यस्त है या उपलब्ध नहीं हैं</string>
+    <string name="press_back">हो जाने पर बैक दबाएं</string>
+    <string name="details">विवरण</string>
+    <string name="saved_as_pending">लंबित स्क्रोबल की तरह रखा है</string>
+    <string name="sort">क्रम</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">अन्य समय</string>
+    <string name="my_scrobbles">मेरे स्क्रोबल</string>
+    <string name="their_scrobbles">उनके स्क्रोबल</string>
+    <string name="listeners">श्रोता</string>
+    <string name="scrobbles">स्क्रोबल</string>
+    <string name="collapse" comment="(view only a few items)">कम</string>
+    <string name="expand" comment="(view all items)">अधिक</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s को यह प्रिय हैं</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
+    <string name="not_found" comment="Shown in search">प्राप्त नहीं हुआ</string>
+    <string name="save" comment="saves a file">सेव करें</string>
+    <string name="saved_to_gallery">गैलरी में सेव किया गया</string>
+    <string name="reports" comment="Like last.week reports and stuff">रिपोर्टें</string>
+    <string name="weekly">साप्ताहिक</string>
+    <string name="weeks">सप्ताह</string>
+    <string name="monthly">मासिक</string>
+    <string name="months">महीने</string>
+    <string name="years" comment="For the charts menu which displays year by year">वर्ष</string>
+    <string name="charts_overall">सम्पूर्ण काल</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">सुन्ने की गतिविधि</string>
+    <string name="charts_no_data">इस अवधि का डेटा नहीं है</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">स्वानुसार</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">निरन्तर</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s पर आधारित</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">पर्याप्त डेटा नहीं हैं</string>
     <!--  pro  -->
 </resources>

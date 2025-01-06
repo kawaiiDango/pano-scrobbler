@@ -193,6 +193,7 @@
     <string name="uploading">अपलोड हो रहा है…</string>
     <string name="recording_failed">रिकॉर्डिंग प्रारंभ करने में असफल।इस डिवाइस का माइक संभवतः व्यस्त है या उपलब्ध नहीं हैं</string>
     <string name="press_back">हो जाने पर बैक दबाएं</string>
+    <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">विवरण</string>
     <string name="saved_as_pending">लंबित स्क्रौब्ल की तरह रखा है</string>
     <string name="sort">क्रम</string>
@@ -221,10 +222,33 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">निरन्तर</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s पर आधारित</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">पर्याप्त डेटा नहीं हैं</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">मै सौभाग्यशाली अनुभव कर रहा हूं</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">सौभाग्य का क्षण</string>
     <string name="random_not_found">कोई ट्रैक नहीं मिला</string>
     <string name="loved_track">पसंदीदा ट्रैक</string>
     <string name="randomize" comment="(To randomize or fetch a new random item)">रैंडम करें</string>
+    <string name="random_text">रैंडम</string>
+    <string name="graph_daily">दैनिक स्क्रोबल गणना</string>
+    <string name="graph_weekly">साप्ताहिक स्क्रोबल गणना</string>
+    <string name="graph_monthly">मासिक स्क्रोबल गणना</string>
+    <string name="graph_yearly">वार्षिक स्क्रोबल गणना</string>
+    <string name="tag" comment="last.fm tag">टैग</string>
+    <string name="taggers" comment="(number of) people who have tagged">टैगकरता</string>
+    <string name="my_tags" comment="Tags, the user has added">मेरे टैग</string>
+    <string name="close" comment="To close a dialog or something">बंद करें</string>
+    <string name="user_tags_hint" comment="To add a new tag">नया टैग</string>
+    <string name="appwidget_loading">लोड हो रहा है…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">अवधि</string>
+    <string name="appwidget_shadow">छाया</string>
+    <string name="appwidget_show">दिखाओ</string>
+    <string name="light">सफेद</string>
+    <string name="dark">कला</string>
+    <string name="system_colors">सिस्टम के रंग</string>
+    <string name="edit_name" comment="name for regex pattern">नाम</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">क्षत्र</string>
+    <string name="edit_first" comment="First occurrence of a pattern">प्रथम</string>
+    <string name="edit_all" comment="All occurrences of a pattern">सभ</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">अपने कैप्चर समूह को नाम दे <i>track, album, artist</i> or <i>albumArtist</i> तो दूसरे क्षेत्र से प्राप्त कर सके</string>
+    <string name="edit_presets" comment="Regex presets">प्रीसेट</string>
     <string name="edit_presets_available">प्रीसेट उपलब्द हैं</string>
     <string name="edit_no_presets_available">सभी प्रीसेट उपयोग में हैं</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">प्रीसेट: %1$s</string>
@@ -245,16 +269,34 @@
     <string name="pin_limit_reached" formatted="true">पिन करने की सीमा पहुंच गई (%1$d)</string>
     <string name="pin_help">पिन किए गए वस्तु का क्रम बदलने के लिए दबाए रखे</string>
     <string name="use_channel" comment="(Use youtube channel name)">यूट्यूब चैनल के नाम का उपयोग करें</string>
+    <string name="scrobbler_off">स्क्रौब्ल करना बंद है</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">विश्लेषण</string>
     <string name="pref_master">संगीत स्क्रौब्ल करें</string>
+    <string name="pref_noti">सूचनाएं</string>
+    <string name="pref_noti_categories">सूचना की श्रेणियाँ</string>
+    <string name="pref_scrobble_noti">स्क्रौब्ल की सूचनाएं</string>
+    <string name="pref_lockscreen_noti">लॉक स्क्रीन पर की सूचनाएं</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">स्क्रौब्ल लक्ष्य</string>
+    <string name="pref_enabled_apps_title">एप को चुनें</string>
     <string name="pref_delay">स्क्रौब्ल कब करें (जोभी पहले हो)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">मिनिट</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">प्रतिशत</string>
+    <string name="pref_scrobble_only">(सिर्फ स्क्रौब्ल)</string>
+    <string name="pref_fetch_album">लुप्त एल्बम लास्ट एफ़एम से प्राप्त करें</string>
     <string name="pref_locale">भाषा</string>
     <string name="pref_change_locale">भाषा बदले</string>
     <string name="pref_misc">इत्यादि</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">सप्ताह काहा से आरंभ करें</string>
+    <string name="pref_show_albums">एल्बम का नाम दिखाओ</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…स्क्रौब्ल के लिए</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">सूचियाँ</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">अवरोधित मेटाडेटा</string>
     <string name="pref_translate">इस एप का अनुवाद करें</string>
     <string name="pref_translate_credits">अनुवादकर्ता</string>
+    <string name="pref_check_updates">नए अपडेट की जाँच करें</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">अपडेट उपलब्ध है: %1$s</string>
+    <string name="download" comment="Its a verb">डाउनलोड</string>
+    <string name="artist_extra">ट्रॅकक्स, एल्बम &amp; समान</string>
+    <string name="shazam_scrobbling">निरंतर स्क्रौब्ल करना है तो <a href="https://play.google.com/store/apps/details?id=com.shazam.android">शझैम</a> खोले और ऑटो शझैम चालू करें। हां और शझैम के लिए स्क्रौब्ल चालू करना ना भूले।</string>
     <!--  pro  -->
 </resources>

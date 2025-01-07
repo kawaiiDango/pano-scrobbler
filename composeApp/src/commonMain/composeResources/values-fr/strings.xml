@@ -280,7 +280,7 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de modèles atteinte (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Poignée de classement glissante</string>
     <string name="text" comment="text to test regex rules with">Texte</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠️ Assurez-vous de bien comprendre <a href="https://www.google.com/search?q=regex+tutorial">les regex java</a> avant d\'utiliser ceci, ou utilisez l\'un des presets <b></b> fournis. Les correspondances avec les regex sont faites du haut vers le bas</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠️ Assurez-vous de bien comprendre <a href="https://www.google.com/search?q=regex+tutorial">les regex java</a> avant d\'utiliser ceci, ou utilisez l\'un des presets <b/> fournis. Les correspondances avec les regex sont faites du haut vers le bas</string>
     <string name="blocked_metadata_info">i Remplir plusieurs de ces champs appliquera un opérateur ET entre eux</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Appuyer pour bloquer et passer</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>

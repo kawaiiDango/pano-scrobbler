@@ -254,12 +254,12 @@
     <string name="notification_channel_blocked">This requires notifications to be enabled</string>
     <string name="send_notifications_desc"
         comment="Shown before asking for notification permission on Android 13+"
-        >"""- Check scrobble status and counts
+        >- Check scrobble status and counts
 - Love or block directly from the notification
 - Get notified about scrobble errors and actions you can take
 - Get your top scrobbles every week
 - And more
-- The notifications do not make a sound"""</string>
+- The notifications do not make a sound</string>
     <string name="will_not_scrobble">Skipping this step will disable scrobbling</string>
     <string name="swap"
         comment="(Swap title and artist)"
@@ -722,9 +722,9 @@
         >Add</string>
     <string name="add_acr_key_info"
         comment="Bucket as in a cloud storage bucket"
-        >"• Sign up at https://console.acrcloud.com
+        >• Sign up at https://console.acrcloud.com
 • Navigate to Projects > Audio &amp; video recognition
-• Create a new project, select Recorded Audio and the ACRCloud Music bucket"</string>
+• Create a new project, select Recorded Audio and the ACRCloud Music bucket</string>
     <string name="shazam_scrobbling">To continuously scrobble, open <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> instead and start Auto Shazam. Also make sure that Shazam is enabled for scrobbling.</string>
     <string name="pending_n_remaining" formatted="true"
         comment="For pending scrobbles"
@@ -782,7 +782,7 @@
     <string name="thank_you">Thank you!</string>
     <string name="purchase_pending">Your purchase has not been confirmed by your payment provider yet. Please check back after a few minutes.</string>
     <string name="billing_troubleshoot_title">Restore purchase</string>
-    <string name="billing_troubleshoot">"Already purchased?
+    <string name="billing_troubleshoot">Already purchased?
 
 Your purchases are managed by Google Play. They are linked with a Google Play account that did a purchase. When you install the app on a new device with multiple accounts, Google Play can associate it with a wrong one. The best solution to explicitly select the account owning a purchase is to install the app from a computer via Google Play web page:
 
@@ -790,7 +790,7 @@ Your purchases are managed by Google Play. They are linked with a Google Play ac
 • Open Google Play web page from your computer.
 • Login with an account owning the purchase.
 • Install this app directly from the Google Play web page.
-"</string>
+</string>
     <string name="billing_block">Block artists/tracks and auto skip or mute</string>
     <string name="billing_pin_friends" formatted="true"
         comment="%1= number of pins, always 10 or more"

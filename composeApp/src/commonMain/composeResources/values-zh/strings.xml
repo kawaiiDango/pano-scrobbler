@@ -152,12 +152,12 @@
     <string name="grant_notification_access_desc">借此获取音乐元数据信息，不会读取非音乐类通知</string>
     <string name="send_notifications">允许通知</string>
     <string name="notification_channel_blocked">需要开启通知权限</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- 检查记录状态和计数
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- 检查记录状态和计数
 - 从通知中直接收藏或屏蔽记录
 - 记录出错或需要执行操作时收到提醒
 - 获取每周热门记录报告
 - 以及更多
-- 通知不会发出声音\"\""</string>
+- 通知不会发出声音\"\"</string>
     <string name="will_not_scrobble">跳过该步骤将禁用记录</string>
     <string name="swap" comment="(Swap title and artist)">切换</string>
     <string name="rate_msg">喜欢这个应用吗？</string>
@@ -395,9 +395,9 @@
     <string name="remove_acr_key">删除 ACRCloud 密钥</string>
     <string name="add_acr_consider">尽量使用您自己的 ACRCloud 密钥来避免触发访问限制</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">添加</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• 前往 https://console.acrcloud.com 进行注册
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• 前往 https://console.acrcloud.com 进行注册
 • 导航至项目 &gt; 音频 &amp; 视频识别
-• 创建一个新项目，选择已录制音频和 ACRCloud Music bucket"</string>
+• 创建一个新项目，选择已录制音频和 ACRCloud Music bucket</string>
     <string name="shazam_scrobbling">要继续进行记录，请打开 <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> 并启用 Auto Shazam。同时确保 Shazam 已启用音乐记录。</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">剩余 %1$d 条</string>
     <string name="submitting_loves" formatted="true">正在提交喜爱曲目，还剩 %1$d 条</string>
@@ -426,15 +426,14 @@
     <string name="thank_you">感谢！</string>
     <string name="purchase_pending">您的购买尚未被付款提供商确认，请稍后再试</string>
     <string name="billing_troubleshoot_title">恢复购买</string>
-    <string name="billing_troubleshoot">"已经购买？
+    <string name="billing_troubleshoot">已经购买？
 
 您的购买记录由 Google Play 管理，并与进行购买的 Google Play 账户关联。当您在一台同时登录了多个账户的新设备上安装应用时，Google Play 可能会将其关联至错误的账户。最佳解决方案是在电脑上访问网页端 Google Play 页面，然后选择关联了购买记录的账户进行安装：
 
 • 首先请卸载此应用程序
 • 在电脑上打开 Google Play 页面
 • 登录关联了购买记录的账户
-• 通过 Google Play 网页端直接安装应用
-"</string>
+• 通过 Google Play 网页端直接安装应用</string>
     <string name="billing_block">屏蔽艺术家/曲目并自动跳过至下一曲或静音</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最多钉选 %1$d 位朋友并且支持手动排序</string>
     <string name="billing_sharing">分享时移除应用名称</string>

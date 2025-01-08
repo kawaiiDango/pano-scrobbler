@@ -5,8 +5,8 @@
         <item quantity="other">%1$s स्क्रबल</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
-        <item quantity="one">आज %1$s</item>
-        <item quantity="other">आज %1$s</item>
+        <item quantity="one">%1$s आज</item>
+        <item quantity="other">%1$s आज</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s श्रोता</item>

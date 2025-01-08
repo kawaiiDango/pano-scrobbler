@@ -164,12 +164,12 @@
     <string name="grant_notification_access_desc">Tarvitaan musiikin metadatan hakemiseen. Ei lueta muita kuin musiikkia koskevia ilmoituksia</string>
     <string name="send_notifications">Salli ilmoitukset</string>
     <string name="notification_channel_blocked">Tämä edellyttää ilmoitusten käyttöönottoa</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Tarkista scrobblausten tila ja lukumäärät
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Tarkista scrobblausten tila ja lukumäärät
 - Tykkää tai estä suoraan ilmoituksesta
 - Saa ilmoituksia scrobblausvirheistä ja toiminnoista, joita voit tehdä
 - Saa joka viikko kuunnelluimmat scrobblauksesi
 - Ja muuta
-- Ilmoituksissa ei ole ääntä\"\""</string>
+- Ilmoituksissa ei ole ääntä\"\"</string>
     <string name="will_not_scrobble">Tämän vaiheen ohittaminen poistaa scrobblauksen käytöstä</string>
     <string name="swap" comment="(Swap title and artist)">Vaihda</string>
     <string name="rate_msg">Pidätkö sovelluksesta?</string>
@@ -383,9 +383,9 @@
     <string name="add_acr_key">Lisää ACRCloud Key</string>
     <string name="remove_acr_key">Poista ACRCloud Key</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Lisää</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Rekisteröidy osoitteessa https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Rekisteröidy osoitteessa https://console.acrcloud.com
 • Siirry kohtaan Projects &gt; Audio &amp; video recognition
-• Luo uusi projekti, valitse Recorded Audio ja ACRCloud Music bucket"</string>
+• Luo uusi projekti, valitse Recorded Audio ja ACRCloud Music bucket</string>
     <string name="shazam_scrobbling">Scrobblataksesi jatkuvasti, avaa sen sijaan <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> ja aloita Auto Shazam. Varmista myös, että Shazam on käytössä scrobblaamista varten.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d jäljellä</string>
     <string name="submitting_loves" formatted="true">Lähetetään tykkäyksiä, %1$d jäljellä</string>
@@ -413,15 +413,14 @@
     <string name="thank_you">Kiitos!</string>
     <string name="purchase_pending">Maksuntarjoaja ei ole vielä vahvistanut ostostasi. Tarkista uudestaan muutaman minuutin kuluttua.</string>
     <string name="billing_troubleshoot_title">Palauta ostos</string>
-    <string name="billing_troubleshoot">"Joko ostit?
+    <string name="billing_troubleshoot">Joko ostit?
 
 Ostojasi hallinnoi Google Play. Ne on yhdistetty Google Play -tiliin, joka teki ostoksen. Kun asennat sovelluksen uudelle laitteelle, jolla on monta tiliä, Google Play voi liittää laitteen väärään tiliin. Paras tapa valita juuri oston omistava tili on asentaa sovellus tietokoneella Google Playn nettisivun kautta:
 
 • Poista tämän sovelluksen asennus.
 • Avaa Google Playn nettisivu koneellasi.
 • Kirjaudu sisään oston omistavalla tilillä.
-• Asenna tämä sovellus suoraan Google Playn nettisivulta.
-"</string>
+• Asenna tämä sovellus suoraan Google Playn nettisivulta.</string>
     <string name="billing_block">Estä esittäjiä/kappaleita ja ohita tai mykistä automaattisesti</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Kiinnitä enintään %1$d ystävää ja järjestele heidät uudelleen</string>
     <string name="billing_sharing">Poista sovelluksen nimi jaettaessa</string>

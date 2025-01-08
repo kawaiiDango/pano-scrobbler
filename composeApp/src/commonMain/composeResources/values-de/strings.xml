@@ -165,12 +165,12 @@
     <string name="grant_notification_access_desc">Benötigt, um Musik-Metadaten abzurufen. Keine Nicht-Musik-Benachrichtigungen werden gelesen</string>
     <string name="send_notifications">Benachrichtigungen zulassen</string>
     <string name="notification_channel_blocked">Dafür müssen Benachrichtigungen aktiviert sein</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Überprüfen Sie Scrobble-Status und -Statistiken
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Überprüfen Sie Scrobble-Status und -Statistiken
 - Favorisieren oder blocken direkt über die Benachrichtigung
 - Benachrichtigungen bei Fehler des Scrobbeln und mögliche Lösungsvorschläge
 - Wöchentliche Top-Scrobbels
 - Und mehr
-- Benachrichtigungen sind stumm\"\""</string>
+- Benachrichtigungen sind stumm\"\"</string>
     <string name="will_not_scrobble">Wenn Sie diesen Schritt überspringen, wird das Scrobbling deaktiviert</string>
     <string name="swap" comment="(Swap title and artist)">Tauschen</string>
     <string name="rate_msg">Gefällt Ihnen diese App?</string>
@@ -402,9 +402,9 @@
     <string name="remove_acr_key">ACRCloud-Schlüssel entfernen</string>
     <string name="add_acr_consider">Um das Erreichen von Geschwindigkeitsbegrenzungen zu verhindern, sollten Sie Ihren eigenen ACRCloud-Schlüssel hinzufügen</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Hinzufügen</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Melden Sie sich bei https://console.acrcloud.com an
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Melden Sie sich bei https://console.acrcloud.com an
 • Navigieren Sie zu Projekten &gt; Audio &amp; Videoerkennung
-• Erstellen Sie ein neues Projekt, wählen Sie aufgenommenes Audio und die ACRCloud Music Bucket aus"</string>
+• Erstellen Sie ein neues Projekt, wählen Sie aufgenommenes Audio und die ACRCloud Music Bucket aus</string>
     <string name="shazam_scrobbling">Öffne <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> um kontinuierlich zu scrobbeln und starte Auto Shazam. Stelle auch sicher, dass Shazam zum Scrobbeln aktiviert ist.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d verbleibend</string>
     <string name="submitting_loves" formatted="true">Sende Favoriten, %1$d verbleibend</string>
@@ -432,15 +432,14 @@
     <string name="thank_you">Vielen Dank!</string>
     <string name="purchase_pending">Ihr Kauf wurde von Ihrem Zahlungsanbieter noch nicht bestätigt. Bitte versuchen Sie es in ein paar Minuten noch einmal.</string>
     <string name="billing_troubleshoot_title">Käufe wiederherstellen</string>
-    <string name="billing_troubleshoot">"Bereits gekauft?
+    <string name="billing_troubleshoot">Bereits gekauft?
 
 Ihre Käufe werden von Google Play verwaltet. Sie sind mit einem Google Play-Konto verknüpft, das einen Kauf gemacht hat. Wenn Sie die App auf einem neuen Gerät mit mehreren Konten installieren, kann Google Play sie mit einem falschen verknüpfen. Die beste Lösung, um explizit das Konto zu wählen, das einen Kauf besitzt, ist die Installation der App von einem Computer über die Google Play-Webseite:
 
 • Diese App deinstallieren.
 • Öffnen Sie die Google Play-Webseite von Ihrem Computer.
 • Melden Sie sich mit einem Konto an, das den Kauf besitzt.
-• Installieren Sie diese App direkt von der Google Play-Webseite.
-"</string>
+• Installieren Sie diese App direkt von der Google Play-Webseite.</string>
     <string name="billing_block">Blockieren von Künstlern/Titeln und automatisches Überspringen oder Stummschalten</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Bis zu %1$d Freunde anheften und neu anordnen</string>
     <string name="billing_sharing">Entfernen Sie den App-Namen beim Teilen</string>

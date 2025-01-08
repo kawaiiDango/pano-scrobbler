@@ -161,12 +161,12 @@
     <string name="grant_notification_access_desc">Nodig om de muziekmetadata op te halen. Niet-muziek-meldingen worden niet gelezen</string>
     <string name="send_notifications">Meldingen toestaan</string>
     <string name="notification_channel_blocked">Dit vereist dat meldingen ingeschakeld zijn</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Controleer de scrobble status en aantallen
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Controleer de scrobble status en aantallen
 - Love of blokkeer direct vanuit de melding
 - Krijg een melding over scrobble fouten en acties die je kan ondernemen
 - Krijg uw top scrobbles elke week
 - En meer
-- De meldingen maken geen geluid\"\""</string>
+- De meldingen maken geen geluid\"\"</string>
     <string name="will_not_scrobble">Het overslaan van deze stap zal scrobblen uitschakelen</string>
     <string name="swap" comment="(Swap title and artist)">Wissel</string>
     <string name="rate_msg">Tevreden over de app?</string>
@@ -389,9 +389,9 @@
     <string name="remove_acr_key">Verwijder ACRCloud-sleutel</string>
     <string name="add_acr_consider">Overweeg om uw eigen ACRCloud-sleutel toe te voegen om te voorkomen dat de rate-limits worden bereikt</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Voeg toe</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Meld u aan op https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Meld u aan op https://console.acrcloud.com
 • Navigeer naar Projecten &gt; Geluid &amp; videoherkenning
-• Maak een nieuw project, selecteer Opgenomen audio en de ACRCloud Muziek-bucket"</string>
+• Maak een nieuw project, selecteer Opgenomen audio en de ACRCloud Muziek-bucket</string>
     <string name="shazam_scrobbling">Als u continu wilt scrobblen, open je <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> in plaats daarvan en start u Auto Shazam. Zorg er ook voor dat Shazam is ingeschakeld voor scrobblen.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d resterend</string>
     <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
@@ -415,15 +415,14 @@
     <string name="thank_you">Bedankt!</string>
     <string name="purchase_pending">Uw aankoop is nog niet bevestigd door uw betalingsprovider. Kom na een paar minuten nog eens terug.</string>
     <string name="billing_troubleshoot_title">Herstel aankoop</string>
-    <string name="billing_troubleshoot">"Al aangeschaft?
+    <string name="billing_troubleshoot">Al aangeschaft?
 
 Je aankopen worden beheerd door Google Play. Ze zijn gekoppeld met het Google Play-account dat de aankoop heeft gemaakt. Wanneer u de app op een nieuw apparaat met meerdere accounts installeert, kan Google Play deze aan het verkeerde account koppelen. De beste oplossing om expliciet een account te selecteren dat een aankoop bezit, is om de app te installeren vanaf een computer via Google Play webpagina:
 
 • Deïnstalleer deze app,
 • Open de Google Play webpagina vanaf uw computer,
 • Log in met het account die de aankoop bezit,
-• Installeer de app rechtstreeks vanuit de Google Play webpagina.
-"</string>
+• Installeer de app rechtstreeks vanuit de Google Play webpagina.</string>
     <string name="billing_block">Blokkeer artiesten/nummers en sla ze over of negeer ze automatisch</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Pin tot %1$d vrienden en sorteer ze opnieuw</string>
     <string name="billing_sharing">App-naam bij delen weg laten</string>

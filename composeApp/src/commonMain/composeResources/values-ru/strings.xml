@@ -200,12 +200,12 @@
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
     <string name="send_notifications">Разрешить уведомления</string>
     <string name="notification_channel_blocked">Это требует включенные уведомления</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Проверяйте статус скроббла и количество
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Проверяйте статус скроббла и количество
 - Лайкайте или блокируйте прямо из уведомления
 - Получайте уведомления об ошибках и действиях, которые вы можете совершить
 - Получайте ваш топ скробблов каждую неделю
 - И более
-- Уведомления не издают звук\"\""</string>
+- Уведомления не издают звук\"\"</string>
     <string name="will_not_scrobble">Пропуск этого шага отключит скробблинг</string>
     <string name="swap" comment="(Swap title and artist)">Поменять</string>
     <string name="rate_msg">Нравится это приложение?</string>
@@ -443,9 +443,9 @@
     <string name="remove_acr_key">Удалить ключ ACRCloud</string>
     <string name="add_acr_consider">Чтобы предотвратить превышение лимитов скорости, подумайте о добавлении собственного ключа ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Добавить</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Зарегистрируйтесь на console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Зарегистрируйтесь на console.acrcloud.com
 • Перейдите в раздел Projects &gt; Audio &amp; video recognition
-• Создайте новый проект, выберите Recorded Audio и сегмент ACRCloud Music"</string>
+• Создайте новый проект, выберите Recorded Audio и сегмент ACRCloud Music</string>
     <string name="shazam_scrobbling">Чтобы скробблить непрерывно, вместо этого откройте <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> и запустите Автошазам. Также убедитесь, что Shazam включен для скробблинга.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Осталось %1$d</string>
     <string name="submitting_loves" formatted="true">Отправка лайков, осталось %1$d</string>
@@ -474,15 +474,14 @@
     <string name="thank_you">Спасибо!</string>
     <string name="purchase_pending">Ваша покупка еще не подтверждена вашим платежным провайдером. Пожалуйста, повторите попытку через несколько минут.</string>
     <string name="billing_troubleshoot_title">Восстановить покупку</string>
-    <string name="billing_troubleshoot">"Уже купили?
+    <string name="billing_troubleshoot">Уже купили?
 
 Ваши покупки управляются Google Play. Они связаны с учетной записью Google Play, в которой была совершена покупка. Когда вы устанавливаете приложение на новое устройство с несколькими учетными записями, Google Play может связать его с неправильным. Лучшее решение для явного выбора учетной записи, которой принадлежит покупка, — это установить приложение с компьютера через веб-страницу Google Play:
 
 • Удалите это приложение.
 • Откройте веб-страницу Google Play со своего компьютера.
 • Войдите в систему с учетной записью, которой принадлежит покупка.
-• Установите это приложение прямо с веб-страницы Google Play.
-"</string>
+• Установите это приложение прямо с веб-страницы Google Play.</string>
     <string name="billing_block">Блокировать исполнителей/треки и автоматически пропускать или отключать звук</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закрепить до %1$d друзей и изменить их порядок</string>
     <string name="billing_sharing">Удалить имя приложения при шеринге</string>

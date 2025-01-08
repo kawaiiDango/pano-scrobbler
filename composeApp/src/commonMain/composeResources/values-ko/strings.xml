@@ -149,12 +149,12 @@
     <string name="grant_notification_access_desc">음악 메타데이터를 검색하는 데 필요합니다. 음악 알림이 아니면 읽지 않습니다.</string>
     <string name="send_notifications">알림 허용</string>
     <string name="notification_channel_blocked">이를 위해서는 알림이 활성화되어야 합니다.</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- 스크로블 상태 및 횟수 확인
-- 알림에서 직접 '좋아요' 또는 '차단'
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- 스크로블 상태 및 횟수 확인
+- 알림에서 직접 \'좋아요\' 또는 \'차단\'
 - 스크로블 오류 및 조치 가능한 작업에 대한 알림
 - 매주 최상위 스크로블 받기
 - 그 외 다양한 기능
-- 알림은 소리를 내지 않습니다.\"\""</string>
+- 알림은 소리를 내지 않습니다.\"\"</string>
     <string name="will_not_scrobble">이 단계를 건너뛰면 스크로블링이 비활성화됩니다</string>
     <string name="swap" comment="(Swap title and artist)">맞교환</string>
     <string name="rate_msg">이 앱에 만족하십니까?</string>
@@ -376,9 +376,9 @@
     <string name="add_acr_key">ACRCloud 키 추가</string>
     <string name="remove_acr_key">ACRCloud 키 제거</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">추가</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• https://console.acrcloud.com에서 가입하세요.
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• https://console.acrcloud.com에서 가입하세요.
 • Projects&gt; Audio &amp; video recognition으로 이동하세요.
-• 새 프로젝트를 생성하고, Recorded Audio 및 ACRCloud Music bucket을 선택하세요."</string>
+• 새 프로젝트를 생성하고, Recorded Audio 및 ACRCloud Music bucket을 선택하세요.</string>
     <string name="shazam_scrobbling">지속적으로 스크로블하려면, <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>을 대신 열고 Auto Shazam을 시작하세요. 또한 Shazam에서 스크로블링이 활성화되어 있는지 확인하세요.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d 남음</string>
     <string name="submitting_loves" formatted="true">좋아요 제출 중, %1$d 남음</string>
@@ -398,15 +398,14 @@
     <string name="thank_you">감사합니다!</string>
     <string name="purchase_pending">아직 지불 공급처에서 구매가 확인되지 않았습니다. 몇 분 후에 다시 확인해 주세요.</string>
     <string name="billing_troubleshoot_title">구매 복원</string>
-    <string name="billing_troubleshoot">"이미 구매하셨나요?
+    <string name="billing_troubleshoot">이미 구매하셨나요?
 
 구매한 항목은 Google Play에서 관리됩니다. 구매를 완료한 Google Play 계정과 연결되어 있습니다. 여러 계정이 있는 새로운 기기에 앱을 설치하면 Google Play가 잘못된 계정과 연결할 수 있습니다. 구매를 소유한 계정을 명시적으로 선택하는 가장 좋은 해결책은 다음과 같습니다:
 
 • 이 앱을 제거하세요. 
 • 컴퓨터에서 Google Play 웹 페이지를 엽니다. 
 • 구매를 소유한 계정으로 로그인하세요. 
-• Google Play 웹 페이지에서 직접 이 앱을 설치하세요.
-"</string>
+• Google Play 웹 페이지에서 직접 이 앱을 설치하세요.</string>
     <string name="billing_block">아티스트/트랙을 차단하고 자동 스킵 또는 뮤트</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">친구를 최대 %1$d명까지 고정하고 재정렬하세요</string>
     <string name="billing_sharing">공유 시 앱 이름 제거</string>

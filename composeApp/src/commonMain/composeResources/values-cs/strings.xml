@@ -197,12 +197,12 @@
     <string name="grant_notification_access_desc">Nutné pro získání metadat skladeb. Nebudou přečtena žádná nehudební oznámení</string>
     <string name="send_notifications">Povolit oznámení</string>
     <string name="notification_channel_blocked">Je nutné povolit oznámení</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Možnost kontrolovat stav a počet scrobblů
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Možnost kontrolovat stav a počet scrobblů
 - Přidávejte do oblíbených či zablokovaných přímo skrz oznámení
 - Buďte v obraze o chybách při scrobblování a co s nimi můžete dělat
 - Dostávejte top scrobbly každý týden
 - A mnoho dalšího
-- Oznámení nevydává zvuk\"\""</string>
+- Oznámení nevydává zvuk\"\"</string>
     <string name="will_not_scrobble">Přeskočení tohoto kroku zakáže scrobblování</string>
     <string name="swap" comment="(Swap title and artist)">Prohodit</string>
     <string name="rate_msg">Líbí se vám aplikace?</string>
@@ -425,9 +425,9 @@
     <string name="remove_acr_key">Odebrat klíč ACRCloud</string>
     <string name="add_acr_consider">Pro zabránění překročení limitů, zvažte přidání vlastního ACRCloud klíče</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Přidat</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Zaregistrujte se na https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Zaregistrujte se na https://console.acrcloud.com
 • Přejděte do \"Projects\" &gt; \"Audio &amp; video recognition\"
-• Vytvořte nový projekt, vyberte \"Recorded Audio\" a \"ACRCloud Music bucket\""</string>
+• Vytvořte nový projekt, vyberte \"Recorded Audio\" a \"ACRCloud Music bucket\"</string>
     <string name="shazam_scrobbling">Pro neustálé scrobblování si otevřte <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> a zapněte Auto Shazam. Také se ujistěte, že je povoleno scrobblování ze Shazamu.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d zbývajících</string>
     <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
@@ -448,15 +448,14 @@
     <string name="thank_you">Díky!</string>
     <string name="purchase_pending">Váš nákup zatím nebyl potvrzen vašim poskytovatelem platebních služeb. Zkontrolujte nákup za pár minut.</string>
     <string name="billing_troubleshoot_title">Obnovit nákup</string>
-    <string name="billing_troubleshoot">"Již jste někdy aplikaci podpořili?
+    <string name="billing_troubleshoot">Již jste někdy aplikaci podpořili?
 
 Vaše nákupy spravuje Google Play, jsou vázané na účet Google Play, který nákup provedl. Když aplikaci nainstalujete na nové zařízení s více účty, Google Play může zařízení spojit se špatným účtem. Nejlepší řešení je přímo vybrat účet, který provedl nákup, aby aplikaci nainstaloval na zařízení skrz webovou verzi Google Play na počítači:
 
 • Odinstalujte tuto aplikaci
 • Otevřte webovou stránku Google Play na svém počítači
 • Přihlaste se účtem, který provedl nákup
-• Nainstalujte aplikaci na zařízení přímo z webu.
-"</string>
+• Nainstalujte aplikaci na zařízení přímo z webu.</string>
     <string name="billing_block">Blokování umělců/skladeb a automatické přeskakování nebo ztlumení</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Připněte až %1$d přátel a seřaďte si je</string>
     <string name="billing_sharing">Odstranit název aplikace při sdílení</string>

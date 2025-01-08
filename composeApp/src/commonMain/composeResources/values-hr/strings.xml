@@ -184,12 +184,12 @@
     <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>
     <string name="send_notifications">Dopusti obavijesti</string>
     <string name="notification_channel_blocked">Za ovo je potrebno omogućiti obavijesti</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- provjera statusa scrobbleanja i prikaz brojača
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- provjera statusa scrobbleanja i prikaz brojača
 - označavanje kao voljeno ili blokiranje izravno iz obavijesti
 - obavještavanje o greškama kod scrobbleanja i kako ih ispraviti
 - obavještavanje o top scrobbleovima svakog tjedna
 - i više toga
-- obavijesti su tihe\""</string>
+- obavijesti su tihe\"</string>
     <string name="will_not_scrobble">Ako preskočite ovaj korak, scrobbleanje bit će onemogućeno</string>
     <string name="swap" comment="(Swap title and artist)">Zamijeni mjesta</string>
     <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
@@ -427,9 +427,9 @@
     <string name="remove_acr_key">Ukloni ključ za ACRCloud</string>
     <string name="add_acr_consider">Za sprječavanje prelaženja ograničenja stope pristupa, razmislite o dodavanju vlastitog ključa za ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Dodaj</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Registrirajte se na https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Registrirajte se na https://console.acrcloud.com
 • Navigirajte do \"Projects\" &gt; \"Audio &amp; video recognition\"
-• Stvorite novi projekt, odaberite \"Recorded Audio\" i \"ACRCloud Music bucket\""</string>
+• Stvorite novi projekt, odaberite \"Recorded Audio\" i \"ACRCloud Music bucket\"</string>
     <string name="shazam_scrobbling">Za kontinuirano scrobbleanje, umjesto ovoga otvorite <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> i pokrenite \"Auto Shazam\". Provjerite i je li omogućeno scrobbleanje iz Shazama.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Preostalo %1$d</string>
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
@@ -458,15 +458,14 @@
     <string name="thank_you">Hvala Vam!</string>
     <string name="purchase_pending">Vašu kupovinu još nije potvrdio Vaš davatelj usluga plaćanja. Provjerite ponovno za nekoliko minuta.</string>
     <string name="billing_troubleshoot_title">Obnovi kupovinu</string>
-    <string name="billing_troubleshoot">"Već ste kupili?
+    <string name="billing_troubleshoot">Već ste kupili?
 
 Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom koji je obavio kupovinu. Kada instalirate aplikaciju na novom uređaju s više računa, Google Play može ju povezati s krivim računom. Najbolji način da izričito odaberete račun koji posjeduje tu kupovinu je da instalirate aplikaciju s računala pomoću Google Play web-stranice:
 
 • Deinstalirajte ovu aplikaciju.
 • Otvorite Google Play web-stranicu na Vašem računalu.
 • Prijaviti se s računom koji posjeduje kupovinu ove aplikacije.
-• Instalirajte aplikaciju s Google Play web-stranice.
-"</string>
+• Instalirajte aplikaciju s Google Play web-stranice.</string>
     <string name="billing_block">Blokiranje izvođača/pjesama i automatsko preskakanje ili utišavanje</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>

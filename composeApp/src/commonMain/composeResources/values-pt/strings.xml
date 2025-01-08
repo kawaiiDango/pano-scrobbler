@@ -168,12 +168,12 @@
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
     <string name="send_notifications">Permitir notificações</string>
     <string name="notification_channel_blocked">Isto requer que as notificações estejam ativadas</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Verifique o estado e a contagem dos scrobbles
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Verifique o estado e a contagem dos scrobbles
 - Favorite ou bloqueie diretamente da notificação
 - Seja notificado sobre erros de scrobble e possíveis soluções para o problema
 - Confira a sua tabela de scrobbles todas as semanas
 - E muito mais
-- As notifcações não reproduzem nenhum som\"\""</string>
+- As notifcações não reproduzem nenhum som\"\"</string>
     <string name="will_not_scrobble">Ignorar esta etapa desativará o scrobbling</string>
     <string name="swap" comment="(Swap title and artist)">Inverter</string>
     <string name="rate_msg">Está a gostar da aplicação?</string>
@@ -411,9 +411,9 @@
     <string name="remove_acr_key">Remover chave ACRCloud</string>
     <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar a sua própria chave ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Adicionar</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Registe-se em https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Registe-se em https://console.acrcloud.com
 • Navegue em Projects &gt; Audio &amp; video recognition
-• Crie um novo projeto, selecione Recorded Audio e o repositório ACRCloud Music"</string>
+• Crie um novo projeto, selecione Recorded Audio e o repositório ACRCloud Music</string>
     <string name="shazam_scrobbling">Para scrobbles contínuos, abra o <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> em vez disso e inicie o Auto Shazam. Certifique-se também de que o Shazam tem o scrobbler ativado.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restantes</string>
     <string name="submitting_loves" formatted="true">A submeter favoritas, %1$d restantes</string>
@@ -442,15 +442,14 @@
     <string name="thank_you">Obrigado!</string>
     <string name="purchase_pending">A sua compra ainda não foi confirmada pelo seu provedor de pagamento. Por favor, verifique novamente daqui a alguns minutos.</string>
     <string name="billing_troubleshoot_title">Restaurar compra</string>
-    <string name="billing_troubleshoot">"Já comprou?
+    <string name="billing_troubleshoot">Já comprou?
 
 As suas compras são administradas pelo Google Play. Estas estão vinculadas a uma conta do Google Play que fez uma compra. Quando instala a aplicação num novo dispositivo com várias contas, o Google Play pode associá-la com uma errada. A melhor solução para selecionar explicitamente a conta que possui uma compra é instalar a aplicação a partir de um computador, através da página web do Google Play:
 
 • Desinstale esta aplicação.
 • Abra a página da Web do Google Play no seu computador.
 • Inicie sessão com a conta que fez a compra.
-• Instale este aplicativo diretamente a partir da página web do Google Play.
-"</string>
+• Instale este aplicativo diretamente a partir da página web do Google Play.</string>
     <string name="billing_block">Bloquear, saltar ou silenciar artistas/faixas automaticamente</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Afixe até %1$d amigos e reordene-os</string>
     <string name="billing_sharing">Remover nome da aplicação ao partilhar</string>

@@ -23,7 +23,12 @@
 <img src="https://i.imgur.com/pgETfhc.png" alt="scrobbles" width="150"/> <img src="https://i.imgur.com/Q7yPi2z.png" alt="friends" width="150"/> <img src="https://i.imgur.com/MUhcyBw.png" alt="charts" width="150"/> <img src="https://i.imgur.com/aikbtGR.png" alt="random" width="150"/>
 
 ### Download
+
+**Android:**
 [![play-store][play-store]][play-store-link] [![github][github]][github-link] [![fdroid][fdroid]][fdroid-link]
+
+> [!WARNING]
+> The F-droid repo is currently broken
 
 ### Translate
 [![translate][crowdin]][crowdin-link]

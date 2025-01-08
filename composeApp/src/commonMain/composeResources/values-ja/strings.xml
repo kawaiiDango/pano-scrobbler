@@ -152,12 +152,12 @@
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
     <string name="send_notifications">通知を許可する</string>
     <string name="notification_channel_blocked">このアプリからの通知を有効にしてください</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Scrobbleの状態や回数の確認
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Scrobbleの状態や回数の確認
 - 通知から直接のLoveやブロック
 - Scrobbleのエラーと対処法についての通知
 - 週初のトップScrobbleのお知らせ
 - などなど
-- 通知音は鳴りません\"\""</string>
+- 通知音は鳴りません\"\"</string>
     <string name="will_not_scrobble">この項目をスキップすると、Scrobbleが行われません</string>
     <string name="swap" comment="(Swap title and artist)">入れ替え</string>
     <string name="rate_msg">アプリに満足していただいていますか？</string>
@@ -394,9 +394,9 @@
     <string name="remove_acr_key">ACRCloudキーを削除</string>
     <string name="add_acr_consider">個別のACRCloudキーを追加することで、レート制限を防ぐことができます</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">追加</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• https://console.acrcloud.com に登録
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• https://console.acrcloud.com に登録
 • Projects &gt; Audio &amp; video recognitionに移動
-• Create Projectからプロジェクトを新規作成し、Audio SourceをRecorded Audioに、BucketsをACRCloud Musicに選択"</string>
+• Create Projectからプロジェクトを新規作成し、Audio SourceをRecorded Audioに、BucketsをACRCloud Musicに選択</string>
     <string name="shazam_scrobbling">連続してScrobbleする場合は、<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>を代わりに開き、Auto Shazamをオンにしてください。また、ShazamがScrobbleの対象アプリになっていることを確認してください。</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">残り%1$d件</string>
     <string name="submitting_loves" formatted="true">Loveを送信中、残り%1$d件</string>
@@ -425,14 +425,14 @@
     <string name="thank_you">ありがとうございます！</string>
     <string name="purchase_pending">お支払いの確認が取れませんでした。後ほどお試しください。</string>
     <string name="billing_troubleshoot_title">購入の復元</string>
-    <string name="billing_troubleshoot">"すでに支援してくださっていますか？
+    <string name="billing_troubleshoot">すでに支援してくださっていますか？
 
 お支払い情報はGoogle Playで管理され、それを行ったアカウントに記録されています。複数のアカウントが登録されたデバイスでこのアプリをインストールした際、別のアカウントが紐付けられる可能性があります。購入したアカウントを指定するには、PCでGoogle Playのストアページを開き、そちらからインストールを行う方法が最適です。手順は以下のとおりです。
 
 • このアプリをアンインストール
 • PCでGoogle Playのストアページを開く
 • お支払いを行ったアカウントでログイン
-• このアプリをストアページ上から直接インストール"</string>
+• このアプリをストアページ上から直接インストール</string>
     <string name="billing_block">アーティスト/トラックのブロック、オートスキップ/ミュート機能</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最大%1$d人のフレンドのピン留めおよび並び替え</string>
     <string name="billing_sharing">共有時にアプリ名を含めない</string>

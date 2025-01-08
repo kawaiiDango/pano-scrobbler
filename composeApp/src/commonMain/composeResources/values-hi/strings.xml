@@ -169,12 +169,12 @@
     <string name="grant_notification_access_desc">गीत का मेटाडेटा प्राप्त करने के लिए आवश्यक है। अन्य कोई सुचनाएं नहीं पढ़ी जाती</string>
     <string name="send_notifications">सुचनाएं आने कि अनुमति दें</string>
     <string name="notification_channel_blocked">इसके लिए सुचनाएं को सक्रिय होना आवश्यक है</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- स्क्रौब्ल की स्थिति और गणना की जांच करें
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- स्क्रौब्ल की स्थिति और गणना की जांच करें
 - प्रिय या अवरोध सीधा सूचना से करें
 - स्क्रौब्ल में समस्या और आप क्या कर सकते है उसकी सूचना प्राप्त करें
 - हर सप्ताह आपके सर्वोच स्क्रौब्ल प्राप्त करें
 - इत्यादि
-- सुचनाएं आवाज़ नहीं करतीं\"\""</string>
+- सुचनाएं आवाज़ नहीं करतीं\"\"</string>
     <string name="will_not_scrobble">इस चरण को अंधेका करने पर स्क्रॉबल करना निष्क्रिय हो जायेगा</string>
     <string name="swap" comment="(Swap title and artist)">अदला-बदली करें</string>
     <string name="rate_msg">एप्लीकेशन उपयोग करने में आनंद आ रहा हैं?</string>

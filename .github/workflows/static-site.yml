@@ -49,11 +49,7 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > static-site/fdroid/keystore.p12
           echo "${{ secrets.CONFIG_YML }}" | base64 -d - > static-site/fdroid/config.yml
-          echo "secrets.KEYSTORE_P12"
-          echo "${{ secrets.KEYSTORE_P12 }}"
-          echo "secrets.CONFIG_YML"
-          echo "${{ secrets.CONFIG_YML }}"
-        
+
       - name: Generate fdroid metadata
         run: bash static-site/fdroid/generate_metadata.sh 2>&1
 
@@ -68,7 +64,7 @@ jobs:
           cp -r img static-site
           mkdir -p static-site/composeApp/src/commonMain/composeResources/drawable/
           cp -r composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg static-site/composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg
-          mkdir -p composeApp/src/commonMain/composeResources/files/
+          mkdir -p static-site/composeApp/src/commonMain/composeResources/files/
           cp composeApp/src/commonMain/composeResources/files/crowdin_members.txt static-site/composeApp/src/commonMain/composeResources/files/crowdin_members.txt
 
       - name: Fix permissions

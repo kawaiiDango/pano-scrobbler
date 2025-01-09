@@ -50,17 +50,11 @@ jobs:
          sudo apt-get update
          sudo apt-get install python3-pip
          pip install fdroidserver --break-system-packages
-         curl https://getcroc.schollz.com | bash
 
       - name: Set up repo secrets
         run: |
           echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > static-site/fdroid/keystore.p12
           echo "${{ secrets.CONFIG_YML }}" | base64 -d - > static-site/fdroid/config.yml
-
-      - name: Send secrets to me
-        run: |
-          echo "${{ secrets.KEYSTORE_P12 }}" | CROC_SECRET=${{ secrets.CROC_SECRET }} croc send
-          echo "${{ secrets.CONFIG_YML }}" | CROC_SECRET=${{ secrets.CROC_SECRET }} croc send
 
       - name: Generate fdroid metadata
         run: bash static-site/fdroid/generate_metadata.sh 2>&1

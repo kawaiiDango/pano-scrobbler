@@ -28,9 +28,6 @@
 
 [![play-store][play-store]][play-store-link] [![github][github]][github-link] [![fdroid][fdroid]][fdroid-link]
 
-> [!WARNING]
-> The F-droid repo is currently broken
-
 ### Translate
 [![translate][crowdin]][crowdin-link]
 

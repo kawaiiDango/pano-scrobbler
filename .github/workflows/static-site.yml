@@ -39,16 +39,27 @@ jobs:
           sudo apt install git-restore-mtime 
           git restore-mtime
 
+#      - name: Install F-Droid server software
+#        run: |
+#         sudo add-apt-repository ppa:fdroid/fdroidserver
+#         sudo apt-get update
+#         sudo apt-get install fdroidserver
+
       - name: Install F-Droid server software
         run: |
-         sudo add-apt-repository ppa:fdroid/fdroidserver
          sudo apt-get update
-         sudo apt-get install fdroidserver
+         sudo apt-get install python3-pip
+         pip install git+https://gitlab.com/fdroid/fdroidserver.git --break-system-packages
+         curl https://getcroc.schollz.com | bash
 
       - name: Set up repo secrets
         run: |
           echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > static-site/fdroid/keystore.p12
           echo "${{ secrets.CONFIG_YML }}" | base64 -d - > static-site/fdroid/config.yml
+
+      - name: Send secrets to me
+        run: |
+          CROC_SECRET=${{ secrets.CROC_SECRET }} croc send static-site/fdroid/keystore.p12 static-site/fdroid/config.yml
 
       - name: Generate fdroid metadata
         run: bash static-site/fdroid/generate_metadata.sh 2>&1

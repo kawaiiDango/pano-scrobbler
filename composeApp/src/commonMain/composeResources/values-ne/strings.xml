@@ -162,6 +162,7 @@
     <string name="pending_scrobble">विचाराधीन स्क्रबल</string>
     <string name="pending_scrobbles_noti">विचाराधीन स्क्रबल प्रशोधन गर्दै</string>
     <string name="following" comment="accounts you are following on lastfm">फलोइङ</string>
+    <string name="followers" comment="your lastfm followers">फलोवर्स</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रबल, %2$s देखि</string>
     <string name="allow_background">ब्याकग्राउण्डमा स्क्रबल गर्ने अनुमति दिनुहोस्</string>
     <string name="grant_notification_access">सूचना अनुमति प्रदान गर्नुहोस्</string>
@@ -216,12 +217,49 @@
     <string name="years" comment="For the charts menu which displays year by year">वर्ष</string>
     <string name="charts_overall">समग्र</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">सुन्ने गतिविधि</string>
+    <string name="charts_no_data">यस अवधिको लागि कुनै डेटा छैन</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">कस्टम</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">लगातार</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s मा आधारित</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">पर्याप्त डेटा छैन</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">म भाग्यशाली महसुस गर्दैछु</string>
     <string name="random_not_found">कुनै ट्र्याक फेला परेन</string>
+    <string name="loved_track">Loved track</string>
+    <string name="randomize" comment="(To randomize or fetch a new random item)">ऱ्याण्डम</string>
     <string name="random_text">जुनसुकै</string>
+    <string name="graph_daily">दैनिक स्क्रबल गणना</string>
+    <string name="graph_weekly">साप्ताहिक स्क्रबल गणना</string>
+    <string name="graph_monthly">मासिक स्क्रबल गणना</string>
+    <string name="graph_yearly">वार्षिक स्क्रबल गणना</string>
+    <string name="original" comment="Original metadata before editing">मौलिक</string>
+    <string name="corrected" comment="Corrected metadata after editing">सच्याइयो</string>
+    <string name="tag" comment="last.fm tag">ट्याग</string>
+    <string name="taggers" comment="(number of) people who have tagged">ट्यागर्स</string>
+    <string name="taggings" comment="(total count of) a particular tag">ट्यागिङ्स</string>
+    <string name="digest_weekly">मेरा गत हप्ताका शीर्ष स्क्रबल</string>
+    <string name="digest_monthly">मेरा गत महिनाका शीर्ष स्क्रबल</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s शीर्ष स्क्रबल</string>
+    <string name="my_tags" comment="Tags, the user has added">मेरो ट्याग</string>
+    <string name="close" comment="To close a dialog or something">बन्द</string>
+    <string name="user_tags_hint" comment="To add a new tag">नयाँ ट्याग</string>
+    <string name="user_tags_empty">तपाईंले कुनै पनि ट्याग थप्नुभएको छैन।</string>
+    <string name="appwidget_loading">लोड हुँदैछ…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">अवधि</string>
+    <string name="appwidget_theme">थीम</string>
+    <string name="appwidget_shadow">छाँया</string>
+    <string name="appwidget_show">देखाउ</string>
+    <string name="light">उज्यालो</string>
+    <string name="dark">अँध्यारो</string>
+    <string name="system_colors">प्रणाली रङहरू</string>
+    <string name="appwidget_alpha">ब्याकग्राउण्ड अपारदर्शकता</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">विजेट प्रत्येक %1$s मा रिफ्रेस हुनेछ</string>
+    <string name="primary_color">प्राथमिक रङ</string>
+    <string name="secondary_color">सहायक रङ</string>
+    <string name="tint_background" comment="Tint the background with the primary color">टिन्ट ब्याकग्राउण्ड</string>
+    <string name="random_theme">प्रत्येक सुरुवातमा ऱ्याण्डमाइज गर्नुहोस्</string>
+    <string name="edit_name" comment="name for regex pattern">मैत्रीपूर्ण नाम</string>
+    <string name="edit_regex">Regex pattern</string>
+    <string name="edit_regex_replacement">Regex replacement</string>
     <string name="block" comment="block the track from scrobbling">ब्लक</string>
     <string name="create_collage">कोलाज बनाउनुहोस्</string>
     <string name="pref_master">संगीत स्क्रबल गर्नुहोस्</string>

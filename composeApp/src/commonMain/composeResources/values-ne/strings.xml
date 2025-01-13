@@ -124,6 +124,7 @@
     <string name="more" comment="More options menu in short">अरू</string>
     <string name="learn" comment="(Learn java regex syntax)">सिक्नुहोस्</string>
     <string name="hide">लुकाउनुहोस्</string>
+    <string name="rank_change" comment="%1= delta change">श्रेणी परिवर्तन: %1$s</string>
     <string name="rank_change_no_change">परिवर्तन छैन</string>
     <string name="rank_change_new">अघिल्लो अवधि भित्र स्क्रबल गरिएको छैन</string>
     <string name="search">खोज्नुहोस्</string>
@@ -136,16 +137,34 @@
     <string name="full_index">पूर्ण इन्डेक्स</string>
     <string name="take_long_time">यसले लामो समय लिन सक्छ</string>
     <string name="full_index_desc">यदि तपाईंले वेबसाइटबाट स्क्रबल सम्पादन वा मेटाउनुभएको छ भने मात्र यसलाई प्रयोग गर्नुहोस्।</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">प्रत्येक श्रेणीमा शीर्ष %1$s वस्तुहरू खोजियो।</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">अन्तिम पटक %1$s मा इन्डेक्स गरिएको।</string>
     <string name="profile">प्रोफाइल</string>
     <string name="profile_pic">प्रोफाइल छवि</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">यस वस्तुको लागि विकल्पहरू</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s भेटियो</string>
+    <string name="new_player_prompt">यो एप स्क्रबल गरिरहने हो?</string>
+    <string name="no_scrobbles">अहिलेसम्म कुनै पनि गीत छैन…</string>
+    <string name="no_friends">अहिलेसम्म कसैलाई पनि फलो गरिरहेको छैन…</string>
+    <string name="channel_err" comment="Its a noun">स्क्रबल त्रुटिहरू</string>
+    <string name="new_app">नयाँ एप</string>
+    <string name="no_apps_enabled">कुनै एप सक्षम छैन</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d थप</string>
     <string name="show_all">सबै हेर्नुहोस्</string>
     <string name="edit">सम्पादन</string>
     <string name="delete">हटाउनुहोस्</string>
+    <string name="delete_all">सबै मेटाउनुहोस्</string>
+    <string name="love" comment="Love/like a song">Love</string>
+    <string name="hate" comment="Hate or dislike a song">Hate</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Unhate</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Unlove</string>
+    <string name="pending_scrobbles">विचाराधीन स्क्रबल</string>
+    <string name="pending_scrobble">विचाराधीन स्क्रबल</string>
     <string name="pending_scrobbles_noti">विचाराधीन स्क्रबल प्रशोधन गर्दै</string>
     <string name="following" comment="accounts you are following on lastfm">फलोइङ</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रबल, %2$s देखि</string>
     <string name="allow_background">ब्याकग्राउण्डमा स्क्रबल गर्ने अनुमति दिनुहोस्</string>
-    <string name="grant_notification_access">सूचना पठाउने अनुमति प्रदान गर्नुहोस्</string>
+    <string name="grant_notification_access">सूचना अनुमति प्रदान गर्नुहोस्</string>
     <string name="grant_notification_access_desc">संगीत मेटाडेटा प्राप्त गर्न आवश्यक छ। अन्य कुनै पनि गैर-संगीत सूचनाहरू पढिने छैनन्</string>
     <string name="send_notifications">सूचनाहरूलाई अनुमति दिनुहोस्</string>
     <string name="notification_channel_blocked">यसका लागि सूचनाहरू सक्षम गर्न आवश्यक छ</string>

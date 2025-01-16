@@ -111,6 +111,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">App</string>
     <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
     <string name="unavailable_offline">Non disponibile offline</string>
+    <string name="tv_url_notice">Apri questo URL sul browser di un altro dispositivo</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servizi</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Stavo ascoltando\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s stava ascoltando\n%1$s %2$s</string>
@@ -123,6 +124,7 @@
     <string name="more" comment="More options menu in short">Altro</string>
     <string name="learn" comment="(Learn java regex syntax)">Impara</string>
     <string name="hide">Nascondi</string>
+    <string name="rank_change" comment="%1= delta change">Spostamento in classifica: %1$s</string>
     <string name="rank_change_no_change">Nessuno spostamento</string>
     <string name="rank_change_new">Nessuno scrobbling nel periodo precedente</string>
     <string name="search">Cerca</string>
@@ -159,6 +161,8 @@
     <string name="pending_scrobbles">Scrobbling in attesa</string>
     <string name="pending_scrobble">Scrobbling in attesa</string>
     <string name="pending_scrobbles_noti">Elaborando gli scrobbling in attesa</string>
+    <string name="following" comment="accounts you are following on lastfm">Seguiti</string>
+    <string name="followers" comment="your lastfm followers">Seguaci</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbling eseguiti, dal %2$s</string>
     <string name="allow_background">Consenti lo scrobbling in background</string>
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
@@ -297,6 +301,8 @@
     <string name="persistent_noti_desc">Tieni premuto per nascondere</string>
     <string name="scrobbler_off">Scrobbler disattivato</string>
     <string name="scrobbler_on">Scrobbler attivato</string>
+    <string name="duration">Durata</string>
+    <string name="total_listen_time">Tempo di ascolto totale</string>
     <string name="acoustic" comment="(Acoustic music)">Acustica</string>
     <string name="instrumental">Strumentale</string>
     <string name="energetic" comment="(Energetic music)">Energetica</string>
@@ -325,6 +331,8 @@
     <string name="pref_enabled_apps_title">Scegli app</string>
     <string name="pref_auto_detect">Scrobble automatico da nuove app</string>
     <string name="pref_spotify_remote">Scrobble di Spotify da altri dispositivi</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Usa ricerca approssimativa per le immagini degli artisti</string>
+    <string name="pref_link_heart_button_rating">Usa il cuore nella notifica per impostare come preferito anche nel lettore musicale</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Disabilita lo scrobbling continuo dal microfono quando il dispositivo sta riproducendo musica</string>
     <string name="pref_delay">Ritardo dello scrobbling (quello che viene prima)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuti</string>
@@ -338,6 +346,7 @@
     <string name="pref_user_label" comment="(Like username)">Utente</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token di autenticazione</string>
     <string name="api_url" comment="For Listenbrainz">URL dell\'API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL del server</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Puoi trovare il tuo token di autenticazione su: %1$s</string>
     <string name="pref_now_playing">Invia scrobbling in corso</string>
     <string name="pref_fetch_album">Recupera i dati dell\'album mancanti da lastFM</string>
@@ -350,6 +359,9 @@
     <string name="pref_export">Esporta</string>
     <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
     <string name="pref_import">Importa</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Network</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Codice</string>
+    <string name="pref_imexport_network_notice">Per la modalità network, entrambi i dispositivi devono essere connessi alla stessa rete.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizzazione</string>
     <string name="pref_themes" comment="Color themes">Temi</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Personalizza gli abbinamenti\nCambia anche il colore delle notifiche</string>
@@ -391,6 +403,7 @@
     <string name="no_browser">Nessun browser installato</string>
     <string name="no_player">Nessun lettore musicale installato</string>
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo: %1$s</string>
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit" comment="Verifies the login details">Verifica</string>
     <string name="acr_host" comment="Web hostname">Host</string>
@@ -412,9 +425,29 @@
     <string name="fix_it_title">Possibili soluzioni</string>
     <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
     <string name="fix_it_battery_title">Disattiva l\'ottimizzazione della batteria</string>
+    <string name="fix_it_energy_title">Disattiva ottimizzazione batteria</string>
     <string name="fix_it_action" comment="(To open an app)">Apri</string>
     <string name="delete_account">Cancella il tuo account</string>
     <string name="delete_account_custom_servers">Per i server personalizzati, controlla le rispettive documentazioni.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Aggiungi o cambia immagine</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Dalla galleria</string>
+    <string name="square_photo_hint">Usa un\'immagine quadrata per risultati migliori</string>
+    <string name="scrobble_to_file">File</string>
+    <string name="password">Password</string>
+    <string name="open_existing" comment="Append to an existing file">Concatena a file esistente</string>
+    <string name="create" comment="Create a new file">Crea</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annulla</string>
+    <string name="back">Indietro</string>
+    <string name="done">Fatto</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Riprova</string>
+    <string name="run_on_start">Esegui all\'avvio del computer</string>
+    <string name="use_browser">Ti chiediamo di usare un browser su un dispositivo supportato.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Salva registri di debug</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Contrasto</string>
+    <string name="high" comment="As in high/medium/low">Alto</string>
+    <string name="medium" comment="As in high/medium/low">Medio</string>
+    <string name="low" comment="As in high/medium/low">Basso</string>
     <!--  pro  -->
     <string name="get_pro">Sostieni questa app</string>
     <string name="help">Aiuto</string>
@@ -436,4 +469,5 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
     <string name="billing_scrobble_source">Ricorda e vedi le app da cui hai effettuato lo scrobble, e cerca direttamente in queste</string>
     <string name="billing_regex_extract">Scrivi regole di estrazione dei metadati personalizzate usando regex</string>
+    <string name="billing_max_devices_reached" formatted="true">Questo codice è già stato usato sul numero massimo (%1$d) di dispositivi.</string>
 </resources>

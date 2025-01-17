@@ -402,7 +402,7 @@
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…для скробблов</string>
     <string name="pref_show_scrobble_sources">Отображать иконки приложений, из которых вы скробблили</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
-    <string name="pref_search_in_source">Поиск &amp; воспроизведение в приложении, из которого вы скробблили</string>
+    <string name="pref_search_in_source">Поиск и воспроизведение в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Шаблоны редактирования</string>

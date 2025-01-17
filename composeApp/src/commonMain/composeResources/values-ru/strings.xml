@@ -156,6 +156,7 @@
     <string name="more" comment="More options menu in short">Ещё</string>
     <string name="learn" comment="(Learn java regex syntax)">Узнать больше</string>
     <string name="hide">Скрыть</string>
+    <string name="rank_change" comment="%1= delta change">Изменение рейтинга: %1$s</string>
     <string name="rank_change_no_change">Без изменений</string>
     <string name="rank_change_new">Не заскробблено за предыдущий период</string>
     <string name="search">Поиск</string>
@@ -434,6 +435,7 @@
     <string name="no_browser">Браузер не установлен</string>
     <string name="no_player">Музыкальный плеер не установлен</string>
     <string name="not_running">⚠ Скробблер был остановлен вашей системой</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина: %1$s</string>
     <string name="not_running_fix_action">Исправить это</string>
     <string name="login_submit" comment="Verifies the login details">Проверить</string>
     <string name="acr_host" comment="Web hostname">Хост</string>
@@ -466,6 +468,18 @@
     <string name="password">Пароль</string>
     <string name="open_existing" comment="Append to an existing file">Добавить к существующему</string>
     <string name="create" comment="Create a new file">Создать</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
+    <string name="back">Назад</string>
+    <string name="done">Готово</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Повторить</string>
+    <string name="run_on_start">Запускать при старте компьютера</string>
+    <string name="use_browser">Пожалуйста, используйте браузер на поддерживаемом устройстве для этого.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Сохранить логи</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Контраст</string>
+    <string name="high" comment="As in high/medium/low">Высокий</string>
+    <string name="medium" comment="As in high/medium/low">Средний</string>
+    <string name="low" comment="As in high/medium/low">Низкий</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="help">Помощь</string>
@@ -487,4 +501,5 @@
     <string name="billing_sharing">Удалить имя приложения при шеринге</string>
     <string name="billing_scrobble_source">Запомнить и просмотреть приложения, из которых вы скробблили, и искать прямо в них</string>
     <string name="billing_regex_extract">Напишите правила извлечения пользовательских метаданных с помощью регулярных выражений</string>
+    <string name="billing_max_devices_reached" formatted="true">Этот код уже используется на максимальном числе устройств (%1$d).</string>
 </resources>

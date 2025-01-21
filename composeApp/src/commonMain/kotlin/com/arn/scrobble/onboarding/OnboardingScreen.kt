@@ -12,9 +12,12 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.MySplitButtonLayout
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
@@ -37,6 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.fix_it_action
 import pano_scrobbler.composeapp.generated.resources.lastfm
+import pano_scrobbler.composeapp.generated.resources.more
 import pano_scrobbler.composeapp.generated.resources.skip
 
 
@@ -68,6 +71,7 @@ fun ButtonsStepper(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
     val accountTypesToStringRes = remember {
@@ -80,37 +84,44 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
 
     var dropDownShown by remember { mutableStateOf(false) }
 
-    MySplitButtonLayout(
-        leadingButtonContent = {
-            Text(stringResource(Res.string.lastfm))
-        },
-        leadingButtonOnClick = {
-            navigate(LoginDestinations.route(AccountType.LASTFM))
-        },
-        trailingButtonContent = {
-            Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
-
-            DropdownMenu(
-                expanded = dropDownShown,
-                onDismissRequest = { dropDownShown = false }
+    SplitButtonLayout(
+        leadingButton = {
+            SplitButtonDefaults.OutlinedLeadingButton(
+                onClick = { navigate(LoginDestinations.route(AccountType.LASTFM)) }
             ) {
-                accountTypesToStringRes.forEach { (accType, stringRes) ->
-                    DropdownMenuItem(
-                        onClick = {
-                            navigate(LoginDestinations.route(accType))
-                            dropDownShown = false
-                        },
-                        text = {
-                            Text(stringResource(stringRes))
-                        }
-                    )
+                Text(text = stringResource(Res.string.lastfm))
+            }
+        },
+        trailingButton = {
+            SplitButtonDefaults.OutlinedTrailingButton(
+                onCheckedChange = {
+                    dropDownShown = it
+                },
+                checked = dropDownShown
+            ) {
+                Icon(
+                    Icons.Outlined.ArrowDropDown,
+                    contentDescription = stringResource(Res.string.more)
+                )
+
+                DropdownMenu(
+                    expanded = dropDownShown,
+                    onDismissRequest = { dropDownShown = false }
+                ) {
+                    accountTypesToStringRes.forEach { (accType, stringRes) ->
+                        DropdownMenuItem(
+                            onClick = {
+                                navigate(LoginDestinations.route(accType))
+                                dropDownShown = false
+                            },
+                            text = {
+                                Text(stringResource(stringRes))
+                            }
+                        )
+                    }
                 }
             }
         },
-        trailingButtonOnCheckedChange = {
-            dropDownShown = it
-        },
-        trailingButtonChecked = dropDownShown,
     )
 }
 

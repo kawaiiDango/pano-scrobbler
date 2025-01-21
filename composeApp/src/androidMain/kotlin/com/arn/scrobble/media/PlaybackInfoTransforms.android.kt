@@ -23,7 +23,6 @@ actual fun transformPlaybackState(
 
     val commonPlaybackInfo = PlaybackInfo(
         app_id = trackInfo.appId,
-        session_id = trackInfo.sessionId,
         state = commonPlaybackState,
         position = position,
         can_skip = playbackInfo.actions and PlaybackState.ACTION_SKIP_TO_NEXT != 0L

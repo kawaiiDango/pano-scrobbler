@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -68,9 +67,8 @@ val appNameWithoutSpaces = "pano-scrobbler"
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_23)
         }
     }
 
@@ -262,8 +260,8 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_23
+        targetCompatibility = JavaVersion.VERSION_23
     }
 
     testOptions {
@@ -290,7 +288,7 @@ android {
     }
 //    kotlinOptions {
 //        freeCompilerArgs += "-Xjvm-default=all"
-//        jvmTarget = "21"
+//        jvmTarget = "23"
 //    }
 //
 }
@@ -368,7 +366,7 @@ compose.desktop {
                 obfuscate = false
                 optimize = false
                 joinOutputJars = true
-                version = "7.5.0"
+                version = "7.6.0"
                 configurationFiles.from(project.file("proguard-rules-desktop.pro"))
             }
         }

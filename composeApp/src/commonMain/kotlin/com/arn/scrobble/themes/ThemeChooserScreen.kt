@@ -224,12 +224,6 @@ private fun ThemeSwatch(
     OutlinedIconToggleButton(
         checked = selected,
         onCheckedChange = { onClick() },
-        // todo: enable when new api
-//        shapes = IconButtonShapes(
-//            shape = IconButtonDefaults.smallRoundShape,
-//            pressedShape = IconButtonDefaults.smallPressedShape,
-//            checkedShape = IconButtonDefaults.smallSquareShape,
-//        ),
         interactionSource = interactionSource,
         modifier = modifier
             .size(72.dp)

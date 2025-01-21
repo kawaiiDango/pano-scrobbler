@@ -16,9 +16,12 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +44,6 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.ui.AppIcon
-import com.arn.scrobble.ui.MySplitButtonLayout
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
@@ -293,6 +295,7 @@ fun AppIconsPref(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SliderPref(
     text: String,
@@ -336,28 +339,34 @@ fun SliderPref(
             )
 
             if (PlatformStuff.isTv) {
-                MySplitButtonLayout(
-                    leadingButtonContent = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
-                            contentDescription = stringResource(Res.string.move_left),
-                        )
+                SplitButtonLayout(
+                    leadingButton = {
+                        SplitButtonDefaults.OutlinedLeadingButton(
+                            onClick = {
+                                internalValue -= increments
+                                scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                                contentDescription = stringResource(Res.string.move_left),
+                            )
+                        }
                     },
-                    leadingButtonOnClick = {
-                        internalValue -= increments
-                        scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
+                    trailingButton = {
+                        SplitButtonDefaults.OutlinedTrailingButton(
+                            onCheckedChange = {
+                                internalValue += increments
+                                scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
+                            },
+                            checked = false,
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                contentDescription = stringResource(Res.string.move_right),
+                            )
+                        }
                     },
-                    trailingButtonContent = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                            contentDescription = stringResource(Res.string.move_right),
-                        )
-                    },
-                    trailingButtonOnCheckedChange = {
-                        internalValue += increments
-                        scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
-                    },
-                    trailingButtonChecked = false,
                 )
             }
 

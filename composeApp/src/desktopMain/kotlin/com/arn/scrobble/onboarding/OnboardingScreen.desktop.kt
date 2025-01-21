@@ -30,7 +30,8 @@ actual fun OnboardingScreen(
     onDone: () -> Unit,
     modifier: Modifier,
 ) {
-    val isLoggedIn by Scrobblables.current.map { it != null }.collectAsStateWithLifecycle(false)
+    val isLoggedIn by Scrobblables.current.map { it != null }
+        .collectAsStateWithLifecycle(Scrobblables.current.value != null)
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {

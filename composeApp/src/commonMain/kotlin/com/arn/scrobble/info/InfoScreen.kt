@@ -98,7 +98,6 @@ import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import com.valentinilk.shimmer.shimmer
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
 import io.github.koalaplot.core.legend.LegendLocation
@@ -713,7 +712,6 @@ private fun ColumnScope.InfoTags(
                     }
                 ),
                 singleLine = true,
-                // todo: enable when new api
                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable)
             )
             ExposedDropdownMenu(

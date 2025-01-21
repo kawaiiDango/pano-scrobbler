@@ -1,11 +1,13 @@
 package com.arn.scrobble.main
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -78,7 +80,7 @@ private fun init() {
             config = RollingFileLogWriterConfig(
                 logFileName = "pano-scrobbler",
                 logFilePath = Path(logsDir.absolutePath),
-                rollOnSize = 20 * 1024, // 50 KB
+                rollOnSize = 20 * 1024, // 20 KB
                 maxLogFiles = 5,
             )
         )
@@ -102,6 +104,7 @@ fun main(args: Array<String>) {
         val subsequentRoute = remember { MutableSharedFlow<PanoRoute>() }
         val scope = rememberCoroutineScope()
         val windowState = rememberWindowState()
+        val isSystemInDarkTheme = isSystemInDarkTheme()
 
         fun forceNavigateTo(route: PanoRoute) {
             if (!windowShown) {
@@ -151,10 +154,19 @@ fun main(args: Array<String>) {
                 }
         }
 
-        LaunchedEffect(trayIconPainter) {
-            val bmp = trayIconPainter.toImageBitmap()
+        LaunchedEffect(trayIconPainter, isSystemInDarkTheme) {
+            val bmp = trayIconPainter.toImageBitmap(size = Size(64f, 64f))
             val argb = IntArray(bmp.width * bmp.height)
             bmp.readPixels(argb)
+
+            // invert colors for light theme
+            if (!isSystemInDarkTheme) {
+                argb.forEachIndexed { index, color ->
+                    val alpha = color and 0xFF000000.toInt()
+                    val invertedColor = color.inv() and 0x00FFFFFF
+                    argb[index] = invertedColor or alpha
+                }
+            }
 
             PanoNativeComponents.setTrayIcon(argb, bmp.width, bmp.height)
         }
@@ -249,13 +261,11 @@ fun main(args: Array<String>) {
 
         LaunchedEffect(windowShown) {
             if (!windowShown) {
-                delay(10.seconds)
+                delay(60.seconds)
                 // todo: cleanup, also make it 60 seconds
                 Logger.d { "running cleanup" }
                 SingletonImageLoader.reset()
                 Platform.exit()
-                delay(2.seconds)
-                System.gc()
             }
         }
 

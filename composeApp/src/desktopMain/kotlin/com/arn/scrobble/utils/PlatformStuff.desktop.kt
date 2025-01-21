@@ -8,6 +8,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -57,8 +58,13 @@ actual object PlatformStuff {
 
     actual val isTestLab = false
 
-    private fun getAppDataRoot() =
-        System.getenv("APPDATA")?.ifEmpty { null } ?: System.getProperty("user.home")
+    private fun getAppDataRoot() = if (DesktopStuff.isWindows()) {
+        System.getenv("APPDATA")?.ifEmpty { null }
+            ?: System.getProperty("user.home")
+    } else {
+        System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
+            ?: (System.getProperty("user.home") + "/.local/share")
+    }
 
 
     actual val filesDir by lazy {
@@ -97,9 +103,7 @@ actual object PlatformStuff {
     }
 
     actual fun getDeviceIdentifier(): String {
-        val name = System.getenv("COMPUTERNAME")?.ifEmpty { null }
-            ?: System.getenv("HOSTNAME")?.ifEmpty { null }
-            ?: "Unknown"
+        val name = PanoNativeComponents.getMachineId()
         return name.sha256()
     }
 

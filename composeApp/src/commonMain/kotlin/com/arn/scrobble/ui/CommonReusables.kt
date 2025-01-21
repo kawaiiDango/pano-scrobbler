@@ -381,64 +381,6 @@ fun IconButtonWithTooltip(
 }
 
 @Composable
-fun MySplitButtonLayout(
-    leadingButtonContent: @Composable () -> Unit,
-    leadingButtonOnClick: () -> Unit,
-    trailingButtonContent: @Composable () -> Unit,
-    trailingButtonOnCheckedChange: (Boolean) -> Unit,
-    trailingButtonChecked: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .padding(8.dp),
-    ) {
-        OutlinedButton(
-            onClick = leadingButtonOnClick,
-        ) {
-            leadingButtonContent()
-        }
-
-        OutlinedButton(
-            onClick = { trailingButtonOnCheckedChange(true) },
-        ) {
-            trailingButtonContent()
-        }
-    }
-
-    // todo: enable when new api
-
-    //        SplitButtonLayout(
-//            leadingButton = {
-//                SplitButtonDefaults.OutlinedLeadingButton(
-//                    onClick = onSameClick
-//                ) {
-//                    Icon(
-//                        getIconForType(type),
-//                        contentDescription = null,
-//                        modifier = Modifier.padding(end = 4.dp)
-//                    )
-//
-//                    Text(text = getTextForType(type))
-//                }
-//            },
-//            trailingButton = {
-//                SplitButtonDefaults.OutlinedTrailingButton(
-//                    onCheckedChange = {
-//                        typeSelectorIsShown = true
-//                    },
-//                    checked = typeSelectorIsShown
-//                ) {
-//                    Icon(
-//                        Icons.Outlined.ArrowDropDown,
-//                        contentDescription = stringResource(Res.string.item_options)
-//                    )
-//                }
-//            },
-//        )
-}
-
-@Composable
 fun ButtonWithIcon(
     onClick: () -> Unit,
     icon: ImageVector,
@@ -479,8 +421,7 @@ fun BottomSheetDialogParent(
         else {
             { BottomSheetDefaults.DragHandle() }
         },
-        // todo: enable when new api
-//        sheetGesturesEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop,
+        sheetGesturesEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop,
         sheetState = sheetState,
     ) {
         if (PlatformStuff.isDesktop) {

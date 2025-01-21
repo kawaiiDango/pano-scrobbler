@@ -210,7 +210,14 @@ object Scrobblables {
     val current = combine(
         all,
         PlatformStuff.mainPrefs.data.mapLatest { it.currentAccountType }) { all, currentType ->
-        all.firstOrNull { it.userAccount.type == currentType }
+        var account = all.firstOrNull { it.userAccount.type == currentType }
+
+        if (all.isNotEmpty() && account == null) {
+            account = all.first()
+            PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = account.userAccount.type) }
+        }
+
+        account
     }.stateIn(GlobalScope, SharingStarted.Eagerly, null)
 
     val currentScrobblableUser

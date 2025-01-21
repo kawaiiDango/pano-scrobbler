@@ -19,7 +19,10 @@ import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +46,6 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.MusicEntryGridItem
 import com.arn.scrobble.ui.MusicEntryListItem
-import com.arn.scrobble.ui.MySplitButtonLayout
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
@@ -228,6 +230,7 @@ fun RandomScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RandomTypeSelector(
     type: Int,
@@ -257,25 +260,37 @@ private fun RandomTypeSelector(
     Box(
         modifier = modifier
     ) {
-        MySplitButtonLayout(
-            leadingButtonContent = {
-                Icon(
-                    getIconForType(type),
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
+        SplitButtonLayout(
+            leadingButton = {
+                SplitButtonDefaults.OutlinedLeadingButton(
+                    onClick = onSameClick
+                ) {
+                    Icon(
+                        getIconForType(type),
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
 
-                Text(text = getTextForType(type))
+                    Text(text = getTextForType(type))
+                }
             },
-            leadingButtonOnClick = onSameClick,
-            trailingButtonContent = {
+            trailingButton = {
+                SplitButtonDefaults.OutlinedTrailingButton(
+                    onCheckedChange = {
+                        typeSelectorIsShown = it
+                    },
+                    checked = typeSelectorIsShown
+                ) {
+                    Icon(
+                        Icons.Outlined.ArrowDropDown,
+                        contentDescription = stringResource(Res.string.item_options)
+                    )
+                }
                 Icon(
                     Icons.Outlined.ArrowDropDown,
                     contentDescription = stringResource(Res.string.item_options)
                 )
             },
-            trailingButtonOnCheckedChange = { typeSelectorIsShown = true },
-            trailingButtonChecked = typeSelectorIsShown
         )
 
         DropdownMenu(

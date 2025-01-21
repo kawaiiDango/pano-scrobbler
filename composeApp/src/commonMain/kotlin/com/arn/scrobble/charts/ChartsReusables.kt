@@ -29,8 +29,8 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SelectableDates
-import androidx.compose.material3.SplitButton
 import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -221,44 +221,9 @@ fun TimePeriodSelector(
 
         if (!isListenBrainz) {
             Box {
-                // todo: enable when new api
-//                SplitButtonLayout(
-//                    leadingButton = {
-//                        OutlinedLeadingButton(
-//                            onClick = {
-//                                selectorTypeShown = SelectorType.PERIOD_TYPE
-//                            }
-//                        ) {
-//                            periodType?.let {
-//                                Icon(
-//                                    imageVector = getPeriodTypeIcon(it),
-//                                    contentDescription = stringResource(Res.string.item_options)
-//                                )
-//                            }
-//                        }
-//                    },
-//
-//                    trailingButton = {
-//                        if (periodType == TimePeriodType.WEEK || periodType == TimePeriodType.MONTH) {
-//                            OutlinedTrailingButton(
-//                                checked = false,
-//                                onCheckedChange = {
-//                                    selectorTypeShown =
-//                                        if (periodType == TimePeriodType.WEEK) SelectorType.WEEK else SelectorType.MONTH
-//                                }
-//                            ) {
-//                                Icon(
-//                                    imageVector = Icons.Outlined.Colorize,
-//                                    contentDescription = stringResource(Res.string.appwidget_period)
-//                                )
-//                            }
-//                        }
-//                    },
-//                )
-
-                SplitButton(
+                SplitButtonLayout(
                     leadingButton = {
-                        SplitButtonDefaults.LeadingButton(
+                        SplitButtonDefaults.OutlinedLeadingButton(
                             onClick = {
                                 selectorTypeShown = SelectorType.PERIOD_TYPE
                             }
@@ -274,9 +239,9 @@ fun TimePeriodSelector(
 
                     trailingButton = {
                         if (periodType == TimePeriodType.WEEK || periodType == TimePeriodType.MONTH) {
-                            SplitButtonDefaults.TrailingButton(
+                            SplitButtonDefaults.OutlinedTrailingButton(
                                 checked = false,
-                                onClick = {
+                                onCheckedChange = {
                                     selectorTypeShown =
                                         if (periodType == TimePeriodType.WEEK) SelectorType.WEEK else SelectorType.MONTH
                                 }

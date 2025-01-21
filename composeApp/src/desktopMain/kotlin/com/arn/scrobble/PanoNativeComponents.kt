@@ -122,6 +122,9 @@ class PanoNativeComponents(
         external fun setTrayMenu(menuItemIds: Array<String>, menuItemTexts: Array<String>)
 
         @JvmStatic
+        external fun getMachineId(): String
+
+        @JvmStatic
         external fun addRemoveStartupWin(exePath: String, add: Boolean): Boolean
 
         @JvmStatic

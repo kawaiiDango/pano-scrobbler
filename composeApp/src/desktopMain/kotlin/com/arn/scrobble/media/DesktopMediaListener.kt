@@ -45,9 +45,9 @@ class DesktopMediaListener(
                     .toSet()
 
                 val allowedApps = (allowed + seen).filter { shouldScrobble(it) }
-                // this will trigger platformActiveSessionsChanged
                 PanoNativeComponents.setAllowedAppIds(allowedApps.toTypedArray())
                 removeSessions(keysToKeep)
+                platformActiveSessionsChanged(sessionInfos)
             }
         }
 
@@ -85,7 +85,7 @@ class DesktopMediaListener(
             return
 
         val sessionsFiltered = sessions.filter {
-            shouldScrobble(it.app_id) && (it.app_id + "|" + it.session_id) !in sessionTrackersMap
+            shouldScrobble(it.app_id) && it.app_id !in sessionTrackersMap
         }
 
 //        val tokens = mutableSetOf<MediaSession.Token>()
@@ -95,19 +95,20 @@ class DesktopMediaListener(
 //                if (controller.sessionToken !in controllersMap) {
 
             val playingTrackInfo =
-                findTrackInfoByKey(session.app_id + "|" + session.session_id)
-                    ?: PlayingTrackInfo(session.app_id, session.session_id).also {
-                        putTrackInfo(session.app_id + "|" + session.session_id, it)
+                findTrackInfoByKey(session.app_id)
+                // there is no concept of session tag on desktop platforms
+                    ?: PlayingTrackInfo(session.app_id, "").also {
+                        putTrackInfo(session.app_id, it)
                     }
 
-            sessionTrackersMap[session.app_id + "|" + session.session_id] =
+            sessionTrackersMap[session.app_id] =
                 SessionTracker(playingTrackInfo)
         }
 //            }
 //        }
         // Now remove old sessions that are not longer active.
         removeSessions(
-            sessions.map { it.app_id + "|" + it.session_id }.toSet(),
+            sessions.map { it.app_id }.toSet(),
         )
 
         this.sessionInfos = sessions
@@ -203,7 +204,7 @@ class DesktopMediaListener(
         Logger.d { "metadata: $metadata" }
 
         val sessionTracker =
-            sessionTrackersMap[metadata.app_id + "|" + metadata.session_id] ?: return
+            sessionTrackersMap[metadata.app_id] ?: return
         val (metadata, canDoFallbackScrobble) = transformMediaMetadata(
             sessionTracker.trackInfo,
             metadata
@@ -216,7 +217,7 @@ class DesktopMediaListener(
         Logger.d { "playbackInfo: $playbackInfo" }
 
         val sessionTracker =
-            sessionTrackersMap[playbackInfo.app_id + "|" + playbackInfo.session_id] ?: return
+            sessionTrackersMap[playbackInfo.app_id] ?: return
         val (commonPlaybackInfo, ignoreScrobble) =
             transformPlaybackState(sessionTracker.trackInfo, playbackInfo)
         sessionTracker.playbackStateChanged(commonPlaybackInfo, ignoreScrobble)

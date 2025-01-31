@@ -2,11 +2,11 @@
 targetSdk = "35"
 minSdk = "23"
 minSdkBaselineProfile = "28"
-android-application = "8.9.0-alpha09"
+android-application = "8.10.0-alpha02"
 compose-multiplatform = "1.8.0-alpha02"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 
-aboutlibraries = "11.4.0"
+aboutlibraries = "11.5.0"
 activity = "1.10.0"
 adaptive = "1.1.0-alpha02"
 androidx-espresso-core = "3.6.1"
@@ -18,7 +18,7 @@ benchmark = "1.3.3"
 billing = "7.1.1"
 buildkonfig = "0.15.2"
 coil = "3.0.4"
-composeShimmer = "1.3.1"
+composeShimmer = "1.3.2"
 composeWebview = "0.33.6"
 core = "1.15.0"
 core-remoteviews = "1.1.0"
@@ -38,7 +38,7 @@ javafxPlugin = "0.1.0"
 kermit = "2.0.5"
 koalaplot = "0.8.0"
 kotlinCsvJvm = "1.10.0"
-ksp = "2.1.0-1.0.29"
+ksp = "2.1.10-1.0.29"
 ktorBom = "3.0.3"
 lifecycle = "2.9.0-alpha02"
 media = "1.7.0"
@@ -49,12 +49,13 @@ paging = "3.3.5"
 play-publisher = "3.12.1"
 profileinstaller = "1.4.1"
 review = "2.0.2"
-room = "2.7.0-alpha12"
+room = "2.7.0-alpha13"
 runner = "1.6.2"
 serialization-json = "1.8.0"
-sqlite = "2.5.0-alpha12"
+sqlite = "2.5.0-alpha13"
 uiautomator = "2.4.0-alpha01"
 work-runtime = "2.10.0"
+zxing = "3.5.3"
 
 [libraries]
 compose-webview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
@@ -112,6 +113,7 @@ androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
 kotlinx-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
+zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }

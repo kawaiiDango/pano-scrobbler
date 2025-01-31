@@ -50,6 +50,10 @@ class PanoNativeComponents(
     companion object {
         private const val TAG = "native_components"
 
+        fun load() {
+            System.loadLibrary("native_components")
+        }
+
         fun init() {
             System.loadLibrary("native_components")
 
@@ -91,6 +95,9 @@ class PanoNativeComponents(
         private external fun startEventLoop(callback: PanoNativeComponents)
 
         @JvmStatic
+        external fun stopEventLoop()
+
+        @JvmStatic
         private external fun startListeningMedia()
 
         @JvmStatic
@@ -113,13 +120,13 @@ class PanoNativeComponents(
         )
 
         @JvmStatic
-        external fun setTrayIcon(argb: IntArray, width: Int, height: Int)
-
-        @JvmStatic
-        external fun setTrayTooltip(tooltip: String)
-
-        @JvmStatic
-        external fun setTrayMenu(menuItemIds: Array<String>, menuItemTexts: Array<String>)
+        external fun setTray(
+            tooltip: String,
+            argb: IntArray,
+            iconSize: Int,
+            menuItemIds: Array<String>,
+            menuItemTexts: Array<String>
+        )
 
         @JvmStatic
         external fun getMachineId(): String
@@ -129,5 +136,8 @@ class PanoNativeComponents(
 
         @JvmStatic
         external fun isAddedToStartupWin(exePath: String): Boolean
+
+        @JvmStatic
+        external fun setEnvironmentVariable(key: String, value: String)
     }
 }

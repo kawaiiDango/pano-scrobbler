@@ -8,8 +8,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.toPainter
+import androidx.compose.ui.window.Notification
+import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
@@ -60,6 +64,7 @@ import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
+import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
 import kotlin.time.Duration.Companion.seconds
@@ -91,6 +96,11 @@ private fun init() {
 
     setAppLocale(null, Stuff.mainPrefsInitialValue.locale, force = false)
 
+    PanoNativeComponents.load()
+    if (DesktopStuff.os == DesktopStuff.Os.LINUX) {
+        // fix for javafx on linux
+        PanoNativeComponents.setEnvironmentVariable("GDK_BACKEND", "x11")
+    }
     PanoNativeComponents.init()
     test()
 }
@@ -105,6 +115,10 @@ fun main(args: Array<String>) {
         val scope = rememberCoroutineScope()
         val windowState = rememberWindowState()
         val isSystemInDarkTheme = isSystemInDarkTheme()
+        var trayData by remember { mutableStateOf<PanoTrayUtils.TrayData?>(null) }
+        val trayIconNotPlaying = painterResource(Res.drawable.vd_noti_persistent)
+        val trayIconPlaying = painterResource(Res.drawable.vd_noti)
+        val trayIconError = painterResource(Res.drawable.vd_noti_err)
 
         fun forceNavigateTo(route: PanoRoute) {
             if (!windowShown) {
@@ -122,23 +136,14 @@ fun main(args: Array<String>) {
             exitApplication()
         }
 
-        var isScrobbling by remember { mutableStateOf(false) }
-
-        var hasError by remember { mutableStateOf(false) }
-
-        val trayIconRes = remember(isScrobbling, hasError) {
-            if (hasError)
-                Res.drawable.vd_noti_err
-            else if (isScrobbling)
-                Res.drawable.vd_noti
-            else
-                Res.drawable.vd_noti_persistent
-        }
-
-        val trayIconPainter = painterResource(trayIconRes)
-
         LaunchedEffect(Unit) {
             PanoNotifications.playingTrackTrayInfo.mapLatest {
+                val trayIconPainter = when {
+                    it.isEmpty() -> trayIconNotPlaying
+                    it.values.any { it is PlayingTrackNotificationState.Error } -> trayIconError
+                    else -> trayIconPlaying
+                }
+
                 val tooltip = it.entries.firstOrNull {
                     val it = it.value
                     it is PlayingTrackNotificationState.Scrobbling
@@ -147,34 +152,6 @@ fun main(args: Array<String>) {
                 }
                     ?: BuildKonfig.APP_NAME
 
-                tooltip
-            }.distinctUntilChanged()
-                .collectLatest {
-                    PanoNativeComponents.setTrayTooltip(it)
-                }
-        }
-
-        LaunchedEffect(trayIconPainter, isSystemInDarkTheme) {
-            val bmp = trayIconPainter.toImageBitmap(size = Size(64f, 64f))
-            val argb = IntArray(bmp.width * bmp.height)
-            bmp.readPixels(argb)
-
-            // invert colors for light theme
-            if (!isSystemInDarkTheme) {
-                argb.forEachIndexed { index, color ->
-                    val alpha = color and 0xFF000000.toInt()
-                    val invertedColor = color.inv() and 0x00FFFFFF
-                    argb[index] = invertedColor or alpha
-                }
-            }
-
-            PanoNativeComponents.setTrayIcon(argb, bmp.width, bmp.height)
-        }
-
-        LaunchedEffect(Unit) {
-            PanoNotifications.playingTrackTrayInfo.mapLatest {
-                hasError = it.values.any { it is PlayingTrackNotificationState.Error }
-                isScrobbling = it.isNotEmpty()
 
                 val trayItems = mutableListOf<Pair<String, String>>()
 
@@ -236,11 +213,34 @@ fun main(args: Array<String>) {
                 trayItems += PanoTrayUtils.ItemId.Settings.name to getString(Res.string.settings)
                 trayItems += PanoTrayUtils.ItemId.Close.name to getString(Res.string.close)
 
-                trayItems
+                Triple(tooltip, trayIconPainter, trayItems)
             }
                 .distinctUntilChanged()
-                .collectLatest { trayItems ->
-                    PanoNativeComponents.setTrayMenu(
+                .collectLatest { (tooltip, trayIconPainter, trayItems) ->
+                    val iconSize = 64
+
+                    val bmp = trayIconPainter.toImageBitmap(
+                        size = Size(
+                            iconSize.toFloat(),
+                            iconSize.toFloat()
+                        )
+                    )
+                    val argb = IntArray(bmp.width * bmp.height)
+                    bmp.readPixels(argb)
+
+                    // invert colors for light theme
+                    if (!isSystemInDarkTheme) {
+                        argb.forEachIndexed { index, color ->
+                            val alpha = color and 0xFF000000.toInt()
+                            val invertedColor = color.inv() and 0x00FFFFFF
+                            argb[index] = invertedColor or alpha
+                        }
+                    }
+
+                    trayData = PanoTrayUtils.TrayData(
+                        tooltip = tooltip,
+                        argb = argb,
+                        iconSize = iconSize,
                         menuItemIds = trayItems.map { it.first }.toTypedArray(),
                         menuItemTexts = trayItems.map { it.second }.toTypedArray()
                     )
@@ -266,6 +266,73 @@ fun main(args: Array<String>) {
                 Logger.d { "running cleanup" }
                 SingletonImageLoader.reset()
                 Platform.exit()
+            }
+        }
+
+        // use the AWT tray for macOS instead
+        if (DesktopStuff.os == DesktopStuff.Os.MACOS) {
+            val trayState = rememberTrayState()
+
+            LaunchedEffect(Unit) {
+                PanoNotifications.setNotifyFn { title, body ->
+                    trayState.sendNotification(
+                        Notification(
+                            title = title,
+                            message = body,
+                            type = Notification.Type.Info
+                        )
+                    )
+                }
+            }
+
+            trayData?.let { trayData ->
+                Tray(
+                    icon = trayData.argb.let {
+                        val bufferedImage = BufferedImage(
+                            trayData.iconSize, trayData.iconSize, BufferedImage.TYPE_INT_ARGB
+                        )
+                        bufferedImage.setRGB(
+                            0,
+                            0,
+                            trayData.iconSize,
+                            trayData.iconSize,
+                            it,
+                            0,
+                            trayData.iconSize
+                        )
+                        bufferedImage.toPainter()
+                    },
+                    tooltip = trayData.tooltip,
+                    state = trayState
+                ) {
+                    trayData.menuItemIds.zip(trayData.menuItemTexts).forEach { (id, text) ->
+                        if (id == PanoTrayUtils.ItemId.Separator.name) {
+                            Separator()
+                        } else {
+                            Item(text = text) {
+                                PanoTrayUtils.onTrayMenuItemClickedFn(id)
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            LaunchedEffect(Unit) {
+                PanoNotifications.setNotifyFn { title, body ->
+                    PanoNativeComponents.notify(title, body)
+                }
+            }
+
+            LaunchedEffect(trayData) {
+                trayData?.let { trayData ->
+                    PanoNativeComponents.setTray(
+                        tooltip = trayData.tooltip,
+                        argb = trayData.argb,
+                        iconSize = trayData.iconSize,
+                        menuItemIds = trayData.menuItemIds,
+                        menuItemTexts = trayData.menuItemTexts,
+                    )
+                }
             }
         }
 

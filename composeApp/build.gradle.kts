@@ -36,12 +36,21 @@ plugins {
 }
 
 val os = org.gradle.internal.os.OperatingSystem.current()
+val arch = System.getProperty("os.arch")
 
-val platform = when {
-    os.isWindows -> "win"
-    os.isMacOsX -> "mac"
-    else -> "linux"
+val archAmd64 = arrayOf("amd64", "x86_64")
+val archArm64 = arrayOf("aarch64", "arm64")
+
+val resourcesDirName = when {
+    os.isMacOsX && arch in archAmd64 -> "macos-x64"
+    os.isMacOsX && arch in archArm64 -> "macos-arm64"
+    os.isLinux && arch in archAmd64 -> "linux-x64"
+    os.isLinux && arch in archArm64 -> "linux-arm64"
+    os.isWindows && arch in archAmd64 -> "windows-x64"
+    os.isWindows && arch in archArm64 -> "windows-arm64"
+    else -> throw IllegalStateException("Unsupported platform: $os $arch")
 }
+
 val pathSeperator = File.pathSeparator!!
 
 val versionFile = file("version.txt")
@@ -89,6 +98,7 @@ kotlin {
             implementation(libs.compose.webview)
             implementation(libs.documentfile)
             implementation(libs.harmony)
+            implementation(libs.zxing)
 
             implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 
@@ -144,6 +154,11 @@ kotlin {
             implementation(projects.extrasNonPlay)
             implementation(libs.androidx.sqlite.bundled)
 
+            val platform = when {
+                os.isWindows -> "win"
+                os.isMacOsX -> "mac"
+                else -> "linux"
+            }
             val javafxVersion = libs.versions.javafx.get()
 
             implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
@@ -205,11 +220,13 @@ buildkonfig {
 
 android {
     compileSdk = libs.versions.targetSdk.get().toInt()
+//    compileSdkPreview = "Baklava"
 
     defaultConfig {
         applicationId = appId
         namespace = appId
         minSdk = libs.versions.minSdk.get().toInt()
+//        targetSdkPreview = "Baklava"
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = verCode
         versionName = verNameWithDate
@@ -316,39 +333,43 @@ compose.desktop {
     application {
         mainClass = "com.arn.scrobble.main.MainKt"
         // ZGC starts with ~70MB minimized and goes down to ~160MB after re-minimizing
-        jvmArgs += listOf(
-            "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/${os.familyName}",
+        jvmArgs += mutableListOf(
+            "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
+            "-Ddev.resources.dir.name=$resourcesDirName",
 //            "-XX:NativeMemoryTracking=detail",
-//            "-XX:+UseSerialGC",
-//            "-XX:+UseAdaptiveSizePolicy",
-            "-XX:+UseZGC",
-            "-XX:+ZGenerational",
-            "-XX:ZUncommitDelay=60",
+            "-XX:+UseSerialGC",
+            "-XX:+UseAdaptiveSizePolicy",
+//            "-XX:+UseZGC",
+//            "-XX:ZUncommitDelay=60",
             "-XX:+UseStringDeduplication",
             "-Xms32m",
             "-Xmx512m",
         )
 
         nativeDistributions {
-            targetFormats(TargetFormat.Msi, TargetFormat.AppImage)
+            val formats = mutableSetOf(TargetFormat.AppImage, TargetFormat.Dmg, TargetFormat.Msi)
+
+            // else sync fails on mac
+            if (os.isMacOsX)
+                formats.remove(TargetFormat.AppImage)
+
+            targetFormats = formats
             packageVersion = "$verName.0"
-            description = appName
             vendor = "kawaiiDango"
 
             appResourcesRootDir = project.layout.projectDirectory.dir("resources")
 
-//            modules("javafx.controls","javafx.media")
             includeAllModules = true
 
             windows {
                 console = true
                 dirChooser = true
-//                perUserInstall = true
                 upgradeUuid = "85173f4e-ca52-4ec9-b77f-c2e0b1ff4209"
                 msiPackageVersion = packageVersion
                 exePackageVersion = packageVersion
                 packageName = appName
                 menuGroup = appName
+                description = appName
                 iconFile = project.layout.projectDirectory.dir("resources")
                     .file("windows/app_icon.ico")
             }
@@ -356,8 +377,20 @@ compose.desktop {
             linux {
                 packageName = appNameWithoutSpaces
                 menuGroup = appNameWithoutSpaces
+                description = appNameWithoutSpaces
                 iconFile = project.layout.projectDirectory.dir("resources")
                     .file("linux/app_icon.png")
+            }
+
+            macOS {
+                bundleID = appId
+                packageName = appName
+                dockName = appName
+                description = appName
+                appStore = false
+
+                iconFile = project.layout.projectDirectory.dir("resources")
+                    .file("macos/app_icon.icns")
             }
         }
 
@@ -375,7 +408,7 @@ compose.desktop {
 
 tasks.register<Zip>("zipAppImage") {
     from("build/compose/binaries/main-release/app")
-    archiveFileName = "$appNameWithoutSpaces-$verCode-${os.familyName}-release.zip"
+    archiveFileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.zip"
     destinationDirectory = file("release-builds")
 }
 
@@ -385,7 +418,7 @@ tasks.register<Copy>("copyGithubReleaseApk") {
     include("*-releaseGithub.apk")
     rename(
         "(.*)-releaseGithub.apk",
-        "$appNameWithoutSpaces-$verCode-android-release.apk"
+        "$appNameWithoutSpaces-$verCode-android-all.apk"
     )
 }
 
@@ -395,18 +428,35 @@ tasks.register<Copy>("copyReleaseMsi") {
     include("*.msi")
     rename(
         "(.*).msi",
-        "$appNameWithoutSpaces-$verCode-${os.familyName}-release.msi"
+        "$appNameWithoutSpaces-$verCode-$resourcesDirName.msi"
+    )
+}
+
+tasks.register<Copy>("copyReleaseDmg") {
+    from("build/compose/binaries/main-release/dmg")
+    into("release-builds")
+    include("*.dmg")
+    rename(
+        "(.*).dmg",
+        "$appNameWithoutSpaces-$verCode-$resourcesDirName.dmg"
     )
 }
 
 afterEvaluate {
-    tasks.named("packageReleaseAppImage") {
-        finalizedBy(tasks.named("zipAppImage"))
-    }
+    if (os.isWindows || os.isLinux)
+        tasks.named("packageReleaseAppImage") {
+            finalizedBy(tasks.named("zipAppImage"))
+        }
 
-    tasks.named("packageReleaseMsi") {
-        finalizedBy(tasks.named("copyReleaseMsi"))
-    }
+    if (os.isWindows)
+        tasks.named("packageReleaseMsi") {
+            finalizedBy(tasks.named("copyReleaseMsi"))
+        }
+
+    if (os.isMacOsX)
+        tasks.named("packageReleaseDmg") {
+            finalizedBy(tasks.named("copyReleaseDmg"))
+        }
 
     tasks.named("packageReleaseGithub") {
         finalizedBy(tasks.named("copyGithubReleaseApk"))

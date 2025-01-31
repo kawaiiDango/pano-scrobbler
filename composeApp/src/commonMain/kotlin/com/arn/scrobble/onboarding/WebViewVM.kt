@@ -61,9 +61,6 @@ class WebViewVM : ViewModel() {
                                     secure = true,
                                 )
                                 LastfmUnscrobbler.cookieStorage.addCookie(httpUrl, cookie)
-
-                            } else {
-                                null
                             }
                         }
                 }

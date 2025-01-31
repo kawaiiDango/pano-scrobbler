@@ -6,6 +6,27 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 object PanoTrayUtils {
+    class TrayData(
+        val tooltip: String,
+        val argb: IntArray,
+        val iconSize: Int,
+        val menuItemIds: Array<String>,
+        val menuItemTexts: Array<String>,
+    ) {
+        fun copy(
+            tooltip: String = this.tooltip,
+            argb: IntArray = this.argb,
+            iconSize: Int = this.iconSize,
+            menuItemIds: Array<String> = this.menuItemIds,
+            menuItemTexts: Array<String> = this.menuItemTexts,
+        ) = TrayData(
+            tooltip = tooltip,
+            argb = argb,
+            iconSize = iconSize,
+            menuItemIds = menuItemIds,
+            menuItemTexts = menuItemTexts,
+        )
+    }
 
     private val _onTrayMenuItemClicked = MutableSharedFlow<String>()
     val onTrayMenuItemClicked = _onTrayMenuItemClicked.asSharedFlow()

@@ -21,8 +21,9 @@ captures
 /build
 /composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
 /composeApp/src/commonMain/composeResources/files/aboutlibraries.json
-/composeApp/resources/linux/*.so
-/composeApp/resources/windows/*.dll
+/composeApp/resources/**/*.so
+/composeApp/resources/**/*.dll
+/composeApp/resources/**/*.dylib
 /baselineProfile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt
 /psd/renders
 /composeApp/*.json

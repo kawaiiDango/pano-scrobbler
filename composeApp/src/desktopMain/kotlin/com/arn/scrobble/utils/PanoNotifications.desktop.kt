@@ -1,7 +1,6 @@
 package com.arn.scrobble.utils
 
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.media.PlayingTrackInfo
@@ -27,6 +26,15 @@ actual object PanoNotifications {
         MutableStateFlow<Map<String, PlayingTrackNotificationState>>(emptyMap())
     val playingTrackTrayInfo = _playingTrackTrayInfo.asStateFlow()
 
+    private var notify: ((String, String) -> Unit) = { title, text ->
+    }
+
+    fun setNotifyFn(
+        fn: (String, String) -> Unit
+    ) {
+        notify = fn
+    }
+
     actual fun notifyScrobble(trackInfo: PlayingTrackInfo, nowPlaying: Boolean) {
         val playingTrackState = PlayingTrackNotificationState.Scrobbling(
             trackInfo = trackInfo.copy(),
@@ -50,7 +58,7 @@ actual object PanoNotifications {
 
     actual fun notifyAppDetected(appId: String, appLabel: String) {
         GlobalScope.launch {
-            PanoNativeComponents.notify(
+            notify(
                 getString(Res.string.new_player, appLabel.ifEmpty { appId }),
                 getString(Res.string.new_player_prompt)
             )
@@ -88,7 +96,7 @@ actual object PanoNotifications {
 
         val notificationText = notificationTextList.joinToString("\n")
 
-        PanoNativeComponents.notify(
+        notify(
             notificationTitle,
             notificationText
         )

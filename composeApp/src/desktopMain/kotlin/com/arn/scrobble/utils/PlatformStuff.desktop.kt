@@ -58,21 +58,12 @@ actual object PlatformStuff {
 
     actual val isTestLab = false
 
-    private fun getAppDataRoot() = if (DesktopStuff.isWindows()) {
-        System.getenv("APPDATA")?.ifEmpty { null }
-            ?: System.getProperty("user.home")
-    } else {
-        System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
-            ?: (System.getProperty("user.home") + "/.local/share")
-    }
-
-
     actual val filesDir by lazy {
-        File(getAppDataRoot(), "${BuildKonfig.APP_ID}/data")
+        File(DesktopStuff.appDataRoot, "${BuildKonfig.APP_ID}/data")
     }
 
     actual val cacheDir by lazy {
-        File(getAppDataRoot(), "${BuildKonfig.APP_ID}/cache")
+        File(DesktopStuff.appDataRoot, "${BuildKonfig.APP_ID}/cache")
     }
 
     actual val mainPrefs by lazy {

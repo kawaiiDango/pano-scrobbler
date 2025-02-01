@@ -390,6 +390,8 @@
     <string name="fix_it_action" comment="(To open an app)">열기</string>
     <string name="delete_account">계정 삭제</string>
     <string name="delete_account_custom_servers">사용자 정의 서버의 경우, 해당 서버의 문서를 확인하세요.</string>
+    <string name="ok">예</string>
+    <string name="low" comment="As in high/medium/low">낮음</string>
     <!--  pro  -->
     <string name="get_pro">앱 지원하기</string>
     <string name="help">도움말</string>

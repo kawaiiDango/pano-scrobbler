@@ -127,6 +127,18 @@ sealed interface PanoRoute {
     ) : PanoRoute
 
     @Serializable
+    data class OobPleromaAuth(
+        val url: String,
+        val userAccountTemp: UserAccountTemp,
+        val creds: PleromaOauthClientCreds,
+    ) : PanoRoute
+
+    @Serializable
+    data class OobLibreFmAuth(
+        val userAccountTemp: UserAccountTemp,
+    ) : PanoRoute
+
+    @Serializable
     data class EditScrobble(
         val scrobbleData: ScrobbleData,
         val msid: String? = null,

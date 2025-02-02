@@ -3,12 +3,13 @@ package com.arn.scrobble.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.lastfm.GnuFm
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
-import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.utils.Stuff
 import io.ktor.http.parseUrl
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -92,7 +93,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun pleromaCreateApp(apiRoot: String) {
+    fun pleromaCreateApp(apiRoot: String, redirectUri: String) {
         viewModelScope.launch {
             var apiRoot = apiRoot
             val result = if (apiRoot.isNotBlank()) {
@@ -100,8 +101,7 @@ class LoginViewModel : ViewModel() {
                     if (!apiRoot.endsWith('/'))
                         apiRoot += '/'
 
-                    Pleroma.createApp(apiRoot)
-
+                    Pleroma.createApp(apiRoot, redirectUri)
 
                 } else {
                     Result.failure(IllegalArgumentException(getString(Res.string.failed_encode_url)))
@@ -136,6 +136,34 @@ class LoginViewModel : ViewModel() {
             }
 
             _result.emit(result)
+        }
+    }
+
+    fun pleromaLogin(
+        userAccountTemp: UserAccountTemp,
+        creds: PleromaOauthClientCreds,
+        token: String,
+    ) {
+        viewModelScope.launch {
+            Pleroma.authAndGetSession(
+                userAccountTemp.copy(authKey = token),
+                creds
+            )
+                .map { }
+                .let { _result.emit(it) }
+
+        }
+    }
+
+    fun lastfmLogin(
+        userAccountTemp: UserAccountTemp,
+        token: String,
+    ) {
+        viewModelScope.launch {
+            LastFm.authAndGetSession(
+                userAccountTemp.copy(authKey = token)
+            ).map { }
+                .let { _result.emit(it) }
         }
     }
 }

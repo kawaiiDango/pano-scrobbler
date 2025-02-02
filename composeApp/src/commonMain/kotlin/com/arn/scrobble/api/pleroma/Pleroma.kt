@@ -26,7 +26,6 @@ import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.PlatformStuff.toHtmlAnnotatedString
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
@@ -192,13 +191,13 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     }
 
     companion object {
-        suspend fun createApp(apiRoot: String) =
+        suspend fun createApp(apiRoot: String, redirectUri: String) =
             Requesters.genericKtorClient.postResult<PleromaOauthClientCreds>("$apiRoot/api/v1/apps") {
                 contentType(ContentType.Application.Json)
                 setBody(
                     CreateAppRequest(
                         client_name = BuildKonfig.APP_NAME,
-                        redirect_uris = Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma",
+                        redirect_uris = redirectUri,
                         scopes = "read write",
 //                        website = getString(R.string.github_link)
                     )

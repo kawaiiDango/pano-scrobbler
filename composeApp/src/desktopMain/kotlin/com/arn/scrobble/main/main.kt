@@ -18,8 +18,6 @@ import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
-import co.touchlab.kermit.io.RollingFileLogWriter
-import co.touchlab.kermit.io.RollingFileLogWriterConfig
 import coil3.SingletonImageLoader
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
@@ -48,7 +46,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.io.files.Path
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -65,7 +62,6 @@ import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
 import java.awt.image.BufferedImage
-import java.io.File
 import java.net.URL
 import kotlin.time.Duration.Companion.seconds
 
@@ -79,17 +75,17 @@ private fun init() {
         if (PlatformStuff.isDebug) Severity.Debug else Severity.Info
     )
 
-    val logsDir = File(PlatformStuff.filesDir, "logs").also { it.mkdirs() }
-    Logger.addLogWriter(
-        RollingFileLogWriter(
-            config = RollingFileLogWriterConfig(
-                logFileName = "pano-scrobbler",
-                logFilePath = Path(logsDir.absolutePath),
-                rollOnSize = 20 * 1024, // 20 KB
-                maxLogFiles = 5,
-            )
-        )
-    )
+//    val logsDir = File(PlatformStuff.filesDir, "logs").also { it.mkdirs() }
+//    Logger.addLogWriter(
+//        RollingFileLogWriter(
+//            config = RollingFileLogWriterConfig(
+//                logFileName = "pano-scrobbler",
+//                logFilePath = Path(logsDir.absolutePath),
+//                rollOnSize = 20 * 1024, // 20 KB
+//                maxLogFiles = 5,
+//            )
+//        )
+//    )
 
 //    todo fix RollingFileLogWriter: Uncaught exception in writer coroutine, deletion failed
 //    System.setErr(PrintStream(StderrOutputStream(), true))

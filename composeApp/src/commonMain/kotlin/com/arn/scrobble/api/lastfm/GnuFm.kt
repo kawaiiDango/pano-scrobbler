@@ -4,9 +4,9 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.setBody
@@ -81,19 +81,14 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
         ): Result<Session> {
             val apiKey = Stuff.LIBREFM_KEY
             val apiSecret = Stuff.LIBREFM_KEY
-            val client = Requesters.genericKtorClient
 
-            val params = mutableMapOf<String, String?>(
-                "method" to "auth.getMobileSession",
-                "api_key" to apiKey,
-                "username" to username,
-                "password" to password,
-            )
-
-            val session = client.postResult<SessionResponse>(apiRoot) {
-                setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
-            }.map { it.session }
-            session.onSuccess {
+            val session = Requesters.lastfmUnauthedRequester.getMobileSession(
+                apiRoot,
+                apiKey,
+                apiSecret,
+                username,
+                password
+            ).onSuccess {
                 val user = UserCached(
                     username,
                     "$apiRoot/user/$username",

@@ -3,9 +3,13 @@ package com.arn.scrobble.api.lastfm
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
+import com.arn.scrobble.api.Requesters.postResult
+import com.arn.scrobble.api.lastfm.LastFm.Companion.toFormParametersWithSig
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
+import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
@@ -106,8 +110,6 @@ class LastFmUnauthedRequester {
                 // fix duration returned in millis
                 (it.track.copy(duration = it.track.duration?.div(1000)) as T)
             }
-
-            else -> throw IllegalArgumentException("Unknown type")
         }
     }
 
@@ -142,8 +144,6 @@ class LastFmUnauthedRequester {
                 parameter("artist", musicEntry.artist.name)
                 parameter("track", musicEntry.name)
             }
-
-            else -> throw IllegalArgumentException("Unknown type")
         }
     }
 
@@ -222,5 +222,56 @@ class LastFmUnauthedRequester {
             parameter("format", "json")
             parameter("api_key", apiKey)
         }.map { it.tag }
+
+    suspend fun getToken(
+        apiRoot: String,
+        apiKey: String,
+        apiSecret: String,
+    ): Result<TokenResponse> {
+        val params = mutableMapOf<String, String?>(
+            "method" to "auth.getToken",
+            "api_key" to apiKey,
+        )
+
+        return client.postResult<TokenResponse>(apiRoot) {
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
+        }
+    }
+
+    suspend fun getMobileSession(
+        apiRoot: String,
+        apiKey: String,
+        apiSecret: String,
+        username: String,
+        password: String,
+    ): Result<Session> {
+        val params = mutableMapOf<String, String?>(
+            "method" to "auth.getMobileSession",
+            "api_key" to apiKey,
+            "username" to username,
+            "password" to password,
+        )
+
+        return client.postResult<SessionResponse>(apiRoot) {
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
+        }.map { it.session }
+    }
+
+    suspend fun getSession(
+        apiRoot: String,
+        apiKey: String,
+        apiSecret: String,
+        token: String,
+    ): Result<Session> {
+        val params = mutableMapOf<String, String?>(
+            "method" to "auth.getSession",
+            "api_key" to apiKey,
+            "token" to token,
+        )
+
+        return client.postResult<SessionResponse>(apiRoot) {
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
+        }.map { it.session }
+    }
 
 }

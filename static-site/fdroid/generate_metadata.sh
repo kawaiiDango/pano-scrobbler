@@ -16,7 +16,7 @@ Categories:
 IssueTracker: 'https://github.com/kawaiiDango/pano-scrobbler/issues'
 Name: Pano Scrobbler
 SourceCode: https://github.com/kawaiiDango/pano-scrobbler
-Summary: 'Scrobbles to last.fm, ListenBrainz, libre.fm, GNU FM, Maloja, Pleroma or to a file, on Android'
+Summary: 'Scrobbles to last.fm, ListenBrainz, libre.fm, GNU FM, Maloja, Pleroma or to a file'
 Description: |
 $features
 AntiFeatures:

@@ -13,8 +13,6 @@
     <color name="pinkLight">@color/mdcolor_sakurapink_100</color>
     <color name="pinkDark">#AB2C5D</color>
     <color name="pinkExtraDark">#66002E</color>
-    <color name="gradient_launcher_fg">@color/pinkLight</color>
-    <color name="gradient_shortcut_fg">@color/pinkLight</color>
     <color name="splash_fg">@color/pinkDark</color>
 
     <color name="pinkNoti">#EC5F8F</color>

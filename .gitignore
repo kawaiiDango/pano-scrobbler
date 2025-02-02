@@ -35,9 +35,6 @@ captures
 /composeApp/src/androidMain/res/**/strings-np.xml
 /composeApp/src/androidMain/res/**/strings-android.xml
 /composeApp/src/commonMain/composeResources/files/embedded_server.bks
-/buildSrc/build/tmp
-/misc/profilerDumps
-.privado
 crowdin.properties
 Gemfile.lock
 .jekyll-cache

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,11 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.VerifyButton
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.api_url
@@ -44,8 +46,8 @@ fun ListenBrainzLoginScreen(
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
 ) {
-    var token by remember { mutableStateOf("") }
-    var apiRoot by remember { mutableStateOf("https://") }
+    var token by rememberSaveable { mutableStateOf("") }
+    var apiRoot by rememberSaveable { mutableStateOf("https://") }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     val doLogin = {
         if (hasCustomApiRoot) {
@@ -121,9 +123,9 @@ fun GnufmLoginScreen(
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var apiRoot by remember { mutableStateOf("https://") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var apiRoot by rememberSaveable { mutableStateOf("https://") }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     val doLogin = {
         viewModel.gnufmLogin(apiRoot, username, password)
@@ -190,8 +192,8 @@ fun MalojaLoginScreen(
     modifier: Modifier = Modifier,
 ) {
     val result by viewModel.result.collectAsStateWithLifecycle(null)
-    var token by remember { mutableStateOf("") }
-    var apiRoot by remember { mutableStateOf("https://") }
+    var token by rememberSaveable { mutableStateOf("") }
+    var apiRoot by rememberSaveable { mutableStateOf("https://") }
     val doLogin = {
         viewModel.malojaLogin(apiRoot, token)
     }
@@ -241,14 +243,20 @@ fun MalojaLoginScreen(
 
 @Composable
 fun PleromaLoginScreen(
-    onNavigateToWebview: (String, UserAccountTemp, PleromaOauthClientCreds) -> Unit,
+    onBackAndThenNavigate: (PanoRoute) -> Unit,
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
 ) {
-    var apiRoot by remember { mutableStateOf("https://") }
+    var apiRoot by rememberSaveable { mutableStateOf("https://") }
     val result by viewModel.pleromaCredsResult.collectAsStateWithLifecycle(null)
+    val redirectUri = remember {
+        if (PlatformStuff.isTv)
+            Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma"
+        else
+            "urn:ietf:wg:oauth:2.0:oob"
+    }
     val onSubmit = {
-        viewModel.pleromaCreateApp(apiRoot)
+        viewModel.pleromaCreateApp(apiRoot, redirectUri)
     }
 
     Column(
@@ -278,13 +286,19 @@ fun PleromaLoginScreen(
                 val creds = result?.getOrNull() ?: return@VerifyButton
                 val _apiRoot = if (apiRoot.endsWith('/')) apiRoot else "$apiRoot/"
 
-                onNavigateToWebview(
+                val userAccountTemp = UserAccountTemp(AccountType.PLEROMA, "", _apiRoot)
+                val url =
                     "${_apiRoot}oauth/authorize?client_id=${creds.client_id}&redirect_uri=${
                         creds.redirect_uri
-                    }&response_type=code&scope=read+write",
-                    UserAccountTemp(AccountType.PLEROMA, "", _apiRoot),
-                    creds
-                )
+                    }&response_type=code&scope=read+write"
+
+                val route = if (PlatformStuff.isTv) {
+                    PanoRoute.WebView(url, userAccountTemp, creds)
+                } else {
+                    PanoRoute.OobPleromaAuth(url, userAccountTemp, creds)
+                }
+
+                onBackAndThenNavigate(route)
             },
             doStuff = onSubmit,
             result = result

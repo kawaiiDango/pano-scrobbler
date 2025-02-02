@@ -98,7 +98,6 @@ kotlin {
             implementation(libs.compose.webview)
             implementation(libs.documentfile)
             implementation(libs.harmony)
-            implementation(libs.zxing)
 
             implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 

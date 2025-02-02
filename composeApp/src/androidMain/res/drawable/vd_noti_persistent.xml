@@ -7,27 +7,27 @@
       android:pathData="M54.851,89.652C43.418,87.718 31.628,81.591 22.242,68.788L16.474,58.744C27.384,38.115 47.224,25.936 58.736,31.757"
       android:strokeLineJoin="miter"
       android:strokeWidth="7"
-      android:strokeColor="#000000"
+      android:strokeColor="#FFF"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M8.401,41.313C20.558,18.252 38.784,9.148 53.308,11.641"
       android:strokeLineJoin="miter"
       android:strokeWidth="6"
-      android:strokeColor="#000000"
+      android:strokeColor="#FFF"
       android:strokeLineCap="round"/>
-    <group android:translateY="-22">
-      <path
-          android:fillColor="#FF000000"
-          android:pathData="M88.204,76.573m-6.375,0a6.375,6.375 0,1 1,12.75 0a6.375,6.375 0,1 1,-12.75 0"/>
-    </group>
-<!--  <path-->
-<!--      android:fillColor="#FF000000"-->
-<!--      android:pathData="m88.204,25.571c-3.506,0 -6.375,2.869 -6.375,6.375l0,25.501c0,3.506 2.869,6.375 6.375,6.375 3.506,0 6.375,-2.869 6.375,-6.375L94.579,31.946C94.579,28.44 91.71,25.571 88.204,25.571Z"/>-->
+  <group android:translateY="-22">
+    <path
+        android:fillColor="#FFF"
+        android:pathData="M88.204,76.573m-6.375,0a6.375,6.375 0,1 1,12.75 0a6.375,6.375 0,1 1,-12.75 0"/>
+  </group>
+  <!--  <path-->
+  <!--      android:fillColor="#FFFFF"-->
+  <!--      android:pathData="m88.204,25.571c-3.506,0 -6.375,2.869 -6.375,6.375l0,25.501c0,3.506 2.869,6.375 6.375,6.375 3.506,0 6.375,-2.869 6.375,-6.375L94.579,31.946C94.579,28.44 91.71,25.571 88.204,25.571Z"/>-->
   <path
       android:pathData="M39.223,57.932a28.07,10.648 91.906,1 0,21.269 1.164a28.07,10.648 91.906,1 0,-21.269 -1.164z"
       android:strokeWidth="6"
-      android:strokeColor="#000000"/>
+      android:strokeColor="#FFF"/>
   <path
       android:pathData="m56.426,44.829a6.189,13.835 2.408,0 0,-3.732 2.469,2.748 4.594,0 0,1 1.603,4.172 2.748,4.594 0,0 1,-2.748 4.594,2.748 4.594,0 0,1 -1.593,-0.855 6.189,13.835 2.408,0 0,-0.306 3.155,6.189 13.835,2.408 0,0 5.589,14.11 6.189,13.835 2.408,0 0,6.777 -13.536,6.189 13.835,2.408 0,0 -5.591,-14.11z"
-      android:fillColor="#000000"/>
+      android:fillColor="#FFF"/>
 </vector>

@@ -19,21 +19,6 @@ import kotlinx.coroutines.launch
 class WebViewVM : ViewModel() {
     val callbackProcessed = MutableSharedFlow<Boolean>()
 
-    fun doLastFmAuth(userAccountTemp: UserAccountTemp) {
-        viewModelScope.launch {
-            LastFm.authAndGetSession(userAccountTemp).isSuccess
-                .let { callbackProcessed.emit(it) }
-        }
-    }
-
-    fun doPleromaAuth(userAccountTemp: UserAccountTemp, oauthClientCreds: PleromaOauthClientCreds) {
-        viewModelScope.launch {
-            Pleroma.authAndGetSession(userAccountTemp, oauthClientCreds).isSuccess
-                .let { callbackProcessed.emit(it) }
-
-        }
-    }
-
     fun handleCallbackUrl(
         url: Url,
         userAccountTemp: UserAccountTemp,
@@ -63,25 +48,34 @@ class WebViewVM : ViewModel() {
                                 LastfmUnscrobbler.cookieStorage.addCookie(httpUrl, cookie)
                             }
                         }
+                    LastFm.authAndGetSession(
+                        userAccountTemp.copy(authKey = token)
+                    ).isSuccess
+                        .let { callbackProcessed.emit(it) }
                 }
-                doLastFmAuth(
-                    userAccountTemp.copy(authKey = token)
-                )
             }
 
             "librefm" -> {
                 val token = url.parameters["token"] ?: return false
-                doLastFmAuth(
-                    userAccountTemp.copy(authKey = token)
-                )
+
+                viewModelScope.launch {
+                    LastFm.authAndGetSession(
+                        userAccountTemp.copy(authKey = token)
+                    ).isSuccess
+                        .let { callbackProcessed.emit(it) }
+                }
             }
 
             "pleroma" -> {
                 val token = url.parameters["code"] ?: return false
-                doPleromaAuth(
-                    userAccountTemp.copy(authKey = token),
-                    creds!!
-                )
+                viewModelScope.launch {
+                    Pleroma.authAndGetSession(
+                        userAccountTemp.copy(authKey = token),
+                        creds!!
+                    ).isSuccess
+                        .let { callbackProcessed.emit(it) }
+
+                }
             }
 
             else -> return false

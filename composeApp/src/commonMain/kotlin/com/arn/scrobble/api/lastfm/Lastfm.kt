@@ -1,7 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
@@ -11,12 +10,13 @@ import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
-import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.UserCached.Companion.toUserCached
+import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.charts.TimePeriodsGenerator
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import com.arn.scrobble.utils.Stuff.setMidnight
@@ -33,9 +33,6 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Calendar
 import java.util.TreeMap
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     open val apiKey: String = Stuff.LAST_KEY
@@ -552,28 +549,26 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
 
         suspend fun authAndGetSession(userAccountTemp: UserAccountTemp): Result<Session> {
-            val apiKey = if (userAccountTemp.type == AccountType.LASTFM) Stuff.LAST_KEY
-            else Stuff.LIBREFM_KEY
+            val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
+                Stuff.LAST_KEY
+            else
+                Stuff.LIBREFM_KEY
 
-            val apiSecret = if (userAccountTemp.type == AccountType.LASTFM) Stuff.LAST_SECRET
-            else Stuff.LIBREFM_KEY
+            val apiSecret = if (userAccountTemp.type == AccountType.LASTFM)
+                Stuff.LAST_SECRET
+            else
+                Stuff.LIBREFM_KEY
 
-            val client = Requesters.genericKtorClient
+            val apiRoot = userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT
 
-            val params = mutableMapOf<String, String?>(
-                "method" to "auth.getSession",
-                "api_key" to apiKey,
-                "token" to userAccountTemp.authKey,
-            )
-
-            val session = client.postResult<SessionResponse>(
-                userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT,
-            ) {
-                setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
-            }.map { it.session }
-            session.onSuccess {
+            val session = Requesters.lastfmUnauthedRequester.getSession(
+                apiRoot,
+                apiKey,
+                apiSecret,
+                userAccountTemp.authKey
+            ).onSuccess {
                 // get user info
-                client.getResult<UserGetInfoResponse> {
+                Requesters.genericKtorClient.getResult<UserGetInfoResponse> {
                     url(userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT)
                     parameter("method", "user.getInfo")
                     parameter("format", "json")

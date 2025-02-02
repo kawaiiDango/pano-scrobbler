@@ -3,6 +3,7 @@ package com.arn.scrobble.onboarding
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 
 object LoginDestinations {
@@ -15,14 +16,23 @@ object LoginDestinations {
             )
         )
 
-        AccountType.LIBREFM -> PanoRoute.WebView(
-            url = Stuff.LIBREFM_AUTH_CB_URL,
-            userAccountTemp = UserAccountTemp(
+        AccountType.LIBREFM -> {
+            val userAccountTemp = UserAccountTemp(
                 AccountType.LIBREFM,
                 "",
                 Stuff.LIBREFM_API_ROOT
             )
-        )
+            if (PlatformStuff.isTv) {
+                PanoRoute.WebView(
+                    url = Stuff.LIBREFM_AUTH_CB_URL,
+                    userAccountTemp = userAccountTemp
+                )
+            } else {
+                PanoRoute.OobLibreFmAuth(
+                    userAccountTemp = userAccountTemp,
+                )
+            }
+        }
 
         AccountType.GNUFM -> PanoRoute.LoginGnufm
         AccountType.LISTENBRAINZ -> PanoRoute.LoginListenBrainz

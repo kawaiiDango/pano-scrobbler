@@ -44,6 +44,8 @@ import com.arn.scrobble.onboarding.GnufmLoginScreen
 import com.arn.scrobble.onboarding.ListenBrainzLoginScreen
 import com.arn.scrobble.onboarding.MalojaLoginScreen
 import com.arn.scrobble.onboarding.OnboardingScreen
+import com.arn.scrobble.onboarding.OobLibrefmLoginScreen
+import com.arn.scrobble.onboarding.OobPleromaLoginScreen
 import com.arn.scrobble.onboarding.PleromaLoginScreen
 import com.arn.scrobble.onboarding.WebViewScreen
 import com.arn.scrobble.pref.AppListScreen
@@ -85,6 +87,7 @@ import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_import
+import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
 import pano_scrobbler.composeapp.generated.resources.pref_regex_edits
 import pano_scrobbler.composeapp.generated.resources.pref_themes
@@ -457,9 +460,9 @@ fun NavGraphBuilder.panoNavGraph(
         onSetTitleRes(Res.string.pleroma)
 
         PleromaLoginScreen(
-            onNavigateToWebview = { url, userAccountTemp, creds ->
+            onBackAndThenNavigate = {
                 goBack()
-                navigate(PanoRoute.WebView(url, userAccountTemp, creds))
+                navigate(it)
             },
             modifier = modifier().addColumnPadding()
         )
@@ -481,6 +484,41 @@ fun NavGraphBuilder.panoNavGraph(
             onBack = goBack,
             modifier = modifier().padding(panoContentPadding())
             // webview has issues with nested scroll
+        )
+    }
+
+    composable<PanoRoute.OobPleromaAuth>(
+        typeMap = mapOf(
+            typeOf<UserAccountTemp>() to serializableType<UserAccountTemp>(),
+            typeOf<PleromaOauthClientCreds>() to serializableType<PleromaOauthClientCreds>()
+        )
+    ) {
+        onSetTitleRes(Res.string.pleroma)
+
+        val arguments = it.toRoute<PanoRoute.OobPleromaAuth>()
+
+        OobPleromaLoginScreen(
+            url = arguments.url,
+            userAccountTemp = arguments.userAccountTemp,
+            pleromaCreds = arguments.creds,
+            onBack = goBack,
+            modifier = modifier().addColumnPadding()
+        )
+    }
+
+    composable<PanoRoute.OobLibreFmAuth>(
+        typeMap = mapOf(
+            typeOf<UserAccountTemp>() to serializableType<UserAccountTemp>(),
+        )
+    ) {
+        onSetTitleRes(Res.string.pref_login)
+
+        val arguments = it.toRoute<PanoRoute.OobLibreFmAuth>()
+
+        OobLibrefmLoginScreen(
+            userAccountTemp = arguments.userAccountTemp,
+            onBack = goBack,
+            modifier = modifier().addColumnPadding()
         )
     }
 

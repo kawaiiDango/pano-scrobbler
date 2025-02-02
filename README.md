@@ -81,7 +81,29 @@ This project is not affiliated with Last.fm, or any other scrobbling service.
 Pano Scrobbler is licensed under the GNU General Public License v3 (GPL-3) (http://www.gnu.org/copyleft/gpl.html).
 
 #### Exceptions
-* You are FORBIDDEN to use the Pano Scrobbler logo in any way (unless for displaying Pano Scrobbler itself).
+* You are FORBIDDEN to use image files listed below, containing the Pano Scrobbler icon, in any way (unless for displaying Pano Scrobbler itself).
+
+  ```
+  svg/ic_banner.svg
+  svg/ic_launcher-for-import.svg
+  svg/vd_noti.svg
+  svg/vd_noti_err.svg
+  composeApp/resources/linux/app_icon.png
+  composeApp/resources/macos/app_icon.icns
+  composeApp/resources/windows/app_icon.ico
+  composeApp/src/androidMain/res/drawable/vd_banner_fg.xml
+  composeApp/src/androidMain/res/drawable/vd_launcher_fg.xml
+  composeApp/src/androidMain/res/drawable/vd_launcher_fg_splash.xml
+  composeApp/src/androidMain/res/drawable/vd_noti.xml
+  composeApp/src/androidMain/res/drawable/vd_noti_err.xml
+  composeApp/src/androidMain/res/drawable/vd_noti_persistent.xml
+  composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg
+  composeApp/src/commonMain/composeResources/drawable/vd_launcher_fg.xml
+  composeApp/src/commonMain/composeResources/drawable/vd_noti.xml
+  composeApp/src/commonMain/composeResources/drawable/vd_noti_err.xml
+  composeApp/src/commonMain/composeResources/drawable/vd_noti_persistent.xml
+  ```
+
 * For the project as a whole, you are FORBIDDEN to publish the builds compiled by you
   (including modified, e.g., rename app name "Pano Scrobbler" to something else)
   to any app store (IBNLT Google Play Store, F-Droid, Amazon Appstore etc.).

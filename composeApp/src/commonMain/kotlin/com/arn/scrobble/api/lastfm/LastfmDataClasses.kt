@@ -489,6 +489,10 @@ data class DeleteScrobbleResponse(
     val result: Boolean,
 )
 
+@Serializable
+data class TokenResponse(
+    val token: String,
+)
 
 data class SearchResults(
     val term: String,

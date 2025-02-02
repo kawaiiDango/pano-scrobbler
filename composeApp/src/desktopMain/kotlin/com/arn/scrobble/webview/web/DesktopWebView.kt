@@ -7,7 +7,7 @@ import javafx.scene.web.WebView
 /**
  * Created By Kevin Zou On 2023/9/12
  */
-class DesktopWebView(private val webView: WebView) : IWebView {
+class DesktopWebView(webView: WebView) : IWebView {
     private val engine = webView.engine
 
     override fun canGoBack() = engine.canGoBack()

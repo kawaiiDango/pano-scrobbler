@@ -297,6 +297,7 @@
     <string name="persistent_noti_desc">Lange drücken, um dies zu verstecken</string>
     <string name="scrobbler_off">Scrobbler deaktiviert</string>
     <string name="scrobbler_on">Scrobbler aktiv</string>
+    <string name="duration">Länge</string>
     <string name="acoustic" comment="(Acoustic music)">Akustisch</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Energetisch</string>

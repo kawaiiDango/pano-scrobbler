@@ -431,6 +431,7 @@
     <string name="password">Mot de passe</string>
     <string name="open_existing" comment="Append to an existing file">Ajouter à un fichier existant</string>
     <string name="create" comment="Create a new file">Créer</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Contraste</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="help">Aide</string>

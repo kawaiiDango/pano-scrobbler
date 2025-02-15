@@ -300,6 +300,8 @@
     <string name="persistent_noti_desc">Appuyez longuement pour masquer ceci</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
     <string name="scrobbler_on">Scrobbler activé</string>
+    <string name="duration">Durée</string>
+    <string name="total_listen_time">Temps d\'écoute total</string>
     <string name="acoustic" comment="(Acoustic music)">Acoustique</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Énergisante</string>
@@ -431,6 +433,10 @@
     <string name="password">Mot de passe</string>
     <string name="open_existing" comment="Append to an existing file">Ajouter à un fichier existant</string>
     <string name="create" comment="Create a new file">Créer</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annuler</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Réessayer</string>
+    <string name="run_on_start">Exécuter au démarrage de l\'ordinateur</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Contraste</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>

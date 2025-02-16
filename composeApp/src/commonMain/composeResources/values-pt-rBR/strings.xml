@@ -443,7 +443,7 @@
     <string name="medium" comment="As in high/medium/low">Médio</string>
     <string name="low" comment="As in high/medium/low">Baixo</string>
     <!--  pro  -->
-    <string name="get_pro">Apoiar este aplicativo</string>
+    <string name="get_pro">Apoiar</string>
     <string name="help">Ajuda</string>
     <string name="pro_support">Esta é uma maneira simples e rápida para usuários incríveis como você mostrar o seu apoio ao reconhecer o valor que este aplicativo fornece.</string>
     <string name="pro_also_get">Você também receberá as seguintes funcionalidades:</string>

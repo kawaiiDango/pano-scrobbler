@@ -438,6 +438,7 @@
     <string name="back">Voltar</string>
     <string name="done">Pronto</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Tentar de novo</string>
+    <string name="run_on_start">Executar ao iniciar o computador</string>
     <string name="use_browser">Por favor, use um navegador em um dispositivo suportado para isso.</string>
     <string name="high" comment="As in high/medium/low">Alto</string>
     <string name="medium" comment="As in high/medium/low">Médio</string>

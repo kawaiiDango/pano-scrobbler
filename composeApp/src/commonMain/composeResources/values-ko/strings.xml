@@ -76,7 +76,7 @@
     <string name="tracks">트랙</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">많이 재생한 트랙</string>
     <string name="similar_tracks">비슷한 트랙</string>
-    <string name="similar" comment="Similar tracks but in short">Similars</string>
+    <string name="similar" comment="Similar tracks but in short">비슷함</string>
     <string name="state_scrobbling">지금 스크로블 중…</string>
     <string name="state_scrobbled">스크로블됨</string>
     <string name="unscrobble">스크로블 취소</string>
@@ -108,6 +108,7 @@
     <string name="more" comment="More options menu in short">더보기</string>
     <string name="learn" comment="(Learn java regex syntax)">배우기</string>
     <string name="hide">숨기기</string>
+    <string name="rank_change" comment="%1= delta change">순위 변경됨: %1$s</string>
     <string name="rank_change_no_change">변경사항 없음</string>
     <string name="rank_change_new">이전 기간 내에 스크로블되지 않음</string>
     <string name="search">검색</string>

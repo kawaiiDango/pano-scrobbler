@@ -22,33 +22,33 @@
         <item quantity="other">%1$s년 전</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="other">%1$s 아티스트</item>
+        <item quantity="other">%1$s명의 아티스트</item>
     </plurals>
     <plurals name="num_albums">
-        <item quantity="other">%1$s 앨범</item>
+        <item quantity="other">%1$s개의 앨범</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="other">%1$d 곡</item>
+        <item quantity="other">%1$s개의 곡</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
-        <item quantity="other">%1$d 일치</item>
+        <item quantity="other">%1$d개 일치</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="other">%1$s 편집</item>
+        <item quantity="other">%1$s개 편집</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="other">%1$s 패턴 편집</item>
+        <item quantity="other">%1$s개의 패턴 수정</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="other">%1$s 차단된 메타데이터</item>
+        <item quantity="other">%1$s개의 차단된 메타데이터</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="other">%1$d 분</item>
     </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
-        <item quantity="other">%1$s 대기중</item>
+        <item quantity="other">%1$s개 대기중</item>
     </plurals>
-    <string name="yes">네</string>
+    <string name="yes">예</string>
     <string name="no">아니오</string>
     <string name="reset">초기화</string>
     <string name="settings">환경설정</string>
@@ -56,7 +56,7 @@
     <string name="faq">자주 묻는 질문</string>
     <string name="album_art">앨범 아트</string>
     <string name="artist_image">아티스트 이미지</string>
-    <string name="parse_error" comment="Title parsing error for Youtube etc">구문 오류</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">구문을 파싱할 수 없습니다</string>
     <string name="network_error">네트워크 오류</string>
     <string name="disable_tls_verify">TLS 오류 무시</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">스크로블 인식 안됨</string>
@@ -71,13 +71,13 @@
     <string name="album_optional">앨범 (선택사항)</string>
     <string name="album">앨범</string>
     <string name="albums">앨범</string>
-    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">상위 앨범</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">인기 앨범</string>
     <string name="track">트랙</string>
     <string name="tracks">트랙</string>
-    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">상위 트랙</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">많이 재생한 트랙</string>
     <string name="similar_tracks">비슷한 트랙</string>
-    <string name="similar" comment="Similar tracks but in short">비슷함</string>
-    <string name="state_scrobbling">현재 스크로블 중...</string>
+    <string name="similar" comment="Similar tracks but in short">Similars</string>
+    <string name="state_scrobbling">지금 스크로블 중…</string>
     <string name="state_scrobbled">스크로블됨</string>
     <string name="unscrobble">스크로블 취소</string>
     <string name="state_unscrobbled">스크로블 취소됨</string>
@@ -87,7 +87,7 @@
     <string name="recents" comment="Short for recently scrobbled">최근</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">%1$s에 처음 기록됨</string>
     <string name="auto" comment="automatic or default setting">자동</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">거의 다 왔습니다…</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">거의 다 됐습니다…</string>
     <string name="music_players">음악 플레이어</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">기타 앱</string>
     <string name="choose_apps">앱 선택</string>
@@ -119,14 +119,14 @@
     <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">스크로블 색인화</string>
     <string name="full_index">전체 색인</string>
     <string name="take_long_time">시간이 많이 걸릴 수 있습니다</string>
-    <string name="full_index_desc">이것은 웹사이트에서 스크로블을 편집하거나 삭제한 경우에만 사용하십시오.</string>
+    <string name="full_index_desc">이것은 웹사이트에서 스크로블을 편집했거나 삭제한 경우에만 사용하십시오.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">각 카테고리에서 검색된 상위 %1$s 항목</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">마지막으로 %1$s에 색인화.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">마지막으로 %1$s에 색인화됨.</string>
     <string name="profile">프로필</string>
     <string name="profile_pic">프로필 사진</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">이 항목에 대한 옵션</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s 감지됨</string>
-    <string name="new_player_prompt">이 앱을 계속 scrobbling 할까요?</string>
+    <string name="new_player_prompt">이 앱을 계속 스크롤빙 할까요?</string>
     <string name="no_scrobbles">여기엔 아직 노래가 없습니다...</string>
     <string name="no_friends">아직 아무도 팔로잉하고 있지 않습니다...</string>
     <string name="channel_err" comment="Its a noun">스크로블 오류</string>
@@ -170,6 +170,7 @@
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">태그 클라우드</string>
     <string name="scrobble_from_mic" comment="Its a verb">마이크를 통해 스크로블</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">마이크에서</string>
     <string name="add_to_hs">홈화면에 추가하기</string>
     <string name="listening">주변에서 재생되는 음악 듣기</string>
     <string name="uploading">업로드 중…</string>
@@ -283,6 +284,8 @@
     <string name="persistent_noti_desc">길게 눌러 숨기기</string>
     <string name="scrobbler_off">스크로블러 비활성화</string>
     <string name="scrobbler_on">스크로블러 활성화</string>
+    <string name="duration">길이</string>
+    <string name="total_listen_time">총 감상 시간</string>
     <string name="acoustic" comment="(Acoustic music)">어쿠스틱</string>
     <string name="instrumental">인스트루멘탈</string>
     <string name="energetic" comment="(Energetic music)">에너제틱</string>
@@ -305,10 +308,12 @@
     <string name="pref_scrobble_noti">스크로블 알림</string>
     <string name="pref_lockscreen_noti">잠금화면 알림</string>
     <string name="pref_offline_info">ℹ️ 오프라인 상태에서의 스크로블과 좋아요는 저장되었다가 나중에 전송됩니다.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">다음에서 스크로블</string>
     <string name="pref_enabled_apps_summary">ℹ️ 음악 메타데이터를 공개하는 앱을 지원합니다. Spotify에서는 중복 스크로블을 피하기 위해 한 군데에서만 활성화하세요.</string>
     <string name="pref_enabled_apps_title">앱 선택</string>
     <string name="pref_auto_detect">자동으로 새 앱을 통해 스크로블</string>
     <string name="pref_spotify_remote">Spotify가 다른 기기에서 재생 중일 때 스크로블</string>
+    <string name="pref_link_heart_button_rating">알림의 하트 버튼으로 미디어 플레이어의 즐겨찾기에 추가하기</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">기기에서 음악이 재생 중일 때 마이크를 통한 중복 스크로블링 비활성화</string>
     <string name="pref_delay">스크로블 딜레이 (빠른 쪽 우선)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">분</string>
@@ -322,6 +327,7 @@
     <string name="pref_user_label" comment="(Like username)">사용자</string>
     <string name="pref_token_label" comment="For Listenbrainz">인증 토큰</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">서버 URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">인증 토큰은 다음 위치에서 찾을 수 있습니다: %1$s</string>
     <string name="pref_now_playing">지금 재생 중인 음악 등록하기</string>
     <string name="pref_fetch_album">LastFM에서 누락된 앨범 데이터 가져오기</string>
@@ -334,6 +340,9 @@
     <string name="pref_export">내보내기</string>
     <string name="pref_export_desc">설정, 편집 내역, 차단 목록을 백업합니다. 보안상의 이유로 로그인 정보는 저장하지 않습니다. 데이터를 다른 기기로 이동하거나 친구들과 공유할 때 유용합니다.</string>
     <string name="pref_import">가져오기</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">네트워크</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">코드</string>
+    <string name="pref_imexport_network_notice">네트워크 모드에서는, 두 개의 기기가 반드시 같은 네트워크에 연결되어야 합니다.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">개인 설정</string>
     <string name="pref_themes" comment="Color themes">테마</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">믹스 앤 매치\n알림 색상 또한 변경됩니다</string>
@@ -393,7 +402,20 @@
     <string name="fix_it_action" comment="(To open an app)">열기</string>
     <string name="delete_account">계정 삭제</string>
     <string name="delete_account_custom_servers">사용자 정의 서버의 경우, 해당 서버의 문서를 확인하세요.</string>
+    <string name="scrobble_to_file">파일</string>
+    <string name="password">비밀번호</string>
+    <string name="create" comment="Create a new file">만들기</string>
     <string name="ok">예</string>
+    <string name="cancel">취소</string>
+    <string name="back">돌아가기</string>
+    <string name="done">완료</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">다시 시도</string>
+    <string name="run_on_start">컴퓨터가 시작될 때 시작됨</string>
+    <string name="use_browser">이걸 하기 위해서 지원되는 디바이스의 브라우저를 사용하세요.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">로그 저장</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">대비</string>
+    <string name="high" comment="As in high/medium/low">높음</string>
+    <string name="medium" comment="As in high/medium/low">중간</string>
     <string name="low" comment="As in high/medium/low">낮음</string>
     <!--  pro  -->
     <string name="get_pro">앱 지원하기</string>

@@ -198,6 +198,7 @@ fun View.createSkeletonWithFade(
 }
 
 private fun mySkeletonConfig(context: Context, radiusDp: Int = 12) = SkeletonConfig(
+    maskLayout = null,
     maskCornerRadius = radiusDp.dp.toFloat(),
     shimmerAngle = 22,
     shimmerColor = ContextCompat.getColor(context, R.color.skeleton_shimmer),

@@ -211,7 +211,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 duration = it.track_metadata.additional_info?.duration_ms,
                 date = it.listened_at,
                 userloved = null,
-                isNowPlaying = it.playing_now ?: false,
+                isNowPlaying = it.playing_now == true,
             )
         }
 
@@ -240,9 +240,9 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 }
             ) {
                 if (to > 0L)
-                    parameter("max_ts", to)
+                    parameter("max_ts", to / 1000)
                 if (from > 0L)
-                    parameter("min_ts", from)
+                    parameter("min_ts", from / 1000)
                 parameter("count", actualLimit)
                 cacheStrategy(cacheStrategy)
             }

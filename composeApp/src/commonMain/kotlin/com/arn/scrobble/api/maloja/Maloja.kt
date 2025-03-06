@@ -114,7 +114,7 @@ class Maloja(userAccount: UserAccountSerializable) :
 
         return client.getResult<MalojaTracksResponse>("scrobbles") {
             parameter("page", page)
-            parameter("perpagge", limit)
+            parameter("perpage", limit)
             cacheStrategy(cacheStrategy)
         }
             .map {

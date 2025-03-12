@@ -140,6 +140,7 @@
     <string name="more" comment="More options menu in short">Više</string>
     <string name="learn" comment="(Learn java regex syntax)">Saznaj</string>
     <string name="hide">Sakrij</string>
+    <string name="rank_change" comment="%1= delta change">Promjena ranga: %1$s</string>
     <string name="rank_change_no_change">Nema promjene</string>
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
     <string name="search">Traži</string>
@@ -418,6 +419,7 @@
     <string name="no_browser">Nema instaliranih preglednika</string>
     <string name="no_player">Nema instaliranih reproduktora glazbe</string>
     <string name="not_running">⚠ Vaš sustav je zaustavio pokretanje scrobblera</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razlog: %1$s</string>
     <string name="not_running_fix_action">Popravi</string>
     <string name="login_submit" comment="Verifies the login details">Potvrdi</string>
     <string name="acr_host" comment="Web hostname">Poslužitelj</string>
@@ -450,6 +452,18 @@
     <string name="password">Lozinka</string>
     <string name="open_existing" comment="Append to an existing file">Dodaj postojećem</string>
     <string name="create" comment="Create a new file">Stvori</string>
+    <string name="ok">U redu</string>
+    <string name="cancel">Odustani</string>
+    <string name="back">Natrag</string>
+    <string name="done">Gotovo</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Pokušaj ponovo</string>
+    <string name="run_on_start">Pokretanje kod uključivanja računala</string>
+    <string name="use_browser">Molimo da za ovo koristite internetski preglednik na nekom od podržanih uređaja.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Spremi izvješća</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Kontrast</string>
+    <string name="high" comment="As in high/medium/low">Visoko</string>
+    <string name="medium" comment="As in high/medium/low">Srednje</string>
+    <string name="low" comment="As in high/medium/low">Nisko</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="help">Pomoć</string>
@@ -471,4 +485,5 @@ Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom k
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>
     <string name="billing_scrobble_source">Zapamti i pregledaj aplikacije iz kojih si scrobblao i direktno pretraži u njima</string>
     <string name="billing_regex_extract">Pisanje vlastitih pravila za izvlačenje metapodataka pomoću regexa</string>
+    <string name="billing_max_devices_reached" formatted="true">Ovaj kôd već je korišten na maksimalnom broju uređaja (%1$d).</string>
 </resources>

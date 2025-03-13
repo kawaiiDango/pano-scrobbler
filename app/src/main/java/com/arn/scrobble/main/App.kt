@@ -1,5 +1,6 @@
 package com.arn.scrobble.main
 
+import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,6 +9,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import android.os.Process
 import android.os.StrictMode
 import androidx.core.content.ContextCompat
 import androidx.work.Configuration
@@ -78,15 +80,36 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             .build()
         DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
 
-        val crashlyticsKeys = mapOf(
-            "isDebug" to BuildConfig.DEBUG.toString(),
-        )
+        // the built in content provider initializer only runs in the main process
+        val crashlyticsEnabled = isMainProcess() && prefs.crashlyticsEnabled
 
-        CrashReporter.init(this, prefs.crashlyticsEnabled, crashlyticsKeys)
+        if (crashlyticsEnabled) {
+            val crashlyticsKeys = mapOf(
+                "isDebug" to BuildConfig.DEBUG.toString(),
+            )
+
+            CrashReporter.config(crashlyticsKeys)
+        }
 
         createChannels()
 
         initConnectivityCheck()
+    }
+
+    fun isMainProcess(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // For API 28+ we can use Application.getProcessName()
+            return getProcessName() == packageName
+        } else {
+            val manager = getSystemService(ActivityManager::class.java)
+            val pid = Process.myPid()
+            manager?.runningAppProcesses?.forEach { processInfo ->
+                if (processInfo.pid == pid) {
+                    return processInfo.processName == packageName
+                }
+            }
+        }
+        return false
     }
 
     private fun enableStrictMode() {

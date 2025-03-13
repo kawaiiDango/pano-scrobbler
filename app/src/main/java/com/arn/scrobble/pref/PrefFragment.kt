@@ -332,13 +332,6 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val crashReporter = findPreference<SwitchPreference>(MainPrefs.PREF_CRASHLYTICS_ENABLED)!!
 
-        crashReporter.setOnPreferenceChangeListener { preference, newValue ->
-            newValue as Boolean
-            CrashReporter.setEnabled(newValue)
-
-            true
-        }
-
         if (ExtrasConsts.isFossBuild) {
             crashReporter.isVisible = false
         }

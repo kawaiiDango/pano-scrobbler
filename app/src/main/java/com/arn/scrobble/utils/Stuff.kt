@@ -145,7 +145,7 @@ object Stuff {
     val LASTFM_AUTH_CB_URL =
         "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm"
     const val LIBREFM_AUTH_CB_URL =
-        "https://www.libre.fm/api/auth?api_key=$LIBREFM_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/librefm"
+        "https://libre.fm/api/auth/?api_key=$LIBREFM_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/librefm"
 
     private var timeIt = 0L
 

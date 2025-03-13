@@ -30,7 +30,6 @@ import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.media.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -96,7 +95,6 @@ actual fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boo
                 text = stringResource(Res.string.pref_crashlytics_enabled),
                 value = crashReporterEnabled,
                 copyToSave = {
-                    CrashReporter.setEnabled(it)
                     copy(crashReporterEnabled = it)
                 }
             )

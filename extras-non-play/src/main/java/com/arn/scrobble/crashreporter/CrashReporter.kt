@@ -2,14 +2,8 @@ package com.arn.scrobble.crashreporter
 
 
 object CrashReporter {
-    fun init(
-        androidApplication: Any?,
-        collectionEnabled: Boolean,
+    fun config(
         keysMap: Map<String, String> = emptyMap(),
     ) {
-
-    }
-
-    fun setEnabled(enabled: Boolean) {
     }
 }

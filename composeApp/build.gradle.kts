@@ -107,7 +107,7 @@ kotlin {
             implementation(libs.kotlin.coroutines.core)
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
+            implementation(libs.material3)
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.uiUtil)
@@ -671,7 +671,15 @@ android {
     }
 
     buildTypes {
-        defaultConfig {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+
+        getByName("releaseGithub") {
             signingConfig = signingConfigs.getByName("release")
         }
     }

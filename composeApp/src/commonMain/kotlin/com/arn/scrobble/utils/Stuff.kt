@@ -283,8 +283,6 @@ object Stuff {
 
     val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>() }
 
-    val browserPackages = mutableSetOf<String>()
-
     fun Number.format() = numberFormat.format(this)!!
 
     fun exec(command: String): String {

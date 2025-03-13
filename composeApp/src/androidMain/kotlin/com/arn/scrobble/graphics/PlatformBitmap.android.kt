@@ -2,6 +2,7 @@ package com.arn.scrobble.graphics
 
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.createBitmap
 import coil3.asImage
 import coil3.request.SuccessResult
 
@@ -16,7 +17,7 @@ actual class PlatformBitmap {
         get() = bitmap.height
 
     actual constructor(width: Int, height: Int) {
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap = createBitmap(width, height)
     }
 
     actual constructor(coilBitmap: Any) {

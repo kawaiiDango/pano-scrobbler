@@ -1,14 +1,14 @@
 [versions]
-targetSdk = "35"
+targetSdk = "36"
 minSdk = "23"
 minSdkBaselineProfile = "28"
-android-application = "8.10.0-alpha02"
-compose-multiplatform = "1.8.0-alpha02"
+android-application = "8.10.0-alpha08"
+compose-multiplatform = "1.8.0-alpha04"
 kotlin = "2.1.10"
 
-aboutlibraries = "11.5.0"
-activity = "1.10.0"
-adaptive = "1.1.0-alpha02"
+aboutlibraries = "11.6.3"
+activity = "1.10.1"
+adaptive = "1.1.0-alpha04"
 androidx-espresso-core = "3.6.1"
 androidx-test-ext-junit = "1.2.1"
 androidx-test-junit = "1.2.1"
@@ -17,45 +17,45 @@ baselineprofile = "1.3.3"
 benchmark = "1.3.3"
 billing = "7.1.1"
 buildkonfig = "0.15.2"
-coil = "3.0.4"
+coil = "3.1.0"
 composeShimmer = "1.3.2"
 composeWebview = "0.33.6"
 core = "1.15.0"
 core-remoteviews = "1.1.0"
 coroutines = "1.10.1"
-crashlytics = "3.0.2"
-datastore = "1.1.2"
-desugar_jdk_libs = "2.1.4"
+crashlytics = "3.0.3"
+datastore = "1.1.3"
+desugar_jdk_libs = "2.1.5"
 documentfile = "1.0.1"
 espresso-core = "3.6.1"
-firebase-bom = "33.8.0"
+firebase-bom = "33.10.0"
 github-release = "2.5.2"
 google-services = "4.4.2"
 harmony = "1.2.6"
-immutable= "0.3.8"
+immutable = "0.3.8"
 javafx = "23.0.1"
 javafxPlugin = "0.1.0"
 kermit = "2.0.5"
 koalaplot = "0.8.0"
 kotlinCsvJvm = "1.10.0"
-ksp = "2.1.10-1.0.29"
-ktorBom = "3.0.3"
-lifecycle = "2.9.0-alpha02"
+ksp = "2.1.10-1.0.31"
+ktorBom = "3.1.1"
+lifecycle = "2.9.0-alpha04"
+material3 = "1.8.0-alpha03"
 media = "1.7.0"
 nanohttpd = "2.3.1"
-navigation = "2.8.0-alpha12"
+navigation = "2.9.0-alpha14"
 okhttp = "5.0.0-alpha.14"
-paging = "3.3.5"
+paging = "3.3.6"
 play-publisher = "3.12.1"
 profileinstaller = "1.4.1"
 review = "2.0.2"
-room = "2.7.0-alpha13"
+room = "2.7.0-rc02"
 runner = "1.6.2"
 serialization-json = "1.8.0"
-sqlite = "2.5.0-alpha13"
+sqlite = "2.5.0-rc02"
 uiautomator = "2.4.0-alpha01"
 work-runtime = "2.10.0"
-zxing = "3.5.3"
 
 [libraries]
 compose-webview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
@@ -73,7 +73,6 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
 nanohttpd = { module = "org.nanohttpd:nanohttpd", version.ref = "nanohttpd" }
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
-aboutlibraries-compose = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutlibraries" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
 androidx-core-remoteviews = { module = "androidx.core:core-remoteviews", version.ref = "core-remoteviews" }
@@ -113,7 +112,7 @@ androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
 kotlinx-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
-zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }

@@ -234,9 +234,9 @@ class SessListener(
         )
             false
         else (trackInfo.appId in Stuff.IGNORE_ARTIST_META &&
-                !trackInfo.artist.endsWith("- Topic")) ||
-                (trackInfo.appId in Stuff.browserPackages &&
-                        trackInfo.artist.isUrlOrDomain())
+                !trackInfo.artist.endsWith("- Topic"))
+//                (trackInfo.appId in Stuff.browserPackages &&
+//                        trackInfo.artist.isUrlOrDomain())
     }
 
     inner class ControllerCallback(

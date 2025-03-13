@@ -3,6 +3,7 @@ package com.arn.scrobble.main
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -63,7 +64,7 @@ class App : Application(), Configuration.Provider {
                 crashlyticsKeys
             )
         }
-
+        setComposeResourcesAndroidContext(this)
         createChannels()
         initConnectivityCheck()
     }
@@ -117,6 +118,17 @@ class App : Application(), Configuration.Provider {
         })
     }
 
+    private fun setComposeResourcesAndroidContext(context: Context) {
+        val clazz =
+            Class.forName("org.jetbrains.compose.resources.AndroidContextProvider")
+        val field = clazz.getDeclaredField("ANDROID_CONTEXT")
+        field.isAccessible = true
+
+        // only set value if it is null
+        if (field.get(null) == null) {
+            field.set(null, context)
+        }
+    }
 
     private fun createChannels() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

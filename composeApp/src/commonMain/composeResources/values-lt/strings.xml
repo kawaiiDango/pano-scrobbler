@@ -156,6 +156,7 @@
     <string name="more" comment="More options menu in short">Daugiau</string>
     <string name="learn" comment="(Learn java regex syntax)">Išmokti</string>
     <string name="hide">Slėpti</string>
+    <string name="rank_change" comment="%1= delta change">Reitingo pokytis: %1$s</string>
     <string name="rank_change_no_change">Jokių pokyčių</string>
     <string name="rank_change_new">Per praėjusį laikotarpį nenuskrobuolinta</string>
     <string name="search">Ieškoti</string>
@@ -434,6 +435,7 @@
     <string name="no_browser">Neįdiegta jokia naršyklė</string>
     <string name="no_player">Nėra įdiegtas joks muzikos leistuvas</string>
     <string name="not_running">⚠ Sistema sustabdė skrobuoklį</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Priežastis: %1$s</string>
     <string name="not_running_fix_action">Taisyti</string>
     <string name="login_submit" comment="Verifies the login details">Patikrinti</string>
     <string name="acr_host" comment="Web hostname">Serveris</string>
@@ -466,6 +468,8 @@
     <string name="password">Slaptažodis</string>
     <string name="open_existing" comment="Append to an existing file">Pridėti prie esamo</string>
     <string name="create" comment="Create a new file">Kurti</string>
+    <string name="ok">Gerai</string>
+    <string name="cancel">Atšaukti</string>
     <!--  pro  -->
     <string name="get_pro">Palaikyti šią programėlę</string>
     <string name="help">Pagalba</string>

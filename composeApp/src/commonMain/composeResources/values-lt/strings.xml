@@ -69,7 +69,7 @@
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s redagavimas</item>
         <item quantity="few">%1$s redagavimai</item>
-        <item quantity="many">%1$s radagavimo</item>
+        <item quantity="many">%1$s redagavimo</item>
         <item quantity="other">%1$s redagavimų</item>
     </plurals>
     <plurals name="num_regex_edits">
@@ -100,15 +100,15 @@
     <string name="no">Ne</string>
     <string name="reset">Atkurti</string>
     <string name="settings">Konfigūruoti</string>
-    <string name="bug_report">Pranešimas apie riktą</string>
+    <string name="bug_report">Pranešti apie riktą</string>
     <string name="faq">DUK</string>
     <string name="album_art">Albumo viršelis</string>
     <string name="artist_image">Atlikėjo vaizdas</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nepavyko analizuoti pavadinimo.</string>
     <string name="network_error">Tinklo klaida.</string>
-    <string name="disable_tls_verify">Ignoruoti TLS klaidas</string>
+    <string name="disable_tls_verify">Nepaisyti TLS klaidas</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Skroblas ignoruotas</string>
-    <string name="scrobble_ignored_save_edit">„last.fm“ ignoravo redagavimą, tikriausiai dėl to, kad skroblas yra per senas. Ar norėtum išsaugoti šį redagavimą būsimiems skroblams?</string>
+    <string name="scrobble_ignored_save_edit">„last.fm“ ignoravo redagavimą tikriausiai dėl to, kad skroblas yra per senas. Ar norėtumėte išsaugoti šį redagavimą būsimiems skrobliams?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Privalomi laukai yra tušti.</string>
     <string name="artist">Atlikėjas</string>
     <string name="artists">Atlikėjai</string>
@@ -474,6 +474,12 @@
     <string name="done">Atlikta</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Kartoti</string>
     <string name="run_on_start">Vykdyti, kai kompiuteris paleidžiamas</string>
+    <string name="use_browser">Tam naudokite palaikomo įrenginio naršyklę.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Išsaugoti žurnalus</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Kontrastas</string>
+    <string name="high" comment="As in high/medium/low">Didelis</string>
+    <string name="medium" comment="As in high/medium/low">Vidutinis</string>
+    <string name="low" comment="As in high/medium/low">Žemas</string>
     <!--  pro  -->
     <string name="get_pro">Palaikyti šią programėlę</string>
     <string name="help">Pagalba</string>
@@ -495,4 +501,5 @@ Tavo pirkimus tvarko „Google Play“. Jie susieti su „Google Play“ paskyra
     <string name="billing_sharing">Pašalinti programėlės pavadinimą bendrinant</string>
     <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobuolinai, ir tiesiogiai jose ieškoti</string>
     <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliarią reiškinį</string>
+    <string name="billing_max_devices_reached" formatted="true">Šis kodas jau buvo panaudotas daugiausiuose (%1$d) įrenginiuose.</string>
 </resources>

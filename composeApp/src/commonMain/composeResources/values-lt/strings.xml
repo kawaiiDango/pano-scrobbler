@@ -470,6 +470,10 @@
     <string name="create" comment="Create a new file">Kurti</string>
     <string name="ok">Gerai</string>
     <string name="cancel">Atšaukti</string>
+    <string name="back">Atgal</string>
+    <string name="done">Atlikta</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Kartoti</string>
+    <string name="run_on_start">Vykdyti, kai kompiuteris paleidžiamas</string>
     <!--  pro  -->
     <string name="get_pro">Palaikyti šią programėlę</string>
     <string name="help">Pagalba</string>

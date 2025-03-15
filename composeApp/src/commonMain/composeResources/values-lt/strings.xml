@@ -290,8 +290,8 @@
     <string name="tint_background" comment="Tint the background with the primary color">Fono atspalvis</string>
     <string name="random_theme">Atrinkti atsitiktine tvarka kiekvieno paleidimo metu</string>
     <string name="edit_name" comment="name for regex pattern">Draugiškas pavadinimas</string>
-    <string name="edit_regex">Reguliaraus reiškinio šablonas</string>
-    <string name="edit_regex_replacement">Reguliaraus reiškinio keitimas</string>
+    <string name="edit_regex">Reguliariaus reiškinio šablonas</string>
+    <string name="edit_regex_replacement">Reguliariaus reiškinio keitimas</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Laukai</string>
     <string name="edit_replace">Pakeisti</string>
     <string name="edit_first" comment="First occurrence of a pattern">Pirmas</string>
@@ -299,23 +299,23 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Ištraukti</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pavadinkite savo fiksavimo grupes <i>track, album, artist</i> arba <i>albumArtist</i>, kad jas ištrauktumėte iš kitų laukų.</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">pvz., kad pakeistumėte atlikėją ir pavadinimą, turėtumėte įrašyti atlikėjo reguliariąją reiškinį kaip (?&lt;artist&gt;.*) ir takelio reguliariąją reiškinį kaip (?&lt;track&gt;.*).</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliariams reiškiniams turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Tavo reguliari reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
-    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkamas reguliariusis reiškinys: %1$s.</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Jūsų reguliarieji reiškiniai turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Jūsų reguliarieji reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Netinkamas reguliarusis reiškinys: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Naudojami šablonai:</string>
-    <string name="edit_continue">Jei rasta, toliau atitikti kitų reguliarių reiškinių</string>
+    <string name="edit_continue">Jei rasta, toliau atitikti kitus reguliaruosius reiškinius</string>
     <string name="edit_case_sensitive">Skirti raidžių lygį</string>
-    <string name="edit_regex_test" comment="(Test regex rules)">Testas</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Testuoti</string>
     <string name="edit_presets" comment="Regex presets">Išankstiniai nustatymai</string>
     <string name="edit_presets_available">Galimi išankstiniai nustatymai</string>
-    <string name="edit_no_presets_available">Visi išankstiniai nustatymai yra naudojami</string>
+    <string name="edit_no_presets_available">Visi išankstiniai nustatymai naudojami</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Išankstinis nustatymas: %1$s</string>
-    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono ribojimas (%1$d).</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono riba (%1$d).</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Nutempimo rankenėlė</string>
     <string name="text" comment="text to test regex rules with">Tekstas</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikink, kad supranti <a href="https://www.google.com/search?q=regex+tutorial">Javos reguliarią reiškinį</a>, arba naudok vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliariaus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikinkite, kad suprantate <a href="https://www.google.com/search?q=regex+tutorial">Javos reguliariąją reiškinį</a>, arba naudokite vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliariaus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
     <string name="blocked_metadata_info">ℹ️ Užpildžius daugiau nei vieną iš šių laukų, tarp jų bus taikomas IR operatorius.</string>
-    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Paliesk, kad blokuoti ir praleisti</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Palieskite, kad blokuoti ir praleisti</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
     <string name="skip" comment="skip to next track">Praleisti</string>
     <string name="mute" comment="mute the music">Nutildyti</string>
@@ -437,19 +437,19 @@
     <string name="not_running">⚠ Sistema sustabdė skrobuoklį</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Priežastis: %1$s</string>
     <string name="not_running_fix_action">Taisyti</string>
-    <string name="login_submit" comment="Verifies the login details">Patikrinti</string>
+    <string name="login_submit" comment="Verifies the login details">Patvirtinti</string>
     <string name="acr_host" comment="Web hostname">Serveris</string>
     <string name="acr_key" comment="API key">Prieigos raktas</string>
     <string name="acr_secret" comment="API secret">Paslaptis</string>
     <string name="add_acr_key">Pridėti „ACRCloud“ raktą</string>
-    <string name="remove_acr_key">Pašalinti „ACRCloud“ raktą</string>
-    <string name="add_acr_consider">Kad išvengtum spartos ribojimų, apsvarstyk galimybę pridėti savo „ACRCloud“ raktą</string>
+    <string name="remove_acr_key">Šalinti „ACRCloud“ raktą</string>
+    <string name="add_acr_consider">Kad išvengtumėte spartos ribų, apsvarstykite galimybę pridėti savo „ACRCloud“ raktą.</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Pridėti</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Užsiregistruok adresu https://console.acrcloud.com.
-• Naršyk į „Projects“ &gt; „“Audio &amp; „video recognition“.
-• Sukurk naują projektą, pasirink „Recorded Audio“ ir „ACRCloud Music“ kaušas.</string>
-    <string name="shazam_scrobbling">Jei nori nuolat skrobuolinti, vietoj to atidaryk „<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>“ ir įjunk „Auto Shazam“. Taip pat įsitikink, kad „Shazam“ įjungtas skrobuolinimui.</string>
-    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d likusių</string>
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Registruokitės adresu https://console.acrcloud.com.
+• Naršykite į „Projects“ &gt; „Audio“ &amp; „video recognition“.
+• Sukurkite naują projektą, pasirinkite „Recorded Audio“ ir „ACRCloud Music“ kaušas.</string>
+    <string name="shazam_scrobbling">Kad nuolat skrobuolintumėte, vietoj to atidarykite <a href="https://play.google.com/store/apps/details?id=com.shazam.android">„Shazam“</a> ir paleiskite „Auto Shazam“. Taip pat įsitikinkite, kad „Shazam“ įjungtas skrobuolinimui.</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Liko %1$d</string>
     <string name="submitting_loves" formatted="true">Siunčiami mėgstami. Liko %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Siunčiamas paketas</string>
     <string name="bar_chart">Juostinė diagrama</string>
@@ -457,13 +457,13 @@
     <string name="fix_it_title">Galimi taisymai</string>
     <string name="fix_it_startup_title">Maitinimo taupyklės / paleidimo tvarkytuvai</string>
     <string name="fix_it_battery_title">Išjungti akumuliatoriaus optimizavimą</string>
-    <string name="fix_it_energy_title">Išjunk energijos optimizavimą</string>
+    <string name="fix_it_energy_title">Išjunkite energijos optimizavimus</string>
     <string name="fix_it_action" comment="(To open an app)">Atidaryti</string>
     <string name="delete_account">Ištrinti paskyrą</string>
-    <string name="delete_account_custom_servers">Apie pasirinktinius serverius žiūrėk atitinkamus jų dokumentus.</string>
+    <string name="delete_account_custom_servers">Apie pasirinktinius serverius žiūrėkite atitinkamus jų dokumentus.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Pridėti arba keisti vaizdą</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Iš galerijos</string>
-    <string name="square_photo_hint">Naudok kvadratinį vaizdą, kad pasiektum geriausių rezultatų</string>
+    <string name="square_photo_hint">Naudokite kvadratinį vaizdą, kad pasiektumėte geriausių rezultatų</string>
     <string name="scrobble_to_file">Failas</string>
     <string name="password">Slaptažodis</string>
     <string name="open_existing" comment="Append to an existing file">Pridėti prie esamo</string>
@@ -481,25 +481,25 @@
     <string name="medium" comment="As in high/medium/low">Vidutinis</string>
     <string name="low" comment="As in high/medium/low">Žemas</string>
     <!--  pro  -->
-    <string name="get_pro">Palaikyti šią programėlę</string>
+    <string name="get_pro">Paremti šią programėlę</string>
     <string name="help">Pagalba</string>
-    <string name="pro_support">Tai paprastas ir greitas būdas nuostabiems naudotojams, tokiems kaip tu, išreikšti palaikymą, pripažįstant šios programos teikiamą vertę.</string>
-    <string name="pro_also_get">Taip pat gausi toliau nurodytas funkcijas:</string>
+    <string name="pro_support">Tai – paprastas ir greitas būdas nuostabiems naudotojams, kaip jūs, išreikšti paramą, pripažįstant šios programėlės teikiamą vertę.</string>
+    <string name="pro_also_get">Taip pat gausite toliau nurodytas funkcijas:</string>
     <string name="thank_you">Ačiū!</string>
-    <string name="purchase_pending">Mokėjimo paslaugų teikėjas dar nepatvirtino pirkimo. Patikrink po kelių minučių.</string>
+    <string name="purchase_pending">Jūsų mokėjimo paslaugų teikėjas dar nepatvirtino pirkimo. Patikrinkite po kelių minučių.</string>
     <string name="billing_troubleshoot_title">Atkurti pirkimą</string>
-    <string name="billing_troubleshoot">Jau nusipirkai?
+    <string name="billing_troubleshoot">Jau nusipirkote?
 
-Tavo pirkimus tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programėlę naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programėlę iš kompiuterio per „Google Play“ tinklalapį:
+Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programėlę naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programėlę iš kompiuterio per „Google Play“ tinklalapį:
 
-• Išdiegk šią programėlę.
-• Atidaryk „Google Play“ tinklalapį iš kompiuterio.
-• Prisijunk su paskyra, kuriai priklauso pirkimas.
-• Įdiek šią programėlę tiesiogiai iš „Google Play“ tinklalapio.</string>
+• Išdiegkite šią programėlę.
+• Atidarykite „Google Play“ tinklalapį iš kompiuterio.
+• Prisijunkite su paskyra, kuriai priklauso pirkimas.
+• Įdiekite šią programėlę tiesiogiai iš „Google Play“ tinklalapio.</string>
     <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos</string>
-    <string name="billing_sharing">Pašalinti programėlės pavadinimą bendrinant</string>
-    <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobuolinai, ir tiesiogiai jose ieškoti</string>
-    <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliarią reiškinį</string>
+    <string name="billing_sharing">Šalinti programėlės pavadinimą bendrinant</string>
+    <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobuolinote, ir tiesiogiai jose ieškoti</string>
+    <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliariąją reiškinį</string>
     <string name="billing_max_devices_reached" formatted="true">Šis kodas jau buvo panaudotas daugiausiuose (%1$d) įrenginiuose.</string>
 </resources>

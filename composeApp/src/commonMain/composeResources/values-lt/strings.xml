@@ -396,16 +396,16 @@
     <string name="pref_imexport_network_notice">Tinklo režimu abu įrenginiai turi būti prijungti prie to paties tinklo.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Suasmeninimas</string>
     <string name="pref_themes" comment="Color themes">Temos</string>
-    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Maišyti ir derinti\nTaip pat keičia pranešimo spalvą.</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Maišyti ir derinti.\nTaip pat keičia pranešimo spalvą.</string>
     <string name="pref_widget_charts">Pradžios ekrano valdiklis – Diagramos</string>
     <string name="pref_show_albums">Rodyti albumų pavadinimus</string>
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…skroblams.</string>
-    <string name="pref_show_scrobble_sources">Rodyti programėlių piktogramas, iš kurių nuskrobuoliniai</string>
-    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…prie kiekvieno skroblo. Šie duomenys lieka tavo įrenginyje.</string>
-    <string name="pref_search_in_source">Ieškoti ir leisti programėlėje, iš kurios nuskrobuoliniai</string>
-    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Palaikomoms programėlėms</string>
+    <string name="pref_show_scrobble_sources">Rodyti programėlių piktogramas, iš kurių nuskrobuolinote</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…prie kiekvieno skroblo. Šie duomenys lieka jūsų įrenginyje.</string>
+    <string name="pref_search_in_source">Ieškoti ir paleisti programėlėje, iš kurios nuskrobuolinote</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Palaikomoms programėlėms.</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Sąrašai</string>
-    <string name="pref_regex_edits">Šablonų redagavimai</string>
+    <string name="pref_regex_edits">Šablono redagavimai</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Užblokuoti metaduomenys</string>
     <string name="pref_translate">Versti šia programėlę</string>
     <string name="pref_translate_credits">Vertimo kūrėjai</string>
@@ -418,22 +418,22 @@
     <string name="export_failed">Eksportuoti nepavyko.</string>
     <string name="imported">Importuota</string>
     <string name="import_options">Importavimo parinktys</string>
-    <string name="import_lists_nope">Neimportuoti redagavimų ir blokavimo sąrašo</string>
+    <string name="import_lists_nope">Neimportuoti redagavimus ir blokavimo sąrašo</string>
     <string name="import_lists_replace_all">Pakeisti visus redagavimus ir blokavimo sąrašą</string>
     <string name="import_lists_replace_existing">Sujungti, pakeičiant esamus redagavimus ir blokavimo sąrašą</string>
-    <string name="import_lists_keep">Sujungti, išsaugant esamus redagavimus ir blokavimo sąrašą</string>
+    <string name="import_lists_keep">Sujungti, išlaikant esamus redagavimus ir blokavimo sąrašą</string>
     <string name="import_settings">Importuoti nustatymus</string>
-    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Transliavimo intencijos</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Transliavimo ketinimai</string>
     <string name="current_track">Dabartinė daina:</string>
     <string name="pref_intents">„Tasker“ ketinimai ir pan.</string>
     <string name="copied">Nukopijuota!</string>
-    <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti tapatybę</string>
+    <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti tapatybę.</string>
     <string name="custom_listenbrainz">Pasirinktinis „Listenbrainz“</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
-    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrink %1$s</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrinkite „%1$s“</string>
     <string name="artist_extra">Takeliai, albumai ir panašumai</string>
-    <string name="no_browser">Neįdiegta jokia naršyklė</string>
-    <string name="no_player">Nėra įdiegtas joks muzikos leistuvas</string>
+    <string name="no_browser">Nėra įdiegtos naršyklės</string>
+    <string name="no_player">Nėra įdiegta muzikos leistuvė</string>
     <string name="not_running">⚠ Sistema sustabdė skrobuoklį</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Priežastis: %1$s</string>
     <string name="not_running_fix_action">Taisyti</string>
@@ -460,7 +460,7 @@
     <string name="fix_it_energy_title">Išjunkite energijos optimizavimus</string>
     <string name="fix_it_action" comment="(To open an app)">Atidaryti</string>
     <string name="delete_account">Ištrinti paskyrą</string>
-    <string name="delete_account_custom_servers">Apie pasirinktinius serverius žiūrėkite atitinkamus jų dokumentus.</string>
+    <string name="delete_account_custom_servers">Apie pasirinktinius serverius patikrinkite atitinkamus jų dokumentus.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Pridėti arba keisti vaizdą</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Iš galerijos</string>
     <string name="square_photo_hint">Naudokite kvadratinį vaizdą, kad pasiektumėte geriausių rezultatų</string>

@@ -55,12 +55,11 @@ minima:
   skin: auto
   social_links:
     - { platform: github,  user_url: "https://github.com/kawaiiDango/pano-scrobbler" }
+  nav_pages:
+    - faq.md
 
 author:
   name: kawaiiDango
-
-header_pages:
-  - faq.md
 
 optional_front_matter:
   remove_originals: true

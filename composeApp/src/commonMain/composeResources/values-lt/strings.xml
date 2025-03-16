@@ -178,7 +178,7 @@
     <string name="new_player_prompt">Toliau skrobuolinti šią programėlę?</string>
     <string name="no_scrobbles">Čia dar nėra dainų…</string>
     <string name="no_friends">Dar nė vieno nesekate…</string>
-    <string name="channel_err" comment="Its a noun">Skroblo klaidos.</string>
+    <string name="channel_err" comment="Its a noun">Skroblo klaidos</string>
     <string name="new_app">Nauja programėlė</string>
     <string name="no_apps_enabled">Nėra įjungtų programėlių</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d daugiau</string>
@@ -255,7 +255,7 @@
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Pagal %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nepakanka duomenų</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Jaučiuosi laimingas</string>
-    <string name="random_not_found">Nerasta jokių takelių</string>
+    <string name="random_not_found">Nerasta takelių</string>
     <string name="loved_track">Mėgstamas takelis</string>
     <string name="randomize" comment="(To randomize or fetch a new random item)">Atsitiktine tvarka</string>
     <string name="random_text">Atsitiktinis</string>
@@ -267,7 +267,7 @@
     <string name="corrected" comment="Corrected metadata after editing">Pataisytas</string>
     <string name="tag" comment="last.fm tag">Žymė</string>
     <string name="taggers" comment="(number of) people who have tagged">Žymėtojai</string>
-    <string name="taggings" comment="(total count of) a particular tag">Žymėlės</string>
+    <string name="taggings" comment="(total count of) a particular tag">Žymės</string>
     <string name="digest_weekly">Mano praėjusios savaitės geriausi skroblai</string>
     <string name="digest_monthly">Mano praėjusio mėnesio geriausi skroblai</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s geriausi skroblai</string>
@@ -324,13 +324,13 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Paslėptos žymės</string>
     <string name="pin" comment="pin a friend to the top">Prisegti</string>
     <string name="unpin" comment="unpin a friend to the top">Atsegti</string>
-    <string name="pin_limit_reached" formatted="true">Pasiekta prisegimų ribojimas (%1$d).</string>
-    <string name="pin_help">Ilgai prispausk prisegtus elementus, kad pakeisti jų tvarką</string>
+    <string name="pin_limit_reached" formatted="true">Pasiekta prisegimų riba (%1$d).</string>
+    <string name="pin_help">Ilgai prispauskite prisegtus elementus, kad pakeisti jų tvarką</string>
     <string name="use_channel" comment="(Use youtube channel name)">Naudoti kanalo pavadinimą</string>
-    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar nori įjungti šablono redagavimo taisyklę: %1$s?</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar norite įjungti šablono redagavimo taisyklę: „%1$s“?</string>
     <string name="show_persistent_noti">Rodyti nuolatinį pranešimą</string>
-    <string name="fix_it_desc">Tai gali padėti palaikyti skrobuoklio veikimą fone kai kuriuose įrenginiuose.</string>
-    <string name="persistent_noti_desc">Ilgai prispausk, kad paslėpti</string>
+    <string name="fix_it_desc">Tai gali padėti išlaikyti skrobuoklio veikimą fone kai kuriuose įrenginiuose.</string>
+    <string name="persistent_noti_desc">Ilgai prispauskite, kad paslėpti</string>
     <string name="scrobbler_off">Skrobuoklis išjungtas</string>
     <string name="scrobbler_on">Skrobuoklis aktyvus</string>
     <string name="duration">Trukmė</string>
@@ -338,7 +338,7 @@
     <string name="acoustic" comment="(Acoustic music)">Akustika</string>
     <string name="instrumental">Instrumentinė</string>
     <string name="energetic" comment="(Energetic music)">Energinga</string>
-    <string name="danceable">Šokių tinkamas</string>
+    <string name="danceable">Šokiakumas</string>
     <string name="valence" comment="(Musical positivity)">Pozityvumas</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analizė</string>
@@ -352,25 +352,25 @@
     <string name="pref_master_qs_hint">Taip pat galima perjungti iš sparčiųjų nustatymų plytelės</string>
     <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
     <string name="pref_master_qs_already_addded">Sparčiųjų nustatymų plytelė jau pridėta.</string>
-    <string name="pref_noti_q">Jei piktograma nerodoma, galima skatinti pranešimą</string>
+    <string name="pref_noti_q">Jei piktograma nerodoma, galima skatinti pranešimą.</string>
     <string name="pref_noti">Pranešimai</string>
     <string name="pref_noti_categories">Pranešimų kategorijos</string>
     <string name="pref_scrobble_noti">Skroblo pranešimai</string>
     <string name="pref_lockscreen_noti">Užrakinto ekrano pranešimai</string>
-    <string name="pref_offline_info">ℹ️ Atsijungę skroblai ir pamėgti bus išsaugoti, kad būtų išsiųsti vėliau.</string>
+    <string name="pref_offline_info">ℹ️ Neprisijungus skroblai ir mėgstami bus išsaugoti, kad būtų išsiųsti vėliau.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Skrobuolinti iš</string>
-    <string name="pref_enabled_apps_summary">ℹ️ Palaiko muzikos metaduomenis atskleidžiančias programėles. Kad išvengtum dvigubo „Spotify“ skroblo, įjunk šią funkciją tik vienoje vietoje.</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Palaiko muzikos metaduomenis atskleidžiančias programėles. Kad išvengtumėte dvigubo „Spotify“ skroblo, įjunkite tai tik vienoje vietoje.</string>
     <string name="pref_enabled_apps_title">Pasirinkti programėles</string>
     <string name="pref_auto_detect">Automatiškai skrobuolinti iš naujų programėlių</string>
     <string name="pref_spotify_remote">Skrobuolinti „Spotify“ leidžiant kituose įrenginiuose</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Naudoti apytikslę atlikėjo vaizdų paiešką</string>
-    <string name="pref_link_heart_button_rating">Naudoti širdelės mygtuką pranešime, kad jį taip pat pamėgti medijos leistuve</string>
+    <string name="pref_link_heart_button_rating">Naudoti širdelės mygtuką pranešime, kad jį taip pat pamėgti medijos leistuvėje</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Išjungti nuolatinį mikrofono skrobuolinimą, kai įrenginys leidžia muziką</string>
     <string name="pref_delay">Skroblo delsa (priklausomai nuo to, kuri ankstesnė)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutės</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procentas</string>
     <string name="pref_logout">Atsijungti</string>
-    <string name="sure_tap_again">Tikrai? Paliesk dar kartą</string>
+    <string name="sure_tap_again">Tikrai? Palieskite dar kartą</string>
     <string name="pref_login">Prisijungti</string>
     <string name="pref_about" comment="Info about this app">Apie</string>
     <string name="pref_privacy_policy">Privatumo politika</string>

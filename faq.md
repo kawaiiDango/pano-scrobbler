@@ -45,3 +45,18 @@ This is not a music streaming app. However, you can click the search and play bu
 ### The search and play button always opens a particular music player
 
 This can happen if you have set that particular music player as the default. To fix this, go to that music player's app info and tap on "Clear defaults".
+
+
+### What's the difference between skip, mute, and ignore?
+
+![](https://i.imgur.com/hD6lKia.png)
+
+**Skip:** Skips the track (if the media player supports it)
+
+**Mute:** Mutes the track in the media player supports it.
+
+**Ignore:** Does nothing to the track in the media player.
+
+All these options are a part of the "blocked metadata" screen (found in the track menu ⋮ > More > Block), so the track will be blocked from scrobbling in the receiving server.
+
+![](https://i.imgur.com/3VVFMzq.png)

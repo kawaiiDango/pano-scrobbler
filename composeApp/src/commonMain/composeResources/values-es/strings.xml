@@ -124,6 +124,7 @@
     <string name="more" comment="More options menu in short">Ver más</string>
     <string name="learn" comment="(Learn java regex syntax)">Aprender</string>
     <string name="hide">Ocultar</string>
+    <string name="rank_change" comment="%1= delta change">Cambio de rango: %1$s</string>
     <string name="rank_change_no_change">Ningún cambio</string>
     <string name="rank_change_new">No scrobbleado en el período anterior</string>
     <string name="search">Buscar</string>
@@ -300,6 +301,8 @@
     <string name="persistent_noti_desc">Mantén presionado para ocultar esto</string>
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
+    <string name="duration">Duración</string>
+    <string name="total_listen_time">Tiempo total de escucha</string>
     <string name="acoustic" comment="(Acoustic music)">Acústica</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Enérgica</string>
@@ -328,6 +331,7 @@
     <string name="pref_enabled_apps_title">Escoge las aplicaciones</string>
     <string name="pref_auto_detect">Automáticamente hace scrobble de nuevas aplicaciones</string>
     <string name="pref_spotify_remote">Haz scrobble de Spotify reproduciendo en otros dispositivos</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Usar búsqueda aproximada para imágenes de artistas</string>
     <string name="pref_link_heart_button_rating">Usa el botón del corazón en la notificación para también favorecerlo en el reproductor multimedia</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Desactivar el scrobbling continuo del micrófono cuando el dispositivo está reproduciendo música</string>
     <string name="pref_delay">Demora del scrobble (lo que ocurra primero)</string>
@@ -399,6 +403,7 @@
     <string name="no_browser">No hay ningún navegador instalado</string>
     <string name="no_player">No hay reproductor de música instalado</string>
     <string name="not_running">⚠ El scrobbler fue asesinado por tu sistema</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razón: %1$s</string>
     <string name="not_running_fix_action">Corregir</string>
     <string name="login_submit" comment="Verifies the login details">Verificar</string>
     <string name="acr_host" comment="Web hostname">Alojamiento</string>

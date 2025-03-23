@@ -108,6 +108,7 @@
     <string name="more" comment="More options menu in short">更多</string>
     <string name="learn" comment="(Learn java regex syntax)">了解</string>
     <string name="hide">隐藏</string>
+    <string name="rank_change" comment="%1= delta change">更改排序：%1$s</string>
     <string name="rank_change_no_change">没有更改</string>
     <string name="rank_change_new">未在上一周期内进行记录</string>
     <string name="search">搜索</string>
@@ -386,6 +387,7 @@
     <string name="no_browser">未安装浏览器</string>
     <string name="no_player">未安装音乐播放器</string>
     <string name="not_running">⚠ 您的系统终止了记录器运行</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">原因: %1$s</string>
     <string name="not_running_fix_action">修复</string>
     <string name="login_submit" comment="Verifies the login details">验证</string>
     <string name="acr_host" comment="Web hostname">主机</string>
@@ -418,6 +420,12 @@
     <string name="password">密码</string>
     <string name="open_existing" comment="Append to an existing file">追加至现有文件</string>
     <string name="create" comment="Create a new file">创建</string>
+    <string name="ok">好的</string>
+    <string name="cancel">取消</string>
+    <string name="back">返回</string>
+    <string name="done">已完成</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">重试</string>
+    <string name="run_on_start">当电脑启动时运行</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="help">帮助</string>

@@ -1,17 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="other">%1$s hôm nay</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="other">%1$s người nghe</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="other">%1$s ngày</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="other">%1$s tuần</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="other">%1$s tháng</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="other">%1$s năm</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="other">%1$s nghệ sĩ</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="other">%1$s album</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="other">%1$s bài hát</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="other">%1$s lần sửa</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="other">%1$s phút</item>
+    </plurals>
     <string name="yes">Có</string>
     <string name="no">Không</string>
+    <string name="reset">Đặt lại</string>
+    <string name="settings">Tùy chỉnh</string>
+    <string name="bug_report">Báo cáo lỗi</string>
+    <string name="faq">Câu hỏi thường gặp</string>
     <string name="album_art">Ảnh bìa</string>
     <string name="artist_image">Ảnh bìa nghệ sĩ</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Yêu cầu ô này là trống</string>
+    <string name="artist">Nghệ sĩ</string>
+    <string name="artists">Nghệ sĩ</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Nghệ sĩ hàng đầu</string>
+    <string name="album">Album</string>
+    <string name="albums">Album</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album hàng đầu</string>
     <string name="track">Bài hát</string>
     <string name="tracks">Bài hát</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Bài hát hàng đầu</string>
     <string name="similar_tracks">Bài hát phổ biến</string>
+    <string name="similar" comment="Similar tracks but in short">Tương tự</string>
+    <string name="tap_to_edit">(Chạm để sửa)</string>
+    <string name="recents" comment="Short for recently scrobbled">Gần đây</string>
+    <string name="auto" comment="automatic or default setting">Tự động</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Sắp xong rồi…</string>
+    <string name="music_players">Trình phát nhạc</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ứng dụng khác</string>
     <string name="choose_apps">Chọn ứng dụng</string>
     <string name="choose_an_app">Chọn một ứng dụng</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Ứng dụng</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Các dịch vụ</string>
+    <string name="share_sig">(bởi Pano Scrobbler)</string>
     <string name="share">Chia sẻ</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Chú thích</string>
     <string name="pinch_to_zoom">Chụm để thu phóng</string>
@@ -37,6 +89,8 @@
     <string name="followers" comment="your lastfm followers">Người theo dõi</string>
     <string name="send_notifications">Cho phép gửi thông báo</string>
     <string name="swap" comment="(Swap title and artist)">Hoán đổi</string>
+    <string name="time_just_now">mới đây</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Từ mic</string>
     <string name="uploading">Đang tải lên…</string>
     <string name="details">Chi tiết</string>
     <string name="sort">Sắp xếp</string>
@@ -56,6 +110,7 @@
     <string name="charts_overall">Tổng quan</string>
     <string name="charts_no_data">Không có dữ liệu trong giai đoạn này</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Tuỳ chỉnh</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Dựa trên %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Không đủ dữ liệu</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Tôi đang cảm thấy may mắn</string>
     <string name="random_not_found">Không tìm thấy bài hát</string>
@@ -75,6 +130,7 @@
     <string name="system_colors">Màu hệ thống</string>
     <string name="primary_color">Màu chủ đạo</string>
     <string name="secondary_color">Màu phụ đạo</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Mục</string>
     <string name="edit_replace">Thay thế</string>
     <string name="edit_first" comment="First occurrence of a pattern">Đầu tiên</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tất cả</string>
@@ -88,6 +144,10 @@
     <string name="unpin" comment="unpin a friend to the top">Bỏ ghim</string>
     <string name="duration">Thời lượng</string>
     <string name="total_listen_time">Tổng thời lượng nghe</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Phân tích</string>
+    <string name="enable" comment="To enable the scrobbler">Bật</string>
+    <string name="username" comment="last.fm Username">Tên người dùng</string>
+    <string name="pref_noti">Thông báo</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Phút</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Phần trăm</string>
     <string name="pref_logout">Đăng xuất</string>

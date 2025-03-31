@@ -8,5 +8,51 @@
     <string name="track">Bài hát</string>
     <string name="tracks">Bài hát</string>
     <string name="similar_tracks">Bài hát phổ biến</string>
+    <string name="choose_apps">Chọn ứng dụng</string>
+    <string name="choose_an_app">Chọn một ứng dụng</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Ứng dụng</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Các dịch vụ</string>
+    <string name="share">Chia sẻ</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Chú thích</string>
+    <string name="pinch_to_zoom">Chụm để thu phóng</string>
+    <string name="more_info">Thông tin chi tiết</string>
+    <string name="more" comment="More options menu in short">Khác</string>
+    <string name="learn" comment="(Learn java regex syntax)">Tìm hiểu</string>
+    <string name="hide">Ẩn</string>
+    <string name="rank_change_no_change">Không đổi</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Xóa lịch sử</string>
+    <string name="library" comment="search within the library">Thư viện</string>
+    <string name="global" comment="search globally across lastfm">Toàn cầu</string>
+    <string name="take_long_time">Có thể hơi lâu</string>
+    <string name="profile">Hồ sơ</string>
+    <string name="profile_pic">Ảnh đại diện</string>
+    <string name="show_all">Xem thêm</string>
+    <string name="edit">Sửa</string>
+    <string name="delete">Xoá</string>
+    <string name="delete_all">Xóa tất cả</string>
+    <string name="love" comment="Love/like a song">Yêu thích</string>
+    <string name="hate" comment="Hate or dislike a song">Không thích</string>
+    <string name="following" comment="accounts you are following on lastfm">Đang theo dõi</string>
+    <string name="followers" comment="your lastfm followers">Người theo dõi</string>
+    <string name="send_notifications">Cho phép gửi thông báo</string>
+    <string name="swap" comment="(Swap title and artist)">Hoán đổi</string>
+    <string name="uploading">Đang tải lên…</string>
+    <string name="details">Chi tiết</string>
+    <string name="sort">Sắp xếp</string>
+    <string name="listeners">Thính giả</string>
+    <string name="collapse" comment="(view only a few items)">Thu nhỏ</string>
+    <string name="expand" comment="(view all items)">Mở rộng</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s thích</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Từ %1$s</string>
+    <string name="not_found" comment="Shown in search">Không tìm thấy</string>
+    <string name="save" comment="saves a file">Lưu</string>
+    <string name="saved_to_gallery">Đã lưu vào Thư viện</string>
+    <string name="weekly">Hàng tuần</string>
+    <string name="weeks">Tuần</string>
+    <string name="monthly">Hàng tháng</string>
+    <string name="months">Tháng</string>
+    <string name="years" comment="For the charts menu which displays year by year">Năm</string>
+    <string name="charts_overall">Tổng quan</string>
     <!--  pro  -->
 </resources>

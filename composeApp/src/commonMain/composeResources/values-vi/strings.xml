@@ -54,5 +54,88 @@
     <string name="months">Tháng</string>
     <string name="years" comment="For the charts menu which displays year by year">Năm</string>
     <string name="charts_overall">Tổng quan</string>
+    <string name="charts_no_data">Không có dữ liệu trong giai đoạn này</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Tuỳ chỉnh</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Không đủ dữ liệu</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Tôi đang cảm thấy may mắn</string>
+    <string name="random_not_found">Không tìm thấy bài hát</string>
+    <string name="loved_track">Bài hát được ưa thích</string>
+    <string name="randomize" comment="(To randomize or fetch a new random item)">Trộn</string>
+    <string name="random_text">Ngẫu nhiên</string>
+    <string name="original" comment="Original metadata before editing">Gốc</string>
+    <string name="corrected" comment="Corrected metadata after editing">Đã sửa</string>
+    <string name="close" comment="To close a dialog or something">Đóng</string>
+    <string name="appwidget_loading">Đang tải…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Khoảng thời gian</string>
+    <string name="appwidget_theme">Chủ đề</string>
+    <string name="appwidget_shadow">Bóng</string>
+    <string name="appwidget_show">Hiện</string>
+    <string name="light">Sáng</string>
+    <string name="dark">Tối</string>
+    <string name="system_colors">Màu hệ thống</string>
+    <string name="primary_color">Màu chủ đạo</string>
+    <string name="secondary_color">Màu phụ đạo</string>
+    <string name="edit_replace">Thay thế</string>
+    <string name="edit_first" comment="First occurrence of a pattern">Đầu tiên</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Tất cả</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Trích xuất</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Thử</string>
+    <string name="edit_presets" comment="Regex presets">Mẫu thiết lập</string>
+    <string name="mute" comment="mute the music">Tắt tiếng</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Bỏ qua</string>
+    <string name="block" comment="block the track from scrobbling">Chặn</string>
+    <string name="pin" comment="pin a friend to the top">Ghim</string>
+    <string name="unpin" comment="unpin a friend to the top">Bỏ ghim</string>
+    <string name="duration">Thời lượng</string>
+    <string name="total_listen_time">Tổng thời lượng nghe</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Phút</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Phần trăm</string>
+    <string name="pref_logout">Đăng xuất</string>
+    <string name="pref_login">Đăng nhập</string>
+    <string name="pref_about" comment="Info about this app">Giới thiệu</string>
+    <string name="pref_privacy_policy">Chính sách quyền riêng tư</string>
+    <string name="pref_user_label" comment="(Like username)">Người dùng</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Token xác thực</string>
+    <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL máy chủ</string>
+    <string name="pref_locale">Ngôn ngữ</string>
+    <string name="pref_misc">Khác</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tuần mới bắt đầu vào</string>
+    <string name="pref_export">Xuất</string>
+    <string name="pref_import">Nhập</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Cá nhân hoá</string>
+    <string name="pref_themes" comment="Color themes">Chủ đề</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Danh sách</string>
+    <string name="pref_translate">Đóng góp bản dịch</string>
+    <string name="pref_check_updates">Kiểm tra bản cập nhật</string>
+    <string name="download" comment="Its a verb">Tải về</string>
+    <string name="changelog">Nhật kí thay đổi</string>
+    <string name="imported">Đã nhập</string>
+    <string name="current_track">Bản nhạc đang phát</string>
+    <string name="copied">Đã sao chép!</string>
+    <string name="no_browser">Không có trình duyệt trên thiết bị</string>
+    <string name="not_running_fix_action">Khắc phục</string>
+    <string name="login_submit" comment="Verifies the login details">Xác thực</string>
+    <string name="acr_key" comment="API key">Mã truy cập</string>
+    <string name="acr_secret" comment="API secret">Mã bí mật</string>
+    <string name="add" comment="Add a new item such as an edit, a tag, etc">Thêm</string>
+    <string name="fix_it_action" comment="(To open an app)">Mở</string>
+    <string name="delete_account">Xóa tài khoản</string>
+    <string name="scrobble_to_file">Tập tin</string>
+    <string name="password">Mật khẩu</string>
+    <string name="create" comment="Create a new file">Tạo mới</string>
+    <string name="ok">Đồng ý</string>
+    <string name="cancel">Hủy</string>
+    <string name="back">Quay lại</string>
+    <string name="done">Hoàn tất</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Thử lại</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Độ tương phản</string>
+    <string name="high" comment="As in high/medium/low">Cao</string>
+    <string name="medium" comment="As in high/medium/low">Vừa</string>
+    <string name="low" comment="As in high/medium/low">Thấp</string>
     <!--  pro  -->
+    <string name="get_pro">Ủng hộ ứng dụng</string>
+    <string name="help">Hỗ trợ</string>
+    <string name="thank_you">Cảm ơn bạn!</string>
+    <string name="billing_troubleshoot_title">Khôi phục thanh toán</string>
 </resources>

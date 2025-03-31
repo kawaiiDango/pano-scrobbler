@@ -159,6 +159,7 @@
     <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL máy chủ</string>
     <string name="pref_locale">Ngôn ngữ</string>
+    <string name="pref_change_locale">Thay đổi ngôn ngữ</string>
     <string name="pref_misc">Khác</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tuần mới bắt đầu vào</string>
     <string name="pref_export">Xuất</string>
@@ -173,14 +174,21 @@
     <string name="imported">Đã nhập</string>
     <string name="current_track">Bản nhạc đang phát</string>
     <string name="copied">Đã sao chép!</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Kiểm tra %1$s</string>
     <string name="no_browser">Không có trình duyệt trên thiết bị</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Lý do: %1$s</string>
     <string name="not_running_fix_action">Khắc phục</string>
     <string name="login_submit" comment="Verifies the login details">Xác thực</string>
     <string name="acr_key" comment="API key">Mã truy cập</string>
     <string name="acr_secret" comment="API secret">Mã bí mật</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Thêm</string>
+    <string name="fix_it_battery_title">Tắt tối ưu hoá pin</string>
+    <string name="fix_it_energy_title">Tắt tối ưu hoá pin</string>
     <string name="fix_it_action" comment="(To open an app)">Mở</string>
     <string name="delete_account">Xóa tài khoản</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Thêm hoặc thay ảnh</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Từ thư viện ảnh</string>
+    <string name="square_photo_hint">Chọn ảnh vuông để có kết quả tốt nhất</string>
     <string name="scrobble_to_file">Tập tin</string>
     <string name="password">Mật khẩu</string>
     <string name="create" comment="Create a new file">Tạo mới</string>
@@ -189,6 +197,9 @@
     <string name="back">Quay lại</string>
     <string name="done">Hoàn tất</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Thử lại</string>
+    <string name="run_on_start">Chạy khi khởi động máy</string>
+    <string name="use_browser">Hãy sử dụng trình duyệt trên thiết bị được hỗ trợ.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Lưu log</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Độ tương phản</string>
     <string name="high" comment="As in high/medium/low">Cao</string>
     <string name="medium" comment="As in high/medium/low">Vừa</string>

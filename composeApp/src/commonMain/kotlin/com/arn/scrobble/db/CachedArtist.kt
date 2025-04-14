@@ -30,7 +30,7 @@ data class CachedArtist(
             name = artistName,
             url = artistUrl,
             mbid = artistMbid,
-            playcount = userPlayCount,
+            playcount = userPlayCount.toLong(),
             userplaycount = userPlayCount,
         )
 
@@ -38,14 +38,14 @@ data class CachedArtist(
             artistName = name,
             artistUrl = url ?: "",
             artistMbid = mbid ?: "",
-            userPlayCount = playcount ?: -1,
+            userPlayCount = playcount?.toInt() ?: -1,
         )
 
         fun Track.toCachedArtist() = CachedArtist(
             artistName = artist.name,
             artistUrl = artist.url ?: "",
             artistMbid = artist.mbid ?: "",
-            userPlayCount = playcount ?: -1,
+            userPlayCount = playcount?.toInt() ?: -1,
         )
     }
 }

@@ -2,12 +2,14 @@ package com.arn.scrobble.charts
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -465,14 +467,14 @@ private fun ListeningActivityContent(
                     XYGraph(
                         xAxisModel = remember { CategoryAxisModel(xLabels) },
                         yAxisModel = rememberFloatLinearAxisModel(
-                            range = 0f..yValuesMax,
+                            range = 0f..1.2f * yValuesMax,
                             minViewExtent = 1f,
-                            maxViewExtent = yValuesMax,
+                            maxViewExtent = 1.2f * yValuesMax,
                             minorTickCount = 0,
                         ),
                         yAxisTitle = stringResource(Res.string.scrobbles),
                         yAxisLabels = { it.toInt().toString() },
-                        xAxisLabels = { it.toString().take(2) },
+                        xAxisLabels = { it.take(2) },
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
@@ -481,6 +483,10 @@ private fun ListeningActivityContent(
                             yData = yValues,
                             bar = {
                                 val currentYValue = yValues[it]
+                                val density = LocalDensity.current
+                                val fontSizeDp = with(density) {
+                                    MaterialTheme.typography.titleSmallEmphasized.fontSize.toDp()
+                                }
 
                                 DefaultVerticalBar(
                                     color = tintColor.copy(
@@ -495,8 +501,13 @@ private fun ListeningActivityContent(
                                 Text(
                                     currentYValue.toInt().format(),
                                     style = MaterialTheme.typography.titleSmallEmphasized,
-                                    color = MaterialTheme.colorScheme.onSecondary,
+                                    color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.align(Alignment.TopCenter)
+                                        .offset(y = -fontSizeDp * 2)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.background,
+                                            shape = MaterialTheme.shapes.small
+                                        )
                                 )
 
                             }

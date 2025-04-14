@@ -1,8 +1,8 @@
 package com.kennycason.kumo.bg
 
-import com.kennycason.kumo.collide.RectanglePixelCollidable
 import com.arn.scrobble.graphics.KumoPoint
 import com.arn.scrobble.graphics.KumoRect
+import com.kennycason.kumo.collide.RectanglePixelCollidable
 import com.kennycason.kumo.image.CollisionRaster
 
 /**
@@ -11,9 +11,9 @@ import com.kennycason.kumo.image.CollisionRaster
 class CircleBackground(private val radius: Int) : Background {
     private val position: KumoPoint = KumoPoint(0, 0)
 
-    override fun mask(background: RectanglePixelCollidable) {
-        val dimensionOfBackground: KumoRect = background.dimension
-        val rasterOfBackground: CollisionRaster = background.collisionRaster
+    override fun mask(backgroundCollidable: RectanglePixelCollidable) {
+        val dimensionOfBackground: KumoRect = backgroundCollidable.dimension
+        val rasterOfBackground: CollisionRaster = backgroundCollidable.collisionRaster
 
         for (y in 0..<dimensionOfBackground.height) {
             for (x in 0..<dimensionOfBackground.width) {

@@ -167,7 +167,8 @@ data class ListenBrainzStatsEntry(
 data class ListenBrainzActivityPayload(
     @Serializable(with = TimeSerializer::class)
     val from_ts: Long,
-    val last_updated: Int,
+    @Serializable(with = TimeSerializer::class)
+    val last_updated: Long,
     val listening_activity: List<ListeningActivity>,
     @Serializable(with = TimeSerializer::class)
     val to_ts: Long

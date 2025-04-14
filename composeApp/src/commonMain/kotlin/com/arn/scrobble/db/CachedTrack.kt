@@ -49,7 +49,7 @@ data class CachedTrack(
             ),
             album = null,
             duration = durationSecs.takeIf { it > 0 }?.toLong()?.times(1000),
-            playcount = userPlayCount,
+            playcount = userPlayCount.toLong(),
             userloved = isLoved,
             date = lastPlayed
         )
@@ -62,7 +62,7 @@ data class CachedTrack(
             artistUrl = artist.url ?: "",
             artistMbid = artist.mbid ?: "",
             durationSecs = duration?.div(1000)?.toInt() ?: -1,
-            userPlayCount = playcount ?: -1,
+            userPlayCount = playcount?.toInt() ?: -1,
             isLoved = userloved ?: false,
             lastPlayed = date ?: -1
         )

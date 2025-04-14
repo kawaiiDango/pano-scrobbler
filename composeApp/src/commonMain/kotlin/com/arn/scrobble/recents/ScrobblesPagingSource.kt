@@ -76,7 +76,7 @@ class ScrobblesPagingSource(
                 pr.entries
 
 
-            val prevPage = if (pr.attr.page == 1) null else pr.attr.page - 1
+            val prevPage = if (pr.attr.page <= 1) null else pr.attr.page - 1
             val nextPage = if (pr.attr.totalPages <= pr.attr.page) null else pr.attr.page + 1
             val total = pr.attr.total ?: 0
 

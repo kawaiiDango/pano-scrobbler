@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import android.annotation.TargetApi
 import android.app.PendingIntent
 import android.app.StatusBarManager
 import android.appwidget.AppWidgetManager
@@ -10,6 +9,7 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,8 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
-import com.arn.scrobble.media.NLService
 import com.arn.scrobble.R
+import com.arn.scrobble.media.NLService
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -102,7 +102,7 @@ actual fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boo
     }
 }
 
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 private fun requestPinWidget(context: Context) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
     if (appWidgetManager.isRequestPinAppWidgetSupported) {
@@ -120,7 +120,7 @@ private fun requestPinWidget(context: Context) {
     }
 }
 
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 private fun launchNotificationsActivity(context: Context) {
     val intent = Intent().apply {
         action = Settings.ACTION_APP_NOTIFICATION_SETTINGS

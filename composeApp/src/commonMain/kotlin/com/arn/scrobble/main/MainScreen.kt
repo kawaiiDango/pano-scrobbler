@@ -352,7 +352,12 @@ fun PanoAppContent(
                             navigate = navController::navigate,
                             goBack = navController::popBackStack,
                             goUp = navController::navigateUp,
-                            onOnboardingFinished = { onboardingFinished = true },
+                            onOnboardingFinished = {
+                                if (!onboardingFinished)
+                                    onboardingFinished = true
+                                else // case when the user is logged in but some onboarding steps are not done
+                                    navController.popBackStack()
+                            },
                             onSetOtherUser = { currentUserOther = it },
                             navMetadataList = { navMetadata },
                             onSetNavMetadataList = { navMetadata = it },

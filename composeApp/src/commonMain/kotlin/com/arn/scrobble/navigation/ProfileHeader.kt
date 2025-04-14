@@ -56,6 +56,7 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.TextWithIcon
+import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.drawSnowflake
 import com.arn.scrobble.ui.generateRandomSnowflake
 import com.arn.scrobble.utils.PlatformStuff
@@ -89,7 +90,7 @@ fun ProfileHeader(
         Stuff.isInDemoMode -> "nobody"
         currentScrobblable == null -> BuildKonfig.APP_NAME
         currentScrobblable!!.userAccount.type == AccountType.LASTFM -> currentScrobblable!!.userAccount.user.name
-        else -> stringResource(Scrobblables.getStringRes(currentScrobblable!!.userAccount.type)) + ": " + currentScrobblable!!.userAccount.user.name
+        else -> accountTypeLabel(currentScrobblable!!.userAccount.type) + ": " + currentScrobblable!!.userAccount.user.name
     }
 
 
@@ -291,7 +292,7 @@ fun ProfileHeaderDropdown(
                 accounts.filterNot { it == Scrobblables.current.value }.forEach {
                     DropdownMenuItem(
                         text = {
-                            Text(stringResource(Scrobblables.getStringRes(it.userAccount.type)) + ": " + it.userAccount.user.name)
+                            Text(accountTypeLabel(it.userAccount.type) + ": " + it.userAccount.user.name)
                         },
                         leadingIcon = {
                             Icon(

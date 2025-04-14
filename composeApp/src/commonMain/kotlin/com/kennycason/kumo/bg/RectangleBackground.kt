@@ -1,8 +1,8 @@
 package com.kennycason.kumo.bg
 
-import com.kennycason.kumo.collide.RectanglePixelCollidable
 import com.arn.scrobble.graphics.KumoPoint
 import com.arn.scrobble.graphics.KumoRect
+import com.kennycason.kumo.collide.RectanglePixelCollidable
 import com.kennycason.kumo.image.CollisionRaster
 
 /**
@@ -20,7 +20,7 @@ class RectangleBackground(private val position: KumoPoint, private val dimension
      */
     constructor(dimension: KumoRect) : this(KumoPoint(0, 0), dimension)
 
-    override fun mask(background: RectanglePixelCollidable) {
+    override fun mask(backgroundCollidable: RectanglePixelCollidable) {
         val dimensionOfShape: KumoRect = dimension
 
         val minY = position.y.coerceAtLeast(0)
@@ -29,8 +29,8 @@ class RectangleBackground(private val position: KumoPoint, private val dimension
         val maxY: Int = dimensionOfShape.height + position.y - 1
         val maxX: Int = dimensionOfShape.width + position.x - 1
 
-        val dimensionOfBackground: KumoRect = background.dimension
-        val rasterOfBackground: CollisionRaster = background.collisionRaster
+        val dimensionOfBackground: KumoRect = backgroundCollidable.dimension
+        val rasterOfBackground: CollisionRaster = backgroundCollidable.collisionRaster
 
         for (y in 0..<dimensionOfBackground.height) {
             for (x in 0..<dimensionOfBackground.width) {

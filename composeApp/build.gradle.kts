@@ -98,6 +98,7 @@ kotlin {
             implementation(libs.compose.webview)
             implementation(libs.documentfile)
             implementation(libs.harmony)
+            implementation(libs.coil.gif)
 
             implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 
@@ -117,7 +118,6 @@ kotlin {
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
             implementation(libs.coil.compose)
-            implementation(libs.coil.gif)
             implementation(libs.coil.network.okhttp)
             implementation(project.dependencies.platform(libs.ktor.bom))
             implementation(libs.ktor.client.core)
@@ -167,6 +167,10 @@ kotlin {
             implementation("org.openjfx:javafx-media:$javafxVersion:$platform")
             implementation("org.openjfx:javafx-web:$javafxVersion:$platform")
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 

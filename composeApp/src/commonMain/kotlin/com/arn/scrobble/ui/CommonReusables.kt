@@ -80,6 +80,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.PanoNavigationType
@@ -93,11 +94,18 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.delete
+import pano_scrobbler.composeapp.generated.resources.lastfm
+import pano_scrobbler.composeapp.generated.resources.librefm
+import pano_scrobbler.composeapp.generated.resources.like_instance
+import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.login_submit
+import pano_scrobbler.composeapp.generated.resources.maloja
 import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.ok
+import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.profile_pic
 import pano_scrobbler.composeapp.generated.resources.retry
+import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 import pano_scrobbler.composeapp.generated.resources.search
 import kotlin.math.abs
 
@@ -735,7 +743,7 @@ fun placeholderPainter(): ColorPainter {
 }
 
 @Composable
-fun Modifier.shimmerWindowBounds() = Modifier.shimmer(rememberShimmer(ShimmerBounds.Window))
+fun Modifier.shimmerWindowBounds() = this.shimmer(rememberShimmer(ShimmerBounds.Window))
 
 @Composable
 expect fun getActivityOrNull(): Any?
@@ -745,3 +753,19 @@ expect fun AppIcon(
     appItem: AppItem?,
     modifier: Modifier = Modifier,
 )
+
+@Composable
+fun accountTypeLabel(accountType: AccountType) = when (accountType) {
+    AccountType.LASTFM -> stringResource(Res.string.lastfm)
+    AccountType.LIBREFM -> stringResource(Res.string.librefm)
+    AccountType.GNUFM -> stringResource(Res.string.like_instance, stringResource(Res.string.lastfm))
+    AccountType.LISTENBRAINZ -> stringResource(Res.string.listenbrainz)
+    AccountType.CUSTOM_LISTENBRAINZ -> stringResource(
+        Res.string.like_instance,
+        stringResource(Res.string.listenbrainz)
+    )
+
+    AccountType.MALOJA -> stringResource(Res.string.maloja)
+    AccountType.PLEROMA -> stringResource(Res.string.pleroma)
+    AccountType.FILE -> stringResource(Res.string.scrobble_to_file)
+}

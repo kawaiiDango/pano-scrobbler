@@ -40,7 +40,7 @@ import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.artist_channel
 import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.blocked_metadata_info
-import pano_scrobbler.composeapp.generated.resources.ignore
+import pano_scrobbler.composeapp.generated.resources.do_nothing
 import pano_scrobbler.composeapp.generated.resources.mute
 import pano_scrobbler.composeapp.generated.resources.player_actions
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
@@ -163,7 +163,7 @@ private fun BlockedMetadataAddContent(
                     skip = false
                     mute = false
                 },
-                label = { Text(stringResource(Res.string.ignore)) }
+                label = { Text(stringResource(Res.string.do_nothing)) }
             )
         }
 

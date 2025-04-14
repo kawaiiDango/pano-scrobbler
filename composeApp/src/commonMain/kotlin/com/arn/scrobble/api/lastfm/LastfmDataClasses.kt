@@ -21,8 +21,8 @@ sealed class MusicEntry {
     abstract val url: String?
     abstract val mbid: String?
     abstract val msid: String?
-    abstract val listeners: Int?
-    abstract val playcount: Int?
+    abstract val listeners: Long?
+    abstract val playcount: Long?
     abstract val userplaycount: Int?
     abstract val tags: Tags?
     abstract val wiki: Wiki?
@@ -59,11 +59,11 @@ data class Wiki(
 data class Tag(
     val name: String,
     val url: String? = null,
-    @Serializable(with = StringOrIntSerializer::class)
-    val reach: Int? = null,
-    @Serializable(with = StringOrIntSerializer::class)
+    @Serializable(with = StringOrLongSerializer::class)
+    val reach: Long? = null,
+    @Serializable(with = StringOrLongSerializer::class)
     @JsonNames("total")
-    val count: Int? = null,
+    val count: Long? = null,
     @JsonNames("bio")
     val wiki: Wiki? = null,
 )
@@ -75,10 +75,10 @@ data class TagGetInfoResponse(
 
 @Serializable
 data class Stats(
-    @Serializable(with = StringOrIntSerializer::class)
-    val listeners: Int,
-    @Serializable(with = StringOrIntSerializer::class)
-    val playcount: Int,
+    @Serializable(with = StringOrLongSerializer::class)
+    val listeners: Long,
+    @Serializable(with = StringOrLongSerializer::class)
+    val playcount: Long,
     @Serializable(with = StringOrIntSerializer::class)
     val userplaycount: Int?,
 )
@@ -101,8 +101,11 @@ data class Artist(
     override val msid: String? = null,
     @SerialName("stats")
     private val _stats: Stats? = null,
-    override val listeners: Int? = _stats?.listeners,
-    override val playcount: Int? = _stats?.playcount,
+    @Serializable(with = StringOrLongSerializer::class)
+    override val listeners: Long? = _stats?.listeners,
+    @Serializable(with = StringOrLongSerializer::class)
+    override val playcount: Long? = _stats?.playcount,
+    @Serializable(with = StringOrIntSerializer::class)
     override val userplaycount: Int? = _stats?.userplaycount,
     @Serializable(with = StringOrFloatSerializer::class)
     override val match: Float? = null,
@@ -130,10 +133,10 @@ data class Album(
     override val mbid: String? = null, // lastfm sometimes provides invalid mbids, so we ignore them
     @Transient
     override val msid: String? = null,
-    @Serializable(with = StringOrIntSerializer::class)
-    override val listeners: Int? = null,
-    @Serializable(with = StringOrIntSerializer::class)
-    override val playcount: Int? = null,
+    @Serializable(with = StringOrLongSerializer::class)
+    override val listeners: Long? = null,
+    @Serializable(with = StringOrLongSerializer::class)
+    override val playcount: Long? = null,
     @Serializable(with = StringOrIntSerializer::class)
     override val userplaycount: Int? = null,
     @Serializable(with = StringOrFloatSerializer::class)
@@ -165,10 +168,10 @@ data class Track(
     override val mbid: String? = null, // lastfm sometimes provides invalid mbids, so we ignore them
     @Transient
     override val msid: String? = null,
-    @Serializable(with = StringOrIntSerializer::class)
-    override val listeners: Int? = null,
-    @Serializable(with = StringOrIntSerializer::class)
-    override val playcount: Int? = null,
+    @Serializable(with = StringOrLongSerializer::class)
+    override val listeners: Long? = null,
+    @Serializable(with = StringOrLongSerializer::class)
+    override val playcount: Long? = null,
     @Serializable(with = StringOrIntSerializer::class)
     override val userplaycount: Int? = null,
     @Serializable(with = StringOrFloatSerializer::class)

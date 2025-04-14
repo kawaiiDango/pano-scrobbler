@@ -1,6 +1,5 @@
 package com.arn.scrobble.api.maloja
 
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.DrawerData
@@ -11,6 +10,9 @@ import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.UserAccountSerializable
+import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheStrategy
@@ -22,9 +24,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.api.listenbrainz.TimeSerializer
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.api.UserAccountSerializable
-import com.arn.scrobble.api.UserAccountTemp
-import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
@@ -113,7 +113,7 @@ class Maloja(userAccount: UserAccountSerializable) :
             CacheStrategy.NETWORK_ONLY
 
         return client.getResult<MalojaTracksResponse>("scrobbles") {
-            parameter("page", page)
+            parameter("page", page - 1) // maloja page numbers start from 0
             parameter("perpage", limit)
             cacheStrategy(cacheStrategy)
         }

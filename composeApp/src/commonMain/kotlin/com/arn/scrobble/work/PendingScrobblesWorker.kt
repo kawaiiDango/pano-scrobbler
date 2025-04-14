@@ -117,8 +117,9 @@ class PendingScrobblesWorker(
                         val result = it.scrobble(filteredData)
 
                         if (result.isFailure) {
-                            // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
-                            if ((result.exceptionOrNull() as? ApiException)?.code == 29)
+                            // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later (29)
+                            // Invalid session key - Please re-authenticate (9)
+                            if ((result.exceptionOrNull() as? ApiException)?.code in arrayOf(29, 9))
                                 return false
                         }
 

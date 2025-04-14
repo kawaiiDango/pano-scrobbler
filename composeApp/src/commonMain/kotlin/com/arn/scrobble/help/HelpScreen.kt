@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -49,7 +49,7 @@ fun HelpScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
         ) {
-            Button(
+            OutlinedButton(
                 onClick = {
                     PlatformStuff.openInBrowser(faqLink)
                 }
@@ -120,7 +120,7 @@ private fun BugReportButtons(
     onLogsClick: () -> Unit,
 ) {
     Row(
-        horizontalArrangement = Arrangement.End,
+        horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxWidth()
     ) {
         TextButton(

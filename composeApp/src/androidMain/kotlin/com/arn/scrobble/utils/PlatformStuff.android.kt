@@ -295,8 +295,8 @@ actual object PlatformStuff {
         CookieManager.getInstance().getCookie(uri)?.let {
             val map = mutableMapOf<String, String>()
             it.split(";").forEach { cookie ->
-                val pair = cookie.split("=")
-                if (pair.size == 2) {
+                val pair = cookie.trim().split("=", limit = 2)
+                if (pair.size == 2 && pair.all { it.isNotEmpty() }) {
                     map[pair[0]] = pair[1]
                 }
             }

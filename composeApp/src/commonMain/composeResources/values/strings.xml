@@ -483,19 +483,22 @@
         >Tap to block and skip</string>
     <string name="player_actions"
         comment="music player actions such as skip/mute"
-        >Player actions</string>
+        >Media player actions</string>
     <string name="skip"
         comment="skip to next track"
         >Skip</string>
     <string name="mute"
-        comment="mute the music"
-        >Mute</string>
-    <string name="ignore"
-        comment="ignore the track so that it doesn't scrobble"
-        >Ignore</string>
+        comment="mute the sound"
+        >Mute audio</string>
+    <string name="do_nothing"
+        comment="do nothing on the media player"
+        >Do nothing</string>
     <string name="block"
         comment="block the track from scrobbling"
         >Block</string>
+    <string name="copy"
+        comment="copy to clipboard"
+        >Copy</string>
     <string name="hidden_tags"
         comment="Tags that should not be shown to the user"
         >Hidden tags</string>
@@ -689,7 +692,9 @@
 
     <string name="copied">Copied!</string>
     <string name="lastfm_reauth">You need to reauthenticate in order to edit or delete scrobbles</string>
-    <string name="custom_listenbrainz">Custom Listenbrainz</string>
+    <string name="like_instance"
+        comment="%1= the scrobbling service name, such as last.fm, ListenBrainz"
+        >%1$s-like instance</string>
     <string name="failed_encode_url">Failed to encode URL</string>
     <string name="check_nls" formatted="true"
         comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings"

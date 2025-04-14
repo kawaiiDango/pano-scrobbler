@@ -9,12 +9,12 @@ class LinearFontScalar(private val minFont: Int, private val maxFont: Int) : Fon
         require(maxFont >= minFont) { "maxFont cannot be smaller than minFont" }
     }
 
-    override fun scale(value: Int, maxValue: Int): Float {
+    override fun scale(n: Int, maxValue: Int): Float {
         val leftSpan = maxValue.toFloat()
         val rightSpan = (maxFont - minFont).toFloat()
 
         // Convert the left range into a 0-1 range
-        val valueScaled = value / leftSpan
+        val valueScaled = n / leftSpan
 
         // Convert the 0-1 range into a value in the right range.
         return minFont + (valueScaled * rightSpan)

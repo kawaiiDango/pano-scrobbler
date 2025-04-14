@@ -26,15 +26,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.custom_listenbrainz
-import pano_scrobbler.composeapp.generated.resources.gnufm
-import pano_scrobbler.composeapp.generated.resources.lastfm
-import pano_scrobbler.composeapp.generated.resources.librefm
-import pano_scrobbler.composeapp.generated.resources.listenbrainz
-import pano_scrobbler.composeapp.generated.resources.maloja
-import pano_scrobbler.composeapp.generated.resources.pleroma
-import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 
 
 abstract class Scrobblable(val userAccount: UserAccountSerializable) {
@@ -240,17 +231,4 @@ object Scrobblables {
     suspend fun setCurrent(type: AccountType) {
         PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = type) }
     }
-
-
-    fun getStringRes(accountType: AccountType) = when (accountType) {
-        AccountType.LASTFM -> Res.string.lastfm
-        AccountType.LIBREFM -> Res.string.librefm
-        AccountType.GNUFM -> Res.string.gnufm
-        AccountType.LISTENBRAINZ -> Res.string.listenbrainz
-        AccountType.CUSTOM_LISTENBRAINZ -> Res.string.custom_listenbrainz
-        AccountType.MALOJA -> Res.string.maloja
-        AccountType.PLEROMA -> Res.string.pleroma
-        AccountType.FILE -> Res.string.scrobble_to_file
-    }
-
 }

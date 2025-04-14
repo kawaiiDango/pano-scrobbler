@@ -1,7 +1,6 @@
 package com.arn.scrobble.onboarding
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +9,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -59,7 +59,7 @@ import pano_scrobbler.composeapp.generated.resources.tv_link
 import pano_scrobbler.composeapp.generated.resources.will_not_scrobble
 
 
-@TargetApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 private fun NotificationPermissionStep(
     isDone: Boolean,
@@ -316,13 +316,15 @@ actual fun OnboardingScreen(
                 }
 
                 OnboardingStepType.SEND_NOTIFICATIONS -> {
-                    NotificationPermissionStep(
-                        isDone = isDone,
-                        isExpanded = step == currentStep,
-                        onDone = {
-                            markAsDone(OnboardingStepType.SEND_NOTIFICATIONS)
-                        }
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        NotificationPermissionStep(
+                            isDone = isDone,
+                            isExpanded = step == currentStep,
+                            onDone = {
+                                markAsDone(OnboardingStepType.SEND_NOTIFICATIONS)
+                            }
+                        )
+                    }
                 }
             }
         }

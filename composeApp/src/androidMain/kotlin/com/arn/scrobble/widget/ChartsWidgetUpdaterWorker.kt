@@ -160,7 +160,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                                     ChartsWidgetListItem(
                                         it.name,
                                         subtitle,
-                                        it.playcount ?: 0,
+                                        it.playcount?.toInt() ?: 0,
                                         imgUrl ?: "",
                                         it.stonksDelta
                                     )
@@ -192,7 +192,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
         }
 
         return if (errorData != null)
-            Result.failure(errorData!!)
+            Result.failure(errorData)
         else
             Result.success()
     }

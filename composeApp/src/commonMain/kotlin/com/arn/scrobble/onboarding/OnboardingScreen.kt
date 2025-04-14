@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
@@ -74,13 +74,12 @@ fun ButtonsStepper(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
-    val accountTypesToStringRes = remember {
+    val accountTypesToStrings =
         AccountType.entries.filterNot {
             it == AccountType.LASTFM || PlatformStuff.isTv && it == AccountType.FILE
         }.associateWith {
-            Scrobblables.getStringRes(it)
+            accountTypeLabel(it)
         }
-    }
 
     var dropDownShown by remember { mutableStateOf(false) }
 
@@ -108,14 +107,14 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
                     expanded = dropDownShown,
                     onDismissRequest = { dropDownShown = false }
                 ) {
-                    accountTypesToStringRes.forEach { (accType, stringRes) ->
+                    accountTypesToStrings.forEach { (accType, string) ->
                         DropdownMenuItem(
                             onClick = {
                                 navigate(LoginDestinations.route(accType))
                                 dropDownShown = false
                             },
                             text = {
-                                Text(stringResource(stringRes))
+                                Text(string)
                             }
                         )
                     }

@@ -44,6 +44,7 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.ui.AppIcon
+import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
@@ -52,18 +53,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.custom_listenbrainz
-import pano_scrobbler.composeapp.generated.resources.gnufm
-import pano_scrobbler.composeapp.generated.resources.lastfm
-import pano_scrobbler.composeapp.generated.resources.librefm
-import pano_scrobbler.composeapp.generated.resources.listenbrainz
-import pano_scrobbler.composeapp.generated.resources.maloja
 import pano_scrobbler.composeapp.generated.resources.move_left
 import pano_scrobbler.composeapp.generated.resources.move_right
-import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_enabled_apps_summary
 import pano_scrobbler.composeapp.generated.resources.pref_logout
-import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 import pano_scrobbler.composeapp.generated.resources.sure_tap_again
 
 private val mainPrefs = PlatformStuff.mainPrefs
@@ -423,17 +416,3 @@ expect fun filterAppList(
     packageNames: Set<String>,
     seenAppsMap: Map<String, String>,
 ): List<String>
-
-fun accountTypeStringRes(accountType: AccountType) = when (accountType) {
-    AccountType.LASTFM -> Res.string.lastfm
-    AccountType.LIBREFM -> Res.string.librefm
-    AccountType.GNUFM -> Res.string.gnufm
-    AccountType.LISTENBRAINZ -> Res.string.listenbrainz
-    AccountType.CUSTOM_LISTENBRAINZ -> Res.string.custom_listenbrainz
-    AccountType.MALOJA -> Res.string.maloja
-    AccountType.PLEROMA -> Res.string.pleroma
-    AccountType.FILE -> Res.string.scrobble_to_file
-}
-
-@Composable
-fun accountTypeLabel(accountType: AccountType) = stringResource(accountTypeStringRes(accountType))

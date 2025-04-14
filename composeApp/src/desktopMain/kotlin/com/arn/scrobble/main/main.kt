@@ -52,6 +52,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.cancel
 import pano_scrobbler.composeapp.generated.resources.close
+import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.fix_it_action
 import pano_scrobbler.composeapp.generated.resources.ic_launcher_with_bg
@@ -190,6 +191,9 @@ fun main(args: Array<String>) {
                             trayItems += PanoTrayUtils.ItemId.Block.withSuffix(appId) to
                                     "⛔ " +
                                     getString(Res.string.block)
+                            trayItems += PanoTrayUtils.ItemId.Copy.withSuffix(appId) to
+//                                    "📋 " +
+                                    getString(Res.string.copy)
                         }
 
                         is PlayingTrackNotificationState.Error -> {
@@ -467,6 +471,11 @@ private suspend fun trayMenuClickListener(
                         )
 
                         onForceNavigateTo(route)
+                    }
+
+                    PanoTrayUtils.ItemId.Copy -> {
+                        val text = "${scrobblingTrackInfo.artist} - ${scrobblingTrackInfo.title}"
+                        PlatformStuff.copyToClipboard(text)
                     }
 
                     else -> {

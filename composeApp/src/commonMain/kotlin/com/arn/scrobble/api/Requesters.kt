@@ -9,8 +9,8 @@ import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageEntries
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.spotify.SpotifyRequester
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
@@ -53,7 +53,7 @@ object Requesters {
 
                 install(UserAgent) {
                     agent =
-                        BuildKonfig.APP_NAME + " " + BuildKonfig.VER_CODE
+                        BuildKonfig.APP_NAME + " " + (BuildKonfig.VER_CODE / 100f)
                 }
 
                 install(HttpCache) {

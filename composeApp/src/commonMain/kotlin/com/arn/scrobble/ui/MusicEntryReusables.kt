@@ -202,13 +202,13 @@ fun MusicEntryListItem(
                         entry is Track && entry.date != null -> PanoTimeFormatter.relative(entry.date)
                         entry.listeners != null -> pluralStringResource(
                             Res.plurals.num_listeners,
-                            entry.listeners!!,
+                            entry.listeners!!.toInt(),
                             entry.listeners!!.format()
                         )
 
                         entry.playcount != null -> pluralStringResource(
                             Res.plurals.num_scrobbles_noti,
-                            entry.playcount!!,
+                            entry.playcount!!.toInt(),
                             entry.playcount!!.format()
                         )
 
@@ -401,7 +401,7 @@ fun MusicEntryGridItem(
             val thirdText = if (playCount != null) {
                 pluralStringResource(
                     Res.plurals.num_scrobbles_noti,
-                    playCount,
+                    playCount.toInt(),
                     playCount.format()
                 ) + scrobbleDateText
             } else
@@ -761,7 +761,7 @@ fun EntriesHorizontal(
 
             items(entries.itemCount, key = entries.itemKey()) { idx ->
                 val entryNullable = entries[idx]
-                val entry = entryNullable ?: Artist(" ", listeners = idx)
+                val entry = entryNullable ?: Artist(" ", listeners = idx.toLong())
 
                 MusicEntryGridItem(
                     entry,
@@ -844,7 +844,7 @@ fun EntriesGrid(
 
             items(entries.itemCount, key = entries.itemKey()) { idx ->
                 val entryNullable = entries[idx]
-                val entry = entryNullable ?: Artist(" ", listeners = idx)
+                val entry = entryNullable ?: Artist(" ", listeners = idx.toLong())
 
                 MusicEntryGridItem(
                     entry,
@@ -883,7 +883,7 @@ fun EntriesGrid(
 
 
 fun getMusicEntryPlaceholderItem(type: Int, showScrobbleCount: Boolean = true): MusicEntry {
-    val count = if (showScrobbleCount) 10 else 0
+    val count = if (showScrobbleCount) 10L else 0L
 
     return when (type) {
         Stuff.TYPE_TRACKS -> Track(

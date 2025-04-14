@@ -388,7 +388,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     Artist(
                         name = it.artist_name,
                         mbid = it.artist_mbids?.firstOrNull(),
-                        playcount = it.listen_count,
+                        playcount = it.listen_count.toLong(),
                         userplaycount = it.listen_count,
                     )
                 }
@@ -401,7 +401,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                             mbid = it.artist_mbids?.firstOrNull(),
                         ),
                         mbid = it.release_mbid,
-                        playcount = it.listen_count,
+                        playcount = it.listen_count.toLong(),
                         userplaycount = it.listen_count,
                         image = createImageMap(it.release_mbid),
                     )
@@ -427,7 +427,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         album = album,
                         artist = artist,
                         mbid = it.recording_mbid,
-                        playcount = it.listen_count,
+                        playcount = it.listen_count.toLong(),
                         userplaycount = it.listen_count,
                     )
                 }

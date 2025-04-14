@@ -44,7 +44,7 @@ class InfoMiscPagingSource(
 
         return if (result.isSuccess) {
 //            val pr = result.getOrNull()!!
-//            val prevKey = if (pr.attr.page == 1) null else pr.attr.page - 1
+//            val prevKey = if (pr.attr.page <= 1) null else pr.attr.page - 1
 //            val nextKey =
 //                if (firstPageOnly || pr.attr.totalPages <= pr.attr.page) null else pr.attr.page + 1
 //            val total = pr.attr.total ?: 0

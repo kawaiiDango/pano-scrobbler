@@ -20,7 +20,7 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
             "method" to "library.removeScrobble",
             "artist" to track.artist.name,
             "track" to track.name,
-            "timestamp" to (track.date?.toString()
+            "timestamp" to (track.date?.div(1000)?.toString()
                 ?: return Result.failure(IllegalStateException("no date"))),
             "format" to "json",
             "api_key" to apiKey,

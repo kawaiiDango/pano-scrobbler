@@ -45,6 +45,7 @@ import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.PendingScrobbleState
 import com.arn.scrobble.edits.EditScrobbleDialog
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
@@ -522,7 +523,7 @@ private fun ColumnScope.PendingScrobbleServicesDesc(
                 Text(
                     stringResource(Res.string.scrobble_services) + ":\n" +
                             accountTypesList.map {
-                                stringResource(Scrobblables.getStringRes(it))
+                                accountTypeLabel(it)
                             }.joinToString(", ")
                 )
             },

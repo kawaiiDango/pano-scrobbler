@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.utils.AcceptableTags
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -193,6 +193,6 @@ class ChartsVM : ViewModel() {
     private data class TagStats(
         var score: Double = 0.0,
         var artists: Int = 0,
-        var percentSum: Int = 0,
+        var percentSum: Long = 0,
     )
 }

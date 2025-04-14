@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
@@ -60,6 +61,7 @@ import com.arn.scrobble.search.ImageSearchScreen
 import com.arn.scrobble.search.IndexingScreen
 import com.arn.scrobble.search.SearchScreen
 import com.arn.scrobble.themes.ThemeChooserScreen
+import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.addColumnPadding
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.PlatformStuff
@@ -73,12 +75,10 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.billing_troubleshoot_title
 import pano_scrobbler.composeapp.generated.resources.choose_an_app
 import pano_scrobbler.composeapp.generated.resources.choose_apps
-import pano_scrobbler.composeapp.generated.resources.custom_listenbrainz
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.edit_regex
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
-import pano_scrobbler.composeapp.generated.resources.gnufm
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.maloja
@@ -419,7 +419,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginGnufm> {
-        onSetTitleRes(Res.string.gnufm)
+        onSetTitle(accountTypeLabel(AccountType.GNUFM))
 
         GnufmLoginScreen(
             onDone = goBack,
@@ -438,7 +438,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginCustomListenBrainz> {
-        onSetTitleRes(Res.string.custom_listenbrainz)
+        onSetTitle(accountTypeLabel(AccountType.CUSTOM_LISTENBRAINZ))
 
         ListenBrainzLoginScreen(
             onDone = goBack,

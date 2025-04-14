@@ -45,6 +45,7 @@ object PanoTrayUtils {
         Edit,
         Cancel,
         Block,
+        Copy,
         Error,
         Open,
         Settings,

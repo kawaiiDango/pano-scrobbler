@@ -13,7 +13,6 @@
     <string name="bmc" translatable="false">BuyMeACoffee (Uses Stripe)</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
-    <string name="gnufm" translatable="false">GNU FM</string>
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
     <string name="maloja" translatable="false">Maloja</string>
     <string name="pleroma" translatable="false">Pleroma</string>

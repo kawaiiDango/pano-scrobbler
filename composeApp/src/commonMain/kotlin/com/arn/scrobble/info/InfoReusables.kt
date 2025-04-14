@@ -104,7 +104,7 @@ fun InfoWikiText(
 
 @Composable
 fun InfoCounts(
-    countPairs: List<Pair<String, Int?>>,
+    countPairs: List<Pair<String, Number?>>,
     avatarUrl: String? = null,
     avatarInitialLetter: Char? = null,
     firstItemIsUsers: Boolean,

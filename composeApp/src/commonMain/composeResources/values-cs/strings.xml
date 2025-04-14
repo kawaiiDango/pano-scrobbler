@@ -112,7 +112,7 @@
     <string name="required_fields_empty" comment="Shown on filling a form">Požadovaná pole jsou prázdná</string>
     <string name="artist">Interpret</string>
     <string name="artists">Interpreti</string>
-    <string name="top_artists" comment="Top artists the user has listened to">Nejlepší interpreti</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Nejposlouchanější interpreti</string>
     <string name="album_artist">Interpret alba</string>
     <string name="artist_channel" comment="Artist or youtube channel">Interpret / kanál</string>
     <string name="similar_artists">Podobní umělci</string>
@@ -122,7 +122,7 @@
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Nejlepší alba</string>
     <string name="track">Skladba</string>
     <string name="tracks">Skladby</string>
-    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Nejlepší skladby</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Nejposlouchanější skladby</string>
     <string name="similar_tracks">Podobné skladby</string>
     <string name="similar" comment="Similar tracks but in short">Podobné</string>
     <string name="state_scrobbling">Nyní scrobbluji…</string>
@@ -193,6 +193,8 @@
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string name="pending_scrobble">Čekající scrobble</string>
     <string name="pending_scrobbles_noti">Zpracovávám čekající scrobbly</string>
+    <string name="following" comment="accounts you are following on lastfm">Sledovaní</string>
+    <string name="followers" comment="your lastfm followers">Sledující</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblů od %2$s</string>
     <string name="allow_background">Povolit scrobblování na pozadí</string>
     <string name="grant_notification_access">Udělit přístup k oznámením</string>

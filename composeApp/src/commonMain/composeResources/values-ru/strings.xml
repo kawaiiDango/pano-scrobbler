@@ -318,8 +318,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Нажмите, чтобы заблокировать и пропустить</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Действия плеера</string>
     <string name="skip" comment="skip to next track">Пропустить</string>
-    <string name="mute" comment="mute the music">Выключить звук</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Игнорировать</string>
+    <string name="mute" comment="mute the sound">Выключить звук</string>
     <string name="block" comment="block the track from scrobbling">Блокировать</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Скрытые теги</string>
     <string name="pin" comment="pin a friend to the top">Закрепить</string>
@@ -428,7 +427,6 @@
     <string name="pref_intents">Интенты для Tasker и других приложений</string>
     <string name="copied">Скопировано!</string>
     <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы</string>
-    <string name="custom_listenbrainz">Персонализация Listenbrainz</string>
     <string name="failed_encode_url">Не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Проверьте %1$s</string>
     <string name="artist_extra">Треки, альбомы и похожие исполнители</string>

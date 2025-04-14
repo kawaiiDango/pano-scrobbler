@@ -282,8 +282,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Engelleyip atlamak için dokunun</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Oynatıcı komutları</string>
     <string name="skip" comment="skip to next track">Atla</string>
-    <string name="mute" comment="mute the music">Sustur</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Yok say</string>
+    <string name="mute" comment="mute the sound">Sustur</string>
     <string name="block" comment="block the track from scrobbling">Engelle</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Gizlenmiş etiketler</string>
     <string name="pin" comment="pin a friend to the top">Sabitle</string>
@@ -386,7 +385,6 @@
     <string name="pref_intents">Tasker vb. için intentler</string>
     <string name="copied">Kopyalandı!</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>
-    <string name="custom_listenbrainz">Özel Listenbrainz</string>
     <string name="failed_encode_url">URL şifreleme başarısız</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s uygulamasını kontrol et</string>
     <string name="artist_extra">Parçalar, albümler &amp; benzer öneriler</string>

@@ -137,8 +137,7 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Trích xuất</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Thử</string>
     <string name="edit_presets" comment="Regex presets">Mẫu thiết lập</string>
-    <string name="mute" comment="mute the music">Tắt tiếng</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Bỏ qua</string>
+    <string name="mute" comment="mute the sound">Tắt tiếng</string>
     <string name="block" comment="block the track from scrobbling">Chặn</string>
     <string name="pin" comment="pin a friend to the top">Ghim</string>
     <string name="unpin" comment="unpin a friend to the top">Bỏ ghim</string>

@@ -269,8 +269,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">タップしてブロックおよびスキップ</string>
     <string name="player_actions" comment="music player actions such as skip/mute">プレーヤー操作</string>
     <string name="skip" comment="skip to next track">スキップ</string>
-    <string name="mute" comment="mute the music">ミュート</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">無視</string>
+    <string name="mute" comment="mute the sound">ミュート</string>
     <string name="block" comment="block the track from scrobbling">ブロック</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">非表示のタグ</string>
     <string name="pin" comment="pin a friend to the top">ピン留め</string>
@@ -378,7 +377,6 @@
     <string name="pref_intents">Tasker等用のインテント</string>
     <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
-    <string name="custom_listenbrainz">カスタムListenbrainz</string>
     <string name="failed_encode_url">URLのエンコードに失敗しました</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$sを確認</string>
     <string name="artist_extra">トラック、アルバム &amp; 類似</string>

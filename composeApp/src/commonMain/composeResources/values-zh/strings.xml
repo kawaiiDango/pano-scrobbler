@@ -270,8 +270,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">点击以屏蔽并跳过</string>
     <string name="player_actions" comment="music player actions such as skip/mute">播放器操作</string>
     <string name="skip" comment="skip to next track">跳过</string>
-    <string name="mute" comment="mute the music">静音</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">忽略</string>
+    <string name="mute" comment="mute the sound">静音</string>
     <string name="block" comment="block the track from scrobbling">屏蔽</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">隐藏标签</string>
     <string name="pin" comment="pin a friend to the top">钉选</string>
@@ -380,7 +379,6 @@
     <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
-    <string name="custom_listenbrainz">自定义 Listenbrainz</string>
     <string name="failed_encode_url">无法对 URL 进行编码</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">勾选 %1$s</string>
     <string name="artist_extra">曲目、专辑 &amp; 相似艺术家</string>

@@ -436,6 +436,12 @@
     <string name="password">Contraseña</string>
     <string name="open_existing" comment="Append to an existing file">Anexar a los existentes</string>
     <string name="create" comment="Create a new file">Crear</string>
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="back">Volver</string>
+    <string name="done">Completado</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Reintentar</string>
+    <string name="run_on_start">Ejecutar cuando el ordenador se enciende</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="help">Ayuda</string>

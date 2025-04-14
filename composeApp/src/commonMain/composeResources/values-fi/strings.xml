@@ -268,8 +268,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Napauta estääksesi ja ohittaaksesi</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Soittimen toiminnot</string>
     <string name="skip" comment="skip to next track">Ohita</string>
-    <string name="mute" comment="mute the music">Mykistä</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ohita</string>
+    <string name="mute" comment="mute the sound">Mykistä</string>
     <string name="block" comment="block the track from scrobbling">Estä</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Piilotetut tunnisteet</string>
     <string name="pin" comment="pin a friend to the top">Kiinnitä</string>
@@ -369,7 +368,6 @@
     <string name="current_track">Tämänhetkinen kappale:</string>
     <string name="copied">Kopioitu!</string>
     <string name="lastfm_reauth">Sinun täytyy tunnistautua uudelleen muokataksesi tai poistaaksesi scrobblauksia</string>
-    <string name="custom_listenbrainz">Mukautettu Listenbrainz</string>
     <string name="failed_encode_url">URL-osoitteen koodaus epäonnistui</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Tarkista %1$s</string>
     <string name="artist_extra">Kappaleet, albumit &amp; samankaltaiset</string>

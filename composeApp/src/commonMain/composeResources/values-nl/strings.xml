@@ -272,7 +272,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Klik om te blokkeren en over te slaan</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Speler acties</string>
     <string name="skip" comment="skip to next track">Overslaan</string>
-    <string name="mute" comment="mute the music">Mute</string>
+    <string name="mute" comment="mute the sound">Mute</string>
     <string name="block" comment="block the track from scrobbling">Blokkeer</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Verborgen tags</string>
     <string name="pin" comment="pin a friend to the top">Vastzetten</string>
@@ -373,7 +373,6 @@
     <string name="pref_intents">Intenties voor Tasker enz</string>
     <string name="copied">Gekopieerd!</string>
     <string name="lastfm_reauth">U moet zich opnieuw verifiëren om scrobbles te bewerken of te verwijderen</string>
-    <string name="custom_listenbrainz">Aangepaste Listenbrainz</string>
     <string name="failed_encode_url">Kan URL niet coderen</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Controleer %1$s</string>
     <string name="artist_extra">Tracks, albums &amp; vergelijkbaar</string>

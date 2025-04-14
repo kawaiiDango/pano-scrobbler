@@ -285,8 +285,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Appuyer pour bloquer et passer</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
     <string name="skip" comment="skip to next track">Passer</string>
-    <string name="mute" comment="mute the music">Mettre en sourdine</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorer</string>
+    <string name="mute" comment="mute the sound">Mettre en sourdine</string>
     <string name="block" comment="block the track from scrobbling">Bloquer</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tags cachés</string>
     <string name="pin" comment="pin a friend to the top">Épingler</string>
@@ -394,7 +393,6 @@
     <string name="pref_intents">Intents pour Tasker etc</string>
     <string name="copied">Copié !</string>
     <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
-    <string name="custom_listenbrainz">Serveur personnalisé Listenbrainz</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Vérifier %1$s</string>
     <string name="artist_extra">Morceaux, albums &amp; similaires</string>

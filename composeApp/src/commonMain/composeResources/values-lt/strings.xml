@@ -318,8 +318,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Palieskite, kad blokuoti ir praleisti</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
     <string name="skip" comment="skip to next track">Praleisti</string>
-    <string name="mute" comment="mute the music">Nutildyti</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignoruoti</string>
+    <string name="mute" comment="mute the sound">Nutildyti</string>
     <string name="block" comment="block the track from scrobbling">Blokuoti</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Paslėptos žymės</string>
     <string name="pin" comment="pin a friend to the top">Prisegti</string>
@@ -428,7 +427,6 @@
     <string name="pref_intents">„Tasker“ ketinimai ir pan.</string>
     <string name="copied">Nukopijuota!</string>
     <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti tapatybę.</string>
-    <string name="custom_listenbrainz">Pasirinktinis „Listenbrainz“</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrinkite „%1$s“</string>
     <string name="artist_extra">Takeliai, albumai ir panašumai</string>

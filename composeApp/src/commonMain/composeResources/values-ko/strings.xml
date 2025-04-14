@@ -270,8 +270,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">눌러서 차단하고 건너뛰기</string>
     <string name="player_actions" comment="music player actions such as skip/mute">플레이어 동작</string>
     <string name="skip" comment="skip to next track">건너뛰기</string>
-    <string name="mute" comment="mute the music">음소거</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">무시</string>
+    <string name="mute" comment="mute the sound">음소거</string>
     <string name="block" comment="block the track from scrobbling">차단</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">숨겨진 태그</string>
     <string name="pin" comment="pin a friend to the top">고정</string>

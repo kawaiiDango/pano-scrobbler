@@ -123,7 +123,6 @@
     <string name="more" comment="More options menu in short">Dahası</string>
     <string name="learn" comment="(Learn java regex syntax)">Öğren</string>
     <string name="hide">Gizle</string>
-    <string name="rank_change" comment="%1= delta change">Sıralama değişikliği: %s</string>
     <string name="rank_change_no_change">Değişiklik yok</string>
     <string name="rank_change_new">Bir önceki dönemde skroplanmamış</string>
     <string name="search">Ara</string>
@@ -166,12 +165,12 @@
     <string name="grant_notification_access_desc">Müzik meta verilerini almak için gerekli. Müzik dışı bildirimler okunmaz</string>
     <string name="send_notifications">Bildirimlere izin ver</string>
     <string name="notification_channel_blocked">Bildirimlerin etkinleştirilmesi gerekiyor</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Skrop durumunu ve sayılarını kontrol edin
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Skrop durumunu ve sayılarını kontrol edin
 - Doğrudan bildirimden beğenin veya engelleyin
 - Skroplama hataları ve olası çözümler konusunda bilgilendirilirsiniz
 - En çok dinlenenleri haftalık olarak gösterme
 - Ve dahası
-- Bildirimler sesli değildir\"\""</string>
+- Bildirimler sesli değildir\"\"</string>
     <string name="will_not_scrobble">Bu adımı atlamak skroplamayı devre dışı bırakacaktır</string>
     <string name="swap" comment="(Swap title and artist)">Değiştir</string>
     <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
@@ -283,8 +282,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Engelleyip atlamak için dokunun</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Oynatıcı komutları</string>
     <string name="skip" comment="skip to next track">Atla</string>
-    <string name="mute" comment="mute the music">Sustur</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Yok say</string>
+    <string name="mute" comment="mute the sound">Sustur</string>
     <string name="block" comment="block the track from scrobbling">Engelle</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Gizlenmiş etiketler</string>
     <string name="pin" comment="pin a friend to the top">Sabitle</string>
@@ -387,14 +385,12 @@
     <string name="pref_intents">Tasker vb. için intentler</string>
     <string name="copied">Kopyalandı!</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>
-    <string name="custom_listenbrainz">Özel Listenbrainz</string>
     <string name="failed_encode_url">URL şifreleme başarısız</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s uygulamasını kontrol et</string>
     <string name="artist_extra">Parçalar, albümler &amp; benzer öneriler</string>
     <string name="no_browser">Yüklü tarayıcı yok</string>
     <string name="no_player">Yüklü müzik oynatıcı yok</string>
     <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından sonlandırıldı</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sistem tarafından verilen sonlarılma sebebi: %s</string>
     <string name="not_running_fix_action">Düzelt</string>
     <string name="login_submit" comment="Verifies the login details">Doğrula</string>
     <string name="acr_host" comment="Web hostname">Sunucu</string>
@@ -404,9 +400,9 @@
     <string name="remove_acr_key">ACRCloud Anahtarını Kaldır</string>
     <string name="add_acr_consider">Hız kısıtlamalarını önlemek için kendi ACRCloud Anahtarınızı ekleyebilirsiniz</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Ekle</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Kaydolun: https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Kaydolun: https://console.acrcloud.com
 • Projelerde &gt; Ses &amp; video tanımaya gidin
-• Yeni proje oluşturun, Kayıtlı Sesi ve ACRCloud Müzik kutusunu seçin"</string>
+• Yeni proje oluşturun, Kayıtlı Sesi ve ACRCloud Müzik kutusunu seçin</string>
     <string name="shazam_scrobbling">Sürekli skroplamak için <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam\'ı</a> açın ve Otomatik Shazam\'ı etkinleştirin. Ayrıca Shazam\'ın skroplama özelliğinin etkin olduğundan emin olun.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d kaldı</string>
     <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
@@ -434,15 +430,14 @@
     <string name="thank_you">Teşekkürler!</string>
     <string name="purchase_pending">Satın alma işleminiz henüz ödeme sağlayıcınız tarafından onaylanmadı. Lütfen birkaç dakika sonra tekrar kontrol edin.</string>
     <string name="billing_troubleshoot_title">Satın almayı geri yükle</string>
-    <string name="billing_troubleshoot">"Çoktan satın aldınız mı?
+    <string name="billing_troubleshoot">Çoktan satın aldınız mı?
 
 Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı gerçekleştiren Google Play hesabıyla bağlantılıdır. Uygulamayı birden fazla hesaba sahip yeni bir cihaza yüklediğinizde, Google Play bunu yanlış hesapla ilişkilendirebilir. Satın alma gerçekleştirilen hesabı açıkça seçmenin en iyi yolu, uygulamayı Google Play web sayfası aracılığıyla bir bilgisayardan yüklemektir:
 
 • Uygulamayı kaldırın.
 • Bilgisayarınızdan Google Play web sayfasını açın.
 • Satın alma işlemi gerçekleştirilen hesapla oturum açın.
-• Uygulamayı direkt Google Play web sayfasından kurun.
-"</string>
+• Uygulamayı direkt Google Play web sayfasından kurun.</string>
     <string name="billing_block">Sanatçıları/parçaları engelleyip otomatik olarak atla/sustur</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Arkadaşlarınızı sabitleyip yeniden sıralayın (en fazla %1$d)</string>
     <string name="billing_sharing">Paylaşımlarda uygulama ismini kaldır</string>

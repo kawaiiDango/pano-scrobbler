@@ -150,7 +150,6 @@
     <string name="more" comment="More options menu in short">Więcej</string>
     <string name="learn" comment="(Learn java regex syntax)">Naucz się</string>
     <string name="hide">Ukryj</string>
-    <string name="rank_change" comment="%1= delta change">Zmiana rangi: %s</string>
     <string name="rank_change_no_change">Bez zmian</string>
     <string name="rank_change_new">Nie scrobblowano w poprzednim okresie</string>
     <string name="search">Szukaj</string>
@@ -193,12 +192,12 @@
     <string name="grant_notification_access_desc">Potrzebne do pobierania metadanych muzyki. Nie czytamy żadnych powiadomień</string>
     <string name="send_notifications">Zezwól na powiadomienia</string>
     <string name="notification_channel_blocked">To wymaga włączenia powiadomień</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Sprawdź status i liczby scrobblowania
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Sprawdź status i liczby scrobblowania
 - Polub lub blokuj bezpośrednio z powiadomienia
 - Otrzymuj powiadomienia o błędach scrobblowania i działaniach, które możesz podjąć
 - Otrzymuj co tydzień top listę scrobbli
 - I więcej
-- Wyłącz dźwięki powiadomień\"\""</string>
+- Wyłącz dźwięki powiadomień\"\"</string>
     <string name="will_not_scrobble">Pominięcie tego kroku wyłączy scrobblowanie</string>
     <string name="swap" comment="(Swap title and artist)">Zamień</string>
     <string name="rate_msg">Podoba Ci się ta aplikacja?</string>
@@ -305,8 +304,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Dotknij, aby zablokować i pominąć</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Akcje odtwarzacza</string>
     <string name="skip" comment="skip to next track">Pomiń</string>
-    <string name="mute" comment="mute the music">Wycisz</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignoruj</string>
+    <string name="mute" comment="mute the sound">Wycisz</string>
     <string name="block" comment="block the track from scrobbling">Blokuj</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Ukryte tagi</string>
     <string name="pin" comment="pin a friend to the top">Przypnij</string>
@@ -415,14 +413,12 @@
     <string name="pref_intents">Intencje dla Tasker itp.</string>
     <string name="copied">Skopiowano!</string>
     <string name="lastfm_reauth">Uwierzytelnii ponownie, aby edytować lub usunąć scrobble</string>
-    <string name="custom_listenbrainz">Niestandardowy serwer Listenbrainz</string>
     <string name="failed_encode_url">Nie udało się wprowadzić adresu URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Sprawdź %1$s</string>
     <string name="artist_extra">Ścieżki, albumy &amp; podobne</string>
     <string name="no_browser">Brak zainstalowanej przeglądarki</string>
     <string name="no_player">Brak zainstalowanego odtwarzacza muzyki</string>
     <string name="not_running">⚠ Scrobbler został zabity przez twój system</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Powód zabicia podany przez system: %s</string>
     <string name="not_running_fix_action">Napraw to</string>
     <string name="login_submit" comment="Verifies the login details">Weryfikuj</string>
     <string name="acr_host" comment="Web hostname">Host</string>
@@ -432,9 +428,9 @@
     <string name="remove_acr_key">Usuń klucz ACRCloud</string>
     <string name="add_acr_consider">Aby zapobiec obniżeniu limitów szybkości, rozważ dodanie własnego klucza ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Dodaj</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Zarejestruj się na https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Zarejestruj się na https://console.acrcloud.com
 • Przejdź do Projekt &gt; Rozpoznawanie Audio &amp; video
-• Utwórz nowy projekt, wybierz Nagrane Audio i ACRCloud Music bucket"</string>
+• Utwórz nowy projekt, wybierz Nagrane Audio i ACRCloud Music bucket</string>
     <string name="shazam_scrobbling">Aby ciągle scrobblować, otwórz <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> i włącz Auto Shazam. Upewnij się że Shazam ma włączone scrobblowanie.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Pozostało %1$d</string>
     <string name="submitting_loves" formatted="true">Przesyłanie polubionych, pozostało %1$d</string>
@@ -463,15 +459,14 @@
     <string name="thank_you">Dziękujemy!</string>
     <string name="purchase_pending">Zakup nie został jeszcze potwierdzony przez dostawcę płatności. Sprawdź ponownie za kilka minut.</string>
     <string name="billing_troubleshoot_title">Przywróć zakup</string>
-    <string name="billing_troubleshoot">"Już kupiłeś?
+    <string name="billing_troubleshoot">Już kupiłeś?
 
 Twoje zakupy są zarządzane przez Google Play. Są one połączone z kontem Google Play, na którym dokonałeś zakupu. Po zainstalowaniu aplikacji na nowym urządzeniu z wieloma kontami Google Play, może powiązać ją z błędnym kontem. Najlepszym rozwiązaniem do wyraźnego wyboru konta posiadającego zakup jest zainstalowanie aplikacji z komputera za pośrednictwem strony internetowej Google Play:
 
 • Odinstaluj tę aplikację.
 • Otwórz stronę Google Play ze swojego komputera.
 • Zaloguj się przy użyciu konta posiadającego zakup.
-• Zainstaluj tę aplikację bezpośrednio ze strony Google Play.
-"</string>
+• Zainstaluj tę aplikację bezpośrednio ze strony Google Play.</string>
     <string name="billing_block">Blokuj artystów/utwory i automatycznie pomiń lub wycisz</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Przypnij do %1$d znajomych i zmień kolejność</string>
     <string name="billing_sharing">Usuń nazwę aplikacji podczas udostępniania</string>

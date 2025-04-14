@@ -140,7 +140,7 @@
     <string name="more" comment="More options menu in short">Više</string>
     <string name="learn" comment="(Learn java regex syntax)">Saznaj</string>
     <string name="hide">Sakrij</string>
-    <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
+    <string name="rank_change" comment="%1= delta change">Promjena ranga: %1$s</string>
     <string name="rank_change_no_change">Nema promjene</string>
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
     <string name="search">Traži</string>
@@ -185,12 +185,12 @@
     <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>
     <string name="send_notifications">Dopusti obavijesti</string>
     <string name="notification_channel_blocked">Za ovo je potrebno omogućiti obavijesti</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- provjera statusa scrobbleanja i prikaz brojača
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- provjera statusa scrobbleanja i prikaz brojača
 - označavanje kao voljeno ili blokiranje izravno iz obavijesti
 - obavještavanje o greškama kod scrobbleanja i kako ih ispraviti
 - obavještavanje o top scrobbleovima svakog tjedna
 - i više toga
-- obavijesti su tihe\""</string>
+- obavijesti su tihe\"</string>
     <string name="will_not_scrobble">Ako preskočite ovaj korak, scrobbleanje bit će onemogućeno</string>
     <string name="swap" comment="(Swap title and artist)">Zamijeni mjesta</string>
     <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
@@ -302,8 +302,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Dodirnite za blokiranje i preskakanje</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Radnje reproduktora glazbe</string>
     <string name="skip" comment="skip to next track">Preskoči</string>
-    <string name="mute" comment="mute the music">Utišaj</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignoriraj</string>
+    <string name="mute" comment="mute the sound">Utišaj</string>
     <string name="block" comment="block the track from scrobbling">Blokiraj</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skrivene oznake</string>
     <string name="pin" comment="pin a friend to the top">Prikvači</string>
@@ -412,14 +411,13 @@
     <string name="pref_intents">Intentovi za Tasker itd.</string>
     <string name="copied">Kopirano!</string>
     <string name="lastfm_reauth">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
-    <string name="custom_listenbrainz">Prilagođeni Listenbrainz</string>
     <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Provjeri %1$s</string>
     <string name="artist_extra">Pjesme, albumi i slično</string>
     <string name="no_browser">Nema instaliranih preglednika</string>
     <string name="no_player">Nema instaliranih reproduktora glazbe</string>
     <string name="not_running">⚠ Vaš sustav je zaustavio pokretanje scrobblera</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razlog za prekidanje rada kojeg je dao sustav: %s</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razlog: %1$s</string>
     <string name="not_running_fix_action">Popravi</string>
     <string name="login_submit" comment="Verifies the login details">Potvrdi</string>
     <string name="acr_host" comment="Web hostname">Poslužitelj</string>
@@ -429,9 +427,9 @@
     <string name="remove_acr_key">Ukloni ključ za ACRCloud</string>
     <string name="add_acr_consider">Za sprječavanje prelaženja ograničenja stope pristupa, razmislite o dodavanju vlastitog ključa za ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Dodaj</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Registrirajte se na https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Registrirajte se na https://console.acrcloud.com
 • Navigirajte do \"Projects\" &gt; \"Audio &amp; video recognition\"
-• Stvorite novi projekt, odaberite \"Recorded Audio\" i \"ACRCloud Music bucket\""</string>
+• Stvorite novi projekt, odaberite \"Recorded Audio\" i \"ACRCloud Music bucket\"</string>
     <string name="shazam_scrobbling">Za kontinuirano scrobbleanje, umjesto ovoga otvorite <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> i pokrenite \"Auto Shazam\". Provjerite i je li omogućeno scrobbleanje iz Shazama.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Preostalo %1$d</string>
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
@@ -452,6 +450,18 @@
     <string name="password">Lozinka</string>
     <string name="open_existing" comment="Append to an existing file">Dodaj postojećem</string>
     <string name="create" comment="Create a new file">Stvori</string>
+    <string name="ok">U redu</string>
+    <string name="cancel">Odustani</string>
+    <string name="back">Natrag</string>
+    <string name="done">Gotovo</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Pokušaj ponovo</string>
+    <string name="run_on_start">Pokretanje kod uključivanja računala</string>
+    <string name="use_browser">Molimo da za ovo koristite internetski preglednik na nekom od podržanih uređaja.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Spremi izvješća</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Kontrast</string>
+    <string name="high" comment="As in high/medium/low">Visoko</string>
+    <string name="medium" comment="As in high/medium/low">Srednje</string>
+    <string name="low" comment="As in high/medium/low">Nisko</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="help">Pomoć</string>
@@ -460,18 +470,18 @@
     <string name="thank_you">Hvala Vam!</string>
     <string name="purchase_pending">Vašu kupovinu još nije potvrdio Vaš davatelj usluga plaćanja. Provjerite ponovno za nekoliko minuta.</string>
     <string name="billing_troubleshoot_title">Obnovi kupovinu</string>
-    <string name="billing_troubleshoot">"Već ste kupili?
+    <string name="billing_troubleshoot">Već ste kupili?
 
 Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom koji je obavio kupovinu. Kada instalirate aplikaciju na novom uređaju s više računa, Google Play može ju povezati s krivim računom. Najbolji način da izričito odaberete račun koji posjeduje tu kupovinu je da instalirate aplikaciju s računala pomoću Google Play web-stranice:
 
 • Deinstalirajte ovu aplikaciju.
 • Otvorite Google Play web-stranicu na Vašem računalu.
 • Prijaviti se s računom koji posjeduje kupovinu ove aplikacije.
-• Instalirajte aplikaciju s Google Play web-stranice.
-"</string>
+• Instalirajte aplikaciju s Google Play web-stranice.</string>
     <string name="billing_block">Blokiranje izvođača/pjesama i automatsko preskakanje ili utišavanje</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>
     <string name="billing_scrobble_source">Zapamti i pregledaj aplikacije iz kojih si scrobblao i direktno pretraži u njima</string>
     <string name="billing_regex_extract">Pisanje vlastitih pravila za izvlačenje metapodataka pomoću regexa</string>
+    <string name="billing_max_devices_reached" formatted="true">Ovaj kôd već je korišten na maksimalnom broju uređaja (%1$d).</string>
 </resources>

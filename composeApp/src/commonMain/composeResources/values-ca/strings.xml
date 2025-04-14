@@ -108,7 +108,6 @@
     <string name="grid_size">Canvia la quadrícula</string>
     <string name="pinch_to_zoom">Pessiga per a ampliar</string>
     <string name="more_info">Més informació</string>
-    <string name="rank_change" comment="%1= delta change">Canvi de posició: %s</string>
     <string name="rank_change_no_change">Sense canvis</string>
     <string name="rank_change_new">No s\'ha fet scribbling en el període anterior</string>
     <string name="search">Cerca</string>
@@ -227,7 +226,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Toca per a saltar i bloquejar</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Accions del reproductor</string>
     <string name="skip" comment="skip to next track">Salta</string>
-    <string name="mute" comment="mute the music">Silencia</string>
+    <string name="mute" comment="mute the sound">Silencia</string>
     <string name="block" comment="block the track from scrobbling">Bloqueja</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Etiquetes amagades</string>
     <string name="pin" comment="pin a friend to the top">Fixa</string>
@@ -301,7 +300,6 @@
     <string name="no_browser">No hi ha cap navegador instal·lat</string>
     <string name="no_player">No hi ha cap reproductor de música instal·lat</string>
     <string name="not_running">⚠ El sistema ha tancat l\'scrobbler</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raó del tancament: %s</string>
     <string name="not_running_fix_action">Arregla-ho</string>
     <string name="login_submit" comment="Verifies the login details">Verifica</string>
     <string name="acr_key" comment="API key">Clau d\'accés</string>

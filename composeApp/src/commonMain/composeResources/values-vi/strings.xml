@@ -1,12 +1,211 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="other">%1$s hôm nay</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="other">%1$s người nghe</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="other">%1$s ngày</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="other">%1$s tuần</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="other">%1$s tháng</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="other">%1$s năm</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="other">%1$s nghệ sĩ</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="other">%1$s album</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="other">%1$s bài hát</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="other">%1$s lần sửa</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="other">%1$s phút</item>
+    </plurals>
     <string name="yes">Có</string>
     <string name="no">Không</string>
+    <string name="reset">Đặt lại</string>
+    <string name="settings">Tùy chỉnh</string>
+    <string name="bug_report">Báo cáo lỗi</string>
+    <string name="faq">Câu hỏi thường gặp</string>
     <string name="album_art">Ảnh bìa</string>
     <string name="artist_image">Ảnh bìa nghệ sĩ</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Yêu cầu ô này là trống</string>
+    <string name="artist">Nghệ sĩ</string>
+    <string name="artists">Nghệ sĩ</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Nghệ sĩ hàng đầu</string>
+    <string name="album">Album</string>
+    <string name="albums">Album</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album hàng đầu</string>
     <string name="track">Bài hát</string>
     <string name="tracks">Bài hát</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Bài hát hàng đầu</string>
     <string name="similar_tracks">Bài hát phổ biến</string>
+    <string name="similar" comment="Similar tracks but in short">Tương tự</string>
+    <string name="tap_to_edit">(Chạm để sửa)</string>
+    <string name="recents" comment="Short for recently scrobbled">Gần đây</string>
+    <string name="auto" comment="automatic or default setting">Tự động</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Sắp xong rồi…</string>
+    <string name="music_players">Trình phát nhạc</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ứng dụng khác</string>
+    <string name="choose_apps">Chọn ứng dụng</string>
+    <string name="choose_an_app">Chọn một ứng dụng</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Ứng dụng</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Các dịch vụ</string>
+    <string name="share_sig">(bởi Pano Scrobbler)</string>
+    <string name="share">Chia sẻ</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Chú thích</string>
+    <string name="pinch_to_zoom">Chụm để thu phóng</string>
+    <string name="more_info">Thông tin chi tiết</string>
+    <string name="more" comment="More options menu in short">Khác</string>
+    <string name="learn" comment="(Learn java regex syntax)">Tìm hiểu</string>
+    <string name="hide">Ẩn</string>
+    <string name="rank_change_no_change">Không đổi</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Xóa lịch sử</string>
+    <string name="library" comment="search within the library">Thư viện</string>
+    <string name="global" comment="search globally across lastfm">Toàn cầu</string>
+    <string name="take_long_time">Có thể hơi lâu</string>
+    <string name="profile">Hồ sơ</string>
+    <string name="profile_pic">Ảnh đại diện</string>
+    <string name="show_all">Xem thêm</string>
+    <string name="edit">Sửa</string>
+    <string name="delete">Xoá</string>
+    <string name="delete_all">Xóa tất cả</string>
+    <string name="love" comment="Love/like a song">Yêu thích</string>
+    <string name="hate" comment="Hate or dislike a song">Không thích</string>
+    <string name="following" comment="accounts you are following on lastfm">Đang theo dõi</string>
+    <string name="followers" comment="your lastfm followers">Người theo dõi</string>
+    <string name="send_notifications">Cho phép gửi thông báo</string>
+    <string name="swap" comment="(Swap title and artist)">Hoán đổi</string>
+    <string name="time_just_now">mới đây</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Từ mic</string>
+    <string name="uploading">Đang tải lên…</string>
+    <string name="details">Chi tiết</string>
+    <string name="sort">Sắp xếp</string>
+    <string name="listeners">Thính giả</string>
+    <string name="collapse" comment="(view only a few items)">Thu nhỏ</string>
+    <string name="expand" comment="(view all items)">Mở rộng</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s thích</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Từ %1$s</string>
+    <string name="not_found" comment="Shown in search">Không tìm thấy</string>
+    <string name="save" comment="saves a file">Lưu</string>
+    <string name="saved_to_gallery">Đã lưu vào Thư viện</string>
+    <string name="weekly">Hàng tuần</string>
+    <string name="weeks">Tuần</string>
+    <string name="monthly">Hàng tháng</string>
+    <string name="months">Tháng</string>
+    <string name="years" comment="For the charts menu which displays year by year">Năm</string>
+    <string name="charts_overall">Tổng quan</string>
+    <string name="charts_no_data">Không có dữ liệu trong giai đoạn này</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Tuỳ chỉnh</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Dựa trên %1$s</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Không đủ dữ liệu</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Tôi đang cảm thấy may mắn</string>
+    <string name="random_not_found">Không tìm thấy bài hát</string>
+    <string name="loved_track">Bài hát được ưa thích</string>
+    <string name="randomize" comment="(To randomize or fetch a new random item)">Trộn</string>
+    <string name="random_text">Ngẫu nhiên</string>
+    <string name="original" comment="Original metadata before editing">Gốc</string>
+    <string name="corrected" comment="Corrected metadata after editing">Đã sửa</string>
+    <string name="close" comment="To close a dialog or something">Đóng</string>
+    <string name="appwidget_loading">Đang tải…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Khoảng thời gian</string>
+    <string name="appwidget_theme">Chủ đề</string>
+    <string name="appwidget_shadow">Bóng</string>
+    <string name="appwidget_show">Hiện</string>
+    <string name="light">Sáng</string>
+    <string name="dark">Tối</string>
+    <string name="system_colors">Màu hệ thống</string>
+    <string name="primary_color">Màu chủ đạo</string>
+    <string name="secondary_color">Màu phụ đạo</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Mục</string>
+    <string name="edit_replace">Thay thế</string>
+    <string name="edit_first" comment="First occurrence of a pattern">Đầu tiên</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Tất cả</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Trích xuất</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Thử</string>
+    <string name="edit_presets" comment="Regex presets">Mẫu thiết lập</string>
+    <string name="mute" comment="mute the sound">Tắt tiếng</string>
+    <string name="block" comment="block the track from scrobbling">Chặn</string>
+    <string name="pin" comment="pin a friend to the top">Ghim</string>
+    <string name="unpin" comment="unpin a friend to the top">Bỏ ghim</string>
+    <string name="duration">Thời lượng</string>
+    <string name="total_listen_time">Tổng thời lượng nghe</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Phân tích</string>
+    <string name="enable" comment="To enable the scrobbler">Bật</string>
+    <string name="username" comment="last.fm Username">Tên người dùng</string>
+    <string name="pref_noti">Thông báo</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Phút</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Phần trăm</string>
+    <string name="pref_logout">Đăng xuất</string>
+    <string name="pref_login">Đăng nhập</string>
+    <string name="pref_about" comment="Info about this app">Giới thiệu</string>
+    <string name="pref_privacy_policy">Chính sách quyền riêng tư</string>
+    <string name="pref_user_label" comment="(Like username)">Người dùng</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Token xác thực</string>
+    <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL máy chủ</string>
+    <string name="pref_locale">Ngôn ngữ</string>
+    <string name="pref_change_locale">Thay đổi ngôn ngữ</string>
+    <string name="pref_misc">Khác</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tuần mới bắt đầu vào</string>
+    <string name="pref_export">Xuất</string>
+    <string name="pref_import">Nhập</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Cá nhân hoá</string>
+    <string name="pref_themes" comment="Color themes">Chủ đề</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Danh sách</string>
+    <string name="pref_translate">Đóng góp bản dịch</string>
+    <string name="pref_check_updates">Kiểm tra bản cập nhật</string>
+    <string name="download" comment="Its a verb">Tải về</string>
+    <string name="changelog">Nhật kí thay đổi</string>
+    <string name="imported">Đã nhập</string>
+    <string name="current_track">Bản nhạc đang phát</string>
+    <string name="copied">Đã sao chép!</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Kiểm tra %1$s</string>
+    <string name="no_browser">Không có trình duyệt trên thiết bị</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Lý do: %1$s</string>
+    <string name="not_running_fix_action">Khắc phục</string>
+    <string name="login_submit" comment="Verifies the login details">Xác thực</string>
+    <string name="acr_key" comment="API key">Mã truy cập</string>
+    <string name="acr_secret" comment="API secret">Mã bí mật</string>
+    <string name="add" comment="Add a new item such as an edit, a tag, etc">Thêm</string>
+    <string name="fix_it_battery_title">Tắt tối ưu hoá pin</string>
+    <string name="fix_it_energy_title">Tắt tối ưu hoá pin</string>
+    <string name="fix_it_action" comment="(To open an app)">Mở</string>
+    <string name="delete_account">Xóa tài khoản</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">Thêm hoặc thay ảnh</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Từ thư viện ảnh</string>
+    <string name="square_photo_hint">Chọn ảnh vuông để có kết quả tốt nhất</string>
+    <string name="scrobble_to_file">Tập tin</string>
+    <string name="password">Mật khẩu</string>
+    <string name="create" comment="Create a new file">Tạo mới</string>
+    <string name="ok">Đồng ý</string>
+    <string name="cancel">Hủy</string>
+    <string name="back">Quay lại</string>
+    <string name="done">Hoàn tất</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Thử lại</string>
+    <string name="run_on_start">Chạy khi khởi động máy</string>
+    <string name="use_browser">Hãy sử dụng trình duyệt trên thiết bị được hỗ trợ.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Lưu log</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Độ tương phản</string>
+    <string name="high" comment="As in high/medium/low">Cao</string>
+    <string name="medium" comment="As in high/medium/low">Vừa</string>
+    <string name="low" comment="As in high/medium/low">Thấp</string>
     <!--  pro  -->
+    <string name="get_pro">Ủng hộ ứng dụng</string>
+    <string name="help">Hỗ trợ</string>
+    <string name="thank_you">Cảm ơn bạn!</string>
+    <string name="billing_troubleshoot_title">Khôi phục thanh toán</string>
 </resources>

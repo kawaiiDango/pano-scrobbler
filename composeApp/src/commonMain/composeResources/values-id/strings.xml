@@ -108,7 +108,6 @@
     <string name="more" comment="More options menu in short">Selengkapnya</string>
     <string name="learn" comment="(Learn java regex syntax)">Pelajari</string>
     <string name="hide">Sembunyikan</string>
-    <string name="rank_change" comment="%1= delta change">Perubahan peringkat: %s</string>
     <string name="rank_change_no_change">Tidak ada perubahan</string>
     <string name="rank_change_new">Tidak di-scrobble pada periode sebelumnya</string>
     <string name="search">Cari</string>
@@ -153,12 +152,12 @@
     <string name="grant_notification_access_desc">Diperlukan untuk mengambil metadata musik. Tidak ada notifikasi non-musik yang dibaca</string>
     <string name="send_notifications">Izinkan notifikasi</string>
     <string name="notification_channel_blocked">Ini memerlukan notifikasi untuk diaktifkan</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Periksa status dan jumlah scrobble
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Periksa status dan jumlah scrobble
 - Sukai atau blokir langsung dari notifikasi
 - Dapatkan pemberitahuan tentang kesalahan scrobble dan tindakan yang dapat Anda ambil
 - Dapatkan scrobble terbaik Anda setiap minggu
 - Dan banyak lagi
-- Notifikasi tidak berbunyi\"\""</string>
+- Notifikasi tidak berbunyi\"\"</string>
     <string name="will_not_scrobble">Melewatkan langkah ini akan menonaktifkan scrobbling</string>
     <string name="swap" comment="(Swap title and artist)">Tukar</string>
     <string name="rate_msg">Menikmati aplikasi ini?</string>
@@ -270,8 +269,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Ketuk untuk memblokir dan melewati</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Tindakan pemain</string>
     <string name="skip" comment="skip to next track">Lewati</string>
-    <string name="mute" comment="mute the music">Bisukan</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Abaikan</string>
+    <string name="mute" comment="mute the sound">Bisukan</string>
     <string name="block" comment="block the track from scrobbling">Blokir</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tag tersembunyi</string>
     <string name="pin" comment="pin a friend to the top">Sematkan</string>
@@ -380,14 +378,12 @@
     <string name="pref_intents">Maksud untuk tugas dll</string>
     <string name="copied">Tersalin!</string>
     <string name="lastfm_reauth">Anda perlu mengautentikasi ulang untuk mengedit atau menghapus scrobble</string>
-    <string name="custom_listenbrainz">Kostumisasi Listenbrainz</string>
     <string name="failed_encode_url">Gagal menyandikan URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Cek %1$s</string>
     <string name="artist_extra">Lagu, album &amp; serupa</string>
     <string name="no_browser">Tidak ada browser yang diinstal</string>
     <string name="no_player">Tidak ada pemutar musik yang dipasang</string>
     <string name="not_running">⚠ Scrobbler dimatikan oleh sistem Anda</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Matikan alasan yang diberikan oleh sistem: %s</string>
     <string name="not_running_fix_action">Perbaiki</string>
     <string name="login_submit" comment="Verifies the login details">Verifikasi</string>
     <string name="acr_host" comment="Web hostname">Penyedia</string>
@@ -397,9 +393,9 @@
     <string name="remove_acr_key">Hapus Kunci ACRCloud</string>
     <string name="add_acr_consider">Untuk mencegah mencapai batas kecepatan, pertimbangkan untuk menambahkan Kunci ACRCloud Anda sendiri</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Tambah</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Daftar di https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Daftar di https://console.acrcloud.com
 • Navigasikan ke Proyek &gt; Audio &amp; pengenalan video
-• Buat proyek baru, pilih Audio yang Direkam dan keranjang ACRCloud Music"</string>
+• Buat proyek baru, pilih Audio yang Direkam dan keranjang ACRCloud Music</string>
     <string name="shazam_scrobbling">Untuk terus scrobble, buka <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> sebagai gantinya dan mulai Otomatis Shazam. Pastikan juga Shazam diaktifkan untuk scrobbling.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d tersisa</string>
     <string name="submitting_loves" formatted="true">Mengirimkan suka, %1$d tersisa</string>
@@ -428,15 +424,14 @@
     <string name="thank_you">Terima kasih!</string>
     <string name="purchase_pending">Pembelian Anda belum dikonfirmasi oleh penyedia pembayaran Anda. Silakan periksa kembali setelah beberapa menit.</string>
     <string name="billing_troubleshoot_title">Pulihkan Pembelian</string>
-    <string name="billing_troubleshoot">"Telah dibeli?
+    <string name="billing_troubleshoot">Telah dibeli?
 
 Pembelian Anda dikelola oleh Google play. Mereka ditautkan dengan akun Google Play yang melakukan pembelian. Saat Anda memasang aplikasi di perangkat baru dengan banyak akun, Google Play dapat mengaitkannya dengan akun yang salah. solusi terbaik untuk secara eksplisit memilih akun yang memiliki pembelian adalah dengan menginstal aplikasi dari komputer melalui halaman web Google Play:
 
 • Copot pemasangan aplikasi ini.
 • Buka halaman web Google Play dari komputer Anda.
 • Login dengan akun pemilik pembelian.
-• Instal aplikasi ini langsung dari halaman web Google Play.
-"</string>
+• Instal aplikasi ini langsung dari halaman web Google Play.</string>
     <string name="billing_block">Blokir artis/trek dan lewati atau bisukan otomatis</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Sematkan hingga %1$d teman dan susun ulang mereka</string>
     <string name="billing_sharing">Hapus nama aplikasi saat berbagi</string>

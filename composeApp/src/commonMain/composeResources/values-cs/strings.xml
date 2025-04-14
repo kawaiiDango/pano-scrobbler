@@ -112,7 +112,7 @@
     <string name="required_fields_empty" comment="Shown on filling a form">Požadovaná pole jsou prázdná</string>
     <string name="artist">Interpret</string>
     <string name="artists">Interpreti</string>
-    <string name="top_artists" comment="Top artists the user has listened to">Nejlepší interpreti</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Nejposlouchanější interpreti</string>
     <string name="album_artist">Interpret alba</string>
     <string name="artist_channel" comment="Artist or youtube channel">Interpret / kanál</string>
     <string name="similar_artists">Podobní umělci</string>
@@ -122,7 +122,7 @@
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Nejlepší alba</string>
     <string name="track">Skladba</string>
     <string name="tracks">Skladby</string>
-    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Nejlepší skladby</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Nejposlouchanější skladby</string>
     <string name="similar_tracks">Podobné skladby</string>
     <string name="similar" comment="Similar tracks but in short">Podobné</string>
     <string name="state_scrobbling">Nyní scrobbluji…</string>
@@ -143,6 +143,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikace</string>
     <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
     <string name="unavailable_offline">Není dostupné offline</string>
+    <string name="tv_url_notice">Otevřít tuto URL v prohlížeči na jiném zařízení</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Služby</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Poslouchal jsem \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s poslouchal/a \n%1$s %2$s</string>
@@ -155,7 +156,7 @@
     <string name="more" comment="More options menu in short">Další</string>
     <string name="learn" comment="(Learn java regex syntax)">Více informací</string>
     <string name="hide">Skrýt</string>
-    <string name="rank_change" comment="%1= delta change">Změna pořadí: %s</string>
+    <string name="rank_change" comment="%1= delta change">Změna úrovně: %1$s</string>
     <string name="rank_change_no_change">Beze změn</string>
     <string name="rank_change_new">Nebylo scrobblováno v předchozím období</string>
     <string name="search">Hledat</string>
@@ -192,18 +193,20 @@
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string name="pending_scrobble">Čekající scrobble</string>
     <string name="pending_scrobbles_noti">Zpracovávám čekající scrobbly</string>
+    <string name="following" comment="accounts you are following on lastfm">Sledovaní</string>
+    <string name="followers" comment="your lastfm followers">Sledující</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblů od %2$s</string>
     <string name="allow_background">Povolit scrobblování na pozadí</string>
     <string name="grant_notification_access">Udělit přístup k oznámením</string>
     <string name="grant_notification_access_desc">Nutné pro získání metadat skladeb. Nebudou přečtena žádná nehudební oznámení</string>
     <string name="send_notifications">Povolit oznámení</string>
     <string name="notification_channel_blocked">Je nutné povolit oznámení</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Možnost kontrolovat stav a počet scrobblů
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Možnost kontrolovat stav a počet scrobblů
 - Přidávejte do oblíbených či zablokovaných přímo skrz oznámení
 - Buďte v obraze o chybách při scrobblování a co s nimi můžete dělat
 - Dostávejte top scrobbly každý týden
 - A mnoho dalšího
-- Oznámení nevydává zvuk\"\""</string>
+- Oznámení nevydává zvuk\"\"</string>
     <string name="will_not_scrobble">Přeskočení tohoto kroku zakáže scrobblování</string>
     <string name="swap" comment="(Swap title and artist)">Prohodit</string>
     <string name="rate_msg">Líbí se vám aplikace?</string>
@@ -309,8 +312,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Klepnutím zablokujete a přeskočíte</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Akce přehráváče</string>
     <string name="skip" comment="skip to next track">Přeskočit</string>
-    <string name="mute" comment="mute the music">Ztlumit</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorovat</string>
+    <string name="mute" comment="mute the sound">Ztlumit</string>
     <string name="block" comment="block the track from scrobbling">Zablokovat</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skryté tagy</string>
     <string name="pin" comment="pin a friend to the top">Připnout</string>
@@ -410,14 +412,12 @@
     <string name="pref_intents">Pro Tasker apod.</string>
     <string name="copied">Zkopírováno!</string>
     <string name="lastfm_reauth">Pro úpravu nebo smazání scrobblů je třeba se znovu ověřit</string>
-    <string name="custom_listenbrainz">Vlastní ListenBrainz</string>
     <string name="failed_encode_url">Kódování URL selhalo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Zkontrolovat %1$s</string>
     <string name="artist_extra">Skladby, alba a podobné</string>
     <string name="no_browser">Není nainstalován žádný prohlížeč</string>
     <string name="no_player">Není nainstalován žádný hudební přehrávač</string>
     <string name="not_running">⚠ Skrobbler byl vypnut vaším systémem</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Důvod vypnutí uvedený systémem: %s</string>
     <string name="not_running_fix_action">Opravit</string>
     <string name="login_submit" comment="Verifies the login details">Ověřit</string>
     <string name="acr_host" comment="Web hostname">Host</string>
@@ -427,9 +427,9 @@
     <string name="remove_acr_key">Odebrat klíč ACRCloud</string>
     <string name="add_acr_consider">Pro zabránění překročení limitů, zvažte přidání vlastního ACRCloud klíče</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Přidat</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Zaregistrujte se na https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Zaregistrujte se na https://console.acrcloud.com
 • Přejděte do \"Projects\" &gt; \"Audio &amp; video recognition\"
-• Vytvořte nový projekt, vyberte \"Recorded Audio\" a \"ACRCloud Music bucket\""</string>
+• Vytvořte nový projekt, vyberte \"Recorded Audio\" a \"ACRCloud Music bucket\"</string>
     <string name="shazam_scrobbling">Pro neustálé scrobblování si otevřte <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> a zapněte Auto Shazam. Také se ujistěte, že je povoleno scrobblování ze Shazamu.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d zbývajících</string>
     <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
@@ -450,15 +450,14 @@
     <string name="thank_you">Díky!</string>
     <string name="purchase_pending">Váš nákup zatím nebyl potvrzen vašim poskytovatelem platebních služeb. Zkontrolujte nákup za pár minut.</string>
     <string name="billing_troubleshoot_title">Obnovit nákup</string>
-    <string name="billing_troubleshoot">"Již jste někdy aplikaci podpořili?
+    <string name="billing_troubleshoot">Již jste někdy aplikaci podpořili?
 
 Vaše nákupy spravuje Google Play, jsou vázané na účet Google Play, který nákup provedl. Když aplikaci nainstalujete na nové zařízení s více účty, Google Play může zařízení spojit se špatným účtem. Nejlepší řešení je přímo vybrat účet, který provedl nákup, aby aplikaci nainstaloval na zařízení skrz webovou verzi Google Play na počítači:
 
 • Odinstalujte tuto aplikaci
 • Otevřte webovou stránku Google Play na svém počítači
 • Přihlaste se účtem, který provedl nákup
-• Nainstalujte aplikaci na zařízení přímo z webu.
-"</string>
+• Nainstalujte aplikaci na zařízení přímo z webu.</string>
     <string name="billing_block">Blokování umělců/skladeb a automatické přeskakování nebo ztlumení</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Připněte až %1$d přátel a seřaďte si je</string>
     <string name="billing_sharing">Odstranit název aplikace při sdílení</string>

@@ -124,7 +124,7 @@
     <string name="more" comment="More options menu in short">Ver más</string>
     <string name="learn" comment="(Learn java regex syntax)">Aprender</string>
     <string name="hide">Ocultar</string>
-    <string name="rank_change" comment="%1= delta change">Cambio de rango: %s</string>
+    <string name="rank_change" comment="%1= delta change">Cambio de rango: %1$s</string>
     <string name="rank_change_no_change">Ningún cambio</string>
     <string name="rank_change_new">No scrobbleado en el período anterior</string>
     <string name="search">Buscar</string>
@@ -169,12 +169,12 @@
     <string name="grant_notification_access_desc">Es necesario para recuperar los metadatos de las canciones. No se leen las notificaciones que no sean de canción.</string>
     <string name="send_notifications">Permitir notificaciones</string>
     <string name="notification_channel_blocked">Es necesario activar las notificaciones</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Comprueba el estado y el número de scrobbles.
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Comprueba el estado y el número de scrobbles.
 - Da como favorito o bloquéalo el scrobble directamente desde la notificación.
 - Recibe notificaciones sobre errores de scrobble y acciones que puedes tomar.
 - Recibe tus mejores scrobbles semanalmente.
 - Y mucho más.
-- Las notificaciones no hacen ruido.\"\""</string>
+- Las notificaciones no hacen ruido.\"\"</string>
     <string name="will_not_scrobble">Omitir este paso desactivará el scrobbling</string>
     <string name="swap" comment="(Swap title and artist)">Intercambiar</string>
     <string name="rate_msg">¿Estás disfrutando de esta aplicación?</string>
@@ -286,8 +286,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Toca para bloquear y saltar</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Acciones del reproductor</string>
     <string name="skip" comment="skip to next track">Saltar</string>
-    <string name="mute" comment="mute the music">Silenciar</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorar</string>
+    <string name="mute" comment="mute the sound">Silenciar</string>
     <string name="block" comment="block the track from scrobbling">Bloquear</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Etiquetas ocultas</string>
     <string name="pin" comment="pin a friend to the top">Fijar</string>
@@ -301,6 +300,8 @@
     <string name="persistent_noti_desc">Mantén presionado para ocultar esto</string>
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
+    <string name="duration">Duración</string>
+    <string name="total_listen_time">Tiempo total de escucha</string>
     <string name="acoustic" comment="(Acoustic music)">Acústica</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Enérgica</string>
@@ -329,6 +330,7 @@
     <string name="pref_enabled_apps_title">Escoge las aplicaciones</string>
     <string name="pref_auto_detect">Automáticamente hace scrobble de nuevas aplicaciones</string>
     <string name="pref_spotify_remote">Haz scrobble de Spotify reproduciendo en otros dispositivos</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Usar búsqueda aproximada para imágenes de artistas</string>
     <string name="pref_link_heart_button_rating">Usa el botón del corazón en la notificación para también favorecerlo en el reproductor multimedia</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Desactivar el scrobbling continuo del micrófono cuando el dispositivo está reproduciendo música</string>
     <string name="pref_delay">Demora del scrobble (lo que ocurra primero)</string>
@@ -393,14 +395,13 @@
     <string name="pref_intents">Intents para Tasker y etc.</string>
     <string name="copied">¡Copiado!</string>
     <string name="lastfm_reauth">Necesitas volver a autenticarte para editar o eliminar scrobbles</string>
-    <string name="custom_listenbrainz">Servidor personalizado de Listenbrainz</string>
     <string name="failed_encode_url">Error al codificar el enlace</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Comprobar %1$s</string>
     <string name="artist_extra">Canciones, álbumes y artistas similares</string>
     <string name="no_browser">No hay ningún navegador instalado</string>
     <string name="no_player">No hay reproductor de música instalado</string>
     <string name="not_running">⚠ El scrobbler fue asesinado por tu sistema</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razón de muerte dada por el sistema: %s</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razón: %1$s</string>
     <string name="not_running_fix_action">Corregir</string>
     <string name="login_submit" comment="Verifies the login details">Verificar</string>
     <string name="acr_host" comment="Web hostname">Alojamiento</string>
@@ -410,9 +411,9 @@
     <string name="remove_acr_key">Eliminar clave de ACRCloud</string>
     <string name="add_acr_consider">Para evitar alcanzar los límites de capacidad, considere la posibilidad de agregar su propia clave de ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Agregar</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Regístrate en https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Regístrate en https://console.acrcloud.com
 • Vaya a Projects &gt; Audio &amp; video recognition.
-• Crea un nuevo proyecto, seleccione Recorded Audio y ACRCloud Music bucket."</string>
+• Crea un nuevo proyecto, seleccione Recorded Audio y ACRCloud Music bucket.</string>
     <string name="shazam_scrobbling">Para hacer scrobble continuamente, abra <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> También asegúrese de que Shazam esté habilitado para hacer scrobbling.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restantes</string>
     <string name="submitting_loves" formatted="true">Enviando favoritos, %1$d restantes</string>
@@ -433,6 +434,12 @@
     <string name="password">Contraseña</string>
     <string name="open_existing" comment="Append to an existing file">Anexar a los existentes</string>
     <string name="create" comment="Create a new file">Crear</string>
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="back">Volver</string>
+    <string name="done">Completado</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Reintentar</string>
+    <string name="run_on_start">Ejecutar cuando el ordenador se enciende</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="help">Ayuda</string>
@@ -441,15 +448,14 @@
     <string name="thank_you">¡Gracias!</string>
     <string name="purchase_pending">Tu proveedor de pago aún no ha confirmado tu compra. Vuelva a comprobarlo en un par de minutos.</string>
     <string name="billing_troubleshoot_title">Restaurar compra</string>
-    <string name="billing_troubleshoot">"¿Ya has comprado?
+    <string name="billing_troubleshoot">¿Ya has comprado?
 
 Google Play administra tus compras. Están enlazadas con una cuenta de Google Play que hizo una compra. Cuando instalas la aplicación en un nuevo dispositivo con varias cuentas, Google Play puede asociarla con una errónea. La mejor solución para seleccionar explícitamente la cuenta que posee una compra es instalar la aplicación desde un ordenador a través de la página web de Google Play:
 
 • Desinstalar esta aplicación.
 • Abrir la página web de Google Play desde su ordenador.
 • Iniciar sesión con la cuenta propietaria de la compra.
-• Instalar esta aplicación directamente desde la página web de Google Play.
-"</string>
+• Instalar esta aplicación directamente desde la página web de Google Play.</string>
     <string name="billing_block">Bloquear artistas/canciones y omitir o silenciar automáticamente</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fija hasta %1$d amigos y reordenalos</string>
     <string name="billing_sharing">Eliminar el nombre de la aplicación al compartir</string>

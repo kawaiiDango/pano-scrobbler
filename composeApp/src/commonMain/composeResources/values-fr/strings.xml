@@ -124,7 +124,6 @@
     <string name="more" comment="More options menu in short">Plus</string>
     <string name="learn" comment="(Learn java regex syntax)">Apprendre</string>
     <string name="hide">Masquer</string>
-    <string name="rank_change" comment="%1= delta change">Changement de classement: %s</string>
     <string name="rank_change_no_change">Aucune modification</string>
     <string name="rank_change_new">Non scrobblé dans la période précédente</string>
     <string name="search">Rechercher</string>
@@ -169,12 +168,12 @@
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
     <string name="send_notifications">Autoriser les notifications</string>
     <string name="notification_channel_blocked">Ceci nécessite l\'activation des notifications</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Vérifier l'état et le compte des scrobbles
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Vérifier l\'état et le compte des scrobbles
 - Love or block directly from the notification
 - Soyez notifiés à propos des erreurs de scrobble et des actions à faire 
 - Obtenez vos scrobbles favoris chaque semaine
 - Et plus
-- Les notifications ne feront pas de sons\"\""</string>
+- Les notifications ne feront pas de sons\"\"</string>
     <string name="will_not_scrobble">Passer cette étape désactivera le scrobble</string>
     <string name="swap" comment="(Swap title and artist)">Changer</string>
     <string name="rate_msg">Vous aimez cette application ?</string>
@@ -286,8 +285,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Appuyer pour bloquer et passer</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
     <string name="skip" comment="skip to next track">Passer</string>
-    <string name="mute" comment="mute the music">Mettre en sourdine</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorer</string>
+    <string name="mute" comment="mute the sound">Mettre en sourdine</string>
     <string name="block" comment="block the track from scrobbling">Bloquer</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tags cachés</string>
     <string name="pin" comment="pin a friend to the top">Épingler</string>
@@ -301,6 +299,8 @@
     <string name="persistent_noti_desc">Appuyez longuement pour masquer ceci</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
     <string name="scrobbler_on">Scrobbler activé</string>
+    <string name="duration">Durée</string>
+    <string name="total_listen_time">Temps d\'écoute total</string>
     <string name="acoustic" comment="(Acoustic music)">Acoustique</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Énergisante</string>
@@ -393,14 +393,12 @@
     <string name="pref_intents">Intents pour Tasker etc</string>
     <string name="copied">Copié !</string>
     <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
-    <string name="custom_listenbrainz">Serveur personnalisé Listenbrainz</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Vérifier %1$s</string>
     <string name="artist_extra">Morceaux, albums &amp; similaires</string>
     <string name="no_browser">Aucun navigateur n’est installé</string>
     <string name="no_player">Aucun lecteur de musique n\'est installé</string>
     <string name="not_running">⚠ Le scrobbler a été tué par votre système</string>
-    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raison d\'arrêt donnée par le système: %s</string>
     <string name="not_running_fix_action">Réparer</string>
     <string name="login_submit" comment="Verifies the login details">Vérifier</string>
     <string name="acr_host" comment="Web hostname">Hôte</string>
@@ -410,9 +408,9 @@
     <string name="remove_acr_key">Supprimer la clé ACRCloud</string>
     <string name="add_acr_consider">Pour éviter les limites de l\'API, pensez à ajouter votre propre clé ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Ajouter</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Inscrivez-vous sur https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Inscrivez-vous sur https://console.acrcloud.com
 • Naviguer vers les projets &gt; Audio &amp; reconnaissance vidéo
-• Créer un nouveau projet, sélectionnez un enregistrement vocal et le seau de musique ACRCloud"</string>
+• Créer un nouveau projet, sélectionnez un enregistrement vocal et le seau de musique ACRCloud</string>
     <string name="shazam_scrobbling">Pour faire du scrobble continu, ouvrez plutôt <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> et activez Auto Shazam. Assurez-vous également que Shazam est activé pour le scrobble.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
     <string name="submitting_loves" formatted="true">Envoi de soutien, %1$d restant</string>
@@ -433,6 +431,11 @@
     <string name="password">Mot de passe</string>
     <string name="open_existing" comment="Append to an existing file">Ajouter à un fichier existant</string>
     <string name="create" comment="Create a new file">Créer</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annuler</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Réessayer</string>
+    <string name="run_on_start">Exécuter au démarrage de l\'ordinateur</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Contraste</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="help">Aide</string>
@@ -441,15 +444,14 @@
     <string name="thank_you">Merci !</string>
     <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
     <string name="billing_troubleshoot_title">Restaurer l\'achat</string>
-    <string name="billing_troubleshoot">"Déjà acheté?
+    <string name="billing_troubleshoot">Déjà acheté?
 
-Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qui a fait l'achat. Lorsque vous installez l'application sur un nouvel appareil avec plusieurs comptes, Google Play peut l'associer à un mauvais appareil. La meilleure solution pour sélectionner explicitement le compte possédant un achat est d'installer l'application depuis un ordinateur via la page Web Google Play :
+Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qui a fait l\'achat. Lorsque vous installez l\'application sur un nouvel appareil avec plusieurs comptes, Google Play peut l\'associer à un mauvais appareil. La meilleure solution pour sélectionner explicitement le compte possédant un achat est d\'installer l\'application depuis un ordinateur via la page Web Google Play :
 
 • Désinstaller cette application.
 • Ouvrez la page Web de Google Play depuis votre ordinateur.
-• Connectez-vous avec un compte propriétaire de l'achat.
-• Installez cette application directement depuis la page Web de Google Play.
-"</string>
+• Connectez-vous avec un compte propriétaire de l\'achat.
+• Installez cette application directement depuis la page Web de Google Play.</string>
     <string name="billing_block">Bloquer cet artiste/ce titre et automatiquement passer la chanson ou couper le son</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Épingler jusqu\'à %1$d amis et classer les</string>
     <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>

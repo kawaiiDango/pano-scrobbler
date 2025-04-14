@@ -302,8 +302,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Dodirnite za blokiranje i preskakanje</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Radnje reproduktora glazbe</string>
     <string name="skip" comment="skip to next track">Preskoči</string>
-    <string name="mute" comment="mute the music">Utišaj</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignoriraj</string>
+    <string name="mute" comment="mute the sound">Utišaj</string>
     <string name="block" comment="block the track from scrobbling">Blokiraj</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skrivene oznake</string>
     <string name="pin" comment="pin a friend to the top">Prikvači</string>
@@ -412,7 +411,6 @@
     <string name="pref_intents">Intentovi za Tasker itd.</string>
     <string name="copied">Kopirano!</string>
     <string name="lastfm_reauth">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
-    <string name="custom_listenbrainz">Prilagođeni Listenbrainz</string>
     <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Provjeri %1$s</string>
     <string name="artist_extra">Pjesme, albumi i slično</string>

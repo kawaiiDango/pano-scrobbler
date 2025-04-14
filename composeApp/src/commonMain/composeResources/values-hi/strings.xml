@@ -260,8 +260,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">टैप करें ब्लॉक या स्किप करने के लिए</string>
     <string name="player_actions" comment="music player actions such as skip/mute">प्लेयर क्रिया</string>
     <string name="skip" comment="skip to next track">स्किप</string>
-    <string name="mute" comment="mute the music">शांत करें</string>
-    <string name="ignore" comment="ignore the track so that it doesn't scrobble">अनदेखा करें</string>
+    <string name="mute" comment="mute the sound">शांत करें</string>
     <string name="block" comment="block the track from scrobbling">ब्लॉक करें</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">गुप्त टैग</string>
     <string name="pin" comment="pin a friend to the top">पिन करें</string>

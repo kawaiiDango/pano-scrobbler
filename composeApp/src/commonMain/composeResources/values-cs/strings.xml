@@ -143,6 +143,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikace</string>
     <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
     <string name="unavailable_offline">Není dostupné offline</string>
+    <string name="tv_url_notice">Otevřít tuto URL v prohlížeči na jiném zařízení</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Služby</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Poslouchal jsem \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s poslouchal/a \n%1$s %2$s</string>
@@ -155,6 +156,7 @@
     <string name="more" comment="More options menu in short">Další</string>
     <string name="learn" comment="(Learn java regex syntax)">Více informací</string>
     <string name="hide">Skrýt</string>
+    <string name="rank_change" comment="%1= delta change">Změna úrovně: %1$s</string>
     <string name="rank_change_no_change">Beze změn</string>
     <string name="rank_change_new">Nebylo scrobblováno v předchozím období</string>
     <string name="search">Hledat</string>

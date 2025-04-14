@@ -251,7 +251,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Πατήστε για αποκλεισμό και παράλειψη</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Ενέργειες παίκτη</string>
     <string name="skip" comment="skip to next track">Παράλειψη</string>
-    <string name="mute" comment="mute the music">Σίγαση</string>
+    <string name="mute" comment="mute the sound">Σίγαση</string>
     <string name="block" comment="block the track from scrobbling">Αποκλεισμός</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Κρυφές ετικέτες</string>
     <string name="pin" comment="pin a friend to the top">Καρφίτσωμα</string>

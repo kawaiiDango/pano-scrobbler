@@ -351,7 +351,6 @@
     <string name="pref_master_qs_hint">Taip pat galima perjungti iš sparčiųjų nustatymų plytelės</string>
     <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
     <string name="pref_master_qs_already_addded">Sparčiųjų nustatymų plytelė jau pridėta.</string>
-    <string name="pref_noti_q">Jei piktograma nerodoma, galima skatinti pranešimą.</string>
     <string name="pref_noti">Pranešimai</string>
     <string name="pref_noti_categories">Pranešimų kategorijos</string>
     <string name="pref_scrobble_noti">Skroblo pranešimai</string>

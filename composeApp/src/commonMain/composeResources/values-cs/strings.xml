@@ -343,7 +343,6 @@
     <string name="pref_master_qs_hint">Lze také přepnout z dlaždice rychlého nastavení</string>
     <string name="pref_master_qs_add">Přidat dlaždici rychlého nastavení</string>
     <string name="pref_master_qs_already_addded">Dlaždice rychlého nastavení je již přidána</string>
-    <string name="pref_noti_q">Pokud se ikona nezobrazuje, můžete propagovat oznámení</string>
     <string name="pref_noti">Oznámení</string>
     <string name="pref_noti_categories">Kategorie oznámení</string>
     <string name="pref_scrobble_noti">Oznámení o scrobblování</string>

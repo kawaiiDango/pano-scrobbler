@@ -5,6 +5,8 @@ import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.reload.ComposeHotRun
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -32,6 +34,7 @@ plugins {
     alias(libs.plugins.play.publisher)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.hot.reload)
     id("kotlin-parcelize")
 }
 
@@ -74,10 +77,14 @@ val appId = "com.arn.scrobble"
 val appName = "Pano Scrobbler"
 val appNameWithoutSpaces = "pano-scrobbler"
 
+composeCompiler {
+    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
+}
+
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_23)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 
@@ -280,8 +287,8 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_23
-        targetCompatibility = JavaVersion.VERSION_23
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     testOptions {
@@ -306,11 +313,6 @@ android {
         androidTestImplementation(libs.androidx.espresso.core)
         androidTestImplementation(libs.androidx.test.ext.junit)
     }
-//    kotlinOptions {
-//        freeCompilerArgs += "-Xjvm-default=all"
-//        jvmTarget = "23"
-//    }
-//
 }
 
 aboutLibraries {
@@ -336,7 +338,7 @@ compose.desktop {
     application {
         mainClass = "com.arn.scrobble.main.MainKt"
         // ZGC starts with ~70MB minimized and goes down to ~160MB after re-minimizing
-        jvmArgs += mutableListOf(
+        jvmArgs += listOf(
             "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
             "-Ddev.resources.dir.name=$resourcesDirName",
 //            "-XX:NativeMemoryTracking=detail",
@@ -365,7 +367,6 @@ compose.desktop {
             includeAllModules = true
 
             windows {
-                console = true
                 dirChooser = true
                 upgradeUuid = "85173f4e-ca52-4ec9-b77f-c2e0b1ff4209"
                 msiPackageVersion = packageVersion
@@ -402,11 +403,19 @@ compose.desktop {
                 obfuscate = false
                 optimize = false
                 joinOutputJars = true
-                version = "7.6.0"
+                version = "7.7.0"
                 configurationFiles.from(project.file("proguard-rules-desktop.pro"))
             }
         }
     }
+}
+
+tasks.register<ComposeHotRun>("runHot") {
+    mainClass = "com.arn.scrobble.main.MainKt"
+    jvmArgs = (jvmArgs ?: emptyList()) + listOf(
+        "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
+        "-Ddev.resources.dir.name=$resourcesDirName"
+    )
 }
 
 tasks.register<Zip>("zipAppImage") {
@@ -421,7 +430,7 @@ tasks.register<Copy>("copyGithubReleaseApk") {
     include("*-releaseGithub.apk")
     rename(
         "(.*)-releaseGithub.apk",
-        "$appNameWithoutSpaces-$verCode-android-all.apk"
+        "$appNameWithoutSpaces-$verCode-android-universal.apk"
     )
 }
 

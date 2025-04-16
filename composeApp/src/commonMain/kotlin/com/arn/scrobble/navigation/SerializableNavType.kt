@@ -5,7 +5,7 @@ import androidx.savedstate.SavedState
 import androidx.savedstate.read
 import androidx.savedstate.write
 import io.ktor.http.decodeURLPart
-import io.ktor.http.encodeURLPathPart
+import io.ktor.http.encodeURLParameter
 import kotlinx.serialization.json.Json
 
 inline fun <reified T : Any?> serializableType(
@@ -23,7 +23,8 @@ inline fun <reified T : Any?> serializableType(
     override fun parseValue(value: String): T = json.decodeFromString(value)
 
     // Serialized values must always be Uri encoded
-    override fun serializeAsValue(value: T): String = json.encodeToString(value).encodeURLPathPart()
+    override fun serializeAsValue(value: T): String =
+        json.encodeToString(value).encodeURLParameter()
 
     override fun put(bundle: SavedState, key: String, value: T) {
         bundle.write {

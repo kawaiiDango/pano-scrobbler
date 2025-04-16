@@ -46,9 +46,9 @@ class FriendsVM : ViewModel() {
     var showsPins = Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
             PlatformStuff.billingRepository.isLicenseValid // && user.isSelf
     val pinnedFriends =
-        mainPrefs.data.map { it.pinnedFriends.sortedBy { it.order } }.mapLatest {
+        mainPrefs.data.map { it.pinnedFriends }.mapLatest {
             if (showsPins)
-                it
+                it.sortedBy { it.order }
             else
                 emptyList()
         }
@@ -117,7 +117,11 @@ class FriendsVM : ViewModel() {
 
         val willBeAdded = newUser.name !in pinnedUsernamesSet.value
 
-        if (!willBeAdded) {
+        if (willBeAdded) {
+            viewModelScope.launch {
+                mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends + newUser) }
+            }
+        } else {
             viewModelScope.launch {
                 val snackbarData = PanoSnackbarVisuals(
                     getString(
@@ -127,12 +131,6 @@ class FriendsVM : ViewModel() {
                     isError = true
                 )
                 Stuff.globalSnackbarFlow.emit(snackbarData)
-            }
-        }
-
-        if (willBeAdded) {
-            viewModelScope.launch {
-                mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends + newUser) }
             }
         }
         return willBeAdded

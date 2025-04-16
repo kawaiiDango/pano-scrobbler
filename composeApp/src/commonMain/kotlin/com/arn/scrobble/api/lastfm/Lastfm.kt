@@ -174,18 +174,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             parameter("sk", userAccount.authKey)
             cacheStrategy(cacheStrategy)
         }.map {
-            var entries = it.entries
-            if (!includeNowPlaying)
-                entries = entries.filterNot { it.isNowPlaying }
-
-            // fix blank album
-            entries = entries.map {
-                if (it.album?.name == "")
-                    it.copy(album = null)
-                else it
-            }
-
-            it.copy(entries = entries)
+            it.fixTracksPage(includeNowPlaying)
         }
     }
 
@@ -519,7 +508,22 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             parameter("format", "json")
             parameter("api_key", apiKey)
             parameter("sk", userAccount.authKey)
+        }.map { it.fixTracksPage() }
+
+    private fun PageResult<Track>.fixTracksPage(includeNowPlaying: Boolean = false): PageResult<Track> {
+        var newEntries = entries.map {
+            if (it.album?.name == "")
+                it.copy(album = null)
+            else
+            // copy the album art
+                it.copy(album = it.album?.copy(image = it.image))
         }
+
+        if (!includeNowPlaying)
+            newEntries = newEntries.filterNot { it.isNowPlaying }
+
+        return copy(entries = newEntries)
+    }
 
 
     companion object {

@@ -4,12 +4,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -30,13 +31,15 @@ import coil3.request.crossfade
 import coil3.size.Scale
 import coil3.toBitmap
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.imageloader.MusicEntryImageReq
+import com.arn.scrobble.ui.colorSeed
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
@@ -56,6 +59,7 @@ import pano_scrobbler.composeapp.generated.resources.share_sig
 import pano_scrobbler.composeapp.generated.resources.top_albums
 import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
+import kotlin.math.abs
 
 class CollageGeneratorVM : ViewModel() {
 
@@ -90,9 +94,7 @@ class CollageGeneratorVM : ViewModel() {
         skipMissing: Boolean,
         username: Boolean,
         textMeasurer: TextMeasurer,
-        appIcon: Painter,
-        userIcon: VectorPainter,
-        placeholderIcon: VectorPainter,
+        iconPainters: IconPaintersForCollage,
     ) {
         this.context = context
         viewModelScope.launch {
@@ -105,9 +107,7 @@ class CollageGeneratorVM : ViewModel() {
                 username,
                 skipMissing,
                 textMeasurer,
-                appIcon,
-                userIcon,
-                placeholderIcon,
+                iconPainters,
             )
         }
     }
@@ -125,9 +125,7 @@ class CollageGeneratorVM : ViewModel() {
         username: Boolean,
         skipMissing: Boolean,
         textMeasurer: TextMeasurer,
-        appIcon: Painter,
-        userIcon: VectorPainter,
-        placeholderIcon: VectorPainter,
+        iconPainters: IconPaintersForCollage,
     ) {
 
         _progress.value = 0f
@@ -173,9 +171,10 @@ class CollageGeneratorVM : ViewModel() {
                 skipMissing,
                 captions,
                 textMeasurer,
-                appIcon,
-                userIcon,
-                placeholderIcon
+                artistPlaceholder = iconPainters.artist,
+                albumPlaceholder = iconPainters.album,
+                trackPlaceholder = iconPainters.track,
+                placeholderColors = iconPainters.colors
             )
         }
 
@@ -185,8 +184,8 @@ class CollageGeneratorVM : ViewModel() {
             timePeriod,
             user.name.takeIf { username },
             textMeasurer,
-            appIcon,
-            userIcon
+            iconPainters.app,
+            iconPainters.user,
         )
         _progress.value = 1f
 
@@ -245,9 +244,10 @@ class CollageGeneratorVM : ViewModel() {
         skipMissing: Boolean,
         captions: Boolean,
         textMeasurer: TextMeasurer,
-        appIcon: Painter,
-        userIcon: VectorPainter,
-        placeholderIcon: VectorPainter,
+        artistPlaceholder: Painter,
+        albumPlaceholder: Painter,
+        trackPlaceholder: Painter,
+        placeholderColors: List<Color>,
     ): ImageBitmap {
         val limit = cols * rows
         val cellSize = 300
@@ -334,8 +334,25 @@ class CollageGeneratorVM : ViewModel() {
                         dstSize = IntSize(scaledWidth, scaledHeight)
                     )
                 } else {
+                    val placeholderIcon = when (entry) {
+                        is Track -> trackPlaceholder
+                        is Album -> albumPlaceholder
+                        is Artist -> artistPlaceholder
+                    }
+
+                    val color =
+                        placeholderColors[abs(entry.colorSeed()) % placeholderColors.size]
+
                     with(placeholderIcon) {
-                        draw(size = Size(cellSize.toFloat(), cellSize.toFloat()))
+                        translate(
+                            left = x + imgOffsetX,
+                            top = y + imgOffsetY,
+                        ) {
+                            draw(
+                                size = Size(cellSize.toFloat(), cellSize.toFloat()),
+                                colorFilter = ColorFilter.tint(color)
+                            )
+                        }
                     }
                 }
 
@@ -459,12 +476,12 @@ class CollageGeneratorVM : ViewModel() {
         username: String?,
         textMeasurer: TextMeasurer,
         appIcon: Painter,
-        userIcon: VectorPainter,
+        userIcon: Painter,
     ): ImageBitmap {
 
-        val artistsStr = "🎙️ " + getString(Res.string.top_artists)
-        val albumsStr = "💿️ " + getString(Res.string.top_albums)
-        val tracksStr = "🎵️ " + getString(Res.string.top_tracks)
+        val artistsStr = getString(Res.string.top_artists)
+        val albumsStr = getString(Res.string.top_albums)
+        val tracksStr = getString(Res.string.top_tracks)
 
         val collageTypeString = when (type) {
             Stuff.TYPE_ARTISTS -> artistsStr

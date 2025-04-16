@@ -454,8 +454,16 @@ private fun MonthPickerDialog(
         remember {
             monthPickerYears(allowedRange.first, allowedRange.second, yearFormatter)
         }
-    val monthsMap = remember {
-        monthPickerMonths(selectedYear, allowedRange.first, allowedRange.second, monthFormatter)
+    val monthsMap = remember(selectedYear) {
+        monthPickerMonths(
+            selectedYear,
+            allowedRange.first,
+            allowedRange.second,
+            monthFormatter
+        ).also {
+            if (selectedMonth !in it.keys)
+                selectedMonth = Calendar.JANUARY
+        }
     }
 
     BasicAlertDialog(onDismissRequest = onDismissRequest) {

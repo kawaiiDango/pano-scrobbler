@@ -253,6 +253,13 @@
 -keep class com.sun.scenario.effect.** { *; }
 -keep class javafx.css.** { *; }
 -keep class javafx.scene.** { *; }
+-keep class com.jogamp.** { *; }
+
+# Suppress warnings from the Newt JavaFX classes
+-dontwarn com.jogamp.newt.javafx.**
+
+# Suppress warnings from the io.ktor network sockets classes
+-dontwarn io.ktor.network.sockets.**
 
 # PanoNativeComponents
 -keep class com.arn.scrobble.PanoNativeComponents { *; }

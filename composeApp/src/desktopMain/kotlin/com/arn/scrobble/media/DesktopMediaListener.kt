@@ -218,8 +218,10 @@ class DesktopMediaListener(
 
         val sessionTracker =
             sessionTrackersMap[playbackInfo.app_id] ?: return
+
+        val options = TransformMetadataOptions()
         val (commonPlaybackInfo, ignoreScrobble) =
-            transformPlaybackState(sessionTracker.trackInfo, playbackInfo)
+            transformPlaybackState(sessionTracker.trackInfo, playbackInfo, options)
         sessionTracker.playbackStateChanged(commonPlaybackInfo, ignoreScrobble)
     }
 }

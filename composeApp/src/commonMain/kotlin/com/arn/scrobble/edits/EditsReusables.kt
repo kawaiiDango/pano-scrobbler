@@ -1,6 +1,7 @@
 package com.arn.scrobble.edits
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Close
@@ -50,9 +51,10 @@ fun AppItemChip(
         },
         label = {
             Text(
-                text = appListItem.label,
+                text = appListItem.label.ifEmpty { appListItem.appId },
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.widthIn(max = 150.dp)
             )
         },
         avatar = {

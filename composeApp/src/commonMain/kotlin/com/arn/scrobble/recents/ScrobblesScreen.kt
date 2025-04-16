@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Casino
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.rounded.ArrowDropDown
@@ -425,6 +426,9 @@ private fun ScrobblesTypeSelector(
         FilterChip(
             label = {
                 Text(text = stringResource(Res.string.random_text))
+            },
+            leadingIcon = {
+                Icon(Icons.Outlined.Casino, contentDescription = null)
             },
             selected = selectedType == ScrobblesType.RANDOM,
             onClick = { onTypeSelected(ScrobblesType.RANDOM, null) },

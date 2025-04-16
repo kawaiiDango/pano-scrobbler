@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,7 +69,6 @@ import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.format
 import com.kennycason.kumo.WordCloud
 import com.kennycason.kumo.WordFrequency
 import com.kennycason.kumo.bg.CircleBackground
@@ -474,7 +474,12 @@ private fun ListeningActivityContent(
                         ),
                         yAxisTitle = stringResource(Res.string.scrobbles),
                         yAxisLabels = { it.toInt().toString() },
-                        xAxisLabels = { it.take(2) },
+                        xAxisLabels = {
+                            if (it[0] == '\'') // this is the shortened year
+                                it
+                            else
+                                it.take(2)
+                        },
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
@@ -485,7 +490,7 @@ private fun ListeningActivityContent(
                                 val currentYValue = yValues[it]
                                 val density = LocalDensity.current
                                 val fontSizeDp = with(density) {
-                                    MaterialTheme.typography.titleSmallEmphasized.fontSize.toDp()
+                                    MaterialTheme.typography.labelSmall.fontSize.toDp()
                                 }
 
                                 DefaultVerticalBar(
@@ -499,9 +504,12 @@ private fun ListeningActivityContent(
                                 )
 
                                 Text(
-                                    currentYValue.toInt().format(),
-                                    style = MaterialTheme.typography.titleSmallEmphasized,
+                                    currentYValue.toInt().toString(),
+                                    style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.secondary,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    overflow = TextOverflow.Visible,
                                     modifier = Modifier.align(Alignment.TopCenter)
                                         .offset(y = -fontSizeDp * 2)
                                         .background(

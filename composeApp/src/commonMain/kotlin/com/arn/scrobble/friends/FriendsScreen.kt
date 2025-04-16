@@ -56,9 +56,6 @@ import coil3.compose.AsyncImage
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.icons.AlbumFilled
-import com.arn.scrobble.icons.EqualizerFilled
-import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoRoute
@@ -606,8 +603,8 @@ private fun FriendItem(
                             )
                         }
                     },
-                    fallback = rememberTintedVectorPainter(PanoIcons.EqualizerFilled, track),
-                    error = rememberTintedVectorPainter(PanoIcons.AlbumFilled, track),
+                    fallback = rememberTintedVectorPainter(null),
+                    error = rememberTintedVectorPainter(track),
                     placeholder = placeholderPainter(),
                     contentDescription = stringResource(Res.string.album_art),
                     modifier = imageModifier

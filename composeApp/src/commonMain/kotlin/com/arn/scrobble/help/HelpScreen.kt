@@ -97,7 +97,7 @@ fun HelpScreen(
 
     FilePicker(
         show = filePickerShown,
-        mode = FilePickerMode.Save("pano_scrobbler"),
+        mode = FilePickerMode.Save("pano_scrobbler_logs"),
         type = FileType.LOG,
         onDismiss = { filePickerShown = false },
     ) { platformFile ->

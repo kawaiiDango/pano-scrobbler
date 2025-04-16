@@ -32,6 +32,7 @@ firebase-bom = "33.12.0"
 github-release = "2.5.2"
 google-services = "4.4.2"
 harmony = "1.2.6"
+hot-reload = "1.0.0-alpha05"
 immutable = "0.3.8"
 javafx = "23.0.1"
 javafxPlugin = "0.1.0"
@@ -133,7 +134,7 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 room = { id = "androidx.room", version.ref = "room" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
-#javafx = { id = "org.openjfx.javafxplugin", version.ref = "javafxPlugin" }
+hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "hot-reload" }
 
 [bundles]
 

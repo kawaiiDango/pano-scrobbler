@@ -78,7 +78,7 @@
     <string name="artist_image">Artist image</string>
     <string name="parse_error"
         comment="Title parsing error for Youtube etc"
-        >Couldn\'t parse title</string>
+        >Couldn't parse title</string>
     <string name="network_error">Network error</string>
     <string name="disable_tls_verify">Ignore TLS errors</string>
     <string name="scrobble_ignored"
@@ -141,7 +141,7 @@
     <string name="apps"
         comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps"
         >Apps</string>
-    <string name="offline">Offline. Data shown isn\'t fresh</string>
+    <string name="offline">Offline. Data shown isn't fresh</string>
     <string name="unavailable_offline">Not available when offline</string>
     <string name="tv_url_notice">Open this URL in a browser on another device</string>
     <string name="scrobble_services"
@@ -352,7 +352,7 @@
         >Not enough data</string>
     <string name="random"
         comment="Displays a random scrobble or a loved track of the user"
-        >I\'m feeling lucky</string>
+        >I'm feeling lucky</string>
     <string name="random_not_found">No track found</string>
     <string name="loved_track">Loved track</string>
     <string name="randomize"
@@ -378,8 +378,8 @@
     <string name="taggings"
         comment="(total count of) a particular tag"
         >Taggings</string>
-    <string name="digest_weekly">My last week\'s top scrobbles</string>
-    <string name="digest_monthly">My last month\'s top scrobbles</string>
+    <string name="digest_weekly">My last week's top scrobbles</string>
+    <string name="digest_monthly">My last month's top scrobbles</string>
     <string name="s_top_scrobbles" formatted="true"
         comment="%1= the word weekly or monthly"
         >%1$s top scrobbles</string>
@@ -392,7 +392,7 @@
     <string name="user_tags_hint"
         comment="To add a new tag"
         >New tag</string>
-    <string name="user_tags_empty">You haven\'t added any tags</string>
+    <string name="user_tags_empty">You haven't added any tags</string>
 
     <string name="appwidget_loading">Loading…</string>
     <string name="appwidget_period"
@@ -563,7 +563,6 @@
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile</string>
     <string name="pref_master_qs_add">Add the quick settings tile</string>
     <string name="pref_master_qs_already_addded">Quick settings tile is already added</string>
-    <string name="pref_noti_q">You may promote the notification, if the icon doesn\'t show up</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_noti_categories">Notification categories</string>
     <string name="pref_scrobble_noti">Scrobble notifications</string>
@@ -675,7 +674,7 @@
         >Download</string>
     <string name="changelog">Changelog</string>
 
-    <string name="import_hey_wtf">That\'s probably not a Pano Scrobbler export file</string>
+    <string name="import_hey_wtf">That's probably not a Pano Scrobbler export file</string>
     <string name="export_failed">Export failed</string>
     <string name="imported">Imported</string>
     <string name="import_options">Import options</string>

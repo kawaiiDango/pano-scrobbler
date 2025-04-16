@@ -74,6 +74,7 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.icons.AlbumFilled
 import com.arn.scrobble.icons.EqualizerFilled
+import com.arn.scrobble.icons.MicFilled
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.icons.StonksNew
 import com.arn.scrobble.imageloader.MusicEntryImageReq
@@ -153,8 +154,8 @@ fun MusicEntryListItem(
                                 entry,
                                 fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                             ),
-                        fallback = rememberTintedVectorPainter(PanoIcons.EqualizerFilled, entry),
-                        error = rememberTintedVectorPainter(PanoIcons.AlbumFilled, entry),
+                        fallback = rememberTintedVectorPainter(null),
+                        error = rememberTintedVectorPainter(entry),
                         placeholder = placeholderPainter(),
                         contentDescription = stringResource(Res.string.album_art),
                         modifier = Modifier
@@ -271,7 +272,7 @@ fun MusicEntryListItem(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (entry is Track && entry.isNowPlaying == true) {
+                        if (entry is Track && entry.isNowPlaying) {
                             Icon(
                                 imageVector = Icons.Rounded.PlayArrow,
                                 contentDescription = stringResource(Res.string.time_just_now),
@@ -351,8 +352,8 @@ fun MusicEntryGridItem(
                     entry,
                     fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                 ),
-            fallback = rememberTintedVectorPainter(PanoIcons.EqualizerFilled, entry),
-            error = rememberTintedVectorPainter(PanoIcons.AlbumFilled, entry),
+            fallback = rememberTintedVectorPainter(null),
+            error = rememberTintedVectorPainter(entry),
             placeholder = placeholderPainter(),
             contentDescription = stringResource(Res.string.album_art),
             modifier = Modifier
@@ -926,22 +927,35 @@ fun stonksIconForDelta(delta: Int?) = when {
     else -> null
 }
 
+fun MusicEntry?.colorSeed(): Int {
+    val str = when (this) {
+        is Track -> artist.name + album?.name + name
+        is Album -> artist?.name + name
+        is Artist -> name
+        else -> null
+    }
+
+    return str.hashCode()
+}
+
 @Composable
 fun rememberTintedVectorPainter(
-    imageVector: ImageVector,
     musicEntry: MusicEntry?,
+    imageVector: ImageVector = when (musicEntry) {
+        is Artist -> PanoIcons.MicFilled
+        is Album -> PanoIcons.AlbumFilled
+        is Track -> if (musicEntry.album != null)
+            PanoIcons.AlbumFilled
+        else
+            PanoIcons.EqualizerFilled
+
+        else -> PanoIcons.EqualizerFilled
+    },
 ): VectorPainter {
 
     val colors = LocalThemeAttributes.current.allSecondaryContainerColors
 
-    val colorSeed = when (musicEntry) {
-        is Track -> musicEntry.artist.name + musicEntry.album?.name + musicEntry.name
-        is Album -> musicEntry.artist?.name + musicEntry.name
-        is Artist -> musicEntry.name
-        else -> null
-    }
-
-    val color = colors[abs(colorSeed.hashCode()) % colors.size]
+    val color = colors[abs(musicEntry.colorSeed()) % colors.size]
 
     return rememberVectorPainter(
         defaultWidth = imageVector.defaultWidth,

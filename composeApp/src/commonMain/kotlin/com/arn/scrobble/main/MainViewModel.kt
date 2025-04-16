@@ -214,7 +214,7 @@ class MainViewModel : ViewModel() {
 
     // from activity
     private fun checkForUpdates() {
-        if (!Stuff.isLoggedIn() || !PlatformStuff.isNonPlayBuild)
+        if (!PlatformStuff.isNonPlayBuild)
             return
 
         viewModelScope.launch(Dispatchers.IO) {

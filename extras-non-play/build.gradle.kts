@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("java-library")
     alias(libs.plugins.jetbrains.kotlin.jvm)
@@ -5,13 +7,13 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_23
-    targetCompatibility = JavaVersion.VERSION_23
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_23
+        jvmTarget = JvmTarget.JVM_21
     }
 }
 

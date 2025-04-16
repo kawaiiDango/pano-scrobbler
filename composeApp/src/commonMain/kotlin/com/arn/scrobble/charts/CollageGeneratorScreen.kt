@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,7 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.LocalPlatformContext
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.icons.AlbumFilled
+import com.arn.scrobble.icons.EqualizerFilled
+import com.arn.scrobble.icons.MicFilled
+import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.ErrorText
@@ -73,6 +79,15 @@ import pano_scrobbler.composeapp.generated.resources.username
 import pano_scrobbler.composeapp.generated.resources.vd_launcher_fg
 import java.util.Calendar
 
+data class IconPaintersForCollage(
+    val app: Painter,
+    val user: Painter,
+    val artist: Painter,
+    val album: Painter,
+    val track: Painter,
+    val colors: List<Color>
+)
+
 @Composable
 private fun CollageGeneratorContent(
     viewModel: CollageGeneratorVM = viewModel { CollageGeneratorVM() },
@@ -91,9 +106,14 @@ private fun CollageGeneratorContent(
     var shareCollageClicked by remember { mutableStateOf(false) }
     var saveCollageClicked by remember { mutableStateOf(false) }
     var showSavedMessage by remember { mutableStateOf(false) }
-    val appIcon = painterResource(Res.drawable.vd_launcher_fg)
-    val userIcon = rememberVectorPainter(Icons.Outlined.Person)
-    val placeholderIcon = rememberVectorPainter(Icons.Outlined.GraphicEq)
+    val iconPainters = IconPaintersForCollage(
+        app = painterResource(Res.drawable.vd_launcher_fg),
+        user = rememberVectorPainter(Icons.Outlined.Person),
+        artist = rememberVectorPainter(PanoIcons.MicFilled),
+        album = rememberVectorPainter(PanoIcons.AlbumFilled),
+        track = rememberVectorPainter(PanoIcons.EqualizerFilled),
+        colors = LocalThemeAttributes.current.allSecondaryContainerColors
+    )
     val context = LocalPlatformContext.current
     val shareEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop
 
@@ -128,9 +148,7 @@ private fun CollageGeneratorContent(
             timePeriod = timePeriod,
             skipMissing = collageSkipMissing,
             textMeasurer = textMeasurer,
-            appIcon = appIcon,
-            userIcon = userIcon,
-            placeholderIcon = placeholderIcon,
+            iconPainters = iconPainters,
         )
     }
 

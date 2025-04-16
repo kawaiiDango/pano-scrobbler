@@ -277,7 +277,10 @@ class SessListener(
 
             Logger.i { "onPlaybackStateChanged=$playingState laststate=${sessionTracker.lastPlaybackState} pos=$pos cb=${this@ControllerCallback.hashCode()} sl=${this@SessListener.hashCode()}" }
 
-            val (playbackInfo, ignoreScrobble) = transformPlaybackState(trackInfo, state)
+            val options = TransformMetadataOptions(
+                scrobbleSpotifyRemote = scrobbleSpotifyRemote.value
+            )
+            val (playbackInfo, ignoreScrobble) = transformPlaybackState(trackInfo, state, options)
 
             sessionTracker.playbackStateChanged(playbackInfo, ignoreScrobble)
         }

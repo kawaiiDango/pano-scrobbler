@@ -9,6 +9,7 @@ actual typealias PlatformPlaybackInfo = PlaybackState
 actual fun transformPlaybackState(
     trackInfo: PlayingTrackInfo,
     playbackInfo: PlatformPlaybackInfo,
+    options: TransformMetadataOptions
 ): Pair<PlaybackInfo, Boolean> {
     val commonPlaybackState = when (playbackInfo.state) {
         PlaybackState.STATE_NONE -> CommonPlaybackState.None
@@ -31,8 +32,7 @@ actual fun transformPlaybackState(
     var ignoreScrobble = false
 
     // do not scrobble spotify remote playback
-    // todo read the prefs properly
-    if (!Stuff.mainPrefsInitialValue.scrobbleSpotifyRemote &&
+    if (!options.scrobbleSpotifyRemote &&
         trackInfo.appId == Stuff.PACKAGE_SPOTIFY
         && playbackInfo.extras?.getBoolean("com.spotify.music.extra.ACTIVE_PLAYBACK_LOCAL") == false
     ) {

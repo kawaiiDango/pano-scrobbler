@@ -23,7 +23,7 @@ fun BillingTroubleshootScreen(
         modifier = modifier
     ) {
         val text = if (PlatformStuff.isNonPlayBuild) {
-            stringResource(Res.string.billing_troubleshoot_github, 6, "February 2025")
+            stringResource(Res.string.billing_troubleshoot_github, 6, "June 2025")
         } else {
             stringResource(Res.string.billing_troubleshoot)
         }

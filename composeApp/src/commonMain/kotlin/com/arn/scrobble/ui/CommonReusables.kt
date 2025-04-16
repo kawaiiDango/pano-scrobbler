@@ -725,15 +725,22 @@ fun horizontalOverscanPadding(): Dp {
 
 @Composable
 fun verticalOverscanPadding(): Dp {
-    val navigationType = LocalNavigationType.current
-    return when (navigationType) {
-        PanoNavigationType.BOTTOM_NAVIGATION,
-        PanoNavigationType.NAVIGATION_RAIL,
-            -> if (PlatformStuff.isDesktop) 27.dp
-        else 0.dp
+    return if (PlatformStuff.isTv)
+        27.dp
+    else
+        0.dp
 
-        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 27.dp
-    }
+//    val navigationType = LocalNavigationType.current
+//    return when (navigationType) {
+//        PanoNavigationType.BOTTOM_NAVIGATION,
+//        PanoNavigationType.NAVIGATION_RAIL,
+//            ->if (PlatformStuff.isTv)
+//        27.dp
+//    else
+//        0.dp
+//
+//        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 27.dp
+//    }
 }
 
 @Composable

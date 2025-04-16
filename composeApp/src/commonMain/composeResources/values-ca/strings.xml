@@ -242,7 +242,6 @@
     <string name="username" comment="last.fm Username">Nom d\'usuari</string>
     <string name="pref_master">Fes scrobble</string>
     <string name="pref_master_qs_hint">També es pot ajustar des de la configuració ràpida</string>
-    <string name="pref_noti_q">Pots prioritzar la notificació, si la icona no apareix</string>
     <string name="pref_noti">Notificacions</string>
     <string name="pref_noti_categories">Categories de notificació</string>
     <string name="pref_scrobble_noti">Notificacions d\'scrobbles</string>

@@ -335,7 +335,6 @@
     <string name="pref_master_qs_hint">Može se omogućiti i u brzim postavkama</string>
     <string name="pref_master_qs_add">Dodaj pločicu brzih postavki</string>
     <string name="pref_master_qs_already_addded">Pločica brzih postavki već je dodana</string>
-    <string name="pref_noti_q">Možete promovirati obavijest, ako se ikona ne prikazuje</string>
     <string name="pref_noti">Obavijesti</string>
     <string name="pref_noti_categories">Kategorije obavijesti</string>
     <string name="pref_scrobble_noti">Obavijesti scrobbleanja</string>

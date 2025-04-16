@@ -319,7 +319,6 @@
     <string name="pref_master_qs_hint">Può essere attivato anche dalla barra di stato</string>
     <string name="pref_master_qs_add">Aggiungi il tile impostazioni rapide</string>
     <string name="pref_master_qs_already_addded">Tile impostazioni rapide già aggiunto</string>
-    <string name="pref_noti_q">Puoi dare priorità alla notifica in caso l\'icona non si vedesse</string>
     <string name="pref_noti">Notifiche</string>
     <string name="pref_noti_categories">Categorie di notifiche</string>
     <string name="pref_scrobble_noti">Notifiche di scrobbling</string>

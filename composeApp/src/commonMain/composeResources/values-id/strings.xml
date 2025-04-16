@@ -302,7 +302,6 @@
     <string name="pref_master_qs_hint">Dapat juga diubah dari ubin pengaturan cepat</string>
     <string name="pref_master_qs_add">Tambahkan ubin pengaturan cepat</string>
     <string name="pref_master_qs_already_addded">Ubin pengaturan cepat sudah ditambahkan</string>
-    <string name="pref_noti_q">Anda dapat mempromosikan notifikasi, jika ikon tidak muncul</string>
     <string name="pref_noti">Notifikasi</string>
     <string name="pref_noti_categories">Kategori notifikasi</string>
     <string name="pref_scrobble_noti">Notifikasi scrobble</string>

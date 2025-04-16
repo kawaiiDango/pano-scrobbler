@@ -303,7 +303,6 @@
     <string name="pref_master_qs_hint">Kan ook via de snelle instellingen tegel worden aangezet.</string>
     <string name="pref_master_qs_add">Voeg tegel snelle instellingen toe</string>
     <string name="pref_master_qs_already_addded">Tegel snelle instellingen is al toegevoegd</string>
-    <string name="pref_noti_q">Je kunt de melding promoten, als het pictogram niet wordt weergegeven</string>
     <string name="pref_noti">Meldingen</string>
     <string name="pref_noti_categories">Meldingscategorieën</string>
     <string name="pref_scrobble_noti">Scrobble meldingen</string>

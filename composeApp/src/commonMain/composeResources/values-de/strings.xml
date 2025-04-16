@@ -314,7 +314,6 @@
     <string name="pref_master_qs_hint">Kann auch von den Schnelleinstellungen umgeschaltet werden</string>
     <string name="pref_master_qs_add">Schnelleinstellungs-Kachel hinzufügen</string>
     <string name="pref_master_qs_already_addded">Schnelleinstellungs-Kachel ist bereits hinzugefügt</string>
-    <string name="pref_noti_q">Wenn das Symbol nicht angezeigt wird, können Sie die Benachrichtigung höherstufen</string>
     <string name="pref_noti">Benachrichtigungen</string>
     <string name="pref_noti_categories">Benachrichtigungskategorien</string>
     <string name="pref_scrobble_noti">Benachrichtigungen scrobbeln</string>

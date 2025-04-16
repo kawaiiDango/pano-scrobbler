@@ -275,7 +275,6 @@
     <string name="pref_master_qs_hint">Μπορεί επίσης να ρυθμιστεί από το πλακίδιο γρήγορων ρυθμίσεων</string>
     <string name="pref_master_qs_add">Προσθέστε το πλακίδιο Γρήγορων Ρυθμίσεων</string>
     <string name="pref_master_qs_already_addded">Το πλακίδιο Γρήγορων Ρυθμίσεων έχει ήδη προστεθεί</string>
-    <string name="pref_noti_q">Μπορείτε να προωθήσετε την ειδοποίηση, αν το εικονίδιο δεν εμφανίζεται</string>
     <string name="pref_noti">Ειδοποιήσεις</string>
     <string name="pref_noti_categories">Κατηγορίες ειδοποιήσεων</string>
     <string name="pref_scrobble_noti">Ειδοποιήσεις scrobble</string>

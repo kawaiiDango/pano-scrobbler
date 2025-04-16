@@ -351,7 +351,6 @@
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
     <string name="pref_master_qs_add">Добавить плитку быстрых настроек</string>
     <string name="pref_master_qs_already_addded">Плитка быстрых настроек уже добавлена</string>
-    <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
     <string name="pref_noti">Уведомления</string>
     <string name="pref_noti_categories">Категории уведомлений</string>
     <string name="pref_scrobble_noti">Уведомления скробблинга</string>

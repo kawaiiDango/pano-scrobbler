@@ -318,7 +318,6 @@
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das configurações rápidas</string>
     <string name="pref_master_qs_add">Adicionar o bloco de configurações rápidas</string>
     <string name="pref_master_qs_already_addded">O bloco de configurações rápidas já existe</string>
-    <string name="pref_noti_q">Você pode promover a notificação, caso o ícone não apareça</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_noti_categories">Categorias de notificação</string>
     <string name="pref_scrobble_noti">Notificações de scrobbles</string>

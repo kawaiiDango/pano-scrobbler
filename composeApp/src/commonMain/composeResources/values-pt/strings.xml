@@ -318,7 +318,6 @@
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das definições rápidas</string>
     <string name="pref_master_qs_add">Adicionar botão de definições rápidas</string>
     <string name="pref_master_qs_already_addded">O botão de definições rápidas já foi adicionado</string>
-    <string name="pref_noti_q">Pode incitar a notificação, se o ícone não aparecer</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_noti_categories">Categorias de notificação</string>
     <string name="pref_scrobble_noti">Notificações de scrobble</string>

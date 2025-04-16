@@ -337,7 +337,6 @@
     <string name="pref_master_qs_hint">Może to być również przełączane z kafelka szybkich ustawień</string>
     <string name="pref_master_qs_add">Dodaj kafelek szybkich ustawień</string>
     <string name="pref_master_qs_already_addded">Kafelek szybkich ustawień jest już dodany</string>
-    <string name="pref_noti_q">Możesz edytować powiadomienia, jeśli ikona się nie wyświetla</string>
     <string name="pref_noti">Powiadomienia</string>
     <string name="pref_noti_categories">Kategorie powiadomień</string>
     <string name="pref_scrobble_noti">Powiadomienia o scrobblach</string>

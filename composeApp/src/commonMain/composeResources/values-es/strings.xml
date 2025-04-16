@@ -319,7 +319,6 @@
     <string name="pref_master_qs_hint">También se puede cambiar desde el panel de ajustes rápidos</string>
     <string name="pref_master_qs_add">Añadir el ajuste rápido</string>
     <string name="pref_master_qs_already_addded">Ya se han añadido ajustes rápidos</string>
-    <string name="pref_noti_q">Puedes promover la notificación, si el icono no se muestra</string>
     <string name="pref_noti">Notificaciones</string>
     <string name="pref_noti_categories">Categorías de notificaciones</string>
     <string name="pref_scrobble_noti">Notificaciones de Scrobble</string>

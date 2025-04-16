@@ -313,7 +313,6 @@
     <string name="pref_master_qs_hint">Ayrıca hızlı ayarlar kutucuğundan da değiştirilebilir</string>
     <string name="pref_master_qs_add">Hızlı ayar karosunu ekle</string>
     <string name="pref_master_qs_already_addded">Hızlı ayar karosu çoktan eklendi</string>
-    <string name="pref_noti_q">Simge görünmüyorsa cihazınızın bildirim ayarlarından ekleyebilirsiniz</string>
     <string name="pref_noti">Bildirimler</string>
     <string name="pref_noti_categories">Bildirim kategorileri</string>
     <string name="pref_scrobble_noti">Skrop bildirimleri</string>

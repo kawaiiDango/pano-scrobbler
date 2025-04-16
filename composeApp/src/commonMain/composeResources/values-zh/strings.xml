@@ -305,7 +305,6 @@
     <string name="pref_master_qs_hint">也可通过快速设置开关触发</string>
     <string name="pref_master_qs_add">添加快速设置开关</string>
     <string name="pref_master_qs_already_addded">已经添加过快速设置开关</string>
-    <string name="pref_noti_q">如果图标不显示，您可以手动提升通知优先级</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知类别</string>
     <string name="pref_scrobble_noti">记录通知</string>

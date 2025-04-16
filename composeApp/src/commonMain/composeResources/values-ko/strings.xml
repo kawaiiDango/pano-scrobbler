@@ -302,7 +302,6 @@
     <string name="pref_master_qs_hint">빠른 설정 타일에서도 전환할 수 있습니다</string>
     <string name="pref_master_qs_add">빠른 설정 타일 추가하기</string>
     <string name="pref_master_qs_already_addded">빠른 설정 타일이 이미 추가되었습니다</string>
-    <string name="pref_noti_q">아이콘이 보이지 않으면 알림을 띄웁니다</string>
     <string name="pref_noti">알림</string>
     <string name="pref_noti_categories">알림 카테고리</string>
     <string name="pref_scrobble_noti">스크로블 알림</string>

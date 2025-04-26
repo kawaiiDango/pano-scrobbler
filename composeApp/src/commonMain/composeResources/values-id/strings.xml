@@ -102,7 +102,6 @@
     <string name="share_sig">(melalui Pano Scrobbler)</string>
     <string name="share">Bagikan</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legendaris</string>
-    <string name="grid_size">Ubah ukuran kisi</string>
     <string name="pinch_to_zoom">Cubit untuk memperbesar</string>
     <string name="more_info">Info lainnya</string>
     <string name="more" comment="More options menu in short">Selengkapnya</string>

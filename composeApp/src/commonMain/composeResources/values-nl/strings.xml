@@ -115,7 +115,6 @@
     <string name="share_sig">(via Pano Scrobbeler)</string>
     <string name="share">Delen</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Rastergrootte wijzigen</string>
     <string name="pinch_to_zoom">Knijpen om te zoomen</string>
     <string name="more_info">Meer informatie</string>
     <string name="more" comment="More options menu in short">Meer</string>

@@ -138,7 +138,6 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share">Поширити</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Умовні позначення</string>
-    <string name="grid_size">Змінити розмір сітки</string>
     <string name="pinch_to_zoom">Щипніть для збільшення</string>
     <string name="more_info">Детальніше</string>
     <string name="more" comment="More options menu in short">Більше</string>

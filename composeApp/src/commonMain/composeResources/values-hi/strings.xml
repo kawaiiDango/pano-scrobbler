@@ -118,7 +118,6 @@
     <string name="share_sig">(Pano Scrobbler के मध्यम से)</string>
     <string name="share">भेजें</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">विवयण</string>
-    <string name="grid_size">ग्रिड का आकार बदलें</string>
     <string name="pinch_to_zoom">बड़ा/छोटा करने के लिए दो अँगुलियों का उपयोग करें</string>
     <string name="more_info">अधिक जानकारी</string>
     <string name="more" comment="More options menu in short">अधिक</string>

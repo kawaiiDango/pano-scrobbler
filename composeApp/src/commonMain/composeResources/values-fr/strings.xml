@@ -118,7 +118,6 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Partager</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Légende</string>
-    <string name="grid_size">Changer la taille de la grille</string>
     <string name="pinch_to_zoom">Pincer pour zoomer</string>
     <string name="more_info">Plus d\'informations</string>
     <string name="more" comment="More options menu in short">Plus</string>

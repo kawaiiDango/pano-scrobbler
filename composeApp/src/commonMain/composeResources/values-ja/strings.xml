@@ -102,7 +102,6 @@
     <string name="share_sig">(Pano Scrobblerより)</string>
     <string name="share">共有</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">アイコン説明</string>
-    <string name="grid_size">グリッドサイズを変更</string>
     <string name="pinch_to_zoom">ピンチ操作で拡大</string>
     <string name="more_info">詳細</string>
     <string name="more" comment="More options menu in short">詳細</string>

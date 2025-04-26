@@ -150,7 +150,6 @@
     <string name="share_sig">(per „Pano Scrobbler“)</string>
     <string name="share">Bendrinti</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Keisti tinklelio dydį</string>
     <string name="pinch_to_zoom">Prispauskite, kad padidinti</string>
     <string name="more_info">Daugiau informacijos</string>
     <string name="more" comment="More options menu in short">Daugiau</string>

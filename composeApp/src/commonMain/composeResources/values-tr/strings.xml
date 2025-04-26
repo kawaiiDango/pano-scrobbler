@@ -117,7 +117,6 @@
     <string name="share_sig">(Pano Scrobbler tarafından)</string>
     <string name="share">Paylaş</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Göstergeler</string>
-    <string name="grid_size">Izgara boyutunu değiştir</string>
     <string name="pinch_to_zoom">İki parmakla yakınlaştırın</string>
     <string name="more_info">Daha fazla bilgi</string>
     <string name="more" comment="More options menu in short">Dahası</string>

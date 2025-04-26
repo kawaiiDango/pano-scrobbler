@@ -40,7 +40,7 @@ object ManualMigrations {
         override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE ${PendingScrobblesDao.tableName} ADD COLUMN event TEXT NOT NULL DEFAULT ''")
             connection.execSQL("UPDATE ${PendingScrobblesDao.tableName} SET event = 'scrobble' WHERE event = ''")
-            
+
             connection.execSQL("ALTER TABLE ${PendingScrobblesDao.tableName} ADD COLUMN packageName TEXT NOT NULL DEFAULT ''")
             connection.execSQL("DROP TABLE IF EXISTS PendingLoves")
 
@@ -61,11 +61,13 @@ object ManualMigrations {
             connection.execSQL(
                 """
         INSERT INTO blockedMetadata_new (_id, track, album, artist, albumArtist, blockPlayerAction)
-        SELECT _id, track, album, artist, albumArtist, '' FROM blockedMetadata
+        SELECT _id, track, album, artist, albumArtist, 'ignore' FROM blockedMetadata
     """.trimIndent()
             )
             connection.execSQL("DROP TABLE blockedMetadata")
             connection.execSQL("ALTER TABLE blockedMetadata_new RENAME TO blockedMetadata")
+
+            connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_blockedMetadata_track_album_artist_albumArtist` ON `blockedMetadata` (`track`, `album`, `artist`, `albumArtist`)")
         }
     }
 

@@ -1,3 +1,7 @@
 - The app has been rewritten from ground up using Compose Multiplatform
+- The option to display a persistent notification on Android 14+ is back for non Play Store builds
+- This may help prevent the system from killing the app in the background on some devices
 - Bug fixes
 - Translation updates by the translators on Crowdin
+
+Consider this release as a beta.

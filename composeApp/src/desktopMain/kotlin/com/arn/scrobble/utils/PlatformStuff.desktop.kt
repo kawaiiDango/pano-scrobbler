@@ -57,6 +57,12 @@ actual object PlatformStuff {
 
     actual val isNonPlayBuild = true
 
+    actual val platformSubstring = when (DesktopStuff.os) {
+        DesktopStuff.Os.Macos -> "macos"
+        DesktopStuff.Os.Windows -> "windows"
+        DesktopStuff.Os.Linux -> "linux"
+    }
+
     actual fun isDkmaNeeded() = false
 
     actual val isTestLab = false

@@ -1,8 +1,10 @@
-package com.arn.scrobble.onboarding
+package com.arn.scrobble.updates
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +20,7 @@ import pano_scrobbler.composeapp.generated.resources.changelog
 private fun ChangelogContent(modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.padding(vertical = 16.dp)
+        modifier = modifier.verticalScroll(rememberScrollState()).padding(vertical = 16.dp)
     ) {
         Text(
             text = stringResource(Res.string.changelog),

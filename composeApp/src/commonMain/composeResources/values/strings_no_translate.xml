@@ -47,7 +47,6 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="date_range" translatable="false">Select date range</string>
 
     <!-- strings for dev only stuff  -->
-    <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
     <string name="force_exception" translatable="false">Force log an exception</string>
     <string name="debug_menu" translatable="false">Shrine maiden's menu</string>
     <string name="listen_along" translatable="false">Listen along</string>

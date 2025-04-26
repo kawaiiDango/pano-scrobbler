@@ -33,6 +33,14 @@ import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.digest_monthly
+import pano_scrobbler.composeapp.generated.resources.digest_weekly
+import pano_scrobbler.composeapp.generated.resources.graph_yearly
+import pano_scrobbler.composeapp.generated.resources.top_albums
+import pano_scrobbler.composeapp.generated.resources.top_artists
+import pano_scrobbler.composeapp.generated.resources.top_tracks
 
 actual object PanoNotifications {
     private val context = AndroidStuff.application
@@ -396,22 +404,20 @@ actual object PanoNotifications {
         val notificationTextList = mutableListOf<String>()
         resultsList.forEach { (type, text) ->
             val title = when (type) {
-                Stuff.TYPE_ARTISTS -> context.getString(R.string.top_artists)
-                Stuff.TYPE_ALBUMS -> context.getString(R.string.top_albums)
-                Stuff.TYPE_TRACKS -> context.getString(R.string.top_tracks)
+                Stuff.TYPE_ARTISTS -> getString(Res.string.top_artists)
+                Stuff.TYPE_ALBUMS -> getString(Res.string.top_albums)
+                Stuff.TYPE_TRACKS -> getString(Res.string.top_tracks)
                 else -> throw IllegalArgumentException("Invalid musicEntry type")
             }
             notificationTextList += "<b>$title:</b>\n$text"
         }
 
-        val notificationTitle = context.getString(
-            when (timePeriod.lastfmPeriod) {
-                LastfmPeriod.WEEK -> R.string.digest_weekly
-                LastfmPeriod.MONTH -> R.string.digest_monthly
-                LastfmPeriod.YEAR -> R.string.graph_yearly
-                else -> throw IllegalArgumentException("Invalid period")
-            }
-        )
+        val notificationTitle = when (timePeriod.lastfmPeriod) {
+            LastfmPeriod.WEEK -> getString(Res.string.digest_weekly)
+            LastfmPeriod.MONTH -> getString(Res.string.digest_monthly)
+            LastfmPeriod.YEAR -> getString(Res.string.graph_yearly)
+            else -> throw IllegalArgumentException("Invalid period")
+        }
 
 
         val notificationText = Html.fromHtml(notificationTextList.joinToString("<br>\n"))

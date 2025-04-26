@@ -58,6 +58,7 @@ import pano_scrobbler.composeapp.generated.resources.num_regex_edits
 import pano_scrobbler.composeapp.generated.resources.num_simple_edits
 import pano_scrobbler.composeapp.generated.resources.pref_about
 import pano_scrobbler.composeapp.generated.resources.pref_auto_detect
+import pano_scrobbler.composeapp.generated.resources.pref_check_updates
 import pano_scrobbler.composeapp.generated.resources.pref_delay
 import pano_scrobbler.composeapp.generated.resources.pref_delay_mins
 import pano_scrobbler.composeapp.generated.resources.pref_delay_per
@@ -72,6 +73,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_lists
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
+import pano_scrobbler.composeapp.generated.resources.pref_native_file_picker
 import pano_scrobbler.composeapp.generated.resources.pref_now_playing
 import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
@@ -91,7 +93,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_translate
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
-import pano_scrobbler.composeapp.generated.resources.pref_native_file_picker
 import java.util.Calendar
 import java.util.Locale
 
@@ -139,6 +140,10 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.submitNowPlaying } }
     val useNativeFilePicker by
     remember { derivedStateOf { mainPrefsData.useNativeFilePicker } }
+    val notiPersistent by
+    remember { derivedStateOf { mainPrefsData.notiPersistent } }
+    val checkForUpdates by
+    remember { derivedStateOf { mainPrefsData.checkForUpdates } }
     val crashReporterEnabled by
     remember { derivedStateOf { mainPrefsData.crashReporterEnabled } }
     val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
@@ -530,6 +535,18 @@ fun PrefsScreen(
             }
         }
 
+        if (PlatformStuff.isNonPlayBuild) {
+            item(MainPrefs::checkForUpdates.name) {
+                SwitchPref(
+                    text = stringResource(Res.string.pref_check_updates),
+                    value = checkForUpdates,
+                    copyToSave = { copy(checkForUpdates = it) }
+                )
+            }
+        }
+
+        prefPersistentNoti(this, notiPersistent)
+
         prefIntents(this)
 
         prefCrashReporter(this, crashReporterEnabled)
@@ -685,6 +702,8 @@ expect fun prefNotifications(listScope: LazyListScope)
 expect fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boolean)
 
 expect fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean)
+
+expect fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean)
 
 expect fun prefChartsWidget(listScope: LazyListScope)
 

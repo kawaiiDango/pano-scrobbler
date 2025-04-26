@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,9 +29,18 @@ fun AppTheme(
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
     val isSystemInDarkTheme = isSystemInDarkTheme()
 
-    val isDark by remember(dayNightMode) {
+    LaunchedEffect(licenseState) {
+        if (licenseState != LicenseState.VALID) {
+            PlatformStuff.mainPrefs.updateData { it.copy(themeDayNight = DayNightMode.DARK) }
+        }
+    }
+
+    val isDark by remember(dayNightMode, licenseState, isSystemInDarkTheme) {
         mutableStateOf(
-            dayNightMode == DayNightMode.DARK || (dayNightMode == DayNightMode.SYSTEM && isSystemInDarkTheme)
+            if (licenseState != LicenseState.VALID)
+                true
+            else
+                dayNightMode == DayNightMode.DARK || (dayNightMode == DayNightMode.SYSTEM && isSystemInDarkTheme)
         )
     }
 

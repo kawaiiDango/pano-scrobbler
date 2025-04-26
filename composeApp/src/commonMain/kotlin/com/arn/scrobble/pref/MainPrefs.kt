@@ -90,6 +90,7 @@ data class MainPrefs(
     val digestSeconds: Int? = null,
     val lastReviewPromptTime: Long? = null,
     val lastUpdateCheckTime: Long? = null,
+    val checkForUpdates: Boolean = true,
     val version: Int = 0,
     val hiddenTags: Set<String> = emptySet(),
     val pinnedFriends: List<UserCached> = emptyList(),

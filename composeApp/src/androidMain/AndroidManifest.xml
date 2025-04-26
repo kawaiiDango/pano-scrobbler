@@ -161,9 +161,7 @@
                 android:value="conversations" />
 
         </service>
-        <service
-            android:name=".media.PersistentNotificationService"
-            android:process=":bgScrobbler" />
+
         <service
             android:name=".MasterSwitchQS"
             android:exported="true"

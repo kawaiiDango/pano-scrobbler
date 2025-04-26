@@ -164,6 +164,14 @@ fun PanoAppContent(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.updateAvailability.collectLatest {
+            navController.navigate(
+                PanoRoute.UpdateAvailable(it),
+            )
+        }
+    }
+
     // show changelog if needed
     LaunchedEffect(Unit) {
         delay(2000)

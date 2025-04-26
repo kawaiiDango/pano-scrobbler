@@ -2,6 +2,7 @@ package com.arn.scrobble.navigation
 
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -204,6 +205,11 @@ sealed interface PanoRoute {
 
     @Serializable
     data object Changelog : PanoRoute
+
+    @Serializable
+    data class UpdateAvailable(
+        val githubReleases: GithubReleases,
+    ) : PanoRoute
 
     @Serializable
     data object FixIt : PanoRoute

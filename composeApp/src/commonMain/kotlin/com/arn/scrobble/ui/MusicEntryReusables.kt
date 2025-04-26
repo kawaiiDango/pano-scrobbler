@@ -45,7 +45,6 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Rectangle
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -84,6 +83,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.icons.Nothing
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.icons.RectFilledTranslucent
 import com.arn.scrobble.icons.StonksNew
@@ -1118,7 +1118,7 @@ fun placeholderImageVectorPainter(
         else
             Icons.Rounded.GraphicEq
 
-        else -> Icons.Rounded.Rectangle
+        else -> PanoIcons.Nothing
     },
     scaleFactor: Float = 0.6f,
 ): VectorPainter {

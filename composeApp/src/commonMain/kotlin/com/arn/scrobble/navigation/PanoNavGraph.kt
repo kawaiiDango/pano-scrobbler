@@ -17,6 +17,7 @@ import androidx.navigation.toRoute
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
@@ -40,7 +41,6 @@ import com.arn.scrobble.info.InfoPagerScreen
 import com.arn.scrobble.info.SimilarTracksScreen
 import com.arn.scrobble.main.HomePagerScreen
 import com.arn.scrobble.main.MainViewModel
-import com.arn.scrobble.onboarding.ChangelogScreen
 import com.arn.scrobble.onboarding.FileLoginScreen
 import com.arn.scrobble.onboarding.GnufmLoginScreen
 import com.arn.scrobble.onboarding.ListenBrainzLoginScreen
@@ -66,6 +66,8 @@ import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.addColumnPadding
 import com.arn.scrobble.ui.panoContentPadding
+import com.arn.scrobble.updates.ChangelogScreen
+import com.arn.scrobble.updates.UpdateAvailableScreen
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -744,6 +746,18 @@ fun NavGraphBuilder.panoNavGraph(
 
     dialog<PanoRoute.Changelog> {
         ChangelogScreen(
+            onDismiss = goUp
+        )
+    }
+
+    dialog<PanoRoute.UpdateAvailable>(
+        typeMap = mapOf(
+            typeOf<GithubReleases>() to serializableType<GithubReleases>(),
+        )
+    ) {
+        val arguments = it.toRoute<PanoRoute.UpdateAvailable>()
+        UpdateAvailableScreen(
+            githubReleases = arguments.githubReleases,
             onDismiss = goUp
         )
     }

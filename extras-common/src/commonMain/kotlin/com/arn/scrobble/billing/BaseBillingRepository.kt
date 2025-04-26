@@ -60,7 +60,6 @@ abstract class BaseBillingRepository(
     protected abstract fun verifyPurchase(data: String, signature: String?): Boolean
     abstract fun launchPlayBillingFlow(activity: Any)
 
-    @Synchronized
     protected fun retryBillingConnectionWithExponentialBackoff() {
         if (reconnectCount >= RECONNECT_MAX_TIMES) {
             return

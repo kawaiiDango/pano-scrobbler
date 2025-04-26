@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.DrawerData
+import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.github.GithubReleases
-import com.arn.scrobble.api.github.UpdateChecker
+import com.arn.scrobble.api.github.Github
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
@@ -16,6 +17,7 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
+import com.arn.scrobble.BuildKonfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -171,6 +173,8 @@ class MainViewModel : ViewModel() {
         repository.startDataSourceConnections()
 
         queryPurchasesAsync()
+
+        checkForUpdatesIfNeeded()
     }
 
     fun checkAndStoreLicense(receipt: String) {
@@ -228,16 +232,23 @@ class MainViewModel : ViewModel() {
             .filter { it == id }
             .map { }
 
-    // from activity
-    private fun checkForUpdates() {
+    private fun checkForUpdatesIfNeeded() {
         if (!PlatformStuff.isNonPlayBuild)
             return
 
         viewModelScope.launch(Dispatchers.IO) {
             delay(3000)
+            val checkForUpdates = mainPrefs.data.map { it.checkForUpdates }.first()
+
+            if (!checkForUpdates) {
+                return@launch
+            }
+
             val lastUpdateCheckTime = mainPrefs.data.map { it.lastUpdateCheckTime }.first()
-            UpdateChecker.checkGithubForUpdates(
-                lastUpdateCheckTime = lastUpdateCheckTime,
+            Github.checkForUpdates(
+                client = Requesters.genericKtorClient,
+                currentVersionCode = BuildKonfig.VER_CODE,
+                lastUpdateCheckTime = lastUpdateCheckTime ?: 0,
                 setLastUpdateCheckTime = { time ->
                     mainPrefs.updateData { it.copy(lastUpdateCheckTime = time) }
                 }

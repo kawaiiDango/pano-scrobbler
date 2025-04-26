@@ -87,7 +87,7 @@ private fun init() {
     setAppLocale(Stuff.mainPrefsInitialValue.locale, force = false)
 
     PanoNativeComponents.load()
-    if (DesktopStuff.os == DesktopStuff.Os.LINUX) {
+    if (DesktopStuff.os == DesktopStuff.Os.Linux) {
         // fix for javafx on linux
         PanoNativeComponents.setEnvironmentVariable("GDK_BACKEND", "x11")
     }
@@ -265,7 +265,7 @@ fun main(args: Array<String>) {
         }
 
         // use the AWT tray for macOS instead
-        if (DesktopStuff.os == DesktopStuff.Os.MACOS) {
+        if (DesktopStuff.os == DesktopStuff.Os.Macos) {
             val trayState = rememberTrayState()
 
             LaunchedEffect(Unit) {

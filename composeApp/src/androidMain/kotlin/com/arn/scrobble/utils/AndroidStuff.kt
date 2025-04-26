@@ -28,6 +28,7 @@ import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetPrefsMigration1
 import com.arn.scrobble.pref.WidgetPrefsSerializer
+import com.arn.scrobble.utils.PlatformStuff.isNonPlayBuild
 import com.arn.scrobble.utils.Stuff.SCROBBLER_PROCESS_NAME
 import com.arn.scrobble.utils.Stuff.myJson
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,8 @@ object AndroidStuff {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         else PendingIntent.FLAG_UPDATE_CURRENT
 
+    val canShowPersistentNotiIfEnabled =
+        Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU || isNonPlayBuild
 
 //    @RequiresApi(Build.VERSION_CODES.Q)
 //    @Throws(IOException::class)

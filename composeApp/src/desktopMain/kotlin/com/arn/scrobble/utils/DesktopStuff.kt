@@ -6,7 +6,7 @@ import java.io.File
 
 object DesktopStuff {
     enum class Os {
-        WINDOWS, MACOS, LINUX
+        Windows, Macos, Linux
     }
 
     private lateinit var cmdlineArgs: CmdlineArgs
@@ -32,9 +32,9 @@ object DesktopStuff {
 
     val iconPath: String by lazy {
         val ext = when (os) {
-            Os.WINDOWS -> "ico"
-            Os.LINUX -> "png"
-            Os.MACOS -> "icns"
+            Os.Windows -> "ico"
+            Os.Linux -> "png"
+            Os.Macos -> "icns"
         }
         File(resourcesPath, "app_icon.$ext").absolutePath
     }
@@ -42,11 +42,11 @@ object DesktopStuff {
     val os by lazy {
         val osName = System.getProperty("os.name").lowercase()
         if (osName.contains("windows")) {
-            Os.WINDOWS
+            Os.Windows
         } else if (osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx")) {
-            Os.MACOS
+            Os.Macos
         } else {
-            Os.LINUX
+            Os.Linux
         }
     }
 
@@ -85,12 +85,12 @@ object DesktopStuff {
     fun addOrRemoveFromStartup(add: Boolean) {
         val execPath = execPath ?: return
         when (os) {
-            Os.WINDOWS -> {
+            Os.Windows -> {
                 // windows. add or remove registry key in HKCU\Software\Microsoft\Windows\CurrentVersion\Run
                 PanoNativeComponents.addRemoveStartupWin(execPath, add)
             }
 
-            Os.LINUX -> {
+            Os.Linux -> {
                 // linux. create or delete .desktop file in ~/.config/autostart
 
                 val desktopFile =
@@ -115,7 +115,7 @@ object DesktopStuff {
                 }
             }
 
-            Os.MACOS -> {
+            Os.Macos -> {
                 // will not implement for macos
             }
         }
@@ -123,13 +123,13 @@ object DesktopStuff {
 
     fun isAddedToStartup(): Boolean {
         when (os) {
-            Os.WINDOWS -> {
+            Os.Windows -> {
 
                 val execPath = execPath ?: return false
                 return PanoNativeComponents.isAddedToStartupWin(execPath)
             }
 
-            Os.LINUX -> {
+            Os.Linux -> {
 
                 val desktopFile =
                     File(
@@ -139,7 +139,7 @@ object DesktopStuff {
                 return desktopFile.exists() && desktopFile.readText().contains(execPath ?: "")
             }
 
-            Os.MACOS -> {
+            Os.Macos -> {
                 return false
             }
         }
@@ -147,17 +147,17 @@ object DesktopStuff {
 
     private fun getDefaultDataDir(): String {
         return when (os) {
-            Os.WINDOWS -> {
+            Os.Windows -> {
                 System.getenv("APPDATA")?.ifEmpty { null }
                     ?: System.getProperty("user.home")
             }
 
-            Os.LINUX -> {
+            Os.Linux -> {
                 System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
                     ?: (System.getProperty("user.home") + "/.local/share")
             }
 
-            Os.MACOS -> {
+            Os.Macos -> {
                 System.getProperty("user.home") + "/Library/Application Support"
             }
         }.let {

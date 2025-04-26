@@ -24,8 +24,8 @@ import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.getStringInDeviceLocale
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
+import com.arn.scrobble.utils.getStringInDeviceLocale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -142,12 +142,9 @@ class NLService : NotificationListenerService() {
 
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
         val persistentNoti = mainPrefs.data.map { it.notiPersistent }.first()
-        if (persistentNoti && Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU) {
+        if (persistentNoti && AndroidStuff.canShowPersistentNotiIfEnabled) {
             try {
-                ContextCompat.startForegroundService(
-                    this,
-                    Intent(this, PersistentNotificationService::class.java)
-                )
+                PersistentNotificationService.start()
 //                ForegroundServiceStartNotAllowedException extends IllegalStateException
             } catch (e: IllegalStateException) {
                 Logger.e(e) { "Foreground service start not allowed" }

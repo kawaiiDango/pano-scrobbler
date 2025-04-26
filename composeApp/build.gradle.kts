@@ -21,7 +21,7 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
@@ -158,7 +158,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
-            implementation(projects.extrasNonPlay)
+            implementation(projects.extrasNonplay)
             implementation(libs.androidx.sqlite.bundled)
 
             val platform = when {
@@ -306,8 +306,8 @@ android {
         coreLibraryDesugaring(libs.desugar.jdk.libs)
         releaseImplementation(projects.extrasPlay)
 //    debugImplementation(projects.extrasPlay)
-        debugImplementation(projects.extrasNonPlay)
-        "releaseGithubImplementation"(projects.extrasNonPlay)
+        debugImplementation(projects.extrasNonplay)
+        "releaseGithubImplementation"(projects.extrasNonplay)
 
         androidTestImplementation(libs.androidx.uiautomator)
         androidTestImplementation(libs.androidx.runner)

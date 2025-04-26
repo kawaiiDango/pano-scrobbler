@@ -106,11 +106,13 @@ actual object PlatformStuff {
         uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 
-    actual val supportsDynamicColors = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isTv
+    actual val supportsDynamicColors = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
     actual val isDesktop = false
 
     actual val isNonPlayBuild = ExtrasConsts.isNonPlayBuild
+
+    actual val platformSubstring = "android"
 
     actual fun isDkmaNeeded(): Boolean {
         val packages = Stuff.STARTUPMGR_INTENTS.map { it.first }.toSet()

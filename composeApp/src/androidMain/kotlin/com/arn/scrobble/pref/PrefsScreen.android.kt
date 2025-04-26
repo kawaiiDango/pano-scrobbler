@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.R
 import com.arn.scrobble.media.NLService
+import com.arn.scrobble.media.PersistentNotificationService
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -40,6 +41,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.fix_it_desc
 import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_intents
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
@@ -48,6 +50,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_noti
 import pano_scrobbler.composeapp.generated.resources.pref_widget_charts
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import pano_scrobbler.composeapp.generated.resources.scrobbler_on
+import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 
 actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !PlatformStuff.isTv) {
@@ -204,6 +207,26 @@ actual fun prefNotifications(listScope: LazyListScope) {
                 text = stringResource(Res.string.pref_noti),
                 onClick = {
                     launchNotificationsActivity(context)
+                }
+            )
+        }
+    }
+}
+
+actual fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean) {
+    if (AndroidStuff.canShowPersistentNotiIfEnabled) {
+        listScope.item(MainPrefs::notiPersistent.name) {
+            SwitchPref(
+                text = stringResource(Res.string.show_persistent_noti),
+                summary = stringResource(Res.string.fix_it_desc),
+                value = notiEnabled,
+                copyToSave = {
+                    if (it) {
+                        PersistentNotificationService.start()
+                    } else {
+                        PersistentNotificationService.stop()
+                    }
+                    copy(notiPersistent = it)
                 }
             )
         }

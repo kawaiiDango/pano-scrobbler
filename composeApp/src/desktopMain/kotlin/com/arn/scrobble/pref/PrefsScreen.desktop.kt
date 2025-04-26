@@ -26,6 +26,10 @@ actual fun prefIntents(listScope: LazyListScope) {
     // no-op
 }
 
+actual fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean) {
+    // no-op
+}
+
 actual fun addToStartup(
     listScope: LazyListScope,
     isAdded: Boolean,

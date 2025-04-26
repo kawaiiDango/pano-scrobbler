@@ -35,6 +35,6 @@ dependencyResolutionManagement {
 include(":composeApp")
 include(":extras-play")
 include(":extras-common")
-include(":extras-non-play")
+include(":extras-nonplay")
 include(":androidx-mod:androidx:paging:compose")
 include(":baselineprofile")

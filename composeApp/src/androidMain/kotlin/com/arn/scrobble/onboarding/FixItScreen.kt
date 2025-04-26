@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.media.PersistentNotificationService
 import com.arn.scrobble.ui.BottomSheetDialogParent
@@ -58,9 +57,8 @@ private fun FixItContent(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val showDkmaLayout = remember { !PlatformStuff.isTv }
-    val showNotiPersistent by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
-        !it.notiPersistent && !PlatformStuff.isTv &&
-                Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU
+    val canShowPersistentNoti by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        !it.notiPersistent && AndroidStuff.canShowPersistentNotiIfEnabled
     }
 
     var exitReason: String? by remember { mutableStateOf(null) }
@@ -103,7 +101,7 @@ private fun FixItContent(
             text = stringResource(Res.string.fix_it_desc),
         )
 
-        if (!showDkmaLayout && batteryIntent == null && !showNotiPersistent) {
+        if (!showDkmaLayout && batteryIntent == null && !canShowPersistentNoti) {
             Text(
                 text = stringResource(Res.string.not_found),
                 style = MaterialTheme.typography.titleLarge
@@ -166,7 +164,7 @@ private fun FixItContent(
             }
         }
 
-        if (showNotiPersistent) {
+        if (canShowPersistentNoti) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -183,10 +181,8 @@ private fun FixItContent(
                         scope.launch {
                             PlatformStuff.mainPrefs.updateData { it.copy(notiPersistent = true) }
                         }
-                        ContextCompat.startForegroundService(
-                            context,
-                            Intent(context, PersistentNotificationService::class.java)
-                        )
+
+                        PersistentNotificationService.start()
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {

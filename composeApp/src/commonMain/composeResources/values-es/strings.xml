@@ -118,7 +118,6 @@
     <string name="share_sig">(a través de Pano Scrobbler)</string>
     <string name="share">Compartir</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Leyenda</string>
-    <string name="grid_size">Cambiar el tamaño de la cuadrícula</string>
     <string name="pinch_to_zoom">Pellizcar para ampliar</string>
     <string name="more_info">Más información</string>
     <string name="more" comment="More options menu in short">Ver más</string>

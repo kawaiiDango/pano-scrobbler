@@ -134,7 +134,6 @@
     <string name="share_sig">(pomoću aplikacije Pano Scrobbler)</string>
     <string name="share">Podijeli</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Promijeni veličinu mreže</string>
     <string name="pinch_to_zoom">Zumiranje prstima</string>
     <string name="more_info">Više informacija</string>
     <string name="more" comment="More options menu in short">Više</string>

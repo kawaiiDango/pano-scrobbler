@@ -32,6 +32,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -98,9 +99,9 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
         val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
             throwable.printStackTrace()
-            logTimestampToFile("errored " + throwable.message)
+            logTimestampToFile("errored " + throwable.redactedMessage)
             errorData = Data.Builder()
-                .putString("reason", throwable.message)
+                .putString("reason", throwable.redactedMessage)
                 .build()
         }
 

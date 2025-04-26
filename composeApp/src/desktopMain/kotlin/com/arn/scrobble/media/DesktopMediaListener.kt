@@ -7,11 +7,10 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.isUrlOrDomain
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,18 +32,20 @@ class DesktopMediaListener(
                 Stuff.mainPrefsInitialValue.seenApps.map { it.appId }.toSet()
             )
 
-    init {
+
+    fun start() {
+        val listeningStarted = CompletableDeferred<Unit>()
+
         scope.launch {
-            combine(allowedPackages, seenAppIds, autoDetectApps) { allowed, seen, autoDetect ->
-                Triple(allowed, seen, autoDetect)
-
-            }.collectLatest { (allowed, seen, autoDetect) ->
-
+            listeningStarted.await()
+            allowedPackages.collectLatest { allowed ->
                 val keysToKeep = sessionTrackersMap.keys
                     .filter { shouldScrobble(it.substringBefore('|')) }
                     .toSet()
 
-                val allowedApps = (allowed + seen).filter { shouldScrobble(it) }
+                val allowedApps = allowed.filter { shouldScrobble(it) }
+
+                Logger.d { "allowed: $allowedApps" }
                 PanoNativeComponents.setAllowedAppIds(allowedApps.toTypedArray())
                 removeSessions(keysToKeep)
                 platformActiveSessionsChanged(sessionInfos)
@@ -52,15 +53,16 @@ class DesktopMediaListener(
         }
 
         scope.launch {
-            scrobblerEnabled
-                .debounce(1000)
-                .collectLatest { enabled ->
-                    if (enabled) {
-                        PanoNativeComponents.startListeningMediaInThread()
-                    } else {
-                        PanoNativeComponents.stopListeningMedia()
+            scrobblerEnabled.collectLatest { enabled ->
+                if (enabled) {
+                    PanoNativeComponents.startListeningMediaInThread()
+                    if (!listeningStarted.isCompleted) {
+                        listeningStarted.complete(Unit)
                     }
+                } else {
+                    PanoNativeComponents.stopListeningMedia()
                 }
+            }
         }
     }
 
@@ -71,6 +73,7 @@ class DesktopMediaListener(
             .filter { it.app_id !in seenAppIds.value }
             .map { AppItem(it.app_id, it.app_name) }
             .toSet()
+
         if (unseenAppItems.isNotEmpty()) {
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(seenApps = it.seenApps + unseenAppItems) }
@@ -130,7 +133,7 @@ class DesktopMediaListener(
     }
 
     override fun isMediaPlaying() =
-        sessionTrackersMap.values.any { it.isMediaPlaying() } == true
+        sessionTrackersMap.values.any { it.isMediaPlaying() }
 
     fun findSessionInfoByAppId(appId: String) =
         sessionTrackersMap.keys.find { it.startsWith("$appId|") }
@@ -201,7 +204,7 @@ class DesktopMediaListener(
     }
 
     fun platformMetadataChanged(metadata: MetadataInfo) {
-        Logger.d { "metadata: $metadata" }
+        Logger.i { "metadata: $metadata" }
 
         val sessionTracker =
             sessionTrackersMap[metadata.app_id] ?: return

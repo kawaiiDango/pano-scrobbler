@@ -56,13 +56,13 @@ import pano_scrobbler.composeapp.generated.resources.track
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RegexEditsTestScreen(
-    viewModel: RegexEditsTestVM = viewModel { RegexEditsTestVM() },
     mainViewModel: MainViewModel,
     onNavigateToAppList: () -> Unit,
     onNavigateToRegexEditsAdd: (RegexEdit) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: RegexEditsTestVM = viewModel { RegexEditsTestVM() },
 ) {
-    val regexMatches by viewModel.regexMatches.collectAsStateWithLifecycle()
+    val regexMatches by viewModel.regexResults.collectAsStateWithLifecycle()
     val hasPkgName by viewModel.hasPkgName.collectAsStateWithLifecycle()
     var appItem by remember { mutableStateOf<AppItem?>(null) }
     var track by remember { mutableStateOf("") }
@@ -184,17 +184,17 @@ fun RegexEditsTestScreen(
             )
         }
 
-        AnimatedVisibility(regexMatches?.values?.all { it.isEmpty() } == true) {
+        AnimatedVisibility(regexMatches?.isEdit == false) {
             Text(
                 text = pluralStringResource(Res.plurals.num_matches, 0, 0),
                 color = MaterialTheme.colorScheme.error
             )
         }
 
-        AnimatedVisibility(regexMatches?.values?.all { it.isEmpty() } == false) {
+        AnimatedVisibility(regexMatches?.isEdit == true) {
 
             Column {
-                regexMatches?.forEach { (field, regexEdits) ->
+                regexMatches?.fieldsMatched?.forEach { (field, regexEdits) ->
                     val count = regexEdits.size
                     val countString = if (count > 0) " (${count.format()})" else ""
                     when (field) {
@@ -232,7 +232,7 @@ fun RegexEditsTestScreen(
                     }
                 }
 
-                val matchedRegexEdits = regexMatches?.values?.flatten()?.toSet()
+                val matchedRegexEdits = regexMatches?.fieldsMatched?.values?.flatten()?.toSet()
 
                 FlowRow(
                     modifier = Modifier

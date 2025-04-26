@@ -18,18 +18,19 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 *.log
+*.backup
 /build
 /composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
 /composeApp/src/commonMain/composeResources/files/aboutlibraries.json
 /composeApp/resources/**/*.so
 /composeApp/resources/**/*.dll
 /composeApp/resources/**/*.dylib
-/baselineProfile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt
+/baselineprofile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt
 /psd/renders
 /composeApp/*.json
 /composeApp/src/commonTest/kotlin/com/arn/scrobble/AuthTest.kt
 /composeApp/src/desktopTest/kotlin/com/arn/scrobble/DesktopAuthTests.kt
-/composeApp/release-builds
+/composeApp/dist
 /composeApp/src/release/generated
 /composeApp/src/releaseGithub/generated
 /composeApp/src/androidMain/res/**/strings-np.xml
@@ -39,3 +40,6 @@ crowdin.properties
 Gemfile.lock
 .jekyll-cache
 _site/
+composeApp/src/androidRelease/generated/baselineProfiles
+composeApp/src/androidReleaseGithub/generated/baselineProfiles
+composeApp/appimage-files/appimagetool-*.AppImage

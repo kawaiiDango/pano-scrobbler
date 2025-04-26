@@ -17,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,6 +29,7 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.VerifyButton
+import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
@@ -43,8 +45,8 @@ import pano_scrobbler.composeapp.generated.resources.username
 fun ListenBrainzLoginScreen(
     hasCustomApiRoot: Boolean,
     onDone: () -> Unit,
-    viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
     var token by rememberSaveable { mutableStateOf("") }
     var apiRoot by rememberSaveable { mutableStateOf("https://") }
@@ -120,12 +122,12 @@ fun ListenBrainzLoginScreen(
 @Composable
 fun GnufmLoginScreen(
     onDone: () -> Unit,
-    viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    var apiRoot by rememberSaveable { mutableStateOf("https://") }
+    var apiRoot by rememberSaveable { mutableStateOf("") }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     val doLogin = {
         viewModel.gnufmLogin(apiRoot, username, password)
@@ -133,10 +135,10 @@ fun GnufmLoginScreen(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
+        modifier = modifier.testTagsAsResId()
     ) {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("login_url"),
             singleLine = true,
             value = apiRoot,
             onValueChange = { apiRoot = it },
@@ -148,7 +150,7 @@ fun GnufmLoginScreen(
             )
         )
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("login_username"),
             singleLine = true,
             value = username,
             onValueChange = { username = it },
@@ -160,7 +162,7 @@ fun GnufmLoginScreen(
             )
         )
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("login_password"),
             singleLine = true,
             value = password,
             onValueChange = { password = it },
@@ -188,8 +190,8 @@ fun GnufmLoginScreen(
 @Composable
 fun MalojaLoginScreen(
     onDone: () -> Unit,
-    viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     var token by rememberSaveable { mutableStateOf("") }
@@ -244,8 +246,8 @@ fun MalojaLoginScreen(
 @Composable
 fun PleromaLoginScreen(
     onBackAndThenNavigate: (PanoRoute) -> Unit,
-    viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
     var apiRoot by rememberSaveable { mutableStateOf("https://") }
     val result by viewModel.pleromaCredsResult.collectAsStateWithLifecycle(null)

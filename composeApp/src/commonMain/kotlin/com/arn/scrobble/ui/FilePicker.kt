@@ -4,14 +4,18 @@ import androidx.compose.runtime.Composable
 import com.arn.scrobble.utils.PlatformFile
 
 sealed interface FilePickerMode {
+    sealed interface HasInitialPath {
+        val initialPath: String?
+    }
+
     data class Open(
-        val initialPath: String? = null,
-    ) : FilePickerMode
+        override val initialPath: String? = null,
+    ) : FilePickerMode, HasInitialPath
 
     data class Save(
         val title: String,
-        val initialPath: String? = null,
-    ) : FilePickerMode
+        override val initialPath: String? = null,
+    ) : FilePickerMode, HasInitialPath
 }
 
 enum class FileType {

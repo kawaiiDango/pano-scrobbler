@@ -12,7 +12,7 @@ import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.setAndroidLocale
+import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -87,6 +87,6 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase ?: return)
-        setAndroidLocale()
+        applyAndroidLocaleLegacy()
     }
 }

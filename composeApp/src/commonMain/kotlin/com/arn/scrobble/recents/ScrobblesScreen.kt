@@ -2,27 +2,32 @@ package com.arn.scrobble.recents
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Casino
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,15 +37,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.lastfm.Album
-import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.DatePickerModal
 import com.arn.scrobble.charts.TimePeriodType
@@ -49,15 +52,19 @@ import com.arn.scrobble.charts.getPeriodTypeIcon
 import com.arn.scrobble.charts.getPeriodTypePluralRes
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.expandableSublist
+import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
+import com.arn.scrobble.ui.combineImageVectors
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.timeToLocal
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -70,6 +77,7 @@ import pano_scrobbler.composeapp.generated.resources.not_running
 import pano_scrobbler.composeapp.generated.resources.num_pending
 import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.recents
+import pano_scrobbler.composeapp.generated.resources.retry
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import pano_scrobbler.composeapp.generated.resources.time_jump
 
@@ -80,34 +88,42 @@ private enum class ScrobblesType {
     RANDOM,
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ScrobblesScreen(
     user: UserCached,
     showChips: Boolean,
+    pullToRefreshState: PullToRefreshState,
+    onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
+    pullToRefreshTriggered: Flow<Unit>,
     onNavigate: (PanoRoute) -> Unit,
-    viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
     modifier: Modifier = Modifier,
+    viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {
     val listState = rememberLazyListState()
     var selectedType by rememberSaveable { mutableStateOf(ScrobblesType.RECENTS) }
     var timeJumpMillis by rememberSaveable { mutableStateOf<Long?>(null) }
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
+    val lastRecentsRefreshTime by viewModel.lastRecentsRefreshTime.collectAsStateWithLifecycle()
     val pendingScrobbles by viewModel.pendingScrobbles.collectAsStateWithLifecycle()
-    val pendingLoves by viewModel.pendingLoves.collectAsStateWithLifecycle()
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val scrobblerEnabled by viewModel.scrobblerEnabled.collectAsStateWithLifecycle()
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
-    val isListenBrainz by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType == AccountType.LISTENBRAINZ }
+    val currentAccoutType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
-    var pendingLovesExpanded by rememberSaveable { mutableStateOf(false) }
-    var pendingScrobblesMenuShown by remember { mutableStateOf(false) }
-    var pendingLovesMenuShown by remember { mutableStateOf(false) }
     val pendingScrobblesheader =
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
-    val pendingLovesHeader = stringResource(Res.string.loved) + ": " + pendingLoves.size
+    val canShowTrackFullMenu by remember(selectedType, currentAccoutType) {
+        mutableStateOf(
+            selectedType != ScrobblesType.LOVED && currentAccoutType !in arrayOf(
+                AccountType.FILE,
+                AccountType.MALOJA,
+                AccountType.PLEROMA,
+            )
+        )
+    }
 
     fun onTrackClick(track: Track, pkgName: String?) {
         onNavigate(PanoRoute.MusicEntryInfo(user = user, track = track, pkgName = pkgName))
@@ -147,15 +163,45 @@ fun ScrobblesScreen(
         }
     }
 
+    LifecycleResumeEffect(tracks.loadState.refresh) {
+        onSetRefreshing(
+            if (tracks.loadState.refresh is LoadState.Loading) {
+                PanoPullToRefreshStateForTab.Refreshing
+            } else {
+                PanoPullToRefreshStateForTab.NotRefreshing
+            }
+        )
+
+        onPauseOrDispose {
+            onSetRefreshing(PanoPullToRefreshStateForTab.Disabled)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        pullToRefreshTriggered.collect {
+            if (tracks.loadState.refresh is LoadState.NotLoading) {
+                tracks.refresh()
+            }
+        }
+    }
+
+    AutoRefreshEffect(
+        lastRefreshTime = lastRecentsRefreshTime,
+        interval = Stuff.RECENTS_REFRESH_INTERVAL,
+        shouldRefresh = {
+            selectedType == ScrobblesType.RECENTS && listState.firstVisibleItemIndex < 4
+        },
+        lazyPagingItems = tracks,
+    )
+
     PanoPullToRefresh(
         isRefreshing = tracks.loadState.refresh is LoadState.Loading,
-        onRefresh = { tracks.refresh() },
+        state = pullToRefreshState,
     ) {
         EmptyText(
             visible = tracks.loadState.refresh is LoadState.NotLoading &&
                     tracks.itemCount == 0 &&
-                    pendingScrobbles.isEmpty() &&
-                    pendingLoves.isEmpty(),
+                    pendingScrobbles.isEmpty(),
             text = stringResource(Res.string.no_scrobbles)
         )
 
@@ -191,6 +237,11 @@ fun ScrobblesScreen(
                                     timeJumpMillis = _timeJumpMillis
                                     selectedType = type
                                 }
+                            }
+                        },
+                        onRefresh = {
+                            if (tracks.loadState.refresh is LoadState.NotLoading) {
+                                tracks.refresh()
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -239,69 +290,26 @@ fun ScrobblesScreen(
                 }
             }
 
-            expandableSublist(
-                headerText = pendingScrobblesheader,
-                headerIcon = Icons.Outlined.HourglassEmpty,
-                items = pendingScrobbles,
-                transformToMusicEntry = {
-                    Track(
-                        name = it.track,
-                        artist = Artist(it.artist),
-                        album = it.album.ifEmpty { null }?.let { Album(it) },
-                        date = it.timestamp,
-                        duration = it.duration,
-                    )
-                },
-                expanded = pendingScrobblesExpanded,
-                onToggle = {
-                    pendingScrobblesExpanded = it
-                },
-                onItemClick = {
-                    onTrackClick(it as Track, null)
-                },
-                onMenuClick = {
-                    pendingScrobblesMenuShown = true
-                },
-                menuContent = {
-                    PendingDropdownMenu(
-                        pending = it,
-                        expanded = pendingScrobblesMenuShown,
-                        onDismissRequest = { pendingScrobblesMenuShown = false }
-                    )
-                },
-            )
+            if (selectedType == ScrobblesType.RECENTS) {
+                pendingScrobblesListItems(
+                    headerText = pendingScrobblesheader,
+                    headerIcon = Icons.Outlined.HourglassEmpty,
+                    items = pendingScrobbles,
+                    expanded = pendingScrobblesExpanded,
+                    onToggle = {
+                        pendingScrobblesExpanded = it
+                    },
+                    onItemClick = {
+                        onTrackClick(it as Track, null)
+                    },
+                )
 
-            expandableSublist(
-                headerText = pendingLovesHeader,
-                headerIcon = Icons.Outlined.HourglassEmpty,
-                items = pendingLoves,
-                transformToMusicEntry = {
-                    Track(
-                        name = it.track,
-                        artist = Artist(it.artist),
-                        album = null,
-                        userloved = it.shouldLove,
-                        userHated = !it.shouldLove,
-                    )
-                },
-                expanded = pendingLovesExpanded,
-                onToggle = {
-                    pendingLovesExpanded = it
-                },
-                onItemClick = {
-                    onTrackClick(it as Track, null)
-                },
-                onMenuClick = {
-                    pendingLovesMenuShown = true
-                },
-                menuContent = {
-                    PendingDropdownMenu(
-                        pending = it,
-                        expanded = pendingLovesMenuShown,
-                        onDismissRequest = { pendingLovesMenuShown = false }
-                    )
-                },
-            )
+                if (pendingScrobbles.isNotEmpty()) {
+                    item("pending_divider") {
+                        HorizontalDivider()
+                    }
+                }
+            }
 
             scrobblesListItems(
                 tracks = tracks,
@@ -310,8 +318,9 @@ fun ScrobblesScreen(
                 editedTracksMap = editedTracksMap,
                 pkgMap = pkgMap,
                 fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,
-                showFullMenu = selectedType != ScrobblesType.LOVED,
-                showHate = isListenBrainz,
+                showFullMenu = canShowTrackFullMenu,
+                showLove = true,
+                showHate = currentAccoutType == AccountType.LISTENBRAINZ,
                 onNavigate = onNavigate,
                 viewModel = viewModel,
             )
@@ -321,62 +330,97 @@ fun ScrobblesScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ScrobblesTypeSelector(
     selectedType: ScrobblesType,
     timeJumpMillis: Long?,
     registeredTime: Long,
     onTypeSelected: (ScrobblesType, Long?) -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var timeJumpMenuShown by remember { mutableStateOf(false) }
     var datePickerShown by remember { mutableStateOf(false) }
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .horizontalScroll(rememberScrollState())
+    ButtonGroup(
+        horizontalArrangement = Arrangement.spacedBy(
+            ButtonGroupDefaults.HorizontalArrangement.spacing,
+            alignment = Alignment.CenterHorizontally
+        ),
+        modifier = modifier.background(
+            MaterialTheme.colorScheme.surfaceContainerHigh,
+            MaterialTheme.shapes.large
+        )
     ) {
-        FilterChip(
-            label = {
-                Text(text = stringResource(Res.string.recents))
-            },
-            leadingIcon = {
-                Icon(Icons.Rounded.History, contentDescription = null)
-            },
-            selected = selectedType == ScrobblesType.RECENTS,
-            onClick = { onTypeSelected(ScrobblesType.RECENTS, null) },
-        )
-
-        FilterChip(
-            label = {
-                Text(text = stringResource(Res.string.loved))
-            },
-            leadingIcon = {
-                Icon(Icons.Rounded.FavoriteBorder, contentDescription = null)
-            },
-            selected = selectedType == ScrobblesType.LOVED,
-            onClick = { onTypeSelected(ScrobblesType.LOVED, null) },
-        )
-
-        Box {
-            FilterChip(
-                label = {
-                    Text(
-                        if (timeJumpMillis == null)
-                            stringResource(Res.string.time_jump)
-                        else
-                            PanoTimeFormatter.relative(timeJumpMillis)
-                    )
+        if (PlatformStuff.isDesktop || PlatformStuff.isTv) {
+            OutlinedToggleButton(
+                checked = false,
+                onCheckedChange = {
+                    if (it)
+                        onRefresh()
                 },
-                trailingIcon = {
-                    Icon(Icons.Rounded.ArrowDropDown, contentDescription = null)
-                },
-                selected = selectedType == ScrobblesType.TIME_JUMP,
-                onClick = { timeJumpMenuShown = true },
+            ) {
+                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(Res.string.retry))
+            }
+        }
+
+        OutlinedToggleButton(
+            checked = selectedType == ScrobblesType.RECENTS,
+            onCheckedChange = {
+                if (it)
+                    onTypeSelected(ScrobblesType.RECENTS, null)
+            },
+        ) {
+            Icon(Icons.Rounded.History, contentDescription = stringResource(Res.string.recents))
+
+            if (selectedType == ScrobblesType.RECENTS) {
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(text = stringResource(Res.string.recents), maxLines = 1)
+            }
+        }
+
+        OutlinedToggleButton(
+            checked = selectedType == ScrobblesType.LOVED,
+            onCheckedChange = {
+                if (it)
+                    onTypeSelected(ScrobblesType.LOVED, null)
+            },
+        ) {
+            Icon(
+                Icons.Rounded.FavoriteBorder,
+                contentDescription = stringResource(Res.string.loved)
             )
+
+            if (selectedType == ScrobblesType.LOVED) {
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(text = stringResource(Res.string.loved), maxLines = 1)
+            }
+        }
+
+        OutlinedToggleButton(
+            checked = selectedType == ScrobblesType.TIME_JUMP,
+            onCheckedChange = {
+                if (it)
+                    timeJumpMenuShown = true
+            },
+        ) {
+            Icon(
+                combineImageVectors(
+                    getPeriodTypeIcon(TimePeriodType.CUSTOM),
+                    Icons.Outlined.ArrowDropDown
+                ), contentDescription = stringResource(Res.string.time_jump)
+            )
+
+            if (selectedType == ScrobblesType.TIME_JUMP) {
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(
+                    if (timeJumpMillis == null)
+                        stringResource(Res.string.time_jump)
+                    else
+                        PanoTimeFormatter.relative(timeJumpMillis),
+                    maxLines = 1
+                )
+            }
 
             DropdownMenu(
                 expanded = timeJumpMenuShown,
@@ -423,16 +467,20 @@ private fun ScrobblesTypeSelector(
             }
         }
 
-        FilterChip(
-            label = {
-                Text(text = stringResource(Res.string.random_text))
+        OutlinedToggleButton(
+            checked = selectedType == ScrobblesType.RANDOM,
+            onCheckedChange = {
+                if (it)
+                    onTypeSelected(ScrobblesType.RANDOM, null)
             },
-            leadingIcon = {
-                Icon(Icons.Outlined.Casino, contentDescription = null)
-            },
-            selected = selectedType == ScrobblesType.RANDOM,
-            onClick = { onTypeSelected(ScrobblesType.RANDOM, null) },
-        )
+        ) {
+            Icon(Icons.Outlined.Casino, contentDescription = stringResource(Res.string.random_text))
+
+            if (selectedType == ScrobblesType.RANDOM) {
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(text = stringResource(Res.string.random_text), maxLines = 1)
+            }
+        }
     }
 
     if (datePickerShown) {

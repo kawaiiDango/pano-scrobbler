@@ -27,10 +27,8 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import pano_scrobbler.composeapp.generated.resources.Res
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun OssCreditsScreen(
     modifier: Modifier = Modifier,
@@ -52,7 +50,7 @@ fun OssCreditsScreen(
 private fun rememberLibraries(
     block: suspend () -> String,
 ): State<Libs?> {
-    return produceState<Libs?>(initialValue = null) {
+    return produceState(initialValue = null) {
         value = withContext(Dispatchers.Default) {
             Libs.Builder()
                 .withJson(block())

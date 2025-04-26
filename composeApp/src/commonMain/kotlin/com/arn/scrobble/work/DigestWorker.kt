@@ -9,6 +9,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
@@ -61,7 +62,7 @@ class DigestWorker(
         DigestWork.checkAndSchedule()
 
         return if (error != null)
-            CommonWorkerResult.Failure(error.localizedMessage ?: "Unknown error")
+            CommonWorkerResult.Failure(error.redactedMessage)
         else
             CommonWorkerResult.Success
     }

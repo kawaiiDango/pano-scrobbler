@@ -34,8 +34,8 @@ import java.net.URLEncoder
 fun TagInfoContent(
     tag: Tag,
     onOpenUrl: (String) -> Unit,
-    viewModel: TagInfoVM = viewModel { TagInfoVM() },
     modifier: Modifier = Modifier,
+    viewModel: TagInfoVM = viewModel { TagInfoVM() },
 ) {
     val info by viewModel.info.collectAsStateWithLifecycle()
     var wikiExpanded by rememberSaveable { mutableStateOf(false) }

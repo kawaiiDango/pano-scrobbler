@@ -29,6 +29,7 @@ import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.RadioButtonGroup
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.stringResource
@@ -48,9 +49,9 @@ import pano_scrobbler.composeapp.generated.resources.pref_imexport_network_notic
 
 @Composable
 fun ImportScreen(
-    viewModel: ImportVM = viewModel { ImportVM() },
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ImportVM = viewModel { ImportVM() },
 ) {
     var codeText by remember { mutableStateOf<String?>(null) }
     var errorText by remember { mutableStateOf<String?>(null) }
@@ -140,7 +141,7 @@ fun ImportScreen(
                 codeText = it
                 errorText = null
             }.onFailure {
-                errorText = it.message
+                errorText = it.redactedMessage
             }
         }
     }

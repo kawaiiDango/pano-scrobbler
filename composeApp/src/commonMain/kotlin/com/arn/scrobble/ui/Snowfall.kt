@@ -3,7 +3,6 @@ package com.arn.scrobble.ui
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
 

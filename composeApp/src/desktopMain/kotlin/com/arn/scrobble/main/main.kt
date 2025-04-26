@@ -23,6 +23,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.logger.JvmLogger
 import com.arn.scrobble.media.PlayingTrackNotificationState
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
@@ -71,27 +72,19 @@ private fun init() {
     URL.setURLStreamHandlerFactory(CustomURLStreamHandlerFactory())
 
     Stuff.mainPrefsInitialValue = runBlocking { PlatformStuff.mainPrefs.data.first() }
+
+    Logger.setLogWriters(
+        JvmLogger(
+            logToFile = true,
+            redirectStderr = true
+        )
+    )
     Logger.setTag("scrobbler")
     Logger.setMinSeverity(
         if (PlatformStuff.isDebug) Severity.Debug else Severity.Info
     )
 
-//    val logsDir = File(PlatformStuff.filesDir, "logs").also { it.mkdirs() }
-//    Logger.addLogWriter(
-//        RollingFileLogWriter(
-//            config = RollingFileLogWriterConfig(
-//                logFileName = "pano-scrobbler",
-//                logFilePath = Path(logsDir.absolutePath),
-//                rollOnSize = 20 * 1024, // 20 KB
-//                maxLogFiles = 5,
-//            )
-//        )
-//    )
-
-//    todo fix RollingFileLogWriter: Uncaught exception in writer coroutine, deletion failed
-//    System.setErr(PrintStream(StderrOutputStream(), true))
-
-    setAppLocale(null, Stuff.mainPrefsInitialValue.locale, force = false)
+    setAppLocale(Stuff.mainPrefsInitialValue.locale, force = false)
 
     PanoNativeComponents.load()
     if (DesktopStuff.os == DesktopStuff.Os.LINUX) {
@@ -99,14 +92,16 @@ private fun init() {
         PanoNativeComponents.setEnvironmentVariable("GDK_BACKEND", "x11")
     }
     PanoNativeComponents.init()
-    test()
+//    test()
 }
 
 fun main(args: Array<String>) {
+    val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
+
     init()
 
     return application {
-        var windowShown by remember { mutableStateOf(!shouldStartMinimized(args)) }
+        var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
         var initialRoute by remember { mutableStateOf<PanoRoute?>(null) }
         val subsequentRoute = remember { MutableSharedFlow<PanoRoute>() }
         val scope = rememberCoroutineScope()
@@ -487,10 +482,6 @@ private suspend fun trayMenuClickListener(
     }
 }
 
-private fun shouldStartMinimized(args: Array<String>): Boolean {
-//    return true
-    return args.contains(DesktopStuff.MINIMIZED_ARG) || args.contains("-m")
-}
 
 private fun test() {
     // test stuff

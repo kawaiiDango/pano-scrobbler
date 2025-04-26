@@ -26,3 +26,5 @@ actual fun AppIcon(
         modifier = modifier.clip(CircleShape),
     )
 }
+
+actual fun Modifier.testTagsAsResId() = this

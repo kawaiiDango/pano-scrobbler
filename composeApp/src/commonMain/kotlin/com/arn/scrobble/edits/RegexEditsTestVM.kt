@@ -21,7 +21,7 @@ class RegexEditsTestVM : ViewModel() {
     private val _appListItem = MutableStateFlow<AppItem?>(null)
     val hasPkgName = dao.hasPkgNameFlow().stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    val regexMatches =
+    val regexResults =
         combine(_scrobbleData, hasPkgName, _appListItem) { sd, hasPkgName, appListItem ->
             Triple(
                 sd,

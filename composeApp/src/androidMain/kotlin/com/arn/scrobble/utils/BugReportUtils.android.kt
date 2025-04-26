@@ -57,12 +57,9 @@ actual object BugReportUtils {
 
         val emailAddress = getString(Res.string.email)
         val emailIntent =
-            Intent(
-                Intent.ACTION_SENDTO,
-                Uri.fromParts("mailto", emailAddress, null)
-            ).apply {
+            Intent(Intent.ACTION_SENDTO).apply {
                 // https://stackoverflow.com/questions/33098280/how-to-choose-email-app-with-action-sendto-also-support-attachment
-                type = "message/rfc822"
+                setDataAndType(Uri.fromParts("mailto", emailAddress, null), "message/rfc822")
                 putExtra(Intent.EXTRA_EMAIL, emailAddress)
                 putExtra(
                     Intent.EXTRA_SUBJECT,

@@ -14,7 +14,6 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
-import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.datastore.core.MultiProcessDataStoreFactory
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -41,7 +41,6 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.BaseBillingRepository
 import com.arn.scrobble.billing.BillingRepository
-import com.arn.scrobble.db.ManualMigrations
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.media.NLService
 import com.arn.scrobble.pref.MainPrefs
@@ -56,7 +55,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.copied
@@ -170,7 +168,7 @@ actual object PlatformStuff {
         }
 
         try {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             application.startActivity(browserIntent)
@@ -187,15 +185,16 @@ actual object PlatformStuff {
     }
 
 
-    actual fun launchSearchIntent(
+    actual suspend fun launchSearchIntent(
         musicEntry: MusicEntry,
         pkgName: String?,
     ) {
+        val searchInSource = mainPrefs.data.map { it.searchInSource }.first()
 
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            var searchQuery = ""
+            val searchQuery: String
 
             when (musicEntry) {
                 is Artist -> {
@@ -236,8 +235,6 @@ actual object PlatformStuff {
 
             putExtra(SearchManager.QUERY, searchQuery)
 
-            val searchInSource =
-                runBlocking { mainPrefs.data.map { it.searchInSource }.first() }
             if (pkgName != null && billingRepository.isLicenseValid && searchInSource)
                 `package` = pkgName
         }
@@ -270,13 +267,12 @@ actual object PlatformStuff {
     }
 
     actual fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb> {
-        val dbFile = application.getDatabasePath(PanoDb.fileName)
+        val dbFile = application.getDatabasePath(PanoDb.FILE_NAME)
         return Room.databaseBuilder<PanoDb>(
             context = application,
             name = dbFile.absolutePath
         )
             .setDriver(AndroidSQLiteDriver())
-            .addMigrations(*ManualMigrations.all)
             .enableMultiInstanceInvalidation()
 
     }

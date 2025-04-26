@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -37,6 +38,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AlertDialogOk
+import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -194,7 +196,7 @@ actual fun OnboardingScreen(
 
     val doneStatus = rememberSaveable(
         saver = listSaver(
-            save = { it.map { it }.toList() },
+            save = { it.toList() },
             restore = { mutableStateListOf(*it.toTypedArray()) }
         )
     ) {
@@ -233,7 +235,7 @@ actual fun OnboardingScreen(
     }
 
     Column(
-        modifier = modifier,
+        modifier = modifier.testTagsAsResId(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val privacyPolicyLink = stringResource(Res.string.privacy_policy_link)
@@ -246,6 +248,7 @@ actual fun OnboardingScreen(
                 .align(Alignment.End)
                 .padding(bottom = 16.dp)
                 .alpha(0.75f)
+                .testTag("button_privacy_policy")
         ) {
             Text(text = stringResource(Res.string.pref_privacy_policy))
         }
@@ -263,7 +266,6 @@ actual fun OnboardingScreen(
                         openAction = {},
                         isDone = isDone,
                         isExpanded = step == currentStep,
-                        onSkip = null,
                     ) {
                         ButtonStepperForLogin(navigate = onNavigate)
                     }

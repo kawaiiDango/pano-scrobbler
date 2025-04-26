@@ -49,6 +49,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -56,6 +58,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -93,6 +96,7 @@ import com.arn.scrobble.navigation.hasNavMetadata
 import com.arn.scrobble.navigation.panoNavGraph
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.LocalInnerPadding
+import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.ui.verticalOverscanPadding
@@ -142,7 +146,7 @@ fun PanoAppContent(
     val currentUserSelf by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { pref ->
             pref.scrobbleAccounts
-                .firstOrNull { it.type == accountType }?.user
+                .firstOrNull { it.type == pref.currentAccountType }?.user
         }
     var onboardingFinished by remember { mutableStateOf(currentUserSelf != null) }
     var currentUserOther by remember { mutableStateOf<UserCached?>(null) }
@@ -150,6 +154,9 @@ fun PanoAppContent(
 
     val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val pullToRefreshState = rememberPullToRefreshState()
+    val pullToRefreshStateForTabs =
+        remember { mutableStateMapOf<Int, PanoPullToRefreshStateForTab>() }
 
     LaunchedEffect(Unit) {
         Stuff.globalSnackbarFlow.collectLatest {
@@ -236,6 +243,22 @@ fun PanoAppContent(
 
             Scaffold(
                 modifier = Modifier
+                    .pullToRefresh(
+                        state = pullToRefreshState,
+                        isRefreshing = pullToRefreshStateForTabs.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
+                        enabled = !pullToRefreshStateForTabs.values.all { it == PanoPullToRefreshStateForTab.Disabled } &&
+                                !PlatformStuff.isTv &&
+                                !PlatformStuff.isDesktop,
+                        onRefresh = {
+                            // find the right tab
+                            pullToRefreshStateForTabs.entries
+                                .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
+                                ?.key
+                                ?.let { id ->
+                                    viewModel.notifyPullToRefresh(id)
+                                }
+                        }
+                    )
                     .nestedScroll(topBarScrollBehavior.nestedScrollConnection)
                     .then(
                         if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION)
@@ -361,6 +384,10 @@ fun PanoAppContent(
                             onSetOtherUser = { currentUserOther = it },
                             navMetadataList = { navMetadata },
                             onSetNavMetadataList = { navMetadata = it },
+                            pullToRefreshState = { pullToRefreshState },
+                            onSetRefreshing = { id, prState ->
+                                pullToRefreshStateForTabs[id] = prState
+                            },
                             mainViewModel = viewModel,
                         )
                     }
@@ -636,7 +663,6 @@ private fun PanoBottomNavigationBar(
                     }
                 },
                 icon = {
-
                     if (tabMetadata.type == PanoTabType.PROFILE) {
                         AvatarOrInitials(
                             avatarUrl = profilePicUrl,
@@ -653,8 +679,10 @@ private fun PanoBottomNavigationBar(
                 },
                 label = {
                     Text(
-                        text = if (tabMetadata.type == PanoTabType.PROFILE) user?.name
-                            ?: "" else stringResource(tabMetadata.titleRes),
+                        text = if (tabMetadata.type == PanoTabType.PROFILE)
+                            (user?.name ?: "")
+                        else
+                            stringResource(tabMetadata.titleRes),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

@@ -60,6 +60,7 @@ import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -379,7 +380,7 @@ fun RegexEditsAddScreen(
                         val validationResult = validate(re)
 
                         if (validationResult.isFailure) {
-                            errorText = validationResult.exceptionOrNull()?.message
+                            errorText = validationResult.exceptionOrNull()?.redactedMessage
                         } else {
                             withContext(Dispatchers.IO) {
                                 dao.insert(listOf(re))
@@ -670,7 +671,7 @@ private suspend fun areExtractionRulesValid(regexEdit: RegexEdit): Result<Unit> 
                 IllegalArgumentException(
                     getString(
                         Res.string.edit_regex_invalid,
-                        e.message ?: ""
+                        e.redactedMessage ?: ""
                     )
                 )
             )
@@ -726,7 +727,7 @@ private suspend fun validate(regexEdit: RegexEdit): Result<Unit> {
         if (extractRulesResult.isFailure) {
             errorText = getString(
                 Res.string.edit_regex_invalid,
-                extractRulesResult.exceptionOrNull()?.message ?: ""
+                extractRulesResult.exceptionOrNull()?.redactedMessage ?: ""
             )
         } else if (regexEdit.packages.isNullOrEmpty()) {
             errorText = getString(Res.string.no_apps_enabled)
@@ -738,7 +739,7 @@ private suspend fun validate(regexEdit: RegexEdit): Result<Unit> {
             try {
                 Pattern.compile(regexEdit.pattern)
             } catch (e: Exception) {
-                errorText = getString(Res.string.edit_regex_invalid, e.message ?: "")
+                errorText = getString(Res.string.edit_regex_invalid, e.redactedMessage)
             }
         }
     }

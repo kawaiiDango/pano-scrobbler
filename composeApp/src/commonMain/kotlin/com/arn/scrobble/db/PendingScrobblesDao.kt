@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.arn.scrobble.api.ScrobbleEvent
 import kotlinx.coroutines.flow.Flow
 
 
@@ -18,8 +19,20 @@ interface PendingScrobblesDao {
     @Query("SELECT * FROM $tableName ORDER BY timestamp DESC LIMIT :limit")
     fun allFlow(limit: Int): Flow<List<PendingScrobble>>
 
+    @Query("SELECT * FROM $tableName WHERE event = 'scrobble' ORDER BY timestamp DESC LIMIT :limit")
+    suspend fun allScrobbles(limit: Int): List<PendingScrobble>
+
+    @Query("SELECT * FROM $tableName WHERE event != 'scrobble' ORDER BY timestamp DESC LIMIT :limit")
+    suspend fun allLoves(limit: Int): List<PendingScrobble>
+
     @Query("SELECT count(1) FROM $tableName")
     suspend fun count(): Int
+
+    @Query("SELECT * FROM $tableName WHERE artist =:artist AND track=:track AND event = :event")
+    suspend fun find(artist: String, track: String, event: ScrobbleEvent): PendingScrobble?
+
+    @Query("SELECT * FROM $tableName WHERE artist =:artist AND track=:track AND event != 'scrobble'")
+    suspend fun findLoved(artist: String, track: String): PendingScrobble?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(ps: PendingScrobble)

@@ -81,11 +81,12 @@ object Stuff {
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
     const val TIME_2002 = 1009823400000L // Jan 1 2002
+    const val DEFAULT_SEARCH_URL = "spotify://search/\$query"
 
     const val EXTRA_PINNED = "pinned"
     const val EXTRA_EVENT = "event"
 
-    const val RECENTS_REFRESH_INTERVAL = 40 * 1000L
+    const val RECENTS_REFRESH_INTERVAL = 30 * 1000L
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
@@ -146,6 +147,12 @@ object Stuff {
     const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
     const val PACKAGE_NEWPIPE = "org.schabi.newpipe"
     const val PACKAGE_NINTENDO_MUSIC = "com.nintendo.znba"
+    const val PACKAGE_APPLE_MUSIC = "com.apple.android.music"
+    const val PACKAGE_APPLE_MUSIC_WIN = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"
+    const val PACKAGE_CIDER_LINUX = "org.mpris.MediaPlayer2.cider"
+    const val PACKAGE_CIDER_VARIANT_LINUX = "org.mpris.MediaPlayer2.cider.instancen"
+    const val PACKAGE_FIREFOX_WIN = "308046B0AF4A39CB"
+
     const val ARTIST_NINTENDO_MUSIC = "Nintendo Co., Ltd."
 
     const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
@@ -203,6 +210,10 @@ object Stuff {
         PACKAGE_PIXEL_NP,
         PACKAGE_PIXEL_NP_R,
         PACKAGE_PIXEL_NP_AMM,
+    )
+
+    val FRIENDLY_APP_NAMES = mapOf(
+        PACKAGE_FIREFOX_WIN to "Mozilla Firefox"
     )
 
     val STARTUPMGR_INTENTS = listOf(
@@ -300,7 +311,7 @@ object Stuff {
     fun <T> Flow<MainPrefs>.collectAsStateWithInitialValue(
         mapBlock: (MainPrefs) -> T,
     ) = mapLatest {
-//        mainPrefsInitialValue = it
+        mainPrefsInitialValue = it
         mapBlock(it)
     }.collectAsStateWithLifecycle(mapBlock(mainPrefsInitialValue))
 
@@ -478,6 +489,16 @@ fun String.sha256() =
     MessageDigest.getInstance("SHA-256")
         .digest(toByteArray())
         .encodeBase64()
+
+val Throwable.redactedMessage: String
+    get() {
+        var m = this.localizedMessage ?: this.message ?: return this.toString()
+
+        // urls
+        m = m.replace("https?://\\S+".toRegex(), "<url>")
+
+        return m
+    }
 
 @Keep
 // Useful for force logging to crashlytics in debug builds

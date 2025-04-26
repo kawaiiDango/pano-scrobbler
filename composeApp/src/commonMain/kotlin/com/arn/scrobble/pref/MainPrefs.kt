@@ -75,7 +75,6 @@ data class MainPrefs(
     val regexLearnt: Boolean = false,
     val regexEditsLearnt: Boolean = false,
     val reorderFriendsLearnt: Boolean = false,
-    val gridPinchLearnt: Boolean = false,
     val squarePhotoLearnt: Boolean = false,
     val changelogSeenHashcode: Int? = null,
     val searchHistory: List<String> = emptyList(),
@@ -101,6 +100,8 @@ data class MainPrefs(
     val receiptSignature: String? = null,
     val lastLicenseCheckTime: Long = -1,
     val lastPendingScrobblesFailureTime: Long = -1,
+    val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
+    val useNativeFilePicker: Boolean = true,
     val cookies: Map<String, CookieSerializable> = emptyMap(),
 ) {
 
@@ -144,6 +145,8 @@ data class MainPrefs(
         spotifyArtistSearchApproximate = prefs.spotifyArtistSearchApproximate,
         preventDuplicateAmbientScrobbles = prefs.preventDuplicateAmbientScrobbles,
         firstDayOfWeek = prefs.firstDayOfWeek,
+        searchUrlTemplate = prefs.searchUrlTemplate,
+        useNativeFilePicker = prefs.useNativeFilePicker,
         allowedPackages = prefs.allowedPackages
     )
 
@@ -166,7 +169,9 @@ data class MainPrefs(
         spotifyArtistSearchApproximate = this.spotifyArtistSearchApproximate,
         preventDuplicateAmbientScrobbles = this.preventDuplicateAmbientScrobbles,
         firstDayOfWeek = this.firstDayOfWeek,
-        allowedPackages = this.allowedPackages
+        searchUrlTemplate = this.searchUrlTemplate,
+        useNativeFilePicker = this.useNativeFilePicker,
+        allowedPackages = this.allowedPackages,
     )
 
     companion object {
@@ -218,5 +223,7 @@ data class MainPrefsPublic(
     val spotifyArtistSearchApproximate: Boolean,
     val preventDuplicateAmbientScrobbles: Boolean,
     val firstDayOfWeek: Int,
+    val searchUrlTemplate: String,
+    val useNativeFilePicker: Boolean,
     val allowedPackages: Set<String>,
 )

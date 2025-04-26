@@ -31,6 +31,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
@@ -59,19 +61,23 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.PanoLazyVerticalGrid
+import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
+import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
-import com.arn.scrobble.ui.rememberTintedVectorPainter
 import com.arn.scrobble.ui.shake
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
@@ -98,10 +104,13 @@ import pano_scrobbler.composeapp.generated.resources.unpin
 @Composable
 fun FriendsScreen(
     user: UserCached,
+    pullToRefreshState: PullToRefreshState,
+    onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
+    pullToRefreshTriggered: Flow<Unit>,
     onNavigate: (PanoRoute) -> Unit,
     onTitleChange: (String?) -> Unit,
-    viewModel: FriendsVM = viewModel { FriendsVM() },
     modifier: Modifier = Modifier,
+    viewModel: FriendsVM = viewModel { FriendsVM() },
 ) {
     val scope = rememberCoroutineScope()
     val friends = viewModel.friends.collectAsLazyPagingItems()
@@ -111,6 +120,7 @@ fun FriendsScreen(
     val pinnedUsernamesSet by viewModel.pinnedUsernamesSet.collectAsStateWithLifecycle()
     var expandedFriend by remember { mutableStateOf<UserCached?>(null) }
     val sortedFriends by viewModel.sortedFriends.collectAsStateWithLifecycle()
+    val lastFriendsRefreshTime by viewModel.lastFriendsRefreshTime.collectAsStateWithLifecycle()
     val sortable by remember(
         friends.loadState.append,
         friends.itemCount,
@@ -163,14 +173,45 @@ fun FriendsScreen(
             }
     }
 
+    LifecycleResumeEffect(friends.loadState.refresh) {
+        onSetRefreshing(
+            if (friends.loadState.refresh is LoadState.Loading) {
+                PanoPullToRefreshStateForTab.Refreshing
+            } else {
+                PanoPullToRefreshStateForTab.NotRefreshing
+            }
+        )
+
+        onPauseOrDispose {
+            onSetRefreshing(PanoPullToRefreshStateForTab.Disabled)
+        }
+    }
+
+
+    LaunchedEffect(Unit) {
+        pullToRefreshTriggered.collect {
+            if (friends.loadState.refresh is LoadState.NotLoading) {
+                viewModel.markExtraDataAsStale()
+                viewModel.clearSortedFriends()
+                friends.refresh()
+            }
+        }
+    }
+
+
+    AutoRefreshEffect(
+        lastRefreshTime = lastFriendsRefreshTime,
+        interval = Stuff.RECENTS_REFRESH_INTERVAL * 2,
+        shouldRefresh = {
+            sortedFriends == null &&
+                    gridState.firstVisibleItemIndex < 4
+        },
+        lazyPagingItems = friends,
+    )
 
     PanoPullToRefresh(
+        state = pullToRefreshState,
         isRefreshing = friends.loadState.refresh is LoadState.Loading,
-        onRefresh = {
-            viewModel.markExtraDataAsStale()
-            viewModel.clearSortedFriends()
-            friends.refresh()
-        },
         modifier = modifier,
     ) {
 
@@ -380,6 +421,7 @@ private fun FriendItem(
     val track = remember(extraDataResult) { extraDataResult?.getOrNull()?.track }
     var moveLeftShake by remember { mutableStateOf(false) }
     var moveRightShake by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(moveLeftShake) {
         if (moveLeftShake) {
@@ -603,8 +645,8 @@ private fun FriendItem(
                             )
                         }
                     },
-                    fallback = rememberTintedVectorPainter(null),
-                    error = rememberTintedVectorPainter(track),
+                    fallback = placeholderImageVectorPainter(null),
+                    error = placeholderImageVectorPainter(track),
                     placeholder = placeholderPainter(),
                     contentDescription = stringResource(Res.string.album_art),
                     modifier = imageModifier
@@ -630,7 +672,7 @@ private fun FriendItem(
                     Color.Unspecified
 
                 Text(
-                    text = track?.name ?: extraDataResult?.exceptionOrNull()?.localizedMessage
+                    text = track?.name ?: extraDataResult?.exceptionOrNull()?.redactedMessage
                     ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     color = textColor,
@@ -673,7 +715,9 @@ private fun FriendItem(
             if (expanded && track != null) {
                 IconButton(
                     onClick = {
-                        PlatformStuff.launchSearchIntent(track, null)
+                        scope.launch {
+                            PlatformStuff.launchSearchIntent(track, null)
+                        }
                     },
                     modifier = Modifier
                         .padding(horizontal = 8.dp)

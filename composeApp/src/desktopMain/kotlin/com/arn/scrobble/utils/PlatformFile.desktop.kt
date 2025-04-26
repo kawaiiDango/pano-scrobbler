@@ -18,7 +18,7 @@ actual class PlatformFile actual constructor(private val fileUri: String) {
     actual fun isFileOk() =
         file.exists() && file.canWrite() && file.canRead()
 
-    actual fun getFileName() = file.name
+    actual fun getFileName(): String = file.name
 
     actual fun length() = file.length()
 

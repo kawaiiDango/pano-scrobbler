@@ -5,7 +5,10 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.UserAccountSerializable
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheStrategy
@@ -17,8 +20,6 @@ import com.arn.scrobble.api.lastfm.Session
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.api.UserAccountSerializable
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.PackageNameMetadata.englishLabel
 import com.arn.scrobble.ui.PackageNameMetadata.version
@@ -30,7 +31,6 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.io.OutputStream
@@ -52,7 +52,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 throw FException(platformFile, "File not writable")
 
             platformFile.writeAppend { outputStream ->
-                writeEntry(scrobbleData, Event.scrobble, outputStream)
+                writeEntry(scrobbleData, ScrobbleEvent.scrobble, outputStream)
             }
 
             ScrobbleIgnored(false)
@@ -66,7 +66,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
             platformFile.writeAppend { outputStream ->
                 scrobbleDatas.forEach { scrobbleData ->
-                    writeEntry(scrobbleData, Event.scrobble, outputStream)
+                    writeEntry(scrobbleData, ScrobbleEvent.scrobble, outputStream)
                 }
             }
 
@@ -76,7 +76,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
     private suspend fun writeEntry(
         data: ScrobbleData,
-        event: Event,
+        event: ScrobbleEvent,
         outputStream: OutputStream,
     ) {
         val entry = Entry.fromScrobbleData(data, event)
@@ -110,7 +110,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 packageName = null
             )
 
-            val action = if (love) Event.love else Event.unlove
+            val action = if (love) ScrobbleEvent.love else ScrobbleEvent.unlove
 
             platformFile.writeAppend { outputStream ->
                 writeEntry(scrobbleData, action, outputStream)
@@ -184,8 +184,8 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                         album = entry.album?.let { albumName ->
                             Album(albumName, entry.albumArtist?.let { Artist(it) })
                         },
-                        userloved = entry.event == Event.love,
-                        userHated = entry.event == Event.unlove,
+                        userloved = entry.event == ScrobbleEvent.love,
+                        userHated = entry.event == ScrobbleEvent.unlove,
                         duration = entry.durationMs,
                         date = entry.timeMs
                     )
@@ -268,7 +268,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         val mediaPlayerPackage: String? = null,
         val mediaPlayerName: String? = null,
         val mediaPlayerVersion: String? = null,
-        val event: Event,
+        val event: ScrobbleEvent,
     ) {
         fun toJson() = Json.encodeToString(this)
 
@@ -300,10 +300,10 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 mediaPlayerPackage = row[7],
                 mediaPlayerName = row.getOrNull(8),
                 mediaPlayerVersion = row.getOrNull(9),
-                event = FileScrobblable.Event.valueOf(row.getOrNull(10) ?: Event.scrobble.name)
+                event = ScrobbleEvent.valueOf(row.getOrNull(10) ?: ScrobbleEvent.scrobble.name)
             )
 
-            fun fromScrobbleData(scrobbleData: ScrobbleData, event: Event) = Entry(
+            fun fromScrobbleData(scrobbleData: ScrobbleData, event: ScrobbleEvent) = Entry(
                 timeHuman = PanoTimeFormatter.full(scrobbleData.timestamp),
                 timeMs = scrobbleData.timestamp,
                 artist = scrobbleData.artist,
@@ -317,10 +317,6 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 event = event
             )
         }
-    }
-
-    private enum class Event {
-        scrobble, love, unlove
     }
 
     enum class FileFormat {

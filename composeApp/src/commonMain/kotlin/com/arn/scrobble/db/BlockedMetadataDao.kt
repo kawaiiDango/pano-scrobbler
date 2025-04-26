@@ -86,9 +86,7 @@ interface BlockedMetadataDao {
             val maxIdx = entriesToBlanks.indexOfLast { it.second == lowestBlanks }
             val bestEntries = entriesToBlanks.map { it.first }.subList(0, maxIdx + 1)
             val bestEntry = bestEntries.first()
-            val skip = bestEntries.any { it.skip }
-            val mute = !skip && bestEntries.any { it.mute }
-            return bestEntry.copy(skip = skip, mute = mute)
+            return bestEntry
         }
 
 

@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 @Database(
     entities = [
         PendingScrobble::class,
-        PendingLove::class,
         SimpleEdit::class,
         RegexEdit::class,
         BlockedMetadata::class,
@@ -24,18 +23,18 @@ import kotlinx.coroutines.Dispatchers
         CachedArtist::class,
         CustomSpotifyMapping::class,
     ],
-    version = 14,
+    version = 15,
     autoMigrations = [
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11, spec = Spec_10_11::class),
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
+//        AutoMigration(from = 14, to = 15),
     ],
 )
 abstract class PanoDb : RoomDatabase() {
     abstract fun getPendingScrobblesDao(): PendingScrobblesDao
-    abstract fun getPendingLovesDao(): PendingLovesDao
     abstract fun getSimpleEditsDao(): SimpleEditsDao
     abstract fun getRegexEditsDao(): RegexEditsDao
     abstract fun getBlockedMetadataDao(): BlockedMetadataDao
@@ -46,7 +45,7 @@ abstract class PanoDb : RoomDatabase() {
     abstract fun getCustomSpotifyMappingsDao(): CustomSpotifyMappingsDao
 
     companion object {
-        const val fileName = "pendingScrobbles"
+        const val FILE_NAME = "pendingScrobbles"
 
         @Volatile
         private var INSTANCE: PanoDb? = null
@@ -54,6 +53,7 @@ abstract class PanoDb : RoomDatabase() {
         val db
             get(): PanoDb = INSTANCE ?: synchronized(this) {
                 PlatformStuff.getDatabaseBuilder()
+                    .addMigrations(*ManualMigrations.all)
                     .setQueryCoroutineContext(Dispatchers.IO)
                     .fallbackToDestructiveMigrationOnDowngrade(true)
                     .build()

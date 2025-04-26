@@ -23,7 +23,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.LocalPlatformContext
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
@@ -81,6 +80,8 @@ import pano_scrobbler.composeapp.generated.resources.pref_prevent_duplicate_ambi
 import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
 import pano_scrobbler.composeapp.generated.resources.pref_search_in_source
 import pano_scrobbler.composeapp.generated.resources.pref_search_in_source_desc
+import pano_scrobbler.composeapp.generated.resources.pref_search_url_template
+import pano_scrobbler.composeapp.generated.resources.pref_search_url_template_desc
 import pano_scrobbler.composeapp.generated.resources.pref_show_scrobble_sources
 import pano_scrobbler.composeapp.generated.resources.pref_show_scrobble_sources_desc
 import pano_scrobbler.composeapp.generated.resources.pref_spotify_artist_search_approximate
@@ -90,6 +91,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_translate
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
+import pano_scrobbler.composeapp.generated.resources.pref_native_file_picker
 import java.util.Calendar
 import java.util.Locale
 
@@ -123,6 +125,7 @@ fun PrefsScreen(
     val showScrobbleSources by
     remember { derivedStateOf { mainPrefsData.showScrobbleSources } }
     val searchInSource by remember { derivedStateOf { mainPrefsData.searchInSource } }
+    val searchUrlTemplate by remember { derivedStateOf { mainPrefsData.searchUrlTemplate } }
     val linkHeartButtonToRating by
     remember { derivedStateOf { mainPrefsData.linkHeartButtonToRating } }
     val firstDayOfWeek by remember { derivedStateOf { mainPrefsData.firstDayOfWeek } }
@@ -134,6 +137,8 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.preventDuplicateAmbientScrobbles } }
     val submitNowPlaying by
     remember { derivedStateOf { mainPrefsData.submitNowPlaying } }
+    val useNativeFilePicker by
+    remember { derivedStateOf { mainPrefsData.useNativeFilePicker } }
     val crashReporterEnabled by
     remember { derivedStateOf { mainPrefsData.crashReporterEnabled } }
     val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
@@ -207,7 +212,7 @@ fun PrefsScreen(
             }
         }
 
-        if (!PlatformStuff.isTv) {
+        if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
             item(MainPrefs::autoDetectAppsP.name) {
                 val notiEnabled =
                     remember { PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
@@ -304,6 +309,18 @@ fun PrefsScreen(
                     onNavigateToBilling = onNavigateToBilling,
                     enabled = showScrobbleSources,
                     copyToSave = { copy(searchInSource = it) }
+                )
+            }
+        }
+
+        if (PlatformStuff.isDesktop) {
+            item(MainPrefs::searchUrlTemplate.name) {
+                TextFieldDialogPref(
+                    text = stringResource(Res.string.pref_search_url_template),
+                    hint = stringResource(Res.string.pref_search_url_template_desc),
+                    value = searchUrlTemplate,
+                    validate = { it.contains("\$query") },
+                    copyToSave = { copy(searchUrlTemplate = it) }
                 )
             }
         }
@@ -408,9 +425,8 @@ fun PrefsScreen(
         }
 
         item(MainPrefs::locale.name) {
-            val context = LocalPlatformContext.current
             val autoString = stringResource(Res.string.auto)
-            val currentLocale = remember { getCurrentLocale(locale) }
+            val currentLocale = remember(locale) { getCurrentLocale(locale) }
 
             val localesMap = remember {
                 val autoEntry = mapOf("auto" to autoString)
@@ -437,9 +453,7 @@ fun PrefsScreen(
                 values = localesMap.keys,
                 toLabel = { localesMap[it] ?: autoString },
                 copyToSave = {
-                    scope.launch {
-                        setAppLocale(context, lang = it, force = true)
-                    }
+                    setAppLocale(lang = it, force = true)
                     copy(locale = it.takeIf { it != "auto" })
                 }
             )
@@ -504,6 +518,16 @@ fun PrefsScreen(
                 value = submitNowPlaying,
                 copyToSave = { copy(submitNowPlaying = it) }
             )
+        }
+
+        if (PlatformStuff.isDesktop) {
+            item(MainPrefs::useNativeFilePicker.name) {
+                SwitchPref(
+                    text = stringResource(Res.string.pref_native_file_picker),
+                    value = useNativeFilePicker,
+                    copyToSave = { copy(useNativeFilePicker = it) }
+                )
+            }
         }
 
         prefIntents(this)

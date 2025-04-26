@@ -57,7 +57,7 @@ class EditScrobbleViewModel : ViewModel() {
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
-        hash: Int,
+        hash: Int?,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val r = validateAsync(
@@ -87,7 +87,7 @@ class EditScrobbleViewModel : ViewModel() {
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
-        hash: Int,
+        hash: Int?,
     ): Result<ScrobbleData> {
         val track = newScrobbleData.track.trim()
         val origTrack = origScrobbleData.track
@@ -259,7 +259,7 @@ class EditScrobbleViewModel : ViewModel() {
                     scrobbleData,
                     null,
                     presetsAvailable,
-                )
+                ).fieldsMatched
 
                 val firstSuggestion =
                     suggestedRegexReplacements.values.firstOrNull { it.isNotEmpty() }?.firstOrNull()
@@ -267,13 +267,13 @@ class EditScrobbleViewModel : ViewModel() {
                 val replacementsInEdit =
                     dao.performRegexReplace(scrobbleData, null, presetsAvailable)
 
-                if (firstSuggestion != null && replacementsInEdit.values.all { it.isEmpty() }) {
+                if (firstSuggestion != null && !replacementsInEdit.isEdit) {
                     _suggestRegexEdit.emit(firstSuggestion)
                 }
             }
         }
 
-        if (!isNowPlaying) {
+        if (!isNowPlaying && hash != null) {
             notifyPlayingTrackEvent(
                 PlayingTrackNotifyEvent.TrackScrobbleLocked(
                     hash = hash,

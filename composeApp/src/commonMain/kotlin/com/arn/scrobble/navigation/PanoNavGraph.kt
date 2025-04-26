@@ -1,10 +1,11 @@
 package com.arn.scrobble.navigation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +62,7 @@ import com.arn.scrobble.search.ImageSearchScreen
 import com.arn.scrobble.search.IndexingScreen
 import com.arn.scrobble.search.SearchScreen
 import com.arn.scrobble.themes.ThemeChooserScreen
+import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.addColumnPadding
 import com.arn.scrobble.ui.panoContentPadding
@@ -99,6 +101,7 @@ import pano_scrobbler.composeapp.generated.resources.settings
 import pano_scrobbler.composeapp.generated.resources.simple_edits
 import kotlin.reflect.typeOf
 
+@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.panoNavGraph(
     onSetTitle: (String?) -> Unit,
     onSetOtherUser: (UserCached?) -> Unit,
@@ -111,18 +114,23 @@ fun NavGraphBuilder.panoNavGraph(
     onOnboardingFinished: () -> Unit,
     goBack: () -> Unit,
     goUp: () -> Unit,
+    pullToRefreshState: () -> PullToRefreshState,
+    onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
     mainViewModel: MainViewModel,
 ) {
 
     @Composable
     fun onSetTitleRes(resId: StringResource?) {
-        onSetTitle(resId?.let { stringResource(it) })
+        val title = resId?.let { stringResource(it) }
+        LaunchedEffect(title) {
+            onSetTitle(title)
+        }
     }
 
     @Composable
     fun modifier() = Modifier
         .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)
+//        .background(MaterialTheme.colorScheme.background)
 
     composable<PanoRoute.SelfHomePager>(
         typeMap = mapOf(
@@ -151,6 +159,9 @@ fun NavGraphBuilder.panoNavGraph(
                 onSetTabIdx = onSetTabIdx,
                 onSetNavMetadataList = onSetNavMetadataList,
                 onNavigate = navigate,
+                pullToRefreshState = pullToRefreshState(),
+                onSetRefreshing = onSetRefreshing,
+                getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
                 modifier = modifier()
             )
         }
@@ -176,6 +187,9 @@ fun NavGraphBuilder.panoNavGraph(
                 onSetTabIdx = onSetTabIdx,
                 onSetNavMetadataList = onSetNavMetadataList,
                 onNavigate = navigate,
+                pullToRefreshState = pullToRefreshState(),
+                onSetRefreshing = onSetRefreshing,
+                getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
                 modifier = modifier()
             )
         }

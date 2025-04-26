@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 fun LabeledCheckbox(
     text: String,
     checked: Boolean,
-    enabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     textStyle: TextStyle = LocalTextStyle.current,
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
@@ -63,8 +63,8 @@ fun LabeledSwitch(
     text: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier

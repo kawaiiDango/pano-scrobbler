@@ -3,7 +3,6 @@ package com.arn.scrobble.media
 import android.content.Intent
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.serialization.encodeToString
 
 
 actual fun notifyPlayingTrackEventWithIpc(event: PlayingTrackNotifyEvent) {

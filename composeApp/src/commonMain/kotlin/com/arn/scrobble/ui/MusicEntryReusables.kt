@@ -30,21 +30,31 @@ import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FiberManualRecord
+import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.HeartBroken
+import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowDown
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowUp
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Rectangle
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,11 +62,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorPainter
@@ -72,17 +84,18 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.icons.AlbumFilled
-import com.arn.scrobble.icons.EqualizerFilled
-import com.arn.scrobble.icons.MicFilled
 import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.icons.RectFilledTranslucent
 import com.arn.scrobble.icons.StonksNew
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.PanoTimeFormatter
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -90,8 +103,10 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.collapse
 import pano_scrobbler.composeapp.generated.resources.expand
+import pano_scrobbler.composeapp.generated.resources.grid
 import pano_scrobbler.composeapp.generated.resources.hate
 import pano_scrobbler.composeapp.generated.resources.item_options
+import pano_scrobbler.composeapp.generated.resources.list
 import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.num_listeners
 import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
@@ -102,17 +117,21 @@ import kotlin.math.abs
 @Composable
 fun MusicEntryListItem(
     entry: MusicEntry,
+    modifier: Modifier = Modifier,
+    isPending: Boolean = false,
     appId: String? = null,
     showDateSeperator: Boolean = false,
     fixedImageHeight: Boolean = true,
     fetchAlbumImageIfMissing: Boolean = false,
+    index: Int? = null,
+    stonksDelta: Int? = null,
+    progress: Float? = null,
     forShimmer: Boolean = false,
     imageUrlOverride: String? = null,
     onImageClick: (() -> Unit)? = null,
     onEntryClick: () -> Unit,
     onMenuClick: (() -> Unit)? = null,
     menuContent: @Composable () -> Unit = {},
-    modifier: Modifier = Modifier,
 ) {
     val hasOnlyOneClickable = onImageClick == null && onMenuClick == null
 
@@ -154,8 +173,11 @@ fun MusicEntryListItem(
                                 entry,
                                 fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                             ),
-                        fallback = rememberTintedVectorPainter(null),
-                        error = rememberTintedVectorPainter(entry),
+                        fallback = placeholderImageVectorPainter(null),
+                        error = if (!isPending)
+                            placeholderImageVectorPainter(entry)
+                        else
+                            placeholderImageVectorPainter(entry, Icons.Outlined.HourglassEmpty),
                         placeholder = placeholderPainter(),
                         contentDescription = stringResource(Res.string.album_art),
                         modifier = Modifier
@@ -233,15 +255,37 @@ fun MusicEntryListItem(
                         else -> null
                     }
 
-                    if (topText != null)
-                        Text(
-                            text = if (forShimmer) "" else topText,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.align(Alignment.End)
-                        )
+                    if (topText != null) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .backgroundForShimmer(forShimmer)
+                        ) {
+                            if (stonksDelta != null) {
+                                stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
+                                    Icon(
+                                        imageVector = icon,
+                                        tint = color,
+                                        contentDescription = stonksDelta.toString(),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                            Text(
+                                text = if (forShimmer) "" else topText,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
 
                     Text(
-                        text = if (forShimmer) "" else firstText,
+                        text = if (forShimmer)
+                            ""
+                        else if (index != null)
+                            "${index + 1}. $firstText"
+                        else
+                            firstText,
                         style = MaterialTheme.typography.titleMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -266,6 +310,10 @@ fun MusicEntryListItem(
                             modifier = Modifier
                                 .padding(start = 8.dp)
                         )
+
+                    if (progress != null) {
+                        ScrobblesCountProgress(progress)
+                    }
                 }
 
                 if (onMenuClick != null) {
@@ -327,15 +375,15 @@ fun NowPlayingSurface(
 @Composable
 fun MusicEntryGridItem(
     entry: MusicEntry,
-    progress: Float? = null,
     showArtist: Boolean,
-    fetchAlbumImageIfMissing: Boolean = false,
-    forShimmer: Boolean = false,
-    imageUrlOverride: String? = null,
     index: Int?,
     stonksDelta: Int?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    imageUrlOverride: String? = null,
+    fetchAlbumImageIfMissing: Boolean = false,
+    progress: Float? = null,
+    forShimmer: Boolean = false,
 ) {
     Column(
         modifier = modifier
@@ -352,8 +400,8 @@ fun MusicEntryGridItem(
                     entry,
                     fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                 ),
-            fallback = rememberTintedVectorPainter(null),
-            error = rememberTintedVectorPainter(entry),
+            fallback = placeholderImageVectorPainter(null),
+            error = placeholderImageVectorPainter(entry),
             placeholder = placeholderPainter(),
             contentDescription = stringResource(Res.string.album_art),
             modifier = Modifier
@@ -463,22 +511,30 @@ fun MusicEntryGridItem(
                 }
             }
 
-            // always reserve space for the progress bar
-            Box(
-                modifier = Modifier
-                    .then(
-                        if (progress == null)
-                            Modifier
-                        else
-                            Modifier
-                                .fillMaxWidth(progress)
-                                .clip(MaterialTheme.shapes.medium)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                    )
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
-            )
+            ScrobblesCountProgress(progress)
         }
     }
+}
+
+@Composable
+private fun ScrobblesCountProgress(
+    progress: Float?,
+    modifier: Modifier = Modifier,
+) {
+    // always reserve space for the progress bar
+    Box(
+        modifier = modifier
+            .then(
+                if (progress == null)
+                    Modifier
+                else
+                    Modifier
+                        .fillMaxWidth(progress)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    )
 }
 
 @Composable
@@ -487,8 +543,8 @@ fun ExpandableHeaderItem(
     icon: ImageVector,
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
-    enabled: Boolean = true,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -528,8 +584,8 @@ fun GoToDetailsHeaderItem(
     title: String,
     icon: ImageVector,
     onClick: () -> Unit,
-    enabled: Boolean = true,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -602,8 +658,8 @@ fun ExpandableHeaderMenu(
     icon: ImageVector,
     menuItemText: String,
     onMenuItemClick: () -> Unit,
-    enabled: Boolean = true,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     var menuShown by remember { mutableStateOf(false) }
 
@@ -660,8 +716,6 @@ fun <T> LazyListScope.expandableSublist(
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
     onItemClick: (MusicEntry) -> Unit,
-    onMenuClick: (() -> Unit)? = null,
-    menuContent: @Composable (T) -> Unit = {},
     fetchAlbumImageIfMissing: Boolean = false,
     minItems: Int = 3,
     modifier: Modifier = Modifier,
@@ -684,11 +738,10 @@ fun <T> LazyListScope.expandableSublist(
         key = { it.hashCode() }
     ) { item ->
         val musicEntry = transformToMusicEntry(item)
+
         MusicEntryListItem(
             musicEntry,
             onEntryClick = { onItemClick(musicEntry) },
-            onMenuClick = onMenuClick,
-            menuContent = { menuContent(item) },
             fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
             modifier = modifier.animateItem(),
         )
@@ -696,7 +749,7 @@ fun <T> LazyListScope.expandableSublist(
 }
 
 @Composable
-fun EntriesHorizontal(
+fun EntriesRow(
     title: String,
     entries: LazyPagingItems<MusicEntry>,
     headerIcon: ImageVector,
@@ -787,9 +840,50 @@ fun EntriesHorizontal(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun EntriesGrid(
+private fun GridOrListSelector(
+    isColumn: Boolean,
+    onIsColumnChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        ButtonGroup {
+            OutlinedToggleButton(
+                checked = !isColumn,
+                onCheckedChange = {
+                    if (it)
+                        onIsColumnChange(false)
+                },
+            ) {
+                Icon(Icons.Outlined.GridView, contentDescription = stringResource(Res.string.grid))
+            }
+
+            OutlinedToggleButton(
+                checked = isColumn,
+                onCheckedChange = {
+                    if (it)
+                        onIsColumnChange(true)
+                },
+            ) {
+                Icon(Icons.Outlined.List, contentDescription = stringResource(Res.string.list))
+            }
+        }
+    }
+}
+
+@Composable
+fun EntriesGridOrList(
     entries: LazyPagingItems<MusicEntry>,
+    onItemClick: (MusicEntry) -> Unit,
+    placeholderItem: MusicEntry,
+    fetchAlbumImageIfMissing: Boolean,
+    showArtists: Boolean,
+    emptyStringRes: StringResource,
+    modifier: Modifier = Modifier,
     maxCountEvaluater: () -> Float = {
         if (entries.itemCount > 0)
             entries.peek(0)?.playcount?.toFloat() ?: 0f
@@ -799,15 +893,11 @@ fun EntriesGrid(
 //            .maxOfOrNull { i -> entries.peek(i)?.playcount?.toFloat() ?: 0f }
 //            ?: 0f
     },
-    onItemClick: (MusicEntry) -> Unit,
-    placeholderItem: MusicEntry,
-    fetchAlbumImageIfMissing: Boolean,
-    showArtists: Boolean,
-    emptyStringRes: StringResource,
-    modifier: Modifier = Modifier,
 ) {
     val maxCount by remember(entries.loadState) { mutableFloatStateOf(maxCountEvaluater()) }
     val shimmer by remember(entries.loadState.refresh) { mutableStateOf(entries.loadState.refresh is LoadState.Loading) }
+    val isColumn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.gridSingleColumn }
+    val scope = rememberCoroutineScope()
 
     if (entries.itemCount == 0 && !shimmer) {
         Box(
@@ -820,13 +910,26 @@ fun EntriesGrid(
                 textAlign = TextAlign.Center,
             )
         }
-    } else {
+    } else if (!isColumn) {
         PanoLazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = Stuff.GRID_MIN_SIZE.dp),
             modifier = modifier
                 .fillMaxSize()
                 .then(if (shimmer) Modifier.shimmerWindowBounds() else Modifier)
         ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                GridOrListSelector(
+                    isColumn = false,
+                    onIsColumnChange = { isColumn ->
+                        scope.launch {
+                            PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
             if (shimmer) {
                 items(8) { idx ->
                     MusicEntryGridItem(
@@ -879,9 +982,75 @@ fun EntriesGrid(
                 }
             }
         }
+    } else {
+        PanoLazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .then(if (shimmer) Modifier.shimmerWindowBounds() else Modifier)
+        ) {
+            item {
+                GridOrListSelector(
+                    isColumn = true,
+                    onIsColumnChange = { isColumn ->
+                        scope.launch {
+                            PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
+            if (shimmer) {
+                items(8) { idx ->
+                    MusicEntryListItem(
+                        placeholderItem,
+                        forShimmer = true,
+                        onEntryClick = {},
+                        modifier = Modifier
+                            .animateItem()
+                    )
+                }
+            }
+
+            items(entries.itemCount, key = entries.itemKey()) { idx ->
+                val entryNullable = entries[idx]
+                val entry = entryNullable ?: Artist(" ", listeners = idx.toLong())
+
+                MusicEntryListItem(
+                    entry,
+                    forShimmer = entryNullable == null,
+                    onEntryClick = {
+                        onItemClick(entry)
+                    },
+                    progress = if (maxCount > 0) {
+                        entry.playcount?.toFloat()?.div(maxCount) ?: 0f
+                    } else
+                        entry.match,
+                    stonksDelta = entry.stonksDelta,
+                    fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
+//                    showArtist = showArtists,
+                    index = idx,
+                    modifier = Modifier
+                        .animateItem()
+                )
+            }
+
+
+            if (entries.loadState.refresh is LoadState.Error ||
+                entries.loadState.append is LoadState.Error
+            ) {
+                val error = entries.loadState.refresh as LoadState.Error
+                item {
+                    ListLoadError(
+                        modifier = Modifier.animateItem(),
+                        throwable = error.error,
+                        onRetry = { entries.retry() })
+                }
+            }
+        }
     }
 }
-
 
 fun getMusicEntryPlaceholderItem(type: Int, showScrobbleCount: Boolean = true): MusicEntry {
     val count = if (showScrobbleCount) 10L else 0L
@@ -939,22 +1108,22 @@ fun MusicEntry?.colorSeed(): Int {
 }
 
 @Composable
-fun rememberTintedVectorPainter(
+fun placeholderImageVectorPainter(
     musicEntry: MusicEntry?,
     imageVector: ImageVector = when (musicEntry) {
-        is Artist -> PanoIcons.MicFilled
-        is Album -> PanoIcons.AlbumFilled
+        is Artist -> Icons.Rounded.Mic
+        is Album -> Icons.Outlined.Album
         is Track -> if (musicEntry.album != null)
-            PanoIcons.AlbumFilled
+            Icons.Outlined.Album
         else
-            PanoIcons.EqualizerFilled
+            Icons.Rounded.GraphicEq
 
-        else -> PanoIcons.EqualizerFilled
+        else -> Icons.Rounded.Rectangle
     },
+    scaleFactor: Float = 0.6f,
 ): VectorPainter {
 
     val colors = LocalThemeAttributes.current.allSecondaryContainerColors
-
     val color = colors[abs(musicEntry.colorSeed()) % colors.size]
 
     return rememberVectorPainter(
@@ -967,7 +1136,15 @@ fun rememberTintedVectorPainter(
         tintBlendMode = imageVector.tintBlendMode,
         autoMirror = imageVector.autoMirror
     ) { viewportWidth, viewportHeight ->
-
-        RenderVectorGroup(group = imageVector.root)
+        RenderVectorGroup(group = PanoIcons.RectFilledTranslucent.root)
+        Group(
+            name = imageVector.root.name + "_scaled",
+            scaleX = scaleFactor,
+            scaleY = scaleFactor,
+            translationX = (viewportWidth - imageVector.viewportWidth * scaleFactor) / 2,
+            translationY = (viewportHeight - imageVector.viewportHeight * scaleFactor) / 2,
+        ) {
+            RenderVectorGroup(group = imageVector.root)
+        }
     }
 }

@@ -32,8 +32,8 @@ fun TrackHistoryScreen(
     user: UserCached,
     track: Track,
     onNavigate: (PanoRoute) -> Unit,
-    viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
     modifier: Modifier = Modifier,
+    viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstScrobbleTime by viewModel.firstScrobbleTime.collectAsStateWithLifecycle()
@@ -85,7 +85,8 @@ fun TrackHistoryScreen(
             editedTracksMap = editedTracksMap,
             pkgMap = pkgMap,
             fetchAlbumImageIfMissing = false,
-            showFullMenu = false,
+            showFullMenu = true,
+            showLove = false,
             showHate = false,
             onNavigate = onNavigate,
             viewModel = viewModel,

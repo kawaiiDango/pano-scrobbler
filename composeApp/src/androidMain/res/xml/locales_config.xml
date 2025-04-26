@@ -26,5 +26,6 @@
     <locale android:name="sv" />
     <locale android:name="tr" />
     <locale android:name="uk" />
+    <locale android:name="vi" />
     <locale android:name="zh-Hans" />
 </locale-config>

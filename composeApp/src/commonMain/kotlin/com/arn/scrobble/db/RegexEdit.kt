@@ -40,6 +40,7 @@ data class RegexEdit(
     val replaceAll: Boolean = false,
     val caseSensitive: Boolean = false,
     val continueMatching: Boolean = false,
+    val blockPlayerAction: BlockPlayerAction? = null,
 ) {
     @SerialName("field")
     @Ignore

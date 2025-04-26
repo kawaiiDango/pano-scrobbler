@@ -43,6 +43,7 @@ import com.arn.scrobble.ui.colorSeed
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,7 +80,7 @@ class CollageGeneratorVM : ViewModel() {
             blurRadius = 5f
         )
     )
-    lateinit var context: PlatformContext
+    private lateinit var context: PlatformContext
 
     private val paddingPx = 16
     private val isPro = PlatformStuff.billingRepository.isLicenseValid
@@ -616,28 +617,17 @@ class CollageGeneratorVM : ViewModel() {
 
             if (!isPro) {
                 val appIconScaledSize = (footerTextSize * 1.5).toInt()
+
                 with(appIcon) {
-                    draw(
-                        size = Size(appIconScaledSize.toFloat(), appIconScaledSize.toFloat())
-                    )
+                    translate(
+                        left = (totalWidth - brandTextWidth - appIconScaledSize - brandTextPadding / 2 - paddingPx).toFloat(),
+                        top = offsetY
+                    ) {
+                        draw(
+                            size = Size(appIconScaledSize.toFloat(), appIconScaledSize.toFloat())
+                        )
+                    }
                 }
-
-                // Calculate offsets for center cropping
-                val cropOffsetX = (appIconScaledSize - footerTextSize) / 2
-                val cropOffsetY = (appIconScaledSize - footerTextSize) / 2
-
-                // Draw the cropped image
-//                drawImage(
-//                    image = appIcon,
-//                    srcOffset = IntOffset(cropOffsetX, cropOffsetY),
-//                    srcSize = IntSize(footerTextSize, footerTextSize),
-//                    dstOffset = IntOffset(
-//                        (totalWidth - brandTextWidth - footerTextSize - brandTextPadding / 2 - paddingPx),
-//                        offsetY.toInt()
-//                    ),
-//                )
-
-                // todo fix drawImage
 
                 drawText(
                     textMeasurer = textMeasurer,
@@ -664,7 +654,7 @@ class CollageGeneratorVM : ViewModel() {
             1,
             username
         ).onFailure {
-            _errorText.emit(it.message ?: "Unknown error")
+            _errorText.emit(it.redactedMessage)
         }
     }
 

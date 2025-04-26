@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.webview.web.WebView
 import com.arn.scrobble.webview.web.rememberWebViewNavigator
@@ -39,7 +39,7 @@ actual fun WebViewScreen(
     LaunchedEffect(webViewState.errorsForCurrentRequest) {
         val error = webViewState.errorsForCurrentRequest.firstOrNull()
         if (error != null) {
-            val errorMsg = error.description.toString()
+            val errorMsg = error.description
             val errorMsgHtml = "<html><body><div align=\"center\">$errorMsg</div></body></html>"
             navigator.loadHtml(
                 errorMsgHtml,

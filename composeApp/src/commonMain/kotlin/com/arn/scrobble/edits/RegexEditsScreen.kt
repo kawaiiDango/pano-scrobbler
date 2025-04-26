@@ -66,7 +66,6 @@ import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
@@ -226,8 +225,8 @@ private fun RegexEditItem(
     regexEdit: RegexEdit,
     onKeypressMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
     onItemClick: (RegexEdit) -> Unit,
-    forShimmer: Boolean = false,
     modifier: Modifier = Modifier,
+    forShimmer: Boolean = false,
 ) {
     val regexEdit = remember(regexEdit) { RegexPresets.getPossiblePreset(regexEdit) }
     val scope = rememberCoroutineScope()

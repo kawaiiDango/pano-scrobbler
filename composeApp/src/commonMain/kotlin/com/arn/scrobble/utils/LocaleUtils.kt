@@ -31,6 +31,7 @@ object LocaleUtils {
         "sv",
         "tr",
         "uk",
+        "vi",
         "zh-Hans",
     )
     // localesSet end
@@ -44,6 +45,6 @@ object LocaleUtils {
     )
 }
 
-expect fun setAppLocale(context: Any?, lang: String?, force: Boolean)
+expect fun setAppLocale(lang: String?, force: Boolean)
 
 expect fun getCurrentLocale(localePref: String?): String

@@ -16,7 +16,7 @@ import pano_scrobbler.composeapp.generated.resources.digest_monthly
 import pano_scrobbler.composeapp.generated.resources.digest_weekly
 import pano_scrobbler.composeapp.generated.resources.graph_yearly
 import pano_scrobbler.composeapp.generated.resources.new_player
-import pano_scrobbler.composeapp.generated.resources.new_player_prompt
+import pano_scrobbler.composeapp.generated.resources.new_player_prompt_desktop
 import pano_scrobbler.composeapp.generated.resources.top_albums
 import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
@@ -60,7 +60,7 @@ actual object PanoNotifications {
         GlobalScope.launch {
             notify(
                 getString(Res.string.new_player, appLabel.ifEmpty { appId }),
-                getString(Res.string.new_player_prompt)
+                getString(Res.string.new_player_prompt_desktop)
             )
         }
     }

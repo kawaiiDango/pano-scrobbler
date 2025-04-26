@@ -29,7 +29,7 @@ class ScrobbleQueue(
                 Stuff.mainPrefsInitialValue.let { it.delayPercentP to it.delaySecsP })
 
     // delays scrobbling this hash until it becomes null again
-    var lockedHash: Int? = null
+    private var lockedHash: Int? = null
 
     private val tickEveryMs = 500L
 
@@ -71,6 +71,10 @@ class ScrobbleQueue(
     fun reschedule(hash: Int, newElapsedRealtime: Long) {
         tracksCopyPQ.find { it.hash == hash }
             ?.scrobbleAtMonotonicTime = newElapsedRealtime
+    }
+
+    fun setLockedHash(hash: Int?) {
+        lockedHash = hash
     }
 
     fun addScrobble(trackInfo: PlayingTrackInfo) =

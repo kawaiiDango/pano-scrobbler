@@ -3,24 +3,25 @@ package com.arn.scrobble.onboarding
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.file.FileScrobblable
-import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.OutlinedToggleButtons
+import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.RadioButtonGroup
-import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -40,12 +41,10 @@ fun FileLoginScreen(
     var selectedFileFormat by remember { mutableStateOf<FileScrobblable.FileFormat?>(null) }
     val createText = stringResource(Res.string.create)
     val openText = stringResource(Res.string.open_existing)
-    var errorText by remember { mutableStateOf<String?>(null) }
     val fileOpenTypesToTexts =
         remember { mapOf(FileOpenType.CREATE to createText, FileOpenType.OPEN to openText) }
     var filePickerMode by remember { mutableStateOf<FilePickerMode?>(null) }
     var filePickerType by remember { mutableStateOf<FileType?>(null) }
-    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier,
@@ -58,7 +57,6 @@ fun FileLoginScreen(
             selectedIndex = selectedFileFormat?.ordinal ?: -1,
             onSelected = {
                 selectedFileFormat = FileScrobblable.FileFormat.entries[it]
-                errorText = null
             },
         )
 
@@ -90,13 +88,9 @@ fun FileLoginScreen(
                                 }
                         }
                     }
-
-                    errorText = null
                 }
             )
         }
-
-        ErrorText(errorText = errorText)
     }
 
     if (filePickerMode != null && filePickerType != null) {
@@ -105,31 +99,24 @@ fun FileLoginScreen(
             mode = filePickerMode!!,
             type = filePickerType!!,
             onDismiss = {
-                filePickerMode = null
-                filePickerType = null
+                onBack()
+//                filePickerMode = null
+//                filePickerType = null
+                // cannot reuse this screen on android after launching filePicker once, so always onBack()
             },
         ) { uri ->
-            scope.launch {
-                onFilePicked(
-                    uri,
-                    selectedFileFormat!!,
-                    onDone = onBack,
-                    onError = { errorText = it }
-                )
+            GlobalScope.launch {
+                FileScrobblable.authAndGetSession(uri, selectedFileFormat!!)
+                    .onFailure {
+                        Stuff.globalSnackbarFlow.emit(
+                            PanoSnackbarVisuals(
+                                message = it.redactedMessage,
+                                isError = true,
+                                duration = SnackbarDuration.Long
+                            )
+                        )
+                    }
             }
         }
     }
-}
-
-private suspend fun onFilePicked(
-    platformFile: PlatformFile,
-    fileFormat: FileScrobblable.FileFormat,
-    onDone: () -> Unit,
-    onError: (String) -> Unit,
-) {
-    FileScrobblable.authAndGetSession(platformFile, fileFormat)
-        .onSuccess { onDone() }
-        .onFailure {
-            onError(it.message.toString())
-        }
 }

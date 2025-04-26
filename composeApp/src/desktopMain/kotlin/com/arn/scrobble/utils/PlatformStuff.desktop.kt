@@ -7,7 +7,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.arn.scrobble.BuildKonfig
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -23,6 +23,8 @@ import com.arn.scrobble.utils.Stuff.billingClientData
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.skia.EncodedImageFormat
@@ -33,6 +35,7 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
+import java.io.IOException
 import java.io.OutputStream
 import java.net.CookieHandler
 import java.net.CookieManager
@@ -59,11 +62,11 @@ actual object PlatformStuff {
     actual val isTestLab = false
 
     actual val filesDir by lazy {
-        File(DesktopStuff.appDataRoot, "${BuildKonfig.APP_ID}/data")
+        File(DesktopStuff.appDataRoot, "data")
     }
 
     actual val cacheDir by lazy {
-        File(DesktopStuff.appDataRoot, "${BuildKonfig.APP_ID}/cache")
+        File(DesktopStuff.appDataRoot, "cache")
     }
 
     actual val mainPrefs by lazy {
@@ -81,7 +84,11 @@ actual object PlatformStuff {
     }
 
     actual fun openInBrowser(url: String) {
-        Desktop.getDesktop().browse(URI(url))
+        try {
+            Desktop.getDesktop().browse(URI(url))
+        } catch (e: IOException) {
+            Logger.e("Error opening an URL in browser")
+        }
     }
 
     actual fun String.toHtmlAnnotatedString() =
@@ -98,11 +105,11 @@ actual object PlatformStuff {
         return name.sha256()
     }
 
-    actual fun launchSearchIntent(
+    actual suspend fun launchSearchIntent(
         musicEntry: MusicEntry,
         pkgName: String?,
     ) {
-        // call openInBrowser with a spotify search url
+        val searchUrlTemplate = mainPrefs.data.map { it.searchUrlTemplate }.first()
 
         var searchQuery = when (musicEntry) {
             is Artist -> {
@@ -119,7 +126,10 @@ actual object PlatformStuff {
         }
 
         searchQuery = searchQuery.encodeURLPath()
-        val searchUrl = "spotify://search/$searchQuery"
+        val searchUrl = searchUrlTemplate.replace(
+            "\$query",
+            searchQuery
+        )
         openInBrowser(searchUrl)
     }
 
@@ -129,7 +139,7 @@ actual object PlatformStuff {
     }
 
     actual fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb> {
-        val dbFile = File(filesDir, PanoDb.fileName)
+        val dbFile = File(filesDir, PanoDb.FILE_NAME)
         return Room.databaseBuilder<PanoDb>(
             name = dbFile.absolutePath
         )
@@ -142,10 +152,13 @@ actual object PlatformStuff {
     actual fun getWebviewCookies(uri: String): Map<String, String> {
         val cookiesStr = CookieHandler.getDefault().get(URI(uri), emptyMap()).values.firstOrNull()
 
-        return cookiesStr?.associate {
-            val (name, value) = it.trim().split("=", limit = 2)
-            name to value
-        } ?: emptyMap()
+        return cookiesStr
+            ?.joinToString("; ")
+            ?.split(";")
+            ?.associate {
+                val (name, value) = it.trim().split("=", limit = 2)
+                name to value
+            } ?: emptyMap()
     }
 
     actual fun clearWebviewCookies() {

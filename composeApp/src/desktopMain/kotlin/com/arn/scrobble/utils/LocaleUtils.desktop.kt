@@ -2,8 +2,8 @@ package com.arn.scrobble.utils
 
 import java.util.Locale
 
-// context is always null on desktop, lang = null idicates that the system locale should be set
-actual fun setAppLocale(context: Any?, lang: String?, force: Boolean) {
+// context is always null on desktop, lang = null indicates that the system locale should be set
+actual fun setAppLocale(lang: String?, force: Boolean) {
     if (lang != null) {
         val locale = Locale.forLanguageTag(lang)
         Locale.setDefault(locale)

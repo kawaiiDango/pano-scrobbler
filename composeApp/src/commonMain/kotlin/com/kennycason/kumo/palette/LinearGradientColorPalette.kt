@@ -54,7 +54,7 @@ class LinearGradientColorPalette(
             gradientStepsC1AndC2: Int,
             gradientStepsC2AndC3: Int,
         ): MutableList<Int?> {
-            val colors: MutableList<Int?> = ArrayList<Int?>()
+            val colors = mutableListOf<Int?>()
 
             val gradient1 = createLinearGradient(color1, color2, gradientStepsC1AndC2)
             val gradient2 = createLinearGradient(color2, color3, gradientStepsC2AndC3)
@@ -83,7 +83,7 @@ class LinearGradientColorPalette(
             color2: Int,
             gradientSteps: Int,
         ): MutableList<Int> {
-            val colors: MutableList<Int> = ArrayList<Int>(gradientSteps + 1)
+            val colors: MutableList<Int> = ArrayList(gradientSteps + 1)
 
             // add beginning color to the gradient
             colors.add(color1)

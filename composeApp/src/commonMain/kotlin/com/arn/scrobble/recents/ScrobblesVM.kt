@@ -27,8 +27,6 @@ import kotlinx.coroutines.launch
 class ScrobblesVM : ViewModel() {
     val pendingScrobbles = PanoDb.db.getPendingScrobblesDao().allFlow(10000)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-    val pendingLoves = PanoDb.db.getPendingLovesDao().allFlow(10000)
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val scrobblerEnabled =
         PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled && PlatformStuff.isNotificationListenerEnabled() }
             .stateIn(
@@ -56,8 +54,8 @@ class ScrobblesVM : ViewModel() {
         private set
 
     private val _loadedCachedVersion = MutableStateFlow(false)
-    var lastRecentsRefreshTime = System.currentTimeMillis()
-        private set
+    private val _lastRecentsRefreshTime = MutableStateFlow(System.currentTimeMillis())
+    val lastRecentsRefreshTime = _lastRecentsRefreshTime.asStateFlow()
 
     private val pagingConfig = PagingConfig(
         pageSize = Stuff.DEFAULT_PAGE_SIZE,
@@ -86,7 +84,7 @@ class ScrobblesVM : ViewModel() {
                         addToPkgMap = { time, pkg -> _pkgMap.value += time to pkg },
                         onSetFirstScrobbleTime = { _firstScrobbleTime.value = it },
                         onSetLastRecentsRefreshTime = {
-                            lastRecentsRefreshTime = it
+                            _lastRecentsRefreshTime.value = it
                         },
                         onClearOverrides = ::clearOverrides
                     )
@@ -104,18 +102,24 @@ class ScrobblesVM : ViewModel() {
         }
 
     init {
-        if (pendingScrobbles.value.isNotEmpty() || pendingLoves.value.isNotEmpty() && Stuff.isOnline) {
-            viewModelScope.launch {
-                PendingScrobblesWork.getProgress()
-                    .collect {
-                        val snackbarData = PanoSnackbarVisuals(
-                            message = it.message,
-                            isError = it.isError
-                        )
-                        Stuff.globalSnackbarFlow.emit(snackbarData)
-                    }
-            }
+        viewModelScope.launch {
+            val hasPending = PanoDb.db.getPendingScrobblesDao().count() > 0
+
+            if (hasPending && Stuff.isOnline)
+                PendingScrobblesWork.checkAndSchedule()
         }
+
+        viewModelScope.launch {
+            PendingScrobblesWork.getProgress()
+                .collect {
+                    val snackbarData = PanoSnackbarVisuals(
+                        message = it.message,
+                        isError = it.isError
+                    )
+                    Stuff.globalSnackbarFlow.emit(snackbarData)
+                }
+        }
+
         updateScrobblerServiceStatus()
     }
 

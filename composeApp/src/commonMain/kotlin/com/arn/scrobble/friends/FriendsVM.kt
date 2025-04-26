@@ -59,6 +59,9 @@ class FriendsVM : ViewModel() {
 
     private val friendsRecentsSemaphore = Semaphore(2)
 
+    private val _lastFriendsRefreshTime = MutableStateFlow(System.currentTimeMillis())
+    val lastFriendsRefreshTime = _lastFriendsRefreshTime.asStateFlow()
+
     val friends = user.filterNotNull().flatMapLatest { user ->
         Pager(
             config = PagingConfig(
@@ -67,7 +70,13 @@ class FriendsVM : ViewModel() {
                 prefetchDistance = 4,
                 enablePlaceholders = true
             ),
-            pagingSourceFactory = { FriendsPagingSource(user.name) { _totalCount.value = it } }
+            pagingSourceFactory = {
+                FriendsPagingSource(
+                    user.name,
+                    onSetLastFriendsRefreshTime = { _lastFriendsRefreshTime.value = it },
+                    setTotal = { _totalCount.value = it }
+                )
+            }
         ).flow
     }
         .cachedIn(viewModelScope)

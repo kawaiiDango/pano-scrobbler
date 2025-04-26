@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.CalendarViewMonth
 import androidx.compose.material.icons.outlined.CalendarViewWeek
@@ -54,6 +55,7 @@ import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.PanoLazyRow
+import com.arn.scrobble.ui.combineImageVectors
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
@@ -216,7 +218,10 @@ fun TimePeriodSelector(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh)
+        modifier = modifier.background(
+            MaterialTheme.colorScheme.surfaceContainerHigh,
+            shape = MaterialTheme.shapes.large
+        )
     ) {
 
         if (!isListenBrainz) {
@@ -230,7 +235,10 @@ fun TimePeriodSelector(
                         ) {
                             periodType?.let {
                                 Icon(
-                                    imageVector = getPeriodTypeIcon(it),
+                                    combineImageVectors(
+                                        getPeriodTypeIcon(it),
+                                        Icons.Outlined.ArrowDropDown
+                                    ),
                                     contentDescription = stringResource(Res.string.item_options)
                                 )
                             }
@@ -267,7 +275,7 @@ fun TimePeriodSelector(
         PanoLazyRow(
             state = listState,
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            contentPadding = PaddingValues(end = 24.dp),
+            contentPadding = PaddingValues(start = 24.dp, end = 24.dp),
             modifier = Modifier.weight(1f),
         ) {
             items(timePeriods.keys.toList()) { timePeriod ->

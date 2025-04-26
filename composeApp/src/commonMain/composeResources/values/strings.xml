@@ -158,7 +158,12 @@
     <string name="legend"
         comment="Chart legend - descriptions of the symbols used"
         >Legend</string>
-    <string name="grid_size">Change grid size</string>
+    <string name="grid"
+        comment="Grid view"
+        >Grid</string>
+    <string name="list"
+        comment="Single column list view"
+        >List</string>
     <string name="pinch_to_zoom">Pinch to zoom</string>
     <string name="more_info">More info</string>
     <string name="more"
@@ -208,6 +213,11 @@
         comment="(%1 = App name) detected (shown in notification, when a new music player is detected)"
         >%1$s detected</string>
     <string name="new_player_prompt">Keep scrobbling this app?</string>
+    <string name="new_player_prompt_desktop">Head to settings to start scrobbling this app</string>
+    <string name="cannot_access"
+        comment="%1$s= the file or folder name"
+        >Cannot access %1$s</string>
+    <string name="file_exists_confirm_overwrite">File exists. Click again to overwrite.</string>
     <string name="no_scrobbles">No songs here yet…</string>
     <string name="no_friends">Not following anyone yet…</string>
     <string name="channel_err"
@@ -666,6 +676,11 @@
     <string name="pref_translate_credits">Translation credits</string>
     <string name="pref_oss_credits">Open source credits</string>
     <string name="pref_check_updates">Check for updates</string>
+    <string name="pref_search_url_template">Search URL template</string>
+    <string name="pref_search_url_template_desc"
+        comment="Do not translate $query as the user has to enter it as it is"
+        >Use $query as the search term placeholder</string>
+    <string name="pref_native_file_picker">Use native file picker</string>
     <string name="update_available" formatted="true"
         comment="%1= the version number"
         >Update available: %1$s</string>

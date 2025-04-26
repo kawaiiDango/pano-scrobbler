@@ -63,7 +63,6 @@ actual fun OnboardingScreen(
             openAction = {},
             isDone = isLoggedIn,
             isExpanded = true,
-            onSkip = null,
         ) {
             ButtonStepperForLogin(navigate = onNavigate)
         }

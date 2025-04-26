@@ -75,5 +75,5 @@ and tapping on the "Copy last.fm session key" in the settings screen.
 ### For desktop:
 
 - If you intend to package a build for desktop,
-  use [JBRSDK with JCEF v21](https://github.com/JetBrains/JetBrainsRuntime/releases) as your gradle
-  JDK, as the built-in one does not contain jpackage
+  use [JBRSDK v21](https://github.com/JetBrains/JetBrainsRuntime/releases) as your gradle JDK, as
+  the built-in one does not contain jpackage

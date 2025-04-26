@@ -3,10 +3,12 @@ package com.arn.scrobble.recents
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Edit
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,27 +30,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PendingScrobbleState
 import com.arn.scrobble.edits.EditScrobbleDialog
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.accountTypeLabel
+import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
+import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -56,14 +63,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.block
+import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.hate
+import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.more
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
@@ -90,9 +100,18 @@ fun TrackDropdownMenu(
     onDelete: (() -> Unit)?,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
+    skipFirstLevel: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    var menuLevel by remember(expanded) { mutableStateOf(TrackMenuLevel.Root) }
+
+    var menuLevel by remember(expanded) {
+        mutableStateOf(
+            if (!skipFirstLevel)
+                TrackMenuLevel.Root
+            else
+                TrackMenuLevel.More
+        )
+    }
     var editDialogShown by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -166,18 +185,35 @@ fun TrackDropdownMenu(
                                 GlobalScope.launch {
                                     withContext(Dispatchers.IO) {
                                         ScrobbleEverywhere.delete(track)
+                                            .forEach {
+                                                it.onFailure {
+                                                    if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
+                                                        Stuff.globalSnackbarFlow.emit(
+                                                            PanoSnackbarVisuals(
+                                                                getString(Res.string.lastfm_reauth),
+                                                                isError = true
+                                                            )
+                                                        )
+                                                    } else
+                                                        Stuff.globalExceptionFlow.emit(it)
+                                                }
+                                            }
                                     }
                                 }
                                 onDelete()
                                 onDismissRequest()
                             },
                             text = {
-                                Text(stringResource(Res.string.delete))
+                                Text(
+                                    stringResource(Res.string.delete),
+                                    color = MaterialTheme.colorScheme.error
+                                )
                             },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Outlined.Delete,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
                                 )
                             }
                         )
@@ -208,7 +244,23 @@ fun TrackDropdownMenu(
                         },
                     )
 
+                    DropdownMenuItem(
+                        onClick = {
+                            menuLevel = TrackMenuLevel.Block
+                        },
+                        text = {
+                            Text(stringResource(Res.string.block))
+                        },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                contentDescription = null
+                            )
+                        }
+                    )
+
                     if (onHate != null) {
+
                         DropdownMenuItem(
                             onClick = {
                                 val newHated = track.userHated != true
@@ -235,22 +287,9 @@ fun TrackDropdownMenu(
 
                     DropdownMenuItem(
                         onClick = {
-                            menuLevel = TrackMenuLevel.Block
-                        },
-                        text = {
-                            Text(stringResource(Res.string.block))
-                        },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                contentDescription = null
-                            )
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        onClick = {
-                            PlatformStuff.launchSearchIntent(track, pkgName)
+                            scope.launch {
+                                PlatformStuff.launchSearchIntent(track, pkgName)
+                            }
                             onDismissRequest()
                         },
                         text = {
@@ -284,6 +323,24 @@ fun TrackDropdownMenu(
                             }
                         )
                     }
+
+                    if (!PlatformStuff.isTv) {
+                        DropdownMenuItem(
+                            onClick = {
+                                PlatformStuff.copyToClipboard(track.artist.name + " - " + track.name)
+                                onDismissRequest()
+                            },
+                            text = {
+                                Text(stringResource(Res.string.copy))
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.ContentCopy,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
                 }
 
                 TrackMenuLevel.Block -> {
@@ -301,7 +358,6 @@ fun TrackDropdownMenu(
                                 artist = track.artist.name,
                                 album = track.album?.name ?: "",
                                 track = track.name,
-                                skip = true
                             )
                             onNavigate(PanoRoute.BlockedMetadataAdd(b))
                             onDismissRequest()
@@ -321,7 +377,6 @@ fun TrackDropdownMenu(
                             val b = BlockedMetadata(
                                 artist = track.artist.name,
                                 album = track.album?.name ?: "",
-                                skip = true
                             )
                             onNavigate(PanoRoute.BlockedMetadataAdd(b))
                             onDismissRequest()
@@ -340,7 +395,6 @@ fun TrackDropdownMenu(
                         onClick = {
                             val b = BlockedMetadata(
                                 artist = track.artist.name,
-                                skip = true
                             )
                             onNavigate(PanoRoute.BlockedMetadataAdd(b))
                         },
@@ -359,7 +413,9 @@ fun TrackDropdownMenu(
         } else {
             DropdownMenuItem(
                 onClick = {
-                    PlatformStuff.launchSearchIntent(track, pkgName)
+                    scope.launch {
+                        PlatformStuff.launchSearchIntent(track, pkgName)
+                    }
                     onDismissRequest()
                 },
                 text = {
@@ -389,7 +445,7 @@ fun TrackDropdownMenu(
         EditScrobbleDialog(
             scrobbleData = sd,
             msid = track.msid,
-            hash = 0,
+            hash = null,
             onDone = onEdit!!,
             onDismiss = { editDialogShown = false },
             onNavigate = onNavigate
@@ -430,7 +486,7 @@ fun LazyListScope.scrobblesPlaceholdersAndErrors(
 
 @Composable
 fun PendingDropdownMenu(
-    pending: PendingScrobbleState,
+    pendingScrobble: PendingScrobble,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -440,22 +496,22 @@ fun PendingDropdownMenu(
         onDismissRequest = onDismissRequest,
         modifier = modifier
     ) {
-        PendingScrobbleServicesDesc(pending)
+        PendingScrobbleServicesDesc(pendingScrobble)
 
-        if (pending is PendingScrobble) {
+        if (pendingScrobble.event == ScrobbleEvent.scrobble) {
             DropdownMenuItem(
                 onClick = {
                     GlobalScope.launch {
                         withContext(Dispatchers.IO) {
                             val track = Track(
-                                pending.track,
-                                pending.album.ifEmpty { null }?.let {
+                                pendingScrobble.track,
+                                pendingScrobble.album.ifEmpty { null }?.let {
                                     Album(
                                         it,
-                                        pending.albumArtist.ifEmpty { null }
+                                        pendingScrobble.albumArtist.ifEmpty { null }
                                             ?.let { Artist(it) })
                                 },
-                                Artist(pending.artist)
+                                Artist(pendingScrobble.artist)
                             )
 
                             ScrobbleEverywhere.loveOrUnlove(track, true)
@@ -481,21 +537,22 @@ fun PendingDropdownMenu(
             onClick = {
                 GlobalScope.launch {
                     withContext(Dispatchers.IO) {
-                        if (pending is PendingScrobble)
-                            PanoDb.db.getPendingScrobblesDao().delete(pending)
-                        else if (pending is PendingLove)
-                            PanoDb.db.getPendingLovesDao().delete(pending)
+                        PanoDb.db.getPendingScrobblesDao().delete(pendingScrobble)
                     }
                 }
                 onDismissRequest()
             },
             text = {
-                Text(stringResource(Res.string.delete))
+                Text(
+                    stringResource(Res.string.delete),
+                    color = MaterialTheme.colorScheme.error
+                )
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         )
@@ -504,12 +561,12 @@ fun PendingDropdownMenu(
 
 @Composable
 private fun ColumnScope.PendingScrobbleServicesDesc(
-    pendingScrobbleState: PendingScrobbleState,
+    pendingScrobble: PendingScrobble,
 ) {
     val currentScrobblableType by remember { mutableStateOf(Scrobblables.current.value?.userAccount?.type) }
     val accountTypesList = mutableListOf<AccountType>()
     AccountType.entries.forEach {
-        if (pendingScrobbleState.state and (1 shl it.ordinal) != 0)
+        if (pendingScrobble.state and (1 shl it.ordinal) != 0)
             accountTypesList += it
     }
 
@@ -545,6 +602,7 @@ fun LazyListScope.scrobblesListItems(
     pkgMap: Map<Long, String>,
     fetchAlbumImageIfMissing: Boolean,
     showFullMenu: Boolean,
+    showLove: Boolean,
     showHate: Boolean,
     onNavigate: (PanoRoute) -> Unit,
     viewModel: ScrobblesVM,
@@ -580,7 +638,7 @@ fun LazyListScope.scrobblesListItems(
                             pkgName = pkgName,
                             onNavigate = onNavigate,
                             user = user,
-                            onLove = if (showFullMenu) {
+                            onLove = if (showLove) {
                                 {
                                     viewModel.editTrack(
                                         trackPeek!!,
@@ -588,7 +646,7 @@ fun LazyListScope.scrobblesListItems(
                                     )
                                 }
                             } else null,
-                            onHate = if (showFullMenu && showHate) {
+                            onHate = if (showHate) {
                                 {
                                     viewModel.editTrack(
                                         trackPeek!!,
@@ -611,6 +669,7 @@ fun LazyListScope.scrobblesListItems(
                                 viewModel.editTrack(trackPeek!!, editedTrack)
                             },
                             expanded = menuVisible,
+                            skipFirstLevel = !showFullMenu,
                             onDismissRequest = { menuVisible = false }
                         )
                     },
@@ -620,5 +679,65 @@ fun LazyListScope.scrobblesListItems(
 
             }
         }
+    }
+}
+
+fun LazyListScope.pendingScrobblesListItems(
+    headerText: String,
+    headerIcon: ImageVector,
+    items: List<PendingScrobble>,
+    expanded: Boolean,
+    onToggle: (Boolean) -> Unit,
+    onItemClick: (MusicEntry) -> Unit,
+    modifier: Modifier = Modifier,
+    fetchAlbumImageIfMissing: Boolean = false,
+    minItems: Int = 3,
+) {
+    if (items.isEmpty()) return
+
+    item(key = headerText) {
+        ExpandableHeaderItem(
+            title = headerText,
+            icon = headerIcon,
+            expanded = expanded || items.size <= minItems,
+            enabled = items.size > minItems,
+            onToggle = onToggle,
+            modifier = modifier.animateItem(),
+        )
+    }
+
+    items(
+        items.take(if (expanded) items.size else minItems),
+        key = { it.hashCode() }
+    ) { item ->
+        val musicEntry = remember {
+            Track(
+                name = item.track,
+                artist = Artist(item.artist),
+                album = item.album.ifEmpty { null }?.let { Album(it) },
+                date = item.timestamp,
+                duration = item.duration,
+                userloved = item.event == ScrobbleEvent.love,
+                userHated = item.event == ScrobbleEvent.unlove,
+            )
+        }
+        var menuVisible by remember { mutableStateOf(false) }
+
+        MusicEntryListItem(
+            musicEntry,
+            appId = item.packageName,
+            onEntryClick = { onItemClick(musicEntry) },
+            onMenuClick = { menuVisible = true },
+            isPending = true,
+            menuContent = {
+                PendingDropdownMenu(
+                    pendingScrobble = item,
+                    expanded = menuVisible,
+                    onDismissRequest = { menuVisible = false }
+                )
+            },
+            fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
+            modifier = modifier.animateItem()
+        )
     }
 }

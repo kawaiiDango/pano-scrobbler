@@ -72,6 +72,8 @@ class PanoNativeComponents(
             Thread {
                 startEventLoop(instance)
             }.start()
+            
+            desktopMediaListener.start()
 
             GlobalScope.launch {
                 listenForPlayingTrackEvents(scrobbleQueue, desktopMediaListener)
@@ -116,7 +118,7 @@ class PanoNativeComponents(
         external fun notify(
             title: String,
             body: String,
-            iconPath: String = DesktopStuff.iconPath ?: ""
+            iconPath: String = DesktopStuff.iconPath
         )
 
         @JvmStatic

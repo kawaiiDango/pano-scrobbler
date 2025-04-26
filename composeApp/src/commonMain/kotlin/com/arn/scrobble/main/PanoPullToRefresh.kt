@@ -2,31 +2,34 @@ package com.arn.scrobble.main
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.arn.scrobble.utils.PlatformStuff
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PanoPullToRefresh(
     isRefreshing: Boolean,
-    onRefresh: () -> Unit,
+    state: PullToRefreshState,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-        PullToRefreshBox(
+    Box(
+        modifier = modifier,
+    ) {
+        content()
+
+        PullToRefreshDefaults.Indicator(
+            state = state,
             isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = modifier,
-            content = content
-        )
-    } else {
-        Box(
-            modifier = modifier,
-            content = content
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(8.dp)
         )
     }
 }

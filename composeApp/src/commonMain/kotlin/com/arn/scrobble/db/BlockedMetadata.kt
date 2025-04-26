@@ -1,6 +1,5 @@
 package com.arn.scrobble.db
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -25,9 +24,5 @@ data class BlockedMetadata(
     val artist: String = "",
     val albumArtist: String = "",
 
-    @ColumnInfo(defaultValue = "0")
-    val skip: Boolean = false,
-
-    @ColumnInfo(defaultValue = "0")
-    val mute: Boolean = false,
+    val blockPlayerAction: BlockPlayerAction = BlockPlayerAction.ignore,
 )

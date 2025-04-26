@@ -12,6 +12,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import java.awt.SystemColor.text
 
 @Dao
 interface RegexEditsDao {
@@ -86,25 +87,26 @@ interface RegexEditsDao {
             scrobbleData: ScrobbleData,
             pkgName: String? = null, // null means all
             regexEditsp: List<RegexEdit>? = null, // null means all
-        ): Map<String, Set<RegexEdit>> {
-            val numMatches = mutableMapOf(
+        ): RegexResults {
+            val matchesMap = mutableMapOf(
                 RegexEditFields.ARTIST to mutableSetOf<RegexEdit>(),
                 RegexEditFields.ALBUM to mutableSetOf(),
                 RegexEditFields.ALBUM_ARTIST to mutableSetOf(),
                 RegexEditFields.TRACK to mutableSetOf(),
             )
 
+            var blockPlayerAction: BlockPlayerAction? = null
+
             val regexEdits =
                 regexEditsp ?: allFlow().first().map { RegexPresets.getPossiblePreset(it) }
 
-            fun replaceField(textp: String?, field: String): String? {
-                textp ?: return null
+            fun replaceOrBlockField(textp: String, field: String): String {
                 var text: String = textp
                 regexEdits.filter {
                     it.pattern != null &&
                             it.fields != null &&
-                            field in it.fields!! &&
-                            (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages!!)
+                            field in it.fields &&
+                            (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages)
                 }.forEach { regexEdit ->
                     val regexOptions = mutableSetOf<RegexOption>()
                     if (!regexEdit.caseSensitive)
@@ -113,7 +115,16 @@ interface RegexEditsDao {
                     val regex = regexEdit.pattern!!.toRegex(regexOptions)
 
                     if (regex.containsMatchIn(text)) {
-                        numMatches[field]?.add(regexEdit)
+                        matchesMap[field]?.add(regexEdit)
+
+                        if (regexEdit.blockPlayerAction != null) {
+                            if (PlatformStuff.billingRepository.isLicenseValid) {
+                                blockPlayerAction = regexEdit.blockPlayerAction
+                                return textp
+                            } else {
+                                return@forEach
+                            }
+                        }
 
                         kotlin.runCatching {
                             text = if (regexEdit.replaceAll)
@@ -133,7 +144,7 @@ interface RegexEditsDao {
                 regexEdits
                     .filter {
                         it.extractionPatterns != null &&
-                                (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages!!)
+                                (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages)
                     }.forEachIndexed { _, regexEdit ->
                         val extractionPatterns = regexEdit.extractionPatterns!!
 
@@ -179,7 +190,7 @@ interface RegexEditsDao {
                         if (allFound) {
                             extractionsMap.forEach { (sdField, extraction) ->
                                 if (extraction != null)
-                                    numMatches[sdField.lowercase()]?.add(regexEdit)
+                                    matchesMap[sdField.lowercase()]?.add(regexEdit)
                             }
 
                             scrobbleData.track = extractionsMap[RegexEditFields.TRACK] ?: ""
@@ -198,11 +209,30 @@ interface RegexEditsDao {
 
 
             try {
-                scrobbleData.artist = replaceField(scrobbleData.artist, RegexEditFields.ARTIST)!!
-                scrobbleData.album = replaceField(scrobbleData.album, RegexEditFields.ALBUM)
-                scrobbleData.albumArtist =
-                    replaceField(scrobbleData.albumArtist, RegexEditFields.ALBUM_ARTIST)
-                scrobbleData.track = replaceField(scrobbleData.track, RegexEditFields.TRACK)!!
+                mapOf(
+                    RegexEditFields.TRACK to scrobbleData.track,
+                    RegexEditFields.ALBUM to scrobbleData.album,
+                    RegexEditFields.ARTIST to scrobbleData.artist,
+                    RegexEditFields.ALBUM_ARTIST to scrobbleData.albumArtist,
+                ).map { (field, value) ->
+                    if (!value.isNullOrEmpty()) {
+                        val newValue = replaceOrBlockField(value, field)
+                        if (blockPlayerAction != null)
+                            return RegexResults(
+                                blockPlayerAction = blockPlayerAction,
+                                fieldsMatched = matchesMap,
+                            )
+                        else
+                            newValue
+                    } else {
+                        value
+                    }
+                }.let { (track, album, artist, albumArtist) ->
+                    scrobbleData.track = track!!
+                    scrobbleData.album = album
+                    scrobbleData.artist = artist!!
+                    scrobbleData.albumArtist = albumArtist
+                }
 
                 // needs java 8
                 if (PlatformStuff.billingRepository.isLicenseValid && PlatformStuff.isJava8OrGreater)
@@ -211,7 +241,10 @@ interface RegexEditsDao {
                 Logger.w(e) { "regex error" }
             }
 
-            return numMatches
+            return RegexResults(
+                blockPlayerAction = blockPlayerAction,
+                fieldsMatched = matchesMap,
+            )
         }
 
     }

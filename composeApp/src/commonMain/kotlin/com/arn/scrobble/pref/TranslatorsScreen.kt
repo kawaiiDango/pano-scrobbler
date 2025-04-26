@@ -22,8 +22,8 @@ import com.arn.scrobble.ui.horizontalOverscanPadding
 
 @Composable
 fun TranslatorsScreen(
-    viewModel: TranslatorsVM = viewModel { TranslatorsVM() },
     modifier: Modifier = Modifier,
+    viewModel: TranslatorsVM = viewModel { TranslatorsVM() },
 ) {
     val translators by viewModel.translators.collectAsStateWithLifecycle()
 

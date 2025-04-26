@@ -7,6 +7,8 @@ import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.WorkspacePremium
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -24,8 +26,10 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTabType
 import com.arn.scrobble.navigation.PanoTabs
 import com.arn.scrobble.recents.ScrobblesScreen
+import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.from_mic
@@ -34,6 +38,7 @@ import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.settings
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePagerScreen(
     user: UserCached,
@@ -45,6 +50,9 @@ fun HomePagerScreen(
     onSetOtherUser: (UserCached?) -> Unit,
     onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
+    pullToRefreshState: PullToRefreshState,
+    onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
+    getPullToRefreshTrigger: (Int) -> Flow<Unit>,
     modifier: Modifier = Modifier,
 ) {
     val scrobblesTitle by rememberSaveable { mutableStateOf<String?>(null) }
@@ -91,13 +99,19 @@ fun HomePagerScreen(
         when (val currentTab = tabsList.getOrNull(page)) {
             is PanoTabs.Scrobbles -> ScrobblesScreen(
                 user = user,
-                onNavigate = onNavigate,
+                pullToRefreshState = pullToRefreshState,
+                onSetRefreshing = { onSetRefreshing(page, it) },
+                pullToRefreshTriggered = getPullToRefreshTrigger(page),
                 showChips = currentTab.showChips,
+                onNavigate = onNavigate,
                 modifier = Modifier.fillMaxWidth()
             )
 
             PanoTabs.Following -> FriendsScreen(
                 user = user,
+                pullToRefreshState = pullToRefreshState,
+                onSetRefreshing = { onSetRefreshing(page, it) },
+                pullToRefreshTriggered = getPullToRefreshTrigger(page),
                 onNavigate = onNavigate,
                 onTitleChange = {
                     followingTitle = it

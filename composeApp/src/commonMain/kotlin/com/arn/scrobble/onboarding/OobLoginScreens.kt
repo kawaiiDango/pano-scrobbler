@@ -38,8 +38,8 @@ import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 fun OobLibrefmLoginScreen(
     userAccountTemp: UserAccountTemp,
     onBack: () -> Unit,
-    viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
     var token by rememberSaveable { mutableStateOf<String?>(null) }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
@@ -81,8 +81,8 @@ fun OobPleromaLoginScreen(
     userAccountTemp: UserAccountTemp,
     pleromaCreds: PleromaOauthClientCreds,
     onBack: () -> Unit,
-    viewModel: LoginViewModel = viewModel { LoginViewModel() },
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
     var code by rememberSaveable { mutableStateOf("") }
     val result by viewModel.result.collectAsStateWithLifecycle(null)

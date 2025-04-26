@@ -8,6 +8,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileFilter
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -20,7 +21,7 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
+    kotlin("multiplatform")
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
@@ -115,6 +116,7 @@ kotlin {
             implementation(libs.kotlin.coroutines.core)
             implementation(compose.runtime)
             implementation(compose.foundation)
+//            implementation(compose.material3)
             implementation(libs.material3)
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
@@ -136,7 +138,6 @@ kotlin {
             implementation(libs.aboutlibraries.core)
             implementation(libs.kotlin.csv.jvm)
             implementation(libs.kermit)
-            implementation(libs.kermit.io)
             implementation(libs.compose.shimmer)
             implementation(libs.datastore.core)
             implementation(libs.paging.common)
@@ -316,22 +317,27 @@ android {
 }
 
 aboutLibraries {
-    configPath = "aboutLibsConfig"
     offlineMode = true
-    fetchRemoteLicense = false
-    fetchRemoteFunding = false
-    excludeFields = arrayOf(
-        "developers",
-        "funding",
-        "description",
-        "organization",
-        "content",
-        "connection",
-        "developerConnection"
-    )
-    strictMode = StrictMode.FAIL
-    duplicationMode = DuplicateMode.MERGE
-    registerAndroidTasks = false
+    collect {
+        configPath = File("aboutLibsConfig")
+        fetchRemoteLicense = false
+        fetchRemoteFunding = false
+        export {
+            excludeFields = listOf(
+                "developers",
+                "funding",
+                "description",
+                "organization",
+                "content",
+                "connection",
+                "developerConnection"
+            )
+            exportVariant = "release"
+        }
+        license.strictMode = StrictMode.FAIL
+        library.duplicationMode = DuplicateMode.MERGE
+        android.registerAndroidTasks = false
+    }
 }
 
 compose.desktop {
@@ -341,6 +347,8 @@ compose.desktop {
         jvmArgs += listOf(
             "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
             "-Ddev.resources.dir.name=$resourcesDirName",
+            // use sw rendering on linux instead of es2, fixes the no text on webview bug on arch
+            "-Dprism.order=d3d,sw",
 //            "-XX:NativeMemoryTracking=detail",
             "-XX:+UseSerialGC",
             "-XX:+UseAdaptiveSizePolicy",
@@ -414,19 +422,39 @@ tasks.register<ComposeHotRun>("runHot") {
     mainClass = "com.arn.scrobble.main.MainKt"
     jvmArgs = (jvmArgs ?: emptyList()) + listOf(
         "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
-        "-Ddev.resources.dir.name=$resourcesDirName"
+        "-Ddev.resources.dir.name=$resourcesDirName",
     )
+    val appDataRoot = when {
+        os.isWindows -> {
+            System.getenv("APPDATA")?.ifEmpty { null }
+                ?: System.getProperty("user.home")
+        }
+
+        os.isLinux -> {
+            System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
+                ?: (System.getProperty("user.home") + "/.local/share")
+        }
+
+        os.isMacOsX -> {
+            System.getProperty("user.home") + "/Library/Application Support"
+        }
+
+        else -> throw IllegalStateException("unsupported os")
+    }
+
+    val appDataDir = File(appDataRoot, "$appNameWithoutSpaces-debug").absolutePath
+//    args = listOf("--data-dir=$appDataDir")
 }
 
 tasks.register<Zip>("zipAppImage") {
     from("build/compose/binaries/main-release/app")
     archiveFileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.zip"
-    destinationDirectory = file("release-builds")
+    destinationDirectory = file("dist")
 }
 
 tasks.register<Copy>("copyGithubReleaseApk") {
     from("build/outputs/apk/releaseGithub")
-    into("release-builds")
+    into("dist")
     include("*-releaseGithub.apk")
     rename(
         "(.*)-releaseGithub.apk",
@@ -436,7 +464,7 @@ tasks.register<Copy>("copyGithubReleaseApk") {
 
 tasks.register<Copy>("copyReleaseMsi") {
     from("build/compose/binaries/main-release/msi")
-    into("release-builds")
+    into("dist")
     include("*.msi")
     rename(
         "(.*).msi",
@@ -446,7 +474,7 @@ tasks.register<Copy>("copyReleaseMsi") {
 
 tasks.register<Copy>("copyReleaseDmg") {
     from("build/compose/binaries/main-release/dmg")
-    into("release-builds")
+    into("dist")
     include("*.dmg")
     rename(
         "(.*).dmg",
@@ -454,10 +482,87 @@ tasks.register<Copy>("copyReleaseDmg") {
     )
 }
 
+tasks.register<Exec>("packageLinuxAppImage") {
+    group = "distribution"
+    description = "Package Compose Multiplatform JVM app as an .AppImage file."
+    val distroDir = file(
+        File(
+            project.layout.buildDirectory.get().asFile.absolutePath,
+            "compose/binaries/main-release/app/$appName"
+        ).absolutePath
+    )
+    val appDir = file(
+        File(
+            project.layout.buildDirectory.get().asFile.absolutePath,
+            "compose/binaries/main-release/app/PanoScrobbler.AppDir"
+        ).absolutePath
+    )
+    val appimageFilesDir =
+        file(
+            File(
+                project.layout.projectDirectory.asFile.absolutePath,
+                "appimage-files"
+            ).absolutePath
+        )
+    val outputDir =
+        file(File(project.layout.projectDirectory.asFile.absolutePath, "dist").absolutePath)
+
+    doFirst {
+        // Create the AppDir structure. Copy all your distribution files.
+        delete(appDir)
+        appDir.mkdirs()
+        File(appDir, "usr").mkdirs()
+        copy {
+            from(distroDir)
+            into("$appDir/usr")
+        }
+
+        // Copy the PNG icon from the resources to the AppDir root.
+        val iconSource = File("$appDir/usr/lib/app/resources/app_icon.png")
+        val iconDest = File("$appDir/pano-scrobbler.png")
+        if (iconSource.exists()) {
+            iconSource.copyTo(iconDest, overwrite = true)
+        } else {
+            throw GradleException("Icon not found at ${iconSource.absolutePath}")
+        }
+
+        // Copy the desktop file and AppRun script to the AppDir.
+
+        appimageFilesDir
+            .listFiles(FileFilter { it.isFile && !it.name.lowercase().endsWith(".appimage") })
+            ?.forEach {
+                val destFile = File(appDir, it.name)
+                it.copyTo(destFile, overwrite = true)
+            }
+    }
+
+    val apppImageToolFile = File(appimageFilesDir, "appimagetool-x86_64.AppImage")
+
+    if (!apppImageToolFile.exists()) {
+        commandLine(
+            "wget",
+            "-O",
+            apppImageToolFile.absolutePath,
+            "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage",
+        )
+    }
+
+    commandLine(
+        apppImageToolFile.absolutePath,
+        appDir.absolutePath,
+        File(outputDir, "$appNameWithoutSpaces-$verCode-$resourcesDirName.AppImage").absolutePath
+    )
+}
+
 afterEvaluate {
-    if (os.isWindows || os.isLinux)
+    if (os.isWindows)
         tasks.named("packageReleaseAppImage") {
             finalizedBy(tasks.named("zipAppImage"))
+        }
+
+    if (os.isLinux)
+        tasks.named("packageReleaseAppImage") {
+            finalizedBy(tasks.named("packageLinuxAppImage"))
         }
 
     if (os.isWindows)
@@ -529,7 +634,7 @@ tasks.register("fetchCrowdinLanguages") {
     val projectIdProvider = project.provider { localProperties["crowdin.project"]!! }
     val tokenProvider = project.provider { localProperties["crowdin.token"]!! }
     val localesConfigFile = file("src/androidMain/res/xml/locales_config.xml")
-    val localeUtilsFile = file("src/androidMain/kotlin/com/arn/scrobble/utils/LocaleUtils.kt")
+    val localeUtilsFile = file("src/commonMain/kotlin/com/arn/scrobble/utils/LocaleUtils.kt")
 
     outputs.file(localesConfigFile)
     outputs.file(localeUtilsFile)
@@ -719,7 +824,7 @@ githubRelease {
     releaseName = verNameWithDate
     targetCommitish = "main"
 
-    val assets = file("release-builds")
+    val assets = file("dist")
         .listFiles { file -> file.isFile }
         ?.map { it.absolutePath }
         ?.toList() ?: emptyList()

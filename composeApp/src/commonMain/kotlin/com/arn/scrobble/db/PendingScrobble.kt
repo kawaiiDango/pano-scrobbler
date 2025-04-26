@@ -1,8 +1,8 @@
 package com.arn.scrobble.db
 
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.arn.scrobble.api.ScrobbleEvent
 
 
 /**
@@ -21,6 +21,8 @@ data class PendingScrobble(
     val duration: Long = 0,
     val timestamp: Long = System.currentTimeMillis(),
     val autoCorrected: Int = 0,
-    override val state: Int = 0,
-    override val state_timestamp: Long = System.currentTimeMillis(),
-) : PendingScrobbleState
+    val event: ScrobbleEvent = ScrobbleEvent.scrobble,
+    val packageName: String = "",
+    val state: Int = 0,
+    val state_timestamp: Long = System.currentTimeMillis(),
+)

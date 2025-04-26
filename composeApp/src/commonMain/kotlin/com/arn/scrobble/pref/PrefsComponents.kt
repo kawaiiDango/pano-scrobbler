@@ -14,16 +14,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,6 +52,7 @@ import com.arn.scrobble.ui.AppIcon
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -57,6 +63,7 @@ import pano_scrobbler.composeapp.generated.resources.move_left
 import pano_scrobbler.composeapp.generated.resources.move_right
 import pano_scrobbler.composeapp.generated.resources.pref_enabled_apps_summary
 import pano_scrobbler.composeapp.generated.resources.pref_logout
+import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.sure_tap_again
 
 private val mainPrefs = PlatformStuff.mainPrefs
@@ -64,12 +71,12 @@ private val mainPrefs = PlatformStuff.mainPrefs
 @Composable
 fun SwitchPref(
     text: String,
-    summary: String? = null,
-    enabled: Boolean = true,
-    onNavigateToBilling: (() -> Unit)? = null,
     value: Boolean,
     copyToSave: MainPrefs.(Boolean) -> MainPrefs,
     modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    onNavigateToBilling: (() -> Unit)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val enabled =
@@ -131,11 +138,11 @@ fun SwitchPref(
 @Composable
 fun TextPref(
     text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
     onNavigateToBilling: (() -> Unit)? = null,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val enabled =
         if (onNavigateToBilling != null) PlatformStuff.billingRepository.isLicenseValid else enabled
@@ -174,15 +181,78 @@ fun TextPref(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TextFieldDialogPref(
+    text: String,
+    hint: String,
+    value: String,
+    validate: (String) -> Boolean,
+    copyToSave: MainPrefs.(String) -> MainPrefs,
+    modifier: Modifier = Modifier,
+) {
+    var dialogShown by remember { mutableStateOf(false) }
+    var textFieldValue by remember(value) { mutableStateOf(value) }
+    val scope = rememberCoroutineScope()
+    var isError by remember { mutableStateOf(false) }
+
+    TextPref(
+        text = text,
+        summary = textFieldValue,
+        onClick = { dialogShown = true },
+        modifier = modifier
+    )
+
+    if (dialogShown) {
+        BasicAlertDialog(
+            onDismissRequest = { dialogShown = false }
+        ) {
+            Surface {
+                Column {
+                    OutlinedTextField(
+                        value = textFieldValue,
+                        onValueChange = { textFieldValue = it },
+                        label = { Text(hint) },
+                        isError = isError,
+                        modifier = Modifier.padding(16.dp)
+                    )
+
+                    TextButton(
+                        onClick = {
+                            if (textFieldValue.isEmpty()) {
+                                textFieldValue = Stuff.DEFAULT_SEARCH_URL
+                            }
+
+                            if (validate(textFieldValue)) {
+                                scope.launch {
+                                    PlatformStuff.mainPrefs.updateData {
+                                        it.copyToSave(textFieldValue)
+                                    }
+                                }
+                                isError = false
+                                dialogShown = false
+                            } else
+                                isError = true
+                        },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(text = stringResource(Res.string.save))
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun <T> DropdownPref(
     text: String,
     selectedValue: T,
     values: Iterable<T>,
     toLabel: (T) -> String,
-    enabled: Boolean = true,
     copyToSave: MainPrefs.(T) -> MainPrefs,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()

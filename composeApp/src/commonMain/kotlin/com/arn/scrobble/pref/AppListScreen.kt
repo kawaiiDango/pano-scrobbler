@@ -47,12 +47,12 @@ import pano_scrobbler.composeapp.generated.resources.pixel_np
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppListScreen(
-    viewModel: AppListVM = viewModel { AppListVM() },
     isSingleSelect: Boolean,
     hasPreSelection: Boolean,
     preSelectedPackages: Set<String>,
     onSetSelectedPackages: (List<AppItem>) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: AppListVM = viewModel { AppListVM() },
 ) {
     val appList by viewModel.appList.collectAsStateWithLifecycle()
     val selectedPackages by viewModel.selectedPackages.collectAsStateWithLifecycle()
@@ -154,9 +154,9 @@ private fun AppListItem(
     appItem: AppItem?,
     isSelected: Boolean,
     isSingleSelect: Boolean,
-    forShimmer: Boolean = false,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    forShimmer: Boolean = false,
 ) {
     Row(
         modifier = modifier

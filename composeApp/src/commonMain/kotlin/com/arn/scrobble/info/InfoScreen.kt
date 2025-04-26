@@ -58,6 +58,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,7 +67,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -87,13 +87,14 @@ import com.arn.scrobble.icons.UserTag
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.BottomSheetDialogParent
-import com.arn.scrobble.ui.EntriesHorizontal
+import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyRow
 import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.placeholderPainter
+import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -111,6 +112,7 @@ import io.github.koalaplot.core.polar.rememberFloatRadialAxisModel
 import io.github.koalaplot.core.style.AreaStyle
 import io.github.koalaplot.core.style.LineStyle
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -150,9 +152,9 @@ private fun InfoContent(
     pkgName: String?,
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: InfoVM = viewModel { InfoVM() },
     miscVM: InfoMiscVM = viewModel { InfoMiscVM() },
-    modifier: Modifier = Modifier,
 ) {
     val infoMap by viewModel.infoMap.collectAsStateWithLifecycle()
     val infoLoaded by viewModel.infoLoaded.collectAsStateWithLifecycle()
@@ -253,7 +255,10 @@ private fun InfoContent(
                             AsyncImage(
                                 model = imgRequest,
                                 placeholder = placeholderPainter(),
-                                error = rememberVectorPainter(Icons.Outlined.ImageNotSupported),
+                                error = placeholderImageVectorPainter(
+                                    entry,
+                                    Icons.Outlined.ImageNotSupported
+                                ),
                                 contentDescription = when (entry) {
                                     is Album -> stringResource(Res.string.album_art)
                                     is Artist -> stringResource(Res.string.artist_image)
@@ -339,7 +344,7 @@ private fun InfoContent(
                                 )
                             }
                         } else {
-                            EntriesHorizontal(
+                            EntriesRow(
                                 title = stringResource(Res.string.top_tracks),
                                 entries = artistTopTracks,
                                 fetchAlbumImageIfMissing = true,
@@ -362,7 +367,7 @@ private fun InfoContent(
                                 onItemClick = onHorizontalEntryItemClick,
                             )
 
-                            EntriesHorizontal(
+                            EntriesRow(
                                 title = stringResource(Res.string.top_albums),
                                 entries = artistTopAlbums,
                                 fetchAlbumImageIfMissing = false,
@@ -385,7 +390,7 @@ private fun InfoContent(
                                 onItemClick = onHorizontalEntryItemClick,
                             )
 
-                            EntriesHorizontal(
+                            EntriesRow(
                                 title = stringResource(Res.string.similar_artists),
                                 entries = similarArtists,
                                 fetchAlbumImageIfMissing = false,
@@ -437,7 +442,7 @@ private fun InfoContent(
                             )
                         }
 
-                        EntriesHorizontal(
+                        EntriesRow(
                             title = stringResource(Res.string.similar_tracks),
                             entries = similarTracks,
                             fetchAlbumImageIfMissing = true,
@@ -498,7 +503,7 @@ private fun ColumnScope.InfoBigPicture(
 ) {
     AsyncImage(
         model = imgRequest,
-        error = rememberVectorPainter(Icons.Outlined.ImageNotSupported),
+        error = placeholderImageVectorPainter(entry, Icons.Outlined.ImageNotSupported),
         placeholder = placeholderPainter(),
         contentDescription = when (entry) {
             is Album -> stringResource(Res.string.album_art)
@@ -522,7 +527,7 @@ private fun InfoCountsForMusicEntry(
 ) {
     InfoCounts(
         countPairs = listOfNotNull(
-            if (entry.playcount != null) {
+            if (entry.userplaycount != null) {
                 "" to entry.userplaycount
             } else {
                 null
@@ -570,6 +575,8 @@ private fun InfoActionsRow(
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
+
     Row(modifier = modifier.fillMaxWidth()) {
         if (showUserTagsButton) {
             IconButtonWithTooltip(
@@ -583,8 +590,8 @@ private fun InfoActionsRow(
             IconButtonWithTooltip(
                 enabled = user.isSelf,
                 onClick = onLoveClick,
-                icon = if (isLoved == true) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (isLoved == true)
+                icon = if (isLoved) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = if (isLoved)
                     stringResource(Res.string.unlove)
                 else if (user.isSelf)
                     stringResource(Res.string.love)
@@ -613,7 +620,9 @@ private fun InfoActionsRow(
 
         IconButtonWithTooltip(
             onClick = {
-                PlatformStuff.launchSearchIntent(entry, pkgName)
+                scope.launch {
+                    PlatformStuff.launchSearchIntent(entry, pkgName)
+                }
             },
             icon = Icons.Outlined.Search,
             contentDescription = stringResource(Res.string.search),

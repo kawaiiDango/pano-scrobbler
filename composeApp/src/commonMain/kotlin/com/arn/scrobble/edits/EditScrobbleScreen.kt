@@ -67,10 +67,10 @@ private fun EditScrobbleContent(
     onReauthenticate: () -> Unit,
     scrobbleData: ScrobbleData,
     msid: String?,
-    hash: Int,
+    hash: Int?,
     onNavigateToRegexEdits: () -> Unit,
-    viewModel: EditScrobbleViewModel = viewModel { EditScrobbleViewModel() },
     modifier: Modifier = Modifier,
+    viewModel: EditScrobbleViewModel = viewModel { EditScrobbleViewModel() },
 ) {
     var track by rememberSaveable { mutableStateOf(scrobbleData.track) }
     var album by rememberSaveable { mutableStateOf(scrobbleData.album ?: "") }
@@ -99,12 +99,14 @@ private fun EditScrobbleContent(
     }
 
     LaunchedEffect(Unit) {
-        notifyPlayingTrackEvent(
-            PlayingTrackNotifyEvent.TrackScrobbleLocked(
-                hash = hash,
-                locked = true
+        if (hash != null) {
+            notifyPlayingTrackEvent(
+                PlayingTrackNotifyEvent.TrackScrobbleLocked(
+                    hash = hash,
+                    locked = true
+                )
             )
-        )
+        }
     }
 
     LaunchedEffect(result) {
@@ -295,7 +297,7 @@ private fun ShowRegexRecommendation(
 fun EditScrobbleDialog(
     scrobbleData: ScrobbleData,
     msid: String?,
-    hash: Int,
+    hash: Int?,
     onDone: (ScrobbleData) -> Unit,
     onDismiss: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,

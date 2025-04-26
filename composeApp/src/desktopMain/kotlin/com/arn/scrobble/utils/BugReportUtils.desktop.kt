@@ -42,7 +42,22 @@ actual object BugReportUtils {
     }
 
     actual fun saveLogsToFile(): String? {
-        return File(PlatformStuff.filesDir, "pano-scrobbler.log").absolutePath
+        val logsDir = File(PlatformStuff.filesDir, "logs")
+
+        if (!logsDir.exists()) {
+            return null
+        }
+
+        // get the most recent log file
+        // return null if there are no log files
+
+        val logFiles = logsDir.listFiles { file ->
+            file.isFile && file.name.endsWith(".log")
+        } ?: emptyArray()
+
+        val logFile = logFiles.maxByOrNull { it.lastModified() } ?: return null
+
+        return logFile.absolutePath
     }
 
 }

@@ -36,7 +36,13 @@ object MetadataUtils {
         "ヴァリアス・アーティスト",
     ).map { it.lowercase() }.toSet()
 
-    // from WebScrobbler https://github.com/web-scrobbler/web-scrobbler
+    // from WebScrobbler https://github.com/web-scrobbler
+    // relevant files:
+    // https://github.com/web-scrobbler/web-scrobbler/blob/master/src/core/content/util.ts
+    // https://github.com/web-scrobbler/metadata-filter/blob/master/src/rules.ts
+    // https://github.com/web-scrobbler/web-scrobbler/blob/master/src/connectors/youtube.ts
+    // https://github.com/web-scrobbler/web-scrobbler/blob/master/tests/content/util.test.ts
+    // https://github.com/web-scrobbler/metadata-filter/blob/master/test/fixtures/functions/youtube.json
 
     private val defaultSeparators = listOf(
         " -- ",
@@ -97,23 +103,6 @@ object MetadataUtils {
         FilterRule("\\u0020{1,}", " ")
     )
 
-    private val youtubePreprocessFilters = listOf(
-        // Remove [genre] or 【genre】 from the beginning of the title
-        FilterRule("^((\\[[^\\]]+])|(【[^】]+】))\\s*-*\\s*", "", false),
-        // Remove track (CD and vinyl) numbers from the beginning of the title
-        FilterRule("^\\s*([a-zA-Z]{1,2}|[0-9]{1,2})[1-9]?\\.\\s+", "", false),
-        // Remove - preceding opening bracket
-        FilterRule("-\\s*([「【『])", "$1"),
-        // 【/(*Music Video/MV/PV*】/)
-        FilterRule("[(［【][^(［【]*?((Music Video)|(MV)|(PV)).*?[】］)]", "", false),
-        // 【/(東方/オリジナル*】/)
-        FilterRule("[(［【]((オリジナル)|(東方)).*?[】］)]+?", ""),
-        // MV/PV if followed by an opening/closing bracket
-        FilterRule("((?:Music Video)|MV|PV)([「［【『』】］」])", "$2", false),
-        // MV/PV if ending and with whitespace in front
-        FilterRule("\\s+(MV|PV)\$", "", false),
-    )
-
     /**
      * Filter rules to remove YouTube suffixes and prefixes from a text.
      */
@@ -136,8 +125,8 @@ object MetadataUtils {
         FilterRule("\\(.*lyrics?\\s*(video)?\\)", "", false),
         // ((Official)? (Track)? Stream)
         FilterRule("\\((of+icial\\s*)?(track\\s*)?stream\\)", "", false),
-        // ((Official)? (Music)? Video|Audio)
-        FilterRule("\\((of+icial\\s*)?(music\\s*)?(video|audio)\\)", "", false),
+        // ((Official)? (Music|HD)? Video|Audio)
+        FilterRule("\\((of+icial\\s*)?((music|hd)\\s*)?(video|audio)\\)", "", false),
         // - (Official)? (Music)? Video|Audio
         FilterRule("-\\s(of+icial\\s*)?(music\\s*)?(video|audio)$", "", false),
         // ((Whatever)? Album Track)
@@ -280,28 +269,55 @@ object MetadataUtils {
         var artist: String? = null
         var track: String? = null
 
-        fun isArtistTrackEmpty() = artist.isNullOrEmpty() || track.isNullOrEmpty()
-
-        if (videoTitle.isEmpty()) {
-            return Pair(artist, track)
-        }
+        if (videoTitle.isEmpty()) return Pair(null, null)
 
         var title = videoTitle
 
-        // Preprocess title
-        youtubePreprocessFilters.forEach { rule ->
-            title = title.applyFilter(rule)
-        }
+        // Remove [genre] or 【genre】 from the beginning of the title
+        title = title.replace(
+            Regex("^((\\[[^\\]]+])|(【[^】]+】))\\s*-*\\s*", RegexOption.IGNORE_CASE),
+            ""
+        )
+        // Remove track (CD and vinyl) numbers from the beginning of the title
+        title = title.replace(
+            Regex(
+                "^\\s*([a-zA-Z]{1,2}|[0-9]{1,2})[1-9]?\\.\\s+",
+                RegexOption.IGNORE_CASE
+            ), ""
+        )
+        // Remove - preceding opening bracket
+        title = title.replace(Regex("-\\s*([「【『])"), "$1")
+        // 【/(*Music Video/MV/PV*】/)
+        title = title.replace(
+            Regex(
+                "[(［【][^(［【]*?((Music Video)|(MV)|(PV)).*?[】］)]",
+                RegexOption.IGNORE_CASE
+            ), ""
+        )
+        // 【/(東方/オリジナル*】/)
+        title = title.replace(
+            Regex("[(［【]((オリジナル)|(東方)).*?[】］)]+?", RegexOption.IGNORE_CASE),
+            ""
+        )
+        // MV/PV if followed by an opening/closing bracket
+        title = title.replace(
+            Regex("((?:Music Video)|MV|PV)([「［【『』】］」])", RegexOption.IGNORE_CASE),
+            "$2"
+        )
+        // MV/PV if ending and with whitespace in front
+        title = title.replace(Regex("\\s+(MV|PV)$", RegexOption.IGNORE_CASE), "")
 
-        // Try to match one of the regexps
+        // Try to match one of the regexps from existing rules
         for (regExp in ytTitleRegExps) {
-            val artistTrack = regExp.pattern.toRegex().find(title)
-            if (artistTrack != null) {
-                artist = artistTrack.groupValues[regExp.artistGroup]
-                track = artistTrack.groupValues[regExp.trackGroup]
+            val matchResult = regExp.pattern.toRegex().find(title)
+            if (matchResult != null) {
+                artist = matchResult.groupValues[regExp.artistGroup]
+                track = matchResult.groupValues[regExp.trackGroup]
                 break
             }
         }
+
+        fun isArtistTrackEmpty() = artist.isNullOrEmpty() || track.isNullOrEmpty()
 
         // No match? Try splitting, then.
         if (isArtistTrackEmpty()) {
@@ -312,22 +328,12 @@ object MetadataUtils {
 
         // No match? Check for 【】
         if (isArtistTrackEmpty()) {
-            val artistTrack = Regex("(.+?)【(.+?)】").find(title)
-            if (artistTrack != null) {
-                artist = artistTrack.groupValues[1]
-                track = artistTrack.groupValues[2]
+            val regex = Regex("(.+?)【(.+?)】")
+            val match = regex.find(title)
+            if (match != null) {
+                artist = match.groupValues[1]
+                track = match.groupValues[2]
             }
-        }
-
-        // clean up
-        if (!isArtistTrackEmpty()) {
-            track = cleanYoutubeTrack(track!!)
-
-            (removeLtrRtlChars + removeNumericPrefix).forEach { rule ->
-                artist = artist?.applyFilter(rule)
-                track = track?.applyFilter(rule)
-            }
-
         }
 
         if (isArtistTrackEmpty()) {
@@ -336,6 +342,9 @@ object MetadataUtils {
 
         return Pair(artist, track)
     }
+
+    fun removeSingleEp(text: String) =
+        text.replace(" - (Single|EP)$".toRegex(), "")
 
     fun sanitizeAlbum(albumOrig: String): String {
         val albumLower = albumOrig.lowercase(Locale.ENGLISH)

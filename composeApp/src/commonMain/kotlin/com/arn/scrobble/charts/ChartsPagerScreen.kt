@@ -23,7 +23,7 @@ import com.arn.scrobble.navigation.PanoNavMetadata
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTabType
 import com.arn.scrobble.navigation.PanoTabs
-import com.arn.scrobble.ui.EntriesGrid
+import com.arn.scrobble.ui.EntriesGridOrList
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.collectLatest
@@ -51,9 +51,9 @@ fun ChartsPagerScreen(
     onNavigate: (PanoRoute) -> Unit,
     onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
     onTitleChange: (String?) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM() },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
-    modifier: Modifier = Modifier,
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
@@ -149,7 +149,7 @@ fun ChartsPagerScreen(
             totalPages = tabsList.count { it.type == PanoTabType.TAB },
             modifier = Modifier.fillMaxWidth(),
         ) { page ->
-            EntriesGrid(
+            EntriesGridOrList(
                 entries = when (page) {
                     0 -> artists
                     1 -> albums

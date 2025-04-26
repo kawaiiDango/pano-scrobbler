@@ -69,9 +69,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.RenderVectorGroup
+import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -87,6 +91,7 @@ import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.redactedMessage
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -233,9 +238,9 @@ fun ErrorText(
 @Composable
 fun InfoText(
     text: String,
+    modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Outlined.Info,
     style: TextStyle = LocalTextStyle.current,
-    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.padding(8.dp),
@@ -258,8 +263,8 @@ fun InfoText(
 fun TextWithIcon(
     text: String,
     icon: ImageVector,
-    style: TextStyle = LocalTextStyle.current,
     modifier: Modifier = Modifier,
+    style: TextStyle = LocalTextStyle.current,
 ) {
     Row(
         modifier = modifier,
@@ -281,9 +286,9 @@ fun TextWithIcon(
 @Composable
 fun SearchBox(
     searchTerm: String,
-    label: String = stringResource(Res.string.search),
     onSearchTermChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    label: String = stringResource(Res.string.search),
 ) {
     OutlinedTextField(
         value = searchTerm,
@@ -363,9 +368,9 @@ fun IconButtonWithTooltip(
     icon: ImageVector,
     onClick: () -> Unit,
     contentDescription: String,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     tint: Color = MaterialTheme.colorScheme.secondary,
-    modifier: Modifier = Modifier,
 ) {
     // todo find out why this freezes
 //    TooltipBox(
@@ -540,18 +545,17 @@ fun VerifyButton(
     doStuff: () -> Unit,
     result: Result<*>?,
     onDone: () -> Unit,
-    buttonText: String = stringResource(Res.string.login_submit),
     modifier: Modifier = Modifier,
+    buttonText: String = stringResource(Res.string.login_submit),
     extraContent: @Composable RowScope.() -> Unit = {},
 ) {
     var verifying by remember { mutableStateOf(false) }
     var errorText by remember { mutableStateOf<String?>(null) }
-    val networkErrorStr = stringResource(Res.string.network_error)
 
     LaunchedEffect(result) {
         result?.onFailure {
             verifying = false
-            errorText = it.message ?: networkErrorStr
+            errorText = it.redactedMessage
         }?.onSuccess {
             verifying = false
             errorText = null
@@ -581,7 +585,7 @@ fun VerifyButton(
                             errorText = null
                             doStuff()
                         },
-                        modifier = Modifier.align(Alignment.CenterEnd)
+                        modifier = Modifier.align(Alignment.CenterEnd).testTag("button_verify")
                     ) {
                         Text(buttonText, maxLines = 1)
                     }
@@ -597,11 +601,11 @@ fun VerifyButton(
 fun AvatarOrInitials(
     avatarUrl: String?,
     avatarInitialLetter: Char?,
-    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     modifier: Modifier = Modifier
         .padding(8.dp)
         .size(24.dp)
         .clip(CircleShape),
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     if (!avatarUrl.isNullOrEmpty()) {
         AsyncImage(
@@ -643,7 +647,7 @@ fun ListLoadError(
         if (throwable is ApiException)
             genericErrorText + ": " + throwable.code
         else
-            throwable.localizedMessage!!
+            throwable.redactedMessage
     }
 
     Row(
@@ -725,22 +729,15 @@ fun horizontalOverscanPadding(): Dp {
 
 @Composable
 fun verticalOverscanPadding(): Dp {
-    return if (PlatformStuff.isTv)
-        27.dp
-    else
-        0.dp
+    val navigationType = LocalNavigationType.current
+    return when (navigationType) {
+        PanoNavigationType.BOTTOM_NAVIGATION,
+        PanoNavigationType.NAVIGATION_RAIL,
+            -> if (PlatformStuff.isDesktop || PlatformStuff.isTv) 27.dp
+        else 0.dp
 
-//    val navigationType = LocalNavigationType.current
-//    return when (navigationType) {
-//        PanoNavigationType.BOTTOM_NAVIGATION,
-//        PanoNavigationType.NAVIGATION_RAIL,
-//            ->if (PlatformStuff.isTv)
-//        27.dp
-//    else
-//        0.dp
-//
-//        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 27.dp
-//    }
+        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 27.dp
+    }
 }
 
 @Composable
@@ -750,16 +747,43 @@ fun placeholderPainter(): ColorPainter {
 }
 
 @Composable
-fun Modifier.shimmerWindowBounds() = this.shimmer(rememberShimmer(ShimmerBounds.Window))
+fun combineImageVectors(
+    main: ImageVector,
+    secondary: ImageVector,
+): VectorPainter {
+    val mainScaleFactor = 0.7f
+    val secondaryScaleFactor = 0.5f
 
-@Composable
-expect fun getActivityOrNull(): Any?
+    return rememberVectorPainter(
+        defaultWidth = main.defaultWidth,
+        defaultHeight = main.defaultHeight,
+        viewportWidth = main.viewportWidth,
+        viewportHeight = main.viewportHeight,
+        name = main.name,
+        tintColor = main.tintColor,
+        tintBlendMode = main.tintBlendMode,
+        autoMirror = main.autoMirror
+    ) { viewportWidth, viewportHeight ->
+        Group(
+            name = main.root.name + "_main",
+            scaleX = mainScaleFactor,
+            scaleY = mainScaleFactor,
+            translationY = (viewportWidth - main.viewportWidth * mainScaleFactor) / 2,
+        ) {
+            RenderVectorGroup(group = main.root)
+        }
 
-@Composable
-expect fun AppIcon(
-    appItem: AppItem?,
-    modifier: Modifier = Modifier,
-)
+        Group(
+            name = secondary.root.name + "_secondary",
+            scaleX = secondaryScaleFactor,
+            scaleY = secondaryScaleFactor,
+            translationX = (viewportWidth - secondary.viewportWidth * secondaryScaleFactor),
+            translationY = (viewportHeight - secondary.viewportHeight * secondaryScaleFactor),
+        ) {
+            RenderVectorGroup(group = secondary.root)
+        }
+    }
+}
 
 @Composable
 fun accountTypeLabel(accountType: AccountType) = when (accountType) {
@@ -776,3 +800,17 @@ fun accountTypeLabel(accountType: AccountType) = when (accountType) {
     AccountType.PLEROMA -> stringResource(Res.string.pleroma)
     AccountType.FILE -> stringResource(Res.string.scrobble_to_file)
 }
+
+@Composable
+fun Modifier.shimmerWindowBounds() = this.shimmer(rememberShimmer(ShimmerBounds.Window))
+
+@Composable
+expect fun getActivityOrNull(): Any?
+
+@Composable
+expect fun AppIcon(
+    appItem: AppItem?,
+    modifier: Modifier = Modifier,
+)
+
+expect fun Modifier.testTagsAsResId(): Modifier

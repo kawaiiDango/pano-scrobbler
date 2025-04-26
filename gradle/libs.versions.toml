@@ -2,13 +2,15 @@
 targetSdk = "36"
 minSdk = "23"
 minSdkBaselineProfile = "28"
-android-application = "8.11.0-alpha06"
-compose-multiplatform = "1.8.0-beta02"
+android-application = "8.11.0-alpha07"
+compose-multiplatform = "1.8.0-rc01"
+#compose-multiplatform = "1.8.10+dev2370"
+
 kotlin = "2.1.20"
 
-aboutlibraries = "11.6.3"
+aboutlibraries = "12.0.1"
 activity = "1.10.1"
-adaptive = "1.1.0-beta02"
+adaptive = "1.1.0-rc01"
 androidx-espresso-core = "3.6.1"
 androidx-test-ext-junit = "1.2.1"
 androidx-test-junit = "1.2.1"
@@ -16,7 +18,7 @@ appcompat = "1.7.0"
 baselineprofile = "1.3.4"
 benchmark = "1.3.4"
 billing = "7.1.1"
-buildkonfig = "0.17.0"
+buildkonfig = "0.17.1"
 coil = "3.1.0"
 composeShimmer = "1.3.2"
 composeWebview = "0.33.6"
@@ -24,39 +26,39 @@ core = "1.16.0"
 core-remoteviews = "1.1.0"
 coroutines = "1.10.2"
 crashlytics = "3.0.3"
-datastore = "1.1.4"
+datastore = "1.1.5"
 desugar_jdk_libs = "2.1.5"
 documentfile = "1.0.1"
 espresso-core = "3.6.1"
-firebase-bom = "33.12.0"
+firebase-bom = "33.13.0"
 github-release = "2.5.2"
 google-services = "4.4.2"
 harmony = "1.2.6"
-hot-reload = "1.0.0-alpha05"
+hot-reload = "1.0.0-alpha08"
 immutable = "0.3.8"
 javafx = "23.0.1"
 javafxPlugin = "0.1.0"
 kermit = "2.0.5"
 koalaplot = "0.8.0"
 kotlinCsvJvm = "1.10.0"
-ksp = "2.1.20-1.0.31"
+ksp = "2.1.20-2.0.0"
 ktorBom = "3.1.2"
-lifecycle = "2.9.0-alpha06"
+lifecycle = "2.9.0-alpha07"
 material3 = "1.8.0-alpha03"
 media = "1.7.0"
 nanohttpd = "2.3.1"
-navigation = "2.9.0-alpha16"
+navigation = "2.9.0-alpha17"
 okhttp = "5.0.0-alpha.14"
 paging = "3.3.6"
 play-publisher = "3.12.1"
 profileinstaller = "1.4.1"
 review = "2.0.2"
-room = "2.7.0"
+room = "2.7.1"
 runner = "1.6.2"
 serialization-json = "1.8.1"
 sqlite = "2.5.0"
 uiautomator = "2.4.0-alpha01"
-work-runtime = "2.10.0"
+work-runtime = "2.10.1"
 
 [libraries]
 compose-webview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
@@ -98,7 +100,6 @@ media = { module = "androidx.media:media", version.ref = "media" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
-kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
 review = { module = "com.google.android.play:review", version.ref = "review" }
 benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-test-ext-junit" }
@@ -130,7 +131,6 @@ android-library = { id = "com.android.library", version.ref = "android-applicati
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "room" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }

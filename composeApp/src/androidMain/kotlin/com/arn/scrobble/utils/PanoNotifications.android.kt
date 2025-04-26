@@ -33,7 +33,6 @@ import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 
 actual object PanoNotifications {
     private val context = AndroidStuff.application
@@ -354,7 +353,6 @@ actual object PanoNotifications {
             album = trackInfo.album,
             artist = trackInfo.artist,
             albumArtist = trackInfo.albumArtist,
-            skip = true,
         )
 
         val route = PanoRoute.BlockedMetadataAdd(

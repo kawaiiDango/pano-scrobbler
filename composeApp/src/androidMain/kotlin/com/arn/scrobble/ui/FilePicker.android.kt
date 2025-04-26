@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.arn.scrobble.utils.AndroidStuff.application
 import com.arn.scrobble.utils.PlatformFile
+import java.io.IOException
 
 @Composable
 actual fun FilePicker(
@@ -56,6 +57,7 @@ actual fun FilePicker(
             if (uri != null) {
                 onFilePicked(PlatformFile(uri.toString()))
             }
+            onDismiss()
         }
     } else {
         null
@@ -66,6 +68,7 @@ actual fun FilePicker(
             if (uri != null) {
                 onFilePicked(PlatformFile(uri.toString()))
             }
+            onDismiss()
         }
     } else {
         null
@@ -79,6 +82,7 @@ actual fun FilePicker(
                 if (uri != null) {
                     onFilePicked(PlatformFile(uri.toString()))
                 }
+                onDismiss()
             }
         } else {
             null
@@ -98,7 +102,7 @@ actual fun FilePicker(
                 is FilePickerMode.Save -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && type == FileType.PHOTO) {
                         savePictureQ(mode.title, createMimeType!!) { uri ->
-                            onFilePicked(PlatformFile(uri.toString()))
+                            onFilePicked(PlatformFile(uri))
                         }
                     } else {
                         createLauncher!!.launch(addExtensionIfNeeded(mode.title))
@@ -113,14 +117,13 @@ actual fun FilePicker(
                     }
                 }
             }
-            onDismiss()
         }
     }
 }
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
-@Throws(java.io.IOException::class)
+@Throws(IOException::class)
 private fun savePictureQ(
     displayName: String,
     mimeType: String,
@@ -143,7 +146,7 @@ private fun savePictureQ(
 //                    block(it)
 //                } ?: throw java.io.IOException("Failed to open output stream.")
 
-            } ?: throw java.io.IOException("Failed to create new MediaStore record.")
+            } ?: throw IOException("Failed to create new MediaStore record.")
         }
     }.getOrElse {
         uri?.let { orphanUri ->

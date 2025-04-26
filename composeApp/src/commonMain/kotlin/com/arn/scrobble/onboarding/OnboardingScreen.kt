@@ -28,11 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -65,7 +67,11 @@ fun ButtonsStepper(
                 Text(text = stringResource(Res.string.skip))
             }
         }
-        OutlinedButton(onClick = onOpenClick) {
+        OutlinedButton(
+            onClick = onOpenClick,
+            modifier = Modifier
+                .testTag("button_stepper_open")
+        ) {
             Text(text = stringResource(Res.string.fix_it_action))
         }
     }
@@ -96,7 +102,9 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
                 onCheckedChange = {
                     dropDownShown = it
                 },
-                checked = dropDownShown
+                checked = dropDownShown,
+                modifier = Modifier
+                    .testTag("login_type_dropdown"),
             ) {
                 Icon(
                     Icons.Outlined.ArrowDropDown,
@@ -115,12 +123,16 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
                             },
                             text = {
                                 Text(string)
-                            }
+                            },
+                            modifier = Modifier
+                                .testTag("login_type_" + accType.name)
                         )
                     }
                 }
             }
         },
+        modifier = Modifier
+            .testTagsAsResId()
     )
 }
 
@@ -131,8 +143,8 @@ fun VerticalStepperItem(
     openAction: () -> Unit,
     isDone: Boolean,
     isExpanded: Boolean,
-    onSkip: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    onSkip: (() -> Unit)? = null,
     buttonsContent: @Composable () -> Unit = {
         ButtonsStepper(
             onOpenClick = openAction,

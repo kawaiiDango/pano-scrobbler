@@ -62,9 +62,9 @@ import pano_scrobbler.composeapp.generated.resources.tracks
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchVM = viewModel { SearchVM() },
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SearchVM = viewModel { SearchVM() },
 ) {
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle(null)
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()

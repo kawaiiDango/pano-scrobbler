@@ -1,5 +1,7 @@
 package com.arn.scrobble.work
 
+import co.touchlab.kermit.Logger
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -65,10 +67,10 @@ object DesktopWorkManager {
                 return
             } catch (e: Exception) {
                 if (attempt >= retryPolicy.maxAttempts - 1) {
-                    updateState(id, WorkState(id, CommonWorkerResult.Failure(e.localizedMessage)))
+                    updateState(id, WorkState(id, CommonWorkerResult.Failure(e.redactedMessage)))
                     return
                 }
-                CommonWorkerResult.Failure(e.localizedMessage)
+                CommonWorkerResult.Failure(e.redactedMessage)
             }
 
             updateState(id, WorkState(id, result))
@@ -95,6 +97,8 @@ object DesktopWorkManager {
     }
 
     private fun updateState(id: String, state: WorkState) {
+        Logger.d { "WorkManager: $id - $state" }
+
         _workStateFlow.update { it + (id to state) }
     }
 

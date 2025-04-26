@@ -1,15 +1,17 @@
 package com.arn.scrobble.work
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -19,22 +21,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.net.UnknownHostException
 import kotlin.coroutines.cancellation.CancellationException
 
 class PendingScrobblesWorker(
     override val setProgress: suspend (CommonWorkProgress) -> Unit,
 ) : CommonWorker {
 
-    private val scrobblesDao by lazy { PanoDb.db.getPendingScrobblesDao() }
-    private val lovesDao by lazy { PanoDb.db.getPendingLovesDao() }
+    private val dao by lazy { PanoDb.db.getPendingScrobblesDao() }
+
+    private val failsMap = AccountType.entries.associateWith { 0 }.toMutableMap()
 
     override suspend fun doWork(): CommonWorkerResult {
-        // do not retry if recently failed
-        val lastFailureTime =
-            PlatformStuff.mainPrefs.data.map { it.lastPendingScrobblesFailureTime }.first()
-        if (System.currentTimeMillis() - lastFailureTime < 1 * 60 * 60 * 1000)
-            return CommonWorkerResult.Failure("Recently failed")
-
         // do not run if offline, I was unable to infer from the docs whether this constraint is applied to expedited work
         if (!Stuff.isOnline)
             return CommonWorkerResult.Failure("Offline")
@@ -51,9 +49,6 @@ class PendingScrobblesWorker(
         }
 
         return if (errored) {
-            PlatformStuff.mainPrefs.updateData {
-                it.copy(lastPendingScrobblesFailureTime = System.currentTimeMillis())
-            }
             CommonWorkerResult.Retry
         } else {
             CommonWorkerResult.Success
@@ -73,7 +68,7 @@ class PendingScrobblesWorker(
     }
 
     private suspend fun submitScrobbles(): Boolean {
-        val entries = scrobblesDao.allFlow(HARD_LIMIT).first()
+        val entries = dao.allScrobbles(HARD_LIMIT)
 
         for (chunk in entries.chunked(BATCH_SIZE)) {
             if (!submitScrobbleBatch(chunk))
@@ -101,145 +96,140 @@ class PendingScrobblesWorker(
                 albumArtist = it.albumArtist,
                 timestamp = it.timestamp,
                 duration = it.duration.takeIf { it > 30 * 1000 },
-                packageName = null // it.pkg
-                // todo reimplement if needed
+                packageName = it.packageName.ifEmpty { null }
             )
             scrobbleDataToEntry[sd] = it
         }
         if (scrobbleDataToEntry.isNotEmpty()) {
-            try {
-                val scrobbleResults = mutableMapOf<Scrobblable, Result<ScrobbleIgnored>>()
-                //if an error occurs, there will be only one result
+            val scrobbleResults = mutableMapOf<Scrobblable, Result<ScrobbleIgnored>>()
+            //if an error occurs, there will be only one result
 
-                Scrobblables.all.value.forEach {
-                    val filteredData by lazy { filterForService(it, scrobbleDataToEntry) }
-                    if (filteredData.isNotEmpty()) {
-                        val result = it.scrobble(filteredData)
+            Scrobblables.all.value.forEach {
+                val filteredData by lazy { filterForService(it, scrobbleDataToEntry) }
+                if (filteredData.isNotEmpty()) {
+                    val result = it.scrobble(filteredData)
 
-                        if (result.isFailure) {
-                            // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later (29)
-                            // Invalid session key - Please re-authenticate (9)
-                            if ((result.exceptionOrNull() as? ApiException)?.code in arrayOf(29, 9))
-                                return false
-                        }
+                    if (result.isFailure) {
+                        // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later (29)
+                        // Invalid session key - Please re-authenticate (9)
+//                            if ((result.exceptionOrNull() as? ApiException)?.code in arrayOf(29, 9))
+//                                return false
 
-                        scrobbleResults[it] = result
+                        failsMap[it.userAccount.type] = failsMap[it.userAccount.type]!! + 1
                     }
+
+                    scrobbleResults[it] = result
                 }
+            }
 
-                val idsToDelete = mutableListOf<Int>()
-                scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
-                    var state = pendingScrobble.state
-
-                    scrobbleResults.forEach { (scrobblable, result) ->
-                        val err = result.exceptionOrNull() as? ApiException
-
-                        if (err?.code == 6 ||
-                            err?.code == 7 ||
-                            result.isSuccess
-                        ) {
-                            state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
-                        }
-                    }
-
-                    if (state == 0)
-                        idsToDelete += pendingScrobble._id
-                    else if (state != pendingScrobble.state) {
-                        val newPendingScrobble = pendingScrobble.copy(state = state)
-                        scrobblesDao.update(newPendingScrobble)
-                    }
-                }
-
-                if (!MOCK && idsToDelete.isNotEmpty())
-                    scrobblesDao.delete(idsToDelete)
+            val idsToDelete = mutableListOf<Int>()
+            scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
+                var state = pendingScrobble.state
 
                 scrobbleResults.forEach { (scrobblable, result) ->
-                    if (result.isFailure) {
-                        Logger.w {
-                            "PendingScrobblesWorker: err for " + scrobblable.userAccount.type.ordinal +
-                                    ": " + result
-                        }
-                        return false
+                    val err = result.exceptionOrNull() as? ApiException
+
+                    if (err?.code == 6 ||
+                        err?.code == 7 ||
+                        result.isSuccess
+                    ) {
+                        state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
                     }
                 }
 
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Logger.w(e) { "PendingScrobblesWorker: n/w err" }
-                return false
+                if (state == 0)
+                    idsToDelete += pendingScrobble._id
+                else if (state != pendingScrobble.state) {
+                    val newPendingScrobble = pendingScrobble.copy(state = state)
+                    dao.update(newPendingScrobble)
+                }
+            }
+
+            if (!MOCK && idsToDelete.isNotEmpty())
+                dao.delete(idsToDelete)
+
+            scrobbleResults.forEach { (scrobblable, result) ->
+                if (result.isFailure) {
+                    Logger.w {
+                        "PendingScrobblesWorker: err for " + scrobblable.userAccount.type.ordinal +
+                                ": " + result
+                    }
+                    return false
+                }
             }
         }
         return true
     }
 
     private suspend fun submitLoves(): Boolean {
-        try {
-            val entries = lovesDao.all(100)
-            val total = entries.size
-            for ((submitted, entry) in entries.withIndex()) {
-                setProgress(
-                    CommonWorkProgress(
-                        message = "Submitting loves",
-                        progress = submitted.toFloat() / total,
-                    )
+        val entries = dao.allLoves(100)
+        val total = entries.size
+        for ((submitted, entry) in entries.withIndex()) {
+            setProgress(
+                CommonWorkProgress(
+                    message = "Submitting loves",
+                    progress = submitted.toFloat() / total,
                 )
+            )
 
-                val results = mutableMapOf<Scrobblable, Boolean>()
+            val results = mutableMapOf<Scrobblable, Boolean>()
 
-                Scrobblables.all.value.forEach {
-                    val shouldSubmit by lazy { filterOneForService(it, entry) }
-                    if (shouldSubmit) {
-                        val track = Track(
-                            name = entry.track,
-                            artist = Artist(entry.artist),
-                            album = null // todo fix
-//                            album = entry.album?.let { Album(it) }
-                        )
+            Scrobblables.all.value.forEach {
+                val shouldSubmit by lazy { filterOneForService(it, entry) }
+                if (shouldSubmit) {
+                    val track = Track(
+                        name = entry.track,
+                        artist = Artist(entry.artist),
+                        album = entry.album.ifEmpty { null }?.let { Album(it) }
+                    )
 
-                        val result = it.loveOrUnlove(track, entry.shouldLove)
+                    val result = it.loveOrUnlove(track, entry.event == ScrobbleEvent.love)
 
-                        if (result.isFailure) {
-                            // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
-                            if ((result.exceptionOrNull() as? ApiException)?.code == 29)
-                                return false
-                        }
-
-                        results[it] = result.isSuccess
+                    if (result.isFailure) {
+                        // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
+//                            if ((result.exceptionOrNull() as? ApiException)?.code in arrayOf(29, 9))
+//                                return false
+                        failsMap[it.userAccount.type] = failsMap[it.userAccount.type]!! + 1
                     }
-                }
 
-                var state = entry.state
-
-                results.forEach { (scrobblable, success) ->
-                    if (success)
-                        state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
+                    results[it] = result.isSuccess
                 }
-
-                if (state == 0 && !MOCK)
-                    lovesDao.delete(entry)
-                else if (state != entry.state) {
-                    val newPendingLove = entry.copy(state = state)
-                    lovesDao.update(newPendingLove)
-                }
-                delay(DELAY)
             }
-        } catch (e: Exception) {
-            Logger.w(e) { "PendingScrobblesWorker: n/w err submitLoves" }
-            return false
+
+            var state = entry.state
+
+            results.forEach { (scrobblable, success) ->
+                if (success)
+                    state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
+            }
+
+            if (state == 0 && !MOCK)
+                dao.delete(entry)
+            else if (state != entry.state) {
+                val newPendingLove = entry.copy(state = state)
+                dao.update(newPendingLove)
+            }
+            delay(DELAY)
         }
         return true
     }
 
-    private fun filterOneForService(scrobblable: Scrobblable, pl: PendingLove): Boolean {
+    private fun filterOneForService(scrobblable: Scrobblable, pl: PendingScrobble): Boolean {
+        if (failsMap[scrobblable.userAccount.type]!! > MAX_FAILURES_PER_SERVICE)
+            return false
+
         return (pl.state and (1 shl scrobblable.userAccount.type.ordinal)) != 0
     }
 
     private fun filterForService(
         scrobblable: Scrobblable,
         scrobbleDataToEntry: MutableMap<ScrobbleData, PendingScrobble>,
-    ): MutableList<ScrobbleData> {
+    ): List<ScrobbleData> {
         val filtered = mutableListOf<ScrobbleData>()
+
+        if (failsMap[scrobblable.userAccount.type]!! > MAX_FAILURES_PER_SERVICE)
+            return filtered
+
         scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
             if (pendingScrobble.state and (1 shl scrobblable.userAccount.type.ordinal) != 0)
                 filtered += scrobbleData
@@ -253,10 +243,8 @@ class PendingScrobblesWorker(
             loggedInServicesBitset =
                 loggedInServicesBitset or (1 shl it.userAccount.type.ordinal)
         }
-        scrobblesDao.removeLoggedOutAccounts(loggedInServicesBitset)
-        scrobblesDao.deleteStateZero()
-        lovesDao.removeLoggedOutAccounts(loggedInServicesBitset)
-        lovesDao.deleteStateZero()
+        dao.removeLoggedOutAccounts(loggedInServicesBitset)
+        dao.deleteStateZero()
     }
 
 
@@ -266,5 +254,6 @@ class PendingScrobblesWorker(
         private const val HARD_LIMIT = 2500
         private var BATCH_SIZE = 40 //max 50
         private const val DELAY = 400L
+        private const val MAX_FAILURES_PER_SERVICE = 3
     }
 }

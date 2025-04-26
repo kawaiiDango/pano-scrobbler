@@ -19,13 +19,11 @@ import com.arn.scrobble.utils.AndroidStuff.dump
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.isUrlOrDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 

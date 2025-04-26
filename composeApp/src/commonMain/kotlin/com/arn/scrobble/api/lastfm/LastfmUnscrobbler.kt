@@ -1,6 +1,5 @@
 package com.arn.scrobble.api.lastfm
 
-import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.Requesters
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
@@ -49,9 +48,7 @@ object LastfmUnscrobbler {
             if (response.status == HttpStatusCode.OK) {
                 val success = response.body<DeleteScrobbleResponse>().result
 
-                if (success)
-                    Logger.i { "LastfmUnscrobbler unscrobbled" }
-                else
+                if (!success)
                     throw IllegalStateException("LastfmUnscrobbler: error unscrobbling")
             } else if (response.status == HttpStatusCode.Forbidden) {
                 cookieStorage.clear()

@@ -1,6 +1,5 @@
 package com.arn.scrobble.api.lastfm
 
-import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
@@ -185,8 +184,6 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         cacheStrategy: CacheStrategy,
         limit: Int,
     ): Result<PageResult<Track>> {
-        Logger.i { this::getLoves.name + " " + page }
-
         return client.getPageResult<LovedTracksResponse, Track>(transform = { it.lovedtracks }) {
             parameter("method", "user.getLovedTracks")
             parameter("user", username)
@@ -236,8 +233,6 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     }
 
     override suspend fun loadDrawerData(username: String): DrawerData? {
-        Logger.i { this::loadDrawerData.name }
-
         val user = userGetInfo(username).getOrNull()
         val isSelf = username == userAccount.user.name
 

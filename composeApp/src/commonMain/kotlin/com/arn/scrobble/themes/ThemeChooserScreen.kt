@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +40,7 @@ import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -66,7 +66,7 @@ fun ThemeChooserScreen(
     var dynamic: Boolean? by remember { mutableStateOf(null) }
     var dayNightMode: DayNightMode? by remember { mutableStateOf(null) }
     var contrastMode: ContrastMode? by remember { mutableStateOf(null) }
-    val isAppInNightMode = isSystemInDarkTheme()
+    val isAppInNightMode = LocalThemeAttributes.current.isDark
 
     DisposableEffect(Unit) {
         onDispose {
@@ -80,6 +80,8 @@ fun ThemeChooserScreen(
                                 themeDayNight = dayNightMode!!,
                                 themeContrast = contrastMode!!
                             )
+                        }.also {
+                            Stuff.mainPrefsInitialValue = it
                         }
                     }
                 } else
@@ -218,7 +220,7 @@ private fun ThemeSwatch(
             themeVariants.light.tertiary
     }
 
-    var interactionSource = remember { MutableInteractionSource() }
+    val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     OutlinedIconToggleButton(

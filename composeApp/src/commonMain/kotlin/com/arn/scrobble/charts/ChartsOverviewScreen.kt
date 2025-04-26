@@ -59,7 +59,7 @@ import com.arn.scrobble.graphics.toImageBitmap
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.EntriesHorizontal
+import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.TextHeaderItem
 import com.arn.scrobble.ui.backgroundForShimmer
@@ -107,9 +107,9 @@ fun ChartsOverviewScreen(
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
     onTitleChange: (String?) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM() },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
-    modifier: Modifier = Modifier,
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
@@ -172,8 +172,9 @@ fun ChartsOverviewScreen(
     }
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .padding(panoContentPadding(sides = false))
+            .then(modifier)
     ) {
         TimePeriodSelector(
             user = user,
@@ -186,7 +187,7 @@ fun ChartsOverviewScreen(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            EntriesHorizontal(
+            EntriesRow(
                 title = getMusicEntryQString(
                     Res.string.artists,
                     Res.plurals.num_artists,
@@ -220,7 +221,7 @@ fun ChartsOverviewScreen(
                 },
             )
 
-            EntriesHorizontal(
+            EntriesRow(
                 title = getMusicEntryQString(
                     Res.string.albums,
                     Res.plurals.num_albums,
@@ -254,7 +255,7 @@ fun ChartsOverviewScreen(
                 },
             )
 
-            EntriesHorizontal(
+            EntriesRow(
                 title = getMusicEntryQString(
                     Res.string.tracks,
                     Res.plurals.num_tracks,

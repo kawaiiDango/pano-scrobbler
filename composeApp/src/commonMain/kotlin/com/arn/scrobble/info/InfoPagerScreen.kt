@@ -16,7 +16,7 @@ import com.arn.scrobble.main.PanoPager
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTabType
 import com.arn.scrobble.navigation.PanoTabs
-import com.arn.scrobble.ui.EntriesGrid
+import com.arn.scrobble.ui.EntriesGridOrList
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.Stuff
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -33,8 +33,8 @@ fun InfoPagerScreen(
     initialTabIdx: Int,
     onSetTabIdx: (Int) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
-    viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
     modifier: Modifier = Modifier,
+    viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
     val artistTopTracks = viewModel.topTracks.collectAsLazyPagingItems()
     val artistTopAlbums = viewModel.topAlbums.collectAsLazyPagingItems()
@@ -63,7 +63,7 @@ fun InfoPagerScreen(
             )
         }
 
-        EntriesGrid(
+        EntriesGridOrList(
             entries = when (type) {
                 Stuff.TYPE_TRACKS -> artistTopTracks
                 Stuff.TYPE_ALBUMS -> artistTopAlbums

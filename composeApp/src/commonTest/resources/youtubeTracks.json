@@ -135,6 +135,11 @@
     "expectedValue": "Track Title"
   },
   {
+    "description": "should remove 'Official HD Video' string",
+    "funcParameter": "Track Title (Official HD Video)",
+    "expectedValue": "Track Title"
+  },
+  {
     "description": "should remove '- Official Music Video' string",
     "funcParameter": "Track Title - Official Music Video",
     "expectedValue": "Track Title"

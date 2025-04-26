@@ -3,6 +3,7 @@ package com.arn.scrobble.charts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +42,7 @@ private fun ChartsLegendContent(modifier: Modifier = Modifier) {
         ).forEach { (text, value) ->
             stonksIconForDelta(value)?.let { (icon, color) ->
                 Row(
-                    modifier = modifier,
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(

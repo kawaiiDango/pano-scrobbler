@@ -74,7 +74,7 @@ fun AppItemChip(
 @Composable
 fun EditsDeleteMenu(
     onDelete: () -> Unit,
-    enabled: Boolean = true,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var deleteMenuShown by remember { mutableStateOf(false) }

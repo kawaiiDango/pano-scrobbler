@@ -47,7 +47,10 @@ expect object PlatformStuff {
 
     fun openInBrowser(url: String)
 
-    fun launchSearchIntent(musicEntry: MusicEntry, pkgName: String?)
+    suspend fun launchSearchIntent(
+        musicEntry: MusicEntry,
+        pkgName: String?,
+    )
 
     fun isNotiChannelEnabled(channelId: String): Boolean
 

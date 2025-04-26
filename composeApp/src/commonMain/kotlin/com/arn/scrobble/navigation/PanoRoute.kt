@@ -94,7 +94,7 @@ sealed interface PanoRoute {
 
     @Serializable
     data class BlockedMetadataAdd(
-        val blockedMetadata: BlockedMetadata = BlockedMetadata(skip = true),
+        val blockedMetadata: BlockedMetadata = BlockedMetadata(),
         val ignoredArtist: String? = null,
         val hash: Int? = null,
     ) : PanoRoute
@@ -142,7 +142,7 @@ sealed interface PanoRoute {
     data class EditScrobble(
         val scrobbleData: ScrobbleData,
         val msid: String? = null,
-        val hash: Int = 0,
+        val hash: Int? = null,
     ) : PanoRoute
 
     @Serializable

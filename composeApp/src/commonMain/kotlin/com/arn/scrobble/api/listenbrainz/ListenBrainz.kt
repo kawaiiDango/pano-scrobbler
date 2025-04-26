@@ -3,7 +3,6 @@ package com.arn.scrobble.api.listenbrainz
 import androidx.annotation.IntRange
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.ExpirationPolicy
@@ -14,25 +13,26 @@ import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.UserAccountSerializable
+import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.ImageSize
 import com.arn.scrobble.api.lastfm.LastFmImage
+import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageEntries
 import com.arn.scrobble.api.lastfm.PageResult
-import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Session
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.api.UserAccountSerializable
-import com.arn.scrobble.api.UserAccountTemp
-import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
@@ -312,8 +312,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         }
 
         val actualLimit = if (limit > 0) limit else 25
-
-        Logger.i { this::getLoves.name + " " + page }
 
         return client.getPageResult<ListenBrainzFeedbacks, Track>(
             "feedback/user/$username/get-feedback",

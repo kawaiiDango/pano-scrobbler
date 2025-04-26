@@ -43,9 +43,9 @@ import pano_scrobbler.composeapp.generated.resources.num_simple_edits
 
 @Composable
 fun SimpleEditsScreen(
-    viewModel: SimpleEditsVM = viewModel { SimpleEditsVM() },
     onEdit: (SimpleEdit?) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SimpleEditsVM = viewModel { SimpleEditsVM() },
 ) {
     val simpleEdits by viewModel.simpleEditsFiltered.collectAsStateWithLifecycle()
     val count by viewModel.count.collectAsStateWithLifecycle(0)
@@ -109,10 +109,10 @@ fun SimpleEditsScreen(
 @Composable
 private fun SimpleEditItem(
     edit: SimpleEdit,
-    forShimmer: Boolean = false,
     onEdit: (SimpleEdit?) -> Unit,
     onDelete: (SimpleEdit) -> Unit,
     modifier: Modifier = Modifier,
+    forShimmer: Boolean = false,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

@@ -5,13 +5,13 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.getBlockedEntry
 import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
@@ -24,12 +24,12 @@ import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.PendingScrobblesWork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.parse_error
 import pano_scrobbler.composeapp.generated.resources.saved_as_pending
 import pano_scrobbler.composeapp.generated.resources.scrobble_ignored
@@ -84,10 +84,14 @@ object ScrobbleEverywhere {
                     .getBlockedMetadataDao()
                     .getBlockedEntry(scrobbleData)
                 if (blockedMetadata != null) {
-                    if (blockedMetadata.skip || blockedMetadata.mute) {
+                    if (blockedMetadata.blockPlayerAction in arrayOf(
+                            BlockPlayerAction.skip,
+                            BlockPlayerAction.mute
+                        )
+                    ) {
                         notifyPlayingTrackEvent(
                             PlayingTrackNotifyEvent.TrackBlocked(
-                                trackInfo = trackInfo,
+                                hash = trackInfo.hash,
                                 blockedMetadata = blockedMetadata,
                             )
                         )
@@ -118,13 +122,13 @@ object ScrobbleEverywhere {
             val editsDao = PanoDb.db.getSimpleEditsDao()
             var edit = editsDao.performEdit(scrobbleData)
 
-            var regexEdits = PanoDb.db
+            var regexResults = PanoDb.db
                 .getRegexEditsDao()
                 .performRegexReplace(scrobbleData, trackInfo.appId)
 
             val scrobbleDataBeforeParseAndLookup = scrobbleData.copy()
             if (parseTitle) { // youtube
-                if (edit == null && !regexEdits.values.any { it.isNotEmpty() }) { // do not parse if a regex edit is found
+                if (edit == null && !regexResults.isEdit) { // do not parse if a regex edit is found
                     val (parsedArtist, parsedTitle) = MetadataUtils.parseYoutubeTitle(trackInfo.origTitle)
                     scrobbleData.artist = parsedArtist ?: ""
                     scrobbleData.track = parsedTitle ?: ""
@@ -139,7 +143,7 @@ object ScrobbleEverywhere {
                     scrobbleData.track = oldTrack
             }
 
-            if (regexEdits.values.any { it.isNotEmpty() })
+            if (regexResults.isEdit)
                 edit = editsDao.performEdit(scrobbleData)
 
 
@@ -184,14 +188,10 @@ object ScrobbleEverywhere {
                         }
                         scrobbleData.track = track.name
                     } else if (!track.album?.artist?.name.isNullOrEmpty() &&
-                        prefs.fetchAlbum &&
-                        scrobbleData.album?.equals(
-                            track.album.name,
-                            ignoreCase = true
-                        ) == true &&
-                        (scrobbleData.albumArtist.isNullOrEmpty() || scrobbleData.artist == scrobbleData.albumArtist)
+                        scrobbleData.album?.equals(track.album.name, ignoreCase = true) == true
+                        && (scrobbleData.albumArtist.isNullOrEmpty() || scrobbleData.artist == scrobbleData.albumArtist)
                     ) {
-                        scrobbleData.albumArtist = track.album?.artist?.name
+                        scrobbleData.albumArtist = track.album.artist.name
                     }
                 }
 
@@ -211,11 +211,11 @@ object ScrobbleEverywhere {
             if (scrobbleDataBeforeParseAndLookup != scrobbleData) {
                 edit = editsDao.performEdit(scrobbleData, false)
 
-                regexEdits = PanoDb.db
+                regexResults = PanoDb.db
                     .getRegexEditsDao()
                     .performRegexReplace(scrobbleData, trackInfo.appId)
 
-                if (regexEdits.values.any { it.isNotEmpty() })
+                if (regexResults.isEdit)
                     edit = editsDao.performEdit(scrobbleData, false)
             }
 
@@ -308,6 +308,7 @@ object ScrobbleEverywhere {
                     timestamp = scrobbleData.timestamp,
                     duration = scrobbleData.duration ?: -1,
                     autoCorrected = if (scrobbleResults.isNotEmpty()) 1 else 0,
+                    packageName = trackInfo.appId,
                     state = state
                 )
 
@@ -343,9 +344,7 @@ object ScrobbleEverywhere {
                     return
 
                 val errMsg = exception
-                    ?.also { it.printStackTrace() }
-                    ?.message
-                    ?: getString(Res.string.network_error)
+                    ?.redactedMessage
                 failedTextLines += "<b>" + scrobblable.userAccount.type + ":</b> $errMsg"
             } else if (result.isSuccess && result.getOrThrow().ignored) {
                 failedTextLines += "<b>" + scrobblable.userAccount.type + ":</b> " +
@@ -389,8 +388,6 @@ object ScrobbleEverywhere {
     }
 
     suspend fun loveOrUnlove(track: Track, love: Boolean) {
-        Logger.i { this::loveOrUnlove.name + " " + love }
-
         if (track.artist.name.isEmpty() || track.name.isEmpty())
             return
 
@@ -402,16 +399,16 @@ object ScrobbleEverywhere {
             insert(listOf(newTr))
         }
 
-        val dao = PanoDb.db.getPendingLovesDao()
-        val pl = dao.find(track.artist.name, track.name)
+        val dao = PanoDb.db.getPendingScrobblesDao()
+        val pl = dao.findLoved(track.artist.name, track.name)
         val allScrobblables = Scrobblables.all.value
         if (pl != null) {
-            if (pl.shouldLove == !love) {
+            if (pl.event == ScrobbleEvent.unlove) {
                 var state = pl.state
                 allScrobblables.forEach {
                     state = state or (1 shl it.userAccount.type.ordinal)
                 }
-                val newPl = pl.copy(state = state, shouldLove = love)
+                val newPl = pl.copy(state = state, event = ScrobbleEvent.love)
                 dao.update(newPl)
             }
         } else {
@@ -426,10 +423,12 @@ object ScrobbleEverywhere {
                         state = state or (1 shl scrobblable.userAccount.type.ordinal)
                 }
 
-                val entry = PendingLove(
+                val entry = PendingScrobble(
                     artist = track.artist.name,
+                    album = track.album?.name ?: "",
+                    albumArtist = track.album?.artist?.name ?: "",
                     track = track.name,
-                    shouldLove = love,
+                    event = ScrobbleEvent.love,
                     state = state
                 )
 

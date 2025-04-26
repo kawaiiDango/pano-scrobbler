@@ -25,7 +25,7 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.getStringInDeviceLocale
-import com.arn.scrobble.utils.setAndroidLocale
+import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -50,7 +50,7 @@ class NLService : NotificationListenerService() {
     private var inited = false
 
     override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(newBase?.setAndroidLocale() ?: return)
+        super.attachBaseContext(newBase?.applyAndroidLocaleLegacy() ?: return)
     }
 
     //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9

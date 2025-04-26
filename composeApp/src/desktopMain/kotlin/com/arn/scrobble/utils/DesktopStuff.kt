@@ -9,30 +9,25 @@ object DesktopStuff {
         WINDOWS, MACOS, LINUX
     }
 
-    const val MINIMIZED_ARG = "--minimized"
+    private lateinit var cmdlineArgs: CmdlineArgs
 
-    private val execPath by lazy { System.getProperty("jpackage.app-path")?.ifEmpty { null } }
+    private const val MINIMIZED_ARG = "minimized"
+
+    private const val DATA_DIR_ARG = "data-dir"
+
+    private val execPath by lazy {
+        System.getenv("APPIMAGE")
+            ?.ifEmpty { null }
+            ?: System.getProperty("jpackage.app-path")
+                ?.ifEmpty { null }
+    }
 
     val resourcesPath by lazy {
         System.getProperty("compose.application.resources.dir")!!
     }
 
     val appDataRoot: String by lazy {
-        when (os) {
-            Os.WINDOWS -> {
-                System.getenv("APPDATA")?.ifEmpty { null }
-                    ?: System.getProperty("user.home")
-            }
-
-            Os.LINUX -> {
-                System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
-                    ?: (System.getProperty("user.home") + "/.local/share")
-            }
-
-            Os.MACOS -> {
-                System.getProperty("user.home") + "/Library/Application Support"
-            }
-        }
+        cmdlineArgs.dataDir ?: getDefaultDataDir()
     }
 
     val iconPath: String by lazy {
@@ -55,6 +50,38 @@ object DesktopStuff {
         }
     }
 
+    fun parseCmdlineArgs(args: Array<String>): CmdlineArgs {
+        var minimized = false
+        var dataDir: String? = null
+
+        var index = 0
+        while (index < args.size) {
+            when (args[index]) {
+                "-${MINIMIZED_ARG[0]}", "--$MINIMIZED_ARG" -> {
+                    minimized = true
+                }
+
+                "-${DATA_DIR_ARG[0]}", "--$DATA_DIR_ARG" -> {
+                    index++
+                    if (index < args.size) {
+                        dataDir = args[index]
+                    } else {
+                        throw IllegalArgumentException("Missing value for argument: ${args[index - 1]}")
+                    }
+                }
+
+                else -> {
+                    println("Unknown argument ignored: ${args[index]}")
+                }
+            }
+            index++
+        }
+
+        return CmdlineArgs(minimized, dataDir).also {
+            cmdlineArgs = it
+        }
+    }
+
     fun addOrRemoveFromStartup(add: Boolean) {
         val execPath = execPath ?: return
         when (os) {
@@ -72,17 +99,15 @@ object DesktopStuff {
                         ".config/autostart/${BuildKonfig.APP_NAME}.desktop"
                     )
                 if (add) {
-                    val iconPath = iconPath
-
                     desktopFile.writeText(
                         """
                         [Desktop Entry]
                         Type=Application
                         Name=${BuildKonfig.APP_NAME}
                         Comment=${BuildKonfig.APP_NAME}
-                        Icon=$iconPath
-                        Exec=$execPath $MINIMIZED_ARG
-                        Categories=Audio;Utility
+                        Exec="$execPath" --$MINIMIZED_ARG
+                        X-GNOME-Autostart-enabled=true
+                        Categories=Utility
                         """.trimIndent()
                     )
                 } else {
@@ -91,7 +116,7 @@ object DesktopStuff {
             }
 
             Os.MACOS -> {
-                // todo: macos. add or remove launch agent in ~/Library/LaunchAgents
+                // will not implement for macos
             }
         }
     }
@@ -111,7 +136,7 @@ object DesktopStuff {
                         System.getProperty("user.home"),
                         ".config/autostart/${BuildKonfig.APP_NAME}.desktop"
                     )
-                return desktopFile.exists()
+                return desktopFile.exists() && desktopFile.readText().contains(execPath ?: "")
             }
 
             Os.MACOS -> {
@@ -119,4 +144,29 @@ object DesktopStuff {
             }
         }
     }
+
+    private fun getDefaultDataDir(): String {
+        return when (os) {
+            Os.WINDOWS -> {
+                System.getenv("APPDATA")?.ifEmpty { null }
+                    ?: System.getProperty("user.home")
+            }
+
+            Os.LINUX -> {
+                System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
+                    ?: (System.getProperty("user.home") + "/.local/share")
+            }
+
+            Os.MACOS -> {
+                System.getProperty("user.home") + "/Library/Application Support"
+            }
+        }.let {
+            File(it, BuildKonfig.APP_NAME.lowercase().replace(' ', '-')).apply {
+                if (!exists()) {
+                    mkdirs()
+                }
+            }.absolutePath
+        }
+    }
+
 }

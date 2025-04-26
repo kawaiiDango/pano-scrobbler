@@ -13,7 +13,7 @@ import androidx.core.util.Consumer
 import androidx.navigation.compose.rememberNavController
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.AndroidStuff
-import com.arn.scrobble.utils.setAndroidLocale
+import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 
 class MainDialogActivity : ComponentActivity() {
 
@@ -42,7 +42,7 @@ class MainDialogActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase ?: return)
-        setAndroidLocale()
+        applyAndroidLocaleLegacy()
     }
 
     companion object {

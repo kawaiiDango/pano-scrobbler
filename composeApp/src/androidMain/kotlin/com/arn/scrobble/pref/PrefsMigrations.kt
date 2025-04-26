@@ -82,7 +82,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
         val regexLearnt = sharedPreferences.getBoolean("regex_learnt", false)
         val regexEditsLearnt = sharedPreferences.getBoolean("regex_edits_learnt", false)
         val reorderFriendsLearnt = sharedPreferences.getBoolean("reorder_friends_learnt", false)
-        val gridPinchLearnt = sharedPreferences.getBoolean("grid_pinch_learnt", false)
         val squarePhotoLearnt = sharedPreferences.getBoolean("square_photo_learnt", false)
         val notificationsOnLockscreen = sharedPreferences.getBoolean("lockscreen_noti", false)
         val notiScrobbling = sharedPreferences.getBoolean("noti_scrobbling", true)
@@ -166,7 +165,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             regexLearnt = regexLearnt,
             regexEditsLearnt = regexEditsLearnt,
             reorderFriendsLearnt = reorderFriendsLearnt,
-            gridPinchLearnt = gridPinchLearnt,
             squarePhotoLearnt = squarePhotoLearnt,
             notificationsOnLockscreen = notificationsOnLockscreen,
             notiScrobbling = notiScrobbling,

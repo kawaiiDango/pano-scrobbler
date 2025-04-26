@@ -13,7 +13,7 @@ import javafx.scene.web.WebEngine
  * Created By Kevin Zou On 2023/9/12
  */
 internal fun WebEngine.getCurrentUrl(): String? {
-    if (history.entries.size <= 0) return null
+    if (history.entries.isEmpty()) return null
     return history.entries[history.currentIndex].url
 }
 

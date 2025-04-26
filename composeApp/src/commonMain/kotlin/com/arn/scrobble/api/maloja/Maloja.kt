@@ -115,6 +115,8 @@ class Maloja(userAccount: UserAccountSerializable) :
         return client.getResult<MalojaTracksResponse>("scrobbles") {
             parameter("page", page - 1) // maloja page numbers start from 0
             parameter("perpage", limit)
+            // fixes a bug for batch submitted scrobbles
+            parameter("in", "alltime")
             cacheStrategy(cacheStrategy)
         }
             .map {

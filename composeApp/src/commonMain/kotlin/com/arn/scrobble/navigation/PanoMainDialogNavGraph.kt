@@ -5,6 +5,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -15,10 +16,11 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.edits.BlockedMetadataAddScreen
 import com.arn.scrobble.edits.EditScrobbleDialog
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.info.MusicEntryInfoScreen
 import com.arn.scrobble.info.TagInfoScreen
 import com.arn.scrobble.main.MainViewModel
+import com.arn.scrobble.media.PlayingTrackNotifyEvent
+import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.utils.Stuff
 import kotlin.reflect.typeOf
 
@@ -74,7 +76,17 @@ fun NavGraphBuilder.panoDialogNavGraph(
         EditScrobbleDialog(
             scrobbleData = arguments.scrobbleData,
             onDone = {
-                // todo: handle scrobble edit from notification
+                // todo: handle scrobble edit fully
+
+                if (arguments.hash != null) {
+                    notifyPlayingTrackEvent(
+                        PlayingTrackNotifyEvent.TrackCancelled(
+                            hash = arguments.hash,
+                            showUnscrobbledNotification = false,
+                            markAsScrobbled = true,
+                        )
+                    )
+                }
             },
             msid = arguments.msid,
             hash = arguments.hash,

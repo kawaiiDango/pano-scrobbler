@@ -1,9 +1,10 @@
 package com.arn.scrobble.media
 
 import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.PanoNotifications
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -38,7 +39,7 @@ sealed interface PlayingTrackNotifyEvent {
 
     @Serializable
     data class TrackBlocked(
-        val trackInfo: PlayingTrackInfo,
+        val hash: Int,
         val blockedMetadata: BlockedMetadata,
     ) : PlayingTrackNotifyEvent
 
@@ -124,11 +125,11 @@ suspend fun listenForPlayingTrackEvents(
             }
 
             is PlayingTrackNotifyEvent.TrackBlocked -> {
-                val hash = event.trackInfo.hash
+                val hash = event.hash
                 val blockedMetadata = event.blockedMetadata
-                if (blockedMetadata.skip) {
+                if (blockedMetadata.blockPlayerAction == BlockPlayerAction.skip) {
                     mediaListener.skip(hash)
-                } else if (blockedMetadata.mute) {
+                } else if (blockedMetadata.blockPlayerAction == BlockPlayerAction.mute) {
                     mediaListener.mute(hash)
                 }
 
@@ -172,9 +173,9 @@ suspend fun listenForPlayingTrackEvents(
             is PlayingTrackNotifyEvent.TrackScrobbleLocked -> {
                 if (event.hash != -1) {
                     if (event.locked) {
-                        scrobbleQueue.lockedHash = event.hash
+                        scrobbleQueue.setLockedHash(event.hash)
                     } else {
-                        scrobbleQueue.lockedHash = null
+                        scrobbleQueue.setLockedHash(null)
                     }
                 }
             }

@@ -15,6 +15,7 @@ import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -53,6 +55,8 @@ class MainViewModel : ViewModel() {
 
     private val _updateAvailablity = MutableSharedFlow<GithubReleases>()
     val updateAvailability = _updateAvailablity.asSharedFlow()
+
+    private val _pullToRefreshTriggered = MutableSharedFlow<Int>()
 
     private val _currentUser = MutableStateFlow<UserCached?>(null)
 
@@ -152,7 +156,7 @@ class MainViewModel : ViewModel() {
             if (e is ApiException && e.code != 504) { // suppress cache not found exceptions
                 Stuff.globalSnackbarFlow.emit(
                     PanoSnackbarVisuals(
-                        message = e.localizedMessage ?: e.message ?: "Error",
+                        message = e.redactedMessage,
                         isError = true
                     )
                 )
@@ -211,6 +215,18 @@ class MainViewModel : ViewModel() {
             _editData.emit(track)
         }
     }
+
+    fun notifyPullToRefresh(id: Int) {
+        viewModelScope.launch {
+            _pullToRefreshTriggered.emit(id)
+        }
+    }
+
+
+    fun getPullToRefreshTrigger(id: Int) =
+        _pullToRefreshTriggered
+            .filter { it == id }
+            .map { }
 
     // from activity
     private fun checkForUpdates() {

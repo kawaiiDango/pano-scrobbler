@@ -50,6 +50,7 @@ import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -67,9 +68,9 @@ import pano_scrobbler.composeapp.generated.resources.track
 fun RandomScreen(
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: RandomVM = viewModel { RandomVM() },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
-    modifier: Modifier = Modifier,
 ) {
     val musicEntry by viewModel.musicEntry.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
@@ -171,47 +172,49 @@ fun RandomScreen(
 
             if (hasLoaded) {
                 ErrorText(
-                    errorText = error?.localizedMessage,
+                    errorText = error?.redactedMessage,
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Center)
                 )
             }
 
-            if (isLandscape) {
-                MusicEntryListItem(
-                    entry = musicEntryOrPlaceholder,
-                    forShimmer = !hasLoaded,
-                    fetchAlbumImageIfMissing = !isTimePeriodContinuous,
-                    onEntryClick = {
-                        musicEntry?.let { onEntryClick(it) }
-                    },
-                    fixedImageHeight = false,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .then(
-                            if (!hasLoaded) Modifier.shimmerWindowBounds()
-                            else Modifier
-                        )
-                )
-            } else {
-                MusicEntryGridItem(
-                    entry = musicEntryOrPlaceholder,
-                    showArtist = true,
-                    forShimmer = !hasLoaded,
-                    fetchAlbumImageIfMissing = !isTimePeriodContinuous,
-                    index = null,
-                    stonksDelta = null,
-                    onClick = {
-                        musicEntry?.let { onEntryClick(it) }
-                    },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .then(
-                            if (!hasLoaded) Modifier.shimmerWindowBounds()
-                            else Modifier
-                        )
-                )
+            if (error == null) {
+                if (isLandscape) {
+                    MusicEntryListItem(
+                        entry = musicEntryOrPlaceholder,
+                        forShimmer = !hasLoaded,
+                        fetchAlbumImageIfMissing = !isTimePeriodContinuous,
+                        onEntryClick = {
+                            musicEntry?.let { onEntryClick(it) }
+                        },
+                        fixedImageHeight = false,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .then(
+                                if (!hasLoaded) Modifier.shimmerWindowBounds()
+                                else Modifier
+                            )
+                    )
+                } else {
+                    MusicEntryGridItem(
+                        entry = musicEntryOrPlaceholder,
+                        showArtist = true,
+                        forShimmer = !hasLoaded,
+                        fetchAlbumImageIfMissing = !isTimePeriodContinuous,
+                        index = null,
+                        stonksDelta = null,
+                        onClick = {
+                            musicEntry?.let { onEntryClick(it) }
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .then(
+                                if (!hasLoaded) Modifier.shimmerWindowBounds()
+                                else Modifier
+                            )
+                    )
+                }
             }
         }
 

@@ -44,7 +44,7 @@ import pano_scrobbler.composeapp.generated.resources.track
 
 @Composable
 fun SimpleEditsAddScreen(
-    simpleEdit: SimpleEdit? = null,
+    simpleEdit: SimpleEdit?,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

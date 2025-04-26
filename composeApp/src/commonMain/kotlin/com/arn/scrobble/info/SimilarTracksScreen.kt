@@ -10,7 +10,7 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.EntriesGrid
+import com.arn.scrobble.ui.EntriesGridOrList
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.not_found
 
@@ -21,8 +21,8 @@ fun SimilarTracksScreen(
     user: UserCached,
     pkgName: String?,
     onNavigate: (PanoRoute) -> Unit,
-    viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
     modifier: Modifier = Modifier,
+    viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
 
     val similarTracks = viewModel.similarTracks.collectAsLazyPagingItems()
@@ -31,7 +31,7 @@ fun SimilarTracksScreen(
         viewModel.setTrack(musicEntry)
     }
 
-    EntriesGrid(
+    EntriesGridOrList(
         entries = similarTracks,
         fetchAlbumImageIfMissing = true,
         showArtists = true,

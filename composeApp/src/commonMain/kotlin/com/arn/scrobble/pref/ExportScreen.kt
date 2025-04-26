@@ -38,6 +38,7 @@ import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.OutlinedToggleButtons
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.stringResource
@@ -50,9 +51,9 @@ import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 
 @Composable
 fun ExportScreen(
-    viewModel: ExportVM = viewModel { ExportVM() },
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ExportVM = viewModel { ExportVM() },
 ) {
     var codeText by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf<String?>(null) }
@@ -145,7 +146,7 @@ fun ExportScreen(
                 errorText = null
                 onBack()
             }.onFailure {
-                errorText = it.message
+                errorText = it.redactedMessage
             }
         }
     }

@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -44,9 +45,9 @@ import pano_scrobbler.composeapp.generated.resources.skip
 
 @Composable
 fun BlockedMetadatasScreen(
-    viewModel: BlockedMetadataVM = viewModel { BlockedMetadataVM() },
     onEdit: (BlockedMetadata) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: BlockedMetadataVM = viewModel { BlockedMetadataVM() },
 ) {
     val blockedMetadatas by viewModel.blockedMetadataFiltered.collectAsStateWithLifecycle()
     val count by viewModel.count.collectAsStateWithLifecycle(0)
@@ -118,8 +119,8 @@ private fun BlockedMetadataItem(
     blockedMetadata: BlockedMetadata,
     onEdit: (BlockedMetadata) -> Unit,
     onDelete: (BlockedMetadata) -> Unit,
-    forShimmer: Boolean = false,
     modifier: Modifier = Modifier,
+    forShimmer: Boolean = false,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -173,13 +174,13 @@ private fun BlockedMetadataItem(
             }
         }
 
-        if (blockedMetadata.skip) {
+        if (blockedMetadata.blockPlayerAction == BlockPlayerAction.skip) {
             Icon(
                 imageVector = Icons.Outlined.SkipNext,
                 contentDescription = stringResource(Res.string.skip),
                 tint = MaterialTheme.colorScheme.secondary,
             )
-        } else if (blockedMetadata.mute) {
+        } else if (blockedMetadata.blockPlayerAction == BlockPlayerAction.mute) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.VolumeOff,
                 contentDescription = stringResource(Res.string.mute),

@@ -23,6 +23,7 @@ import com.arn.scrobble.db.CachedTracksDao.Companion.deltaUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -52,7 +53,7 @@ class IndexerWorker(
 
         withContext(Dispatchers.IO + exHandler) {
 
-            if (db.getPendingScrobblesDao().count() > 0 || db.getPendingLovesDao().count() > 0) {
+            if (db.getPendingScrobblesDao().count() > 0) {
                 throw IllegalStateException("Cannot run when there are pending scrobbles")
             }
 
@@ -69,7 +70,7 @@ class IndexerWorker(
         }
 
         return if (error != null)
-            CommonWorkerResult.Failure(error.localizedMessage ?: "Unknown error")
+            CommonWorkerResult.Failure(error.redactedMessage)
         else
             CommonWorkerResult.Success
     }

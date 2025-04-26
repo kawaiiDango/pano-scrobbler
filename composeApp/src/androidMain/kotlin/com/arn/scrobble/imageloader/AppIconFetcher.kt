@@ -2,6 +2,7 @@ package com.arn.scrobble.imageloader
 
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DataSource
@@ -38,10 +39,7 @@ class AppIconFetcher(
         firstRequestReturned = true
 
         if (icon !is BitmapDrawable) // just in case
-            icon = BitmapDrawable(
-                options.context.resources,
-                icon.toBitmap()
-            )
+            icon = icon.toBitmap().toDrawable(options.context.resources)
 
         return ImageFetchResult(
             icon.asImage(),

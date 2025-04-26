@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Pano Scrobbler
+Exec=AppRun
+Icon=pano-scrobbler
+Categories=Utility
+Terminal=false
+StartupNotify=true
+NoDisplay=false

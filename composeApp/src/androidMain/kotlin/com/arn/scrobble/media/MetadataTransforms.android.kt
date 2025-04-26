@@ -90,6 +90,11 @@ actual fun transformMediaMetadata(
             if (artist.isEmpty())
                 artist = Stuff.ARTIST_NINTENDO_MUSIC
         }
+
+        Stuff.PACKAGE_APPLE_MUSIC -> {
+            // remove  - Single,  - EP at the end
+            album = MetadataUtils.removeSingleEp(album)
+        }
     }
 
     if (trackInfo.appId in Stuff.IGNORE_ARTIST_META)

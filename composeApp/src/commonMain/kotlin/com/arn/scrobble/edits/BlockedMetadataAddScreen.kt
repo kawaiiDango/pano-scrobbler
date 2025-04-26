@@ -22,9 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.media.PlayingTrackNotifyEvent
+import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.ui.DialogParent
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InfoText
@@ -60,8 +63,7 @@ private fun BlockedMetadataAddContent(
     var albumArtist by remember { mutableStateOf(blockedMetadata.albumArtist) }
     var album by remember { mutableStateOf(blockedMetadata.album) }
     var track by remember { mutableStateOf(blockedMetadata.track) }
-    var skip by remember { mutableStateOf(blockedMetadata.skip) }
-    var mute by remember { mutableStateOf(blockedMetadata.mute) }
+    var blockPlayerAction by remember { mutableStateOf(blockedMetadata.blockPlayerAction) }
     var useChannel by remember { mutableStateOf(false) }
     var errorText by remember { mutableStateOf<String?>(null) }
     val emptyText = stringResource(Res.string.required_fields_empty)
@@ -142,26 +144,23 @@ private fun BlockedMetadataAddContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             FilterChip(
-                selected = skip,
+                selected = blockPlayerAction == BlockPlayerAction.skip,
                 onClick = {
-                    skip = true
-                    mute = false
+                    blockPlayerAction = BlockPlayerAction.skip
                 },
                 label = { Text(stringResource(Res.string.skip)) }
             )
             FilterChip(
-                selected = mute,
+                selected = blockPlayerAction == BlockPlayerAction.mute,
                 onClick = {
-                    mute = true
-                    skip = false
+                    blockPlayerAction == BlockPlayerAction.mute
                 },
                 label = { Text(stringResource(Res.string.mute)) }
             )
             FilterChip(
-                selected = !skip && !mute,
+                selected = blockPlayerAction == BlockPlayerAction.ignore,
                 onClick = {
-                    skip = false
-                    mute = false
+                    blockPlayerAction = BlockPlayerAction.ignore
                 },
                 label = { Text(stringResource(Res.string.do_nothing)) }
             )
@@ -186,8 +185,7 @@ private fun BlockedMetadataAddContent(
                         albumArtist = albumArtist,
                         album = album,
                         track = track,
-                        skip = skip,
-                        mute = mute
+                        blockPlayerAction = blockPlayerAction,
                     )
                     if (listOf(artist, albumArtist, album, track).all { it.isEmpty() }) {
                         errorText = emptyText
@@ -226,14 +224,13 @@ fun BlockedMetadataAddScreen(
                             .insertLowerCase(listOf(it), ignore = false)
                     }
 
-                    if (hash != 0) {
-                        // todo reimplement
-//                        val i = Intent(NLService.iBLOCK_ACTION_S).apply {
-//                            `package` = AndroidStuff.application.packageName
-//                            putSingle(it)
-//                            putExtra(NLService.B_HASH, hash)
-//                        }
-//                        AndroidStuff.application.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+                    if (hash != null) {
+                        notifyPlayingTrackEvent(
+                            PlayingTrackNotifyEvent.TrackBlocked(
+                                hash = hash,
+                                blockedMetadata = blockedMetadata,
+                            )
+                        )
                     }
 
                     onDismiss()

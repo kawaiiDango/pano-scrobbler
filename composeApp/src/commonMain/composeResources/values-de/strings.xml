@@ -111,17 +111,21 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Apps</string>
     <string name="offline">Offline. Angezeigte Daten sind nicht aktuell</string>
     <string name="unavailable_offline">Nicht verfügbar im Offline-Modus</string>
+    <string name="tv_url_notice">Öffne diesen Link in einem Browser auf einem anderen Gerät</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Dienste</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ich habe\n%1$s %2$s gehört</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s hörte\n%1$s %2$s an</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Teilen</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legende</string>
+    <string name="grid" comment="Grid view">Raster</string>
+    <string name="list" comment="Single column list view">Liste</string>
     <string name="pinch_to_zoom">Zum Zoomen auf- und zuziehen</string>
     <string name="more_info">Weitere Infos</string>
     <string name="more" comment="More options menu in short">Mehr</string>
     <string name="learn" comment="(Learn java regex syntax)">Mehr erfahren</string>
     <string name="hide">Ausblenden</string>
+    <string name="rank_change" comment="%1= delta change">Rangwechsel: %1$s</string>
     <string name="rank_change_no_change">Keine Änderung</string>
     <string name="rank_change_new">Nicht gescrobbelt innerhalb des vorherigen Zeitraums</string>
     <string name="search">Suchen</string>
@@ -141,6 +145,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Optionen für dieses Item</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s erkannt</string>
     <string name="new_player_prompt">Diese App weiter scrobbeln?</string>
+    <string name="new_player_prompt_desktop">Gehen Sie zu den Einstellungen, um diese App zu scrobbeln</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Zugriff auf %1$s fehlgeschlagen</string>
+    <string name="file_exists_confirm_overwrite">Datei bereits vorhanden. Zum Überschreiben erneut klicken.</string>
     <string name="no_scrobbles">Noch keine Titel vorhanden…</string>
     <string name="no_friends">Du folgst noch niemandem…</string>
     <string name="channel_err" comment="Its a noun">Scrobble-Fehler</string>
@@ -158,6 +165,8 @@
     <string name="pending_scrobbles">Ausstehende Scrobbles</string>
     <string name="pending_scrobble">Ausstehender Scrobble</string>
     <string name="pending_scrobbles_noti">Bearbeite ausstehende Scrobbles</string>
+    <string name="following" comment="accounts you are following on lastfm">Abonniert</string>
+    <string name="followers" comment="your lastfm followers">Abonnenten</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, seit %2$s</string>
     <string name="allow_background">Scrobbeln im Hintergrund erlauben</string>
     <string name="grant_notification_access">Zugriff auf die Benachrichtigungen gewähren</string>

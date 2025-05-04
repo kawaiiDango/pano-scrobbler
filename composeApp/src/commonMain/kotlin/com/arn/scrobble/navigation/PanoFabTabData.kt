@@ -16,7 +16,8 @@ import pano_scrobbler.composeapp.generated.resources.done
 data class PanoFabData(
     val stringRes: StringResource,
     val icon: ImageVector,
-    val route: PanoRoute,
+    val route: PanoRoute?,
+    val dialog: PanoDialog? = null,
 )
 
 fun getFabData(dest: NavDestination): PanoFabData? {
@@ -36,7 +37,8 @@ fun getFabData(dest: NavDestination): PanoFabData? {
         dest.hasRoute<PanoRoute.BlockedMetadatas>() -> PanoFabData(
             Res.string.add,
             Icons.Outlined.Add,
-            PanoRoute.BlockedMetadataAdd(ignoredArtist = null, hash = null)
+            route = null,
+            dialog = PanoDialog.BlockedMetadataAdd(ignoredArtist = null, hash = null)
         )
 
         dest.hasRoute<PanoRoute.AppList>() ||
@@ -84,18 +86,12 @@ fun getTabData(dest: NavDestination, accountType: AccountType): List<PanoTabs>? 
             )
         }
 
-        dest.hasRoute<PanoRoute.MusicEntryInfoPager>() -> listOf(
-            PanoTabs.TopTracks,
-            PanoTabs.TopAlbums,
-            PanoTabs.TopArtists,
-        )
-
-        dest.hasRoute<PanoRoute.ChartsPager>() -> listOf(
-            PanoTabs.TopArtists,
-            PanoTabs.TopAlbums,
-            PanoTabs.TopTracks,
-            PanoTabs.MoreOptions,
-        )
+        dest.hasRoute<PanoRoute.MusicEntryInfoPager>() || dest.hasRoute<PanoRoute.ChartsPager>() ->
+            listOf(
+                PanoTabs.TopArtists,
+                PanoTabs.TopAlbums,
+                PanoTabs.TopTracks,
+            )
 
         else -> null
     }

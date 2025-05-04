@@ -85,16 +85,16 @@ import com.arn.scrobble.icons.Metronome
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.icons.UserTag
 import com.arn.scrobble.imageloader.MusicEntryImageReq
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyRow
 import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
-import com.arn.scrobble.ui.placeholderPainter
 import com.arn.scrobble.ui.placeholderImageVectorPainter
+import com.arn.scrobble.ui.placeholderPainter
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -144,18 +144,22 @@ import pano_scrobbler.composeapp.generated.resources.user_loved
 import pano_scrobbler.composeapp.generated.resources.user_tags_hint
 import pano_scrobbler.composeapp.generated.resources.valence
 import java.text.DateFormat
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
-private fun InfoContent(
+fun MusicEntryInfoDialog(
     musicEntry: MusicEntry,
     pkgName: String?,
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InfoVM = viewModel { InfoVM() },
     miscVM: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
+    // the arguments can change for this screen
+
     val infoMap by viewModel.infoMap.collectAsStateWithLifecycle()
     val infoLoaded by viewModel.infoLoaded.collectAsStateWithLifecycle()
     val allTypes = remember {
@@ -166,9 +170,9 @@ private fun InfoContent(
             Stuff.TYPE_ALBUM_ARTISTS,
         )
     }
-    var isLoved by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    var expandedHeaderType by rememberSaveable { mutableIntStateOf(-1) }
-    var expandedWikiType by rememberSaveable { mutableIntStateOf(-1) }
+    var isLoved by rememberSaveable(musicEntry) { mutableStateOf<Boolean?>(null) }
+    var expandedHeaderType by rememberSaveable(musicEntry) { mutableIntStateOf(-1) }
+    var expandedWikiType by rememberSaveable(musicEntry) { mutableIntStateOf(-1) }
     val userTags by viewModel.userTags.collectAsStateWithLifecycle()
     val userTagsHistory by viewModel.userTagsHistory.collectAsStateWithLifecycle()
 
@@ -191,8 +195,8 @@ private fun InfoContent(
     }
 
     val onHorizontalEntryItemClick: (MusicEntry) -> Unit = {
-        onNavigate(
-            PanoRoute.MusicEntryInfo(
+        onOpenDialog(
+            PanoDialog.MusicEntryInfo(
                 track = it as? Track,
                 album = it as? Album,
                 artist = it as? Artist,
@@ -202,7 +206,7 @@ private fun InfoContent(
         )
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(musicEntry) {
         viewModel.setMusicEntryIfNeeded(musicEntry, user.name)
     }
 
@@ -303,8 +307,8 @@ private fun InfoContent(
                 userTags = userTags[type],
                 userTagsHistory = userTagsHistory,
                 onTagClick = {
-                    onNavigate(
-                        PanoRoute.TagInfo(it)
+                    onOpenDialog(
+                        PanoDialog.TagInfo(it)
                     )
                 },
                 onUserTagAdd = {
@@ -333,8 +337,8 @@ private fun InfoContent(
                                 InfoTrackList(
                                     tracks = entry.tracks.track,
                                     onTrackClick = {
-                                        onNavigate(
-                                            PanoRoute.MusicEntryInfo(
+                                        onOpenDialog(
+                                            PanoDialog.MusicEntryInfo(
                                                 track = it,
                                                 pkgName = pkgName,
                                                 user = user
@@ -549,9 +553,8 @@ private fun InfoCountsForMusicEntry(
             }
         } else if ((entry.userplaycount ?: 0) > 0 && !PlatformStuff.isTv) {
             {
-                val _username = user.name
                 entry.url
-                    ?.replace("/music/", "/user/$_username/library/music/")
+                    ?.replace("/music/", "/user/${user.name}/library/music/")
                     ?.let {
                         PlatformStuff.openInBrowser(it)
                     }
@@ -852,7 +855,7 @@ private fun TrackFeaturesPlot(
 
             TextWithIcon(
                 icon = Icons.AutoMirrored.Outlined.VolumeUp,
-                text = String.format("%.2f dB", features.loudness),
+                text = String.format(Locale.getDefault(), "%.2f dB", features.loudness),
             )
 
             features.getKeyString()?.let {
@@ -947,28 +950,5 @@ private fun InfoTrackList(
                     .padding(8.dp),
             )
         }
-    }
-}
-
-
-@Composable
-fun MusicEntryInfoScreen(
-    musicEntry: MusicEntry,
-    pkgName: String?,
-    user: UserCached,
-    onNavigate: (PanoRoute) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogParent(
-        onDismiss = onDismiss,
-        padding = false
-    ) {
-        InfoContent(
-            musicEntry = musicEntry,
-            pkgName = pkgName,
-            user = user,
-            onNavigate = onNavigate,
-            modifier = it,
-        )
     }
 }

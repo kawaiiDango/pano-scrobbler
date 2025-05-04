@@ -19,19 +19,19 @@ abstract class MediaListener(
 
     protected val blockedPackages =
         mainPrefs.data.map { it.blockedPackages }
-            .stateIn(scope, SharingStarted.Lazily, Stuff.mainPrefsInitialValue.blockedPackages)
+            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.blockedPackages)
 
     protected val allowedPackages =
         mainPrefs.data.map { it.allowedPackages }
-            .stateIn(scope, SharingStarted.Lazily, Stuff.mainPrefsInitialValue.allowedPackages)
+            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.allowedPackages)
 
     protected val scrobblerEnabled =
         mainPrefs.data.map { it.scrobblerEnabled }
-            .stateIn(scope, SharingStarted.Lazily, Stuff.mainPrefsInitialValue.scrobblerEnabled)
+            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.scrobblerEnabled)
 
     protected val autoDetectApps =
         mainPrefs.data.map { it.autoDetectAppsP }
-            .stateIn(scope, SharingStarted.Lazily, Stuff.mainPrefsInitialValue.autoDetectAppsP)
+            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.autoDetectAppsP)
 
     protected val loggedIn =
         mainPrefs.data.map { it.scrobbleAccounts.isNotEmpty() }
@@ -78,8 +78,7 @@ abstract class MediaListener(
 
     protected fun shouldScrobble(appId: String): Boolean {
         val should = scrobblerEnabled.value && loggedIn.value &&
-                (appId in allowedPackages.value ||
-                        (autoDetectApps.value && appId !in blockedPackages.value))
+                (appId in allowedPackages.value)
 
         return should
     }
@@ -177,7 +176,8 @@ abstract class MediaListener(
                 return
             }
 
-            val isPossiblyAtStart = playbackInfo.position < START_POS_LIMIT
+            val isPossiblyAtStart =
+                playbackInfo.position != -1L && playbackInfo.position < START_POS_LIMIT
 
             if (lastPlaybackState == playbackInfo.state /* bandcamp does this */ &&
                 !(playbackInfo.state == CommonPlaybackState.Playing && isPossiblyAtStart)

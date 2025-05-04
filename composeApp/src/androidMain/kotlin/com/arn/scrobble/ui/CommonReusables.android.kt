@@ -21,7 +21,7 @@ actual fun AppIcon(
     AsyncImage(
         model = appItem?.appId?.let { PackageName(it) },
         placeholder = placeholderPainter(),
-        contentDescription = appItem?.label,
+        contentDescription = appItem?.friendlyLabel,
         modifier = modifier
     )
 }

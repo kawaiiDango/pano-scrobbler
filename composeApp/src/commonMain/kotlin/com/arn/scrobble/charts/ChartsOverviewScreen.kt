@@ -18,8 +18,8 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Tag
@@ -56,6 +56,7 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.graphics.KumoRect
 import com.arn.scrobble.graphics.toImageBitmap
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.EmptyText
@@ -106,6 +107,7 @@ import pano_scrobbler.composeapp.generated.resources.tracks
 fun ChartsOverviewScreen(
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM() },
@@ -123,9 +125,9 @@ fun ChartsOverviewScreen(
     val listeningActivity by viewModel.listeningActivity.collectAsStateWithLifecycle()
 
     val scrollState = rememberScrollState()
-    var tagCloudOffsetY by remember { mutableStateOf(0f) }
+    var tagCloudOffsetY by remember { mutableFloatStateOf(0f) }
     var tagCloudVisible by remember { mutableStateOf(false) }
-    var listeningActivityOffsetY by remember { mutableStateOf(0f) }
+    var listeningActivityOffsetY by remember { mutableFloatStateOf(0f) }
     var listeningActivityVisible by remember { mutableStateOf(false) }
     val density = LocalDensity.current
 
@@ -211,8 +213,8 @@ fun ChartsOverviewScreen(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_ARTISTS)
                 },
                 onItemClick = {
-                    onNavigate(
-                        PanoRoute.MusicEntryInfo(
+                    onOpenDialog(
+                        PanoDialog.MusicEntryInfo(
                             artist = it as Artist,
                             user = user,
                             pkgName = null
@@ -245,8 +247,8 @@ fun ChartsOverviewScreen(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_ALBUMS)
                 },
                 onItemClick = {
-                    onNavigate(
-                        PanoRoute.MusicEntryInfo(
+                    onOpenDialog(
+                        PanoDialog.MusicEntryInfo(
                             album = it as Album,
                             user = user,
                             pkgName = null
@@ -279,8 +281,8 @@ fun ChartsOverviewScreen(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS)
                 },
                 onItemClick = {
-                    onNavigate(
-                        PanoRoute.MusicEntryInfo(
+                    onOpenDialog(
+                        PanoDialog.MusicEntryInfo(
                             track = it as Track,
                             user = user,
                             pkgName = null
@@ -299,8 +301,8 @@ fun ChartsOverviewScreen(
                 ) {
                     ButtonWithIcon(
                         onClick = {
-                            onNavigate(
-                                PanoRoute.CollageGenerator(
+                            onOpenDialog(
+                                PanoDialog.CollageGenerator(
                                     collageType = Stuff.TYPE_ALL,
                                     user = user,
                                     timePeriod = chartsPeriodViewModel.selectedPeriod.value
@@ -308,7 +310,7 @@ fun ChartsOverviewScreen(
                                 )
                             )
                         },
-                        icon = Icons.Outlined.GridView,
+                        icon = Icons.Outlined.AutoAwesomeMosaic,
                         text = stringResource(Res.string.create_collage),
                     )
                 }
@@ -327,7 +329,7 @@ fun ChartsOverviewScreen(
             TagCloudContent(
                 tagCloud = tagCloud,
                 onHeaderMenuClick = {
-                    onNavigate(PanoRoute.HiddenTags)
+                    onOpenDialog(PanoDialog.HiddenTags)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -475,12 +477,7 @@ private fun ListeningActivityContent(
                         ),
                         yAxisTitle = stringResource(Res.string.scrobbles),
                         yAxisLabels = { it.toInt().toString() },
-                        xAxisLabels = {
-                            if (it[0] == '\'') // this is the shortened year
-                                it
-                            else
-                                it.take(2)
-                        },
+                        xAxisLabels = { it },
                         modifier = Modifier
                             .fillMaxSize()
                     ) {

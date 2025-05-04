@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.Tag
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.stringResource
@@ -31,9 +30,8 @@ import pano_scrobbler.composeapp.generated.resources.taggings
 import java.net.URLEncoder
 
 @Composable
-fun TagInfoContent(
+fun TagInfoDialog(
     tag: Tag,
-    onOpenUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TagInfoVM = viewModel { TagInfoVM() },
 ) {
@@ -41,7 +39,7 @@ fun TagInfoContent(
     var wikiExpanded by rememberSaveable { mutableStateOf(false) }
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(tag) {
         viewModel.loadInfoIfNeeded(tag)
     }
 
@@ -61,7 +59,7 @@ fun TagInfoContent(
                         onClick = {
                             val url =
                                 "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8")
-                            onOpenUrl(url)
+                            PlatformStuff.openInBrowser(url)
                         }
                     )
                 }
@@ -89,21 +87,5 @@ fun TagInfoContent(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-    }
-}
-
-@Composable
-fun TagInfoScreen(
-    tag: Tag,
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogParent(
-        onDismiss = onDismiss
-    ) {
-        TagInfoContent(
-            tag = tag,
-            onOpenUrl = { PlatformStuff.openInBrowser(it) },
-            modifier = it
-        )
     }
 }

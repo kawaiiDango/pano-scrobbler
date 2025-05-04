@@ -2,11 +2,9 @@ package com.arn.scrobble.utils
 
 import android.annotation.SuppressLint
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.text.Html
 import androidx.appcompat.content.res.AppCompatResources
@@ -15,20 +13,16 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.media.app.NotificationCompat.MediaStyle
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.media.NLService
 import com.arn.scrobble.media.PlayingTrackInfo
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.ScrobbleError
-import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.navigation.serializableType
+import com.arn.scrobble.navigation.DeepLinkUtils
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -136,20 +130,15 @@ actual object PanoNotifications {
             .apply {
                 val user = Scrobblables.currentScrobblableUser
                 if (user != null) {
-                    val route = PanoRoute.MusicEntryInfo(
+                    val dialogArgs = PanoDialog.MusicEntryInfo(
                         track = trackInfo.toTrack(),
                         pkgName = null,
                         user = user
                     )
 
-                    val deepLinkUri =
-                        Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
-                                serializableType<UserCached>().serializeAsValue(route.user) + "?" +
-                                route::track.name + "=" + serializableType<Track>().serializeAsValue(
-                            route.track!!
-                        )
+                    val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
                     val launchPi =
-                        MainDialogActivity.createDestinationPendingIntent(deepLinkUri)
+                        DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
 
                     setContentIntent(launchPi)
                 }
@@ -174,18 +163,15 @@ actual object PanoNotifications {
                 .setContentText(trackInfo.artist)
 
         if (nowPlaying) {
-            val editRoute = PanoRoute.EditScrobble(
+            val editDialogArgs = PanoDialog.EditScrobble(
                 scrobbleData = trackInfo.toScrobbleData(),
                 hash = trackInfo.hash
             )
 
-            val editDeepLinkUri =
-                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.EditScrobble::class.simpleName + "/" +
-                        serializableType<ScrobbleData>().serializeAsValue(editRoute.scrobbleData) +
-                        "?" + editRoute::hash.name + "=" + editRoute.hash
+            val editDeepLinkUri = DeepLinkUtils.buildDeepLink(editDialogArgs)
 
             val editPi =
-                MainDialogActivity.createDestinationPendingIntent(editDeepLinkUri)
+                DeepLinkUtils.createDestinationPendingIntent(editDeepLinkUri)
 
             val editAction = AndroidStuff.getNotificationAction(
                 R.drawable.vd_edit,
@@ -219,18 +205,15 @@ actual object PanoNotifications {
     }
 
     actual fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val editRoute = PanoRoute.EditScrobble(
+        val editDialogArgs = PanoDialog.EditScrobble(
             scrobbleData = trackInfo.toScrobbleData(),
             hash = trackInfo.hash
         )
 
-        val editDeepLinkUri =
-            Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.EditScrobble::class.simpleName + "/" +
-                    serializableType<ScrobbleData>().serializeAsValue(editRoute.scrobbleData) +
-                    "?" + editRoute::hash.name + "=" + editRoute.hash
+        val editDeepLinkUri = DeepLinkUtils.buildDeepLink(editDialogArgs)
 
         val editPi =
-            MainDialogActivity.createDestinationPendingIntent(editDeepLinkUri)
+            DeepLinkUtils.createDestinationPendingIntent(editDeepLinkUri)
 
         val subtitleSpanned = if (scrobbleError.description != null)
             Html.fromHtml(scrobbleError.description)
@@ -265,26 +248,18 @@ actual object PanoNotifications {
             context, 8, intent,
             AndroidStuff.updateCurrentOrImmutable
         )
-        val spanned = Html.fromHtml(scrobbleError.description)
 
         val nb = buildNotification()
             .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
             .setSmallIcon(R.drawable.vd_noti_err)
             .setContentIntent(launchIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setContentText(spanned) //required on recent oneplus devices
-
-        val isMinimised = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                notificationManager.getNotificationChannel(Stuff.CHANNEL_NOTI_SCROBBLING).importance < NotificationManager.IMPORTANCE_LOW
-        if (isMinimised)
-            nb.setContentTitle(scrobbleError.description?.replace("</?br?>".toRegex(), ""))
-        else
-            nb.setContentTitle(scrobbleError.title)
+            .setContentText(scrobbleError.description) //required on recent oneplus devices
 
         nb.setStyle(
             NotificationCompat.BigTextStyle()
                 .setBigContentTitle(scrobbleError.title)
-                .bigText(spanned)
+                .bigText(scrobbleError.description)
         )
 
         notificationManager.notify(scrobbleError.appId, 0, nb.build())
@@ -363,20 +338,16 @@ actual object PanoNotifications {
             albumArtist = trackInfo.albumArtist,
         )
 
-        val route = PanoRoute.BlockedMetadataAdd(
+        val dialogArgs = PanoDialog.BlockedMetadataAdd(
             blockedMetadata = blockedMetadata,
             ignoredArtist = trackInfo.origArtist,
             hash = trackInfo.hash
         )
 
-        val deepLinkUri =
-            Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.BlockedMetadataAdd::class.simpleName + "?" +
-                    route::blockedMetadata.name + "=" +
-                    serializableType<BlockedMetadata>().serializeAsValue(route.blockedMetadata) +
-                    "&" + route::ignoredArtist.name + "=" + Uri.encode(route.ignoredArtist) + "&hash=" + route.hash
+        val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
 
         val blockPi =
-            MainDialogActivity.createDestinationPendingIntent(deepLinkUri)
+            DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
 
         val nb = buildNotification()
             .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
@@ -427,19 +398,16 @@ actual object PanoNotifications {
         else
             Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
-        val route = PanoRoute.CollageGenerator(
+        val dialogArgs = PanoDialog.CollageGenerator(
             collageType = Stuff.TYPE_ALL,
             timePeriod = timePeriod,
             user = Scrobblables.currentScrobblableUser ?: return
         )
 
-        val deepLinkUri =
-            Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.CollageGenerator::class.simpleName + "/" +
-                    route.collageType + "/" + route.timePeriod + "/" +
-                    serializableType<UserCached>().serializeAsValue(route.user)
+        val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
 
         val launchPi =
-            MainDialogActivity.createDestinationPendingIntent(deepLinkUri)
+            DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
 
         val nb = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.vd_charts)

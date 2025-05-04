@@ -14,6 +14,7 @@ actual fun transformMediaMetadata(
     var title = metadata.title.trim()
     var albumArtist = metadata.album_artist.trim()
     val trackNumber = metadata.track_number
+    // a -1 value on my windows implementation means, a timeline info event hasn't been received yet
     var durationMillis = metadata.duration
 
     val canDoFallbackScrobble = trackInfo.ignoreOrigArtist &&

@@ -93,9 +93,7 @@ class NLService : NotificationListenerService() {
             addAction(iLOVE)
             addAction(iUNLOVE)
             addAction(iAPP_ALLOWED_BLOCKED)
-            addAction(iSCROBBLER_ON)
-            addAction(iSCROBBLER_OFF)
-            addAction(iSCROBBLE_SUBMIT_LOCK_S)
+            addAction(iSCROBBLE_SUBMIT_LOCK)
 
             addAction(Intent.ACTION_SCREEN_ON)
         }
@@ -103,7 +101,7 @@ class NLService : NotificationListenerService() {
             applicationContext,
             nlserviceReciver,
             filter,
-            ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
 
         val sessManager = ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
@@ -330,11 +328,7 @@ class NLService : NotificationListenerService() {
             iCANCEL -> {
                 val event = intent.getStringExtra(Stuff.EXTRA_EVENT)?.let {
                     Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.TrackCancelled>(it)
-                } ?: PlayingTrackNotifyEvent.TrackCancelled(
-                    hash = null,
-                    showUnscrobbledNotification = false,
-                    markAsScrobbled = true
-                )
+                } ?: return
 
                 notifyPlayingTrackEvent(event)
             }
@@ -342,10 +336,7 @@ class NLService : NotificationListenerService() {
             iLOVE, iUNLOVE -> {
                 val event = intent.getStringExtra(Stuff.EXTRA_EVENT)?.let {
                     Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.TrackLovedUnloved>(it)
-                } ?: PlayingTrackNotifyEvent.TrackLovedUnloved(
-                    hash = null,
-                    loved = intent.action == iLOVE
-                )
+                } ?: return
 
                 notifyPlayingTrackEvent(event)
             }
@@ -358,21 +349,11 @@ class NLService : NotificationListenerService() {
                 notifyPlayingTrackEvent(event)
             }
 
-            iSCROBBLER_ON -> {
-                mainPrefs.updateData { it.copy(scrobblerEnabled = true) }
-                toast(R.string.scrobbler_on)
-            }
-
-            iSCROBBLER_OFF -> {
-                mainPrefs.updateData { it.copy(scrobblerEnabled = false) }
-                toast(R.string.scrobbler_off)
-            }
-
             Intent.ACTION_SCREEN_ON -> {
                 mainPrefs.updateData { it.copy(lastInteractiveTime = System.currentTimeMillis()) }
             }
 
-            iSCROBBLE_SUBMIT_LOCK_S -> {
+            iSCROBBLE_SUBMIT_LOCK -> {
                 val event = intent.getStringExtra(Stuff.EXTRA_EVENT)?.let {
                     Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.TrackScrobbleLocked>(it)
                 } ?: return
@@ -403,10 +384,7 @@ class NLService : NotificationListenerService() {
         const val iLOVE = "com.arn.scrobble.LOVE"
         const val iUNLOVE = "com.arn.scrobble.UNLOVE"
         const val iAPP_ALLOWED_BLOCKED = "com.arn.scrobble.ALLOW_BLOCK_APP"
-        const val iSCROBBLER_ON = "com.arn.scrobble.SCROBBLER_ON"
-        const val iSCROBBLER_OFF = "com.arn.scrobble.SCROBBLER_OFF"
-
-        const val iSCROBBLE_SUBMIT_LOCK_S = "com.arn.scrobble.SCROBBLE_SUBMIT_LOCK"
+        const val iSCROBBLE_SUBMIT_LOCK = "com.arn.scrobble.SCROBBLE_SUBMIT_LOCK"
         const val BROADCAST_PERMISSION =
             "com.arn.scrobble.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
 

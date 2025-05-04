@@ -55,8 +55,6 @@ class PanoNativeComponents(
         }
 
         fun init() {
-            System.loadLibrary("native_components")
-
             val scrobbleQueue = ScrobbleQueue(GlobalScope)
             val desktopMediaListener = DesktopMediaListener(
                 GlobalScope,
@@ -72,7 +70,7 @@ class PanoNativeComponents(
             Thread {
                 startEventLoop(instance)
             }.start()
-            
+
             desktopMediaListener.start()
 
             GlobalScope.launch {
@@ -141,5 +139,8 @@ class PanoNativeComponents(
 
         @JvmStatic
         external fun setEnvironmentVariable(key: String, value: String)
+
+        @JvmStatic
+        external fun isSingleInstance(name: String): Boolean
     }
 }

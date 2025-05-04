@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.collectLatest
@@ -39,7 +38,7 @@ import pano_scrobbler.composeapp.generated.resources.full_index_desc
 import pano_scrobbler.composeapp.generated.resources.take_long_time
 
 @Composable
-private fun IndexingContent(
+fun IndexerDialog(
     modifier: Modifier = Modifier,
     viewModel: IndexerVM = viewModel { IndexerVM() },
 ) {
@@ -133,16 +132,5 @@ private fun IndexingContent(
                 showOptions = false
             }
         }
-    }
-}
-
-@Composable
-fun IndexingScreen(
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogParent(
-        onDismiss = onDismiss
-    ) {
-        IndexingContent(it)
     }
 }

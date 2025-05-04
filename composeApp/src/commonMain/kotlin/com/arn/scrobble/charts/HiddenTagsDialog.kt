@@ -2,7 +2,6 @@ package com.arn.scrobble.charts
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -28,7 +27,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.arn.scrobble.ui.DialogParent
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
@@ -39,9 +37,8 @@ import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.tag
 import pano_scrobbler.composeapp.generated.resources.user_tags_empty
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun HiddenTagsContent(modifier: Modifier = Modifier) {
+fun HiddenTagsDialog(modifier: Modifier = Modifier) {
     val hiddenTags by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.hiddenTags }
     var tagInput by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
@@ -129,18 +126,5 @@ private fun HiddenTagsContent(modifier: Modifier = Modifier) {
         ) {
             Text(stringResource(Res.string.add))
         }
-    }
-}
-
-@Composable
-fun HiddenTagsScreen(
-    onDismiss: () -> Unit,
-) {
-    DialogParent(
-        onDismiss = onDismiss
-    ) {
-        HiddenTagsContent(
-            modifier = it
-        )
     }
 }

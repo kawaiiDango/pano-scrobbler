@@ -22,7 +22,7 @@ actual fun prefNotifications(listScope: LazyListScope) {
     // no-op
 }
 
-actual fun prefIntents(listScope: LazyListScope) {
+actual fun prefAutomation(listScope: LazyListScope) {
     // no-op
 }
 

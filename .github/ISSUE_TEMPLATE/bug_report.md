@@ -10,13 +10,13 @@ assignees: ''
 **Describe the bug**
 
 
-**Steps to Reproduce**
+**Steps to replicate this bug**
 
 
 **App version**
 
 
-**Android version**
+**Operating system and version**
 
 
 **Additional info**

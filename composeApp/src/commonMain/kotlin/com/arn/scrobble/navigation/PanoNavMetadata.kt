@@ -12,5 +12,5 @@ data class PanoNavMetadata(
 )
 
 fun hasNavMetadata(dest: NavDestination): Boolean {
-    return dest.hasRoute<PanoRoute.SelfHomePager>() || dest.hasRoute<PanoRoute.OthersHomePager>() || dest.hasRoute<PanoRoute.ChartsPager>()
+    return dest.hasRoute<PanoRoute.SelfHomePager>() || dest.hasRoute<PanoRoute.OthersHomePager>()
 }

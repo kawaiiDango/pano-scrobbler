@@ -179,22 +179,7 @@ object Scrobblables {
         .mapLatest { account ->
             account.distinctBy { it.type }
                 .map {
-                    when (it.type) {
-                        AccountType.LASTFM -> LastFm(it)
-                        AccountType.LIBREFM,
-                        AccountType.GNUFM,
-                            -> GnuFm(it)
-
-                        AccountType.LISTENBRAINZ,
-                        AccountType.CUSTOM_LISTENBRAINZ,
-                            -> ListenBrainz(it)
-
-                        AccountType.MALOJA -> Maloja(it)
-
-                        AccountType.PLEROMA -> Pleroma(it)
-
-                        AccountType.FILE -> FileScrobblable(it)
-                    }
+                    accountToScrobblable(it)
                 }
         }.stateIn(GlobalScope, SharingStarted.Eagerly, emptyList())
 
@@ -230,5 +215,26 @@ object Scrobblables {
 
     suspend fun setCurrent(type: AccountType) {
         PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = type) }
+    }
+
+    fun accountToScrobblable(
+        userAccount: UserAccountSerializable,
+    ): Scrobblable {
+        return when (userAccount.type) {
+            AccountType.LASTFM -> LastFm(userAccount)
+            AccountType.LIBREFM,
+            AccountType.GNUFM,
+                -> GnuFm(userAccount)
+
+            AccountType.LISTENBRAINZ,
+            AccountType.CUSTOM_LISTENBRAINZ,
+                -> ListenBrainz(userAccount)
+
+            AccountType.MALOJA -> Maloja(userAccount)
+
+            AccountType.PLEROMA -> Pleroma(userAccount)
+
+            AccountType.FILE -> FileScrobblable(userAccount)
+        }
     }
 }

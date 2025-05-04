@@ -15,7 +15,10 @@ data class GithubReleases(
         get() = tag_name.replace(".", "").toInt()
 
     fun getDownloadUrl(platformSubstring: String): List<GithubReleaseAsset> =
-        assets.filter { it.name.contains(platformSubstring) }
+        assets.filter {
+            it.name.contains(platformSubstring) &&
+                    !it.name.endsWith(".sha256")
+        }
 }
 
 @Serializable

@@ -145,7 +145,7 @@ actual object PlatformStuff {
     }
 
     actual fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb> {
-        val dbFile = File(filesDir, PanoDb.FILE_NAME)
+        val dbFile = File(filesDir, "panodb.db")
         return Room.databaseBuilder<PanoDb>(
             name = dbFile.absolutePath
         )

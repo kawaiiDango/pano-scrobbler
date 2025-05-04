@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -111,12 +112,14 @@ class ScrobblesVM : ViewModel() {
 
         viewModelScope.launch {
             PendingScrobblesWork.getProgress()
-                .collect {
-                    val snackbarData = PanoSnackbarVisuals(
-                        message = it.message,
-                        isError = it.isError
-                    )
-                    Stuff.globalSnackbarFlow.emit(snackbarData)
+                .collectLatest {
+                    if (!it.state.isFinished) {
+                        val snackbarData = PanoSnackbarVisuals(
+                            message = it.message,
+                            isError = it.isError
+                        )
+                        Stuff.globalSnackbarFlow.emit(snackbarData)
+                    }
                 }
         }
 

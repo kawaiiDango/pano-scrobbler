@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.info.InfoWikiText
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -29,7 +28,7 @@ import pano_scrobbler.composeapp.generated.resources.download
 import pano_scrobbler.composeapp.generated.resources.update_available
 
 @Composable
-private fun UpdateAvailableContent(
+fun UpdateAvailableDialog(
     githubReleases: GithubReleases,
     modifier: Modifier = Modifier
 ) {
@@ -57,10 +56,9 @@ private fun UpdateAvailableContent(
 
         OutlinedButton(
             onClick = {
-                if (assets.isEmpty()) {
-                } else if (assets.size == 1) {
+                if (assets.size == 1) {
                     PlatformStuff.openInBrowser(assets[0].browser_download_url)
-                } else {
+                } else if (assets.size > 1) {
                     dropdownShown = true
                 }
             },
@@ -86,14 +84,4 @@ private fun UpdateAvailableContent(
             }
         }
     }
-}
-
-@Composable
-fun UpdateAvailableScreen(
-    githubReleases: GithubReleases,
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogParent(
-        onDismiss = onDismiss
-    ) { UpdateAvailableContent(githubReleases, it) }
 }

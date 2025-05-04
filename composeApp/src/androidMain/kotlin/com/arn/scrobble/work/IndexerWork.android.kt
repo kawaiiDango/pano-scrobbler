@@ -24,6 +24,7 @@ actual object IndexerWork : CommonWorkImpl(IndexerWorker.NAME) {
                     PlatformWorker.WORK_NAME_KEY to inputName,
                 )
             )
+            .addTag(inputName)
             .setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
             .build()
 

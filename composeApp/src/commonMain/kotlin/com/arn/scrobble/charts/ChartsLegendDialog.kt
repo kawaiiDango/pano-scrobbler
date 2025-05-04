@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.stonksIconForDelta
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -21,7 +20,7 @@ import pano_scrobbler.composeapp.generated.resources.rank_change
 import pano_scrobbler.composeapp.generated.resources.rank_change_new
 
 @Composable
-private fun ChartsLegendContent(modifier: Modifier = Modifier) {
+fun ChartsLegendDialog(modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
@@ -60,13 +59,4 @@ private fun ChartsLegendContent(modifier: Modifier = Modifier) {
 
         }
     }
-}
-
-@Composable
-fun ChartsLegendScreen(
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogParent(
-        onDismiss = onDismiss
-    ) { ChartsLegendContent(it) }
 }

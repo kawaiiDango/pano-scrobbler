@@ -1,5 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
+import com.arn.scrobble.api.ApiErrorDeserializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -41,14 +42,20 @@ val IHasImage.webp300
         ?.find { it.size == ImageSize.extralarge.name }
         ?.let {
             val url = it.url
-            if (url.endsWith(".png") || url.endsWith(".jpg"))
-                "$url.webp"
+            if (url.startsWith("https://lastfm.freetls.fastly.net") &&
+                (url.endsWith(".png") || url.endsWith(".jpg"))
+            )
+                url.substringBeforeLast('.') + ".webp" // lastfm
+//                "$url.webp"
             else
                 url
         }
 
 val IHasImage.webp600
-    get() = webp300?.replace("300x300", "600x600")
+    get() = if (webp300?.startsWith("https://lastfm.freetls.fastly.net") == true)
+        webp300?.replace("300x300", "600x600")
+    else
+        webp300
 
 @Serializable
 data class Wiki(
@@ -368,13 +375,6 @@ data class FriendsResponse(
 @Serializable
 data class LovedTracksResponse(
     val lovedtracks: PageEntries<Track>,
-)
-
-
-@Serializable(with = ApiErrorDeserializer::class)
-data class ApiErrorResponse(
-    val code: Int,
-    val message: String,
 )
 
 @Serializable

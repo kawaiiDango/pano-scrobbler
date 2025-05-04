@@ -19,10 +19,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.utils.PanoTimeFormatter
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.first_scrobbled_on
@@ -31,7 +33,8 @@ import pano_scrobbler.composeapp.generated.resources.first_scrobbled_on
 fun TrackHistoryScreen(
     user: UserCached,
     track: Track,
-    onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
+    editDataFlow: Flow<Pair<Track, ScrobbleData>>,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {
@@ -41,7 +44,7 @@ fun TrackHistoryScreen(
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(user, track) {
         viewModel.setScrobblesInput(
             ScrobblesInput(
                 user = user,
@@ -49,6 +52,11 @@ fun TrackHistoryScreen(
             ),
         )
     }
+
+    OnEditEffect(
+        viewModel,
+        editDataFlow
+    )
 
     PanoLazyColumn(
         modifier = modifier
@@ -88,7 +96,7 @@ fun TrackHistoryScreen(
             showFullMenu = true,
             showLove = false,
             showHate = false,
-            onNavigate = onNavigate,
+            onOpenDialog = onOpenDialog,
             viewModel = viewModel,
         )
 

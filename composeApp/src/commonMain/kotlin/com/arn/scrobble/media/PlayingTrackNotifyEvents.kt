@@ -11,7 +11,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -70,16 +69,14 @@ sealed interface PlayingTrackNotifyEvent {
 }
 
 private val globalTrackEventFlow by lazy { MutableSharedFlow<PlayingTrackNotifyEvent>() }
-private var collectorRegistered = false
 
 suspend fun listenForPlayingTrackEvents(
     scrobbleQueue: ScrobbleQueue,
     mediaListener: MediaListener,
 ) {
-    if (collectorRegistered)
+    if (globalTrackEventFlow.subscriptionCount.value > 0) {
         return
-
-    collectorRegistered = true
+    }
 
     globalTrackEventFlow.collectLatest { event ->
         when (event) {
@@ -228,24 +225,8 @@ suspend fun listenForPlayingTrackEvents(
             }
 
             is PlayingTrackNotifyEvent.AppAllowedBlocked -> {
-                val appId = event.appId
-                //create copies
-                val aSet =
-                    PlatformStuff.mainPrefs.data.map { it.allowedPackages }.first().toMutableSet()
-                val bSet =
-                    PlatformStuff.mainPrefs.data.map { it.blockedPackages }.first().toMutableSet()
-
-                if (event.allowed)
-                    aSet += appId
-                else
-                    bSet += appId
-                bSet.removeAll(aSet) // allowlist takes over blocklist for conflicts
-
                 PlatformStuff.mainPrefs.updateData {
-                    it.copy(
-                        allowedPackages = aSet,
-                        blockedPackages = bSet
-                    )
+                    it.allowOrBlockAppCopied(event.appId, event.allowed)
                 }
 
                 PanoNotifications.removeNotificationByTag(Stuff.CHANNEL_NOTI_NEW_APP)
@@ -256,7 +237,7 @@ suspend fun listenForPlayingTrackEvents(
 }
 
 fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
-    if (collectorRegistered) {
+    if (globalTrackEventFlow.subscriptionCount.value > 0) {
         GlobalScope.launch {
             globalTrackEventFlow.emit(event)
         }

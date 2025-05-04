@@ -47,26 +47,6 @@ class AppListVM : ViewModel() {
         }
     }
 
-    fun saveToPrefs() {
-        GlobalScope.launch {
-            val blockedPackages = appList.value.musicPlayers
-                .union(appList.value.otherApps)
-                .map { it.appId }
-                .toSet() - selectedPackages.value
-            //BL = old WL - new WL
-//            prefs.blockedPackages =
-//                prefs.blockedPackages + prefs.allowedPackages - viewModel.selectedPackages
-            // behaviour change: all unselected apps on the list are blocklisted
-
-            PlatformStuff.mainPrefs.updateData {
-                it.copy(
-                    allowedPackages = selectedPackages.value,
-                    blockedPackages = blockedPackages
-                )
-            }
-        }
-    }
-
 }
 
 expect suspend fun AppListVM.load(

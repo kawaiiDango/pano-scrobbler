@@ -45,8 +45,6 @@ abstract class PanoDb : RoomDatabase() {
     abstract fun getCustomSpotifyMappingsDao(): CustomSpotifyMappingsDao
 
     companion object {
-        const val FILE_NAME = "pendingScrobbles"
-
         @Volatile
         private var INSTANCE: PanoDb? = null
 

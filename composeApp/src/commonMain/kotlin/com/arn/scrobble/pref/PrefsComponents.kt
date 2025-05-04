@@ -61,7 +61,7 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.move_left
 import pano_scrobbler.composeapp.generated.resources.move_right
-import pano_scrobbler.composeapp.generated.resources.pref_enabled_apps_summary
+import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_logout
 import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.sure_tap_again
@@ -315,8 +315,9 @@ fun <T> DropdownPref(
 fun AppIconsPref(
     packageNames: Set<String>,
     seenAppsMap: Map<String, String>,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    summary: String? = null,
+    onClick: () -> Unit,
 ) {
     val maxIcons = 7
     val packageNamesFiltered = remember(packageNames) { mutableStateListOf<String>() }
@@ -342,19 +343,24 @@ fun AppIconsPref(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.height(24.dp)
         ) {
-            packageNamesFiltered.forEach {
-                AppIcon(
-                    appItem = AppItem(it, seenAppsMap[it] ?: ""),
-                    modifier = Modifier
-                        .size(24.dp)
-                )
+            if (packageNamesFiltered.isEmpty()) {
+                Text(stringResource(Res.string.no_apps_enabled))
+            } else {
+                packageNamesFiltered.forEach {
+                    AppIcon(
+                        appItem = AppItem(it, seenAppsMap[it] ?: ""),
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                }
             }
         }
 
-        Text(
-            text = stringResource(Res.string.pref_enabled_apps_summary),
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        if (summary != null)
+            Text(
+                text = summary,
+                style = MaterialTheme.typography.bodyMedium,
+            )
     }
 }
 

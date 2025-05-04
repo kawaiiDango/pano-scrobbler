@@ -31,6 +31,7 @@ actual object DigestWork : CommonWork {
             val work = OneTimeWorkRequestBuilder<PlatformWorker>()
                 .setConstraints(constraints)
                 .setInputData(inputData)
+                .addTag(digestType.name)
                 .setInitialDelay(
                     scheduleTimes[digestType]!! - System.currentTimeMillis(),
                     TimeUnit.MILLISECONDS

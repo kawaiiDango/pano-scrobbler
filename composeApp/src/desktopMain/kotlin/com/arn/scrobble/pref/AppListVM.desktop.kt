@@ -18,7 +18,7 @@ actual suspend fun AppListVM.load(
 
     val musicPlayers = seenApps
         .filterNot { it.appId in packagesToNotConsider }
-        .sortedBy { it.label }
+        .sortedBy { it.friendlyLabel }
 
     if (checkDefaultApps)
         onSetSelectedPackages(musicPlayers.map { it.appId }.toSet())

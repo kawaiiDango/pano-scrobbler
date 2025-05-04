@@ -201,6 +201,13 @@
         </service>
 
         <provider
+            android:name=".providers.AutomationProvider"
+            android:authorities="${applicationId}.automation"
+            android:process=":bgScrobbler"
+            android:exported="true"
+            android:grantUriPermissions="true"/>
+
+        <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"

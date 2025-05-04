@@ -30,6 +30,7 @@ import com.arn.scrobble.api.spotify.TrackItem
 import com.arn.scrobble.imageloader.clearMusicEntryImageCache
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.EmptyText
+import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
@@ -41,6 +42,7 @@ import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -58,8 +60,8 @@ fun ImageSearchScreen(
     album: Album?,
     originalAlbum: Album?,
     onBack: () -> Unit,
-    viewModel: ImageSearchVM = viewModel { ImageSearchVM() },
     modifier: Modifier = Modifier,
+    viewModel: ImageSearchVM = viewModel { ImageSearchVM() },
 ) {
     val musicEntry = artist ?: album!!
     val originalMusicEntry = originalArtist ?: originalAlbum
@@ -90,6 +92,8 @@ fun ImageSearchScreen(
         }
         .collectAsStateWithLifecycle(null)
 
+    val searchError by viewModel.searchError.collectAsStateWithLifecycle()
+
     var searchTerm by remember {
         mutableStateOf(
             if (musicEntry is Album)
@@ -105,7 +109,7 @@ fun ImageSearchScreen(
     val scope = rememberCoroutineScope()
     var filePickerShown by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(musicEntry, originalMusicEntry) {
         viewModel.setMusicEntries(musicEntry, originalMusicEntry)
     }
 
@@ -127,6 +131,11 @@ fun ImageSearchScreen(
         EmptyText(
             text = stringResource(Res.string.not_found),
             visible = searchResults?.isEmpty() == true,
+        )
+
+        ErrorText(
+            errorText = searchError?.redactedMessage,
+            modifier = Modifier.padding(panoContentPadding(bottom = false)),
         )
 
         PanoLazyColumn(
@@ -209,7 +218,7 @@ fun ImageSearchScreen(
                         visible = true,
                     )
                 }
-            } else {
+            } else if (searchError == null) {
                 items(
                     10,
                     key = { it }
@@ -223,27 +232,6 @@ fun ImageSearchScreen(
                         forShimmer = true,
                         onEntryClick = {},
                         modifier = Modifier.shimmerWindowBounds()
-                    )
-                }
-            }
-        }
-
-        if (searchResults == null) {
-            PanoLazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .shimmerWindowBounds()
-            ) {
-                items(10) {
-                    MusicEntryListItem(
-                        Track(
-                            name = "",
-                            artist = Artist(""),
-                            album = Album(""),
-                        ),
-                        forShimmer = true,
-                        onEntryClick = {},
-                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

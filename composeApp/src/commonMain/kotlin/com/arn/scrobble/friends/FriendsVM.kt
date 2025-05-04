@@ -43,10 +43,11 @@ class FriendsVM : ViewModel() {
     val totalFriends = _totalCount.asStateFlow()
 
     private val user = MutableStateFlow<UserCached?>(null)
-    var showsPins = Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
-            PlatformStuff.billingRepository.isLicenseValid // && user.isSelf
+
     val pinnedFriends =
         mainPrefs.data.map { it.pinnedFriends }.mapLatest {
+            var showsPins = Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
+                    PlatformStuff.billingRepository.isLicenseValid // && user.isSelf
             if (showsPins)
                 it.sortedBy { it.order }
             else

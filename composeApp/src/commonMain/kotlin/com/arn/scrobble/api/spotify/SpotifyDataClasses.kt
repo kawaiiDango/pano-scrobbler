@@ -67,7 +67,7 @@ sealed interface SpotifyMusicItem {
 }
 
 @Serializable
-data class SearchItems<T>(
+data class SearchItems<T : SpotifyMusicItem>(
     val href: String,
     val items: List<T>,
     val limit: Int,

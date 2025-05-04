@@ -28,7 +28,6 @@ import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
-import com.arn.scrobble.ui.DialogParent
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -153,7 +152,7 @@ private fun BlockedMetadataAddContent(
             FilterChip(
                 selected = blockPlayerAction == BlockPlayerAction.mute,
                 onClick = {
-                    blockPlayerAction == BlockPlayerAction.mute
+                    blockPlayerAction = BlockPlayerAction.mute
                 },
                 label = { Text(stringResource(Res.string.mute)) }
             )
@@ -202,42 +201,39 @@ private fun BlockedMetadataAddContent(
 }
 
 @Composable
-fun BlockedMetadataAddScreen(
+fun BlockedMetadataAddDialog(
     blockedMetadata: BlockedMetadata,
     ignoredArtist: String?,
     hash: Int?,
     onDismiss: () -> Unit,
     onNavigateToBilling: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
 
-    DialogParent(
-        onDismiss = onDismiss
-    ) {
-        BlockedMetadataAddContent(
-            blockedMetadata = blockedMetadata,
-            ignoredArtist = ignoredArtist,
-            onSave = {
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        PanoDb.db.getBlockedMetadataDao()
-                            .insertLowerCase(listOf(it), ignore = false)
-                    }
-
-                    if (hash != null) {
-                        notifyPlayingTrackEvent(
-                            PlayingTrackNotifyEvent.TrackBlocked(
-                                hash = hash,
-                                blockedMetadata = blockedMetadata,
-                            )
-                        )
-                    }
-
-                    onDismiss()
+    BlockedMetadataAddContent(
+        blockedMetadata = blockedMetadata,
+        ignoredArtist = ignoredArtist,
+        onSave = {
+            scope.launch {
+                withContext(Dispatchers.IO) {
+                    PanoDb.db.getBlockedMetadataDao()
+                        .insertLowerCase(listOf(it), ignore = false)
                 }
-            },
-            onNavigateToBilling = onNavigateToBilling,
-            modifier = it
-        )
-    }
+
+                if (hash != null) {
+                    notifyPlayingTrackEvent(
+                        PlayingTrackNotifyEvent.TrackBlocked(
+                            hash = hash,
+                            blockedMetadata = blockedMetadata,
+                        )
+                    )
+                }
+
+                onDismiss()
+            }
+        },
+        onNavigateToBilling = onNavigateToBilling,
+        modifier = modifier
+    )
 }

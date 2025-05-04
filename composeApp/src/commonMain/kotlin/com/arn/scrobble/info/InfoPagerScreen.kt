@@ -13,7 +13,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.main.PanoPager
-import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoTabType
 import com.arn.scrobble.navigation.PanoTabs
 import com.arn.scrobble.ui.EntriesGridOrList
@@ -32,7 +32,7 @@ fun InfoPagerScreen(
     tabIdx: Int,
     initialTabIdx: Int,
     onSetTabIdx: (Int) -> Unit,
-    onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
@@ -40,7 +40,7 @@ fun InfoPagerScreen(
     val artistTopAlbums = viewModel.topAlbums.collectAsLazyPagingItems()
     val similarArtists = viewModel.similarArtists.collectAsLazyPagingItems()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(musicEntry) {
         viewModel.setArtist(musicEntry)
     }
 
@@ -77,8 +77,8 @@ fun InfoPagerScreen(
                 getMusicEntryPlaceholderItem(type, showScrobbleCount = type != Stuff.TYPE_ARTISTS)
             },
             onItemClick = {
-                onNavigate(
-                    PanoRoute.MusicEntryInfo(
+                onOpenDialog(
+                    PanoDialog.MusicEntryInfo(
                         track = it as? Track,
                         artist = it as? Artist,
                         album = it as? Album,

@@ -18,6 +18,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -52,8 +53,8 @@ class MainViewModel : ViewModel() {
                 System.currentTimeMillis() - (it ?: 0) > TimeUnit.HOURS.toMillis(12)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
-    private val _editData = MutableSharedFlow<Track>()
-    val editData = _editData.asSharedFlow()
+    private val _editData = MutableSharedFlow<Pair<Track, ScrobbleData>>()
+    val editDataFlow = _editData.asSharedFlow()
 
     private val _updateAvailablity = MutableSharedFlow<GithubReleases>()
     val updateAvailability = _updateAvailablity.asSharedFlow()
@@ -66,7 +67,7 @@ class MainViewModel : ViewModel() {
 
     val proProductDetails = repository.proProductDetails
 
-    private val _selectedPackages = MutableSharedFlow<List<AppItem>>()
+    private val _selectedPackages = MutableSharedFlow<Pair<List<AppItem>, List<AppItem>>>()
     val selectedPackages = _selectedPackages.asSharedFlow()
 
     val drawerData = mainPrefs.data.map { it.drawerData }
@@ -208,15 +209,15 @@ class MainViewModel : ViewModel() {
     }
 
 
-    fun setSelectedPackages(packages: List<AppItem>) {
+    fun onSetPackagesSelection(checked: List<AppItem>, unchecked: List<AppItem>) {
         viewModelScope.launch {
-            _selectedPackages.emit(packages)
+            _selectedPackages.emit(checked to unchecked)
         }
     }
 
-    fun notifyEdit(track: Track) {
+    fun notifyEdit(origTrack: Track, sd: ScrobbleData) {
         viewModelScope.launch {
-            _editData.emit(track)
+            _editData.emit(origTrack to sd)
         }
     }
 

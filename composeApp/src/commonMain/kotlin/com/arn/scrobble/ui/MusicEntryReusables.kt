@@ -1,5 +1,8 @@
 package com.arn.scrobble.ui
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,17 +33,19 @@ import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FiberManualRecord
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.HeartBroken
 import androidx.compose.material.icons.outlined.HourglassEmpty
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowDown
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowUp
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Mic
@@ -67,6 +72,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
@@ -95,6 +102,11 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
+import com.valentinilk.shimmer.LocalShimmerTheme
+import com.valentinilk.shimmer.ShimmerBounds
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
+import com.valentinilk.shimmer.shimmerSpec
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
@@ -102,10 +114,12 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.collapse
+import pano_scrobbler.composeapp.generated.resources.create_collage
 import pano_scrobbler.composeapp.generated.resources.expand
 import pano_scrobbler.composeapp.generated.resources.grid
 import pano_scrobbler.composeapp.generated.resources.hate
 import pano_scrobbler.composeapp.generated.resources.item_options
+import pano_scrobbler.composeapp.generated.resources.legend
 import pano_scrobbler.composeapp.generated.resources.list
 import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.num_listeners
@@ -221,22 +235,10 @@ fun MusicEntryListItem(
                         .padding(8.dp)
                         .backgroundForShimmer(forShimmer)
                 ) {
-                    val topText = when {
-                        entry is Track && entry.date != null -> PanoTimeFormatter.relative(entry.date)
-                        entry.listeners != null -> pluralStringResource(
-                            Res.plurals.num_listeners,
-                            entry.listeners!!.toInt(),
-                            entry.listeners!!.format()
-                        )
-
-                        entry.playcount != null -> pluralStringResource(
-                            Res.plurals.num_scrobbles_noti,
-                            entry.playcount!!.toInt(),
-                            entry.playcount!!.format()
-                        )
-
-                        else -> null
-                    }
+                    val topText = if (entry is Track && entry.date != null)
+                        PanoTimeFormatter.relative(entry.date)
+                    else
+                        null
 
                     val firstText = when (entry) {
                         is Album -> entry.name
@@ -250,8 +252,20 @@ fun MusicEntryListItem(
                         else -> null
                     }
 
-                    val thirdText = when (entry) {
-                        is Track -> entry.album?.name?.ifEmpty { null }
+                    val thirdText = when {
+                        entry.listeners != null -> pluralStringResource(
+                            Res.plurals.num_listeners,
+                            entry.listeners!!.toInt(),
+                            entry.listeners!!.format()
+                        )
+
+                        entry.playcount != null -> pluralStringResource(
+                            Res.plurals.num_scrobbles_noti,
+                            entry.playcount!!.toInt(),
+                            entry.playcount!!.format()
+                        )
+
+                        entry is Track && entry.album?.name?.isEmpty() == false -> entry.album.name
                         else -> null
                     }
 
@@ -358,17 +372,48 @@ fun NowPlayingSurface(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    val shimmerTheme = LocalShimmerTheme.current
+    val customShimmerTheme = remember {
+        shimmerTheme.copy(
+            animationSpec = infiniteRepeatable(
+                animation = shimmerSpec(
+                    durationMillis = 7000,
+                    easing = FastOutSlowInEasing,
+                    delayMillis = 500,
+                ),
+                repeatMode = RepeatMode.Restart,
+            ),
+            shaderColors = listOf(
+                Color.White.copy(alpha = 0.15f),
+                Color.White.copy(alpha = 0.50f),
+                Color.White.copy(alpha = 0.15f),
+            ),
+            rotation = 90f,
+            blendMode = BlendMode.Overlay
+        )
+    }
+
+    val customShimmer = rememberShimmer(
+        theme = customShimmerTheme,
+        shimmerBounds = ShimmerBounds.View
+    )
 
     if (nowPlaying) {
         Surface(
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colorScheme.secondaryContainer,
             modifier = modifier
+                .clip(MaterialTheme.shapes.large)
+                .shimmer(customShimmer)
         ) {
             content()
         }
     } else {
-        content()
+        Box(
+            modifier
+        ) {
+            content()
+        }
     }
 }
 
@@ -587,32 +632,37 @@ fun GoToDetailsHeaderItem(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        shadowElevation = 4.dp,
         modifier = modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(16.dp)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
 
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1f)
-        )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
 
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.ArrowRightAlt,
-            contentDescription = stringResource(Res.string.show_all),
-            tint = MaterialTheme.colorScheme.primary
-        )
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowRightAlt,
+                contentDescription = stringResource(Res.string.show_all),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
@@ -722,15 +772,21 @@ fun <T> LazyListScope.expandableSublist(
 ) {
     if (items.isEmpty()) return
 
-    item(key = headerText) {
-        ExpandableHeaderItem(
-            title = headerText,
-            icon = headerIcon,
-            expanded = expanded || items.size <= minItems,
-            enabled = items.size > minItems,
-            onToggle = onToggle,
-            modifier = modifier.animateItem(),
-        )
+    stickyHeader(key = headerText) {
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            shadowElevation = 4.dp,
+            tonalElevation = 4.dp,
+        ) {
+            ExpandableHeaderItem(
+                title = headerText,
+                icon = headerIcon,
+                expanded = expanded || items.size <= minItems,
+                enabled = items.size > minItems,
+                onToggle = onToggle,
+                modifier = modifier.animateItem(),
+            )
+        }
     }
 
     items(
@@ -807,7 +863,7 @@ fun EntriesRow(
                         stonksDelta = null,
                         index = null,
                         modifier = Modifier
-                            .width(150.dp)
+                            .width(minGridSize())
                             .animateItem()
                     )
                 }
@@ -832,9 +888,21 @@ fun EntriesRow(
                     showArtist = showArtists,
                     index = idx,
                     modifier = Modifier
-                        .width(150.dp)
+                        .width(minGridSize())
                         .animateItem()
                 )
+            }
+
+            if (entries.loadState.refresh is LoadState.Error ||
+                entries.loadState.append is LoadState.Error
+            ) {
+                val error = entries.loadState.refresh as LoadState.Error
+                item {
+                    ListLoadError(
+                        modifier = Modifier.animateItem(),
+                        throwable = error.error,
+                        onRetry = { entries.retry() })
+                }
             }
         }
     }
@@ -842,7 +910,7 @@ fun EntriesRow(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun GridOrListSelector(
+fun GridOrListSelector(
     isColumn: Boolean,
     onIsColumnChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -869,9 +937,56 @@ private fun GridOrListSelector(
                         onIsColumnChange(true)
                 },
             ) {
-                Icon(Icons.Outlined.List, contentDescription = stringResource(Res.string.list))
+                Icon(
+                    Icons.AutoMirrored.Outlined.List,
+                    contentDescription = stringResource(Res.string.list)
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun ButtonsBarForCharts(
+    isColumn: Boolean,
+    onCollageClick: (() -> Unit)?,
+    onLegendClick: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    val scope = rememberCoroutineScope()
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        if (onLegendClick != null)
+            IconButton(onClick = onLegendClick) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = stringResource(Res.string.legend)
+                )
+            }
+
+        GridOrListSelector(
+            isColumn = isColumn,
+            onIsColumnChange = { isColumn ->
+                scope.launch {
+                    PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
+                }
+            },
+            modifier = Modifier
+                .weight(1f)
+        )
+
+        if (onCollageClick != null)
+            IconButton(onClick = onCollageClick) {
+                Icon(
+                    imageVector = Icons.Outlined.AutoAwesomeMosaic,
+                    contentDescription = stringResource(Res.string.create_collage)
+                )
+            }
     }
 }
 
@@ -879,11 +994,14 @@ private fun GridOrListSelector(
 fun EntriesGridOrList(
     entries: LazyPagingItems<MusicEntry>,
     onItemClick: (MusicEntry) -> Unit,
+
     placeholderItem: MusicEntry,
     fetchAlbumImageIfMissing: Boolean,
     showArtists: Boolean,
     emptyStringRes: StringResource,
     modifier: Modifier = Modifier,
+    onCollageClick: (() -> Unit)? = null,
+    onLegendClick: (() -> Unit)? = null,
     maxCountEvaluater: () -> Float = {
         if (entries.itemCount > 0)
             entries.peek(0)?.playcount?.toFloat() ?: 0f
@@ -897,7 +1015,6 @@ fun EntriesGridOrList(
     val maxCount by remember(entries.loadState) { mutableFloatStateOf(maxCountEvaluater()) }
     val shimmer by remember(entries.loadState.refresh) { mutableStateOf(entries.loadState.refresh is LoadState.Loading) }
     val isColumn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.gridSingleColumn }
-    val scope = rememberCoroutineScope()
 
     if (entries.itemCount == 0 && !shimmer) {
         Box(
@@ -912,19 +1029,17 @@ fun EntriesGridOrList(
         }
     } else if (!isColumn) {
         PanoLazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = Stuff.GRID_MIN_SIZE.dp),
+            columns = GridCells.Adaptive(minSize = minGridSize()),
             modifier = modifier
                 .fillMaxSize()
                 .then(if (shimmer) Modifier.shimmerWindowBounds() else Modifier)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                GridOrListSelector(
+
+                ButtonsBarForCharts(
                     isColumn = false,
-                    onIsColumnChange = { isColumn ->
-                        scope.launch {
-                            PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
-                        }
-                    },
+                    onCollageClick = onCollageClick,
+                    onLegendClick = onLegendClick,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -989,13 +1104,10 @@ fun EntriesGridOrList(
                 .then(if (shimmer) Modifier.shimmerWindowBounds() else Modifier)
         ) {
             item {
-                GridOrListSelector(
+                ButtonsBarForCharts(
                     isColumn = true,
-                    onIsColumnChange = { isColumn ->
-                        scope.launch {
-                            PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
-                        }
-                    },
+                    onCollageClick = onCollageClick,
+                    onLegendClick = onLegendClick,
                     modifier = Modifier
                         .fillMaxWidth()
                 )

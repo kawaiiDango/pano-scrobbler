@@ -41,8 +41,8 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.navigation.LocalNavigationType
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoNavigationType
-import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.MusicEntryGridItem
 import com.arn.scrobble.ui.MusicEntryListItem
@@ -67,7 +67,7 @@ import pano_scrobbler.composeapp.generated.resources.track
 @Composable
 fun RandomScreen(
     user: UserCached,
-    onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RandomVM = viewModel { RandomVM() },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
@@ -97,8 +97,8 @@ fun RandomScreen(
     }
 
     fun onEntryClick(musicEntry: MusicEntry) {
-        onNavigate(
-            PanoRoute.MusicEntryInfo(
+        onOpenDialog(
+            PanoDialog.MusicEntryInfo(
                 user = user,
                 artist = musicEntry as? Artist,
                 album = musicEntry as? Album,
@@ -109,7 +109,7 @@ fun RandomScreen(
 
 
     // first load
-    LaunchedEffect(Unit) {
+    LaunchedEffect(user) {
         PlatformStuff.mainPrefs.data.map { it.lastRandomType }
             .combine(chartsPeriodViewModel.selectedPeriod) { type, selectedPeriod ->
                 type to selectedPeriod

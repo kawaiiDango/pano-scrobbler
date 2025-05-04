@@ -44,6 +44,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.DatePickerModal
 import com.arn.scrobble.charts.TimePeriodType
@@ -51,6 +52,7 @@ import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.charts.getPeriodTypeIcon
 import com.arn.scrobble.charts.getPeriodTypePluralRes
 import com.arn.scrobble.main.PanoPullToRefresh
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.EmptyText
@@ -65,6 +67,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -79,6 +82,7 @@ import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.recents
 import pano_scrobbler.composeapp.generated.resources.retry
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
+import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.time_jump
 
 private enum class ScrobblesType {
@@ -97,6 +101,9 @@ fun ScrobblesScreen(
     onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
     pullToRefreshTriggered: Flow<Unit>,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
+    onTitleChange: (String?) -> Unit,
+    editDataFlow: Flow<Pair<Track, ScrobbleData>>,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {
@@ -126,7 +133,7 @@ fun ScrobblesScreen(
     }
 
     fun onTrackClick(track: Track, pkgName: String?) {
-        onNavigate(PanoRoute.MusicEntryInfo(user = user, track = track, pkgName = pkgName))
+        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, pkgName = pkgName))
     }
 
     LaunchedEffect(user, selectedType, timeJumpMillis) {
@@ -141,6 +148,8 @@ fun ScrobblesScreen(
                         loadLoved = true,
                     )
                 )
+
+                onTitleChange(getString(Res.string.loved))
             }
 
             ScrobblesType.TIME_JUMP -> {
@@ -151,6 +160,8 @@ fun ScrobblesScreen(
                             timeJumpMillis = timeJumpMillis
                         )
                     )
+
+                onTitleChange(getString(Res.string.time_jump))
             }
 
             ScrobblesType.RECENTS -> {
@@ -159,6 +170,8 @@ fun ScrobblesScreen(
                         user = user,
                     )
                 )
+
+                onTitleChange(getString(Res.string.scrobbles))
             }
         }
     }
@@ -192,6 +205,11 @@ fun ScrobblesScreen(
             selectedType == ScrobblesType.RECENTS && listState.firstVisibleItemIndex < 4
         },
         lazyPagingItems = tracks,
+    )
+
+    OnEditEffect(
+        viewModel,
+        editDataFlow
     )
 
     PanoPullToRefresh(
@@ -272,7 +290,7 @@ fun ScrobblesScreen(
                         menuItemText = menuItemText,
                         onMenuItemClick = {
                             if (scrobblerEnabled) {
-                                onNavigate(PanoRoute.FixIt)
+                                onOpenDialog(PanoDialog.FixIt)
                             } else {
                                 val hasNotificationListenerPerms =
                                     PlatformStuff.isNotificationListenerEnabled()
@@ -321,7 +339,7 @@ fun ScrobblesScreen(
                 showFullMenu = canShowTrackFullMenu,
                 showLove = true,
                 showHate = currentAccoutType == AccountType.LISTENBRAINZ,
-                onNavigate = onNavigate,
+                onOpenDialog = onOpenDialog,
                 viewModel = viewModel,
             )
 
@@ -400,7 +418,9 @@ private fun ScrobblesTypeSelector(
         OutlinedToggleButton(
             checked = selectedType == ScrobblesType.TIME_JUMP,
             onCheckedChange = {
-                if (it)
+                if ((it && selectedType != ScrobblesType.TIME_JUMP) ||
+                    (!it && selectedType == ScrobblesType.TIME_JUMP)
+                )
                     timeJumpMenuShown = true
             },
         ) {

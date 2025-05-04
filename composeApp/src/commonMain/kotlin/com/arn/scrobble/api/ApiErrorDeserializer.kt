@@ -1,6 +1,7 @@
-package com.arn.scrobble.api.lastfm
+package com.arn.scrobble.api
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
@@ -12,11 +13,12 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 
-//@Serializable
-//data class LastFmErrorResponse(
-//    val code: Int,
-//    val message: String
-//)
+@Serializable(with = ApiErrorDeserializer::class)
+data class ApiErrorResponse(
+    val code: Int,
+    val message: String,
+)
+
 
 object ApiErrorDeserializer : KSerializer<ApiErrorResponse> {
 
@@ -37,6 +39,7 @@ object ApiErrorDeserializer : KSerializer<ApiErrorResponse> {
 //        "{\"message\":\"Invalid API key - You must be granted a valid key by last.fm\",\"error\":10}" // lastfm
 //    val variant3 = "{\"code\": 200, \"error\": \"Invalid Method\"}" // listenbrainz
 //    val variant4 = "{\"error\": \"Invalid token\"}" // maloja
+//    val variant5 =  "{\"error\":{\"message\":\"Stuff\",\"status\": 404}}" // Spotify
 
     override fun deserialize(decoder: Decoder): ApiErrorResponse {
         val input = decoder as? JsonDecoder
@@ -44,10 +47,18 @@ object ApiErrorDeserializer : KSerializer<ApiErrorResponse> {
         val apiErrorResponse = when (val jsonElement = input.decodeJsonElement()) {
             is JsonObject -> {
                 when (val errorObject = jsonElement["error"]) {
-                    is JsonObject -> ApiErrorResponse(
-                        code = errorObject["code"]?.jsonPrimitive?.int ?: 0,
-                        message = errorObject["#text"]?.jsonPrimitive?.content ?: ""
-                    )
+                    is JsonObject -> {
+                        val code =
+                            (errorObject["code"] ?: errorObject["status"])?.jsonPrimitive?.int ?: 0
+                        val message =
+                            (errorObject["message"] ?: errorObject["#text"])?.jsonPrimitive?.content
+                                ?: ""
+
+                        ApiErrorResponse(
+                            code = code,
+                            message = message
+                        )
+                    }
 
                     is JsonPrimitive -> {
                         if (errorObject.jsonPrimitive.isString)

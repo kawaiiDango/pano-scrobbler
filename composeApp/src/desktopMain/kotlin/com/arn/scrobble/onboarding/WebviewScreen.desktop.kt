@@ -21,7 +21,7 @@ import pano_scrobbler.composeapp.generated.resources.use_browser
 actual fun WebViewScreen(
     initialUrl: String,
     userAccountTemp: UserAccountTemp?,
-    creds: PleromaOauthClientCreds?,
+    pleromaOauthClientCreds: PleromaOauthClientCreds?,
     onTitleChange: (String) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable ColumnScope.() -> Unit,
@@ -68,7 +68,11 @@ actual fun WebViewScreen(
 
             if (lastLoadedUrlObj.protocol.name == Stuff.DEEPLINK_PROTOCOL_NAME && lastLoadedUrlObj.segments.isNotEmpty()) {
                 val callbackHandled =
-                    viewModel.handleCallbackUrl(lastLoadedUrlObj, userAccountTemp!!, creds)
+                    viewModel.handleCallbackUrl(
+                        lastLoadedUrlObj,
+                        userAccountTemp!!,
+                        pleromaOauthClientCreds
+                    )
 
                 if (callbackHandled) {
                     val loadingMsg = "⏳"

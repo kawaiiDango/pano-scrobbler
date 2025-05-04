@@ -2,9 +2,6 @@ package com.arn.scrobble.charts
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.GridView
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,22 +16,17 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.main.PanoPager
-import com.arn.scrobble.navigation.PanoNavMetadata
-import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoTabType
 import com.arn.scrobble.navigation.PanoTabs
 import com.arn.scrobble.ui.EntriesGridOrList
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
 import pano_scrobbler.composeapp.generated.resources.charts_no_data
-import pano_scrobbler.composeapp.generated.resources.create_collage
-import pano_scrobbler.composeapp.generated.resources.legend
 import pano_scrobbler.composeapp.generated.resources.num_albums
 import pano_scrobbler.composeapp.generated.resources.num_artists
 import pano_scrobbler.composeapp.generated.resources.num_tracks
@@ -48,8 +40,7 @@ fun ChartsPagerScreen(
     tabIdx: Int,
     initialTabIdx: Int,
     onSetTabIdx: (Int) -> Unit,
-    onNavigate: (PanoRoute) -> Unit,
-    onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM() },
@@ -63,6 +54,7 @@ fun ChartsPagerScreen(
     val albumsCount by viewModel.albumCount.collectAsStateWithLifecycle()
     val tracksCount by viewModel.trackCount.collectAsStateWithLifecycle()
 
+    val selectedPeriod by chartsPeriodViewModel.selectedPeriod.collectAsStateWithLifecycle()
     val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
         .collectAsStateWithLifecycle(false)
 
@@ -100,20 +92,6 @@ fun ChartsPagerScreen(
         )
 
         else -> throw IllegalArgumentException("Unknown page $tabIdx")
-    }
-
-    LaunchedEffect(type) {
-        chartsPeriodViewModel.selectedPeriod
-            .filterNotNull()
-            .collectLatest { timePeriod ->
-                onSetNavMetadataList(
-                    getChartsPagerNavMetadata(
-                        user = user,
-                        timePeriod = timePeriod,
-                        type = type
-                    )
-                )
-            }
     }
 
     LaunchedEffect(title) {
@@ -162,9 +140,21 @@ fun ChartsPagerScreen(
                 placeholderItem = remember(type) {
                     getMusicEntryPlaceholderItem(type)
                 },
+                onCollageClick = {
+                    onOpenDialog(
+                        PanoDialog.CollageGenerator(
+                            user = user,
+                            timePeriod = selectedPeriod ?: return@EntriesGridOrList,
+                            collageType = type,
+                        )
+                    )
+                },
+                onLegendClick = {
+                    onOpenDialog(PanoDialog.ChartsLegend)
+                },
                 onItemClick = {
-                    onNavigate(
-                        PanoRoute.MusicEntryInfo(
+                    onOpenDialog(
+                        PanoDialog.MusicEntryInfo(
                             track = it as? Track,
                             artist = it as? Artist,
                             album = it as? Album,
@@ -177,25 +167,3 @@ fun ChartsPagerScreen(
         }
     }
 }
-
-
-private fun getChartsPagerNavMetadata(
-    user: UserCached,
-    timePeriod: TimePeriod,
-    type: Int,
-) = listOf(
-    PanoNavMetadata(
-        titleRes = Res.string.create_collage,
-        icon = Icons.Outlined.GridView,
-        route = PanoRoute.CollageGenerator(
-            user = user,
-            timePeriod = timePeriod,
-            collageType = type,
-        ),
-    ),
-    PanoNavMetadata(
-        titleRes = Res.string.legend,
-        icon = Icons.Outlined.Info,
-        route = PanoRoute.ChartsLegend,
-    ),
-)

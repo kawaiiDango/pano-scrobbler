@@ -12,6 +12,7 @@ import java.io.FileFilter
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.xml.parsers.DocumentBuilderFactory
@@ -372,7 +373,14 @@ compose.desktop {
 
             appResourcesRootDir = project.layout.projectDirectory.dir("resources")
 
-            includeAllModules = true
+//            includeAllModules = true
+            modules(
+                "java.net.http",
+                "jdk.jsobject",
+                "jdk.unsupported",
+                "jdk.unsupported.desktop",
+                "jdk.xml.dom"
+            )
 
             windows {
                 dirChooser = true
@@ -446,6 +454,29 @@ tasks.register<ComposeHotRun>("runHot") {
 //    args = listOf("--data-dir=$appDataDir")
 }
 
+tasks.register<DefaultTask>("generateSha256") {
+    val distFile = file("dist")
+
+    doLast {
+        distFile.listFiles { file ->
+            file.isFile && !file.name.endsWith(".sha256")
+        }?.forEach { file ->
+            val digest = MessageDigest.getInstance("SHA-256")
+            file.inputStream().use { fis ->
+                val buffer = ByteArray(8192)
+                var bytesRead: Int
+                while (fis.read(buffer).also { bytesRead = it } != -1) {
+                    digest.update(buffer, 0, bytesRead)
+                }
+            }
+            val hash = digest.digest().joinToString("") { "%02x".format(it) }
+            file.let { File(it.parent, "${it.name}.sha256") }
+                .writeText("$hash  ${file.name}")
+            println("SHA-256 checksum file created: ${file.name}.sha256")
+        }
+    }
+}
+
 tasks.register<Zip>("zipAppImage") {
     from("build/compose/binaries/main-release/app")
     archiveFileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.zip"
@@ -463,59 +494,43 @@ tasks.register<Copy>("copyGithubReleaseApk") {
 }
 
 tasks.register<Copy>("copyReleaseMsi") {
+    val fileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.msi"
+
     from("build/compose/binaries/main-release/msi")
     into("dist")
     include("*.msi")
     rename(
         "(.*).msi",
-        "$appNameWithoutSpaces-$verCode-$resourcesDirName.msi"
+        fileName
     )
 }
 
 tasks.register<Copy>("copyReleaseDmg") {
+    val fileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.dmg"
     from("build/compose/binaries/main-release/dmg")
     into("dist")
     include("*.dmg")
     rename(
         "(.*).dmg",
-        "$appNameWithoutSpaces-$verCode-$resourcesDirName.dmg"
+        fileName
     )
 }
 
 tasks.register<Exec>("packageLinuxAppImage") {
-    group = "distribution"
-    description = "Package Compose Multiplatform JVM app as an .AppImage file."
-    val distroDir = file(
-        File(
-            project.layout.buildDirectory.get().asFile.absolutePath,
-            "compose/binaries/main-release/app/$appName"
-        ).absolutePath
-    )
-    val appDir = file(
-        File(
-            project.layout.buildDirectory.get().asFile.absolutePath,
-            "compose/binaries/main-release/app/PanoScrobbler.AppDir"
-        ).absolutePath
-    )
-    val appimageFilesDir =
-        file(
-            File(
-                project.layout.projectDirectory.asFile.absolutePath,
-                "appimage-files"
-            ).absolutePath
-        )
-    val outputDir =
-        file(File(project.layout.projectDirectory.asFile.absolutePath, "dist").absolutePath)
+
+    val executableDir = file("build/compose/binaries/main-release/app/Pano Scrobbler")
+    val appDir = file("build/compose/binaries/main-release/app/PanoScrobbler.AppDir")
+    val appimageFilesDir = file("appimage-files")
+    val distDir = file("dist")
 
     doFirst {
         // Create the AppDir structure. Copy all your distribution files.
-        delete(appDir)
+        appDir.deleteRecursively()
         appDir.mkdirs()
         File(appDir, "usr").mkdirs()
-        copy {
-            from(distroDir)
-            into("$appDir/usr")
-        }
+
+        // Copy the distribution files to the AppDir.
+        executableDir.copyRecursively(File("$appDir/usr"))
 
         // Copy the PNG icon from the resources to the AppDir root.
         val iconSource = File("$appDir/usr/lib/app/resources/app_icon.png")
@@ -547,10 +562,11 @@ tasks.register<Exec>("packageLinuxAppImage") {
         )
     }
 
+    val distFile = File(distDir, "$appNameWithoutSpaces-$verCode-$resourcesDirName.AppImage")
     commandLine(
         apppImageToolFile.absolutePath,
         appDir.absolutePath,
-        File(outputDir, "$appNameWithoutSpaces-$verCode-$resourcesDirName.AppImage").absolutePath
+        distFile.absolutePath
     )
 }
 
@@ -578,6 +594,11 @@ afterEvaluate {
     tasks.named("packageReleaseGithub") {
         finalizedBy(tasks.named("copyGithubReleaseApk"))
     }
+
+    tasks.named("githubRelease") {
+        dependsOn(tasks.named("generateSha256"))
+    }
+
 }
 
 data class CrowdinMember(val username: String)
@@ -818,7 +839,8 @@ githubRelease {
     owner = "kawaiidango"
     repo = "pano-scrobbler"
     val changelog = file("src/androidMain/play/release-notes/en-US/default.txt").readText() +
-            "\n\n" + "Copied from Play Store what's new, may not be accurate for minor updates."
+            ""
+//            "\n\n" + "Copied from Play Store what's new, may not be accurate for minor updates."
     body = changelog
     tagName = verCode.toString()
     releaseName = verNameWithDate

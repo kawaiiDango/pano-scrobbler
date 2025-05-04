@@ -25,6 +25,7 @@ actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME)
                     PlatformWorker.WORK_NAME_KEY to name
                 )
             )
+            .addTag(name)
             .setConstraints(constraints)
             .setBackoffCriteria(
                 BackoffPolicy.EXPONENTIAL,

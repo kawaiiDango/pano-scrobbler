@@ -28,6 +28,8 @@ class ImageSearchVM : ViewModel() {
     private val _searchTerm = MutableSharedFlow<Pair<String, Int>>()
     private val _searchResults = MutableStateFlow<SpotifySearchResponse?>(null)
     val searchResults = _searchResults.asSharedFlow()
+    private val _searchError = MutableStateFlow<Throwable?>(null)
+    val searchError = _searchError.asStateFlow()
     private val _hasRedirect = MutableStateFlow(false)
     private val _existingMappings = MutableStateFlow<List<CustomSpotifyMapping>>(emptyList())
     val existingMappings = _existingMappings.asStateFlow()
@@ -54,9 +56,11 @@ class ImageSearchVM : ViewModel() {
                         else -> throw IllegalArgumentException("Invalid search type: $searchType")
                     }
                     results.onSuccess {
-                        _searchResults.emit(it)
+                        _searchResults.value = it
+                        _searchError.value = null
                     }.onFailure { e ->
-                        Stuff.globalExceptionFlow.emit(e)
+                        _searchResults.value = null
+                        _searchError.value = e
                     }
                 }
         }

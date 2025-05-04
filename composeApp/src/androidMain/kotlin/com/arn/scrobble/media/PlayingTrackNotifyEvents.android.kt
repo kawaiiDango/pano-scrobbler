@@ -14,7 +14,7 @@ actual fun notifyPlayingTrackEventWithIpc(event: PlayingTrackNotifyEvent) {
 
             // do not scrobble until the dialog is dismissed
 
-            val intent = Intent(NLService.iSCROBBLE_SUBMIT_LOCK_S)
+            val intent = Intent(NLService.iSCROBBLE_SUBMIT_LOCK)
                 .setPackage(context.packageName)
                 .putExtra(
                     Stuff.EXTRA_EVENT,

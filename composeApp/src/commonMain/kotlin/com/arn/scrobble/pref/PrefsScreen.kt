@@ -62,6 +62,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_check_updates
 import pano_scrobbler.composeapp.generated.resources.pref_delay
 import pano_scrobbler.composeapp.generated.resources.pref_delay_mins
 import pano_scrobbler.composeapp.generated.resources.pref_delay_per
+import pano_scrobbler.composeapp.generated.resources.pref_enabled_apps_summary
 import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_export_desc
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_album
@@ -115,8 +116,10 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.scrobblerEnabled } }
     val allowedPackages by
     remember { derivedStateOf { mainPrefsData.allowedPackages } }
+    val allowedAutomationPackages by
+    remember { derivedStateOf { mainPrefsData.allowedAutomationPackages } }
     val seenAppsMap by
-    remember { derivedStateOf { mainPrefsData.seenApps.associate { it.appId to it.label } } }
+    remember { derivedStateOf { mainPrefsData.seenApps.associate { it.appId to it.friendlyLabel } } }
     val scrobbleSpotifyRemote by
     remember { derivedStateOf { mainPrefsData.scrobbleSpotifyRemote } }
     val autoDetectApps by
@@ -167,6 +170,8 @@ fun PrefsScreen(
         }
     }
 
+
+
     PanoLazyColumn(modifier = modifier) {
         item(MainPrefs::scrobblerEnabled.name) {
             SwitchPref(
@@ -195,11 +200,12 @@ fun PrefsScreen(
             AppIconsPref(
                 packageNames = allowedPackages,
                 seenAppsMap = seenAppsMap,
+                summary = stringResource(Res.string.pref_enabled_apps_summary),
                 onClick = {
                     onNavigate(
                         PanoRoute.AppList(
-                            preSelectedPackages = emptyList(),
-                            hasPreSelection = false,
+                            saveType = AppListSaveType.Scrobbling,
+                            preSelectedPackages = allowedPackages.toList(),
                             isSingleSelect = false,
                         )
                     )
@@ -226,7 +232,7 @@ fun PrefsScreen(
                     text = stringResource(Res.string.pref_auto_detect),
                     summary = if (!notiEnabled && !PlatformStuff.isDesktop) stringResource(Res.string.notification_channel_blocked) else null,
                     value = autoDetectApps,
-                    enabled = notiEnabled || PlatformStuff.isDesktop,
+                    enabled = notiEnabled,
                     copyToSave = { copy(autoDetectApps = it) },
                 )
             }
@@ -547,7 +553,26 @@ fun PrefsScreen(
 
         prefPersistentNoti(this, notiPersistent)
 
-        prefIntents(this)
+        if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
+            prefAutomation(this)
+
+            item(MainPrefs::allowedAutomationPackages.name) {
+                AppIconsPref(
+                    packageNames = allowedAutomationPackages,
+                    seenAppsMap = seenAppsMap,
+                    onClick = {
+                        onNavigate(
+                            PanoRoute.AppList(
+                                saveType = AppListSaveType.Automation,
+                                preSelectedPackages = allowedAutomationPackages.toList(),
+                                isSingleSelect = false,
+                            )
+                        )
+                    }
+                )
+            }
+
+        }
 
         prefCrashReporter(this, crashReporterEnabled)
 
@@ -695,7 +720,7 @@ fun PrefsScreen(
     }
 }
 
-expect fun prefIntents(listScope: LazyListScope)
+expect fun prefAutomation(listScope: LazyListScope)
 
 expect fun prefNotifications(listScope: LazyListScope)
 

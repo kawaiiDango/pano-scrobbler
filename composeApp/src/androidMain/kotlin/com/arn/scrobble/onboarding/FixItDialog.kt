@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.media.PersistentNotificationService
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PlatformStuff
@@ -51,7 +50,7 @@ import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 import pano_scrobbler.composeapp.generated.resources.special_app_access
 
 @Composable
-private fun FixItContent(
+actual fun FixItDialog(
     modifier: Modifier,
 ) {
     val context = LocalContext.current
@@ -197,13 +196,4 @@ private fun FixItContent(
             )
         }
     }
-}
-
-@Composable
-fun FixItScreen(
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogParent(
-        onDismiss = onDismiss
-    ) { FixItContent(it) }
 }

@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,10 +47,11 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.CachedTracksDao
+import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.edits.EditScrobbleDialog
-import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
@@ -61,6 +63,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.showTrackShareSheet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
@@ -89,14 +92,14 @@ private enum class TrackMenuLevel {
 }
 
 @Composable
-fun TrackDropdownMenu(
+private fun TrackDropdownMenu(
     track: Track,
     pkgName: String?,
-    onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     user: UserCached,
+    origTrack: Track?,
     onLove: ((Boolean) -> Unit)?,
     onHate: ((Boolean) -> Unit)?,
-    onEdit: ((ScrobbleData) -> Unit)?,
     onDelete: (() -> Unit)?,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
@@ -112,7 +115,6 @@ fun TrackDropdownMenu(
                 TrackMenuLevel.More
         )
     }
-    var editDialogShown by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     DropdownMenu(
@@ -161,42 +163,64 @@ fun TrackDropdownMenu(
                         )
                     }
 
-                    if (onEdit != null) {
-                        DropdownMenuItem(
-                            onClick = {
-                                editDialogShown = true
-                                onDismissRequest()
-                            },
-                            text = {
-                                Text(stringResource(Res.string.edit))
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Edit,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
+                    DropdownMenuItem(
+                        onClick = {
+                            onDismissRequest()
+
+                            val sd = ScrobbleData(
+                                track = track.name,
+                                artist = track.artist.name,
+                                album = track.album?.name,
+                                timestamp = track.date ?: 0,
+                                albumArtist = null,
+                                duration = null,
+                                packageName = null
+                            )
+
+                            val dialogArgs = PanoDialog.EditScrobble(
+                                origTrack = origTrack,
+                                scrobbleData = sd,
+                                msid = track.msid,
+                                hash = null
+                            )
+
+                            onOpenDialog(dialogArgs)
+                        },
+                        text = {
+                            Text(stringResource(Res.string.edit))
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = null
+                            )
+                        }
+                    )
 
                     if (onDelete != null && track.date != null && track.date > 0) {
                         DropdownMenuItem(
                             onClick = {
                                 GlobalScope.launch {
                                     withContext(Dispatchers.IO) {
-                                        ScrobbleEverywhere.delete(track)
-                                            .forEach {
-                                                it.onFailure {
-                                                    if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
-                                                        Stuff.globalSnackbarFlow.emit(
-                                                            PanoSnackbarVisuals(
-                                                                getString(Res.string.lastfm_reauth),
-                                                                isError = true
-                                                            )
+                                        Scrobblables.current.value?.delete(track)
+                                            ?.onFailure {
+                                                it.printStackTrace()
+                                                if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
+                                                    Stuff.globalSnackbarFlow.emit(
+                                                        PanoSnackbarVisuals(
+                                                            getString(Res.string.lastfm_reauth),
+                                                            isError = true
                                                         )
-                                                    } else
-                                                        Stuff.globalExceptionFlow.emit(it)
-                                                }
+                                                    )
+                                                } else
+                                                    Stuff.globalExceptionFlow.emit(it)
+                                            }
+                                            ?.onSuccess {
+                                                CachedTracksDao.deltaUpdateAll(
+                                                    track,
+                                                    -1,
+                                                    DirtyUpdate.BOTH
+                                                )
                                             }
                                     }
                                 }
@@ -359,7 +383,7 @@ fun TrackDropdownMenu(
                                 album = track.album?.name ?: "",
                                 track = track.name,
                             )
-                            onNavigate(PanoRoute.BlockedMetadataAdd(b))
+                            onOpenDialog(PanoDialog.BlockedMetadataAdd(b))
                             onDismissRequest()
                         },
                         text = {
@@ -378,7 +402,7 @@ fun TrackDropdownMenu(
                                 artist = track.artist.name,
                                 album = track.album?.name ?: "",
                             )
-                            onNavigate(PanoRoute.BlockedMetadataAdd(b))
+                            onOpenDialog(PanoDialog.BlockedMetadataAdd(b))
                             onDismissRequest()
                         },
                         text = {
@@ -396,7 +420,7 @@ fun TrackDropdownMenu(
                             val b = BlockedMetadata(
                                 artist = track.artist.name,
                             )
-                            onNavigate(PanoRoute.BlockedMetadataAdd(b))
+                            onOpenDialog(PanoDialog.BlockedMetadataAdd(b))
                         },
                         text = {
                             Text(stringResource(Res.string.artist))
@@ -429,27 +453,6 @@ fun TrackDropdownMenu(
                 }
             )
         }
-    }
-
-    if (editDialogShown) {
-        val sd = ScrobbleData(
-            track = track.name,
-            artist = track.artist.name,
-            album = track.album?.name,
-            timestamp = track.date ?: 0,
-            albumArtist = null,
-            duration = null,
-            packageName = null
-        )
-
-        EditScrobbleDialog(
-            scrobbleData = sd,
-            msid = track.msid,
-            hash = null,
-            onDone = onEdit!!,
-            onDismiss = { editDialogShown = false },
-            onNavigate = onNavigate
-        )
     }
 }
 
@@ -604,11 +607,11 @@ fun LazyListScope.scrobblesListItems(
     showFullMenu: Boolean,
     showLove: Boolean,
     showHate: Boolean,
-    onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     viewModel: ScrobblesVM,
 ) {
     fun onTrackClick(track: Track, pkgName: String?) {
-        onNavigate(PanoRoute.MusicEntryInfo(user = user, track = track, pkgName = pkgName))
+        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, pkgName = pkgName))
     }
 
     for (i in 0 until tracks.itemCount) {
@@ -636,8 +639,9 @@ fun LazyListScope.scrobblesListItems(
                         TrackDropdownMenu(
                             track = track,
                             pkgName = pkgName,
-                            onNavigate = onNavigate,
+                            onOpenDialog = onOpenDialog,
                             user = user,
+                            origTrack = trackPeek,
                             onLove = if (showLove) {
                                 {
                                     viewModel.editTrack(
@@ -655,19 +659,6 @@ fun LazyListScope.scrobblesListItems(
                                 }
                             } else null,
                             onDelete = { viewModel.removeTrack(trackPeek!!) },
-                            onEdit = {
-                                val _artist = Artist(it.artist)
-                                val _album = it.album?.let { Album(it, _artist) }
-
-                                val editedTrack = Track(
-                                    it.track,
-                                    _album,
-                                    _artist,
-                                    date = it.timestamp.takeIf { it > 0L }
-                                )
-
-                                viewModel.editTrack(trackPeek!!, editedTrack)
-                            },
                             expanded = menuVisible,
                             skipFirstLevel = !showFullMenu,
                             onDismissRequest = { menuVisible = false }
@@ -678,6 +669,28 @@ fun LazyListScope.scrobblesListItems(
                 )
 
             }
+        }
+    }
+}
+
+@Composable
+fun OnEditEffect(
+    viewModel: ScrobblesVM,
+    editDataFlow: Flow<Pair<Track, ScrobbleData>>
+) {
+    LaunchedEffect(Unit) {
+        editDataFlow.collect { (origTrack, newScrobbleData) ->
+            val _artist = Artist(newScrobbleData.artist)
+            val _album = newScrobbleData.album?.let { Album(it, _artist) }
+
+            val editedTrack = Track(
+                newScrobbleData.track,
+                _album,
+                _artist,
+                date = newScrobbleData.timestamp.takeIf { it > 0L }
+            )
+
+            viewModel.editTrack(origTrack, editedTrack)
         }
     }
 }

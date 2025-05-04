@@ -83,6 +83,7 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.imageloader.newImageLoader
 import com.arn.scrobble.navigation.LocalNavigationType
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoFabData
 import com.arn.scrobble.navigation.PanoNavMetadata
 import com.arn.scrobble.navigation.PanoNavigationType
@@ -116,7 +117,7 @@ import pano_scrobbler.composeapp.generated.resources.back
 @Composable
 fun PanoAppContent(
     navController: NavHostController,
-    customInitialRoute: PanoRoute? = null,
+    dialogArgs: PanoDialog? = null,
     viewModel: MainViewModel = viewModel { MainViewModel() },
 ) {
 
@@ -141,6 +142,7 @@ fun PanoAppContent(
     var navMetadata by remember { mutableStateOf<List<PanoNavMetadata>?>(null) }
     var showNavMetadata by remember { mutableStateOf(false) }
     var selectedTabIdx by rememberSaveable { mutableIntStateOf(0) }
+    var currentDialogArgs by remember(dialogArgs) { mutableStateOf(dialogArgs) }
     val drawerData by viewModel.drawerDataFlow.collectAsStateWithLifecycle()
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val currentUserSelf by PlatformStuff.mainPrefs.data
@@ -166,9 +168,7 @@ fun PanoAppContent(
 
     LaunchedEffect(Unit) {
         viewModel.updateAvailability.collectLatest {
-            navController.navigate(
-                PanoRoute.UpdateAvailable(it),
-            )
+            currentDialogArgs = PanoDialog.UpdateAvailable(it)
         }
     }
 
@@ -181,7 +181,7 @@ fun PanoAppContent(
 
         if (storedHashcode != changelogHashcode) {
             if (storedHashcode != null) {
-                navController.navigate(PanoRoute.Changelog)
+                currentDialogArgs = PanoDialog.Changelog
             }
             // else is fresh install
             PlatformStuff.mainPrefs.updateData { it.copy(changelogSeenHashcode = changelogHashcode) }
@@ -216,15 +216,14 @@ fun PanoAppContent(
                         selectedTabIdx = selectedTabIdx,
                         fabData = fabData,
                         onNavigate = { navController.navigate(it) },
+                        onOpenDialog = { currentDialogArgs = it },
                         onBack = { navController.popBackStack() },
                         onTabClicked = { pos, tab ->
                             selectedTabIdx = pos
                         },
                         onMenuClicked = {
-                            navController.navigate(
-                                PanoRoute.NavPopup(
-                                    otherUser = currentUserOther,
-                                )
+                            currentDialogArgs = PanoDialog.NavPopup(
+                                otherUser = currentUserOther,
                             )
                         },
                         user = currentUser,
@@ -236,6 +235,7 @@ fun PanoAppContent(
                         selectedTabIdx = selectedTabIdx,
                         fabData = fabData,
                         onNavigate = { navController.navigate(it) },
+                        onOpenDialog = { currentDialogArgs = it },
                         onBack = { navController.popBackStack() },
                         onTabClicked = { pos, tab ->
                             selectedTabIdx = pos
@@ -293,10 +293,8 @@ fun PanoAppContent(
                                 },
                                 scrollBehavior = bottomBarScrollBehavior,
                                 onMenuClicked = {
-                                    navController.navigate(
-                                        PanoRoute.NavPopup(
-                                            otherUser = currentUserOther,
-                                        )
+                                    currentDialogArgs = PanoDialog.NavPopup(
+                                        otherUser = currentUserOther,
                                     )
                                 },
                                 user = currentUser,
@@ -312,6 +310,7 @@ fun PanoAppContent(
                                 fabData,
                                 onBack = { navController.popBackStack() },
                                 onNavigate = { navController.navigate(it) },
+                                onOpenDialog = { currentDialogArgs = it },
                             )
                         }
                     }
@@ -339,7 +338,6 @@ fun PanoAppContent(
                         startDestination = remember(onboardingFinished, currentUser) {
                             when {
                                 !onboardingFinished || currentUser == null -> PanoRoute.Onboarding
-                                customInitialRoute != null -> customInitialRoute
                                 else -> PanoRoute.SelfHomePager
                             }
                         },
@@ -390,7 +388,7 @@ fun PanoAppContent(
                                     navController.popBackStack()
                             },
                             onSetOtherUser = { currentUserOther = it },
-                            navMetadataList = { navMetadata },
+                            onOpenDialog = { currentDialogArgs = it },
                             onSetNavMetadataList = { navMetadata = it },
                             pullToRefreshState = { pullToRefreshState },
                             onSetRefreshing = { id, prState ->
@@ -401,15 +399,31 @@ fun PanoAppContent(
                     }
                 }
             }
+
+            if (currentDialogArgs != null) {
+                PanoDialogs(
+                    dialogData = currentDialogArgs!!,
+                    onDismiss = { currentDialogArgs = null },
+                    onNavigate = { route ->
+                        currentDialogArgs = null
+                        navController.navigate(route)
+                    },
+                    onOpenDialog = { currentDialogArgs = it },
+                    navMetadataList = { navMetadata },
+                    mainViewModel = viewModel,
+                )
+            }
         }
     }
 }
+
 
 @Composable
 private fun PanoFab(
     fabData: PanoFabData,
     onBack: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (LocalNavigationType.current == PanoNavigationType.PERMANENT_NAVIGATION_DRAWER) {
@@ -417,8 +431,10 @@ private fun PanoFab(
             onClick = {
                 if (fabData.route == PanoRoute.SpecialGoBack)
                     onBack()
-                else
+                else if (fabData.route != null)
                     onNavigate(fabData.route)
+                else if (fabData.dialog != null)
+                    onOpenDialog(fabData.dialog)
             },
             icon = {
                 Icon(
@@ -438,8 +454,10 @@ private fun PanoFab(
             onClick = {
                 if (fabData.route == PanoRoute.SpecialGoBack)
                     onBack()
-                else
+                else if (fabData.route != null)
                     onNavigate(fabData.route)
+                else if (fabData.dialog != null)
+                    onOpenDialog(fabData.dialog)
             },
             modifier = modifier
         ) {
@@ -496,6 +514,7 @@ private fun PanoNavigationRail(
     fabData: PanoFabData?,
     onBack: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     onTabClicked: (pos: Int, PanoTabs) -> Unit,
     onMenuClicked: () -> Unit,
     user: UserCached?,
@@ -523,6 +542,7 @@ private fun PanoNavigationRail(
                     fabData,
                     onBack = onBack,
                     onNavigate = onNavigate,
+                    onOpenDialog = onOpenDialog,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                 )
@@ -709,6 +729,7 @@ private fun PanoNavigationDrawerContent(
     navMetadataList: List<PanoNavMetadata>,
     onBack: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     onTabClicked: (pos: Int, PanoTabs) -> Unit,
     drawSnowfall: Boolean,
     otherUser: UserCached?,
@@ -739,6 +760,7 @@ private fun PanoNavigationDrawerContent(
                     fabData,
                     onBack = onBack,
                     onNavigate = onNavigate,
+                    onOpenDialog = onOpenDialog,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                         .align(CenterHorizontally)
@@ -763,7 +785,8 @@ private fun PanoNavigationDrawerContent(
                                 text = stringResource(tabMetadata.titleRes),
                                 fontWeight = if (index == selectedTabIdx)
                                     FontWeight.Bold
-                                else null,
+                                else
+                                    null,
                                 maxLines = 2
                             )
                         },
@@ -798,7 +821,7 @@ private fun PanoNavigationDrawerContent(
                     label = {
                         Text(
                             text = stringResource(it.titleRes),
-                            maxLines = 2
+                            maxLines = 2,
                         )
                     },
                     icon = {

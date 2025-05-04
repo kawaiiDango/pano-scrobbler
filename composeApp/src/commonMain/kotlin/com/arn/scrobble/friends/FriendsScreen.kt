@@ -1,6 +1,7 @@
 package com.arn.scrobble.friends
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.items
@@ -45,7 +47,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -60,14 +61,18 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.main.PanoPullToRefresh
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.EmptyText
+import com.arn.scrobble.ui.GridOrListSelector
 import com.arn.scrobble.ui.ListLoadError
+import com.arn.scrobble.ui.NowPlayingSurface
 import com.arn.scrobble.ui.PanoLazyVerticalGrid
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
+import com.arn.scrobble.ui.minGridSize
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
 import com.arn.scrobble.ui.shake
@@ -75,6 +80,7 @@ import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -108,6 +114,7 @@ fun FriendsScreen(
     onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
     pullToRefreshTriggered: Flow<Unit>,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FriendsVM = viewModel { FriendsVM() },
@@ -138,6 +145,7 @@ fun FriendsScreen(
 
     val gridState = rememberLazyGridState()
     val followingText = stringResource(Res.string.following)
+    val isColumn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.gridSingleColumn }
 
     LaunchedEffect(user) {
         viewModel.setUser(user)
@@ -222,11 +230,28 @@ fun FriendsScreen(
         )
 
         PanoLazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = Stuff.GRID_MIN_SIZE.dp),
+            columns = if (isColumn)
+                GridCells.Fixed(1)
+            else
+                GridCells.Adaptive(minSize = minGridSize()),
             state = gridState,
             modifier = Modifier
                 .fillMaxSize()
         ) {
+
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                GridOrListSelector(
+                    isColumn = isColumn,
+                    onIsColumnChange = { isColumn ->
+                        scope.launch {
+                            PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
             if (sortedFriends != null) {
                 items(
                     sortedFriends!!,
@@ -238,6 +263,7 @@ fun FriendsScreen(
                         isPinned = false,
                         showPinConfig = false,
                         onExpand = { expandedFriend = friend },
+                        isColumn = isColumn,
                         modifier = Modifier.animateItem()
                     )
                 }
@@ -255,6 +281,7 @@ fun FriendsScreen(
                         isPinned = true,
                         showPinConfig = false,
                         onExpand = { expandedFriend = friend },
+                        isColumn = isColumn,
                         modifier = Modifier.animateItem()
                     )
                 }
@@ -270,6 +297,7 @@ fun FriendsScreen(
 
                         if (friend == null) {
                             FriendItemShimmer(
+                                isColumn = isColumn,
                                 modifier = Modifier.animateItem()
                             )
                         } else {
@@ -279,6 +307,7 @@ fun FriendsScreen(
                                 isPinned = false,
                                 showPinConfig = false,
                                 onExpand = { expandedFriend = friend },
+                                isColumn = isColumn,
                                 modifier = Modifier.animateItem()
                             )
                         }
@@ -291,6 +320,7 @@ fun FriendsScreen(
                     loadState.refresh is LoadState.Loading -> {
                         items(8) { // don't put key here, top items are not scrolled to initially, otherwise
                             FriendItemShimmer(
+                                isColumn = isColumn,
                                 modifier = Modifier.animateItem()
                             )
                         }
@@ -343,8 +373,8 @@ fun FriendsScreen(
                 },
                 onNavigateToTrackInfo = { track, user ->
                     expandedFriend = null
-                    onNavigate(
-                        PanoRoute.MusicEntryInfo(
+                    onOpenDialog(
+                        PanoDialog.MusicEntryInfo(
                             track = track,
                             user = user,
                             pkgName = null
@@ -355,6 +385,7 @@ fun FriendsScreen(
                 isPinned = friend.name in pinnedUsernamesSet,
                 showPinConfig = user.isSelf,
                 expanded = true,
+                isColumn = false,
                 onExpand = { },
                 onPinUnpin = { pin ->
 
@@ -381,7 +412,10 @@ fun FriendsScreen(
 }
 
 @Composable
-private fun FriendItemShimmer(modifier: Modifier = Modifier) {
+private fun FriendItemShimmer(
+    isColumn: Boolean,
+    modifier: Modifier = Modifier
+) {
     val friend = remember {
         UserCached(
             name = " ",
@@ -398,8 +432,33 @@ private fun FriendItemShimmer(modifier: Modifier = Modifier) {
         extraDataResult = null,
         isPinned = false,
         showPinConfig = false,
+        isColumn = isColumn,
         modifier = modifier
     )
+}
+
+@Composable
+private fun FriendItemRowOrColumn(
+    isColumn: Boolean,
+    modifier: Modifier,
+    content: @Composable () -> Unit,
+) {
+    if (!isColumn) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = modifier
+        ) {
+            content()
+        }
+    } else {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = modifier
+                .padding(vertical = 16.dp)
+        ) {
+            content()
+        }
+    }
 }
 
 @Composable
@@ -408,6 +467,7 @@ private fun FriendItem(
     extraDataResult: Result<FriendExtraData>?,
     isPinned: Boolean,
     showPinConfig: Boolean,
+    isColumn: Boolean,
     forShimmer: Boolean = false,
     expanded: Boolean = false,
     onExpand: () -> Unit = {},
@@ -437,295 +497,320 @@ private fun FriendItem(
         }
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+    FriendItemRowOrColumn(
+        isColumn = isColumn,
         modifier = modifier
             .padding(4.dp)
             .clip(MaterialTheme.shapes.medium)
             .clickable(enabled = !expanded && !forShimmer, onClick = onExpand)
     ) {
-        Box(
-            modifier = Modifier
-                .padding(6.dp)
-                .align(Alignment.CenterHorizontally)
+        Column(
+            modifier = if (isColumn)
+                Modifier
+                    .width(110.dp)
+            else
+                Modifier
         ) {
-            AvatarOrInitials(
-                avatarUrl = friend.largeImage,
-                avatarInitialLetter = friend.name.first(),
-                textStyle = if (expanded) MaterialTheme.typography.displayLarge else MaterialTheme.typography.titleLarge,
+            Box(
                 modifier = Modifier
-                    .size(
-                        if (expanded) 200.dp else 64.dp
+                    .padding(6.dp).align(Alignment.CenterHorizontally)
+            ) {
+                AvatarOrInitials(
+                    avatarUrl = friend.largeImage,
+                    avatarInitialLetter = friend.name.first(),
+                    textStyle = if (expanded) MaterialTheme.typography.displayLarge else MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .size(
+                            if (expanded) 200.dp else 64.dp
+                        )
+                        .clip(
+                            if (expanded)
+                                MaterialTheme.shapes.large
+                            else
+                                CircleShape
+                        )
+                        .then(if (forShimmer) Modifier.shimmerWindowBounds() else Modifier)
+                        .then(
+                            if (isPinned)
+                                Modifier.border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    shape = if (expanded)
+                                        MaterialTheme.shapes.large
+                                    else
+                                        CircleShape
+                                )
+                            else
+                                Modifier
+                        )
+                )
+
+                if (isPinned) {
+                    Icon(
+                        imageVector = Icons.Filled.PushPin,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier
+                            .size(16.dp)
+                            .align(Alignment.TopEnd)
                     )
-                    .clip(
-                        if (expanded)
-                            MaterialTheme.shapes.large
-                        else
-                            CircleShape
-                    )
-                    .then(if (forShimmer) Modifier.shimmerWindowBounds() else Modifier)
+                }
+            }
+
+            Text(
+                text = if (Stuff.isInDemoMode) "user" else friend.name,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            if (isPinned) {
-                Icon(
-                    imageVector = Icons.Filled.PushPin,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary,
+            if (expanded) {
+                if (friend.realname.isNotEmpty())
+                    Text(
+                        text = friend.realname,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                if (friend.country.isNotEmpty() && friend.country != "None")
+                    Text(
+                        text = stringResource(
+                            Res.string.from,
+                            friend.country + " " + Stuff.getCountryFlag(friend.country)
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                if (playCount != null) {
+                    Text(
+                        text = if (friend.registeredTime > Stuff.TIME_2002)
+                            stringResource(
+                                Res.string.num_scrobbles_since,
+                                playCount,
+                                PanoTimeFormatter.relative(friend.registeredTime)
+                            )
+                        else
+                            pluralStringResource(Res.plurals.num_scrobbles_noti, playCount),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
-                        .size(16.dp)
-                        .align(Alignment.TopEnd)
-                )
-            }
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
 
-        }
+                    Row {
+                        if (showPinConfig) {
+                            if (isPinned) {
+                                IconButton(
+                                    onClick = {
+                                        if (!onMove(false))
+                                            moveRightShake = true
+                                    },
+                                    modifier = if (moveLeftShake) Modifier.shake(true) else Modifier
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                                        contentDescription = stringResource(Res.string.move_left),
+                                        tint = LocalContentColor.current
+                                    )
+                                }
+                            }
 
-        Text(
-            text = if (Stuff.isInDemoMode) "user" else friend.name,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (expanded) {
-            if (friend.realname.isNotEmpty())
-                Text(
-                    text = friend.realname,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-            if (friend.country.isNotEmpty() && friend.country != "None")
-                Text(
-                    text = stringResource(
-                        Res.string.from,
-                        friend.country + " " + Stuff.getCountryFlag(friend.country)
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-            if (playCount != null) {
-                Text(
-                    text = if (friend.registeredTime > Stuff.TIME_2002)
-                        stringResource(
-                            Res.string.num_scrobbles_since,
-                            playCount,
-                            PanoTimeFormatter.relative(friend.registeredTime)
-                        )
-                    else
-                        pluralStringResource(Res.plurals.num_scrobbles_noti, playCount),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-            ) {
-
-                Row {
-                    if (showPinConfig) {
-
-                        if (isPinned) {
                             IconButton(
                                 onClick = {
-                                    if (!onMove(false))
-                                        moveRightShake = true
+                                    onPinUnpin(!isPinned)
                                 },
-                                modifier = if (moveLeftShake) Modifier.shake(true) else Modifier
                             ) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
-                                    contentDescription = stringResource(Res.string.move_left),
-                                    tint = LocalContentColor.current
+                                    imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                                    contentDescription = stringResource(
+                                        if (isPinned) Res.string.unpin else Res.string.pin
+                                    ),
+                                    tint = if (isPinned)
+                                        MaterialTheme.colorScheme.secondary
+                                    else
+                                        LocalContentColor.current
                                 )
                             }
-                        }
 
-                        IconButton(
-                            onClick = {
-                                onPinUnpin(!isPinned)
-                            },
-                        ) {
+                            if (isPinned) {
+                                IconButton(
+                                    onClick = {
+                                        if (!onMove(true))
+                                            moveRightShake = true
+                                    },
+                                    modifier = if (moveRightShake) Modifier.shake(true) else Modifier
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                        contentDescription = stringResource(Res.string.move_right),
+                                        tint = LocalContentColor.current
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    OutlinedButton(onClick = { onNavigateToScrobbles(friend) }) {
+                        Text(text = stringResource(Res.string.scrobbles))
+                    }
+
+                    if (!PlatformStuff.isTv) {
+                        IconButton(onClick = {
+                            PlatformStuff.openInBrowser(friend.url)
+                        }) {
                             Icon(
-                                imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                                contentDescription = stringResource(
-                                    if (isPinned) Res.string.unpin else Res.string.pin
-                                ),
-                                tint = if (isPinned)
-                                    MaterialTheme.colorScheme.secondary
-                                else
-                                    LocalContentColor.current
+                                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                                contentDescription = stringResource(Res.string.profile)
                             )
                         }
-
-                        if (isPinned) {
-                            IconButton(
-                                onClick = {
-                                    if (!onMove(true))
-                                        moveRightShake = true
-                                },
-                                modifier = if (moveRightShake) Modifier.shake(true) else Modifier
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                    contentDescription = stringResource(Res.string.move_right),
-                                    tint = LocalContentColor.current
-                                )
-                            }
-                        }
-                    }
-                }
-
-                OutlinedButton(onClick = { onNavigateToScrobbles(friend) }) {
-                    Text(text = stringResource(Res.string.scrobbles))
-                }
-
-                if (!PlatformStuff.isTv) {
-                    IconButton(onClick = {
-                        PlatformStuff.openInBrowser(friend.url)
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = stringResource(Res.string.profile)
-                        )
                     }
                 }
             }
         }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(MaterialTheme.shapes.small)
-                .then(
-                    if (forShimmer || extraDataResult == null)
-                        Modifier.shimmerWindowBounds()
-                    else
-                        Modifier
-                )
-                .background(
-                    if (track?.isNowPlaying == true)
-                        MaterialTheme.colorScheme.secondaryContainer
-                    else
-                        MaterialTheme.colorScheme.surfaceContainerHigh
-                )
-                .padding(vertical = 8.dp)
+        NowPlayingSurface(
+            nowPlaying = track?.isNowPlaying == true,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            val imageModifier = Modifier
-                .padding(horizontal = 6.dp)
-                .size(
-                    if (expanded)
-                        64.dp
-                    else
-                        42.dp
-                )
-                .clip(MaterialTheme.shapes.small)
-
-            if (extraDataResult?.isFailure == true) {
-                Icon(
-                    imageVector = Icons.Outlined.ErrorOutline,
-                    contentDescription = stringResource(Res.string.network_error),
-                    modifier = imageModifier
-                )
-            } else {
-                AsyncImage(
-                    model = remember(track) {
-                        track?.let {
-                            MusicEntryImageReq(
-                                musicEntry = it as MusicEntry,
-                                fetchAlbumInfoIfMissing = false,
-                            )
-                        }
-                    },
-                    fallback = placeholderImageVectorPainter(null),
-                    error = placeholderImageVectorPainter(track),
-                    placeholder = placeholderPainter(),
-                    contentDescription = stringResource(Res.string.album_art),
-                    modifier = imageModifier
-                )
-            }
-
-            Column(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
-                    .weight(1f)
-                    .clip(MaterialTheme.shapes.small)
                     .then(
-                        if (expanded && track != null)
-                            Modifier.clickable {
-                                onNavigateToTrackInfo(track, friend)
-                            }
+                        if (forShimmer || extraDataResult == null)
+                            Modifier.shimmerWindowBounds()
                         else
                             Modifier
                     )
+                    .then(
+                        if (track?.isNowPlaying != true)
+                            Modifier.background(
+                                MaterialTheme.colorScheme.surfaceContainerHigh,
+                                MaterialTheme.shapes.large
+                            )
+                        else
+                            Modifier
+                    )
+                    .padding(vertical = 8.dp)
             ) {
-                val textColor = if (track?.isNowPlaying == true)
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                else
-                    Color.Unspecified
+                val imageModifier = Modifier
+                    .padding(horizontal = 6.dp)
+                    .size(
+                        if (expanded)
+                            64.dp
+                        else if (isColumn)
+                            64.dp
+                        else
+                            42.dp
+                    )
+                    .clip(MaterialTheme.shapes.small)
 
-                Text(
-                    text = track?.name ?: extraDataResult?.exceptionOrNull()?.redactedMessage
-                    ?: "",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = textColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = track?.artist?.name ?: "",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = textColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Box(
+                if (extraDataResult?.isFailure == true) {
+                    Icon(
+                        imageVector = Icons.Outlined.ErrorOutline,
+                        contentDescription = stringResource(Res.string.network_error),
+                        modifier = imageModifier
+                    )
+                } else {
+                    AsyncImage(
+                        model = remember(track) {
+                            track?.let {
+                                MusicEntryImageReq(
+                                    musicEntry = it as MusicEntry,
+                                    fetchAlbumInfoIfMissing = false,
+                                )
+                            }
+                        },
+                        fallback = placeholderImageVectorPainter(null),
+                        error = placeholderImageVectorPainter(track),
+                        placeholder = placeholderPainter(),
+                        contentDescription = stringResource(Res.string.album_art),
+                        modifier = imageModifier
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(end = 4.dp)
+                        .weight(1f)
+                        .clip(MaterialTheme.shapes.small)
+                        .then(
+                            if (expanded && track != null)
+                                Modifier.clickable {
+                                    onNavigateToTrackInfo(track, friend)
+                                }
+                            else
+                                Modifier
+                        )
                 ) {
                     Text(
-                        text = track?.date?.let { PanoTimeFormatter.relative(it) } ?: "",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = textColor,
+                        text = track?.name ?: extraDataResult?.exceptionOrNull()?.redactedMessage
+                        ?: "",
+                        style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
-                        overflow = TextOverflow.Clip,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = track?.artist?.name ?: "",
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
-                    if (track?.isNowPlaying == true) {
-                        Icon(
-                            imageVector = Icons.Rounded.PlayArrow,
-                            contentDescription = stringResource(Res.string.time_just_now),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier
-                                .size(20.dp)
-                                .align(Alignment.CenterEnd)
+                    Box(
+                        modifier = if (!isColumn)
+                            Modifier
+                                .align(Alignment.End)
+                                .padding(end = 4.dp)
+                        else
+                            Modifier
+                                .align(Alignment.Start)
+                                .padding(start = 4.dp)
+                    ) {
+                        Text(
+                            text = track?.date?.let { PanoTimeFormatter.relative(it) } ?: "",
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Clip,
                         )
+
+                        if (track?.isNowPlaying == true) {
+                            Icon(
+                                imageVector = Icons.Rounded.PlayArrow,
+                                contentDescription = stringResource(Res.string.time_just_now),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .align(Alignment.CenterEnd)
+                            )
+                        }
                     }
                 }
-            }
 
-            if (expanded && track != null) {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            PlatformStuff.launchSearchIntent(track, null)
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = stringResource(Res.string.search),
-                    )
+                if (expanded && track != null) {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                PlatformStuff.launchSearchIntent(track, null)
+                            }
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = stringResource(Res.string.search),
+                        )
+                    }
                 }
             }
         }

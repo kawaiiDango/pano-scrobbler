@@ -31,7 +31,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.RegexEdit
@@ -39,9 +38,6 @@ import com.arn.scrobble.icons.AlbumArtist
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
-import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.onboarding.LoginDestinations
-import com.arn.scrobble.ui.DialogParent
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.VerifyButton
 import com.arn.scrobble.utils.PlatformStuff
@@ -62,7 +58,7 @@ import pano_scrobbler.composeapp.generated.resources.yes
 
 
 @Composable
-private fun EditScrobbleContent(
+fun EditScrobbleDialog(
     onDone: (ScrobbleData) -> Unit,
     onReauthenticate: () -> Unit,
     scrobbleData: ScrobbleData,
@@ -75,8 +71,8 @@ private fun EditScrobbleContent(
     var track by rememberSaveable { mutableStateOf(scrobbleData.track) }
     var album by rememberSaveable { mutableStateOf(scrobbleData.album ?: "") }
     var artist by rememberSaveable { mutableStateOf(scrobbleData.artist) }
-    var albumArtist by rememberSaveable { mutableStateOf("") }
-    var albumArtistVisible by rememberSaveable { mutableStateOf(false) }
+    var albumArtist by rememberSaveable { mutableStateOf(scrobbleData.albumArtist ?: "") }
+    var albumArtistVisible by rememberSaveable { mutableStateOf(!scrobbleData.albumArtist.isNullOrEmpty()) }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     val regexRecommendation by viewModel.regexRecommendation.collectAsStateWithLifecycle()
     var regexRecommendationShown by remember { mutableStateOf(false) }
@@ -291,39 +287,4 @@ private fun ShowRegexRecommendation(
             }
         }
     )
-}
-
-@Composable
-fun EditScrobbleDialog(
-    scrobbleData: ScrobbleData,
-    msid: String?,
-    hash: Int?,
-    onDone: (ScrobbleData) -> Unit,
-    onDismiss: () -> Unit,
-    onNavigate: (PanoRoute) -> Unit,
-) {
-
-    DialogParent(
-        onDismiss = onDismiss
-    ) {
-        EditScrobbleContent(
-            onDone = {
-                onDone(it)
-                onDismiss()
-            },
-            onReauthenticate = {
-                onDismiss()
-                val route = LoginDestinations.route(AccountType.LASTFM)
-                onNavigate(route)
-            },
-            scrobbleData = scrobbleData,
-            msid = msid,
-            hash = hash,
-            onNavigateToRegexEdits = {
-                onDismiss()
-                onNavigate(PanoRoute.RegexEdits)
-            },
-            modifier = it
-        )
-    }
 }

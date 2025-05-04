@@ -37,7 +37,6 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
@@ -68,7 +67,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 )
             }
 
-            expectSuccess = true
             // https://youtrack.jetbrains.com/issue/KTOR-4225
         }
     }
@@ -105,7 +103,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         return client.postResult<ListenBrainzResponse>("submit-listens") {
             contentType(ContentType.Application.Json)
             setBody(listen)
-            expectSuccess = false
         }.map { if (it.isOk) ScrobbleIgnored(false) else ScrobbleIgnored(true) }
     }
 
@@ -122,6 +119,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         return client.getResult<ListenBrainzMbidLookup>("metadata/lookup") {
             parameter("artist_name", track.artist.name)
             parameter("recording_name", track.name)
+            parameter("release_name", track.album?.name)
         }.getOrNull()
     }
 
@@ -169,7 +167,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         return client.postResult<ListenBrainzResponse>("feedback/recording-feedback") {
             contentType(ContentType.Application.Json)
             setBody(ListenBrainzFeedback(mbid, msid, score))
-            expectSuccess = false
         }.map {
             if (it.isOk) ScrobbleIgnored(false) else ScrobbleIgnored(true)
         }
@@ -222,7 +219,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         val actualLimit = if (limit > 0) limit else 25
 
         val listens =
-            client.getPageResult<ListenBrainzData<ListenBrainzListensPayload>, Track>(
+            client.getPageResult<ListenBrainzListensData, Track>(
                 "user/$username/listens",
                 {
                     it.payload
@@ -249,7 +246,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
 
         if (includeNowPlaying) {
-            client.getResult<ListenBrainzData<ListenBrainzListensPayload>>("user/$username/playing-now") {
+            client.getResult<ListenBrainzListensData>("user/$username/playing-now") {
                 cacheStrategy(cacheStrategy)
             }.map { it.payload.listens.firstOrNull()?.let { trackMap(it) } }
                 .getOrNull()
@@ -358,7 +355,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         val isSelf = username == userAccount.user.name
 
         val totalCount =
-            client.getResult<ListenBrainzData<ListenBrainzCountPayload>>("user/$username/listen-count")
+            client.getResult<ListenBrainzCountData>("user/$username/listen-count")
                 .map { it.payload.count }
                 .getOrDefault(0)
 
@@ -446,7 +443,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             else -> throw IllegalArgumentException("Unknown type")
         }
 
-        return client.getPageResult<ListenBrainzData<ListenBrainzStatsEntriesPayload>, MusicEntry>(
+        return client.getPageResult<ListenBrainzStatsEntriesData, MusicEntry>(
             "stats/user/$username/$typeStr",
             {
                 it.payload.let {
@@ -496,7 +493,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         }
 
         val result =
-            client.getResult<ListenBrainzData<ListenBrainzActivityPayload>>("stats/user/$username/listening-activity") {
+            client.getResult<ListenBrainzActivityData>("stats/user/$username/listening-activity") {
                 parameter("range", timePeriod.tag)
                 cacheStrategy(cacheStrategy)
             }
@@ -578,5 +575,3 @@ class ListenbrainzExpirationPolicy : ExpirationPolicy {
 enum class ListenbrainzRanges {
     this_week, this_month, this_year, week, month, year, quarter, half_yearly, all_time
 }
-
-const val INVALID_METHOD = "Invalid Method"

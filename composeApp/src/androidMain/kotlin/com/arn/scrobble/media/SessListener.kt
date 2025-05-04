@@ -253,6 +253,9 @@ class SessListener(
                 return
             }
 
+//            if (PlatformStuff.isDebug)
+//                metadata.dump()
+
             val (metadataInfo, canDoFallbackScrobble) = transformMediaMetadata(trackInfo, metadata)
 
             Logger.i {

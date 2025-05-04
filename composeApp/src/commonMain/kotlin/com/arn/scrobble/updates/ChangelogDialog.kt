@@ -11,13 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.changelog
 
 @Composable
-private fun ChangelogContent(modifier: Modifier = Modifier) {
+fun ChangelogDialog(modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.verticalScroll(rememberScrollState()).padding(vertical = 16.dp)
@@ -33,13 +32,4 @@ private fun ChangelogContent(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
-}
-
-@Composable
-fun ChangelogScreen(
-    onDismiss: () -> Unit,
-) {
-    BottomSheetDialogParent(
-        onDismiss = onDismiss
-    ) { ChangelogContent(it) }
 }

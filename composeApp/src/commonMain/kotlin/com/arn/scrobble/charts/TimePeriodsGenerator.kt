@@ -14,12 +14,14 @@ import pano_scrobbler.composeapp.generated.resources.charts_overall
 import pano_scrobbler.composeapp.generated.resources.num_months
 import pano_scrobbler.composeapp.generated.resources.num_weeks
 import pano_scrobbler.composeapp.generated.resources.num_years
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
+
 
 class TimePeriodsGenerator(
     private val beginTime: Long,
@@ -349,23 +351,26 @@ class TimePeriodsGenerator(
 
                 TimePeriodType.MONTH -> {
                     {
-                        SimpleDateFormat("MMM", Locale.ENGLISH).format(it.start)
-                        //.take(1).uppercase()
+                        SimpleDateFormat("MMM", Locale.ENGLISH).format(it.start).take(2)
                     }
                 }
 
                 TimePeriodType.WEEK -> {
                     {
-                        val f = SimpleDateFormat("dd", Locale.getDefault())
+                        // https://stackoverflow.com/a/9721171/1067596
+                        val df = DateFormat.getDateInstance(DateFormat.SHORT) as SimpleDateFormat
+                        val pattern = df.toLocalizedPattern().replace(".?[Yy].?".toRegex(), "")
+                        val f = SimpleDateFormat(pattern, Locale.getDefault())
+
                         if (timePeriods.size > maxWeekCountToShowEndDate)
                             f.format(it.start)
                         else
-                            "${f.format(it.start)}-${f.format(it.end)}"
+                            "${f.format(it.start)}-\n${f.format(it.end)}"
                     }
                 }
 
                 TimePeriodType.DAY -> {
-                    { SimpleDateFormat("EEE", Locale.getDefault()).format(it.start) }
+                    { SimpleDateFormat("EEE", Locale.getDefault()).format(it.start).take(2) }
                 }
 
                 else -> throw IllegalArgumentException("Invalid time period type")

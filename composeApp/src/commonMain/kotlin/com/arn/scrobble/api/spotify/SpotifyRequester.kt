@@ -1,17 +1,17 @@
 package com.arn.scrobble.api.spotify
 
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.Requesters.getResult
+import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.request.forms.FormDataContent
-import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -26,7 +26,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.cancellation.CancellationException
 
 class SpotifyRequester {
     private val mainPrefs = PlatformStuff.mainPrefs
@@ -89,65 +88,25 @@ class SpotifyRequester {
                     }
                 }
             }
-            expectSuccess = true
         }
     }
 
     suspend fun search(query: String, type: SpotifySearchType, limit: Int = 5) =
-        try {
-            withContext(Dispatchers.IO) {
-                client.get("https://api.spotify.com/v1/search") {
-                    parameter("q", query)
-                    parameter("type", type.name)
-                    parameter("limit", limit)
+        client.getResult<SpotifySearchResponse>("https://api.spotify.com/v1/search") {
+            parameter("q", query)
+            parameter("type", type.name)
+            parameter("limit", limit)
 //                    parameter("market", "US")
-                }.body<SpotifySearchResponse>()
-                    .let { Result.success(it) }
-            }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Result.failure(e)
         }
 
     suspend fun trackFeatures(trackId: String) =
-        try {
-            withContext(Dispatchers.IO) {
-                client.get("https://api.spotify.com/v1/audio-features/$trackId")
-                    .body<TrackFeatures>()
-                    .let { Result.success(it) }
-            }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        client.getResult<TrackFeatures>("https://api.spotify.com/v1/audio-features/$trackId")
 
     suspend fun artist(artistId: String) =
-        try {
-            withContext(Dispatchers.IO) {
-                client.get("https://api.spotify.com/v1/artists/$artistId")
-                    .body<ArtistItem>()
-                    .let { Result.success(it) }
-            }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        client.getResult<ArtistItem>("https://api.spotify.com/v1/artists/$artistId")
 
     suspend fun album(albumId: String) =
-        try {
-            withContext(Dispatchers.IO) {
-                client.get("https://api.spotify.com/v1/albums/$albumId")
-                    .body<AlbumItem>()
-                    .let { Result.success(it) }
-            }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        client.getResult<AlbumItem>("https://api.spotify.com/v1/albums/$albumId")
 }
 
 class SpotifyCacheExpirationPolicy : ExpirationPolicy {

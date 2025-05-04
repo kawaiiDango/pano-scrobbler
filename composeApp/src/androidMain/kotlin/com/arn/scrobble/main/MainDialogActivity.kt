@@ -1,6 +1,5 @@
 package com.arn.scrobble.main
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,11 +7,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.DisposableEffect
-import androidx.core.net.toUri
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.util.Consumer
-import androidx.navigation.compose.rememberNavController
+import com.arn.scrobble.navigation.DeepLinkUtils
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.themes.AppTheme
-import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 
 class MainDialogActivity : ComponentActivity() {
@@ -22,20 +24,41 @@ class MainDialogActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
-                val navController = rememberNavController()
+            var currentDialogArgs by remember { mutableStateOf<PanoDialog?>(null) }
+            DisposableEffect(Unit) {
+                val consumer = Consumer<Intent> {
+                    val uri = it.data
 
-                DisposableEffect(navController) {
-                    val consumer = Consumer<Intent> {
-                        navController.handleDeepLink(it)
+                    if (uri == null) {
+                        finish()
+                        return@Consumer
                     }
-                    addOnNewIntentListener(consumer)
-                    onDispose {
-                        removeOnNewIntentListener(consumer)
+                    currentDialogArgs = DeepLinkUtils.parseDeepLink(uri)
+
+                    if (currentDialogArgs == null) {
+                        finish()
+                        return@Consumer
                     }
                 }
+                // Handle the intent that started this activity
+                intent?.let {
+                    consumer.accept(it)
+                }
+                // Handle new intents
+                addOnNewIntentListener(consumer)
 
-                PanoMainDialogContent(navController, onFinish = ::finish)
+                onDispose {
+                    removeOnNewIntentListener(consumer)
+                }
+            }
+
+            AppTheme {
+                currentDialogArgs?.let {
+                    PanoMainDialogContent(
+                        currentDialogArgs = it,
+                        onFinish = ::finish
+                    )
+                }
             }
         }
     }
@@ -44,24 +67,4 @@ class MainDialogActivity : ComponentActivity() {
         super.attachBaseContext(newBase ?: return)
         applyAndroidLocaleLegacy()
     }
-
-    companion object {
-
-        fun createDestinationPendingIntent(
-            uri: String,
-            mutable: Boolean = false,
-        ) =
-            PendingIntent.getActivity(
-                AndroidStuff.application,
-                uri.hashCode(),
-                Intent(AndroidStuff.application, MainDialogActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    action = Intent.ACTION_VIEW
-                    data = uri.toUri()
-                },
-                if (mutable) AndroidStuff.updateCurrentOrMutable else AndroidStuff.updateCurrentOrImmutable
-            )!!
-
-    }
-
 }

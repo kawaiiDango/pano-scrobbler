@@ -6,12 +6,12 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.net.toUri
 import com.arn.scrobble.R
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.navigation.serializableType
+import com.arn.scrobble.navigation.DeepLinkUtils
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
@@ -64,23 +64,24 @@ object ChartsListUtils {
         when (tab) {
             Stuff.TYPE_ARTISTS -> {
                 val artist = Artist(item.title)
-
-                deepLinkUri =
-                    Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
-                            serializableType<UserCached>().serializeAsValue(user) + "?" +
-                            PanoRoute.MusicEntryInfo::artist.name + "=" +
-                            serializableType<Artist>().serializeAsValue(artist)
+                deepLinkUri = DeepLinkUtils.buildDeepLink(
+                    PanoDialog.MusicEntryInfo(
+                        artist = artist,
+                        user = user
+                    )
+                )
             }
 
             Stuff.TYPE_ALBUMS -> {
                 if (item.subtitle != null) {
                     val album = Album(item.title, Artist(item.subtitle))
 
-                    deepLinkUri =
-                        Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
-                                serializableType<UserCached>().serializeAsValue(user) + "?" +
-                                PanoRoute.MusicEntryInfo::album.name + "=" +
-                                serializableType<Album>().serializeAsValue(album)
+                    deepLinkUri = DeepLinkUtils.buildDeepLink(
+                        PanoDialog.MusicEntryInfo(
+                            album = album,
+                            user = user
+                        )
+                    )
                 }
             }
 
@@ -88,12 +89,12 @@ object ChartsListUtils {
                 if (item.subtitle != null) {
                     val track = Track(item.title, null, Artist(item.subtitle))
 
-                    deepLinkUri =
-                        Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName + "/" +
-                                serializableType<UserCached>().serializeAsValue(user) + "?" +
-                                PanoRoute.MusicEntryInfo::track.name + "=" + serializableType<Track>().serializeAsValue(
-                            track
+                    deepLinkUri = DeepLinkUtils.buildDeepLink(
+                        PanoDialog.MusicEntryInfo(
+                            track = track,
+                            user = user
                         )
+                    )
                 }
             }
         }

@@ -26,7 +26,7 @@ fun AutoRefreshEffect(
             var tryAgain = true
             while (isActive && tryAgain) {
                 val delayMs = if (System.currentTimeMillis() - lastRefreshTime > interval)
-                    2000L
+                    1000L
                 else
                     interval
 

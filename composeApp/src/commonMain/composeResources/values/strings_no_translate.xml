@@ -16,8 +16,6 @@
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
     <string name="maloja" translatable="false">Maloja</string>
     <string name="pleroma" translatable="false">Pleroma</string>
-    <string name="pixel_np" translatable="false">Pixel Now Playing</string>
-    <string name="autoshazam" translatable="false">AutoShazam</string>
     <string name="loading" translatable="false">…</string>
     <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s</string>
     <string name="edit_case_sensitive_aa" translatable="false">Aa</string>
@@ -33,6 +31,8 @@
     <string name="special_app_access" translatable="false">Special app access</string>
 
     <!--  strings for unfinalized stuff  -->
+    <string name="pref_automation">Apps that can control Pano Scrobbler</string>
+    <string name="pref_automation_desc">Use these ContentProvider query URIs to control Pano Scrobbler from automation apps, such as Tasker</string>
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
 If you had donated $%1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi or BuyMeACoffee with your email address and the code will be manually mailed to you.

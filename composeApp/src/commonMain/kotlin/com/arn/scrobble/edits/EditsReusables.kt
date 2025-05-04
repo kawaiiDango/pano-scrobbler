@@ -51,7 +51,7 @@ fun AppItemChip(
         },
         label = {
             Text(
-                text = appListItem.label.ifEmpty { appListItem.appId },
+                text = appListItem.friendlyLabel,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.widthIn(max = 150.dp)

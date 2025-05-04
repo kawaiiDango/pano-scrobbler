@@ -98,7 +98,6 @@ object Stuff {
     const val MIN_LISTENER_COUNT = 5
     const val MAX_HISTORY_ITEMS = 20
     const val DEFAULT_PAGE_SIZE = 100
-    const val GRID_MIN_SIZE = 170
     const val SCROBBLE_SOURCE_THRESHOLD = 1000L
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
@@ -210,10 +209,6 @@ object Stuff {
         PACKAGE_PIXEL_NP,
         PACKAGE_PIXEL_NP_R,
         PACKAGE_PIXEL_NP_AMM,
-    )
-
-    val FRIENDLY_APP_NAMES = mapOf(
-        PACKAGE_FIREFOX_WIN to "Mozilla Firefox"
     )
 
     val STARTUPMGR_INTENTS = listOf(

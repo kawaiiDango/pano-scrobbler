@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.WorkspacePremium
@@ -19,8 +20,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.ChartsOverviewScreen
 import com.arn.scrobble.friends.FriendsScreen
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoNavMetadata
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTabType
@@ -32,6 +36,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.from_mic
 import pano_scrobbler.composeapp.generated.resources.get_pro
 import pano_scrobbler.composeapp.generated.resources.help
@@ -50,12 +55,14 @@ fun HomePagerScreen(
     onSetOtherUser: (UserCached?) -> Unit,
     onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
     getPullToRefreshTrigger: (Int) -> Flow<Unit>,
+    editDataFlow: Flow<Pair<Track, ScrobbleData>>,
     modifier: Modifier = Modifier,
 ) {
-    val scrobblesTitle by rememberSaveable { mutableStateOf<String?>(null) }
+    var scrobblesTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var followingTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var chartsTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var lastTabIdx by remember { mutableStateOf(tabIdx) }
@@ -104,6 +111,11 @@ fun HomePagerScreen(
                 pullToRefreshTriggered = getPullToRefreshTrigger(page),
                 showChips = currentTab.showChips,
                 onNavigate = onNavigate,
+                onOpenDialog = onOpenDialog,
+                editDataFlow = editDataFlow,
+                onTitleChange = {
+                    scrobblesTitle = it
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -113,6 +125,7 @@ fun HomePagerScreen(
                 onSetRefreshing = { onSetRefreshing(page, it) },
                 pullToRefreshTriggered = getPullToRefreshTrigger(page),
                 onNavigate = onNavigate,
+                onOpenDialog = onOpenDialog,
                 onTitleChange = {
                     followingTitle = it
                 },
@@ -122,6 +135,7 @@ fun HomePagerScreen(
             PanoTabs.Charts -> ChartsOverviewScreen(
                 user = user,
                 onNavigate = onNavigate,
+                onOpenDialog = onOpenDialog,
                 onTitleChange = {
                     chartsTitle = it
                 },
@@ -167,6 +181,14 @@ private fun getHomePagerNavMetadata() = listOfNotNull(
             titleRes = Res.string.help,
             icon = Icons.AutoMirrored.Outlined.HelpOutline,
             route = PanoRoute.Help,
+        ) else
+        null,
+
+    if (PlatformStuff.isDesktop)
+        PanoNavMetadata(
+            titleRes = Res.string.close,
+            icon = Icons.Outlined.PowerSettingsNew,
+            route = PanoRoute.Exit,
         ) else
         null,
 )

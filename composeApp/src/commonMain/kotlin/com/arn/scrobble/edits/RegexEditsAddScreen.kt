@@ -56,6 +56,7 @@ import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.AppItem
+import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -187,8 +188,8 @@ fun RegexEditsAddScreen(
     }
 
     LaunchedEffect(Unit) {
-        mainViewModel.selectedPackages.collectLatest {
-            appItems = it.toSet()
+        mainViewModel.selectedPackages.collectLatest { (checked, unchecked) ->
+            appItems = checked.toSet()
         }
     }
 
@@ -268,8 +269,8 @@ fun RegexEditsAddScreen(
                 onNavigateToAppList = {
                     onNavigate(
                         PanoRoute.AppList(
+                            saveType = AppListSaveType.Callback,
                             preSelectedPackages = it,
-                            hasPreSelection = true,
                             isSingleSelect = false
                         )
                     )
@@ -671,7 +672,7 @@ private suspend fun areExtractionRulesValid(regexEdit: RegexEdit): Result<Unit> 
                 IllegalArgumentException(
                     getString(
                         Res.string.edit_regex_invalid,
-                        e.redactedMessage ?: ""
+                        e.redactedMessage
                     )
                 )
             )

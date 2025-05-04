@@ -1,7 +1,6 @@
 package com.arn.scrobble.api
 
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.lastfm.ApiErrorResponse
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.LastFmUnauthedRequester
 import com.arn.scrobble.api.lastfm.LastfmExpirationPolicy

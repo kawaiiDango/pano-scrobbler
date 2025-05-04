@@ -2,10 +2,10 @@ package com.arn.scrobble.main
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toPainter
@@ -27,7 +27,7 @@ import com.arn.scrobble.logger.JvmLogger
 import com.arn.scrobble.media.PlayingTrackNotificationState
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
-import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
@@ -40,12 +40,11 @@ import com.arn.scrobble.webview.web.CustomURLStreamHandlerFactory
 import com.arn.scrobble.work.DesktopWorkManager
 import javafx.application.Platform
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -58,17 +57,21 @@ import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.fix_it_action
 import pano_scrobbler.composeapp.generated.resources.ic_launcher_with_bg
 import pano_scrobbler.composeapp.generated.resources.love
-import pano_scrobbler.composeapp.generated.resources.settings
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
 import java.awt.image.BufferedImage
 import java.net.URL
+import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
 
-private fun init() {
+private fun init(lockName: String) {
     // init: run once
+
+    PanoNativeComponents.load()
+    preventMultipleInstances(lockName)
+
     URL.setURLStreamHandlerFactory(CustomURLStreamHandlerFactory())
 
     Stuff.mainPrefsInitialValue = runBlocking { PlatformStuff.mainPrefs.data.first() }
@@ -95,32 +98,42 @@ private fun init() {
 //    test()
 }
 
+private fun preventMultipleInstances(uniqueId: String) {
+    val isSingleInstance = PanoNativeComponents.isSingleInstance(uniqueId)
+
+    if (!isSingleInstance) {
+        PanoNativeComponents.notify(
+            "Already running",
+            "Please close the existing instance before starting a new one."
+        )
+        exitProcess(1)
+    }
+}
+
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
-
-    init()
+    val lockName = "pano-scrobbler-" + (cmdlineArgs.dataDir ?: "default-data-dir").hashCode()
+        .toString() + ".lock"
+    init(lockName)
 
     return application {
         var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
-        var initialRoute by remember { mutableStateOf<PanoRoute?>(null) }
-        val subsequentRoute = remember { MutableSharedFlow<PanoRoute>() }
-        val scope = rememberCoroutineScope()
+        var dialogArgs by remember { mutableStateOf<PanoDialog?>(null) }
         val windowState = rememberWindowState()
         val isSystemInDarkTheme = isSystemInDarkTheme()
         var trayData by remember { mutableStateOf<PanoTrayUtils.TrayData?>(null) }
         val trayIconNotPlaying = painterResource(Res.drawable.vd_noti_persistent)
         val trayIconPlaying = painterResource(Res.drawable.vd_noti)
         val trayIconError = painterResource(Res.drawable.vd_noti_err)
+        val appIdToNames by PlatformStuff.mainPrefs.data
+            .map { it.seenApps.associate { it.appId to it.friendlyLabel } }
+            .collectAsState(emptyMap())
 
-        fun forceNavigateTo(route: PanoRoute) {
+        fun onOpenDialog(dialog: PanoDialog) {
             if (!windowShown) {
                 windowShown = true
-                initialRoute = route
-            } else {
-                scope.launch {
-                    subsequentRoute.emit(route)
-                }
             }
+            dialogArgs = dialog
         }
 
         fun onExit() {
@@ -140,7 +153,9 @@ fun main(args: Array<String>) {
                     val it = it.value
                     it is PlayingTrackNotificationState.Scrobbling
                 }?.let { (appId, it) ->
-                    it.trackInfo.title + "\n" + it.trackInfo.artist + "\n" + appId
+                    it.trackInfo.title + "\n" +
+                            it.trackInfo.artist + "\n" +
+                            (appIdToNames[appId] ?: appId)
                 }
                     ?: BuildKonfig.APP_NAME
 
@@ -205,7 +220,6 @@ fun main(args: Array<String>) {
                 // always show these
 
                 trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
-                trayItems += PanoTrayUtils.ItemId.Settings.name to getString(Res.string.settings)
                 trayItems += PanoTrayUtils.ItemId.Close.name to getString(Res.string.close)
 
                 Triple(tooltip, trayIconPainter, trayItems)
@@ -244,8 +258,8 @@ fun main(args: Array<String>) {
 
         LaunchedEffect(Unit) {
             trayMenuClickListener(
-                onOpen = { initialRoute = null; windowShown = true },
-                onForceNavigateTo = ::forceNavigateTo,
+                onOpen = { dialogArgs = null; windowShown = true },
+                onOpenDialog = ::onOpenDialog,
                 onExit = ::onExit
             )
         }
@@ -335,7 +349,7 @@ fun main(args: Array<String>) {
             Window(
                 onCloseRequest = {
                     windowShown = false
-                    initialRoute = null
+                    dialogArgs = null
                 },
                 state = windowState,
                 title = BuildKonfig.APP_NAME,
@@ -343,16 +357,10 @@ fun main(args: Array<String>) {
             ) {
                 val navController = rememberNavController()
 
-                LaunchedEffect(subsequentRoute) {
-                    subsequentRoute.collectLatest { route ->
-                        navController.navigate(route)
-                    }
-                }
-
                 AppTheme {
                     PanoAppContent(
                         navController,
-                        customInitialRoute = initialRoute
+                        dialogArgs = dialogArgs
                     )
                 }
             }
@@ -362,7 +370,7 @@ fun main(args: Array<String>) {
 
 private suspend fun trayMenuClickListener(
     onOpen: () -> Unit,
-    onForceNavigateTo: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     onExit: () -> Unit
 ) {
     PanoTrayUtils.onTrayMenuItemClicked.collect { id ->
@@ -374,10 +382,6 @@ private suspend fun trayMenuClickListener(
         when (itemId) {
             PanoTrayUtils.ItemId.Close -> {
                 onExit()
-            }
-
-            PanoTrayUtils.ItemId.Settings -> {
-                onForceNavigateTo(PanoRoute.Prefs)
             }
 
             PanoTrayUtils.ItemId.Open -> {
@@ -393,11 +397,11 @@ private suspend fun trayMenuClickListener(
                 val scrobbleError = errorState.scrobbleError
 
                 if (scrobbleError.canFixMetadata) {
-                    val route = PanoRoute.EditScrobble(
+                    val dialog = PanoDialog.EditScrobble(
                         scrobbleData = trackInfo.toScrobbleData(),
                         hash = trackInfo.hash
                     )
-                    onForceNavigateTo(route)
+                    onOpenDialog(dialog)
                 }
             }
 
@@ -410,19 +414,19 @@ private suspend fun trayMenuClickListener(
 
                 when (itemId) {
                     PanoTrayUtils.ItemId.TrackName -> {
-                        val route = PanoRoute.MusicEntryInfo(
+                        val dialog = PanoDialog.MusicEntryInfo(
                             track = scrobblingTrackInfo.toTrack(),
                             user = user
                         )
-                        onForceNavigateTo(route)
+                        onOpenDialog(dialog)
                     }
 
                     PanoTrayUtils.ItemId.ArtistName -> {
-                        val route = PanoRoute.MusicEntryInfo(
+                        val dialog = PanoDialog.MusicEntryInfo(
                             artist = scrobblingTrackInfo.toTrack().artist,
                             user = user
                         )
-                        onForceNavigateTo(route)
+                        onOpenDialog(dialog)
                     }
 
                     PanoTrayUtils.ItemId.Love -> {
@@ -435,11 +439,11 @@ private suspend fun trayMenuClickListener(
                     }
 
                     PanoTrayUtils.ItemId.Edit -> {
-                        val route = PanoRoute.EditScrobble(
+                        val dialog = PanoDialog.EditScrobble(
                             scrobbleData = scrobblingTrackInfo.toScrobbleData(),
                             hash = scrobblingTrackInfo.hash
                         )
-                        onForceNavigateTo(route)
+                        onOpenDialog(dialog)
                     }
 
                     PanoTrayUtils.ItemId.Cancel -> {
@@ -460,12 +464,12 @@ private suspend fun trayMenuClickListener(
                             albumArtist = scrobblingTrackInfo.albumArtist,
                         )
 
-                        val route = PanoRoute.BlockedMetadataAdd(
+                        val dialog = PanoDialog.BlockedMetadataAdd(
                             blockedMetadata = blockedMetadata,
                             hash = scrobblingTrackInfo.hash
                         )
 
-                        onForceNavigateTo(route)
+                        onOpenDialog(dialog)
                     }
 
                     PanoTrayUtils.ItemId.Copy -> {

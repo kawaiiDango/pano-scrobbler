@@ -5,11 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.mic.MicScrobbleScreen
-import com.arn.scrobble.onboarding.FixItScreen
 import com.arn.scrobble.ui.addColumnPadding
 import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
@@ -40,12 +38,6 @@ actual fun NavGraphBuilder.panoPlatformSpecificNavGraph(
 
         MicScrobbleScreen(
             modifier = modifier().addColumnPadding()
-        )
-    }
-
-    dialog<PanoRoute.FixIt> {
-        FixItScreen(
-            onDismiss = goUp
         )
     }
 

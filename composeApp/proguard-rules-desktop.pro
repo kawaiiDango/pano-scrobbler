@@ -172,7 +172,15 @@
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
 -if @kotlinx.serialization.Serializable class **
 -keepclassmembers class <1> {
-    static <1>$Companion Companion;
+    static <1>$* Companion;
+}
+
+# Keep names for named companion object from obfuscation
+# Names of a class and of a field are important in lookup of named companion in runtime
+-keepnames @kotlinx.serialization.internal.NamedCompanion class *
+-if @kotlinx.serialization.internal.NamedCompanion class *
+-keepclassmembernames class * {
+    static <1> *;
 }
 
 # Keep `serializer()` on companion objects (both default and named) of serializable classes.
@@ -253,10 +261,7 @@
 -keep class com.sun.scenario.effect.** { *; }
 -keep class javafx.css.** { *; }
 -keep class javafx.scene.** { *; }
--keep class com.jogamp.** { *; }
-
-# Suppress warnings from the Newt JavaFX classes
--dontwarn com.jogamp.newt.javafx.**
+-dontwarn com.jogamp.**
 
 # Suppress warnings from the io.ktor network sockets classes
 -dontwarn io.ktor.network.sockets.**

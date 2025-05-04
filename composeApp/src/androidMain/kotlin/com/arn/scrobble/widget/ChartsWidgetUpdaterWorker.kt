@@ -57,11 +57,17 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
     // runs in Dispatchers.DEFAULT
     override suspend fun doWork(): Result {
         // not logged in
-        val currentScrobblable = Scrobblables.current.value ?: return Result.failure(
-            Data.Builder()
-                .putString("reason", "Not logged in")
-                .build()
-        )
+        val currentScrobblable = PlatformStuff.mainPrefs.data
+            .map { prefs -> prefs.scrobbleAccounts.find { it.type == prefs.currentAccountType } }
+            .first()?.let {
+                Scrobblables.accountToScrobblable(it)
+            }
+
+            ?: return Result.failure(
+                Data.Builder()
+                    .putString("reason", "Not logged in")
+                    .build()
+            )
 
         logTimestampToFile("started")
 

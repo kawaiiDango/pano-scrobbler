@@ -17,7 +17,7 @@ actual fun AppIcon(
     appItem: AppItem?,
     modifier: Modifier,
 ) {
-    val name = appItem?.label?.ifEmpty { appItem.appId } ?: "*"
+    val name = appItem?.friendlyLabel?.ifEmpty { "*" } ?: "*"
 
     AvatarOrInitials(
         avatarUrl = null,

@@ -427,6 +427,7 @@ fun BottomSheetDialogParent(
 
     val sheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = isTabletUi || skipPartiallyExpanded)
+    val sheetGesturesEnabled = remember { !PlatformStuff.isTv && !PlatformStuff.isDesktop }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -434,7 +435,7 @@ fun BottomSheetDialogParent(
         else {
             { BottomSheetDefaults.DragHandle() }
         },
-        sheetGesturesEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop,
+        sheetGesturesEnabled = sheetGesturesEnabled,
         sheetState = sheetState,
     ) {
         if (PlatformStuff.isDesktop) {
@@ -610,7 +611,7 @@ fun AvatarOrInitials(
     if (!avatarUrl.isNullOrEmpty()) {
         AsyncImage(
             model = avatarUrl,
-            error = rememberVectorPainter(Icons.Outlined.Person),
+            error = placeholderImageVectorPainter(null, Icons.Outlined.Person),
             placeholder = placeholderPainter(),
             contentDescription = stringResource(Res.string.profile_pic),
             modifier = modifier,
@@ -782,6 +783,18 @@ fun combineImageVectors(
         ) {
             RenderVectorGroup(group = secondary.root)
         }
+    }
+}
+
+@Composable
+fun minGridSize(): Dp {
+    val navigationType = LocalNavigationType.current
+    return when (navigationType) {
+        PanoNavigationType.BOTTOM_NAVIGATION -> 170.dp
+        PanoNavigationType.NAVIGATION_RAIL,
+            -> 200.dp
+
+        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 250.dp
     }
 }
 

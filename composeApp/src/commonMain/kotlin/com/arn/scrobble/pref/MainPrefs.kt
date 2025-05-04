@@ -28,6 +28,7 @@ data class MainPrefs(
     val scrobblerEnabled: Boolean = true,
     val allowedPackages: Set<String> = emptySet(),
     val blockedPackages: Set<String> = emptySet(),
+    val allowedAutomationPackages: Set<String> = emptySet(),
     val seenApps: Set<AppItem> = emptySet(),
     private val autoDetectApps: Boolean = true,
     private val delaySecs: Int = PREF_DELAY_SECS_DEFAULT,
@@ -107,7 +108,7 @@ data class MainPrefs(
 ) {
 
     val autoDetectAppsP
-        get() = if (PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
+        get() = if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
             false
         else
             autoDetectApps
@@ -126,6 +127,23 @@ data class MainPrefs(
 
     val lastMaxIndexTime
         get() = lastDeltaIndexTime ?: lastFullIndexTime
+
+    fun allowOrBlockAppCopied(appId: String, allow: Boolean): MainPrefs {
+        //create copies
+        val aSet = allowedPackages.toMutableSet()
+        val bSet = blockedPackages.toMutableSet()
+
+        if (allow)
+            aSet += appId
+        else
+            bSet += appId
+        bSet.removeAll(aSet) // allowlist takes over blocklist for conflicts
+
+        return copy(
+            allowedPackages = aSet,
+            blockedPackages = bSet
+        )
+    }
 
     fun updateFromPublicPrefs(prefs: MainPrefsPublic) = copy(
         scrobblerEnabled = prefs.scrobblerEnabled,

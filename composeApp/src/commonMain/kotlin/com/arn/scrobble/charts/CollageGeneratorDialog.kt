@@ -42,14 +42,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.LocalPlatformContext
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.themes.LocalThemeAttributes
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
@@ -88,7 +86,7 @@ data class IconPaintersForCollage(
 )
 
 @Composable
-private fun CollageGeneratorContent(
+fun CollageGeneratorDialog(
     collageType: Int,
     timePeriod: TimePeriod,
     user: UserCached,
@@ -343,29 +341,5 @@ private fun writeImage(imageBitmap: ImageBitmap, platformFile: PlatformFile) {
         platformFile.overwrite { stream ->
             PlatformStuff.writeBitmapToStream(imageBitmap, stream)
         }
-    }
-}
-
-@Composable
-fun CollageGeneratorScreen(
-    collageType: Int,
-    timePeriod: TimePeriod,
-    user: UserCached,
-    onDismiss: () -> Unit,
-) {
-    val activity = getActivityOrNull()
-
-    BottomSheetDialogParent(
-        onDismiss = onDismiss,
-    ) {
-        CollageGeneratorContent(
-            collageType = collageType,
-            timePeriod = timePeriod,
-            user = user,
-            onAskForReview = {
-                PlatformStuff.promptForReview(activity)
-            },
-            modifier = it
-        )
     }
 }

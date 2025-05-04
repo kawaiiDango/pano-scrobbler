@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.AndroidStuff
@@ -306,8 +307,8 @@ actual fun OnboardingScreen(
                         openAction = {
                             onNavigate(
                                 PanoRoute.AppList(
+                                    saveType = AppListSaveType.Scrobbling,
                                     preSelectedPackages = emptyList(),
-                                    hasPreSelection = false,
                                     isSingleSelect = false,
                                 )
                             )

@@ -15,12 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-private fun NavPopupContent(
+fun NavPopupDialog(
     navMetadataList: List<PanoNavMetadata>,
     otherUser: UserCached?,
     drawerDataFlow: StateFlow<DrawerData>,
@@ -31,7 +30,7 @@ private fun NavPopupContent(
 ) {
     val drawerData by drawerDataFlow.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(otherUser) {
         loadOtherUserDrawerData(otherUser)
     }
 
@@ -65,31 +64,5 @@ private fun NavPopupContent(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun NavPopupScreen(
-    navMetadataList: List<PanoNavMetadata>,
-    onDismiss: () -> Unit,
-    otherUser: UserCached?,
-    drawSnowfall: Boolean,
-    drawerDataFlow: StateFlow<DrawerData>,
-    loadOtherUserDrawerData: (UserCached?) -> Unit,
-    onNavigate: (PanoRoute) -> Unit,
-) {
-
-    BottomSheetDialogParent(
-        onDismiss = onDismiss
-    ) {
-        NavPopupContent(
-            navMetadataList = navMetadataList,
-            otherUser = otherUser,
-            drawerDataFlow = drawerDataFlow,
-            loadOtherUserDrawerData = loadOtherUserDrawerData,
-            drawSnowfall = drawSnowfall,
-            onNavigate = onNavigate,
-            modifier = it
-        )
     }
 }

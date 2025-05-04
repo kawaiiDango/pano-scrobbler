@@ -33,24 +33,21 @@ import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.autoshazam
 import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.other_apps
-import pano_scrobbler.composeapp.generated.resources.pixel_np
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppListScreen(
     isSingleSelect: Boolean,
-    hasPreSelection: Boolean,
+    saveType: AppListSaveType,
     preSelectedPackages: Set<String>,
-    onSetSelectedPackages: (List<AppItem>) -> Unit,
+    onSetPackagesSelection: (List<AppItem>, List<AppItem>) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AppListVM = viewModel { AppListVM() },
 ) {
@@ -58,26 +55,43 @@ fun AppListScreen(
     val selectedPackages by viewModel.selectedPackages.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        if (hasPreSelection)
-            viewModel.setSelectedPackages(preSelectedPackages)
-        else
-            viewModel.setSelectedPackages(PlatformStuff.mainPrefs.data.map { it.allowedPackages }
-                .first())
+    LaunchedEffect(preSelectedPackages) {
+        viewModel.setSelectedPackages(preSelectedPackages)
     }
 
     DisposableEffect(Unit) {
         onDispose {
             if (hasLoaded) {
-                if (hasPreSelection) {
-                    val appListItems =
-                        (viewModel.appList.value.musicPlayers + viewModel.appList.value.otherApps).filter {
-                            viewModel.selectedPackages.value.contains(it.appId)
-                        }
+                val all = (viewModel.appList.value.musicPlayers + viewModel.appList.value.otherApps)
+                val (checked, unchecked) = all.partition {
+                    viewModel.selectedPackages.value.contains(it.appId)
+                }
 
-                    onSetSelectedPackages(appListItems)
-                } else {
-                    viewModel.saveToPrefs()
+                when (saveType) {
+                    AppListSaveType.Scrobbling -> {
+                        GlobalScope.launch {
+                            PlatformStuff.mainPrefs.updateData {
+                                it.copy(
+                                    allowedPackages = checked.map { it.appId }.toSet(),
+                                    blockedPackages = unchecked.map { it.appId }.toSet(),
+                                )
+                            }
+                        }
+                    }
+
+                    AppListSaveType.Automation -> {
+                        GlobalScope.launch {
+                            PlatformStuff.mainPrefs.updateData {
+                                it.copy(
+                                    allowedAutomationPackages = checked.map { it.appId }.toSet(),
+                                )
+                            }
+                        }
+                    }
+
+                    AppListSaveType.Callback -> {
+                        onSetPackagesSelection(checked, unchecked)
+                    }
                 }
             }
         }
@@ -137,14 +151,16 @@ fun AppListScreen(
         } else {
             addItems(appList.musicPlayers)
 
-            stickyHeader("header_other_apps") {
-                SimpleHeaderItem(
-                    text = stringResource(Res.string.other_apps),
-                    icon = Icons.Outlined.Apps
-                )
-            }
+            if (appList.otherApps.isNotEmpty()) {
+                stickyHeader("header_other_apps") {
+                    SimpleHeaderItem(
+                        text = stringResource(Res.string.other_apps),
+                        icon = Icons.Outlined.Apps
+                    )
+                }
 
-            addItems(appList.otherApps)
+                addItems(appList.otherApps)
+            }
         }
     }
 }
@@ -183,16 +199,7 @@ private fun AppListItem(
                 .backgroundForShimmer(forShimmer)
         )
         Text(
-            text = when (appItem?.appId) {
-                Stuff.PACKAGE_PIXEL_NP, Stuff.PACKAGE_PIXEL_NP_R ->
-                    stringResource(Res.string.pixel_np)
-
-                Stuff.PACKAGE_SHAZAM ->
-                    stringResource(Res.string.autoshazam)
-
-                else ->
-                    appItem?.label?.ifEmpty { appItem.appId } ?: ""
-            },
+            text = appItem?.friendlyLabel ?: "",
             maxLines = 1,
             modifier = Modifier
                 .weight(1f)
@@ -211,4 +218,8 @@ private fun AppListItem(
             )
         }
     }
+}
+
+enum class AppListSaveType {
+    Scrobbling, Automation, Callback
 }

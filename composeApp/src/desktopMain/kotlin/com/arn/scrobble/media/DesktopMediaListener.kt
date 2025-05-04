@@ -6,9 +6,9 @@ import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.isUrlOrDomain
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapLatest
@@ -28,7 +28,7 @@ class DesktopMediaListener(
         PlatformStuff.mainPrefs.data.mapLatest { it.seenApps.map { it.appId }.toSet() }
             .stateIn(
                 scope,
-                SharingStarted.Lazily,
+                SharingStarted.Eagerly,
                 Stuff.mainPrefsInitialValue.seenApps.map { it.appId }.toSet()
             )
 
@@ -45,7 +45,6 @@ class DesktopMediaListener(
 
                 val allowedApps = allowed.filter { shouldScrobble(it) }
 
-                Logger.d { "allowed: $allowedApps" }
                 PanoNativeComponents.setAllowedAppIds(allowedApps.toTypedArray())
                 removeSessions(keysToKeep)
                 platformActiveSessionsChanged(sessionInfos)
@@ -56,6 +55,7 @@ class DesktopMediaListener(
             scrobblerEnabled.collectLatest { enabled ->
                 if (enabled) {
                     PanoNativeComponents.startListeningMediaInThread()
+                    delay(1500)
                     if (!listeningStarted.isCompleted) {
                         listeningStarted.complete(Unit)
                     }
@@ -69,6 +69,9 @@ class DesktopMediaListener(
     fun platformActiveSessionsChanged(sessions: List<SessionInfo>) {
         Logger.d { "controllers: " + sessions.joinToString { it.app_id } }
 
+        if (!scrobblerEnabled.value)
+            return
+
         val unseenAppItems = sessions
             .filter { it.app_id !in seenAppIds.value }
             .map { AppItem(it.app_id, it.app_name) }
@@ -80,12 +83,10 @@ class DesktopMediaListener(
             }
 
             unseenAppItems.forEach {
-                PanoNotifications.notifyAppDetected(it.appId, it.label)
+                PanoNotifications.notifyAppDetected(it.appId, it.friendlyLabel)
             }
         }
 
-        if (!scrobblerEnabled.value)
-            return
 
         val sessionsFiltered = sessions.filter {
             shouldScrobble(it.app_id) && it.app_id !in sessionTrackersMap
@@ -183,9 +184,6 @@ class DesktopMediaListener(
 
     override fun unlove(hash: Int) {}
 
-    //        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-    // MediaController.getTag() exists on Android 10 and lower but is marked as @hide
-
     private fun SessionTracker.isMediaPlaying() =
         trackInfo.isPlaying && trackInfo.title.isNotBlank() && trackInfo.artist.isNotBlank()
 
@@ -195,12 +193,11 @@ class DesktopMediaListener(
             sessionKey.startsWith(thisTrackInfo.appId + "|") &&
                     sessionKey != thisTrackInfo.appId + "|" + thisTrackInfo.sessionId &&
                     sessionTracker.isMediaPlaying()
-//                        && !cb.trackInfo.hasBlockedTag
         }
     }
 
     override fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {
-        return trackInfo.artist.isUrlOrDomain()
+        return false
     }
 
     fun platformMetadataChanged(metadata: MetadataInfo) {
@@ -208,6 +205,13 @@ class DesktopMediaListener(
 
         val sessionTracker =
             sessionTrackersMap[metadata.app_id] ?: return
+
+//        Info: (scrobbler) metadata: MetadataInfo(app_id=Spotify.exe, title=Advertisement, artist=Spotify, album=, album_artist=Spotify, track_number=0, duration=25417)
+        if (metadata.artist == "Spotify" && metadata.album_artist == "Spotify" && metadata.title == "Advertisement" && metadata.album.isEmpty()) {
+            sessionTracker.resetMeta()
+            return
+        }
+
         val (metadata, canDoFallbackScrobble) = transformMediaMetadata(
             sessionTracker.trackInfo,
             metadata
@@ -217,7 +221,7 @@ class DesktopMediaListener(
     }
 
     fun platformPlaybackStateChanged(playbackInfo: PlaybackInfo) {
-        Logger.d { "playbackInfo: $playbackInfo" }
+        Logger.i { "playbackInfo: $playbackInfo" }
 
         val sessionTracker =
             sessionTrackersMap[playbackInfo.app_id] ?: return

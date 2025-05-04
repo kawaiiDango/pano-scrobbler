@@ -4,10 +4,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.kevinnzou.web.LoadingState
 import com.kevinnzou.web.WebView
 import com.kevinnzou.web.rememberWebViewNavigator
 import com.kevinnzou.web.rememberWebViewState
@@ -20,7 +26,7 @@ import pano_scrobbler.composeapp.generated.resources.use_browser
 actual fun WebViewScreen(
     initialUrl: String,
     userAccountTemp: UserAccountTemp?,
-    creds: PleromaOauthClientCreds?,
+    pleromaOauthClientCreds: PleromaOauthClientCreds?,
     onTitleChange: (String) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable ColumnScope.() -> Unit,
@@ -30,6 +36,14 @@ actual fun WebViewScreen(
     val webViewState = rememberWebViewState(initialUrl)
     val navigator = rememberWebViewNavigator()
     val useBrowserText = stringResource(Res.string.use_browser)
+    val disableNavigation = remember { userAccountTemp == null && pleromaOauthClientCreds == null }
+    var firstLoadComplete by remember { mutableStateOf(false) }
+
+    LaunchedEffect(webViewState.isLoading) {
+        if (webViewState.loadingState == LoadingState.Finished && !firstLoadComplete) {
+            firstLoadComplete = true
+        }
+    }
 
     LaunchedEffect(webViewState.pageTitle) {
         onTitleChange(webViewState.pageTitle ?: "-")
@@ -50,24 +64,39 @@ actual fun WebViewScreen(
     }
 
     LaunchedEffect(webViewState.lastLoadedUrl) {
-        val lastLoadedUrl = webViewState.lastLoadedUrl ?: ""
+        val currentUrl = webViewState.content.getCurrentUrl() ?: ""
 
-        if (Stuff.disallowedWebviewUrls.any { lastLoadedUrl.startsWith(it) }) {
-            val errorMsgHtml =
-                "<html><body><div align=\"center\"><h3>$useBrowserText</h3></div></body></html>"
+        if ((disableNavigation && firstLoadComplete) ||
+            Stuff.disallowedWebviewUrls.any {
+                currentUrl.startsWith(it)
+            }
+        ) {
+            if (!PlatformStuff.isTv) {
+                navigator.stopLoading()
+                navigator.navigateBack()
+                PlatformStuff.openInBrowser(currentUrl)
+            } else {
+                val errorMsgHtml =
+                    "<html><body><div align=\"center\"><h3>$useBrowserText</h3></div></body></html>"
 
-            navigator.loadHtml(
-                errorMsgHtml,
-                baseUrl = "about:blank",
-                mimeType = "text/html",
-                historyUrl = null
-            )
+                navigator.loadHtml(
+                    errorMsgHtml,
+                    baseUrl = "about:blank",
+                    mimeType = "text/html",
+                    historyUrl = null
+                )
+            }
+
         } else {
-            val lastLoadedUrlObj = Url(lastLoadedUrl)
+            val lastLoadedUrlObj = Url(currentUrl)
 
             if (lastLoadedUrlObj.protocol.name == Stuff.DEEPLINK_PROTOCOL_NAME && lastLoadedUrlObj.segments.isNotEmpty()) {
                 val callbackHandled =
-                    viewModel.handleCallbackUrl(lastLoadedUrlObj, userAccountTemp!!, creds)
+                    viewModel.handleCallbackUrl(
+                        lastLoadedUrlObj,
+                        userAccountTemp!!,
+                        pleromaOauthClientCreds
+                    )
 
                 if (callbackHandled) {
                     val loadingMsg = "⏳"

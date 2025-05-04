@@ -25,12 +25,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.R
-import com.arn.scrobble.media.NLService
 import com.arn.scrobble.media.PersistentNotificationService
+import com.arn.scrobble.providers.AutomationProvider
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -42,8 +43,9 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.fix_it_desc
+import pano_scrobbler.composeapp.generated.resources.pref_automation
+import pano_scrobbler.composeapp.generated.resources.pref_automation_desc
 import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
-import pano_scrobbler.composeapp.generated.resources.pref_intents
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
 import pano_scrobbler.composeapp.generated.resources.pref_noti
@@ -140,23 +142,33 @@ private fun IntentsDescDialog(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
     ) {
-        val items = remember {
-            listOf(
-                NLService.iSCROBBLER_ON,
-                NLService.iSCROBBLER_OFF,
-                NLService.iLOVE,
-                NLService.iUNLOVE,
-                NLService.iCANCEL,
+        val prefix = "content://com.arn.scrobble.automation/"
+        val uris = remember {
+            arrayOf(
+                prefix + AutomationProvider.ENABLE,
+                prefix + AutomationProvider.DISABLE,
+                prefix + AutomationProvider.LOVE,
+                prefix + AutomationProvider.UNLOVE,
+                prefix + AutomationProvider.CANCEL,
+                prefix + AutomationProvider.ALLOWLIST + "/<packageName>",
+                prefix + AutomationProvider.BLOCKLIST + "/<packageName>",
             )
         }
+        Text(
+            text = stringResource(Res.string.pref_automation_desc),
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
 
-        items.forEach { item ->
+        uris.forEach { uri ->
             Text(
-                text = item,
+                text = uri,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        PlatformStuff.copyToClipboard(item)
+                        PlatformStuff.copyToClipboard(uri)
                         onDismissRequest()
                     }
                     .padding(16.dp)
@@ -180,12 +192,12 @@ actual fun prefChartsWidget(listScope: LazyListScope) {
     }
 }
 
-actual fun prefIntents(listScope: LazyListScope) {
+actual fun prefAutomation(listScope: LazyListScope) {
     if (!PlatformStuff.isTv) {
-        listScope.item("intents") {
+        listScope.item("automation") {
             var showIntentsDescDialog by remember { mutableStateOf(false) }
             TextPref(
-                text = stringResource(Res.string.pref_intents),
+                text = stringResource(Res.string.pref_automation),
                 onClick = {
                     showIntentsDescDialog = true
                 }

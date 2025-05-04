@@ -77,15 +77,15 @@ data class ListenBrainzDeleteRequest(
 )
 
 @Serializable
-data class ListenBrainzData<T>(
-    val payload: T
-)
-
-@Serializable
-data class ListenBrainzListensPayload(
-    val count: Int,
-    val listens: List<ListenBrainzListensListens>,
-)
+data class ListenBrainzListensData(
+    val payload: ListenBrainzListensPayload
+) {
+    @Serializable
+    data class ListenBrainzListensPayload(
+        val count: Int,
+        val listens: List<ListenBrainzListensListens>,
+    )
+}
 
 @Serializable
 data class ListenBrainzListensListens(
@@ -129,28 +129,38 @@ data class ListenBrainzFollowing(
 )
 
 @Serializable
-data class ListenBrainzCountPayload(
-    val count: Int
-)
+data class ListenBrainzCountData(
+    val payload: ListenBrainzCountPayload
+) {
+    @Serializable
+    data class ListenBrainzCountPayload(
+        val count: Int
+    )
+}
 
 @Serializable
-data class ListenBrainzStatsEntriesPayload(
-    val artists: List<ListenBrainzStatsEntry>?,
-    val releases: List<ListenBrainzStatsEntry>?,
-    val recordings: List<ListenBrainzStatsEntry>?,
-    val count: Int,
-    @Serializable(with = TimeSerializer::class)
-    val from_ts: Long,
-    @Serializable(with = TimeSerializer::class)
-    val last_updated: Long,
-    val offset: Int,
-    val range: String,
-    @Serializable(with = TimeSerializer::class)
-    val to_ts: Long,
-    val total_artist_count: Int?,
-    val total_release_count: Int?,
-    val total_recording_count: Int?,
-)
+data class ListenBrainzStatsEntriesData(
+    val payload: ListenBrainzStatsEntriesPayload
+) {
+    @Serializable
+    data class ListenBrainzStatsEntriesPayload(
+        val artists: List<ListenBrainzStatsEntry>?,
+        val releases: List<ListenBrainzStatsEntry>?,
+        val recordings: List<ListenBrainzStatsEntry>?,
+        val count: Int,
+        @Serializable(with = TimeSerializer::class)
+        val from_ts: Long,
+        @Serializable(with = TimeSerializer::class)
+        val last_updated: Long,
+        val offset: Int,
+        val range: String,
+        @Serializable(with = TimeSerializer::class)
+        val to_ts: Long,
+        val total_artist_count: Int?,
+        val total_release_count: Int?,
+        val total_recording_count: Int?,
+    )
+}
 
 @Serializable
 data class ListenBrainzStatsEntry(
@@ -164,15 +174,20 @@ data class ListenBrainzStatsEntry(
 )
 
 @Serializable
-data class ListenBrainzActivityPayload(
-    @Serializable(with = TimeSerializer::class)
-    val from_ts: Long,
-    @Serializable(with = TimeSerializer::class)
-    val last_updated: Long,
-    val listening_activity: List<ListeningActivity>,
-    @Serializable(with = TimeSerializer::class)
-    val to_ts: Long
-)
+data class ListenBrainzActivityData(
+    val payload: ListenBrainzActivityPayload
+) {
+    @Serializable
+    data class ListenBrainzActivityPayload(
+        @Serializable(with = TimeSerializer::class)
+        val from_ts: Long,
+        @Serializable(with = TimeSerializer::class)
+        val last_updated: Long,
+        val listening_activity: List<ListeningActivity>,
+        @Serializable(with = TimeSerializer::class)
+        val to_ts: Long
+    )
+}
 
 @Serializable
 data class ListeningActivity(

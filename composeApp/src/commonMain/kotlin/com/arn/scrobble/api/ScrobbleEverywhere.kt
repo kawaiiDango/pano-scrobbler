@@ -345,15 +345,15 @@ object ScrobbleEverywhere {
 
                 val errMsg = exception
                     ?.redactedMessage
-                failedTextLines += "<b>" + scrobblable.userAccount.type + ":</b> $errMsg"
+                failedTextLines += scrobblable.userAccount.type.name + ": $errMsg"
             } else if (result.isSuccess && result.getOrThrow().ignored) {
-                failedTextLines += "<b>" + scrobblable.userAccount.type + ":</b> " +
+                failedTextLines += scrobblable.userAccount.type.name + ": " +
                         getString(Res.string.scrobble_ignored)
                 ignored = true
             }
         }
         if (failedTextLines.isNotEmpty()) {
-            val failedText = failedTextLines.joinToString("<br>\n")
+            val failedText = failedTextLines.joinToString("\n")
             Logger.w { "failedText= $failedText" }
             if (ignored) {
 
@@ -361,8 +361,8 @@ object ScrobbleEverywhere {
                     PlayingTrackNotifyEvent.Error(
                         trackInfo = trackInfo.updateMetaFrom(scrobbleData),
                         scrobbleError = ScrobbleError(
-                            "",
                             failedText,
+                            null,
                             trackInfo.appId,
                             canFixMetadata = true
                         ),
@@ -372,15 +372,21 @@ object ScrobbleEverywhere {
                 notifyPlayingTrackEvent(
                     PlayingTrackNotifyEvent.Error(
                         trackInfo = trackInfo.updateMetaFrom(scrobbleData),
-                        ScrobbleError(
-                            if (savedAsPending)
-                                getString(Res.string.saved_as_pending)
-                            else
-                                "",
-                            failedText,
-                            trackInfo.appId,
-                            canFixMetadata = false
-                        )
+                        scrobbleError = if (savedAsPending) {
+                            ScrobbleError(
+                                getString(Res.string.saved_as_pending),
+                                failedText,
+                                trackInfo.appId,
+                                canFixMetadata = false
+                            )
+                        } else {
+                            ScrobbleError(
+                                failedText,
+                                description = null,
+                                trackInfo.appId,
+                                canFixMetadata = false
+                            )
+                        }
                     )
                 )
             }
@@ -439,23 +445,6 @@ object ScrobbleEverywhere {
             }
         }
     }
-
-    suspend fun delete(track: Track): List<Result<Unit>> {
-        val allScrobblables = Scrobblables.all.value
-
-        val results = allScrobblables.mapConcurrently(5) {
-            it.delete(track)
-                .onFailure { it.printStackTrace() }
-        }
-
-        val success = results.all { it.isSuccess }
-
-        if (success)
-            CachedTracksDao.deltaUpdateAll(track, -1, DirtyUpdate.BOTH)
-
-        return results
-    }
-
 
     private val validArtistsCache = LruCache<String, String>(30)
 

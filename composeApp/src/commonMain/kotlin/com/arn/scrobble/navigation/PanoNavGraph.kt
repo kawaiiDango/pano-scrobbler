@@ -11,22 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.billing.BillingScreen
 import com.arn.scrobble.billing.BillingTroubleshootScreen
-import com.arn.scrobble.charts.ChartsLegendScreen
 import com.arn.scrobble.charts.ChartsPagerScreen
-import com.arn.scrobble.charts.HiddenTagsScreen
 import com.arn.scrobble.charts.RandomScreen
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.SimpleEdit
@@ -50,6 +46,7 @@ import com.arn.scrobble.onboarding.OobLibrefmLoginScreen
 import com.arn.scrobble.onboarding.OobPleromaLoginScreen
 import com.arn.scrobble.onboarding.PleromaLoginScreen
 import com.arn.scrobble.onboarding.WebViewScreen
+import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.pref.AppListScreen
 import com.arn.scrobble.pref.DeleteAccountScreen
 import com.arn.scrobble.pref.ExportScreen
@@ -59,15 +56,12 @@ import com.arn.scrobble.pref.PrefsScreen
 import com.arn.scrobble.pref.TranslatorsScreen
 import com.arn.scrobble.recents.TrackHistoryScreen
 import com.arn.scrobble.search.ImageSearchScreen
-import com.arn.scrobble.search.IndexingScreen
 import com.arn.scrobble.search.SearchScreen
 import com.arn.scrobble.themes.ThemeChooserScreen
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.addColumnPadding
 import com.arn.scrobble.ui.panoContentPadding
-import com.arn.scrobble.updates.ChangelogScreen
-import com.arn.scrobble.updates.UpdateAvailableScreen
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -107,7 +101,7 @@ import kotlin.reflect.typeOf
 fun NavGraphBuilder.panoNavGraph(
     onSetTitle: (String?) -> Unit,
     onSetOtherUser: (UserCached?) -> Unit,
-    navMetadataList: () -> List<PanoNavMetadata>?,
+    onOpenDialog: (PanoDialog) -> Unit,
     onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
     tabIdxFlow: Flow<Int>,
     tabDataFlow: Flow<List<PanoTabs>?>,
@@ -161,8 +155,10 @@ fun NavGraphBuilder.panoNavGraph(
                 onSetTabIdx = onSetTabIdx,
                 onSetNavMetadataList = onSetNavMetadataList,
                 onNavigate = navigate,
+                onOpenDialog = onOpenDialog,
                 pullToRefreshState = pullToRefreshState(),
                 onSetRefreshing = onSetRefreshing,
+                editDataFlow = mainViewModel.editDataFlow,
                 getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
                 modifier = modifier()
             )
@@ -189,8 +185,10 @@ fun NavGraphBuilder.panoNavGraph(
                 onSetTabIdx = onSetTabIdx,
                 onSetNavMetadataList = onSetNavMetadataList,
                 onNavigate = navigate,
+                onOpenDialog = onOpenDialog,
                 pullToRefreshState = pullToRefreshState(),
                 onSetRefreshing = onSetRefreshing,
+                editDataFlow = mainViewModel.editDataFlow,
                 getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
                 modifier = modifier()
             )
@@ -207,7 +205,7 @@ fun NavGraphBuilder.panoNavGraph(
 
         RandomScreen(
             user = arguments.user,
-            onNavigate = navigate,
+            onOpenDialog = onOpenDialog,
             modifier = modifier().addColumnPadding()
         )
     }
@@ -230,9 +228,14 @@ fun NavGraphBuilder.panoNavGraph(
 
         AppListScreen(
             isSingleSelect = arguments.isSingleSelect,
-            hasPreSelection = arguments.hasPreSelection,
+            saveType = arguments.saveType,
             preSelectedPackages = arguments.preSelectedPackages.toSet(),
-            onSetSelectedPackages = { mainViewModel.setSelectedPackages(it) },
+            onSetPackagesSelection = { checked, unchecked ->
+                mainViewModel.onSetPackagesSelection(
+                    checked,
+                    unchecked
+                )
+            },
             modifier = modifier()
         )
     }
@@ -342,7 +345,7 @@ fun NavGraphBuilder.panoNavGraph(
             onNavigateToAppList = {
                 navigate(
                     PanoRoute.AppList(
-                        hasPreSelection = true,
+                        saveType = AppListSaveType.Callback,
                         preSelectedPackages = emptyList(),
                         isSingleSelect = true
                     )
@@ -358,8 +361,8 @@ fun NavGraphBuilder.panoNavGraph(
 
         BlockedMetadatasScreen(
             onEdit = {
-                navigate(
-                    PanoRoute.BlockedMetadataAdd(
+                onOpenDialog(
+                    PanoDialog.BlockedMetadataAdd(
                         it,
                         ignoredArtist = null,
                         hash = null
@@ -495,7 +498,7 @@ fun NavGraphBuilder.panoNavGraph(
         WebViewScreen(
             initialUrl = arguments.url,
             userAccountTemp = arguments.userAccountTemp,
-            creds = arguments.creds,
+            pleromaOauthClientCreds = arguments.creds,
             onTitleChange = onSetTitle,
             onBack = goBack,
             modifier = modifier().padding(panoContentPadding())
@@ -551,7 +554,7 @@ fun NavGraphBuilder.panoNavGraph(
         onSetTitleRes(Res.string.search)
 
         SearchScreen(
-            onNavigate = navigate,
+            onOpenDialog = onOpenDialog,
             modifier = modifier()
         )
     }
@@ -613,7 +616,7 @@ fun NavGraphBuilder.panoNavGraph(
                     Stuff.TYPE_ARTISTS -> 2
                     else -> 0
                 },
-                onNavigate = navigate,
+                onOpenDialog = onOpenDialog,
                 modifier = modifier()
             )
         }
@@ -642,8 +645,7 @@ fun NavGraphBuilder.panoNavGraph(
                     else -> 0
                 },
                 onTitleChange = onSetTitle,
-                onSetNavMetadataList = onSetNavMetadataList,
-                onNavigate = navigate,
+                onOpenDialog = onOpenDialog,
                 modifier = modifier()
             )
         }
@@ -677,7 +679,7 @@ fun NavGraphBuilder.panoNavGraph(
             musicEntry = arguments.track,
             user = arguments.user,
             pkgName = arguments.pkgName,
-            onNavigate = navigate,
+            onOpenDialog = onOpenDialog,
             modifier = modifier()
         )
     }
@@ -721,71 +723,11 @@ fun NavGraphBuilder.panoNavGraph(
         TrackHistoryScreen(
             track = track,
             user = user,
-            onNavigate = navigate,
+            onOpenDialog = onOpenDialog,
+            editDataFlow = mainViewModel.editDataFlow,
             modifier = modifier()
         )
     }
-
-    dialog<PanoRoute.NavPopup>(
-        typeMap = mapOf(
-            typeOf<UserCached?>() to serializableType<UserCached?>(),
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.NavPopup>()
-
-        NavPopupScreen(
-            onDismiss = goUp,
-            otherUser = arguments.otherUser,
-            drawerDataFlow = mainViewModel.drawerDataFlow,
-            drawSnowfall = mainViewModel.isItChristmas,
-            loadOtherUserDrawerData = mainViewModel::loadOtherUserDrawerData,
-            navMetadataList = navMetadataList() ?: emptyList(),
-            onNavigate = navigate
-        )
-    }
-
-    dialog<PanoRoute.Changelog> {
-        ChangelogScreen(
-            onDismiss = goUp
-        )
-    }
-
-    dialog<PanoRoute.UpdateAvailable>(
-        typeMap = mapOf(
-            typeOf<GithubReleases>() to serializableType<GithubReleases>(),
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.UpdateAvailable>()
-        UpdateAvailableScreen(
-            githubReleases = arguments.githubReleases,
-            onDismiss = goUp
-        )
-    }
-
-    dialog<PanoRoute.Index> {
-        IndexingScreen(
-            onDismiss = goUp
-        )
-    }
-
-    dialog<PanoRoute.HiddenTags> {
-        HiddenTagsScreen(
-            onDismiss = goUp
-        )
-    }
-
-    dialog<PanoRoute.ChartsLegend> {
-        ChartsLegendScreen(
-            onDismiss = goUp
-        )
-    }
-
-    panoDialogNavGraph(
-        navigate = navigate,
-        goUp = goUp,
-        calledFromDialogActivity = false,
-        mainViewModel = mainViewModel,
-    )
 
     panoPlatformSpecificNavGraph(
         onSetTitle = onSetTitle,

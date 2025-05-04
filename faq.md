@@ -1,6 +1,6 @@
 # FAQ
 
-### The app skips scrobbles when it is in the background / The app says that it has been killed
+### [android] The app skips scrobbles when it is in the background / The app says that it has been killed
 
 Some manufacturers impose drastic background restrictions on 3rd party apps. Try disabling battery
 optimisations for this app. Sometimes, that step may not be enough. Please
@@ -13,10 +13,10 @@ said restrictions.
 This happens if you have more than one scrobbler running. Disable or uninstall other scrobblers.
 Disconnect your Spotify account from the last.fm website.
 
-### The app is scrobbling non music videos from YouTube
+### [android] The app is scrobbling non music videos from YouTube
 
 Unfortunately there is no way to detect whether a video is a music video, from the metadata provided
-by YouTube on Android. You may block certain channels from scrobbling or turn off YouTube scrobbling
+by the YouTube app. You may block certain channels from scrobbling or turn off YouTube scrobbling
 from settings.
 
 ### I cannot edit scrobbles older than 14 days
@@ -34,22 +34,28 @@ As a workaround, you can enable "Approximate search for artist images". Note tha
 you wrong images for some artists. You can also choose your own mapping to Spotify pictures or
 choose your own from gallery.
 
+### Pictures of some tracks are missing in the charts screen
+
+Tracks do not have images for themselves. They have album arts depending on the album or single they
+are associated with. The last.fm API may not provide an album name for some tracks. In that case, no
+image will be displayed.
+
 ### Certain tracks are being ignored
 
-Last.FM has a spam filter, which filters out tracks/albums/artists with titles similar to "Unknown"
-or ".mp3" or "Track_01".
+Last.FM has a spam filter, which filters out tracks/albums/artists with titles similar to
+"Unknown", ".mp3", "Track_01" etc
 
 ### The scrobbler does not seem to pick up album artists
 
-This can happen if your music player does not provide the album artist metadata to other apps like
-this scrobbler. Use a different music player, which does that.
+This can happen if your music player does not provide the album artist metadata in its
+`MediaSession`. Use a different music player, which does that.
 
 ### How do I stream music on this app?
 
 This is not a music streaming app. However, you can click the search and play button, to search and
 play the selected song on your favourite music player.
 
-### The search and play button always opens a particular music player
+### [android] The search and play button always opens a particular music player
 
 This can happen if you have set that particular music player as the default. To fix this, go to that
 music player's app info and tap on "Clear defaults".

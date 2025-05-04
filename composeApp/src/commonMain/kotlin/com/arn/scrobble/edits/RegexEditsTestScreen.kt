@@ -71,8 +71,8 @@ fun RegexEditsTestScreen(
     var albumArtist by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        mainViewModel.selectedPackages.collectLatest {
-            appItem = it.firstOrNull()
+        mainViewModel.selectedPackages.collectLatest { (checked, _) ->
+            appItem = checked.firstOrNull()
         }
     }
 

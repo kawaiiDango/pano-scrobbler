@@ -296,7 +296,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">¿Desea activar la regla de edición de patrones: %1$s?</string>
     <string name="show_persistent_noti">Mostrar una notificación persistente</string>
     <string name="fix_it_desc">Esto puede ayudar a mantener el scrobbler funcionando en segundo plano en algunos dispositivos</string>
-    <string name="persistent_noti_desc">Mantén presionado para ocultar esto</string>
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
     <string name="duration">Duración</string>

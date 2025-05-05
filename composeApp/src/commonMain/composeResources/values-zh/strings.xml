@@ -284,7 +284,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">您想启用 %1$s 这条编辑模板规则吗？</string>
     <string name="show_persistent_noti">显示一条常驻通知</string>
     <string name="fix_it_desc">用于保证记录器在某些设备上维持后台运行</string>
-    <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
     <string name="duration">持续时间</string>

@@ -328,7 +328,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Хотите включить правило шаблона редактирования: %1$s?</string>
     <string name="show_persistent_noti">Показывать постоянное уведомление</string>
     <string name="fix_it_desc">Это может помочь поддерживать работу скробблера в фоновом режиме на некоторых устройствах</string>
-    <string name="persistent_noti_desc">Нажмите и удерживайте, чтобы скрыть это</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="duration">Продолжительность</string>

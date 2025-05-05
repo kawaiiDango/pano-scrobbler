@@ -312,7 +312,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Želite li omogućiti pravilo za šablonsko uređivanje: %1$s?</string>
     <string name="show_persistent_noti">Prikaži trajnu obavijest</string>
     <string name="fix_it_desc">Ovo može pomoći za pokretanje scrobblera u pozadini na nekim uređajima</string>
-    <string name="persistent_noti_desc">Za skrivanje ovoga dugo pritisnite</string>
     <string name="scrobbler_off">Scrobbler onemogućen</string>
     <string name="scrobbler_on">Scrobbler aktivan</string>
     <string name="duration">Trajanje</string>

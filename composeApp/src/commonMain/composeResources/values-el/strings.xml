@@ -261,7 +261,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Θα θέλατε να ενεργοποιήσετε τον κανόνα επεξεργασίας μοτίβου: %1$s;</string>
     <string name="show_persistent_noti">Ενεργοποίηση συνεχών ειδοποιήσεων</string>
     <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
-    <string name="persistent_noti_desc">Πατήστε παρατεταμένα για απόκρυψη</string>
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
     <string name="enable" comment="To enable the scrobbler">Ενεργοποιήση</string>

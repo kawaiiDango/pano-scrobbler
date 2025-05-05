@@ -301,7 +301,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Möchten Sie die Patternbearbeitungsregel %1$s aktivieren?</string>
     <string name="show_persistent_noti">Dauerhafte Benachrichtigung anzeigen</string>
     <string name="fix_it_desc">Diese können helfen, den Scrobbler im Hintergrund auf einigen Geräten laufen zu lassen</string>
-    <string name="persistent_noti_desc">Lange drücken, um dies zu verstecken</string>
     <string name="scrobbler_off">Scrobbler deaktiviert</string>
     <string name="scrobbler_on">Scrobbler aktiv</string>
     <string name="duration">Länge</string>

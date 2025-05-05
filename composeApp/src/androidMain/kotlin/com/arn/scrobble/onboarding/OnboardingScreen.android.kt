@@ -22,7 +22,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -37,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.testTagsAsResId
@@ -109,7 +109,7 @@ private fun NotificationListenerStep(
     isExpanded: Boolean,
     onDone: () -> Unit,
 ) {
-    var warningShown by remember { mutableStateOf(false) }
+    var warningShown by rememberSaveable { mutableStateOf(false) }
 
     val tvLink = stringResource(Res.string.tv_link)
     val toastText = stringResource(
@@ -208,7 +208,7 @@ actual fun OnboardingScreen(
         doneStatus[steps.indexOf(step)] = true
     }
 
-    var currentStep by remember { mutableStateOf(steps.first()) }
+    var currentStep by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(steps.first()) }
 
     val isLoggedIn by Scrobblables.current.map { it != null }.collectAsStateWithLifecycle(false)
     val appListWasRun by PlatformStuff.mainPrefs.data.map { it.appListWasRun }

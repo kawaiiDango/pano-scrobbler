@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,9 +56,9 @@ fun ExportScreen(
     modifier: Modifier = Modifier,
     viewModel: ExportVM = viewModel { ExportVM() },
 ) {
-    var codeText by remember { mutableStateOf("") }
-    var errorText by remember { mutableStateOf<String?>(null) }
-    var toggleButtonSelectedIndex by remember { mutableIntStateOf(-1) }
+    var codeText by rememberSaveable { mutableStateOf("") }
+    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
+    var toggleButtonSelectedIndex by rememberSaveable { mutableIntStateOf(-1) }
     val networkMode =
         remember(toggleButtonSelectedIndex) { toggleButtonSelectedIndex == 1 }
     val exportFileName = stringResource(Res.string.export_file_name, Stuff.getFileNameDateSuffix())

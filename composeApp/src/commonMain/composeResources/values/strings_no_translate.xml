@@ -31,7 +31,7 @@
     <string name="special_app_access" translatable="false">Special app access</string>
 
     <!--  strings for unfinalized stuff  -->
-    <string name="pref_automation">Apps that can control Pano Scrobbler</string>
+    <string name="pref_automation">Control Pano Scrobbler from other apps</string>
     <string name="pref_automation_desc">Use these ContentProvider query URIs to control Pano Scrobbler from automation apps, such as Tasker</string>
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 

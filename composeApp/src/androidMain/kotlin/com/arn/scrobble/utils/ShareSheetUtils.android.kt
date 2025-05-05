@@ -10,8 +10,9 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
@@ -56,14 +57,20 @@ actual suspend fun showTrackShareSheet(track: Track, user: UserCached) {
     }
 
     withContext(Dispatchers.IO) {
-        val loader = ImageLoader(context)
-        val request = ImageRequest.Builder(context)
-            .data(track)
-            .allowHardware(false)
-            .build()
-
-        val shareAlbumArt = loader.execute(request).image?.toBitmap()
-
+        val shareAlbumArt = if (track.webp300 == null) {
+            null
+        } else {
+            try {
+                ImageLoader(context).execute(
+                    ImageRequest.Builder(context)
+                        .data(track.webp300)
+                        .allowHardware(false)
+                        .build()
+                ).image?.toBitmap()
+            } catch (e: Exception) {
+                null
+            }
+        }
 
         if (shareAlbumArt != null) {
             val albumArtFile = File(context.cacheDir, "share/album_art.jpg")

@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -94,7 +95,7 @@ fun ImageSearchScreen(
 
     val searchError by viewModel.searchError.collectAsStateWithLifecycle()
 
-    var searchTerm by remember {
+    var searchTerm by rememberSaveable {
         mutableStateOf(
             if (musicEntry is Album)
                 musicEntry.artist!!.name + " " + musicEntry.name
@@ -105,7 +106,7 @@ fun ImageSearchScreen(
 
     val existingMappings by viewModel.existingMappings.collectAsStateWithLifecycle()
     val squarePhotoLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.squarePhotoLearnt }
-    var showSquarePhotoDialog by remember { mutableStateOf(false) }
+    var showSquarePhotoDialog by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var filePickerShown by remember { mutableStateOf(false) }
 

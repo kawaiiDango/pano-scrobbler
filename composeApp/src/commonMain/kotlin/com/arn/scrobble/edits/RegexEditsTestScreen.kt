@@ -23,7 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -37,6 +37,7 @@ import com.arn.scrobble.db.RegexEditFields
 import com.arn.scrobble.icons.AlbumArtist
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.main.MainViewModel
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.utils.Stuff.format
@@ -64,11 +65,11 @@ fun RegexEditsTestScreen(
 ) {
     val regexMatches by viewModel.regexResults.collectAsStateWithLifecycle()
     val hasPkgName by viewModel.hasPkgName.collectAsStateWithLifecycle()
-    var appItem by remember { mutableStateOf<AppItem?>(null) }
-    var track by remember { mutableStateOf("") }
-    var album by remember { mutableStateOf("") }
-    var artist by remember { mutableStateOf("") }
-    var albumArtist by remember { mutableStateOf("") }
+    var appItem by rememberSaveable(saver = jsonSerializableSaver<AppItem?>()) { mutableStateOf(null) }
+    var track by rememberSaveable { mutableStateOf("") }
+    var album by rememberSaveable { mutableStateOf("") }
+    var artist by rememberSaveable { mutableStateOf("") }
+    var albumArtist by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         mainViewModel.selectedPackages.collectLatest { (checked, _) ->

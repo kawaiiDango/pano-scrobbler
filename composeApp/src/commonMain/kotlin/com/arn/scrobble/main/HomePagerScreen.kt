@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,10 +37,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.from_mic
 import pano_scrobbler.composeapp.generated.resources.get_pro
 import pano_scrobbler.composeapp.generated.resources.help
+import pano_scrobbler.composeapp.generated.resources.quit
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.settings
 
@@ -65,7 +66,7 @@ fun HomePagerScreen(
     var scrobblesTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var followingTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var chartsTitle by rememberSaveable { mutableStateOf<String?>(null) }
-    var lastTabIdx by remember { mutableStateOf(tabIdx) }
+    var lastTabIdx by remember { mutableIntStateOf(tabIdx) }
 
     LaunchedEffect(tabIdx, scrobblesTitle, followingTitle, chartsTitle) {
         val title = when (tabsList.getOrNull(tabIdx)) {
@@ -186,7 +187,7 @@ private fun getHomePagerNavMetadata() = listOfNotNull(
 
     if (PlatformStuff.isDesktop)
         PanoNavMetadata(
-            titleRes = Res.string.close,
+            titleRes = Res.string.quit,
             icon = Icons.Outlined.PowerSettingsNew,
             route = PanoRoute.Exit,
         ) else

@@ -42,7 +42,8 @@ class MainDialogActivity : ComponentActivity() {
                 }
                 // Handle the intent that started this activity
                 intent?.let {
-                    consumer.accept(it)
+                    if (savedInstanceState == null)
+                        consumer.accept(it)
                 }
                 // Handle new intents
                 addOnNewIntentListener(consumer)

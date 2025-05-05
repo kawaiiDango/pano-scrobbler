@@ -217,7 +217,11 @@ fun NavGraphBuilder.panoNavGraph(
         )
     }
 
-    composable<PanoRoute.AppList> {
+    composable<PanoRoute.AppList>(
+        typeMap = mapOf(
+            typeOf<AppListSaveType>() to serializableType<AppListSaveType>()
+        )
+    ) {
         val arguments = it.toRoute<PanoRoute.AppList>()
         onSetTitleRes(
             if (arguments.isSingleSelect)
@@ -231,10 +235,7 @@ fun NavGraphBuilder.panoNavGraph(
             saveType = arguments.saveType,
             preSelectedPackages = arguments.preSelectedPackages.toSet(),
             onSetPackagesSelection = { checked, unchecked ->
-                mainViewModel.onSetPackagesSelection(
-                    checked,
-                    unchecked
-                )
+                mainViewModel.onSetPackagesSelection(checked, unchecked)
             },
             modifier = modifier()
         )

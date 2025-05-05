@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,10 +63,10 @@ fun ThemeChooserScreen(
     modifier: Modifier = Modifier,
 ) {
     val licenseState by PlatformStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
-    var themeName: String? by remember { mutableStateOf(null) }
-    var dynamic: Boolean? by remember { mutableStateOf(null) }
-    var dayNightMode: DayNightMode? by remember { mutableStateOf(null) }
-    var contrastMode: ContrastMode? by remember { mutableStateOf(null) }
+    var themeName: String? by rememberSaveable { mutableStateOf(null) }
+    var dynamic: Boolean? by rememberSaveable { mutableStateOf(null) }
+    var dayNightMode: DayNightMode? by rememberSaveable { mutableStateOf(null) }
+    var contrastMode: ContrastMode? by rememberSaveable { mutableStateOf(null) }
     val isAppInNightMode = LocalThemeAttributes.current.isDark
 
     DisposableEffect(Unit) {

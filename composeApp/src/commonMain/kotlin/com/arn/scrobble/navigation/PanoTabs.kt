@@ -6,7 +6,6 @@ import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.InsertChart
 import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -16,7 +15,6 @@ import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
 import pano_scrobbler.composeapp.generated.resources.charts
 import pano_scrobbler.composeapp.generated.resources.following
-import pano_scrobbler.composeapp.generated.resources.more
 import pano_scrobbler.composeapp.generated.resources.pref_user_label
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.tracks
@@ -45,9 +43,4 @@ sealed class PanoTabs(
     data object TopArtists : PanoTabs(titleRes = Res.string.artists, icon = Icons.Outlined.Mic)
     data object TopAlbums : PanoTabs(titleRes = Res.string.albums, icon = Icons.Outlined.Album)
     data object TopTracks : PanoTabs(titleRes = Res.string.tracks, icon = Icons.Outlined.MusicNote)
-    data object MoreOptions : PanoTabs(
-        titleRes = Res.string.more,
-        icon = Icons.Outlined.MoreHoriz,
-        type = PanoTabType.MENU
-    )
 }

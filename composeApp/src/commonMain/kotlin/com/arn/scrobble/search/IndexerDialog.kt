@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,11 +43,11 @@ fun IndexerDialog(
     modifier: Modifier = Modifier,
     viewModel: IndexerVM = viewModel { IndexerVM() },
 ) {
-    var progress by remember { mutableFloatStateOf(1f) }
-    var indexingMessage by remember { mutableStateOf("") }
+    var progress by rememberSaveable { mutableFloatStateOf(1f) }
+    var indexingMessage by rememberSaveable { mutableStateOf("") }
     var showMenu by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) }
-    var showOptions by remember { mutableStateOf(true) }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showOptions by rememberSaveable { mutableStateOf(true) }
     val longTimeMessage = stringResource(Res.string.take_long_time)
     val doneMessage = stringResource(Res.string.done)
 
@@ -112,7 +113,6 @@ fun IndexerDialog(
 
     LaunchedEffect(Unit) {
         viewModel.indexingProgress.collectLatest { indexingProgress ->
-
 
             indexingMessage =
                 if (indexingProgress.progress == 1f || indexingProgress.state.isFinished) {

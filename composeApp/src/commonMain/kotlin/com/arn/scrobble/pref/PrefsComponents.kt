@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -191,10 +192,10 @@ fun TextFieldDialogPref(
     copyToSave: MainPrefs.(String) -> MainPrefs,
     modifier: Modifier = Modifier,
 ) {
-    var dialogShown by remember { mutableStateOf(false) }
-    var textFieldValue by remember(value) { mutableStateOf(value) }
+    var dialogShown by rememberSaveable { mutableStateOf(false) }
+    var textFieldValue by rememberSaveable(value) { mutableStateOf(value) }
     val scope = rememberCoroutineScope()
-    var isError by remember { mutableStateOf(false) }
+    var isError by rememberSaveable { mutableStateOf(false) }
 
     TextPref(
         text = text,
@@ -316,7 +317,7 @@ fun AppIconsPref(
     packageNames: Set<String>,
     seenAppsMap: Map<String, String>,
     modifier: Modifier = Modifier,
-    summary: String? = null,
+    summary: String,
     onClick: () -> Unit,
 ) {
     val maxIcons = 7
@@ -356,11 +357,10 @@ fun AppIconsPref(
             }
         }
 
-        if (summary != null)
-            Text(
-                text = summary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        Text(
+            text = summary,
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 

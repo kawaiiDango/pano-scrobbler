@@ -399,6 +399,9 @@
     <string name="close"
         comment="To close a dialog or something"
         >Close</string>
+    <string name="quit"
+        comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop"
+        >Quit</string>
     <string name="user_tags_hint"
         comment="To add a new tag"
         >New tag</string>

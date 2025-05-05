@@ -28,15 +28,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.R
 import com.arn.scrobble.charts.AllPeriods
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.ui.LabeledSwitch
 import kotlinx.coroutines.flow.Flow
@@ -59,11 +60,10 @@ fun ChartsWidgetConfigScreen(
     val prefs by specificWidgetPrefs.collectAsStateWithLifecycle(null)
 
     prefs?.let { prefs ->
-        var period by remember { mutableStateOf(prefs.period) }
-        var bgAlpha by remember { mutableFloatStateOf(prefs.bgAlpha) }
-        var shadow by remember { mutableStateOf(prefs.shadow) }
+        var period by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(prefs.period) }
+        var bgAlpha by rememberSaveable { mutableFloatStateOf(prefs.bgAlpha) }
+        var shadow by rememberSaveable { mutableStateOf(prefs.shadow) }
         val scrollState = rememberScrollState()
-        val context = LocalContext.current
         val allPeriods = remember {
             val wtp = WidgetTimePeriods()
             AllPeriods.entries.associateWith {

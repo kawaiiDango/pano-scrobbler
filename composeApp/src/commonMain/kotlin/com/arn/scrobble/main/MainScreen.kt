@@ -94,6 +94,7 @@ import com.arn.scrobble.navigation.ProfileHeader
 import com.arn.scrobble.navigation.getFabData
 import com.arn.scrobble.navigation.getTabData
 import com.arn.scrobble.navigation.hasNavMetadata
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.navigation.panoNavGraph
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.LocalInnerPadding
@@ -136,13 +137,16 @@ fun PanoAppContent(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
     var canPop by remember { mutableStateOf(false) }
-    var currentTitle by remember { mutableStateOf<String?>(null) }
+    var currentTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var fabData by remember { mutableStateOf<PanoFabData?>(null) }
     var tabData by remember { mutableStateOf<List<PanoTabs>?>(null) }
     var navMetadata by remember { mutableStateOf<List<PanoNavMetadata>?>(null) }
     var showNavMetadata by remember { mutableStateOf(false) }
     var selectedTabIdx by rememberSaveable { mutableIntStateOf(0) }
-    var currentDialogArgs by remember(dialogArgs) { mutableStateOf(dialogArgs) }
+    var currentDialogArgs by rememberSaveable(
+        dialogArgs,
+        saver = jsonSerializableSaver<PanoDialog?>()
+    ) { mutableStateOf(dialogArgs) }
     val drawerData by viewModel.drawerDataFlow.collectAsStateWithLifecycle()
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val currentUserSelf by PlatformStuff.mainPrefs.data
@@ -150,8 +154,10 @@ fun PanoAppContent(
             pref.scrobbleAccounts
                 .firstOrNull { it.type == pref.currentAccountType }?.user
         }
-    var onboardingFinished by remember { mutableStateOf(currentUserSelf != null) }
-    var currentUserOther by remember { mutableStateOf<UserCached?>(null) }
+    var onboardingFinished by rememberSaveable { mutableStateOf(currentUserSelf != null) }
+    var currentUserOther by rememberSaveable(saver = jsonSerializableSaver()) {
+        mutableStateOf<UserCached?>(null)
+    }
     val currentUser by remember { derivedStateOf { currentUserOther ?: currentUserSelf } }
 
     val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -197,8 +203,9 @@ fun PanoAppContent(
                 tabData = getTabData(dest, accountType)
                 showNavMetadata = hasNavMetadata(dest)
             }
-            canPop = navController.previousBackStackEntry != null
         }
+
+        canPop = navController.previousBackStackEntry != null
         onDispose { }
     }
 

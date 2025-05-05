@@ -15,12 +15,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
@@ -53,14 +55,18 @@ fun ImportScreen(
     modifier: Modifier = Modifier,
     viewModel: ImportVM = viewModel { ImportVM() },
 ) {
-    var codeText by remember { mutableStateOf<String?>(null) }
-    var errorText by remember { mutableStateOf<String?>(null) }
-    var toggleButtonSelectedIndex by remember { mutableIntStateOf(-1) }
+    var codeText by rememberSaveable { mutableStateOf<String?>(null) }
+    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
+    var toggleButtonSelectedIndex by rememberSaveable { mutableIntStateOf(-1) }
     val networkMode =
-        remember(toggleButtonSelectedIndex) { toggleButtonSelectedIndex == 1 }
-    var selectedEditsMode by remember { mutableStateOf(EditsMode.EDITS_NOPE) }
-    var settingsMode by remember { mutableStateOf(false) }
-    var importDialogShown by remember { mutableStateOf(false) }
+        rememberSaveable(toggleButtonSelectedIndex) { toggleButtonSelectedIndex == 1 }
+    var selectedEditsMode by rememberSaveable(saver = jsonSerializableSaver()) {
+        mutableStateOf(
+            EditsMode.EDITS_NOPE
+        )
+    }
+    var settingsMode by rememberSaveable { mutableStateOf(false) }
+    var importDialogShown by rememberSaveable { mutableStateOf(false) }
     val importErrorText = stringResource(Res.string.import_hey_wtf)
     val importSuccessText = stringResource(Res.string.imported)
     var filePickerShown by remember { mutableStateOf(false) }

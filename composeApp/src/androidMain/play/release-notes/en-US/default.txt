@@ -1,7 +1,8 @@
 - The app has been rewritten from ground up using Compose Multiplatform
+- Now available for Android, Windows and Linux
 - The option to display a persistent notification on Android 14+ is back for non Play Store builds
+- Tasker intents have been replaced with ContentProvider query URIs, which are more secure
 - This may help prevent the system from killing the app in the background on some devices
-- Bug fixes
 - Translation updates by the translators on Crowdin
 
-Consider this release as a beta.
+**This is a lightly tested release, consider this as a beta, expect bugs.**

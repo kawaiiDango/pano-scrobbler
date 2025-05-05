@@ -17,8 +17,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +40,7 @@ import pano_scrobbler.composeapp.generated.resources.user_tags_empty
 @Composable
 fun HiddenTagsDialog(modifier: Modifier = Modifier) {
     val hiddenTags by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.hiddenTags }
-    var tagInput by remember { mutableStateOf("") }
+    var tagInput by rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
     fun addTag(tag: String) {

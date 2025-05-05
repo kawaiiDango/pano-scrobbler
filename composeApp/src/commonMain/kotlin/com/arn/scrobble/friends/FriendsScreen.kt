@@ -42,6 +42,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -63,6 +64,7 @@ import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.BottomSheetDialogParent
@@ -121,11 +123,14 @@ fun FriendsScreen(
 ) {
     val scope = rememberCoroutineScope()
     val friends = viewModel.friends.collectAsLazyPagingItems()
+    val totalFriends by viewModel.totalFriends.collectAsStateWithLifecycle()
     val friendsExtraDataMap by viewModel.friendsExtraDataMap.collectAsStateWithLifecycle()
     val friendsExtraDataMapState = remember { mutableStateMapOf<String, Result<FriendExtraData>>() }
     val pinnedFriends by viewModel.pinnedFriends.collectAsStateWithLifecycle()
     val pinnedUsernamesSet by viewModel.pinnedUsernamesSet.collectAsStateWithLifecycle()
-    var expandedFriend by remember { mutableStateOf<UserCached?>(null) }
+    var expandedFriend by rememberSaveable(saver = jsonSerializableSaver<UserCached?>()) {
+        mutableStateOf(null)
+    }
     val sortedFriends by viewModel.sortedFriends.collectAsStateWithLifecycle()
     val lastFriendsRefreshTime by viewModel.lastFriendsRefreshTime.collectAsStateWithLifecycle()
     val sortable by remember(
@@ -155,13 +160,11 @@ fun FriendsScreen(
         friendsExtraDataMapState.putAll(friendsExtraDataMap)
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.totalFriends.collectLatest {
-            if (it > 0)
-                onTitleChange("$followingText: $it")
-            else
-                onTitleChange(followingText)
-        }
+    LaunchedEffect(totalFriends) {
+        if (totalFriends > 0)
+            onTitleChange("$followingText: $totalFriends")
+        else
+            onTitleChange(followingText)
     }
 
     LaunchedEffect(gridState) {

@@ -16,8 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,14 +48,14 @@ fun SimpleEditsAddScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var origTrack by remember { mutableStateOf(simpleEdit?.origTrack ?: "") }
-    var track by remember { mutableStateOf(simpleEdit?.track ?: "") }
-    var origAlbum by remember { mutableStateOf(simpleEdit?.origAlbum ?: "") }
-    var album by remember { mutableStateOf(simpleEdit?.album ?: "") }
-    var origArtist by remember { mutableStateOf(simpleEdit?.origArtist ?: "") }
-    var artist by remember { mutableStateOf(simpleEdit?.artist ?: "") }
-    var albumArtist by remember { mutableStateOf(simpleEdit?.albumArtist ?: "") }
-    var showError by remember { mutableStateOf(false) }
+    var origTrack by rememberSaveable { mutableStateOf(simpleEdit?.origTrack ?: "") }
+    var track by rememberSaveable { mutableStateOf(simpleEdit?.track ?: "") }
+    var origAlbum by rememberSaveable { mutableStateOf(simpleEdit?.origAlbum ?: "") }
+    var album by rememberSaveable { mutableStateOf(simpleEdit?.album ?: "") }
+    var origArtist by rememberSaveable { mutableStateOf(simpleEdit?.origArtist ?: "") }
+    var artist by rememberSaveable { mutableStateOf(simpleEdit?.artist ?: "") }
+    var albumArtist by rememberSaveable { mutableStateOf(simpleEdit?.albumArtist ?: "") }
+    var showError by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     fun onDone() {

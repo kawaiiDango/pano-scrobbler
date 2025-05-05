@@ -154,7 +154,7 @@ fun RegexEditsAddScreen(
         )
     }
 
-    var errorText by remember { mutableStateOf<String?>(null) }
+    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
     val proStatus = PlatformStuff.billingRepository.isLicenseValid
 
     fun buildRegexEdit() = if (extractMode) {

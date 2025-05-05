@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +28,7 @@ import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -58,13 +59,17 @@ private fun BlockedMetadataAddContent(
     onNavigateToBilling: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var artist by remember { mutableStateOf(blockedMetadata.artist) }
-    var albumArtist by remember { mutableStateOf(blockedMetadata.albumArtist) }
-    var album by remember { mutableStateOf(blockedMetadata.album) }
-    var track by remember { mutableStateOf(blockedMetadata.track) }
-    var blockPlayerAction by remember { mutableStateOf(blockedMetadata.blockPlayerAction) }
-    var useChannel by remember { mutableStateOf(false) }
-    var errorText by remember { mutableStateOf<String?>(null) }
+    var artist by rememberSaveable { mutableStateOf(blockedMetadata.artist) }
+    var albumArtist by rememberSaveable { mutableStateOf(blockedMetadata.albumArtist) }
+    var album by rememberSaveable { mutableStateOf(blockedMetadata.album) }
+    var track by rememberSaveable { mutableStateOf(blockedMetadata.track) }
+    var blockPlayerAction by rememberSaveable(saver = jsonSerializableSaver()) {
+        mutableStateOf(
+            blockedMetadata.blockPlayerAction
+        )
+    }
+    var useChannel by rememberSaveable { mutableStateOf(false) }
+    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
     val emptyText = stringResource(Res.string.required_fields_empty)
 
     LaunchedEffect(useChannel) {

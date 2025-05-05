@@ -31,12 +31,14 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -60,7 +62,7 @@ import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.combineImageVectors
-import com.arn.scrobble.ui.shimmerWindowBounds
+import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -120,6 +122,9 @@ fun ScrobblesScreen(
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
     val currentAccoutType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
+    var expandedIdx by rememberSaveable { mutableIntStateOf(-1) }
+    var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
+    var stickyHeaderHeight by remember { mutableIntStateOf(0) }
     val pendingScrobblesheader =
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
     val canShowTrackFullMenu by remember(selectedType, currentAccoutType) {
@@ -150,6 +155,7 @@ fun ScrobblesScreen(
                 )
 
                 onTitleChange(getString(Res.string.loved))
+                expandedIdx = -1
             }
 
             ScrobblesType.TIME_JUMP -> {
@@ -162,6 +168,7 @@ fun ScrobblesScreen(
                     )
 
                 onTitleChange(getString(Res.string.time_jump))
+                expandedIdx = -1
             }
 
             ScrobblesType.RECENTS -> {
@@ -172,11 +179,28 @@ fun ScrobblesScreen(
                 )
 
                 onTitleChange(getString(Res.string.scrobbles))
+
+                canExpandNowPlaying = true
             }
         }
     }
 
-    LifecycleResumeEffect(tracks.loadState.refresh) {
+    LaunchedEffect(expandedIdx) {
+        if (expandedIdx != -1) {
+            val key = if (expandedIdx < tracks.itemCount)
+                tracks.peek(expandedIdx)?.generateKey() ?: return@LaunchedEffect
+            else
+                return@LaunchedEffect
+
+            listState.layoutInfo.visibleItemsInfo.find {
+                it.key == key
+            }?.let {
+                listState.scrollToItem(it.index, -stickyHeaderHeight)
+            }
+        }
+    }
+
+    LifecycleResumeEffect(tracks.loadState) {
         onSetRefreshing(
             if (tracks.loadState.refresh is LoadState.Loading) {
                 PanoPullToRefreshStateForTab.Refreshing
@@ -184,6 +208,13 @@ fun ScrobblesScreen(
                 PanoPullToRefreshStateForTab.NotRefreshing
             }
         )
+
+        // expand now playing
+        if (tracks.loadState.refresh is LoadState.NotLoading) {
+            if (canExpandNowPlaying && tracks.itemCount > 0 && tracks.peek(0)?.isNowPlaying == true && (expandedIdx == -1 || expandedIdx == 0)) {
+                expandedIdx = 0
+            }
+        }
 
         onPauseOrDispose {
             onSetRefreshing(PanoPullToRefreshStateForTab.Disabled)
@@ -226,12 +257,6 @@ fun ScrobblesScreen(
         PanoLazyColumn(
             state = listState,
             modifier = modifier
-                .then(
-                    if (tracks.loadState.refresh is LoadState.Loading)
-                        Modifier.shimmerWindowBounds()
-                    else Modifier
-                )
-
         ) {
             if (showChips) {
                 stickyHeader(key = "header_chips") {
@@ -262,7 +287,10 @@ fun ScrobblesScreen(
                                 tracks.refresh()
                             }
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .onSizeChanged {
+                                stickyHeaderHeight = it.height
+                            },
                     )
                 }
             }
@@ -339,6 +367,15 @@ fun ScrobblesScreen(
                 showFullMenu = canShowTrackFullMenu,
                 showLove = true,
                 showHate = currentAccoutType == AccountType.LISTENBRAINZ,
+                expandedIdx = { expandedIdx },
+                onExpand = {
+                    if (expandedIdx == 0 && it == -1)
+                        canExpandNowPlaying = false
+                    else if (it == 0)
+                        canExpandNowPlaying = true
+
+                    expandedIdx = it
+                },
                 onOpenDialog = onOpenDialog,
                 viewModel = viewModel,
             )
@@ -359,7 +396,8 @@ private fun ScrobblesTypeSelector(
     modifier: Modifier = Modifier,
 ) {
     var timeJumpMenuShown by remember { mutableStateOf(false) }
-    var datePickerShown by remember { mutableStateOf(false) }
+    var datePickerShown by rememberSaveable { mutableStateOf(false) }
+
     ButtonGroup(
         horizontalArrangement = Arrangement.spacedBy(
             ButtonGroupDefaults.HorizontalArrangement.spacing,

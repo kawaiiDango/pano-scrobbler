@@ -468,7 +468,7 @@ private fun ListeningActivityContent(
             listeningActivity?.let { listeningActivity ->
                 if (listeningActivity.isNotEmpty()) {
                     XYGraph(
-                        xAxisModel = remember { CategoryAxisModel(xLabels) },
+                        xAxisModel = remember(xLabels) { CategoryAxisModel(xLabels) },
                         yAxisModel = rememberFloatLinearAxisModel(
                             range = 0f..1.2f * yValuesMax,
                             minViewExtent = 1f,

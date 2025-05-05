@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +44,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoNavigationType
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.MusicEntryGridItem
 import com.arn.scrobble.ui.MusicEntryListItem
@@ -77,7 +79,11 @@ fun RandomScreen(
     val error by viewModel.error.collectAsStateWithLifecycle()
     val type by PlatformStuff.mainPrefs.data.map { it.lastRandomType }
         .collectAsStateWithLifecycle(Stuff.TYPE_TRACKS)
-    var timePeriod by remember { mutableStateOf<TimePeriod?>(null) }
+    var timePeriod by rememberSaveable(saver = jsonSerializableSaver<TimePeriod?>()) {
+        mutableStateOf(
+            null
+        )
+    }
     val isLandscape = LocalNavigationType.current != PanoNavigationType.BOTTOM_NAVIGATION
 
     val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }

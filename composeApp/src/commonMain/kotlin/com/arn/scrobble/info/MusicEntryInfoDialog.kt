@@ -245,7 +245,7 @@ fun MusicEntryInfoDialog(
             )
     ) {
         entries.forEachIndexed { index, (type, entry) ->
-            val imgRequest = remember {
+            val imgRequest = remember(entry) {
                 MusicEntryImageReq(entry, fetchAlbumInfoIfMissing = true)
             }
 
@@ -286,7 +286,7 @@ fun MusicEntryInfoDialog(
 
             InfoActionsRow(
                 entry = entry,
-                originalEntry = remember { viewModel.originalEntriesMap[type] },
+                originalEntry = viewModel.originalEntriesMap[type],
                 pkgName = pkgName,
                 user = user,
                 showUserTagsButton = userTags[type] == null,
@@ -355,7 +355,7 @@ fun MusicEntryInfoDialog(
                                 showArtists = false,
                                 headerIcon = Icons.Outlined.MusicNote,
                                 emptyStringRes = Res.string.not_found,
-                                placeholderItem = remember {
+                                placeholderItem = remember(type) {
                                     getMusicEntryPlaceholderItem(type)
                                 },
                                 onHeaderClick = {
@@ -377,7 +377,7 @@ fun MusicEntryInfoDialog(
                                 fetchAlbumImageIfMissing = false,
                                 showArtists = false,
                                 headerIcon = Icons.Outlined.Album,
-                                placeholderItem = remember {
+                                placeholderItem = remember(type) {
                                     getMusicEntryPlaceholderItem(type)
                                 },
                                 emptyStringRes = Res.string.not_found,
@@ -401,7 +401,7 @@ fun MusicEntryInfoDialog(
                                 showArtists = true,
                                 headerIcon = Icons.Outlined.Mic,
                                 emptyStringRes = Res.string.not_found,
-                                placeholderItem = remember {
+                                placeholderItem = remember(type) {
                                     getMusicEntryPlaceholderItem(type, showScrobbleCount = false)
                                 },
                                 onHeaderClick = {
@@ -453,7 +453,7 @@ fun MusicEntryInfoDialog(
                             showArtists = true,
                             headerIcon = Icons.Outlined.MusicNote,
                             emptyStringRes = Res.string.not_found,
-                            placeholderItem = remember {
+                            placeholderItem = remember(type) {
                                 getMusicEntryPlaceholderItem(type)
                             },
                             onHeaderClick = {
@@ -770,7 +770,7 @@ private fun TrackFeaturesPlot(
         )
     }
 
-    val data = remember {
+    val data = remember(trackWithFeatures) {
         values.mapIndexed { index, value ->
             DefaultPolarPoint(value, categories[index])
         }
@@ -910,9 +910,9 @@ private fun InfoTrackList(
         return
     }
 
-    val totalDuration = remember { tracks.sumOf { it.duration ?: 0 } }
-    val durationsMissing = remember { tracks.any { it.duration == null } }
-    val durationsString = remember {
+    val totalDuration = remember(tracks) { tracks.sumOf { it.duration ?: 0 } }
+    val durationsMissing = remember(tracks) { tracks.any { it.duration == null } }
+    val durationsString = remember(tracks) {
         totalDuration.takeIf { it > 0 }
             ?.let { Stuff.humanReadableDuration(it) + if (durationsMissing) "+" else "" }
     }

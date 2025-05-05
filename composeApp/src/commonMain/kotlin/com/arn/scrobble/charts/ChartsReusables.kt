@@ -42,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,7 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.PanoLazyRow
 import com.arn.scrobble.ui.combineImageVectors
@@ -181,7 +183,9 @@ fun TimePeriodSelector(
     val timePeriods by viewModel.timePeriods.collectAsStateWithLifecycle()
     val selectedPeriod by viewModel.selectedPeriod.collectAsStateWithLifecycle()
     val periodType by viewModel.periodType.collectAsStateWithLifecycle(null)
-    var selectorTypeShown by remember { mutableStateOf<SelectorType?>(null) }
+    var selectorTypeShown by rememberSaveable(saver = jsonSerializableSaver<SelectorType?>()) {
+        mutableStateOf(null)
+    }
     val isListenBrainz by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType == AccountType.LISTENBRAINZ }
     val listState = rememberLazyListState()
 

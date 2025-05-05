@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -43,6 +46,7 @@ fun TrackHistoryScreen(
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
+    var expandedIdx by rememberSaveable { mutableIntStateOf(-1) }
 
     LaunchedEffect(user, track) {
         viewModel.setScrobblesInput(
@@ -96,6 +100,8 @@ fun TrackHistoryScreen(
             showFullMenu = true,
             showLove = false,
             showHate = false,
+            expandedIdx = { expandedIdx },
+            onExpand = { expandedIdx = it },
             onOpenDialog = onOpenDialog,
             viewModel = viewModel,
         )

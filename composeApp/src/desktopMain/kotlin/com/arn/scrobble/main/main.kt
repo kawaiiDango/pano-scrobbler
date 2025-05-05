@@ -23,6 +23,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.logger.JvmLogger
 import com.arn.scrobble.media.PlayingTrackNotificationState
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -51,12 +52,12 @@ import org.jetbrains.compose.resources.painterResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.cancel
-import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.fix_it_action
 import pano_scrobbler.composeapp.generated.resources.ic_launcher_with_bg
 import pano_scrobbler.composeapp.generated.resources.love
+import pano_scrobbler.composeapp.generated.resources.quit
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
@@ -138,6 +139,7 @@ fun main(args: Array<String>) {
 
         fun onExit() {
             DesktopWorkManager.clearAll()
+            PanoDb.destroyInstance()
             exitApplication()
         }
 
@@ -220,7 +222,7 @@ fun main(args: Array<String>) {
                 // always show these
 
                 trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
-                trayItems += PanoTrayUtils.ItemId.Close.name to getString(Res.string.close)
+                trayItems += PanoTrayUtils.ItemId.Exit.name to getString(Res.string.quit)
 
                 Triple(tooltip, trayIconPainter, trayItems)
             }
@@ -380,7 +382,7 @@ private suspend fun trayMenuClickListener(
         val playingTrackTrayInfo = PanoNotifications.playingTrackTrayInfo.value
 
         when (itemId) {
-            PanoTrayUtils.ItemId.Close -> {
+            PanoTrayUtils.ItemId.Exit -> {
                 onExit()
             }
 

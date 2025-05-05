@@ -26,12 +26,12 @@ class JvmLogger(
             useParentHandlers = false // Disable parent handlers to avoid duplicate logs
 
             if (logToFile) {
-                // Create a log file handler with rolling files (50K per file and max of 3 files)
+                // Create a log file handler with rolling files (100K per file and max of 3 files)
                 val logsDir = File(PlatformStuff.filesDir, "logs").also { it.mkdirs() }
 
                 val fileHandler = FileHandler(
                     logsDir.absolutePath + "/pano-scrobbler-%u-%g.log",
-                    50 * 1024,
+                    100 * 1024,
                     3,
                     true
                 )

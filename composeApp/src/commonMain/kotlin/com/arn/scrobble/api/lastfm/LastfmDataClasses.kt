@@ -1,6 +1,5 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.api.ApiErrorDeserializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

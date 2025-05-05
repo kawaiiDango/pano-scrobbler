@@ -1,7 +1,7 @@
 package com.arn.scrobble.recents
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.arn.scrobble.api.AccountType
@@ -57,6 +59,7 @@ import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.accountTypeLabel
+import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -563,10 +566,10 @@ fun PendingDropdownMenu(
 }
 
 @Composable
-private fun ColumnScope.PendingScrobbleServicesDesc(
+private fun PendingScrobbleServicesDesc(
     pendingScrobble: PendingScrobble,
 ) {
-    val currentScrobblableType by remember { mutableStateOf(Scrobblables.current.value?.userAccount?.type) }
+    val currentScrobblableType = remember { Scrobblables.current.value?.userAccount?.type }
     val accountTypesList = mutableListOf<AccountType>()
     AccountType.entries.forEach {
         if (pendingScrobble.state and (1 shl it.ordinal) != 0)
@@ -607,6 +610,8 @@ fun LazyListScope.scrobblesListItems(
     showFullMenu: Boolean,
     showLove: Boolean,
     showHate: Boolean,
+    expandedIdx: () -> Int,
+    onExpand: (Int) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     viewModel: ScrobblesVM,
 ) {
@@ -617,8 +622,21 @@ fun LazyListScope.scrobblesListItems(
     for (i in 0 until tracks.itemCount) {
         val trackPeek = tracks.peek(i)
         if (trackPeek == null || trackPeek !in deletedTracksSet) {
+
+            if (trackPeek?.date in viewModel.lastScrobbleOfTheDaySet) {
+                item(
+                    key = "date_seperator_${trackPeek?.date}"
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+                }
+            }
+
             item(
-                key = trackPeek?.toString() ?: i
+                key = trackPeek?.generateKey() ?: "placeholder_$i"
             ) {
                 val track = tracks[i]?.let {
                     editedTracksMap[it] ?: it
@@ -631,8 +649,16 @@ fun LazyListScope.scrobblesListItems(
                 MusicEntryListItem(
                     entry = track,
                     appId = pkgName,
-                    showDateSeperator = track.date in viewModel.lastScrobbleOfTheDaySet,
                     onEntryClick = { onTrackClick(track, pkgName) },
+                    isColumn = expandedIdx() == i,
+                    fixedImageHeight = expandedIdx() != i,
+                    onImageClick = {
+                        if (expandedIdx() == i)
+                            onExpand(-1)
+                        else {
+                            onExpand(i)
+                        }
+                    },
                     forShimmer = trackPeek == null,
                     fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
                     menuContent = {
@@ -665,7 +691,14 @@ fun LazyListScope.scrobblesListItems(
                         )
                     },
                     onMenuClick = { menuVisible = true },
-                    modifier = Modifier.animateItem()
+                    modifier = Modifier
+                        .then(
+                            if (expandedIdx() == i)
+                                Modifier.fillParentMaxHeight()
+                            else
+                                Modifier
+                        )
+                        .animateItem()
                 )
 
             }

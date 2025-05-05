@@ -56,7 +56,7 @@ fun AppTheme(
         ThemeAttributes(
             isDark = isDark,
             contrastMode = contrastMode,
-            allOnSecondaryColors = colorSchemes.map { it.onSecondary },
+            allOnSecondaryContainerColors = colorSchemes.map { it.onSecondaryContainer },
             allSecondaryContainerColors = colorSchemes.map { it.secondaryContainer },
         )
     }

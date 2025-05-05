@@ -560,6 +560,7 @@ fun PrefsScreen(
                 AppIconsPref(
                     packageNames = allowedAutomationPackages,
                     seenAppsMap = seenAppsMap,
+                    summary = stringResource(Res.string.choose_apps),
                     onClick = {
                         onNavigate(
                             PanoRoute.AppList(

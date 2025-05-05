@@ -60,6 +60,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -550,8 +551,8 @@ fun VerifyButton(
     buttonText: String = stringResource(Res.string.login_submit),
     extraContent: @Composable RowScope.() -> Unit = {},
 ) {
-    var verifying by remember { mutableStateOf(false) }
-    var errorText by remember { mutableStateOf<String?>(null) }
+    var verifying by rememberSaveable { mutableStateOf(false) }
+    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
 
     LaunchedEffect(result) {
         result?.onFailure {
@@ -618,7 +619,8 @@ fun AvatarOrInitials(
         )
     } else if (avatarInitialLetter != null) {
         val themeAttributes = LocalThemeAttributes.current
-        val index = abs(avatarInitialLetter.hashCode()) % themeAttributes.allOnSecondaryColors.size
+        val index =
+            abs(avatarInitialLetter.hashCode()) % themeAttributes.allOnSecondaryContainerColors.size
 
         Box(
             contentAlignment = Alignment.Center,
@@ -631,7 +633,7 @@ fun AvatarOrInitials(
                 softWrap = false,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
-                color = themeAttributes.allOnSecondaryColors[index],
+                color = themeAttributes.allOnSecondaryContainerColors[index],
             )
         }
     }

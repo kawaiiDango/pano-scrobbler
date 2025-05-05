@@ -280,7 +280,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">패턴 편집 규칙을 활성화 하시겠습니까: %1$s?</string>
     <string name="show_persistent_noti">지속적인 알림 표시</string>
     <string name="fix_it_desc">몇몇 기기에서 스크로블러의 백그라운드 실행을 유지하는 데 도움이 될 수 있습니다.</string>
-    <string name="persistent_noti_desc">길게 눌러 숨기기</string>
     <string name="scrobbler_off">스크로블러 비활성화</string>
     <string name="scrobbler_on">스크로블러 활성화</string>
     <string name="duration">길이</string>

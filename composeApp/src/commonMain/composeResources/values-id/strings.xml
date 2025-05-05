@@ -279,7 +279,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Apakah Anda ingin mengaktifkan aturan edit pola: %1$s?</string>
     <string name="show_persistent_noti">Tampilkan pemberitahuan terus-menerus</string>
     <string name="fix_it_desc">Ini dapat membantu scrobbler tetap berjalan di latar belakang pada beberapa perangkat</string>
-    <string name="persistent_noti_desc">Tekan lama untuk menyembunyikan ini</string>
     <string name="scrobbler_off">Scrobbler dinonaktifkan</string>
     <string name="scrobbler_on">Scrobbler aktif</string>
     <string name="duration">Durasi</string>

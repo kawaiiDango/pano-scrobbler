@@ -102,7 +102,6 @@
     <string name="share_sig">(Pano Scrobblerより)</string>
     <string name="share">共有</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">アイコン説明</string>
-    <string name="grid_size">グリッドサイズを変更</string>
     <string name="pinch_to_zoom">ピンチ操作で拡大</string>
     <string name="more_info">詳細</string>
     <string name="more" comment="More options menu in short">詳細</string>
@@ -280,7 +279,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">パターン訂正ルール: %1$sを有効化しますか？</string>
     <string name="show_persistent_noti">通知を永続的に表示する</string>
     <string name="fix_it_desc">これらは、一部デバイスにおいてバックグラウンドでScrobbleサービスを実行するのに役立ちます</string>
-    <string name="persistent_noti_desc">長押しで非表示</string>
     <string name="scrobbler_off">Scrobbler停止中</string>
     <string name="scrobbler_on">Scrobbler稼働中</string>
     <string name="total_listen_time">合計リスニング時間</string>
@@ -301,7 +299,6 @@
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>
     <string name="pref_master_qs_add">クイック設定タイルを追加</string>
     <string name="pref_master_qs_already_addded">クイック設定タイルはすでに追加されています</string>
-    <string name="pref_noti_q">アイコンが表示されない場合、通知を促せます</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知のカテゴリ</string>
     <string name="pref_scrobble_noti">Scrobbleの通知</string>

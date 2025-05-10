@@ -150,7 +150,6 @@
     <string name="share_sig">(pomocí Pano Scrobbler)</string>
     <string name="share">Sdílet</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Vysvětlivky</string>
-    <string name="grid_size">Změnit velikost mřížky</string>
     <string name="pinch_to_zoom">Přetažením přiblížit</string>
     <string name="more_info">Více informací</string>
     <string name="more" comment="More options menu in short">Další</string>
@@ -323,7 +322,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Chcete povolit pravidlo pro úpravu podle vzoru: %1$s?</string>
     <string name="show_persistent_noti">Zobrazovat trvalé oznámení</string>
     <string name="fix_it_desc">To může u některých zařízení pomoct scrobbleru běžet na pozadí</string>
-    <string name="persistent_noti_desc">Dlouhým stiskem skryjete</string>
     <string name="scrobbler_off">Scrobbler zakázán</string>
     <string name="scrobbler_on">Scrobbler je aktivní</string>
     <string name="acoustic" comment="(Acoustic music)">Akustická</string>
@@ -343,7 +341,6 @@
     <string name="pref_master_qs_hint">Lze také přepnout z dlaždice rychlého nastavení</string>
     <string name="pref_master_qs_add">Přidat dlaždici rychlého nastavení</string>
     <string name="pref_master_qs_already_addded">Dlaždice rychlého nastavení je již přidána</string>
-    <string name="pref_noti_q">Pokud se ikona nezobrazuje, můžete propagovat oznámení</string>
     <string name="pref_noti">Oznámení</string>
     <string name="pref_noti_categories">Kategorie oznámení</string>
     <string name="pref_scrobble_noti">Oznámení o scrobblování</string>

@@ -138,7 +138,6 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share">Поширити</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Умовні позначення</string>
-    <string name="grid_size">Змінити розмір сітки</string>
     <string name="pinch_to_zoom">Щипніть для збільшення</string>
     <string name="more_info">Детальніше</string>
     <string name="more" comment="More options menu in short">Більше</string>
@@ -316,7 +315,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Бажаєте увімкнути правило редагування шаблонів: %1$s?</string>
     <string name="show_persistent_noti">Показувати постійне сповіщення</string>
     <string name="fix_it_desc">Це може допомогти зберігати скробли у фоновому режимі</string>
-    <string name="persistent_noti_desc">Натисніть і утримуйте кнопку щоб сховати</string>
     <string name="scrobbler_off">Скроблер вимкнено</string>
     <string name="scrobbler_on">Скроблер увімкнений</string>
     <string name="duration">Тривалість</string>
@@ -338,7 +336,6 @@
     <string name="pref_master_qs_hint">Можна перемкнути з плитки швидких налаштувань</string>
     <string name="pref_master_qs_add">Додати плитку швидких налаштувань</string>
     <string name="pref_master_qs_already_addded">Плитка швидких налаштувань вже додана</string>
-    <string name="pref_noti_q">Ви можете підвищити рівень сповіщення, якщо іконка не відображається</string>
     <string name="pref_noti">Сповіщення</string>
     <string name="pref_noti_categories">Категорії сповіщення</string>
     <string name="pref_scrobble_noti">Сповіщення скроблінгу</string>

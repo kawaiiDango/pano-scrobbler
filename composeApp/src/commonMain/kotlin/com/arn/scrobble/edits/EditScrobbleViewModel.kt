@@ -274,12 +274,13 @@ class EditScrobbleViewModel : ViewModel() {
         }
 
         if (!isNowPlaying && hash != null) {
-            notifyPlayingTrackEvent(
-                PlayingTrackNotifyEvent.TrackScrobbleLocked(
-                    hash = hash,
-                    locked = false
-                )
+            val cancelEvent = PlayingTrackNotifyEvent.TrackCancelled(
+                hash = hash,
+                showUnscrobbledNotification = false,
+                markAsScrobbled = false
             )
+
+            notifyPlayingTrackEvent(cancelEvent)
         }
 
         return Result.success(scrobbleData)

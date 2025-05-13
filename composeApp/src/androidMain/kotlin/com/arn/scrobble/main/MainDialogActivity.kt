@@ -56,7 +56,7 @@ class MainDialogActivity : ComponentActivity() {
             AppTheme {
                 currentDialogArgs?.let {
                     PanoMainDialogContent(
-                        currentDialogArgs = it,
+                        dialogArgs = it,
                         onFinish = ::finish
                     )
                 }

@@ -59,3 +59,24 @@ play the selected song on your favourite music player.
 
 This can happen if you have set that particular music player as the default. To fix this, go to that
 music player's app info and tap on "Clear defaults".
+
+### [android] Where is the scrobble from mic feature?
+
+In-app scrobble from mic has been removed, in favour of using Shazam/AutoShazam.
+
+### [android] Where are the Tasker intents?
+
+Tasker intents have been replaced with ContentProvider query URIs and an allowlist, which are more
+secure.
+
+### [desktop] How do I launch the app as minimized?
+
+Use the `--minimized` or `-m` command line argument.
+
+### [desktop] How do I store the app's data in a different location?
+
+Use the `--data-dir` or `-d` command line argument, followed by the path to the directory.
+
+### [desktop] How do I correctly scrobble media playing on a web browser?
+
+Browsers are not supported. Use WebScrobbler for that instead.

@@ -12,7 +12,6 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.Process
 import android.os.StrictMode
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.work.Configuration
 import co.touchlab.kermit.Logger
@@ -20,7 +19,6 @@ import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.crashreporter.CrashReporter
-import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff

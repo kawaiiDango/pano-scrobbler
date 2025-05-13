@@ -53,7 +53,6 @@ import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -63,7 +62,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -88,12 +86,11 @@ import com.arn.scrobble.navigation.PanoFabData
 import com.arn.scrobble.navigation.PanoNavMetadata
 import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.navigation.PanoTabType
-import com.arn.scrobble.navigation.PanoTabs
+import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.navigation.ProfileHeader
 import com.arn.scrobble.navigation.getFabData
-import com.arn.scrobble.navigation.getTabData
 import com.arn.scrobble.navigation.hasNavMetadata
+import com.arn.scrobble.navigation.hasTabMetadata
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.navigation.panoNavGraph
 import com.arn.scrobble.ui.AvatarOrInitials
@@ -136,19 +133,15 @@ fun PanoAppContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
-    var canPop by remember { mutableStateOf(false) }
-    var currentTitle by rememberSaveable { mutableStateOf<String?>(null) }
-    var fabData by remember { mutableStateOf<PanoFabData?>(null) }
-    var tabData by remember { mutableStateOf<List<PanoTabs>?>(null) }
+    val titlesMap = remember { mutableStateMapOf<String, String>() }
+    val tabData = remember { mutableStateMapOf<String, List<PanoTab>>() }
     var navMetadata by remember { mutableStateOf<List<PanoNavMetadata>?>(null) }
-    var showNavMetadata by remember { mutableStateOf(false) }
     var selectedTabIdx by rememberSaveable { mutableIntStateOf(0) }
     var currentDialogArgs by rememberSaveable(
         dialogArgs,
         saver = jsonSerializableSaver<PanoDialog?>()
     ) { mutableStateOf(dialogArgs) }
     val drawerData by viewModel.drawerDataFlow.collectAsStateWithLifecycle()
-    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val currentUserSelf by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { pref ->
             pref.scrobbleAccounts
@@ -165,6 +158,27 @@ fun PanoAppContent(
     val pullToRefreshState = rememberPullToRefreshState()
     val pullToRefreshStateForTabs =
         remember { mutableStateMapOf<Int, PanoPullToRefreshStateForTab>() }
+
+    val canPop by remember(currentBackStackEntry) { mutableStateOf(navController.previousBackStackEntry != null) }
+    val fabData by remember(currentBackStackEntry) {
+        mutableStateOf(getFabData(currentBackStackEntry?.destination))
+    }
+
+    val showNavMetadata by remember(currentBackStackEntry) {
+        mutableStateOf(
+            hasNavMetadata(
+                currentBackStackEntry?.destination
+            )
+        )
+    }
+
+    val showTabs by remember(currentBackStackEntry) {
+        mutableStateOf(
+            hasTabMetadata(
+                currentBackStackEntry?.destination
+            )
+        )
+    }
 
     LaunchedEffect(Unit) {
         Stuff.globalSnackbarFlow.collectLatest {
@@ -194,21 +208,6 @@ fun PanoAppContent(
         }
     }
 
-    DisposableEffect(currentBackStackEntry) {
-        currentBackStackEntry?.destination?.let { dest ->
-//            dest.navigatorName is either "composable" or "dialog"
-            if (currentUser != null && dest.navigatorName == "composable") {
-                // don't consider the nav popup for nav metadata
-                fabData = getFabData(dest)
-                tabData = getTabData(dest, accountType)
-                showNavMetadata = hasNavMetadata(dest)
-            }
-        }
-
-        canPop = navController.previousBackStackEntry != null
-        onDispose { }
-    }
-
     setSingletonImageLoaderFactory { context ->
         newImageLoader(context)
     }
@@ -219,7 +218,10 @@ fun PanoAppContent(
             drawerContent = {
                 if (currentNavType == PanoNavigationType.NAVIGATION_RAIL) {
                     PanoNavigationRail(
-                        tabs = tabData ?: emptyList(),
+                        tabs = if (showTabs)
+                            (tabData.values.firstOrNull() ?: emptyList())
+                        else
+                            emptyList(),
                         selectedTabIdx = selectedTabIdx,
                         fabData = fabData,
                         onNavigate = { navController.navigate(it) },
@@ -228,17 +230,16 @@ fun PanoAppContent(
                         onTabClicked = { pos, tab ->
                             selectedTabIdx = pos
                         },
-                        onMenuClicked = {
-                            currentDialogArgs = PanoDialog.NavPopup(
-                                otherUser = currentUserOther,
-                            )
+                        onProfileClicked = {
+                            currentDialogArgs = PanoDialog.NavPopup(otherUser = currentUserOther)
                         },
-                        user = currentUser,
+                        userp = currentUser,
                         drawerData = drawerData,
                     )
                 } else if (currentNavType == PanoNavigationType.PERMANENT_NAVIGATION_DRAWER) {
                     PanoNavigationDrawerContent(
-                        tabs = tabData ?: emptyList(),
+                        tabs = if (showTabs) (tabData.values.firstOrNull()
+                            ?: emptyList()) else emptyList(),
                         selectedTabIdx = selectedTabIdx,
                         fabData = fabData,
                         onNavigate = { navController.navigate(it) },
@@ -247,7 +248,7 @@ fun PanoAppContent(
                         onTabClicked = { pos, tab ->
                             selectedTabIdx = pos
                         },
-                        otherUser = currentUserOther,
+                        otherUserp = currentUserOther,
                         drawerData = drawerData,
                         drawSnowfall = viewModel.isItChristmas,
                         navMetadataList = navMetadata.takeIf { showNavMetadata } ?: emptyList(),
@@ -283,31 +284,28 @@ fun PanoAppContent(
                     ),
                 topBar = {
                     PanoTopAppBar(
-                        currentTitle ?: "",
+                        titlesMap.values.firstOrNull() ?: "",
                         scrollBehavior = { topBarScrollBehavior },
                         showBack = !PlatformStuff.isTv && canPop,
                         onBack = { navController.navigateUp() },
                     )
                 },
                 bottomBar = {
-                    if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION) {
-                        tabData?.let { tabData ->
-                            PanoBottomNavigationBar(
-                                tabs = tabData,
-                                selectedTabIdx = selectedTabIdx,
-                                onTabClicked = { pos, tab ->
-                                    selectedTabIdx = pos
-                                },
-                                scrollBehavior = bottomBarScrollBehavior,
-                                onMenuClicked = {
-                                    currentDialogArgs = PanoDialog.NavPopup(
-                                        otherUser = currentUserOther,
-                                    )
-                                },
-                                user = currentUser,
-                                drawerData = drawerData,
-                            )
-                        }
+                    if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION && showTabs) {
+                        PanoBottomNavigationBar(
+                            tabs = tabData.values.firstOrNull() ?: emptyList(),
+                            selectedTabIdx = selectedTabIdx,
+                            onTabClicked = { pos, tab ->
+                                selectedTabIdx = pos
+                            },
+                            scrollBehavior = bottomBarScrollBehavior,
+                            onProfileClicked = {
+                                currentDialogArgs = PanoDialog.NavPopup(
+                                    otherUser = if (!it.isSelf) it else null,
+                                )
+                            },
+                            drawerData = drawerData,
+                        )
                     }
                 },
                 floatingActionButton = {
@@ -381,9 +379,19 @@ fun PanoAppContent(
                             .consumeWindowInsets(topPadding)
                     ) {
                         panoNavGraph(
-                            onSetTitle = { currentTitle = it },
-                            tabIdxFlow = snapshotFlow { selectedTabIdx },
-                            tabDataFlow = snapshotFlow { tabData },
+                            onSetTitle = { id, title ->
+                                if (title != null)
+                                    titlesMap[id] = title
+                                else
+                                    titlesMap.remove(id)
+                            },
+                            tabIdx = { selectedTabIdx },
+                            onSetTabData = { id, it ->
+                                if (it != null)
+                                    tabData[id] = it
+                                else
+                                    tabData.remove(id)
+                            },
                             onSetTabIdx = { selectedTabIdx = it },
                             navigate = navController::navigate,
                             goBack = navController::popBackStack,
@@ -407,19 +415,13 @@ fun PanoAppContent(
                 }
             }
 
-            if (currentDialogArgs != null) {
-                PanoDialogs(
-                    dialogData = currentDialogArgs!!,
-                    onDismiss = { currentDialogArgs = null },
-                    onNavigate = { route ->
-                        currentDialogArgs = null
-                        navController.navigate(route)
-                    },
-                    onOpenDialog = { currentDialogArgs = it },
-                    navMetadataList = { navMetadata },
-                    mainViewModel = viewModel,
-                )
-            }
+            PanoDialogStack(
+                initialDialogArgs = currentDialogArgs,
+                onNavigate = navController::navigate,
+                onDismiss = { currentDialogArgs = null },
+                navMetadataList = { navMetadata },
+                mainViewModel = viewModel,
+            )
         }
     }
 }
@@ -516,27 +518,17 @@ private fun PanoTopAppBar(
 
 @Composable
 private fun PanoNavigationRail(
-    tabs: List<PanoTabs>,
+    tabs: List<PanoTab>,
     selectedTabIdx: Int,
     fabData: PanoFabData?,
     onBack: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
-    onTabClicked: (pos: Int, PanoTabs) -> Unit,
-    onMenuClicked: () -> Unit,
-    user: UserCached?,
+    onTabClicked: (pos: Int, PanoTab) -> Unit,
+    onProfileClicked: (UserCached) -> Unit,
+    userp: UserCached?,
     drawerData: DrawerData?,
 ) {
-    val profilePicUrl by remember(user, drawerData) {
-        mutableStateOf(
-            when {
-                user?.isSelf == false -> user.largeImage
-                user?.isSelf == true && drawerData != null -> drawerData.profilePicUrl
-                else -> null
-            }
-        )
-    }
-
     NavigationRail(
         windowInsets = WindowInsets.safeDrawing.only(
             WindowInsetsSides.Vertical + WindowInsetsSides.Start
@@ -555,36 +547,19 @@ private fun PanoNavigationRail(
                 )
             }
 
+            val user = tabs.filterIsInstance<PanoTab.Profile>().firstOrNull()?.user ?: userp
 
-            val lastTab = tabs.lastOrNull()
-            if (lastTab?.type == PanoTabType.MENU) {
+            if (user != null) {
                 NavigationRailItem(
                     selected = false,
-                    onClick = onMenuClicked,
-                    icon = {
-                        Icon(
-                            imageVector = lastTab.icon,
-                            contentDescription = stringResource(lastTab.titleRes)
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(lastTab.titleRes),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .width(80.dp)
-                )
-            } else if (user != null) {
-                NavigationRailItem(
-                    selected = false,
-                    onClick = onMenuClicked,
+                    onClick = { onProfileClicked(user) },
                     icon = {
                         AvatarOrInitials(
-                            avatarUrl = profilePicUrl,
+                            avatarUrl = when {
+                                !user.isSelf -> user.largeImage
+                                user.isSelf && drawerData != null -> drawerData.profilePicUrl
+                                else -> null
+                            },
                             avatarInitialLetter = user.name.first(),
                             modifier = Modifier
                                 .size(24.dp)
@@ -610,30 +585,16 @@ private fun PanoNavigationRail(
     ) {
         Spacer(Modifier.weight(1f))
 
-        tabs.filter { it.type == PanoTabType.TAB }
+        tabs.filter { it !is PanoTab.Profile }
             .forEachIndexed { index, tabMetadata ->
                 NavigationRailItem(
                     selected = index == selectedTabIdx,
                     onClick = {
-//                    if (tabMetadata.type != PanoTabType.TAB) {
-//                        onMenuClicked()
-//                        return@NavigationRailItem
-//                    }
-
                         if (index != selectedTabIdx) {
                             onTabClicked(index, tabMetadata)
                         }
                     },
                     icon = {
-//                    if (tabMetadata.type == PanoTabType.PROFILE) {
-//                        AvatarOrInitials(
-//                            avatarUrl = profilePicUrl,
-//                            avatarInitialLetter = user?.name?.first(),
-//                            modifier = Modifier
-//                                .size(24.dp)
-//                                .clip(CircleShape)
-//                        )
-//                    } else
                         Icon(
                             imageVector = tabMetadata.icon,
                             contentDescription = stringResource(tabMetadata.titleRes)
@@ -641,10 +602,7 @@ private fun PanoNavigationRail(
                     },
                     label = {
                         Text(
-                            text =
-//                            if (tabMetadata.type == PanoTabType.PROFILE) user?.name
-//                            ?: "" else
-                                stringResource(tabMetadata.titleRes),
+                            text = stringResource(tabMetadata.titleRes),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -661,24 +619,13 @@ private fun PanoNavigationRail(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PanoBottomNavigationBar(
-    tabs: List<PanoTabs>,
+    tabs: List<PanoTab>,
     selectedTabIdx: Int,
-    onTabClicked: (pos: Int, PanoTabs) -> Unit,
+    onTabClicked: (pos: Int, PanoTab) -> Unit,
     scrollBehavior: BottomAppBarScrollBehavior,
-    onMenuClicked: () -> Unit,
-    user: UserCached?,
+    onProfileClicked: (UserCached) -> Unit,
     drawerData: DrawerData?,
 ) {
-    val profilePicUrl by remember(user, drawerData) {
-        mutableStateOf(
-            when {
-                user?.isSelf == false -> user.largeImage
-                user?.isSelf == true && drawerData != null -> drawerData.profilePicUrl
-                else -> null
-            }
-        )
-    }
-
     BottomAppBar(
         modifier = Modifier.fillMaxWidth(),
         scrollBehavior = scrollBehavior
@@ -688,8 +635,8 @@ private fun PanoBottomNavigationBar(
             NavigationBarItem(
                 selected = index == selectedTabIdx,
                 onClick = {
-                    if (tabMetadata.type != PanoTabType.TAB) {
-                        onMenuClicked()
+                    if (tabMetadata is PanoTab.Profile) {
+                        onProfileClicked(tabMetadata.user)
                         return@NavigationBarItem
                     }
 
@@ -698,10 +645,16 @@ private fun PanoBottomNavigationBar(
                     }
                 },
                 icon = {
-                    if (tabMetadata.type == PanoTabType.PROFILE) {
+                    if (tabMetadata is PanoTab.Profile) {
+
                         AvatarOrInitials(
-                            avatarUrl = profilePicUrl,
-                            avatarInitialLetter = user?.name?.first(),
+                            avatarUrl =
+                                when {
+                                    !tabMetadata.user.isSelf -> tabMetadata.user.largeImage
+                                    tabMetadata.user.isSelf && drawerData != null -> drawerData.profilePicUrl
+                                    else -> null
+                                },
+                            avatarInitialLetter = tabMetadata.user.name.first(),
                             modifier = Modifier
                                 .size(24.dp)
                                 .clip(CircleShape)
@@ -714,8 +667,8 @@ private fun PanoBottomNavigationBar(
                 },
                 label = {
                     Text(
-                        text = if (tabMetadata.type == PanoTabType.PROFILE)
-                            (user?.name ?: "")
+                        if (tabMetadata is PanoTab.Profile)
+                            tabMetadata.user.name
                         else
                             stringResource(tabMetadata.titleRes),
                         maxLines = 1,
@@ -730,16 +683,16 @@ private fun PanoBottomNavigationBar(
 
 @Composable
 private fun PanoNavigationDrawerContent(
-    tabs: List<PanoTabs>,
+    tabs: List<PanoTab>,
     selectedTabIdx: Int,
     fabData: PanoFabData?,
     navMetadataList: List<PanoNavMetadata>,
     onBack: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
-    onTabClicked: (pos: Int, PanoTabs) -> Unit,
+    onTabClicked: (pos: Int, PanoTab) -> Unit,
     drawSnowfall: Boolean,
-    otherUser: UserCached?,
+    otherUserp: UserCached?,
     drawerData: DrawerData?,
 ) {
     PermanentDrawerSheet(
@@ -753,6 +706,13 @@ private fun PanoNavigationDrawerContent(
                 .padding(vertical = verticalOverscanPadding())
                 .width(240.dp)
         ) {
+            val otherUser = tabs
+                .filterIsInstance<PanoTab.Profile>()
+                .firstOrNull()
+                ?.user
+                ?.takeIf { !it.isSelf }
+                ?: otherUserp
+
             ProfileHeader(
                 otherUser = otherUser,
                 drawerData = drawerData,
@@ -783,7 +743,7 @@ private fun PanoNavigationDrawerContent(
                     )
                 )
 
-            tabs.filter { it.type == PanoTabType.TAB }
+            tabs.filter { it !is PanoTab.Profile }
                 .forEachIndexed { index, tabMetadata ->
                     NavigationDrawerItem(
                         selected = index == selectedTabIdx,

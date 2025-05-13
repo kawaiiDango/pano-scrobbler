@@ -213,6 +213,8 @@ fun MusicEntryListItem(
                         else
                             Modifier
                     )
+                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                    .backgroundForShimmer(forShimmer)
             ) {
                 AsyncImage(
                     model = remember(forShimmer, entry, isColumn, fetchAlbumImageIfMissing) {
@@ -248,11 +250,9 @@ fun MusicEntryListItem(
                         placeholderPainter(),
                     contentDescription = stringResource(Res.string.album_art),
                     modifier = Modifier
-                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                        .align(Alignment.Center)
+                        .fillMaxSize()
                         .clip(MaterialTheme.shapes.medium)
                         .then(if (onImageClick != null) Modifier.clickable(enabled = !forShimmer) { onImageClick() } else Modifier)
-                        .backgroundForShimmer(forShimmer)
                 )
 
                 if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
@@ -436,57 +436,55 @@ fun NowPlayingSurface(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    if (nowPlaying) {
-        val infiniteTransition = rememberInfiniteTransition()
-        val progress by infiniteTransition.animateFloat(
-            initialValue = -1f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(20000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            )
-        )
-        val spotlightColor = MaterialTheme.colorScheme.inverseSurface
-        var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = if (nowPlaying) MaterialTheme.colorScheme.secondaryContainer else Color.Unspecified,
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .then(
+                if (nowPlaying) {
 
-        val brush = remember(spotlightColor, brushRadius) {
-            Brush.radialGradient(
-                listOf(spotlightColor, Color.Transparent),
-                radius = brushRadius
-            )
-        }
+                    val infiniteTransition = rememberInfiniteTransition()
+                    val progress by infiniteTransition.animateFloat(
+                        initialValue = -1f,
+                        targetValue = 1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(20000, easing = LinearEasing),
+                            repeatMode = RepeatMode.Reverse
+                        )
+                    )
+                    val spotlightColor = MaterialTheme.colorScheme.inverseSurface
+                    var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
 
-
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            modifier = modifier
-                .clip(MaterialTheme.shapes.large)
-                .drawWithContent {
-                    drawContent()
-
-                    brushRadius = size.maxDimension
-
-                    translate(progress * size.width, size.height / 2) {
-                        drawCircle(
-                            brush = brush,
-                            radius = size.maxDimension,
-                            blendMode = BlendMode.Overlay,
+                    val brush = remember(spotlightColor, brushRadius) {
+                        Brush.radialGradient(
+                            listOf(spotlightColor, Color.Transparent),
+                            radius = brushRadius
                         )
                     }
-                },
-        ) {
-            content()
-        }
-    } else {
-        Box(
-            modifier
-        ) {
-            content()
-        }
+
+                    Modifier.drawWithContent {
+                        drawContent()
+
+                        brushRadius = size.maxDimension
+
+                        translate(progress * size.width, size.height / 2) {
+                            drawCircle(
+                                brush = brush,
+                                radius = size.maxDimension,
+                                blendMode = BlendMode.Overlay,
+                            )
+                        }
+                    }
+                } else
+                    Modifier
+            )
+    ) {
+        content()
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MusicEntryGridItem(
     entry: MusicEntry,
@@ -578,7 +576,7 @@ fun MusicEntryGridItem(
                     "${index + 1}. $firstText"
                 else
                     firstText,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMediumEmphasized,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -590,7 +588,7 @@ fun MusicEntryGridItem(
             if (secondText != null)
                 Text(
                     text = if (forShimmer) "" else secondText,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
@@ -963,15 +961,20 @@ fun EntriesRow(
                 )
             }
 
-            if (entries.loadState.refresh is LoadState.Error ||
-                entries.loadState.append is LoadState.Error
-            ) {
-                val error = entries.loadState.refresh as LoadState.Error
-                item {
-                    ListLoadError(
-                        modifier = Modifier.animateItem(),
-                        throwable = error.error,
-                        onRetry = { entries.retry() })
+            if (entries.loadState.hasError) {
+                val error = when {
+                    entries.loadState.refresh is LoadState.Error -> entries.loadState.refresh as LoadState.Error
+                    entries.loadState.append is LoadState.Error -> entries.loadState.append as LoadState.Error
+                    else -> null
+                }
+
+                if (error != null) {
+                    item {
+                        ListLoadError(
+                            modifier = Modifier.animateItem(),
+                            throwable = error.error,
+                            onRetry = { entries.retry() })
+                    }
                 }
             }
         }
@@ -1188,15 +1191,20 @@ fun EntriesGridOrList(
                 }
             }
 
-            if (entries.loadState.refresh is LoadState.Error ||
-                entries.loadState.append is LoadState.Error
-            ) {
-                val error = entries.loadState.refresh as LoadState.Error
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    ListLoadError(
-                        modifier = Modifier.animateItem(),
-                        throwable = error.error,
-                        onRetry = { entries.retry() })
+            if (entries.loadState.hasError) {
+                val error = when {
+                    entries.loadState.refresh is LoadState.Error -> entries.loadState.refresh as LoadState.Error
+                    entries.loadState.append is LoadState.Error -> entries.loadState.append as LoadState.Error
+                    else -> null
+                }
+
+                if (error != null) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        ListLoadError(
+                            modifier = Modifier.animateItem(),
+                            throwable = error.error,
+                            onRetry = { entries.retry() })
+                    }
                 }
             }
         }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.arn.scrobble.api.UserAccountTemp
@@ -22,7 +23,7 @@ actual fun WebViewScreen(
     initialUrl: String,
     userAccountTemp: UserAccountTemp?,
     pleromaOauthClientCreds: PleromaOauthClientCreds?,
-    onTitleChange: (String) -> Unit,
+    onSetTitle: (String?) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable ColumnScope.() -> Unit,
     viewModel: WebViewVM,
@@ -32,8 +33,12 @@ actual fun WebViewScreen(
     val navigator = rememberWebViewNavigator()
     val useBrowserText = stringResource(Res.string.use_browser)
 
-    LaunchedEffect(webViewState.pageTitle) {
-        onTitleChange(webViewState.pageTitle ?: "-")
+    DisposableEffect(webViewState.pageTitle) {
+        onSetTitle(webViewState.pageTitle ?: "-")
+
+        onDispose {
+            onSetTitle(null)
+        }
     }
 
     LaunchedEffect(webViewState.errorsForCurrentRequest) {
@@ -84,7 +89,7 @@ actual fun WebViewScreen(
                         mimeType = "text/html",
                         historyUrl = null
                     )
-                    onTitleChange("...")
+                    onSetTitle("...")
                 }
             }
         }

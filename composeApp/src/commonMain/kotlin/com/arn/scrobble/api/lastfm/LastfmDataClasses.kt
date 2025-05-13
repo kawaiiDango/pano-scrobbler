@@ -50,12 +50,6 @@ val IHasImage.webp300
                 url
         }
 
-val IHasImage.webp600
-    get() = if (webp300?.startsWith("https://lastfm.freetls.fastly.net") == true)
-        webp300?.replace("300x300", "600x600")
-    else
-        webp300
-
 @Serializable
 data class Wiki(
     val content: String,
@@ -195,11 +189,15 @@ data class Track(
     @SerialName("@attr")
     override val _attr: MusicEntryAttr? = null,
     val isNowPlaying: Boolean = _attr?.nowplaying == true,
-) : MusicEntry(), IHasImage {
-//    val feedbackScore = if (userloved == true) 1 else if (userHated == true) -1 else 0
-
-    // album?.image has more priority since _image can be a white star
-    override val image get() = album?.image ?: _image
+) : MusicEntry() {
+    fun copyImageToAlbum(): Track {
+        if (album != null && _image != null) {
+            val newAlbum = album.copy(image = _image)
+            return copy(album = newAlbum)
+        } else {
+            return this
+        }
+    }
 }
 
 @Serializable

@@ -1,13 +1,13 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.api.ExpirationPolicy
+import com.arn.scrobble.api.cache.ExpirationPolicy
 import io.ktor.http.Url
 import java.util.concurrent.TimeUnit
 
 class LastfmExpirationPolicy : ExpirationPolicy {
 
     private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
-    private val FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5)
+    private val THREE_MINUTES = TimeUnit.MINUTES.toMillis(3)
     private val ONE_MONTH = TimeUnit.DAYS.toMillis(30)
 
     override fun getExpirationTime(url: Url): Long {
@@ -41,7 +41,7 @@ class LastfmExpirationPolicy : ExpirationPolicy {
             "album.getinfo",
             "artist.getinfo" -> {
                 if (username != null)
-                    FIVE_MINUTES
+                    THREE_MINUTES
                 else
                     ONE_MONTH
             }
@@ -56,7 +56,7 @@ class LastfmExpirationPolicy : ExpirationPolicy {
             "user.getweeklyalbumchart",
             "user.getweeklyartistchart",
             "user.getweeklytrackchart",
-            "user.getweeklychartlist" -> FIVE_MINUTES
+            "user.getweeklychartlist" -> THREE_MINUTES
 
             else -> -1
         }

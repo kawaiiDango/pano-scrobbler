@@ -1,12 +1,16 @@
 package com.arn.scrobble.main
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
 import com.arn.scrobble.charts.HiddenTagsDialog
 import com.arn.scrobble.edits.BlockedMetadataAddDialog
 import com.arn.scrobble.edits.EditScrobbleDialog
+import com.arn.scrobble.friends.FriendDialog
 import com.arn.scrobble.info.MusicEntryInfoDialog
 import com.arn.scrobble.info.TagInfoDialog
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -23,23 +27,27 @@ import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 
 @Composable
-fun PanoDialogs(
-    dialogData: PanoDialog,
+private fun PanoDialogs(
+    dialogArgs: PanoDialog,
     onDismiss: () -> Unit,
+    onBack: (() -> Unit)?,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     navMetadataList: () -> List<PanoNavMetadata>?,
     mainViewModel: MainViewModel,
 ) {
     BottomSheetDialogParent(
+        padding = dialogArgs !is PanoDialog.MusicEntryInfo,
+        onBack = onBack,
         onDismiss = onDismiss
     ) { modifier ->
-        when (dialogData) {
+        when (dialogArgs) {
             is PanoDialog.NavPopup -> {
                 NavPopupDialog(
-                    otherUser = dialogData.otherUser,
+                    otherUser = dialogArgs.otherUser,
                     drawerDataFlow = mainViewModel.drawerDataFlow,
                     drawSnowfall = mainViewModel.isItChristmas,
                     loadOtherUserDrawerData = mainViewModel::loadOtherUserDrawerData,
@@ -63,7 +71,7 @@ fun PanoDialogs(
 
             is PanoDialog.UpdateAvailable -> {
                 UpdateAvailableDialog(
-                    githubReleases = dialogData.githubReleases,
+                    githubReleases = dialogArgs.githubReleases,
                     modifier = modifier
                 )
             }
@@ -78,9 +86,9 @@ fun PanoDialogs(
                 val activity = getActivityOrNull()
 
                 CollageGeneratorDialog(
-                    collageType = dialogData.collageType,
-                    timePeriod = dialogData.timePeriod,
-                    user = dialogData.user,
+                    collageType = dialogArgs.collageType,
+                    timePeriod = dialogArgs.timePeriod,
+                    user = dialogArgs.user,
                     onAskForReview = {
                         PlatformStuff.promptForReview(activity)
                     },
@@ -90,9 +98,9 @@ fun PanoDialogs(
 
             is PanoDialog.MusicEntryInfo -> {
                 MusicEntryInfoDialog(
-                    musicEntry = dialogData.artist ?: dialogData.album ?: dialogData.track!!,
-                    pkgName = dialogData.pkgName,
-                    user = dialogData.user,
+                    musicEntry = dialogArgs.artist ?: dialogArgs.album ?: dialogArgs.track!!,
+                    pkgName = dialogArgs.pkgName,
+                    user = dialogArgs.user,
                     onNavigate = onNavigate,
                     onOpenDialog = onOpenDialog,
                     modifier = modifier
@@ -101,7 +109,7 @@ fun PanoDialogs(
 
             is PanoDialog.TagInfo -> {
                 TagInfoDialog(
-                    tag = dialogData.tag,
+                    tag = dialogArgs.tag,
                     modifier = modifier
                 )
             }
@@ -120,9 +128,9 @@ fun PanoDialogs(
 
             is PanoDialog.BlockedMetadataAdd -> {
                 BlockedMetadataAddDialog(
-                    blockedMetadata = dialogData.blockedMetadata,
-                    ignoredArtist = dialogData.ignoredArtist,
-                    hash = dialogData.hash,
+                    blockedMetadata = dialogArgs.blockedMetadata,
+                    ignoredArtist = dialogArgs.ignoredArtist,
+                    hash = dialogArgs.hash,
                     onDismiss = onDismiss,
                     onNavigateToBilling = {
                         onNavigate(PanoRoute.Billing)
@@ -133,20 +141,20 @@ fun PanoDialogs(
 
             is PanoDialog.EditScrobble -> {
                 EditScrobbleDialog(
-                    scrobbleData = dialogData.scrobbleData,
-                    msid = dialogData.msid,
-                    hash = dialogData.hash,
+                    scrobbleData = dialogArgs.scrobbleData,
+                    msid = dialogArgs.msid,
+                    hash = dialogArgs.hash,
                     onDone = {
-                        if (dialogData.hash != null) { // from notification
+                        if (dialogArgs.hash != null) { // from notification
                             notifyPlayingTrackEvent(
                                 PlayingTrackNotifyEvent.TrackCancelled(
-                                    hash = dialogData.hash,
+                                    hash = dialogArgs.hash,
                                     showUnscrobbledNotification = false,
                                     markAsScrobbled = true,
                                 )
                             )
-                        } else if (dialogData.origTrack != null) { // from scrobble history
-                            mainViewModel.notifyEdit(dialogData.origTrack, it)
+                        } else if (dialogArgs.origTrack != null) { // from scrobble history
+                            mainViewModel.notifyEdit(dialogArgs.origTrack, it)
                         }
 
                         onDismiss()
@@ -162,6 +170,75 @@ fun PanoDialogs(
                     modifier = modifier
                 )
             }
+
+            is PanoDialog.Friend -> {
+                FriendDialog(
+                    friend = dialogArgs.friend,
+                    isPinned = dialogArgs.isPinned,
+                    extraData = dialogArgs.extraData,
+                    extraDataFlow = mainViewModel.friendExtraData,
+                    extraDataError = dialogArgs.extraDataError,
+                    onNavigate = onNavigate,
+                    onOpenDialog = onOpenDialog,
+                    modifier = modifier
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun PanoDialogStack(
+    initialDialogArgs: PanoDialog?,
+    onNavigate: (PanoRoute) -> Unit,
+    onDismiss: () -> Unit,
+    navMetadataList: () -> List<PanoNavMetadata>?,
+    mainViewModel: MainViewModel,
+) {
+    val dialogStack = rememberSaveable(
+        initialDialogArgs,
+        saver = listSaver(
+            save = { it.map { Stuff.myJson.encodeToString(it) } },
+            restore = {
+                mutableStateListOf(*it.map { Stuff.myJson.decodeFromString<PanoDialog>(it) }
+                    .toTypedArray())
+            }
+        )
+    ) {
+        if (initialDialogArgs == null)
+            mutableStateListOf()
+        else
+            mutableStateListOf(initialDialogArgs)
+    }
+
+    fun pushDialogArgs(dialog: PanoDialog) {
+        dialogStack.add(dialog)
+    }
+
+    fun popDialogArgs(): PanoDialog? {
+        return if (dialogStack.isNotEmpty()) {
+            dialogStack.removeAt(dialogStack.lastIndex)
+        } else {
+            null
+        }
+    }
+
+    if (dialogStack.isNotEmpty()) {
+        PanoDialogs(
+            dialogArgs = dialogStack.last(),
+            onDismiss = onDismiss,
+            onBack = if (dialogStack.size == 1)
+                null
+            else {
+                { popDialogArgs() }
+            },
+            onNavigate = { route ->
+                onDismiss()
+                onNavigate(route)
+            },
+            onOpenDialog = { pushDialogArgs(it) },
+            navMetadataList = navMetadataList,
+            mainViewModel = mainViewModel,
+        )
     }
 }

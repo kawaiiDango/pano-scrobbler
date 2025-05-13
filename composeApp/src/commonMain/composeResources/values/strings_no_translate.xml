@@ -32,7 +32,8 @@
 
     <!--  strings for unfinalized stuff  -->
     <string name="pref_automation">Control Pano Scrobbler from other apps</string>
-    <string name="pref_automation_desc">Use these ContentProvider query URIs to control Pano Scrobbler from automation apps, such as Tasker</string>
+    <string name="pref_automation_desc">Use these ContentProvider query URIs to control Pano Scrobbler from automation apps</string>
+    <string name="pref_automation_tasker">e.g. For Tasker, use Action > SQL Query, set the mode to "URI Formatted" and URI to one of these. Replace &lt;packageName&gt; with your app's package name.</string>
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
 If you had donated $%1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi or BuyMeACoffee with your email address and the code will be manually mailed to you.
@@ -41,9 +42,10 @@ Already purchased through Google Play?
 
 According to Google Play's policies, purchases made through Google Play cannot be used for apps downloaded outside of Google Play.
 </string>
-    <string name="reorder_dpad" translatable="false">Use the direction keys to reorder</string>
     <string name="move_left" translatable="false">Move left</string>
     <string name="move_right" translatable="false">Move right</string>
+    <string name="move_up" translatable="false">Move up</string>
+    <string name="move_down" translatable="false">Move down</string>
     <string name="date_range" translatable="false">Select date range</string>
 
     <!-- strings for dev only stuff  -->

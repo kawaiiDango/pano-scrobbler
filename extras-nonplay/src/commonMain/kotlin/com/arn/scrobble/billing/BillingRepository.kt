@@ -13,10 +13,6 @@ class BillingRepository(
     clientData
 ) {
 
-    // Breaking change in billing v4: callbacks don't run on main thread, always use LiveData.postValue()
-
-    // how long before the data source tries to reconnect to Google play
-
     override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
     private val CHECK_EVERY = 1000L * 60 * 60 * 24 // 1 day

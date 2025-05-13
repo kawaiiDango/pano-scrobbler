@@ -19,9 +19,6 @@ SourceCode: https://github.com/kawaiiDango/pano-scrobbler
 Summary: 'Scrobbles to last.fm, ListenBrainz, libre.fm, GNU FM, Maloja, Pleroma or to a file'
 Description: |
 $features
-AntiFeatures:
-  - UpstreamNonFree
-  - NonFreeNet
 WebSite: https://kawaiiDango.github.io/pano-scrobbler
 Translation: https://crowdin.com/project/pscrobbler
 Donate: https://ko-fi.com/kawaiiDango

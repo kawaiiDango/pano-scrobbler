@@ -4,7 +4,6 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.DrawerData
-import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
@@ -14,9 +13,10 @@ import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.cache.CacheStrategy
+import com.arn.scrobble.api.cache.ExpirationPolicy
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageResult
@@ -39,7 +39,10 @@ import io.ktor.http.contentType
 import io.ktor.http.parameters
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
+import java.text.SimpleDateFormat
 import java.time.Instant
+import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
@@ -122,7 +125,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
                         name = track.title.toHtmlAnnotatedString().text,
                         album = track.album?.let { Album(it.toHtmlAnnotatedString().text) },
                         duration = track.length,
-                        date = Instant.parse(track.created_at!!).toEpochMilli()
+                        date = parseIso8601ToMillis(track.created_at!!),
                     )
                 }
                 PageResult(
@@ -188,6 +191,16 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     ): Map<TimePeriod, Int> {
         // no op
         return emptyMap()
+    }
+
+    private fun parseIso8601ToMillis(dateString: String): Long {
+        if (PlatformStuff.isJava8OrGreater) {
+            return Instant.parse(dateString).toEpochMilli()
+        }
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        return sdf.parse(dateString)?.time ?: 0L
     }
 
     companion object {

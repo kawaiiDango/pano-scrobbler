@@ -30,11 +30,9 @@ import com.arn.scrobble.pref.WidgetPrefsMigration1
 import com.arn.scrobble.pref.WidgetPrefsSerializer
 import com.arn.scrobble.utils.PlatformStuff.isNonPlayBuild
 import com.arn.scrobble.utils.Stuff.SCROBBLER_PROCESS_NAME
-import com.arn.scrobble.utils.Stuff.myJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.KSerializer
 import org.jetbrains.compose.resources.StringResource
 import java.io.File
 import java.util.Locale
@@ -288,32 +286,6 @@ object AndroidStuff {
             "$it: $value"
         }
         Logger.d { "MediaMetadata\n$data" }
-    }
-
-
-    fun <T> Intent.putSerializableData(
-        data: T,
-        serializer: KSerializer<T>,
-        key: String = "data",
-    ): Intent {
-        val json = myJson.encodeToString(serializer, data)
-        putExtra(key, json)
-        return this
-    }
-
-    fun <T> Bundle.putSerializableData(
-        data: T,
-        serializer: KSerializer<T>,
-        key: String = "data",
-    ): Bundle {
-        val json = myJson.encodeToString(serializer, data)
-        putString(key, json)
-        return this
-    }
-
-    fun <T> Intent.getSerializableData(serializer: KSerializer<T>, key: String = "data"): T? {
-        val json = getStringExtra(key) ?: return null
-        return myJson.decodeFromString(serializer, json)
     }
 
     fun Context.toast(strRes: StringResource, len: Int = Toast.LENGTH_SHORT) {

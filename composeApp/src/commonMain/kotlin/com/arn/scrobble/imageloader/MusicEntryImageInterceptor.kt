@@ -107,7 +107,7 @@ class MusicEntryImageInterceptor : Interceptor {
                     }
 
                     is Track -> {
-                        val webp300 = entry.webp300
+                        val webp300 = entry.album?.webp300
                         val needImage = webp300 == null ||
                                 StarMapper.STAR_PATTERN in webp300
 
@@ -115,7 +115,7 @@ class MusicEntryImageInterceptor : Interceptor {
                             semaphore.withPermit {
                                 delay(delayMs)
                                 Requesters.lastfmUnauthedRequester.getInfo(entry)
-                                    .getOrNull()?.webp300
+                                    .getOrNull()?.album?.webp300
                             }
                         else
                             webp300
@@ -125,8 +125,10 @@ class MusicEntryImageInterceptor : Interceptor {
             }
         }
 
-        if (musicEntryImageReq.isHeroImage && (entry is Album || entry is Track))
-            fetchedImageUrl = fetchedImageUrl?.replace("300x300", "600x600")
+        if (musicEntryImageReq.isHeroImage && (entry is Album || entry is Track) &&
+            fetchedImageUrl?.startsWith("https://lastfm.freetls.fastly.net") == true
+        )
+            fetchedImageUrl = fetchedImageUrl.replace("300x300", "600x600")
 
         val request = chain.request.newBuilder()
             .data(fetchedImageUrl ?: "")

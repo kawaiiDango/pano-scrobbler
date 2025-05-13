@@ -50,8 +50,8 @@ import pano_scrobbler.composeapp.generated.resources.shazam_scrobbling
 
 @Composable
 fun MicScrobbleScreen(
-    viewModel: MicScrobbleVM = viewModel { MicScrobbleVM() },
     modifier: Modifier = Modifier,
+    viewModel: MicScrobbleVM = viewModel { MicScrobbleVM() },
 ) {
     val grantMicPermText = stringResource(Res.string.grant_rec_perm)
     val micPermRequest = rememberLauncherForActivityResult(

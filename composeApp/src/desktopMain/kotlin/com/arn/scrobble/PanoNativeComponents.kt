@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import androidx.annotation.Keep
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.media.DesktopMediaListener
 import com.arn.scrobble.media.MetadataInfo
@@ -13,6 +14,7 @@ import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+@Keep
 class PanoNativeComponents(
     private val _onActiveSessionsChanged: (List<SessionInfo>) -> Unit,
     private val _onMetadataChanged: (MetadataInfo) -> Unit,

@@ -19,6 +19,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.friends.FriendExtraData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -58,6 +59,8 @@ class MainViewModel : ViewModel() {
 
     private val _updateAvailablity = MutableSharedFlow<GithubReleases>()
     val updateAvailability = _updateAvailablity.asSharedFlow()
+
+    val friendExtraData = MutableSharedFlow<FriendExtraData>()
 
     private val _pullToRefreshTriggered = MutableSharedFlow<Int>()
 

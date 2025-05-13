@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -66,11 +65,9 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
-import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.billing_troubleshoot_title
 import pano_scrobbler.composeapp.generated.resources.choose_an_app
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.delete_account
@@ -99,12 +96,12 @@ import kotlin.reflect.typeOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.panoNavGraph(
-    onSetTitle: (String?) -> Unit,
+    onSetTitle: (String, String?) -> Unit,
     onSetOtherUser: (UserCached?) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
-    tabIdxFlow: Flow<Int>,
-    tabDataFlow: Flow<List<PanoTabs>?>,
+    tabIdx: () -> Int,
+    onSetTabData: (String, List<PanoTab>?) -> Unit,
     onSetTabIdx: (Int) -> Unit,
     navigate: (PanoRoute) -> Unit,
     onOnboardingFinished: () -> Unit,
@@ -116,11 +113,19 @@ fun NavGraphBuilder.panoNavGraph(
 ) {
 
     @Composable
-    fun onSetTitleRes(resId: StringResource?) {
-        val title = resId?.let { stringResource(it) }
-        LaunchedEffect(title) {
-            onSetTitle(title)
+    fun onSetTitleString(destId: String, title: String) {
+        DisposableEffect(title) {
+            onSetTitle(destId, title)
+
+            onDispose {
+                onSetTitle(destId, null)
+            }
         }
+    }
+
+    @Composable
+    fun onSetTitleRes(destId: String, resId: StringResource) {
+        onSetTitleString(destId, stringResource(resId))
     }
 
     @Composable
@@ -141,24 +146,22 @@ fun NavGraphBuilder.panoNavGraph(
 
         val initialTab by PlatformStuff.mainPrefs.data
             .collectAsStateWithInitialValue { it.lastHomePagerTab }
-        val tabIdx by tabIdxFlow.collectAsStateWithLifecycle(null)
-        val tabData by tabDataFlow.collectAsStateWithLifecycle(null)
 
-        if (currentUserSelf != null && tabData != null && tabIdx != null) {
+        if (currentUserSelf != null) {
             HomePagerScreen(
                 user = currentUserSelf!!,
                 onSetOtherUser = onSetOtherUser,
-                tabsList = tabData!!,
-                onTitleChange = onSetTitle,
-                tabIdx = tabIdx ?: initialTab,
+                onSetTitle = { title -> onSetTitle(it.id, title) },
+                tabIdx = tabIdx(),
                 initialTabIdx = initialTab,
                 onSetTabIdx = onSetTabIdx,
+                onSetTabData = onSetTabData,
                 onSetNavMetadataList = onSetNavMetadataList,
                 onNavigate = navigate,
                 onOpenDialog = onOpenDialog,
                 pullToRefreshState = pullToRefreshState(),
                 onSetRefreshing = onSetRefreshing,
-                editDataFlow = mainViewModel.editDataFlow,
+                mainViewModel = mainViewModel,
                 getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
                 modifier = modifier()
             )
@@ -170,29 +173,25 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<UserCached>() to serializableType<UserCached>()
         )
     ) {
-        val tabIdx by tabIdxFlow.collectAsStateWithLifecycle(null)
         val arguments = it.toRoute<PanoRoute.OthersHomePager>()
-        val tabData by tabDataFlow.collectAsStateWithLifecycle(null)
 
-        if (tabIdx != null && tabData != null) {
-            HomePagerScreen(
-                user = arguments.user,
-                onSetOtherUser = onSetOtherUser,
-                tabsList = tabData!!,
-                onTitleChange = onSetTitle,
-                initialTabIdx = 0,
-                tabIdx = tabIdx!!,
-                onSetTabIdx = onSetTabIdx,
-                onSetNavMetadataList = onSetNavMetadataList,
-                onNavigate = navigate,
-                onOpenDialog = onOpenDialog,
-                pullToRefreshState = pullToRefreshState(),
-                onSetRefreshing = onSetRefreshing,
-                editDataFlow = mainViewModel.editDataFlow,
-                getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
-                modifier = modifier()
-            )
-        }
+        HomePagerScreen(
+            user = arguments.user,
+            onSetOtherUser = onSetOtherUser,
+            onSetTitle = { title -> onSetTitle(it.id, title) },
+            initialTabIdx = 0,
+            tabIdx = tabIdx(),
+            onSetTabIdx = onSetTabIdx,
+            onSetTabData = onSetTabData,
+            onSetNavMetadataList = onSetNavMetadataList,
+            onNavigate = navigate,
+            onOpenDialog = onOpenDialog,
+            pullToRefreshState = pullToRefreshState(),
+            onSetRefreshing = onSetRefreshing,
+            mainViewModel = mainViewModel,
+            getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
+            modifier = modifier()
+        )
     }
 
     composable<PanoRoute.Random>(
@@ -200,7 +199,7 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<UserCached>() to serializableType<UserCached>()
         )
     ) {
-        onSetTitleRes(Res.string.random_text)
+        onSetTitleRes(it.id, Res.string.random_text)
         val arguments = it.toRoute<PanoRoute.Random>()
 
         RandomScreen(
@@ -211,7 +210,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.OssCredits> {
-        onSetTitleRes(Res.string.pref_oss_credits)
+        onSetTitleRes(it.id, Res.string.pref_oss_credits)
         OssCreditsScreen(
             modifier = modifier()
         )
@@ -224,6 +223,7 @@ fun NavGraphBuilder.panoNavGraph(
     ) {
         val arguments = it.toRoute<PanoRoute.AppList>()
         onSetTitleRes(
+            it.id,
             if (arguments.isSingleSelect)
                 Res.string.choose_an_app
             else
@@ -242,7 +242,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.ThemeChooser> {
-        onSetTitleRes(Res.string.pref_themes)
+        onSetTitleRes(it.id, Res.string.pref_themes)
         ThemeChooserScreen(
             onNavigateToBilling = { navigate(PanoRoute.Billing) },
             modifier = modifier().addColumnPadding()
@@ -250,14 +250,14 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.DeleteAccount> {
-        onSetTitleRes(Res.string.delete_account)
+        onSetTitleRes(it.id, Res.string.delete_account)
         DeleteAccountScreen(
             modifier = modifier().addColumnPadding()
         )
     }
 
     composable<PanoRoute.BillingTroubleshoot> {
-        onSetTitleRes(Res.string.billing_troubleshoot_title)
+        onSetTitleRes(it.id, Res.string.help)
         BillingTroubleshootScreen(
             onBack = goBack,
             modifier = modifier().addColumnPadding()
@@ -265,7 +265,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.Billing> {
-        onSetTitle(null)
+        onSetTitleString(it.id, "")
         BillingScreen(
             onBack = goBack,
             onNavigateToTroubleshoot = { navigate(PanoRoute.BillingTroubleshoot) },
@@ -284,7 +284,7 @@ fun NavGraphBuilder.panoNavGraph(
             }
         )
     ) {
-        onSetTitleRes(Res.string.settings)
+        onSetTitleRes(it.id, Res.string.settings)
         PrefsScreen(
             onNavigate = navigate,
             modifier = modifier()
@@ -292,7 +292,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.SimpleEdits> {
-        onSetTitleRes(Res.string.simple_edits)
+        onSetTitleRes(it.id, Res.string.simple_edits)
         SimpleEditsScreen(
             onEdit = { navigate(PanoRoute.SimpleEditsAdd(it)) },
             modifier = modifier()
@@ -302,7 +302,7 @@ fun NavGraphBuilder.panoNavGraph(
     composable<PanoRoute.SimpleEditsAdd>(
         typeMap = mapOf(typeOf<SimpleEdit?>() to serializableType<SimpleEdit?>())
     ) {
-        onSetTitleRes(Res.string.edit)
+        onSetTitleRes(it.id, Res.string.edit)
 
         val arguments = it.toRoute<PanoRoute.SimpleEditsAdd>()
 
@@ -314,7 +314,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.RegexEdits> {
-        onSetTitleRes(Res.string.pref_regex_edits)
+        onSetTitleRes(it.id, Res.string.pref_regex_edits)
         RegexEditsScreen(
             onNavigateToTest = { navigate(PanoRoute.RegexEditsTest) },
             onNavigateToEdit = { navigate(PanoRoute.RegexEditsAdd(it)) },
@@ -325,7 +325,7 @@ fun NavGraphBuilder.panoNavGraph(
     composable<PanoRoute.RegexEditsAdd>(
         typeMap = mapOf(typeOf<RegexEdit?>() to serializableType<RegexEdit?>())
     ) {
-        onSetTitleRes(Res.string.edit_regex)
+        onSetTitleRes(it.id, Res.string.edit_regex)
 
         val arguments = it.toRoute<PanoRoute.RegexEditsAdd>()
 
@@ -339,7 +339,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.RegexEditsTest> {
-        onSetTitleRes(Res.string.edit_regex_test)
+        onSetTitleRes(it.id, Res.string.edit_regex_test)
 
         RegexEditsTestScreen(
             mainViewModel = mainViewModel,
@@ -358,7 +358,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.BlockedMetadatas> {
-        onSetTitleRes(Res.string.pref_blocked_metadata)
+        onSetTitleRes(it.id, Res.string.pref_blocked_metadata)
 
         BlockedMetadatasScreen(
             onEdit = {
@@ -389,7 +389,7 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<Album?>() to serializableType<Album?>(),
         )
     ) {
-        onSetTitleRes(Res.string.search)
+        onSetTitleRes(it.id, Res.string.search)
 
         val arguments = it.toRoute<PanoRoute.ImageSearch>()
 
@@ -404,7 +404,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.Translators> {
-        onSetTitleRes(Res.string.pref_translate_credits)
+        onSetTitleRes(it.id, Res.string.pref_translate_credits)
 
         TranslatorsScreen(
             modifier = modifier()
@@ -412,7 +412,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.Import> {
-        onSetTitleRes(Res.string.pref_import)
+        onSetTitleRes(it.id, Res.string.pref_import)
 
         ImportScreen(
             onBack = goBack,
@@ -421,7 +421,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.Export> {
-        onSetTitleRes(Res.string.pref_export)
+        onSetTitleRes(it.id, Res.string.pref_export)
 
         ExportScreen(
             onBack = goBack,
@@ -430,7 +430,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginFile> {
-        onSetTitleRes(Res.string.scrobble_to_file)
+        onSetTitleRes(it.id, Res.string.scrobble_to_file)
 
         FileLoginScreen(
             onBack = goBack,
@@ -439,7 +439,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginGnufm> {
-        onSetTitle(accountTypeLabel(AccountType.GNUFM))
+        onSetTitleString(it.id, accountTypeLabel(AccountType.GNUFM))
 
         GnufmLoginScreen(
             onDone = goBack,
@@ -448,7 +448,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginListenBrainz> {
-        onSetTitleRes(Res.string.listenbrainz)
+        onSetTitleRes(it.id, Res.string.listenbrainz)
 
         ListenBrainzLoginScreen(
             onDone = goBack,
@@ -458,7 +458,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginCustomListenBrainz> {
-        onSetTitle(accountTypeLabel(AccountType.CUSTOM_LISTENBRAINZ))
+        onSetTitleString(it.id, accountTypeLabel(AccountType.CUSTOM_LISTENBRAINZ))
 
         ListenBrainzLoginScreen(
             onDone = goBack,
@@ -468,7 +468,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginMaloja> {
-        onSetTitleRes(Res.string.maloja)
+        onSetTitleRes(it.id, Res.string.maloja)
 
         MalojaLoginScreen(
             onDone = goBack,
@@ -477,7 +477,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.LoginPleroma> {
-        onSetTitleRes(Res.string.pleroma)
+        onSetTitleRes(it.id, Res.string.pleroma)
 
         PleromaLoginScreen(
             onBackAndThenNavigate = {
@@ -500,7 +500,7 @@ fun NavGraphBuilder.panoNavGraph(
             initialUrl = arguments.url,
             userAccountTemp = arguments.userAccountTemp,
             pleromaOauthClientCreds = arguments.creds,
-            onTitleChange = onSetTitle,
+            onSetTitle = { title -> onSetTitle(it.id, title) },
             onBack = goBack,
             modifier = modifier().padding(panoContentPadding())
             // webview has issues with nested scroll
@@ -513,7 +513,7 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<PleromaOauthClientCreds>() to serializableType<PleromaOauthClientCreds>()
         )
     ) {
-        onSetTitleRes(Res.string.pleroma)
+        onSetTitleRes(it.id, Res.string.pleroma)
 
         val arguments = it.toRoute<PanoRoute.OobPleromaAuth>()
 
@@ -531,7 +531,7 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<UserAccountTemp>() to serializableType<UserAccountTemp>(),
         )
     ) {
-        onSetTitleRes(Res.string.pref_login)
+        onSetTitleRes(it.id, Res.string.pref_login)
 
         val arguments = it.toRoute<PanoRoute.OobLibreFmAuth>()
 
@@ -552,7 +552,7 @@ fun NavGraphBuilder.panoNavGraph(
             }
         )
     ) {
-        onSetTitleRes(Res.string.search)
+        onSetTitleRes(it.id, Res.string.search)
 
         SearchScreen(
             onOpenDialog = onOpenDialog,
@@ -562,7 +562,7 @@ fun NavGraphBuilder.panoNavGraph(
 
 
     composable<PanoRoute.Onboarding> {
-        onSetTitle(null)
+        onSetTitleString(it.id, "")
 
         OnboardingScreen(
             onNavigate = navigate,
@@ -574,7 +574,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.Help> {
-        onSetTitleRes(Res.string.help)
+        onSetTitleRes(it.id, Res.string.help)
 
         HelpScreen(
             modifier = modifier().padding(panoContentPadding())
@@ -597,30 +597,26 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<UserCached>() to serializableType<UserCached>()
         )
     ) {
-        val tabIdx by tabIdxFlow.collectAsStateWithLifecycle(null)
-        val tabData by tabDataFlow.collectAsStateWithLifecycle(null)
         val arguments = it.toRoute<PanoRoute.MusicEntryInfoPager>()
 
-        onSetTitle(arguments.artist.name)
+        onSetTitleString(it.id, arguments.artist.name)
 
-        if (tabIdx != null && tabData != null) {
-            InfoPagerScreen(
-                musicEntry = arguments.artist,
-                user = arguments.user,
-                pkgName = arguments.pkgName,
-                tabIdx = tabIdx!!,
-                tabsList = tabData!!,
-                onSetTabIdx = onSetTabIdx,
-                initialTabIdx = when (arguments.type) {
-                    Stuff.TYPE_TRACKS -> 0
-                    Stuff.TYPE_ALBUMS -> 1
-                    Stuff.TYPE_ARTISTS -> 2
-                    else -> 0
-                },
-                onOpenDialog = onOpenDialog,
-                modifier = modifier()
-            )
-        }
+        InfoPagerScreen(
+            musicEntry = arguments.artist,
+            user = arguments.user,
+            pkgName = arguments.pkgName,
+            tabIdx = tabIdx(),
+            onSetTabData = onSetTabData,
+            onSetTabIdx = onSetTabIdx,
+            initialTabIdx = when (arguments.type) {
+                Stuff.TYPE_ARTISTS -> 0
+                Stuff.TYPE_ALBUMS -> 1
+                Stuff.TYPE_TRACKS -> 2
+                else -> 0
+            },
+            onOpenDialog = onOpenDialog,
+            modifier = modifier()
+        )
     }
 
 
@@ -629,27 +625,23 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<UserCached>() to serializableType<UserCached>()
         )
     ) {
-        val tabIdx by tabIdxFlow.collectAsStateWithLifecycle(null)
-        val tabData by tabDataFlow.collectAsStateWithLifecycle(null)
         val arguments = it.toRoute<PanoRoute.ChartsPager>()
 
-        if (tabIdx != null && tabData != null) {
-            ChartsPagerScreen(
-                user = arguments.user,
-                tabIdx = tabIdx!!,
-                onSetTabIdx = onSetTabIdx,
-                tabsList = tabData!!,
-                initialTabIdx = when (arguments.type) {
-                    Stuff.TYPE_ARTISTS -> 0
-                    Stuff.TYPE_ALBUMS -> 1
-                    Stuff.TYPE_TRACKS -> 2
-                    else -> 0
-                },
-                onTitleChange = onSetTitle,
-                onOpenDialog = onOpenDialog,
-                modifier = modifier()
-            )
-        }
+        ChartsPagerScreen(
+            user = arguments.user,
+            tabIdx = tabIdx(),
+            onSetTabIdx = onSetTabIdx,
+            onSetTabData = onSetTabData,
+            initialTabIdx = when (arguments.type) {
+                Stuff.TYPE_ARTISTS -> 0
+                Stuff.TYPE_ALBUMS -> 1
+                Stuff.TYPE_TRACKS -> 2
+                else -> 0
+            },
+            onSetTitle = { title -> onSetTitle(it.id, title) },
+            onOpenDialog = onOpenDialog,
+            modifier = modifier()
+        )
     }
 
     composable<PanoRoute.SimilarTracks>(
@@ -674,7 +666,7 @@ fun NavGraphBuilder.panoNavGraph(
             entry.name
         )
 
-        onSetTitle(title)
+        onSetTitleString(it.id, title)
 
         SimilarTracksScreen(
             musicEntry = arguments.track,
@@ -686,7 +678,7 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.Help> {
-        onSetTitleRes(Res.string.help)
+        onSetTitleRes(it.id, Res.string.help)
 
         HelpScreen(
             modifier = modifier().padding(panoContentPadding())
@@ -719,7 +711,7 @@ fun NavGraphBuilder.panoNavGraph(
         } else {
             "${user.name}: $formattedCount"
         }
-        onSetTitle(title)
+        onSetTitleString(it.id, title)
 
         TrackHistoryScreen(
             track = track,

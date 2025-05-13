@@ -6,9 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" android:maxSdkVersion="33" />-->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="com.android.vending.BILLING" />
 
     <queries>
         <intent>
@@ -137,7 +135,8 @@
             android:name=".widget.ChartsWidgetConfigActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
-            android:theme="@style/AppThemeWithWallpaper">
+            android:theme="@style/AppThemeWithWallpaper"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
@@ -203,9 +202,9 @@
         <provider
             android:name=".providers.AutomationProvider"
             android:authorities="${applicationId}.automation"
-            android:process=":bgScrobbler"
             android:exported="true"
-            android:grantUriPermissions="true"/>
+            android:grantUriPermissions="true"
+            android:process=":bgScrobbler" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

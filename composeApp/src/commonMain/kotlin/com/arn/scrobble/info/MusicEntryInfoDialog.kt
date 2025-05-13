@@ -4,13 +4,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -91,7 +91,6 @@ import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyRow
 import com.arn.scrobble.ui.TextWithIcon
-import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
@@ -176,8 +175,6 @@ fun MusicEntryInfoDialog(
     val userTags by viewModel.userTags.collectAsStateWithLifecycle()
     val userTagsHistory by viewModel.userTagsHistory.collectAsStateWithLifecycle()
 
-    val trackWithFeatures by viewModel.spotifyTrackWithFeatures.collectAsStateWithLifecycle()
-    val trackFeaturesLoaded by viewModel.trackFeaturesLoaded.collectAsStateWithLifecycle()
     val similarTracks = miscVM.similarTracks.collectAsLazyPagingItems()
 
     val artistTopTracks = miscVM.topTracks.collectAsLazyPagingItems()
@@ -222,7 +219,6 @@ fun MusicEntryInfoDialog(
         when (expandedEntry) {
             is Track -> {
                 miscVM.setTrack(expandedEntry)
-                viewModel.loadTrackFeaturesIfNeeded()
             }
 
             is Artist -> {
@@ -419,33 +415,6 @@ fun MusicEntryInfoDialog(
                         }
 
                     } else if (entry is Track) {
-                        if (entry.duration != null && entry.duration > 0) {
-                            Text(
-                                text = Stuff.humanReadableDuration(entry.duration),
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier
-                                    .padding(horizontal = 48.dp)
-                            )
-                        }
-
-                        if (trackFeaturesLoaded && trackWithFeatures != null) {
-                            TrackFeaturesPlot(
-                                trackWithFeatures = trackWithFeatures!!,
-                                modifier = Modifier.padding(horizontal = 24.dp)
-                            )
-                        }
-
-                        if (!trackFeaturesLoaded) {
-                            Box(
-                                modifier = Modifier
-                                    .size(200.dp)
-                                    .align(Alignment.CenterHorizontally)
-                                    .clip(MaterialTheme.shapes.extraLarge)
-                                    .shimmerWindowBounds()
-                                    .backgroundForShimmer(true)
-                            )
-                        }
-
                         EntriesRow(
                             title = stringResource(Res.string.similar_tracks),
                             entries = similarTracks,
@@ -515,7 +484,7 @@ private fun ColumnScope.InfoBigPicture(
             else -> null
         },
         modifier = modifier
-            .height(300.dp)
+            .height(320.dp)
             .aspectRatio(1f)
             .align(Alignment.CenterHorizontally)
             .clip(MaterialTheme.shapes.large)
@@ -640,6 +609,19 @@ private fun InfoActionsRow(
                 contentDescription = stringResource(Res.string.more_info),
             )
         }
+
+        Spacer(
+            modifier = Modifier.weight(1f)
+        )
+
+        if (entry is Track && entry.duration != null && entry.duration > 0) {
+            Text(
+                text = Stuff.humanReadableDuration(entry.duration),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            )
+        }
     }
 }
 
@@ -745,7 +727,6 @@ private fun ColumnScope.InfoTags(
 
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalLayoutApi::class)
 @Composable
-@Suppress("MagicNumber")
 private fun TrackFeaturesPlot(
     trackWithFeatures: TrackWithFeatures,
     modifier: Modifier = Modifier,

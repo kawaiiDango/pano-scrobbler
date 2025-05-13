@@ -1,7 +1,6 @@
 package com.arn.scrobble.themes
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -15,14 +14,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.billing.LicenseState
@@ -100,9 +101,6 @@ fun ThemeChooserScreen(
                 contrastMode = it.themeContrast
             }
     }
-
-    if (dynamic == null || dayNightMode == null || contrastMode == null || themeName == null)
-        return
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -191,6 +189,7 @@ private fun ContrastMode.label() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ThemeSwatch(
     themeVariants: ThemeVariants,
@@ -223,38 +222,30 @@ private fun ThemeSwatch(
 
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
+    val toggleButtonShapes = ToggleButtonDefaults.shapes()
 
-    OutlinedIconToggleButton(
+    FilledTonalIconToggleButton(
         checked = selected,
         onCheckedChange = { onClick() },
         interactionSource = interactionSource,
+        shapes = IconButtonDefaults.shapes(
+            toggleButtonShapes.shape,
+            toggleButtonShapes.pressedShape,
+            toggleButtonShapes.checkedShape
+        ),
         modifier = modifier
             .size(72.dp)
-            .then(
-                if (isFocused) {
-                    Modifier
-                        .border(
-                            width = 3.dp,
-                            color = Color.Black,
-                            shape = CircleShape
-                        )
-                        .padding(3.dp)
-                        .border(
-                            width = 3.dp,
-                            color = Color.White,
-                            shape = CircleShape
-                        )
-                } else Modifier.padding(3.dp)
-            )
-//            .size(48.dp)
-//            .clip(MaterialTheme.shapes.extraLarge)
-//            .clickable(onClickLabel = themeVariants.name, enabled = enabled) { onClick() }
-//            .onFocusChanged { isFocused = it.isFocused }
             .alpha(if (enabled) 1f else 0.5f)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(8.dp)
+                .clip(
+                    if (isFocused) toggleButtonShapes.pressedShape
+                    else if (selected) toggleButtonShapes.checkedShape
+                    else toggleButtonShapes.shape
+                )
         ) {
             Box(
                 modifier = Modifier

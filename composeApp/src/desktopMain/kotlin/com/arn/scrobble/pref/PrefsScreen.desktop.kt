@@ -22,7 +22,11 @@ actual fun prefNotifications(listScope: LazyListScope) {
     // no-op
 }
 
-actual fun prefAutomation(listScope: LazyListScope) {
+actual fun prefAutomation(
+    listScope: LazyListScope,
+    onNavigateToBilling: (() -> Unit),
+    onNavigateToAppList: (() -> Unit),
+) {
     // no-op
 }
 

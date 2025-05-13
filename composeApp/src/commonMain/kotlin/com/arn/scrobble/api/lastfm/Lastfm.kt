@@ -13,6 +13,7 @@ import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.UserCached.Companion.toUserCached
+import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.utils.PlatformStuff
@@ -506,16 +507,15 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }.map { it.fixTracksPage() }
 
     private fun PageResult<Track>.fixTracksPage(includeNowPlaying: Boolean = false): PageResult<Track> {
-        var newEntries = entries.map {
-            if (it.album?.name == "")
+        val newEntries = entries.mapNotNull {
+            if (!includeNowPlaying && it.isNowPlaying)
+                null
+            else if (it.album?.name == "")
                 it.copy(album = null)
             else
             // copy the album art
-                it.copy(album = it.album?.copy(image = it.image))
+                it.copyImageToAlbum()
         }
-
-        if (!includeNowPlaying)
-            newEntries = newEntries.filterNot { it.isNowPlaying }
 
         return copy(entries = newEntries)
     }

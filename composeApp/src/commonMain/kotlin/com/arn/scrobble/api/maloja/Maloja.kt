@@ -3,7 +3,6 @@ package com.arn.scrobble.api.maloja
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.DrawerData
-import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
@@ -13,9 +12,10 @@ import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.cache.CacheStrategy
+import com.arn.scrobble.api.cache.ExpirationPolicy
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageResult

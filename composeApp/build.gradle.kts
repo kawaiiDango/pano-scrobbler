@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.google.gson.Gson
@@ -109,7 +110,7 @@ kotlin {
             implementation(libs.harmony)
             implementation(libs.coil.gif)
 
-            implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
+//            implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 
         }
         commonMain.dependencies {
@@ -208,6 +209,10 @@ buildkonfig {
         "changelog_placeholder"
     }
 
+    val isReleaseBuild = gradle.startParameter.taskNames.any {
+        it.contains("proguard", ignoreCase = true) || it.contains("release", ignoreCase = true)
+    }
+
     // default config is required
     defaultConfigs {
         buildConfigField(STRING, "APP_NAME", appName, const = true)
@@ -215,6 +220,7 @@ buildkonfig {
         buildConfigField(INT, "VER_CODE", verCode.toString(), const = true)
         buildConfigField(STRING, "VER_NAME", verNameWithDate, const = true)
         buildConfigField(STRING, "CHANGELOG", changelog, const = true)
+        buildConfigField(BOOLEAN, "DEBUG", (!isReleaseBuild).toString(), const = true)
     }
 
     targetConfigs {
@@ -288,7 +294,6 @@ android {
     }
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
@@ -304,7 +309,6 @@ android {
 
 //        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
 
-        coreLibraryDesugaring(libs.desugar.jdk.libs)
         releaseImplementation(projects.extrasPlay)
 //    debugImplementation(projects.extrasPlay)
         debugImplementation(projects.extrasNonplay)
@@ -349,7 +353,7 @@ compose.desktop {
             "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
             "-Ddev.resources.dir.name=$resourcesDirName",
             // use sw rendering on linux instead of es2, fixes the no text on webview bug on arch
-            "-Dprism.order=d3d,sw",
+            "-Dprism.order=sw",
 //            "-XX:NativeMemoryTracking=detail",
             "-XX:+UseSerialGC",
             "-XX:+UseAdaptiveSizePolicy",
@@ -361,11 +365,23 @@ compose.desktop {
         )
 
         nativeDistributions {
-            val formats = mutableSetOf(TargetFormat.AppImage, TargetFormat.Dmg, TargetFormat.Msi)
+            val formats = when {
+                os.isWindows -> {
+                    mutableSetOf(TargetFormat.Msi, TargetFormat.AppImage)
+                }
 
-            // else sync fails on mac
-            if (os.isMacOsX)
-                formats.remove(TargetFormat.AppImage)
+                os.isLinux -> {
+                    mutableSetOf(TargetFormat.AppImage)
+                }
+
+                os.isMacOsX -> {
+                    mutableSetOf(TargetFormat.Dmg)
+                }
+
+                else -> {
+                    throw IllegalStateException("Unsupported OS: $os")
+                }
+            }
 
             targetFormats = formats
             packageVersion = "$verName.0"
@@ -416,7 +432,7 @@ compose.desktop {
 
         buildTypes.release {
             proguard {
-                obfuscate = false
+                obfuscate = true
                 optimize = false
                 joinOutputJars = true
                 version = "7.7.0"
@@ -451,7 +467,7 @@ tasks.register<ComposeHotRun>("runHot") {
     }
 
     val appDataDir = File(appDataRoot, "$appNameWithoutSpaces-debug").absolutePath
-//    args = listOf("--data-dir=$appDataDir")
+    args = listOf("--data-dir=$appDataDir")
 }
 
 tasks.register<DefaultTask>("generateSha256") {

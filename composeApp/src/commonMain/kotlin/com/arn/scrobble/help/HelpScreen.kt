@@ -73,7 +73,7 @@ fun HelpScreen(
     } else {
         WebViewScreen(
             initialUrl = faqLink,
-            onTitleChange = {},
+            onSetTitle = {},
             onBack = { },
             bottomContent = {
                 if (!PlatformStuff.isTv) {

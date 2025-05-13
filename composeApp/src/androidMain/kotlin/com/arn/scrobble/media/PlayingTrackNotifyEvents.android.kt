@@ -22,22 +22,6 @@ actual fun notifyPlayingTrackEventWithIpc(event: PlayingTrackNotifyEvent) {
                 )
 
             context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
-
-            // also cancel the notification on unlock
-            if (!event.locked) {
-                val cancelEvent = PlayingTrackNotifyEvent.TrackCancelled(
-                    hash = event.hash,
-                    showUnscrobbledNotification = false,
-                    markAsScrobbled = false
-                )
-
-                context.sendBroadcast(
-                    Intent(NLService.iCANCEL)
-                        .setPackage(context.packageName)
-                        .putExtra(Stuff.EXTRA_EVENT, Stuff.myJson.encodeToString(cancelEvent)),
-                    NLService.BROADCAST_PERMISSION
-                )
-            }
         }
 
         is PlayingTrackNotifyEvent.TrackCancelled -> {

@@ -1,8 +1,10 @@
 - The app has been rewritten from ground up using Compose Multiplatform
 - Now available for Android, Windows and Linux
 - The option to display a persistent notification on Android 14+ is back for non Play Store builds
-- Tasker intents have been replaced with ContentProvider query URIs, which are more secure
 - This may help prevent the system from killing the app in the background on some devices
+- Tasker intents have been replaced with ContentProvider query URIs and an allowlist, which are more secure
+- In-app scrobble from mic has been removed, in favour of using Shazam/AutoShazam
+- Targets Android 16, dropped support for Android 6
 - Translation updates by the translators on Crowdin
 
 **This is a lightly tested release, consider this as a beta, expect bugs.**

@@ -36,6 +36,12 @@ class AutomationProvider : ContentProvider() {
         sortOrder: String?
     ): Cursor? {
         val cursor = MatrixCursor(arrayOf("result"))
+
+        if (!PlatformStuff.billingRepository.isLicenseValid) {
+            cursor.addRow(arrayOf("License is invalid"))
+            return cursor
+        }
+
         val mainPrefs = PlatformStuff.mainPrefs
         val allowList = runBlocking {
             mainPrefs.data.map { it.allowedAutomationPackages }.first()

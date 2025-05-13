@@ -1,6 +1,8 @@
 # Privacy Policy
 
-_Last updated on 2025, Mar 28 UTC_
+_Last updated on 2025, May 14 UTC_
+
+Applicable to the Pano Scrobbler app version 4.0 and later.
 
 kawaiiDango built the Pano Scrobbler app as an Open Source, Freemium app. This app is provided by
 kawaiiDango at no cost and is intended for use as is. One may obtain its source code
@@ -20,11 +22,12 @@ tracking services of your choice such as Last.fm, Libre.fm, ListenBrainz and sel
 - Non-Personal Information
 
 The app sends non-personal information such as titles of music playing on the device and other music
-metadata, to the previously mentioned music tracking services of your choice. If you use the
-"Scrobble from mic" feature, a fingerprint of audio sample from the microphone will be sent to
-ACRCloud.com for identification of the song. To fetch images of artists, the name of the artist is
-sent to Spotify. If automatic error reporting is enabled, an anonymous, resettable device identifier
-is sent to Firebase Crashlytics.
+metadata, to the previously mentioned music tracking services of your choice. To fetch images of
+artists, the name of the artist is sent to Spotify. If you are using the version downloaded from
+Google Play and automatic error reporting is enabled, an anonymous, resettable device identifier is
+sent to Firebase Crashlytics. If you are using the non-Google Play version and have entered the
+unlock key, a hash of a device identifier as well as the unlock key is sent to the backend server to
+check its validity and prevent its abuse.
 
 ### Third Party Services
 
@@ -37,16 +40,16 @@ Link to privacy policies of third party service providers used by the app
 - [Libre.fm](https://github.com/foocorp/hacienda/issues/73)
 - [ListenBrainz](https://metabrainz.org/privacy)
 - [Spotify](https://www.spotify.com/legal/privacy-policy)
-- [ACRCloud](https://www.acrcloud.com/privacy)
-- [Firebase Crashlytics](https://firebase.google.com/support/privacy)
+- [Firebase Crashlytics](https://firebase.google.com/support/privacy) (for the Google Play version
+  only)
 
 ### Log Data
 
-If automatic error reporting is enabled and an error occurs in my app or if you choose to send a bug
-report via email, non-personal information such as log data for events that led to the error, stack
-traces for the error, device information such as model name, manufacturer name, OS name, amount of
-RAM used, etc are collected and sent to me through third party services. This information is used to
-identify and fix bugs.
+If automatic error reporting is enabled (for the Google Play version only) and an error occurs in
+my app or if you choose to send logs for a bug report via email, non-personal information such as
+logs for events that led to the error, stack traces for the error, device information such as model
+name, manufacturer name, OS name and version, amount of RAM used etc are collected and sent to me
+through third party services. This information is used to identify and fix bugs.
 
 ### Cookies
 
@@ -57,10 +60,6 @@ device's internal memory.
 This app uses a webview for logging in to services such as Last.fm, Libre.fm or custom servers with
 a URL of your choice. These 3rd party websites may use cookies to keep track of logged in sessions
 and to improve their services.
-
-### Microphone permission
-
-Used for identifying music from microphone audio via ACRCloud.com
 
 ### Notification Access Permission
 

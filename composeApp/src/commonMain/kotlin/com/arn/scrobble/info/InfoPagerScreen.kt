@@ -1,6 +1,7 @@
 package com.arn.scrobble.info
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -14,8 +15,7 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.main.PanoPager
 import com.arn.scrobble.navigation.PanoDialog
-import com.arn.scrobble.navigation.PanoTabType
-import com.arn.scrobble.navigation.PanoTabs
+import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.ui.EntriesGridOrList
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.Stuff
@@ -28,7 +28,7 @@ fun InfoPagerScreen(
     musicEntry: Artist,
     user: UserCached,
     pkgName: String?,
-    tabsList: List<PanoTabs>,
+    onSetTabData: (String, List<PanoTab>?) -> Unit,
     tabIdx: Int,
     initialTabIdx: Int,
     onSetTabIdx: (Int) -> Unit,
@@ -39,25 +39,36 @@ fun InfoPagerScreen(
     val artistTopTracks = viewModel.topTracks.collectAsLazyPagingItems()
     val artistTopAlbums = viewModel.topAlbums.collectAsLazyPagingItems()
     val similarArtists = viewModel.similarArtists.collectAsLazyPagingItems()
+    val tabsList = remember { getTabData() }
 
     LaunchedEffect(musicEntry) {
         viewModel.setArtist(musicEntry)
+    }
+
+    DisposableEffect(user) {
+        val id = musicEntry.toString()
+
+        onSetTabData(id, tabsList)
+
+        onDispose {
+            onSetTabData(id, null)
+        }
     }
 
     PanoPager(
         initialPage = initialTabIdx,
         selectedPage = tabIdx,
         onSelectPage = onSetTabIdx,
-        totalPages = tabsList.count { it.type == PanoTabType.TAB },
+        totalPages = tabsList.count(),
         modifier = modifier,
     ) { page ->
 
         val type by remember(page) {
             mutableIntStateOf(
                 when (page) {
-                    0 -> Stuff.TYPE_TRACKS
+                    0 -> Stuff.TYPE_ARTISTS
                     1 -> Stuff.TYPE_ALBUMS
-                    2 -> Stuff.TYPE_ARTISTS
+                    2 -> Stuff.TYPE_TRACKS
                     else -> throw IllegalArgumentException("Unknown page $tabIdx")
                 }
             )
@@ -90,3 +101,10 @@ fun InfoPagerScreen(
         )
     }
 }
+
+private fun getTabData() =
+    listOf(
+        PanoTab.TopArtists,
+        PanoTab.TopAlbums,
+        PanoTab.TopTracks,
+    )

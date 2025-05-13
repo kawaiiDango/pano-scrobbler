@@ -57,13 +57,13 @@ actual suspend fun showTrackShareSheet(track: Track, user: UserCached) {
     }
 
     withContext(Dispatchers.IO) {
-        val shareAlbumArt = if (track.webp300 == null) {
+        val shareAlbumArt = if (track.album?.webp300 == null) {
             null
         } else {
             try {
                 ImageLoader(context).execute(
                     ImageRequest.Builder(context)
-                        .data(track.webp300)
+                        .data(track.album.webp300)
                         .allowHardware(false)
                         .build()
                 ).image?.toBitmap()

@@ -11,8 +11,6 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.spotify.SpotifySearchType
-import com.arn.scrobble.api.spotify.TrackWithFeatures
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
@@ -54,11 +52,6 @@ class InfoVM : ViewModel() {
         SharingStarted.Lazily,
         emptyList()
     )
-
-    private val _spotifyTrackWithFeatures = MutableStateFlow<TrackWithFeatures?>(null)
-    val spotifyTrackWithFeatures = _spotifyTrackWithFeatures.asStateFlow()
-    private val _trackFeaturesLoaded = MutableStateFlow(false)
-    val trackFeaturesLoaded = _trackFeaturesLoaded.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -329,35 +322,4 @@ class InfoVM : ViewModel() {
     private fun splitTags(tags: String) = tags.split(",")
         .map { it.trim() }
         .filter { it.isNotEmpty() }
-
-    // track features
-
-    fun loadTrackFeaturesIfNeeded() {
-        if (trackFeaturesLoaded.value)
-            return
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val track = infoMap.value?.get(Stuff.TYPE_TRACKS) as? Track ?: return@launch
-
-            Requesters.spotifyRequester.search(
-                "${track.artist.name} ${track.name}",
-                SpotifySearchType.track
-            ).onSuccess {
-                it.tracks?.items?.firstOrNull()?.let { spotifyTrack ->
-                    if (spotifyTrack.artists.first().name == track.artist.name &&
-                        spotifyTrack.name == track.name
-                    ) {
-                        val features =
-                            Requesters.spotifyRequester.trackFeatures(spotifyTrack.id)
-
-                        _spotifyTrackWithFeatures.emit(
-                            TrackWithFeatures(spotifyTrack, features.getOrNull())
-                        )
-                    }
-                }
-            }
-
-            _trackFeaturesLoaded.value = true
-        }
-    }
 }

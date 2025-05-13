@@ -554,25 +554,15 @@ fun PrefsScreen(
         prefPersistentNoti(this, notiPersistent)
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            prefAutomation(this)
-
-            item(MainPrefs::allowedAutomationPackages.name) {
-                AppIconsPref(
-                    packageNames = allowedAutomationPackages,
-                    seenAppsMap = seenAppsMap,
-                    summary = stringResource(Res.string.choose_apps),
-                    onClick = {
-                        onNavigate(
-                            PanoRoute.AppList(
-                                saveType = AppListSaveType.Automation,
-                                preSelectedPackages = allowedAutomationPackages.toList(),
-                                isSingleSelect = false,
-                            )
-                        )
-                    }
+            prefAutomation(this, onNavigateToBilling, {
+                onNavigate(
+                    PanoRoute.AppList(
+                        saveType = AppListSaveType.Automation,
+                        preSelectedPackages = allowedAutomationPackages.toList(),
+                        isSingleSelect = false,
+                    )
                 )
-            }
-
+            })
         }
 
         prefCrashReporter(this, crashReporterEnabled)
@@ -721,7 +711,11 @@ fun PrefsScreen(
     }
 }
 
-expect fun prefAutomation(listScope: LazyListScope)
+expect fun prefAutomation(
+    listScope: LazyListScope,
+    onNavigateToBilling: (() -> Unit),
+    onNavigateToAppList: (() -> Unit),
+)
 
 expect fun prefNotifications(listScope: LazyListScope)
 

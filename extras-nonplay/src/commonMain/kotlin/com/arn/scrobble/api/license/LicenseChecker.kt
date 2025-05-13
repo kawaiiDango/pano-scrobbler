@@ -9,6 +9,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.util.decodeBase64Bytes
 import io.ktor.util.decodeBase64String
+import io.ktor.utils.io.core.toByteArray
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.security.PublicKey

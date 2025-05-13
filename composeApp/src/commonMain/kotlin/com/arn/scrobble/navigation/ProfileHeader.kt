@@ -103,7 +103,7 @@ fun ProfileHeader(
         )
     }
 
-    val profilePicUrl by remember(currentScrobblable, drawerData) {
+    val profilePicUrl by remember(currentScrobblable, drawerData, otherUser) {
         mutableStateOf(
             when {
                 otherUser != null -> otherUser.largeImage

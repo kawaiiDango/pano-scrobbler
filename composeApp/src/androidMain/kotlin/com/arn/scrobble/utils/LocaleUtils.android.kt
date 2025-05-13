@@ -7,7 +7,6 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.core.os.ConfigurationCompat
 import com.arn.scrobble.utils.LocaleUtils.localesSet
@@ -34,16 +33,11 @@ fun Context.applyAndroidLocaleLegacy(
         val locale = if (lang != null)
             Locale.forLanguageTag(lang)
         else
-            deviceLocale
+            deviceLocaleLocaleList.get(0)!!
 
-        configuration.setLocale(locale)
-        Locale.setDefault(locale)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val localeList = LocaleList(locale)
-            configuration.setLocales(localeList)
-            LocaleList.setDefault(localeList)
-        }
+        val localeList = LocaleList(locale)
+        configuration.setLocales(localeList)
+        LocaleList.setDefault(localeList)
 
         // for services
         return ContextWrapper(createConfigurationContext(configuration))
@@ -55,10 +49,7 @@ fun Context.applyAndroidLocaleLegacy(
 fun Context.getStringInDeviceLocale(@StringRes res: Int): String {
     if (deviceLocaleContext.get() == null) {
         val config = Configuration(resources.configuration)
-        config.setLocale(deviceLocale)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocales(deviceLocaleLocaleList.unwrap() as LocaleList)
-        }
+        config.setLocales(deviceLocaleLocaleList.unwrap() as LocaleList)
         deviceLocaleContext = WeakReference(createConfigurationContext(config))
     }
     val resources = deviceLocaleContext.get()!!.resources
@@ -66,12 +57,7 @@ fun Context.getStringInDeviceLocale(@StringRes res: Int): String {
     return resources.getString(res)
 }
 
-private val deviceLocale
-    get() =
-        ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)!!
-
 private val deviceLocaleLocaleList
-    @RequiresApi(Build.VERSION_CODES.N)
     get() = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
 
 actual fun setAppLocale(lang: String?, force: Boolean) {

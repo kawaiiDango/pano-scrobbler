@@ -7,6 +7,7 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.utils.PlatformStuff
@@ -55,12 +56,17 @@ class ScrobblesPagingSource(
                 if (page == 1)
                     onSetLastRecentsRefreshTime(System.currentTimeMillis())
 
+                val isListenBrainz = Scrobblables.current.value is ListenBrainz
+
                 Logger.d { "load page $page cached: $cachedOnly" }
                 Scrobblables.current.value?.getRecents(
                     page,
                     username,
                     cached = cachedOnly,
-                    to = timeJumpMillis ?: -1,
+                    to = if (isListenBrainz)
+                        (lastScrobbleTimestamp ?: -1)
+                    else
+                        (timeJumpMillis ?: -1),
                     includeNowPlaying = includeNowPlaying,
                     limit = limit
                 )

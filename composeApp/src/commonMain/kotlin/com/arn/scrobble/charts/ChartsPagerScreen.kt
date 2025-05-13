@@ -3,7 +3,7 @@ package com.arn.scrobble.charts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -17,8 +17,8 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.main.PanoPager
 import com.arn.scrobble.navigation.PanoDialog
-import com.arn.scrobble.navigation.PanoTabType
-import com.arn.scrobble.navigation.PanoTabs
+import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.ui.EntriesGridOrList
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.Stuff
@@ -36,12 +36,12 @@ import pano_scrobbler.composeapp.generated.resources.tracks
 @Composable
 fun ChartsPagerScreen(
     user: UserCached,
-    tabsList: List<PanoTabs>,
     tabIdx: Int,
     initialTabIdx: Int,
+    onSetTabData: (String, List<PanoTab>?) -> Unit,
     onSetTabIdx: (Int) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
-    onTitleChange: (String?) -> Unit,
+    onSetTitle: (String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM() },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
@@ -57,6 +57,8 @@ fun ChartsPagerScreen(
     val selectedPeriod by chartsPeriodViewModel.selectedPeriod.collectAsStateWithLifecycle()
     val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
         .collectAsStateWithLifecycle(false)
+
+    val tabsList = remember { getTabData() }
 
     val type by remember(tabIdx) {
         mutableIntStateOf(
@@ -94,8 +96,23 @@ fun ChartsPagerScreen(
         else -> throw IllegalArgumentException("Unknown page $tabIdx")
     }
 
-    LaunchedEffect(title) {
-        onTitleChange(title)
+
+    DisposableEffect(title) {
+        onSetTitle(title)
+
+        onDispose {
+            onSetTitle(null)
+        }
+    }
+
+    DisposableEffect(user) {
+        val id = PanoRoute.ChartsPager::class.simpleName + " " + user.name
+
+        onSetTabData(id, tabsList)
+
+        onDispose {
+            onSetTabData(id, null)
+        }
     }
 
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?) {
@@ -124,7 +141,7 @@ fun ChartsPagerScreen(
             initialPage = initialTabIdx,
             selectedPage = tabIdx,
             onSelectPage = onSetTabIdx,
-            totalPages = tabsList.count { it.type == PanoTabType.TAB },
+            totalPages = tabsList.count(),
             modifier = Modifier.fillMaxWidth(),
         ) { page ->
             EntriesGridOrList(
@@ -134,7 +151,7 @@ fun ChartsPagerScreen(
                     2 -> tracks
                     else -> throw IllegalArgumentException("Unknown page $page")
                 },
-                fetchAlbumImageIfMissing = !isTimePeriodContinuous,
+                fetchAlbumImageIfMissing = !isTimePeriodContinuous || type == Stuff.TYPE_TRACKS,
                 showArtists = true,
                 emptyStringRes = Res.string.charts_no_data,
                 placeholderItem = remember(type) {
@@ -167,3 +184,10 @@ fun ChartsPagerScreen(
         }
     }
 }
+
+private fun getTabData() =
+    listOf(
+        PanoTab.TopArtists,
+        PanoTab.TopAlbums,
+        PanoTab.TopTracks,
+    )

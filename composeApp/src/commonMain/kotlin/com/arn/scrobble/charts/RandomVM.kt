@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.LastfmPeriod
+import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.PlatformStuff
@@ -208,7 +208,7 @@ class RandomVM : ViewModel() {
                         val t = track.copy(
                             userplaycount = it.userplaycount,
                             album = if (input.type == Stuff.TYPE_LOVES)
-                                it.album?.copy(image = it.image)
+                                it.album?.copy(image = it.album.image)
                             else
                                 track.album,
                         )

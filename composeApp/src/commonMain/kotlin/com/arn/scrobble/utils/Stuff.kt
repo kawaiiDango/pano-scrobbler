@@ -18,7 +18,7 @@ import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.lastfm.CacheStrategy
+import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.billing.BillingClientData
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -30,14 +30,17 @@ import io.ktor.http.URLParserException
 import io.ktor.http.maxAge
 import io.ktor.http.takeFrom
 import io.ktor.util.encodeBase64
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
@@ -122,6 +125,7 @@ object Stuff {
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
     const val PACKAGE_SHAZAM = "com.shazam.android"
     const val CHANNEL_SHAZAM = "notification_shazam_match_v1" //"auto_shazam_v2"
+    const val CHANNEL_SHAZAM2 = "notification_shazam_foreground_match_v2"
 
     //    const val NOTIFICATION_TAG_SHAZAM = "NOTIFICATION_SHAZAM_RESULTS" //"auto_shazam_v2"
     const val PACKAGE_XIAMI = "fm.xiami.main"
@@ -277,7 +281,12 @@ object Stuff {
             setLastcheckTime = {
                 PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = it.lastLicenseCheckTime) }
             },
-            receipt = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature },
+            receipt = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }
+                .stateIn(
+                    GlobalScope,
+                    SharingStarted.Lazily,
+                    mainPrefsInitialValue.receipt to mainPrefsInitialValue.receiptSignature
+                ),
             setReceipt = { r, s ->
                 PlatformStuff.mainPrefs.updateData { it.copy(receipt = r, receiptSignature = s) }
             }

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -98,6 +99,7 @@ import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.back
 import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.lastfm
@@ -420,8 +422,9 @@ fun ButtonWithIcon(
 @Composable
 fun BottomSheetDialogParent(
     onDismiss: () -> Unit,
+    onBack: (() -> Unit)?,
+    padding: Boolean,
     skipPartiallyExpanded: Boolean = PlatformStuff.isDesktop,
-    padding: Boolean = true,
     content: @Composable (modifier: Modifier) -> Unit,
 ) {
     val isTabletUi = LocalNavigationType.current != PanoNavigationType.BOTTOM_NAVIGATION
@@ -439,7 +442,14 @@ fun BottomSheetDialogParent(
         sheetGesturesEnabled = sheetGesturesEnabled,
         sheetState = sheetState,
     ) {
-        if (PlatformStuff.isDesktop) {
+        if (onBack != null) {
+            IconButtonWithTooltip(
+                icon = Icons.AutoMirrored.Outlined.ArrowBack,
+                onClick = onBack,
+                contentDescription = stringResource(Res.string.back),
+                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
+            )
+        } else if (PlatformStuff.isDesktop) {
             IconButtonWithTooltip(
                 icon = Icons.Outlined.Close,
                 onClick = onDismiss,

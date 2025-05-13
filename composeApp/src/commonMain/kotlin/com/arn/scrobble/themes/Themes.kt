@@ -4,7 +4,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -44,20 +43,22 @@ fun AppTheme(
         )
     }
 
-    val themeAttributes = remember(isDark, contrastMode) {
-        val colorSchemes = ThemeUtils.themesMap.values.map {
-            getColorScheme(
-                theme = it,
-                isDark = isDark,
-                contrastMode = contrastMode,
-            )
-        }
+    val themeAttributes = remember(isDark, contrastMode, themeName) {
+        val otherColorSchemes = ThemeUtils.themesMap.values
+            .filter { it.name != themeName }
+            .map {
+                getColorScheme(
+                    theme = it,
+                    isDark = isDark,
+                    contrastMode = contrastMode,
+                )
+            }
 
         ThemeAttributes(
             isDark = isDark,
             contrastMode = contrastMode,
-            allOnSecondaryContainerColors = colorSchemes.map { it.onSecondaryContainer },
-            allSecondaryContainerColors = colorSchemes.map { it.secondaryContainer },
+            allOnSecondaryContainerColors = otherColorSchemes.map { it.onSecondaryContainer },
+            allSecondaryContainerColors = otherColorSchemes.map { it.secondaryContainer },
         )
     }
 
@@ -110,9 +111,10 @@ private fun getColorScheme(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppPreviewTheme(content: @Composable () -> Unit) {
-    MaterialTheme {
+    MaterialExpressiveTheme {
         content()
     }
 }

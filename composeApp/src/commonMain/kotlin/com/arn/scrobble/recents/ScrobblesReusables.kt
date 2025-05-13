@@ -476,15 +476,20 @@ fun LazyListScope.scrobblesPlaceholdersAndErrors(
             }
         }
 
-        tracks.loadState.refresh is LoadState.Error ||
-                tracks.loadState.append is LoadState.Error
-            -> {
-            val error = tracks.loadState.refresh as LoadState.Error
-            item {
-                ListLoadError(
-                    modifier = Modifier.animateItem(),
-                    throwable = error.error,
-                    onRetry = { tracks.retry() })
+        tracks.loadState.hasError -> {
+            val error = when {
+                tracks.loadState.refresh is LoadState.Error -> tracks.loadState.refresh as LoadState.Error
+                tracks.loadState.append is LoadState.Error -> tracks.loadState.append as LoadState.Error
+                else -> null
+            }
+
+            if (error != null) {
+                item {
+                    ListLoadError(
+                        modifier = Modifier.animateItem(),
+                        throwable = error.error,
+                        onRetry = { tracks.retry() })
+                }
             }
         }
     }

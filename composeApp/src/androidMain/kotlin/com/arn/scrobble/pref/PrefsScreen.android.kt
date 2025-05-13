@@ -15,7 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,9 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
@@ -43,9 +46,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.fix_it_desc
 import pano_scrobbler.composeapp.generated.resources.pref_automation
 import pano_scrobbler.composeapp.generated.resources.pref_automation_desc
+import pano_scrobbler.composeapp.generated.resources.pref_automation_tasker
 import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
@@ -135,9 +140,10 @@ private fun launchNotificationsActivity(context: Context) {
     context.startActivity(intent)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun IntentsDescDialog(
+private fun CpQueryUrisDialog(
+    onNavigateToAppList: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     ModalBottomSheet(
@@ -157,11 +163,25 @@ private fun IntentsDescDialog(
         }
         Text(
             text = stringResource(Res.string.pref_automation_desc),
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMediumEmphasized,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
+        Text(
+            text = stringResource(Res.string.pref_automation_tasker),
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
+
+        OutlinedButton(
+            onClick = onNavigateToAppList,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(stringResource(Res.string.choose_apps))
+        }
 
         uris.forEach { uri ->
             Text(
@@ -193,20 +213,26 @@ actual fun prefChartsWidget(listScope: LazyListScope) {
     }
 }
 
-actual fun prefAutomation(listScope: LazyListScope) {
+actual fun prefAutomation(
+    listScope: LazyListScope,
+    onNavigateToBilling: (() -> Unit),
+    onNavigateToAppList: (() -> Unit),
+) {
     if (!PlatformStuff.isTv) {
         listScope.item("automation") {
-            var showIntentsDescDialog by rememberSaveable { mutableStateOf(false) }
+            var showUrisDialog by rememberSaveable { mutableStateOf(false) }
             TextPref(
                 text = stringResource(Res.string.pref_automation),
                 onClick = {
-                    showIntentsDescDialog = true
-                }
+                    showUrisDialog = true
+                },
+                onNavigateToBilling = onNavigateToBilling,
             )
 
-            if (showIntentsDescDialog)
-                IntentsDescDialog(
-                    onDismissRequest = { showIntentsDescDialog = false },
+            if (showUrisDialog)
+                CpQueryUrisDialog(
+                    onNavigateToAppList = onNavigateToAppList,
+                    onDismissRequest = { showUrisDialog = false },
                 )
         }
     }

@@ -9,14 +9,11 @@ package com.arn.scrobble
 object Tokens {
     const val LAST_KEY = "" // https://www.last.fm/api/account/create
     const val LAST_SECRET = ""
-    const val ACR_HOST = "" // https://console.acrcloud.com/
-    const val ACR_KEY = ""
-    const val ACR_SECRET = ""
     // https://developer.spotify.com/dashboard/
     const val SPOTIFY_REFRESH_TOKEN = "<base64 of spotify client id>:<base64 of spotify client secret>"
     // returns {"code": 0, "message": "valid"} if the license is valid, this spec is subject to change
     const val LICENSE_CHECKING_SERVER = "https://"
-    // used to verify the license
+    // RS256 public key, used to verify the license
     const val LICENSE_PUBLIC_KEY_BASE64 = ""
     const val PLAY_BILLING_PUBLIC_KEY_BASE64 = ""
     const val EMBEDDED_SERVER_KEYSTORE_PASSWORD = "" // password for the embedded https server BKS keystore, used for importing settings over local network
@@ -68,9 +65,9 @@ object Secrets {
 sessionKey can be obtained by logging in to LastFM with a debug build of this app
 and tapping on the "Copy last.fm session key" in the settings screen.
 
-- Info: the build variant "release" includes Google Play billing, Crashlytics (has opt out), Google
-  Play Review API and AcrCloud as its non-free dependencies, while the build variant "releaseGithub"
-  includes AcrCloud as its only non-free dependency.
+- Info: the build variant "release" includes Google Play billing, Crashlytics (has opt out) and
+  Google Play Review API as its non-free dependencies, while the build variant "releaseGithub"
+  includes no non-free dependencies.
 
 ### For desktop:
 

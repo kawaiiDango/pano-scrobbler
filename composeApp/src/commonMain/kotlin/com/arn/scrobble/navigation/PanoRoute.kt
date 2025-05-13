@@ -107,9 +107,6 @@ sealed interface PanoRoute {
     data object Search : PanoRoute
 
     @Serializable
-    data object MicScrobble : PanoRoute
-
-    @Serializable
     data class WebView(
         val url: String,
         val userAccountTemp: UserAccountTemp? = null,

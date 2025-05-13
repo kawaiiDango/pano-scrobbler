@@ -17,13 +17,18 @@ import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material.icons.outlined.FindReplace
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.SwipeLeftAlt
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,18 +37,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,7 +56,6 @@ import com.arn.scrobble.ui.DraggableItem
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.dragContainer
 import com.arn.scrobble.ui.horizontalOverscanPadding
@@ -66,8 +64,6 @@ import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -79,15 +75,16 @@ import pano_scrobbler.composeapp.generated.resources.edit_preset_name
 import pano_scrobbler.composeapp.generated.resources.edit_presets
 import pano_scrobbler.composeapp.generated.resources.edit_presets_available
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
+import pano_scrobbler.composeapp.generated.resources.move_down
+import pano_scrobbler.composeapp.generated.resources.move_up
 import pano_scrobbler.composeapp.generated.resources.num_regex_edits
-import pano_scrobbler.composeapp.generated.resources.reorder_dpad
 
 @Composable
 fun RegexEditsScreen(
-    viewModel: RegexEditsVM = viewModel { RegexEditsVM() },
     onNavigateToTest: () -> Unit,
     onNavigateToEdit: (RegexEdit) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: RegexEditsVM = viewModel { RegexEditsVM() },
 ) {
     val regexEdits by viewModel.regexes.collectAsStateWithLifecycle()
     var regexEditsReordered by remember { mutableStateOf<List<RegexEdit>?>(null) }
@@ -220,6 +217,7 @@ private fun RegexEditsList(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RegexEditItem(
     regexEdit: RegexEdit,
@@ -229,7 +227,6 @@ private fun RegexEditItem(
     forShimmer: Boolean = false,
 ) {
     val regexEdit = remember(regexEdit) { RegexPresets.getPossiblePreset(regexEdit) }
-    val scope = rememberCoroutineScope()
     val modifierIcons = getModifierIcons(regexEdit)
 
     val name = if (regexEdit.preset == null) {
@@ -246,52 +243,43 @@ private fun RegexEditItem(
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding())
     ) {
-        Icon(
-            imageVector = Icons.Outlined.DragHandle,
-            contentDescription = stringResource(Res.string.edit_drag_handle),
-            modifier = Modifier
-                .size(40.dp)
-                .clip(MaterialTheme.shapes.medium)
-                .then(
-                    if (PlatformStuff.isTv) {
-                        Modifier
-                            .clickable(enabled = !forShimmer) {
-                                scope.launch {
-                                    Stuff.globalSnackbarFlow.emit(
-                                        PanoSnackbarVisuals(
-                                            getString(Res.string.reorder_dpad),
-                                            isError = false
-                                        )
-                                    )
-                                }
-                            }
-                            .onKeyEvent { event ->
-                                if (event.type == KeyEventType.KeyDown) {
-                                    when (event.key) {
-                                        Key.DirectionUp -> {
-                                            onKeypressMoveItem(regexEdit.order, regexEdit.order - 1)
-                                            true
-                                        }
 
-                                        Key.DirectionDown -> {
-                                            onKeypressMoveItem(regexEdit.order, regexEdit.order + 1)
-                                            true
-                                        }
+        if (!PlatformStuff.isTv) {
+            Icon(
+                imageVector = Icons.Outlined.DragHandle,
+                contentDescription = stringResource(Res.string.edit_drag_handle),
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .padding(8.dp)
+            )
+        } else {
+            ButtonGroup {
+                IconToggleButton(
+                    checked = false,
+                    onCheckedChange = {
+                        onKeypressMoveItem(regexEdit.order, regexEdit.order - 1)
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.KeyboardArrowUp,
+                        contentDescription = stringResource(Res.string.move_up),
+                    )
+                }
+                IconToggleButton(
+                    checked = false,
+                    onCheckedChange = {
+                        onKeypressMoveItem(regexEdit.order, regexEdit.order + 1)
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = stringResource(Res.string.move_down),
+                    )
+                }
+            }
+        }
 
-                                        else -> {
-                                            false
-                                        }
-                                    }
-                                } else {
-                                    false
-                                }
-                            }
-                    } else {
-                        Modifier
-                    }
-                )
-                .padding(8.dp)
-        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -343,7 +331,7 @@ private fun RegexEditItem(
 }
 
 @Composable
-fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
+private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
     val m = mutableListOf<ImageVector>()
 
     regexEdit.fields?.forEach {
@@ -365,7 +353,7 @@ fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
 }
 
 @Composable
-fun PresetsDialog(
+private fun PresetsDialog(
     presetsAvailable: List<String>,
     onDismissRequest: () -> Unit,
     onPresetSelected: (String) -> Unit,

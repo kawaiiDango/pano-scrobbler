@@ -1,4 +1,4 @@
-package com.arn.scrobble.api
+package com.arn.scrobble.api.cache
 
 import io.ktor.http.Url
 

@@ -17,19 +17,6 @@
     </shortcut>
     <shortcut
         android:enabled="true"
-        android:icon="@mipmap/ic_shortcut_mic"
-        android:shortcutDisabledMessage="@string/from_mic"
-        android:shortcutId="rec"
-        android:shortcutLongLabel="@string/from_mic"
-        android:shortcutShortLabel="@string/from_mic">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="pano-scrobbler://screen/MicScrobble"
-            android:targetClass="com.arn.scrobble.main.MainActivity"
-            android:targetPackage="com.arn.scrobble" />
-    </shortcut>
-    <shortcut
-        android:enabled="true"
         android:icon="@mipmap/ic_shortcut_search"
         android:shortcutDisabledMessage="@string/search"
         android:shortcutId="search"

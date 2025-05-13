@@ -4,12 +4,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -26,10 +23,12 @@ abstract class BaseBillingRepository(
 
     protected abstract val _proProductDetails: MutableStateFlow<MyProductDetails?>
     abstract val proProductDetails: StateFlow<MyProductDetails?>
-    protected val _licenseState = MutableStateFlow<LicenseState?>(null)
-    val licenseState = _licenseState
-        .filterNotNull()
-        .stateIn(scope, SharingStarted.Eagerly, null)
+    protected val _licenseState = MutableStateFlow(
+        clientData.receipt.value.let { (r, s) ->
+            getLicenseState(r, s)
+        }
+    )
+    val licenseState = _licenseState.asStateFlow()
 
     val isLicenseValid: Boolean
         get() = licenseState.value == LicenseState.VALID
@@ -37,17 +36,19 @@ abstract class BaseBillingRepository(
     init {
         scope.launch {
             clientData.receipt
-                .distinctUntilChanged()
-                .mapLatest { (r, s) ->
-                    if (r == null)
-                        LicenseState.NO_LICENSE
-                    else if (verifyPurchase(r, s))
-                        LicenseState.VALID
-                    else
-                        LicenseState.NO_LICENSE
-                }.collect {
-                    _licenseState.value = it
+                .collectLatest { (r, s) ->
+                    _licenseState.value = getLicenseState(r, s)
                 }
+        }
+    }
+
+    private fun getLicenseState(receipt: String?, signature: String?): LicenseState {
+        return if (receipt == null) {
+            LicenseState.NO_LICENSE
+        } else if (verifyPurchase(receipt, signature)) {
+            LicenseState.VALID
+        } else {
+            LicenseState.NO_LICENSE
         }
     }
 

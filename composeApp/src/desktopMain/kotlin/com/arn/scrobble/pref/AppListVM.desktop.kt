@@ -2,7 +2,7 @@ package com.arn.scrobble.pref
 
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 
 actual suspend fun AppListVM.load(
     onSetSelectedPackages: (Set<String>) -> Unit,
@@ -10,15 +10,10 @@ actual suspend fun AppListVM.load(
     onSetHasLoaded: () -> Unit,
     checkDefaultApps: Boolean,
 ) {
-    val packagesToNotConsider = setOf(
-        "stuff",
-    )
-
-    val seenApps = PlatformStuff.mainPrefs.data.mapLatest { it.seenApps }.first()
+    val seenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }.first()
 
     val musicPlayers = seenApps
-        .filterNot { it.appId in packagesToNotConsider }
-        .sortedBy { it.friendlyLabel }
+        .sortedBy { it.friendlyLabel.lowercase() }
 
     if (checkDefaultApps)
         onSetSelectedPackages(musicPlayers.map { it.appId }.toSet())

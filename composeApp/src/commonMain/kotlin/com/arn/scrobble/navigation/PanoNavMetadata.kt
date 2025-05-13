@@ -11,6 +11,13 @@ data class PanoNavMetadata(
     val route: PanoRoute,
 )
 
-fun hasNavMetadata(dest: NavDestination): Boolean {
+fun hasNavMetadata(dest: NavDestination?): Boolean {
+    if (dest == null) return false
     return dest.hasRoute<PanoRoute.SelfHomePager>() || dest.hasRoute<PanoRoute.OthersHomePager>()
+}
+
+fun hasTabMetadata(dest: NavDestination?): Boolean {
+    if (dest == null) return false
+    return dest.hasRoute<PanoRoute.SelfHomePager>() || dest.hasRoute<PanoRoute.OthersHomePager>() ||
+            dest.hasRoute<PanoRoute.ChartsPager>() || dest.hasRoute<PanoRoute.MusicEntryInfoPager>()
 }

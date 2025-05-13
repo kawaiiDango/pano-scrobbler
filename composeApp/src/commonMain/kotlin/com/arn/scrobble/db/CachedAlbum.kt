@@ -65,7 +65,7 @@ data class CachedAlbum(
             artistUrl = artist.url ?: "",
             artistMbid = artist.mbid ?: "",
             userPlayCount = playcount?.toInt() ?: -1,
-            largeImageUrl = image?.find { it.size == ImageSize.extralarge.name }?.url
+            largeImageUrl = album?.image?.find { it.size == ImageSize.extralarge.name }?.url
         )
     }
 }

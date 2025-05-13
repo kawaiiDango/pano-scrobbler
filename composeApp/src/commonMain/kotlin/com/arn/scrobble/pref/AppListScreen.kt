@@ -1,13 +1,15 @@
 package com.arn.scrobble.pref
 
+import androidx.annotation.Keep
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
@@ -101,20 +103,26 @@ fun AppListScreen(
         fun addItems(
             items: List<AppItem>,
         ) {
-            items(
+            itemsIndexed(
                 items = items,
-                key = { it.appId }
-            ) {
+                key = { idx, appItem -> appItem.appId }
+            ) { idx, appItem ->
+
+                val showAppId =
+                    items.getOrNull(idx - 1)?.friendlyLabel?.lowercase() == appItem.friendlyLabel.lowercase() ||
+                            items.getOrNull(idx + 1)?.friendlyLabel?.lowercase() == appItem.friendlyLabel.lowercase()
+
                 AppListItem(
-                    appItem = it,
-                    isSelected = selectedPackages.contains(it.appId),
+                    appItem = appItem,
+                    isSelected = selectedPackages.contains(appItem.appId),
                     onToggle = { selected ->
                         if (isSingleSelect) {
-                            viewModel.setSelectedPackages(setOf(it.appId))
+                            viewModel.setSelectedPackages(setOf(appItem.appId))
                         } else {
-                            viewModel.setMultiSelection(it.appId, selected)
+                            viewModel.setMultiSelection(appItem.appId, selected)
                         }
                     },
+                    showAppId = showAppId,
                     isSingleSelect = isSingleSelect,
                     modifier = Modifier.animateItem()
                 )
@@ -131,6 +139,7 @@ fun AppListScreen(
                 AppListItem(
                     appItem = null,
                     isSelected = false,
+                    showAppId = false,
                     onToggle = {},
                     forShimmer = true,
                     isSingleSelect = isSingleSelect,
@@ -170,6 +179,7 @@ private fun AppListItem(
     appItem: AppItem?,
     isSelected: Boolean,
     isSingleSelect: Boolean,
+    showAppId: Boolean,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
@@ -198,14 +208,25 @@ private fun AppListItem(
                 .size(32.dp)
                 .backgroundForShimmer(forShimmer)
         )
-        Text(
-            text = appItem?.friendlyLabel ?: "",
-            maxLines = 1,
+
+        Column(
             modifier = Modifier
                 .weight(1f)
                 .backgroundForShimmer(forShimmer)
-        )
+        ) {
+            Text(
+                text = appItem?.friendlyLabel ?: "",
+                maxLines = 1,
+            )
 
+            if (showAppId) {
+                Text(
+                    text = appItem?.appId ?: "",
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                )
+            }
+        }
         if (isSingleSelect) {
             RadioButton(
                 selected = isSelected,
@@ -220,6 +241,7 @@ private fun AppListItem(
     }
 }
 
+@Keep
 enum class AppListSaveType {
     Scrobbling, Automation, Callback
 }

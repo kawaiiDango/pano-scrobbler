@@ -265,7 +265,7 @@ fun ChartsOverviewScreen(
                     isTimePeriodContinuous
                 ),
                 entries = tracks,
-                fetchAlbumImageIfMissing = !isTimePeriodContinuous,
+                fetchAlbumImageIfMissing = true,
                 showArtists = true,
                 headerIcon = Icons.Outlined.MusicNote,
                 emptyStringRes = Res.string.charts_no_data,

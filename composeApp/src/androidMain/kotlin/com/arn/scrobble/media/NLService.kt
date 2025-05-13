@@ -189,20 +189,9 @@ class NLService : NotificationListenerService() {
         if (BuildConfig.DEBUG)
             toast(R.string.scrobbler_off)
 
-        if (inited && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (inited) {
             destroy()
         }
-    }
-
-
-    override fun onDestroy() {
-        if (inited && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            // API 23 bug, force run them on Main thread
-            coroutineScope.launch {
-                destroy()
-            }
-        }
-        super.onDestroy()
     }
 
     private suspend fun shouldScrobbleFromNoti(pkgName: String): Boolean {
@@ -217,8 +206,11 @@ class NLService : NotificationListenerService() {
     private fun shouldCheckNoti(sbn: StatusBarNotification?): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 sbn != null &&
-                (sbn.packageName == Stuff.PACKAGE_SHAZAM && sbn.notification.channelId == Stuff.CHANNEL_SHAZAM && sbn.notification.actions != null ||
-                        sbn.packageName in Stuff.PACKAGES_PIXEL_NP && sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP)
+                (sbn.packageName == Stuff.PACKAGE_SHAZAM &&
+                        (sbn.notification.channelId == Stuff.CHANNEL_SHAZAM || sbn.notification.channelId == Stuff.CHANNEL_SHAZAM2) &&
+                        sbn.notification.actions != null ||
+                        sbn.packageName in Stuff.PACKAGES_PIXEL_NP &&
+                        sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP)
 
     }
 

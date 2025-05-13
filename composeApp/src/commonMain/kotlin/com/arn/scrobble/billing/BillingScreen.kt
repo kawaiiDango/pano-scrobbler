@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.automirrored.outlined.Rule
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Done
@@ -62,6 +63,7 @@ import pano_scrobbler.composeapp.generated.resources.ko_fi
 import pano_scrobbler.composeapp.generated.resources.ko_fi_link
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.not_found
+import pano_scrobbler.composeapp.generated.resources.pref_automation
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
 import pano_scrobbler.composeapp.generated.resources.pref_themes
@@ -84,7 +86,7 @@ fun BillingScreen(
 
     val thankYouText = stringResource(Res.string.thank_you)
     val purchasePendingText = stringResource(Res.string.purchase_pending)
-    val maxDevicesReachedText = stringResource(Res.string.billing_max_devices_reached, 4)
+    val maxDevicesReachedText = stringResource(Res.string.billing_max_devices_reached, 8)
     val notFoundText = stringResource(Res.string.not_found)
     val koFiLink = stringResource(Res.string.ko_fi_link)
     val bmcLink = stringResource(Res.string.bmc_link)
@@ -96,6 +98,9 @@ fun BillingScreen(
         Icons.Outlined.PushPin to stringResource(Res.string.billing_pin_friends, 10),
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)
             Icons.Outlined.FavoriteBorder to stringResource(Res.string.pref_link_heart_button_rating)
+        else null,
+        if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)
+            Icons.AutoMirrored.Outlined.Rule to stringResource(Res.string.pref_automation)
         else null,
         Icons.Outlined.SwipeLeftAlt to stringResource(Res.string.billing_regex_extract),
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)

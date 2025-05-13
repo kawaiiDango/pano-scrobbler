@@ -1,4 +1,4 @@
-package com.arn.scrobble.api.lastfm
+package com.arn.scrobble.api.cache
 
 enum class CacheStrategy {
     CACHE_FIRST,

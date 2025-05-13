@@ -342,8 +342,6 @@ class TimePeriodsGenerator(
                 else -> throw IllegalArgumentException("Invalid time period type")
             }
 
-            val maxWeekCountToShowEndDate = 5
-
             val formatter: (TimePeriod) -> String = when (type) {
                 TimePeriodType.YEAR -> {
                     { SimpleDateFormat("''yy", Locale.getDefault()).format(it.start) }
@@ -351,7 +349,10 @@ class TimePeriodsGenerator(
 
                 TimePeriodType.MONTH -> {
                     {
-                        SimpleDateFormat("MMM", Locale.ENGLISH).format(it.start).take(2)
+                        if (timePeriods.size <= 7)
+                            SimpleDateFormat("MMM", Locale.getDefault()).format(it.start)
+                        else
+                            SimpleDateFormat("MM", Locale.getDefault()).format(it.start)
                     }
                 }
 
@@ -362,15 +363,12 @@ class TimePeriodsGenerator(
                         val pattern = df.toLocalizedPattern().replace(".?[Yy].?".toRegex(), "")
                         val f = SimpleDateFormat(pattern, Locale.getDefault())
 
-                        if (timePeriods.size > maxWeekCountToShowEndDate)
-                            f.format(it.start)
-                        else
-                            "${f.format(it.start)}-\n${f.format(it.end)}"
+                        "${f.format(it.start)}-\n${f.format(it.end)}"
                     }
                 }
 
                 TimePeriodType.DAY -> {
-                    { SimpleDateFormat("EEE", Locale.getDefault()).format(it.start).take(2) }
+                    { SimpleDateFormat("EEE", Locale.getDefault()).format(it.start) }
                 }
 
                 else -> throw IllegalArgumentException("Invalid time period type")

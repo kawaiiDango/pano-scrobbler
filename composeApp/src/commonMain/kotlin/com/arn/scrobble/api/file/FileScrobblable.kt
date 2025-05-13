@@ -11,7 +11,7 @@ import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.CacheStrategy
+import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageResult

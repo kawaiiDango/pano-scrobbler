@@ -2,9 +2,9 @@ package com.arn.scrobble.api.spotify
 
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.CustomCachePlugin
-import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
+import com.arn.scrobble.api.cache.ExpirationPolicy
 import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

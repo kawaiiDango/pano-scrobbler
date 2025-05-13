@@ -5,7 +5,6 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.DrawerData
-import com.arn.scrobble.api.ExpirationPolicy
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
@@ -16,10 +15,10 @@ import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.ImageSize
 import com.arn.scrobble.api.lastfm.LastFmImage
 import com.arn.scrobble.api.lastfm.LastfmPeriod
@@ -42,7 +41,6 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.util.appendIfNameAbsent
 import java.util.concurrent.TimeUnit
@@ -93,7 +91,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = scrobbleData.duration?.takeIf { it > 30000 },
                             submission_client = BuildKonfig.APP_NAME,
-                            submission_client_version = BuildKonfig.VER_NAME,
+                            submission_client_version = (BuildKonfig.VER_CODE / 100f).toString(),
                         )
                     )
                 )
@@ -228,7 +226,14 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         .let { PageEntries(it) }
                 },
                 {
-                    val totalPages = if (it.payload.count < actualLimit) page else page + 2
+                    val oldestListenTs = it.payload.oldest_listen_ts
+                    val oldestListenTsInPage = it.payload.listens.lastOrNull()?.listened_at
+                    val totalPages =
+                        if (oldestListenTsInPage != null && oldestListenTsInPage > oldestListenTs)
+                            page + 1
+                        else
+                            page
+
                     PageAttr(
                         page,
                         totalPages,
@@ -323,8 +328,9 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 PageAttr(page, totalPages, it.total_count)
             }
         ) {
-            parameter("metadata", true)
             parameter("offset", actualLimit * (page - 1))
+            parameter("metadata", true)
+            parameter("count", actualLimit)
             cacheStrategy(cacheStrategy)
         }
     }
@@ -459,14 +465,14 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             {
                 val total = it.payload.total_artist_count ?: it.payload.total_release_count
                 ?: it.payload.total_recording_count ?: 0
-                val totalPages = ceil(min(total, 1000).toFloat() / it.payload.count).toInt()
+                val totalPages = ceil(min(total, 1000).toFloat() / actualLimit).toInt()
 
                 PageAttr(page, totalPages, total)
             }
         ) {
-            parameter("count", actualLimit)
             parameter("offset", actualLimit * (page - 1))
             parameter("range", range)
+            parameter("count", actualLimit)
             cacheStrategy(cacheStrategy)
         }
     }
@@ -549,27 +555,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             return result.map { Session(it.user_name, userAccountTemp.authKey) }
         }
     }
-}
-
-class ListenbrainzExpirationPolicy : ExpirationPolicy {
-    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
-    private val FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5)
-
-    override fun getExpirationTime(url: Url) =
-        when (url.segments.lastOrNull()) {
-            "playing-now",
-            "listens",
-            "following",
-            "get-feedback",
-                -> ONE_WEEK
-
-            "artists",
-            "releases",
-            "recordings",
-                -> FIVE_MINUTES
-
-            else -> -1
-        }
 }
 
 enum class ListenbrainzRanges {

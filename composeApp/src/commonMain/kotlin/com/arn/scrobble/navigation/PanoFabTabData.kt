@@ -6,7 +6,6 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
-import com.arn.scrobble.api.AccountType
 import org.jetbrains.compose.resources.StringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add
@@ -20,7 +19,9 @@ data class PanoFabData(
     val dialog: PanoDialog? = null,
 )
 
-fun getFabData(dest: NavDestination): PanoFabData? {
+fun getFabData(dest: NavDestination?): PanoFabData? {
+    if (dest == null) return null
+
     return when {
         dest.hasRoute<PanoRoute.RegexEdits>() -> PanoFabData(
             Res.string.add,
@@ -48,49 +49,6 @@ fun getFabData(dest: NavDestination): PanoFabData? {
                 Res.string.done,
                 Icons.Outlined.Check,
                 PanoRoute.SpecialGoBack
-            )
-
-        else -> null
-    }
-}
-
-fun getTabData(dest: NavDestination, accountType: AccountType): List<PanoTabs>? {
-    return when {
-        dest.hasRoute<PanoRoute.SelfHomePager>() ||
-                dest.hasRoute<PanoRoute.OthersHomePager>()
-            -> when (accountType) {
-            AccountType.LASTFM,
-            AccountType.LISTENBRAINZ,
-            AccountType.CUSTOM_LISTENBRAINZ,
-                -> listOf(
-                PanoTabs.Scrobbles(),
-                PanoTabs.Following,
-                PanoTabs.Charts,
-                PanoTabs.Profile,
-            )
-
-            AccountType.LIBREFM,
-            AccountType.GNUFM,
-                -> listOf(
-                PanoTabs.Scrobbles(),
-                PanoTabs.Charts,
-                PanoTabs.Profile,
-            )
-
-            AccountType.MALOJA,
-            AccountType.PLEROMA,
-            AccountType.FILE,
-                -> listOf(
-                PanoTabs.Scrobbles(showChips = false),
-                PanoTabs.Profile,
-            )
-        }
-
-        dest.hasRoute<PanoRoute.MusicEntryInfoPager>() || dest.hasRoute<PanoRoute.ChartsPager>() ->
-            listOf(
-                PanoTabs.TopArtists,
-                PanoTabs.TopAlbums,
-                PanoTabs.TopTracks,
             )
 
         else -> null

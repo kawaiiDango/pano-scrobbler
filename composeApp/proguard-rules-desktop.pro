@@ -1,168 +1,46 @@
 # https://github.com/JetBrains/compose-multiplatform/issues/4883
 
-#-mergeinterfacesaggressively
-#
-#-overloadaggressively
-#
-#-repackageclasses
+-dontnote **
 
+-printmapping dist/mappings/mapping.txt
 
+# Coil
+# https://github.com/coil-kt/coil/blob/main/samples/shared/shrinker-rules-android.pro
+# https://coil-kt.github.io/coil/faq/#how-to-i-use-proguard-with-coil
 
--keep class androidx.datastore.preferences.** { *; }
+# For native methods, see https://proguard.sourceforge.net/manual/examples.html#native
+-keepclasseswithmembernames class * { native <methods>; }
 
--keep class io.ktor.** { *; }
-
--keep class coil3.** { *; }
-
--keep class ui.navigation.** { *; }
-
-# for desktop TextField
-
--keepclasseswithmembernames class androidx.compose.foundation.text.** { *; }
-
-
-
-# Kotlin & java
-
--assumenosideeffects class kotlin.jvm.internal.Intrinsics {
-
-	public static void check*(...);
-
-	public static void throw*(...);
-
+# For enumeration classes, see https://proguard.sourceforge.net/manual/examples.html#enumerations
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
 }
 
--assumenosideeffects public class kotlin.coroutines.jvm.internal.DebugMetadataKt {
+# Understand the @Keep support annotation.
+-keep class androidx.annotation.Keep
+-keep @androidx.annotation.Keep class * { *; }
+-keepclasseswithmembers class * { @androidx.annotation.Keep <methods>; }
+-keepclasseswithmembers class * { @androidx.annotation.Keep <fields>; }
+-keepclasseswithmembers class * { @androidx.annotation.Keep <init>(...); }
 
-   private static ** getDebugMetadataAnnotation(...);
+-keep class * extends coil3.util.DecoderServiceLoaderTarget { *; }
+-keep class * extends coil3.util.FetcherServiceLoaderTarget { *; }
 
-}
-
--assumenosideeffects class java.util.Objects {
-
-    public static ** requireNonNull(...);
-
-}
-
-
-
-####################################################################################################
-
-
-
-# slf4j
-
--assumenosideeffects interface org.slf4j.Logger {
-
-    public void trace(...);
-
-    public void debug(...);
-
-    public void info(...);
-
-    public void warn(...);
-
-    public void error(...);
-
-
-
-    public boolean isTraceEnabled(...);
-
-    public boolean isDebugEnabled(...);
-
-    public boolean isWarnEnabled(...);
-
-}
-
-
-
--assumenosideeffects class org.slf4j.LoggerFactory {
-
-    public static ** getLogger(...);
-
-}
-
-
-
--dontwarn org.slf4j.**
-
-
-
-####################################################################################################
-
-
-
-# kotlinx.coroutines
-
-# https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro
-
-# ServiceLoader support
-
--keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
-
--keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
-
-
-
-# Most of volatile fields are updated with AFU and should not be mangled
-
--keepclassmembers class kotlinx.coroutines.** {
-
+# ktor https://github.com/ktorio/ktor/blob/main/ktor-utils/jvm/resources/META-INF/proguard/ktor.pro
+# Most of volatile fields are updated with AtomicFU and should not be mangled/removed
+-keepclassmembers class io.ktor.** {
     volatile <fields>;
-
 }
 
-
-
-# Same story for the standard library's SafeContinuation that also uses AtomicReferenceFieldUpdater
-
--keepclassmembers class kotlin.coroutines.SafeContinuation {
-
+-keepclassmembernames class io.ktor.** {
     volatile <fields>;
-
 }
 
-
-
-# These classes are only required by kotlinx.coroutines.debug.AgentPremain, which is only loaded when
-
-# kotlinx-coroutines-core is used as a Java agent, so these are not needed in contexts where ProGuard is used.
-
--dontwarn java.lang.instrument.ClassFileTransformer
-
--dontwarn sun.misc.SignalHandler
-
--dontwarn java.lang.instrument.Instrumentation
-
--dontwarn sun.misc.Signal
-
-
-
-# Only used in `kotlinx.coroutines.internal.ExceptionsConstructor`.
-
-# The case when it is not available is hidden in a `try`-`catch`, as well as a check for Android.
-
--dontwarn java.lang.ClassValue
-
-
-
-# An annotation used for build tooling, won't be directly accessed.
-
--dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
-
-
-
-# https://github.com/Kotlin/kotlinx.coroutines/issues/4025
-
--keep class kotlinx.coroutines.internal.MainDispatcherFactory { *; }
-
--keep class kotlinx.coroutines.swing.SwingDispatcherFactory { *; }
-
-
+# client engines are loaded using ServiceLoader so we need to keep them
+-keep class io.ktor.client.engine.** implements io.ktor.client.HttpClientEngineContainer
 
 ####################################################################################################
-
-
 
 # kotlinx.serialization
 
@@ -247,24 +125,27 @@
 
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
+-keep class androidx.sqlite.** { *; }
 
-# Keep all @Serializable classes and their members
--keep @kotlinx.serialization.Serializable class * { *; }
+# Keep generated serializer classes in com.arn.scrobble and subpackages
+-keep class com.arn.scrobble.**$$serializer { *; }
+
+# Keep important class metadata for serialization
+-keepattributes *Annotation*, Signature, InnerClasses#, EnclosingMethod, EnclosingClass
 
 # javafx
 
-# Keep JavaFX toolkit classes
--keep class com.sun.javafx.** { *; }
--keep class com.sun.prism.** { *; }
+-keep class com.sun.javafx.tk.quantum.QuantumToolkit { *; }
+-keep class com.sun.javafx.font.** { *; }
+-keep class com.sun.javafx.geom.** { *; }
+-keep class com.sun.javafx.scene.** { *; }
+-keep class com.sun.prism.sw.** { *; }
 -keep class com.sun.glass.** { *; }
+-keep class com.sun.pisces.** { *; }
 -keep class com.sun.webkit.** { *; }
 -keep class com.sun.scenario.effect.** { *; }
--keep class javafx.css.** { *; }
 -keep class javafx.scene.** { *; }
 -dontwarn com.jogamp.**
 
 # Suppress warnings from the io.ktor network sockets classes
 -dontwarn io.ktor.network.sockets.**
-
-# PanoNativeComponents
--keep class com.arn.scrobble.PanoNativeComponents { *; }

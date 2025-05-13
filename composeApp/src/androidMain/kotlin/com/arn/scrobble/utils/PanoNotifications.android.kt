@@ -1,15 +1,11 @@
 package com.arn.scrobble.utils
 
-import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import android.text.Html
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.media.app.NotificationCompat.MediaStyle
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
@@ -40,16 +36,11 @@ actual object PanoNotifications {
     private val context = AndroidStuff.application
     private val notificationManager = AndroidStuff.notificationManager
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
-    private var notiIconBitmap: Bitmap? = null
 
     private fun buildNotification(): NotificationCompat.Builder {
         return NotificationCompat.Builder(context)
             .setShowWhen(false)
-            .apply {
-                // coloring on android 6 looks very ugly
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                    setColor(notiColor)
-            }
+            .setColor(notiColor)
             .setAutoCancel(true)
             .setCustomBigContentView(null)
     }
@@ -195,7 +186,7 @@ actual object PanoNotifications {
         }
 
         try {
-            notificationManager.notify(trackInfo.appId, 0, nb.buildWithMediaStyleMod())
+            notificationManager.notify(trackInfo.appId, 0, nb.build())
         } catch (e: RuntimeException) {
             val nExpandable = nb.setLargeIcon(null as Bitmap?)
                 .setStyle(null)
@@ -323,7 +314,7 @@ actual object PanoNotifications {
             .setStyle(
                 MediaStyle().setShowActionsInCompactView(0, 1)
             )
-            .buildWithMediaStyleMod()
+            .build()
         notificationManager.notify(Stuff.CHANNEL_NOTI_NEW_APP, 0, n)
     }
 
@@ -436,21 +427,5 @@ actual object PanoNotifications {
 
     actual fun removeNotificationByTag(tag: String) {
         notificationManager.cancel(tag, 0)
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun NotificationCompat.Builder.buildWithMediaStyleMod(): Notification {
-        val modNeeded =
-            Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && !mActions.isNullOrEmpty()
-        if (modNeeded) {
-            if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true) {
-                notiIconBitmap =
-                    AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)
-                        ?.toBitmap()
-            }
-//                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-            setLargeIcon(notiIconBitmap)
-        }
-        return build()
     }
 }

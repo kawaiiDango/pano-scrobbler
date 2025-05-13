@@ -32,10 +32,7 @@ actual object PackageNameMetadata {
             val pkgInfo = AndroidStuff.application.packageManager.getPackageInfo(packageName, 0)
             val appInfo = pkgInfo.applicationInfo ?: return
             val configuration = Configuration(AndroidStuff.application.resources.configuration)
-            configuration.setLocale(Locale.US)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                configuration.setLocales(LocaleList(Locale.US))
-            }
+            configuration.setLocales(LocaleList(Locale.US))
             val pkgRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 AndroidStuff.application.packageManager.getResourcesForApplication(
                     appInfo,

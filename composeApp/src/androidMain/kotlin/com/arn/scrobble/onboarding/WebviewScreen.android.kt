@@ -3,6 +3,7 @@ package com.arn.scrobble.onboarding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +28,7 @@ actual fun WebViewScreen(
     initialUrl: String,
     userAccountTemp: UserAccountTemp?,
     pleromaOauthClientCreds: PleromaOauthClientCreds?,
-    onTitleChange: (String) -> Unit,
+    onSetTitle: (String?) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable ColumnScope.() -> Unit,
     viewModel: WebViewVM,
@@ -45,8 +46,12 @@ actual fun WebViewScreen(
         }
     }
 
-    LaunchedEffect(webViewState.pageTitle) {
-        onTitleChange(webViewState.pageTitle ?: "-")
+    DisposableEffect(webViewState.pageTitle) {
+        onSetTitle(webViewState.pageTitle ?: "-")
+
+        onDispose {
+            onSetTitle(null)
+        }
     }
 
     LaunchedEffect(webViewState.errorsForCurrentRequest) {
@@ -88,7 +93,9 @@ actual fun WebViewScreen(
             }
 
         } else {
-            val lastLoadedUrlObj = Url(currentUrl)
+            // use lastLoadedUrl here and not getCurrentUrl()
+            val lastLoadedUrlObj =
+                webViewState.lastLoadedUrl?.let { Url(it) } ?: return@LaunchedEffect
 
             if (lastLoadedUrlObj.protocol.name == Stuff.DEEPLINK_PROTOCOL_NAME && lastLoadedUrlObj.segments.isNotEmpty()) {
                 val callbackHandled =
@@ -108,7 +115,7 @@ actual fun WebViewScreen(
                         mimeType = "text/html",
                         historyUrl = null
                     )
-                    onTitleChange("...")
+                    onSetTitle("...")
                 }
             }
         }

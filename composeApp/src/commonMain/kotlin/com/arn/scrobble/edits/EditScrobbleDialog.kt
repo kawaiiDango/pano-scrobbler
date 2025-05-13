@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -94,7 +95,7 @@ fun EditScrobbleDialog(
         )
     }
 
-    LaunchedEffect(Unit) {
+    DisposableEffect(Unit) {
         if (hash != null) {
             notifyPlayingTrackEvent(
                 PlayingTrackNotifyEvent.TrackScrobbleLocked(
@@ -102,6 +103,17 @@ fun EditScrobbleDialog(
                     locked = true
                 )
             )
+        }
+
+        onDispose {
+            if (hash != null) {
+                notifyPlayingTrackEvent(
+                    PlayingTrackNotifyEvent.TrackScrobbleLocked(
+                        hash = hash,
+                        locked = false
+                    )
+                )
+            }
         }
     }
 

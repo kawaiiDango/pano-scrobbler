@@ -1,10 +1,10 @@
 package com.arn.scrobble.api
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.CacheStrategy
 import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler

@@ -84,6 +84,10 @@ data class ListenBrainzListensData(
     data class ListenBrainzListensPayload(
         val count: Int,
         val listens: List<ListenBrainzListensListens>,
+        @Serializable(with = TimeSerializer::class)
+        val latest_listen_ts: Long,
+        @Serializable(with = TimeSerializer::class)
+        val oldest_listen_ts: Long,
     )
 }
 

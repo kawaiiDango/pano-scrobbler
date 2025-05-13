@@ -9,7 +9,7 @@ import com.arn.scrobble.work.DesktopWorkManager
 import kotlin.system.exitProcess
 
 actual fun NavGraphBuilder.panoPlatformSpecificNavGraph(
-    onSetTitle: (String?) -> Unit,
+    onSetTitle: (String, String?) -> Unit,
     navigate: (PanoRoute) -> Unit,
     goUp: () -> Unit,
     mainViewModel: MainViewModel,

@@ -3,7 +3,6 @@ package com.arn.scrobble.pref
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first

@@ -18,11 +18,7 @@ import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import java.net.UnknownHostException
-import kotlin.coroutines.cancellation.CancellationException
 
 class PendingScrobblesWorker(
     override val setProgress: suspend (CommonWorkProgress) -> Unit,
@@ -254,6 +250,6 @@ class PendingScrobblesWorker(
         private const val HARD_LIMIT = 2500
         private var BATCH_SIZE = 40 //max 50
         private const val DELAY = 400L
-        private const val MAX_FAILURES_PER_SERVICE = 3
+        private const val MAX_FAILURES_PER_SERVICE = 2
     }
 }

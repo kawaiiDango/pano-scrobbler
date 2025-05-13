@@ -10,8 +10,6 @@ data class AppItem(
 ) {
     val friendlyLabel: String
         get() = when (appId) {
-            Stuff.PACKAGE_SHAZAM -> "AutoShazam"
-
             Stuff.PACKAGE_PIXEL_NP,
             Stuff.PACKAGE_PIXEL_NP_R,
             Stuff.PACKAGE_PIXEL_NP_AMM -> "Pixel Now Playing"

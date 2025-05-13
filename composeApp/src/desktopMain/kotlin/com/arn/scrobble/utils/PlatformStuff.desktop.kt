@@ -8,6 +8,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -43,7 +44,7 @@ import java.net.URI
 
 actual object PlatformStuff {
 
-    actual val isDebug = true
+    actual val isDebug = BuildKonfig.DEBUG
 
     actual val isJava8OrGreater = true
 
@@ -57,11 +58,7 @@ actual object PlatformStuff {
 
     actual val isNonPlayBuild = true
 
-    actual val platformSubstring = when (DesktopStuff.os) {
-        DesktopStuff.Os.Macos -> "macos"
-        DesktopStuff.Os.Windows -> "windows"
-        DesktopStuff.Os.Linux -> "linux"
-    }
+    actual val platformSubstring = DesktopStuff.os.name.lowercase()
 
     actual fun isDkmaNeeded() = false
 

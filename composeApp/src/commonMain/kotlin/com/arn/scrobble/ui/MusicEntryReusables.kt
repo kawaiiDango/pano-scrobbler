@@ -992,29 +992,40 @@ fun GridOrListSelector(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        ButtonGroup {
-            OutlinedToggleButton(
-                checked = !isColumn,
-                onCheckedChange = {
-                    if (it)
-                        onIsColumnChange(false)
-                },
-            ) {
-                Icon(Icons.Outlined.GridView, contentDescription = stringResource(Res.string.grid))
-            }
+        ButtonGroup(
+            overflowIndicator = {}
+        ) {
+            customItem(
+                buttonGroupContent = {
+                    OutlinedToggleButton(
+                        checked = !isColumn,
+                        onCheckedChange = {
+                            if (it)
+                                onIsColumnChange(false)
+                        },
+                    ) {
+                        Icon(
+                            Icons.Outlined.GridView,
+                            contentDescription = stringResource(Res.string.grid)
+                        )
+                    }
+                }, menuContent = {})
 
-            OutlinedToggleButton(
-                checked = isColumn,
-                onCheckedChange = {
-                    if (it)
-                        onIsColumnChange(true)
-                },
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Outlined.List,
-                    contentDescription = stringResource(Res.string.list)
-                )
-            }
+            customItem(
+                buttonGroupContent = {
+                    OutlinedToggleButton(
+                        checked = isColumn,
+                        onCheckedChange = {
+                            if (it)
+                                onIsColumnChange(true)
+                        },
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.List,
+                            contentDescription = stringResource(Res.string.list)
+                        )
+                    }
+                }, menuContent = {})
         }
     }
 }
@@ -1035,12 +1046,12 @@ private fun ButtonsBarForCharts(
             .padding(8.dp)
     ) {
         if (onLegendClick != null)
-            IconButton(onClick = onLegendClick) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = stringResource(Res.string.legend)
-                )
-            }
+            IconButtonWithTooltip(
+                onClick = onLegendClick,
+                icon = Icons.Outlined.Info,
+                contentDescription = stringResource(Res.string.legend)
+            )
+
 
         GridOrListSelector(
             isColumn = isColumn,
@@ -1054,12 +1065,11 @@ private fun ButtonsBarForCharts(
         )
 
         if (onCollageClick != null)
-            IconButton(onClick = onCollageClick) {
-                Icon(
-                    imageVector = Icons.Outlined.AutoAwesomeMosaic,
-                    contentDescription = stringResource(Res.string.create_collage)
-                )
-            }
+            IconButtonWithTooltip(
+                onClick = onCollageClick,
+                icon = Icons.Outlined.AutoAwesomeMosaic,
+                contentDescription = stringResource(Res.string.create_collage)
+            )
     }
 }
 

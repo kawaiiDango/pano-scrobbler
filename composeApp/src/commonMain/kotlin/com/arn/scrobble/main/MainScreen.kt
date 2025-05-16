@@ -81,6 +81,7 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.imageloader.newImageLoader
 import com.arn.scrobble.navigation.LocalNavigationType
+import com.arn.scrobble.navigation.NavFromTrayEffect
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoFabData
 import com.arn.scrobble.navigation.PanoNavMetadata
@@ -110,12 +111,10 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.back
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PanoAppContent(
     navController: NavHostController,
-    dialogArgs: PanoDialog? = null,
     viewModel: MainViewModel = viewModel { MainViewModel() },
 ) {
 
@@ -137,10 +136,9 @@ fun PanoAppContent(
     val tabData = remember { mutableStateMapOf<String, List<PanoTab>>() }
     var navMetadata by remember { mutableStateOf<List<PanoNavMetadata>?>(null) }
     var selectedTabIdx by rememberSaveable { mutableIntStateOf(0) }
-    var currentDialogArgs by rememberSaveable(
-        dialogArgs,
-        saver = jsonSerializableSaver<PanoDialog?>()
-    ) { mutableStateOf(dialogArgs) }
+    var currentDialogArgs by rememberSaveable(saver = jsonSerializableSaver<PanoDialog?>()) {
+        mutableStateOf(null)
+    }
     val drawerData by viewModel.drawerDataFlow.collectAsStateWithLifecycle()
     val currentUserSelf by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { pref ->
@@ -208,6 +206,10 @@ fun PanoAppContent(
         }
     }
 
+    NavFromTrayEffect(
+        onOpenDialog = { currentDialogArgs = it },
+    )
+
     setSingletonImageLoaderFactory { context ->
         newImageLoader(context)
     }
@@ -224,7 +226,7 @@ fun PanoAppContent(
                             emptyList(),
                         selectedTabIdx = selectedTabIdx,
                         fabData = fabData,
-                        onNavigate = { navController.navigate(it) },
+                        onNavigate = navController::navigate,
                         onOpenDialog = { currentDialogArgs = it },
                         onBack = { navController.popBackStack() },
                         onTabClicked = { pos, tab ->
@@ -259,21 +261,25 @@ fun PanoAppContent(
 
             Scaffold(
                 modifier = Modifier
-                    .pullToRefresh(
-                        state = pullToRefreshState,
-                        isRefreshing = pullToRefreshStateForTabs.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
-                        enabled = !pullToRefreshStateForTabs.values.all { it == PanoPullToRefreshStateForTab.Disabled } &&
-                                !PlatformStuff.isTv &&
-                                !PlatformStuff.isDesktop,
-                        onRefresh = {
-                            // find the right tab
-                            pullToRefreshStateForTabs.entries
-                                .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
-                                ?.key
-                                ?.let { id ->
-                                    viewModel.notifyPullToRefresh(id)
-                                }
-                        }
+                    .then(
+                        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv)
+                            Modifier
+                                .pullToRefresh(
+                                    state = pullToRefreshState,
+                                    isRefreshing = pullToRefreshStateForTabs.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
+                                    enabled = !pullToRefreshStateForTabs.values.all { it == PanoPullToRefreshStateForTab.Disabled },
+                                    onRefresh = {
+                                        // find the right tab
+                                        pullToRefreshStateForTabs.entries
+                                            .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
+                                            ?.key
+                                            ?.let { id ->
+                                                viewModel.notifyPullToRefresh(id)
+                                            }
+                                    }
+                                )
+                        else
+                            Modifier
                     )
                     .nestedScroll(topBarScrollBehavior.nestedScrollConnection)
                     .then(
@@ -424,6 +430,7 @@ fun PanoAppContent(
             )
         }
     }
+
 }
 
 

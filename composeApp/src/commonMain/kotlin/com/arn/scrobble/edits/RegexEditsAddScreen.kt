@@ -25,9 +25,9 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -357,7 +357,7 @@ fun RegexEditsAddScreen(
             modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
             if (regexEdit != null) {
-                OutlinedIconButton(
+                IconButton(
                     onClick = {
                         scope.launch {
                             withContext(Dispatchers.IO) {
@@ -369,7 +369,8 @@ fun RegexEditsAddScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
-                        contentDescription = stringResource(Res.string.delete)
+                        contentDescription = stringResource(Res.string.delete),
+                        tint = MaterialTheme.colorScheme.error,
                     )
                 }
             }

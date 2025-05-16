@@ -80,3 +80,7 @@ Use the `--data-dir` or `-d` command line argument, followed by the path to the 
 ### [desktop] How do I correctly scrobble media playing on a web browser?
 
 Browsers are not supported. Use WebScrobbler for that instead.
+
+### [desktop] The file picker freezes on certain Linux distros
+
+Disable the native file picker in settings as a workaround.

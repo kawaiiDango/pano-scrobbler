@@ -1,9 +1,33 @@
 package com.arn.scrobble.main
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
@@ -22,12 +46,18 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.FixItDialog
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.search.IndexerDialog
-import com.arn.scrobble.ui.BottomSheetDialogParent
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.back
+import pano_scrobbler.composeapp.generated.resources.close
 
 @Composable
 private fun PanoDialogs(
@@ -239,6 +269,110 @@ fun PanoDialogStack(
             onOpenDialog = { pushDialogArgs(it) },
             navMetadataList = navMetadataList,
             mainViewModel = mainViewModel,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BottomSheetDialogParent(
+    onDismiss: () -> Unit,
+    onBack: (() -> Unit)?,
+    padding: Boolean,
+    skipPartiallyExpanded: Boolean = PlatformStuff.isTv || PlatformStuff.isDesktop,
+    content: @Composable (modifier: Modifier) -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+//    val sheetGesturesEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop &&
+//            (
+//                    (!scrollState.canScrollBackward && !scrollState.canScrollForward) ||
+//                            (scrollState.lastScrolledBackward && !scrollState.canScrollBackward) ||
+//                            (scrollState.lastScrolledForward && !scrollState.canScrollForward)
+//                    )
+
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
+    var sheetGesturesEnabled by remember { mutableStateOf(!PlatformStuff.isTv && !PlatformStuff.isDesktop) }
+    var lastScroll by remember { mutableIntStateOf(0) }
+
+    if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { scrollState.value }
+                .distinctUntilChanged()
+                .collectLatest { value ->
+                    val max = scrollState.maxValue
+                    val delta = value - lastScroll
+                    lastScroll = value
+
+                    sheetGesturesEnabled = when {
+                        // inner contents do not overflow
+                        (!scrollState.canScrollBackward && !scrollState.canScrollForward) -> true
+                        // intercept scroll only if inner contents are scrolling
+                        !scrollState.isScrollInProgress -> true
+                        // At top and scrolling up (dragging down)
+                        value == 0 && delta < 0 -> true
+                        // At bottom and scrolling down (dragging up)
+                        value == max && delta > 0 -> true
+                        // Not at an edge, disable sheet gestures
+                        else -> false
+                    }
+                }
+        }
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = if (PlatformStuff.isTv || PlatformStuff.isDesktop) null
+        else {
+            { BottomSheetDefaults.DragHandle() }
+        },
+        sheetGesturesEnabled = sheetGesturesEnabled,
+        sheetState = sheetState,
+    ) {
+        if (onBack != null) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = stringResource(Res.string.back),
+                )
+            }
+
+        } else if (PlatformStuff.isDesktop) {
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                        onDismiss()
+                    }
+                },
+                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = stringResource(Res.string.close),
+                )
+            }
+        }
+
+        content(
+            Modifier
+                .fillMaxWidth()
+                .then(
+                    if (padding)
+                        if (PlatformStuff.isTv || PlatformStuff.isDesktop)
+                            Modifier.padding(24.dp)
+                        else
+                            Modifier.padding(horizontal = 24.dp)
+                    else
+                        Modifier
+                )
+                .verticalScroll(scrollState)
         )
     }
 }

@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +39,7 @@ fun UpdateAvailableDialog(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.verticalScroll(rememberScrollState()).padding(vertical = 16.dp)
+        modifier = modifier.padding(vertical = 16.dp)
     ) {
         Text(
             text = stringResource(Res.string.update_available, githubReleases.tag_name),

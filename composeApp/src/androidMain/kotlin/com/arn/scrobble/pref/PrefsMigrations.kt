@@ -4,7 +4,6 @@ import androidx.datastore.core.DataMigration
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserAccountSerializable
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.CookieSerializable
 import com.arn.scrobble.charts.AllPeriods
 import com.arn.scrobble.themes.DayNightMode
@@ -99,9 +98,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             sharedPreferences.getLong("last_update_check_time", -1).takeIf { it != -1L }
         val hiddenTags = sharedPreferences.getStringSet("hidden_tags", emptySet()) ?: emptySet()
         val pinnedFriendsJson = sharedPreferences.getString("pinned_friends", null)
-        val pinnedFriends =
-            pinnedFriendsJson?.let { Stuff.myJson.decodeFromString<List<UserCached>>(it) }
-                ?: emptyList()
         val spotifyAccessToken =
             sharedPreferences.getString("spotify_access_token", "bad_token") ?: "bad_token"
         val spotifyAccessTokenExpires =
@@ -179,7 +175,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             lastUpdateCheckTime = lastUpdateCheckTime,
             version = 5,
             hiddenTags = hiddenTags,
-            pinnedFriends = pinnedFriends,
             spotifyAccessToken = spotifyAccessToken,
             spotifyAccessTokenExpires = spotifyAccessTokenExpires,
             spotifyArtistSearchApproximate = spotifyArtistSearchApproximate,

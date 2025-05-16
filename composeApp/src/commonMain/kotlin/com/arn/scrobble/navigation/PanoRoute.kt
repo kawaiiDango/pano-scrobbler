@@ -152,6 +152,12 @@ sealed interface PanoRoute {
     @Serializable
     data class TrackHistory(val track: Track, val user: UserCached) : PanoRoute
 
+
+    @Serializable
+    data class Automation(
+        val allowedPackages: List<String>,
+    ) : PanoRoute
+
     @Serializable
     data object Help : PanoRoute
 

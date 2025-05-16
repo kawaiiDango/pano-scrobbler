@@ -12,8 +12,11 @@ import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,11 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.ui.FilePickerMode
+import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.utils.PlatformFile
 import kotlinx.coroutines.delay
@@ -49,6 +52,7 @@ import pano_scrobbler.composeapp.generated.resources.file_exists_confirm_overwri
 import pano_scrobbler.composeapp.generated.resources.show_all
 import java.io.File
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FilePickerScreen(
     title: String,
@@ -69,6 +73,7 @@ fun FilePickerScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var canOverwrite by remember { mutableStateOf(false) }
     var showHiddenFiles by remember { mutableStateOf(false) }
+    val roots = remember { File.listRoots() }
     val scope = rememberCoroutineScope()
 
     fun errorCannotAccess(file: File) {
@@ -137,6 +142,28 @@ fun FilePickerScreen(
                             .padding(8.dp)
                     )
 
+                    if (currentDir.parentFile == null && roots.size > 1) {
+                        ButtonGroup(
+                            overflowIndicator = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Menu,
+                                    contentDescription = stringResource(Res.string.show_all),
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            roots.forEach { root ->
+                                clickableItem(
+                                    onClick = {
+                                        currentDir = root
+                                    },
+                                    weight = 1f,
+                                    label = root.path
+                                )
+                            }
+                        }
+                    }
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -163,19 +190,16 @@ fun FilePickerScreen(
                             modifier = Modifier.padding(start = 8.dp).weight(1f)
                         )
 
-                        IconButton(
+                        IconButtonWithTooltip(
                             onClick = {
                                 showHiddenFiles = !showHiddenFiles
                             },
-                        ) {
-                            Icon(
-                                imageVector = if (showHiddenFiles)
-                                    Icons.Outlined.Visibility
-                                else
-                                    Icons.Outlined.VisibilityOff,
-                                contentDescription = stringResource(Res.string.show_all),
-                            )
-                        }
+                            icon = if (showHiddenFiles)
+                                Icons.Outlined.Visibility
+                            else
+                                Icons.Outlined.VisibilityOff,
+                            contentDescription = stringResource(Res.string.show_all),
+                        )
 
                         if (mode is FilePickerMode.Save) {
                             FilledTonalIconButton(
@@ -259,6 +283,7 @@ fun FilePickerScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun FileItem(
     file: File,
@@ -285,11 +310,10 @@ private fun FileItem(
             text = file.name,
             maxLines = 1,
             overflow = TextOverflow.MiddleEllipsis,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = if (file.isDirectory) {
-                FontWeight.Bold
+            style = if (file.isDirectory) {
+                MaterialTheme.typography.bodyLargeEmphasized
             } else {
-                null
+                MaterialTheme.typography.bodyLarge
             },
             modifier = Modifier
                 .weight(1f)

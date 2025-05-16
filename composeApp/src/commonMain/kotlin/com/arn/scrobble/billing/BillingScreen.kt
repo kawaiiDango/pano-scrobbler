@@ -23,7 +23,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -57,6 +56,7 @@ import pano_scrobbler.composeapp.generated.resources.billing_scrobble_source
 import pano_scrobbler.composeapp.generated.resources.billing_sharing
 import pano_scrobbler.composeapp.generated.resources.bmc
 import pano_scrobbler.composeapp.generated.resources.bmc_link
+import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.get_pro
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.ko_fi
@@ -247,12 +247,11 @@ fun BillingScreen(
                 ),
                 trailingIcon = if (!PlatformStuff.isTv) {
                     {
-                        IconButton(onClick = ::verifyLicenseOnline) {
-                            Icon(
-                                imageVector = Icons.Outlined.Done,
-                                contentDescription = null
-                            )
-                        }
+                        IconButtonWithTooltip(
+                            onClick = ::verifyLicenseOnline,
+                            icon = Icons.Outlined.Done,
+                            contentDescription = stringResource(Res.string.done)
+                        )
                     }
                 } else
                     null,

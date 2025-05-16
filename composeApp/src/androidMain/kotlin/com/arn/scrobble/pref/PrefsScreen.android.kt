@@ -10,32 +10,13 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.R
 import com.arn.scrobble.media.PersistentNotificationService
-import com.arn.scrobble.providers.AutomationProvider
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -46,11 +27,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.fix_it_desc
 import pano_scrobbler.composeapp.generated.resources.pref_automation
-import pano_scrobbler.composeapp.generated.resources.pref_automation_desc
-import pano_scrobbler.composeapp.generated.resources.pref_automation_tasker
 import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
@@ -140,64 +118,6 @@ private fun launchNotificationsActivity(context: Context) {
     context.startActivity(intent)
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun CpQueryUrisDialog(
-    onNavigateToAppList: () -> Unit,
-    onDismissRequest: () -> Unit,
-) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-    ) {
-        val prefix = "content://com.arn.scrobble.automation/"
-        val uris = remember {
-            arrayOf(
-                prefix + AutomationProvider.ENABLE,
-                prefix + AutomationProvider.DISABLE,
-                prefix + AutomationProvider.LOVE,
-                prefix + AutomationProvider.UNLOVE,
-                prefix + AutomationProvider.CANCEL,
-                prefix + AutomationProvider.ALLOWLIST + "/<packageName>",
-                prefix + AutomationProvider.BLOCKLIST + "/<packageName>",
-            )
-        }
-        Text(
-            text = stringResource(Res.string.pref_automation_desc),
-            style = MaterialTheme.typography.titleMediumEmphasized,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-        Text(
-            text = stringResource(Res.string.pref_automation_tasker),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-
-        OutlinedButton(
-            onClick = onNavigateToAppList,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(stringResource(Res.string.choose_apps))
-        }
-
-        uris.forEach { uri ->
-            Text(
-                text = uri,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        PlatformStuff.copyToClipboard(uri)
-                        onDismissRequest()
-                    }
-                    .padding(16.dp)
-            )
-        }
-    }
-}
-
 actual fun prefChartsWidget(listScope: LazyListScope) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !PlatformStuff.isTv) {
         listScope.item("widget") {
@@ -215,25 +135,16 @@ actual fun prefChartsWidget(listScope: LazyListScope) {
 
 actual fun prefAutomation(
     listScope: LazyListScope,
-    onNavigateToBilling: (() -> Unit),
-    onNavigateToAppList: (() -> Unit),
+    onNavigateToAutomation: () -> Unit,
+    onNavigateToBilling: () -> Unit,
 ) {
     if (!PlatformStuff.isTv) {
         listScope.item("automation") {
-            var showUrisDialog by rememberSaveable { mutableStateOf(false) }
             TextPref(
                 text = stringResource(Res.string.pref_automation),
-                onClick = {
-                    showUrisDialog = true
-                },
+                onClick = onNavigateToAutomation,
                 onNavigateToBilling = onNavigateToBilling,
             )
-
-            if (showUrisDialog)
-                CpQueryUrisDialog(
-                    onNavigateToAppList = onNavigateToAppList,
-                    onDismissRequest = { showUrisDialog = false },
-                )
         }
     }
 }

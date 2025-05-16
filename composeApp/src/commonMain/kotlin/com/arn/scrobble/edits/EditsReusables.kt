@@ -12,6 +12,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -91,10 +92,16 @@ fun EditsDeleteMenu(
             onDismissRequest = { deleteMenuShown = false }
         ) {
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.delete)) },
+                text = {
+                    Text(
+                        stringResource(Res.string.delete),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.DeleteOutline,
+                        tint = MaterialTheme.colorScheme.error,
                         contentDescription = null
                     )
                 },

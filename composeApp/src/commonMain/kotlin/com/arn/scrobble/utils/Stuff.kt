@@ -1,9 +1,11 @@
 package com.arn.scrobble.utils
 
-import androidx.annotation.Keep
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
@@ -435,6 +437,7 @@ object Stuff {
     }
 
     fun Painter.toImageBitmap(
+        darkTint: Boolean,
         density: Density = Density(1f),
         layoutDirection: LayoutDirection = LayoutDirection.Ltr,
         size: Size = intrinsicSize,
@@ -452,7 +455,13 @@ object Stuff {
             canvas = canvas,
             size = size
         ) {
-            draw(size = this.size)
+            draw(
+                size = this.size,
+                colorFilter = ColorFilter.tint(
+                    color = if (darkTint) Color.Black else Color.White,
+                    blendMode = BlendMode.SrcIn
+                )
+            )
         }
         return image
     }
@@ -481,10 +490,6 @@ object Stuff {
         return true
     }
 
-    fun <K, V> Map<K, V>.getOrDefaultKey(key: K, defaultKey: K) = this[key] ?: this[defaultKey]!!
-
-    fun <T> List<T>.wrappedGet(index: Int) = this[(index + size) % size]
-
     fun formatBigHyphen(artist: String, title: String) = "$artist — $title"
 }
 
@@ -503,7 +508,3 @@ val Throwable.redactedMessage: String
 
         return m
     }
-
-@Keep
-// Useful for force logging to crashlytics in debug builds
-class ForceLogException(override val message: String?) : Exception(message)

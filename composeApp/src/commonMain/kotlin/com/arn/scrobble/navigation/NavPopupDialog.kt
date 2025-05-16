@@ -3,8 +3,6 @@ package com.arn.scrobble.navigation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
@@ -50,7 +48,6 @@ fun NavPopupDialog(
 
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .weight(1f)
         ) {
             navMetadataList.forEach { navMetadata ->

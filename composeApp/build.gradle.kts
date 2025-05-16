@@ -47,6 +47,9 @@ val arch = System.getProperty("os.arch")
 val archAmd64 = arrayOf("amd64", "x86_64")
 val archArm64 = arrayOf("aarch64", "arm64")
 
+val isReleaseBuild = gradle.startParameter.taskNames.any {
+    it.contains("proguard", ignoreCase = true) || it.contains("release", ignoreCase = true)
+}
 val resourcesDirName = when {
     os.isMacOsX && arch in archAmd64 -> "macos-x64"
     os.isMacOsX && arch in archArm64 -> "macos-arm64"
@@ -118,8 +121,8 @@ kotlin {
             implementation(libs.kotlin.coroutines.core)
             implementation(compose.runtime)
             implementation(compose.foundation)
-//            implementation(compose.material3)
-            implementation(libs.material3)
+            implementation(compose.material3)
+//            implementation(libs.material3)
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.uiUtil)
@@ -207,10 +210,6 @@ buildkonfig {
         changelogFile.readText()
     } else {
         "changelog_placeholder"
-    }
-
-    val isReleaseBuild = gradle.startParameter.taskNames.any {
-        it.contains("proguard", ignoreCase = true) || it.contains("release", ignoreCase = true)
     }
 
     // default config is required
@@ -348,9 +347,15 @@ aboutLibraries {
 compose.desktop {
     application {
         mainClass = "com.arn.scrobble.main.MainKt"
+
+        val libraryPath = if (isReleaseBuild)
+            "\$APPDIR/resources"
+        else
+            "./resources/$resourcesDirName"
+
         // ZGC starts with ~70MB minimized and goes down to ~160MB after re-minimizing
         jvmArgs += listOf(
-            "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
+            "-Djava.library.path=$libraryPath",
             "-Ddev.resources.dir.name=$resourcesDirName",
             // use sw rendering on linux instead of es2, fixes the no text on webview bug on arch
             "-Dprism.order=sw",
@@ -367,7 +372,7 @@ compose.desktop {
         nativeDistributions {
             val formats = when {
                 os.isWindows -> {
-                    mutableSetOf(TargetFormat.Msi, TargetFormat.AppImage)
+                    mutableSetOf(TargetFormat.AppImage, TargetFormat.Exe)
                 }
 
                 os.isLinux -> {
@@ -389,10 +394,9 @@ compose.desktop {
 
             appResourcesRootDir = project.layout.projectDirectory.dir("resources")
 
-//            includeAllModules = true
             modules(
                 "java.net.http",
-                "jdk.jsobject",
+//                "jdk.jsobject",
                 "jdk.unsupported",
                 "jdk.unsupported.desktop",
                 "jdk.xml.dom"
@@ -467,7 +471,7 @@ tasks.register<ComposeHotRun>("runHot") {
     }
 
     val appDataDir = File(appDataRoot, "$appNameWithoutSpaces-debug").absolutePath
-    args = listOf("--data-dir=$appDataDir")
+    args = listOf("--data-dir", appDataDir)
 }
 
 tasks.register<DefaultTask>("generateSha256") {

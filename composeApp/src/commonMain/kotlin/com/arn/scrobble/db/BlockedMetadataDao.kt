@@ -18,11 +18,11 @@ interface BlockedMetadataDao {
 
     @Query(
         """SELECT * FROM $tableName
-          WHERE artist IN ("", :artist) AND
-          album IN ("", :album) AND
-          albumArtist IN ("", :albumArtist) AND
-          track IN ("", :track) AND
-          NOT (artist == "" AND album == "" AND albumArtist == "" AND track == "")
+          WHERE artist IN ('', :artist) AND
+          album IN ('', :album) AND
+          albumArtist IN ('', :albumArtist) AND
+          track IN ('', :track) AND
+          NOT (artist == '' AND album == '' AND albumArtist == '' AND track == '')
     """
     )
     suspend fun getBlockedEntries(

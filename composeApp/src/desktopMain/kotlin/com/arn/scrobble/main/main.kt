@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toPainter
 import androidx.compose.ui.window.Notification
@@ -21,14 +22,11 @@ import co.touchlab.kermit.Severity
 import coil3.SingletonImageLoader
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
-import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.logger.JvmLogger
 import com.arn.scrobble.media.PlayingTrackNotificationState
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
@@ -41,6 +39,7 @@ import com.arn.scrobble.webview.web.CustomURLStreamHandlerFactory
 import com.arn.scrobble.work.DesktopWorkManager
 import javafx.application.Platform
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -111,6 +110,7 @@ private fun preventMultipleInstances(uniqueId: String) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
     val lockName = "pano-scrobbler-" + (cmdlineArgs.dataDir ?: "default-data-dir").hashCode()
@@ -119,7 +119,6 @@ fun main(args: Array<String>) {
 
     return application {
         var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
-        var dialogArgs by remember { mutableStateOf<PanoDialog?>(null) }
         val windowState = rememberWindowState()
         val isSystemInDarkTheme = isSystemInDarkTheme()
         var trayData by remember { mutableStateOf<PanoTrayUtils.TrayData?>(null) }
@@ -129,13 +128,7 @@ fun main(args: Array<String>) {
         val appIdToNames by PlatformStuff.mainPrefs.data
             .map { it.seenApps.associate { it.appId to it.friendlyLabel } }
             .collectAsState(emptyMap())
-
-        fun onOpenDialog(dialog: PanoDialog) {
-            if (!windowShown) {
-                windowShown = true
-            }
-            dialogArgs = dialog
-        }
+        val windowOpenTrigger = remember { MutableSharedFlow<Unit>() }
 
         fun onExit() {
             DesktopWorkManager.clearAll()
@@ -176,14 +169,13 @@ fun main(args: Array<String>) {
                                 if (nowPlaying)
                                     ""
                                 else
-                                    "✓ "
+                                    "[✓] "
 
                             val lovedString =
                                 if (trackInfo.userLoved)
                                     "❤️ " + getString(Res.string.unlove)
                                 else
-                                    "♡  " +
-                                            getString(Res.string.love)
+                                    "🤍 " + getString(Res.string.love)
 
                             trayItems += PanoTrayUtils.ItemId.TrackName.withSuffix(appId) to
                                     playingState + trackInfo.title
@@ -204,7 +196,7 @@ fun main(args: Array<String>) {
                                     "⛔ " +
                                     getString(Res.string.block)
                             trayItems += PanoTrayUtils.ItemId.Copy.withSuffix(appId) to
-//                                    "📋 " +
+                                    "📋 " +
                                     getString(Res.string.copy)
                         }
 
@@ -231,6 +223,7 @@ fun main(args: Array<String>) {
                     val iconSize = 64
 
                     val bmp = trayIconPainter.toImageBitmap(
+                        darkTint = !isSystemInDarkTheme,
                         size = Size(
                             iconSize.toFloat(),
                             iconSize.toFloat()
@@ -238,15 +231,6 @@ fun main(args: Array<String>) {
                     )
                     val argb = IntArray(bmp.width * bmp.height)
                     bmp.readPixels(argb)
-
-                    // invert colors for light theme
-                    if (!isSystemInDarkTheme) {
-                        argb.forEachIndexed { index, color ->
-                            val alpha = color and 0xFF000000.toInt()
-                            val invertedColor = color.inv() and 0x00FFFFFF
-                            argb[index] = invertedColor or alpha
-                        }
-                    }
 
                     trayData = PanoTrayUtils.TrayData(
                         tooltip = tooltip,
@@ -260,8 +244,13 @@ fun main(args: Array<String>) {
 
         LaunchedEffect(Unit) {
             trayMenuClickListener(
-                onOpen = { dialogArgs = null; windowShown = true },
-                onOpenDialog = ::onOpenDialog,
+                onOpenIfNeeded = {
+                    if (!windowShown) {
+                        windowShown = true
+                    } else {
+                        windowOpenTrigger.emit(Unit)
+                    }
+                },
                 onExit = ::onExit
             )
         }
@@ -351,18 +340,26 @@ fun main(args: Array<String>) {
             Window(
                 onCloseRequest = {
                     windowShown = false
-                    dialogArgs = null
                 },
                 state = windowState,
                 title = BuildKonfig.APP_NAME,
                 icon = painterResource(Res.drawable.ic_launcher_with_bg)
             ) {
+                LaunchedEffect(Unit) {
+                    if (isSystemInDarkTheme)
+                        PanoNativeComponents.applyDarkModeToWindow(window.windowHandle)
+
+                    windowOpenTrigger.collect {
+                        window.toFront()
+                        window.windowHandle
+                    }
+                }
+
                 val navController = rememberNavController()
 
                 AppTheme {
                     PanoAppContent(
-                        navController,
-                        dialogArgs = dialogArgs
+                        navController
                     )
                 }
             }
@@ -371,8 +368,7 @@ fun main(args: Array<String>) {
 }
 
 private suspend fun trayMenuClickListener(
-    onOpen: () -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
+    onOpenIfNeeded: suspend () -> Unit,
     onExit: () -> Unit
 ) {
     PanoTrayUtils.onTrayMenuItemClicked.collect { id ->
@@ -387,7 +383,7 @@ private suspend fun trayMenuClickListener(
             }
 
             PanoTrayUtils.ItemId.Open -> {
-                onOpen()
+                onOpenIfNeeded()
             }
 
             PanoTrayUtils.ItemId.Error -> {
@@ -395,42 +391,20 @@ private suspend fun trayMenuClickListener(
                     (playingTrackTrayInfo[suffix] as? PlayingTrackNotificationState.Error)
                         ?: return@collect
 
-                val trackInfo = errorState.trackInfo
                 val scrobbleError = errorState.scrobbleError
 
                 if (scrobbleError.canFixMetadata) {
-                    val dialog = PanoDialog.EditScrobble(
-                        scrobbleData = trackInfo.toScrobbleData(),
-                        hash = trackInfo.hash
-                    )
-                    onOpenDialog(dialog)
+                    onOpenIfNeeded()
                 }
             }
 
             else -> {
-                val user = Scrobblables.currentScrobblableUser ?: return@collect
                 val scrobblingTrackInfo =
                     (playingTrackTrayInfo[suffix] as? PlayingTrackNotificationState.Scrobbling)
                         ?.trackInfo
                         ?: return@collect
 
                 when (itemId) {
-                    PanoTrayUtils.ItemId.TrackName -> {
-                        val dialog = PanoDialog.MusicEntryInfo(
-                            track = scrobblingTrackInfo.toTrack(),
-                            user = user
-                        )
-                        onOpenDialog(dialog)
-                    }
-
-                    PanoTrayUtils.ItemId.ArtistName -> {
-                        val dialog = PanoDialog.MusicEntryInfo(
-                            artist = scrobblingTrackInfo.toTrack().artist,
-                            user = user
-                        )
-                        onOpenDialog(dialog)
-                    }
-
                     PanoTrayUtils.ItemId.Love -> {
                         notifyPlayingTrackEvent(
                             PlayingTrackNotifyEvent.TrackLovedUnloved(
@@ -438,14 +412,6 @@ private suspend fun trayMenuClickListener(
                                 loved = !scrobblingTrackInfo.userLoved
                             )
                         )
-                    }
-
-                    PanoTrayUtils.ItemId.Edit -> {
-                        val dialog = PanoDialog.EditScrobble(
-                            scrobbleData = scrobblingTrackInfo.toScrobbleData(),
-                            hash = scrobblingTrackInfo.hash
-                        )
-                        onOpenDialog(dialog)
                     }
 
                     PanoTrayUtils.ItemId.Cancel -> {
@@ -458,29 +424,13 @@ private suspend fun trayMenuClickListener(
                         )
                     }
 
-                    PanoTrayUtils.ItemId.Block -> {
-                        val blockedMetadata = BlockedMetadata(
-                            track = scrobblingTrackInfo.title,
-                            artist = scrobblingTrackInfo.artist,
-                            album = scrobblingTrackInfo.album,
-                            albumArtist = scrobblingTrackInfo.albumArtist,
-                        )
-
-                        val dialog = PanoDialog.BlockedMetadataAdd(
-                            blockedMetadata = blockedMetadata,
-                            hash = scrobblingTrackInfo.hash
-                        )
-
-                        onOpenDialog(dialog)
-                    }
-
                     PanoTrayUtils.ItemId.Copy -> {
                         val text = "${scrobblingTrackInfo.artist} - ${scrobblingTrackInfo.title}"
                         PlatformStuff.copyToClipboard(text)
                     }
 
                     else -> {
-                        Logger.d { "Unknown tray menu item clicked: $id" }
+                        onOpenIfNeeded()
                     }
                 }
             }

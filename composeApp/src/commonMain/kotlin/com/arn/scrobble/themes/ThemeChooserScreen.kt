@@ -20,7 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButtonShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
@@ -228,7 +228,7 @@ private fun ThemeSwatch(
         checked = selected,
         onCheckedChange = { onClick() },
         interactionSource = interactionSource,
-        shapes = IconButtonDefaults.shapes(
+        shapes = IconToggleButtonShapes(
             toggleButtonShapes.shape,
             toggleButtonShapes.pressedShape,
             toggleButtonShapes.checkedShape

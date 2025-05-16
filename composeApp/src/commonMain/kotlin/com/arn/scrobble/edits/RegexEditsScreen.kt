@@ -25,11 +25,11 @@ import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.SwipeLeftAlt
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -194,6 +194,8 @@ private fun RegexEditsList(
                 RegexEditItem(
                     regexEdit = it,
                     forShimmer = true,
+                    canMoveUp = false,
+                    canMoveDown = false,
                     onKeypressMoveItem = { _, _ -> },
                     onItemClick = { },
                     modifier = Modifier.shimmerWindowBounds().animateItem(),
@@ -205,6 +207,8 @@ private fun RegexEditsList(
                     RegexEditItem(
                         regexEdit = item,
                         onItemClick = { onItemClick(it) },
+                        canMoveUp = index > 0,
+                        canMoveDown = index < regexEdits.size - 1,
                         onKeypressMoveItem = { f, t ->
                             onMoveItem(f, t)
                             onDragEnd()
@@ -221,6 +225,8 @@ private fun RegexEditsList(
 @Composable
 private fun RegexEditItem(
     regexEdit: RegexEdit,
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
     onKeypressMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
     onItemClick: (RegexEdit) -> Unit,
     modifier: Modifier = Modifier,
@@ -254,30 +260,35 @@ private fun RegexEditItem(
                     .padding(8.dp)
             )
         } else {
-            ButtonGroup {
-                IconToggleButton(
-                    checked = false,
-                    onCheckedChange = {
-                        onKeypressMoveItem(regexEdit.order, regexEdit.order - 1)
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.KeyboardArrowUp,
-                        contentDescription = stringResource(Res.string.move_up),
-                    )
-                }
-                IconToggleButton(
-                    checked = false,
-                    onCheckedChange = {
-                        onKeypressMoveItem(regexEdit.order, regexEdit.order + 1)
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.KeyboardArrowDown,
-                        contentDescription = stringResource(Res.string.move_down),
-                    )
-                }
-            }
+            SplitButtonLayout(
+                leadingButton = {
+                    SplitButtonDefaults.OutlinedLeadingButton(
+                        enabled = canMoveUp,
+                        onClick = {
+                            onKeypressMoveItem(regexEdit.order, regexEdit.order - 1)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.KeyboardArrowUp,
+                            contentDescription = stringResource(Res.string.move_up),
+                        )
+                    }
+                },
+                trailingButton = {
+                    SplitButtonDefaults.OutlinedTrailingButton(
+                        enabled = canMoveDown,
+                        onCheckedChange = {
+                            onKeypressMoveItem(regexEdit.order, regexEdit.order + 1)
+                        },
+                        checked = false,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.KeyboardArrowDown,
+                            contentDescription = stringResource(Res.string.move_down),
+                        )
+                    }
+                },
+            )
         }
 
         Column(

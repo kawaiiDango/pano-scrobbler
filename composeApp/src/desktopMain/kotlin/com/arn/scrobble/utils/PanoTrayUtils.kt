@@ -12,23 +12,9 @@ object PanoTrayUtils {
         val iconSize: Int,
         val menuItemIds: Array<String>,
         val menuItemTexts: Array<String>,
-    ) {
-        fun copy(
-            tooltip: String = this.tooltip,
-            argb: IntArray = this.argb,
-            iconSize: Int = this.iconSize,
-            menuItemIds: Array<String> = this.menuItemIds,
-            menuItemTexts: Array<String> = this.menuItemTexts,
-        ) = TrayData(
-            tooltip = tooltip,
-            argb = argb,
-            iconSize = iconSize,
-            menuItemIds = menuItemIds,
-            menuItemTexts = menuItemTexts,
-        )
-    }
+    )
 
-    private val _onTrayMenuItemClicked = MutableSharedFlow<String>()
+    private val _onTrayMenuItemClicked = MutableSharedFlow<String>(replay = 1)
     val onTrayMenuItemClicked = _onTrayMenuItemClicked.asSharedFlow()
 
     fun onTrayMenuItemClickedFn(id: String) {

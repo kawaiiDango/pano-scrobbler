@@ -28,7 +28,7 @@ object DeepLinkUtils {
     fun handleNavigationFromInfoScreen(
         route: PanoRoute,
     ) {
-        var deepLinkUri = when (route) {
+        val deepLinkUri = when (route) {
             is PanoRoute.MusicEntryInfoPager -> {
                 Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfoPager::class.simpleName + "/" +
                         serializableType<Artist>().serializeAsValue(route.artist) + "/" +

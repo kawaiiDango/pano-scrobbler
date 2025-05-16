@@ -4,10 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.AlertDialog
@@ -147,7 +145,6 @@ fun EditScrobbleDialog(
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
-            .verticalScroll(rememberScrollState())
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),

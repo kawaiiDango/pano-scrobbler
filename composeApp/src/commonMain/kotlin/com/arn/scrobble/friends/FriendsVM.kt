@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.UserCached.Companion.toUserCached
@@ -44,19 +43,15 @@ class FriendsVM : ViewModel() {
 
     private val user = MutableStateFlow<UserCached?>(null)
 
-    val pinnedFriends =
-        mainPrefs.data.map { it.pinnedFriends }.mapLatest {
-            var showsPins = Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
-                    PlatformStuff.billingRepository.isLicenseValid // && user.isSelf
-            if (showsPins)
-                it.sortedBy { it.order }
-            else
-                emptyList()
-        }
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-    val pinnedUsernamesSet = pinnedFriends
-        .map { it.map { it.name }.toSet() }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+    val pinnedFriends = mainPrefs.data.map {
+        it.pinnedFriends[it.currentAccountType]
+            ?.sortedBy { it.order }
+            ?: emptyList()
+    }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val pinnedUsernamesSet = pinnedFriends.mapLatest { it.map { it.name }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
     private val friendsRecentsSemaphore = Semaphore(2)
 
@@ -129,7 +124,14 @@ class FriendsVM : ViewModel() {
 
         if (willBeAdded) {
             viewModelScope.launch {
-                mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends + newUser) }
+                mainPrefs.updateData {
+                    it.copy(
+                        pinnedFriends = it.pinnedFriends +
+                                (it.currentAccountType to (it.pinnedFriends.getOrDefault(
+                                    it.currentAccountType, emptySet()
+                                ) + newUser))
+                    )
+                }
             }
         } else {
             viewModelScope.launch {
@@ -151,7 +153,14 @@ class FriendsVM : ViewModel() {
 
         if (willBeRemoved) {
             viewModelScope.launch {
-                mainPrefs.updateData { it.copy(pinnedFriends = it.pinnedFriends - user) }
+                mainPrefs.updateData {
+                    it.copy(
+                        pinnedFriends = it.pinnedFriends +
+                                (it.currentAccountType to (it.pinnedFriends.getOrDefault(
+                                    it.currentAccountType, emptySet()
+                                ) - user))
+                    )
+                }
             }
         }
 
@@ -169,10 +178,11 @@ class FriendsVM : ViewModel() {
             val newList = pinnedFriends.value.toMutableList()
             val friend = newList.removeAt(from)
             newList.add(to, friend)
+            val newListOrdered = newList.mapIndexed { index, it ->
+                it.copy(order = index)
+            }
             mainPrefs.updateData {
-                it.copy(pinnedFriends = newList.mapIndexed { index, it ->
-                    it.copy(order = index)
-                })
+                it.copy(pinnedFriends = it.pinnedFriends + (it.currentAccountType to newListOrdered))
             }
         }
 
@@ -220,7 +230,11 @@ class FriendsVM : ViewModel() {
                 }
 
             if (modifiedCount > 0) {
-                mainPrefs.updateData { it.copy(pinnedFriends = newPinnedFriends) }
+                mainPrefs.updateData {
+                    it.copy(
+                        pinnedFriends = it.pinnedFriends + (it.currentAccountType to newPinnedFriends)
+                    )
+                }
             }
         }
     }

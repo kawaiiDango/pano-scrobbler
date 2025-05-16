@@ -11,8 +11,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -36,6 +34,7 @@ import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
+import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.OutlinedToggleButtons
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -44,6 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.export_file_name
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_network
@@ -109,14 +109,12 @@ fun ExportScreen(
                     ),
                     trailingIcon = if (!PlatformStuff.isTv) {
                         {
-                            IconButton(onClick = {
-                                viewModel.exportToServer(codeText)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Done,
-                                    contentDescription = null
-                                )
-                            }
+                            IconButtonWithTooltip(
+                                onClick = {
+                                    viewModel.exportToServer(codeText)
+                                }, icon = Icons.Outlined.Done,
+                                contentDescription = stringResource(Res.string.done)
+                            )
                         }
                     } else
                         null,

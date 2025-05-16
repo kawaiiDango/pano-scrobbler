@@ -94,7 +94,7 @@ data class MainPrefs(
     val checkForUpdates: Boolean = true,
     val version: Int = 0,
     val hiddenTags: Set<String> = emptySet(),
-    val pinnedFriends: List<UserCached> = emptyList(),
+    val pinnedFriends: Map<AccountType, List<UserCached>> = emptyMap(),
     val spotifyAccessToken: String = "bad_token",
     val spotifyAccessTokenExpires: Long = -1,
     val spotifyArtistSearchApproximate: Boolean = false,

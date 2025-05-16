@@ -24,8 +24,8 @@ actual fun prefNotifications(listScope: LazyListScope) {
 
 actual fun prefAutomation(
     listScope: LazyListScope,
-    onNavigateToBilling: (() -> Unit),
-    onNavigateToAppList: (() -> Unit),
+    onNavigateToAutomation: () -> Unit,
+    onNavigateToBilling: () -> Unit,
 ) {
     // no-op
 }

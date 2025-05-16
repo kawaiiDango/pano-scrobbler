@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -34,10 +36,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,6 +76,7 @@ import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.GridOrListSelector
+import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.NowPlayingSurface
 import com.arn.scrobble.ui.PanoLazyVerticalGrid
@@ -80,7 +84,6 @@ import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.minGridSize
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
-import com.arn.scrobble.ui.shake
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
@@ -88,7 +91,6 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.redactedMessage
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -97,7 +99,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
-import pano_scrobbler.composeapp.generated.resources.edit
+import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.following
 import pano_scrobbler.composeapp.generated.resources.from
 import pano_scrobbler.composeapp.generated.resources.move_down
@@ -135,8 +137,16 @@ fun FriendsScreen(
     val totalFriends by viewModel.totalFriends.collectAsStateWithLifecycle()
     val friendsExtraDataMap by viewModel.friendsExtraDataMap.collectAsStateWithLifecycle()
     val friendsExtraDataMapState = remember { mutableStateMapOf<String, Result<FriendExtraData>>() }
-    val pinnedFriends by viewModel.pinnedFriends.collectAsStateWithLifecycle()
-    val pinnedUsernamesSet by viewModel.pinnedUsernamesSet.collectAsStateWithLifecycle()
+    val pinnedFriends = if (PlatformStuff.billingRepository.isLicenseValid) {
+        viewModel.pinnedFriends.collectAsStateWithLifecycle()
+    } else {
+        remember { mutableStateOf(emptyList()) }
+    }
+    val pinnedUsernamesSet = if (PlatformStuff.billingRepository.isLicenseValid) {
+        viewModel.pinnedUsernamesSet.collectAsStateWithLifecycle()
+    } else {
+        remember { mutableStateOf(emptySet()) }
+    }
     var isInEditMode by rememberSaveable { mutableStateOf(false) }
     val sortedFriends by viewModel.sortedFriends.collectAsStateWithLifecycle()
     val lastFriendsRefreshTime by viewModel.lastFriendsRefreshTime.collectAsStateWithLifecycle()
@@ -239,7 +249,7 @@ fun FriendsScreen(
     fun expandFriend(friend: UserCached) {
         val dialogArgs = PanoDialog.Friend(
             friend = friend,
-            isPinned = friend.name in pinnedUsernamesSet,
+            isPinned = friend.name in pinnedUsernamesSet.value,
             extraData = friendsExtraDataMapState[friend.name]?.getOrNull(),
             extraDataError = friendsExtraDataMapState[friend.name]?.exceptionOrNull()?.redactedMessage,
         )
@@ -302,11 +312,11 @@ fun FriendsScreen(
                 return@PanoLazyVerticalGrid // return early
             }
 
-            if (user.isSelf) {
-                items(
-                    pinnedFriends,
-                    key = { it.name }
-                ) { friend ->
+            if (user.isSelf && PlatformStuff.billingRepository.isLicenseValid) {
+                itemsIndexed(
+                    pinnedFriends.value,
+                    key = { idx, friend -> friend.name }
+                ) { idx, friend ->
                     FriendItem(
                         friend,
                         extraData = friendsExtraDataMapState[friend.name]?.getOrNull(),
@@ -325,8 +335,15 @@ fun FriendsScreen(
                                 onNavigate(PanoRoute.Billing)
                             }
                         },
-                        onMove = {
-                            viewModel.movePinAndSave(friend.name, it)
+                        onMoveLeft = if (idx == 0) null else {
+                            {
+                                viewModel.movePinAndSave(friend.name, false)
+                            }
+                        },
+                        onMoveRight = if (idx == pinnedFriends.value.lastIndex) null else {
+                            {
+                                viewModel.movePinAndSave(friend.name, true)
+                            }
                         },
                         modifier = Modifier.animateItem()
                     )
@@ -335,7 +352,7 @@ fun FriendsScreen(
 
             for (i in 0 until friends.itemCount) {
                 val friendPeek = friends.peek(i)
-                if (friendPeek == null || friendPeek.name !in pinnedUsernamesSet) {
+                if (friendPeek == null || friendPeek.name !in pinnedUsernamesSet.value) {
                     item(
                         key = friendPeek?.name ?: i
                     ) {
@@ -526,30 +543,15 @@ private fun FriendItem(
     expanded: Boolean = false,
     onExpand: () -> Unit = {},
     onPinUnpin: (Boolean) -> Unit = {},
-    onMove: (right: Boolean) -> Boolean = { false },
+    onMoveLeft: (() -> Boolean)? = null,
+    onMoveRight: (() -> Boolean)? = null,
     onNavigateToScrobbles: (UserCached) -> Unit = {},
     onNavigateToTrackInfo: (Track, UserCached) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     val playCount = remember(extraData) { extraData?.playCount }
     val track = remember(extraData) { extraData?.track }
-    var moveLeftShake by remember { mutableStateOf(false) }
-    var moveRightShake by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(moveLeftShake) {
-        if (moveLeftShake) {
-            delay(500)
-            moveLeftShake = false
-        }
-    }
-
-    LaunchedEffect(moveRightShake) {
-        if (moveRightShake) {
-            delay(500)
-            moveRightShake = false
-        }
-    }
 
     FriendItemRowOrColumn(
         isColumn = isColumn,
@@ -669,14 +671,13 @@ private fun FriendItem(
                     }
 
                     if (!PlatformStuff.isTv) {
-                        IconButton(onClick = {
-                            PlatformStuff.openInBrowser(friend.url)
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                contentDescription = stringResource(Res.string.profile)
-                            )
-                        }
+                        IconButtonWithTooltip(
+                            onClick = {
+                                PlatformStuff.openInBrowser(friend.url)
+                            },
+                            icon = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = stringResource(Res.string.profile)
+                        )
                     }
                 }
             }
@@ -826,65 +827,74 @@ private fun FriendItem(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                ButtonGroup {
+                ButtonGroup(
+                    overflowIndicator = {}
+                ) {
                     if (isPinned) {
-                        OutlinedIconToggleButton(
-                            checked = false,
-                            onCheckedChange = {
-                                if (!onMove(false))
-                                    moveRightShake = true
-                            },
-                            modifier = if (moveLeftShake) Modifier.shake(true) else Modifier
-                        ) {
-                            Icon(
-                                imageVector = if (!isColumn) Icons.AutoMirrored.Outlined.KeyboardArrowLeft
-                                else
-                                    Icons.Outlined.KeyboardArrowUp,
-                                contentDescription = stringResource(
-                                    if (!isColumn)
-                                        Res.string.move_left
-                                    else
-                                        Res.string.move_up
-                                ),
-                            )
-                        }
+                        customItem(
+                            buttonGroupContent = {
+                                OutlinedButton(
+                                    enabled = onMoveLeft != null,
+                                    onClick = {
+                                        onMoveLeft?.invoke()
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = if (!isColumn)
+                                            Icons.AutoMirrored.Outlined.KeyboardArrowLeft
+                                        else
+                                            Icons.Outlined.KeyboardArrowUp,
+                                        contentDescription = stringResource(
+                                            if (!isColumn)
+                                                Res.string.move_left
+                                            else
+                                                Res.string.move_up
+                                        ),
+                                    )
+                                }
+                            }, menuContent = {})
                     }
 
-                    OutlinedIconToggleButton(
-                        checked = isPinned,
-                        onCheckedChange = {
-                            onPinUnpin(!isPinned)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                            contentDescription = stringResource(
-                                if (isPinned) Res.string.unpin else Res.string.pin
-                            ),
-                        )
-                    }
+                    customItem(
+                        buttonGroupContent = {
+                            ToggleButton(
+                                checked = isPinned,
+                                onCheckedChange = {
+                                    onPinUnpin(!isPinned)
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                                    contentDescription = stringResource(
+                                        if (isPinned) Res.string.unpin else Res.string.pin
+                                    )
+                                )
+                            }
+                        }, menuContent = {})
 
                     if (isPinned) {
-                        OutlinedIconToggleButton(
-                            checked = false,
-                            onCheckedChange = {
-                                if (!onMove(true))
-                                    moveRightShake = true
-                            },
-                            modifier = if (moveRightShake) Modifier.shake(true) else Modifier
-                        ) {
-                            Icon(
-                                imageVector = if (!isColumn) Icons.AutoMirrored.Outlined.KeyboardArrowRight
-                                else
-                                    Icons.Outlined.KeyboardArrowDown,
-                                contentDescription = stringResource(
-                                    if (!isColumn)
-                                        Res.string.move_right
-                                    else
-                                        Res.string.move_down
-                                ),
-                            )
-                        }
+                        customItem(
+                            buttonGroupContent = {
+                                OutlinedButton(
+                                    enabled = onMoveRight != null,
+                                    onClick = {
+                                        onMoveRight?.invoke()
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = if (!isColumn)
+                                            Icons.AutoMirrored.Outlined.KeyboardArrowRight
+                                        else
+                                            Icons.Outlined.KeyboardArrowDown,
+                                        contentDescription = stringResource(
+                                            if (!isColumn)
+                                                Res.string.move_right
+                                            else
+                                                Res.string.move_down
+                                        ),
+                                    )
+                                }
+                            }, menuContent = {})
                     }
                 }
             }
@@ -893,6 +903,7 @@ private fun FriendItem(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ButtonsBarForFriends(
     isColumn: Boolean,
@@ -901,11 +912,20 @@ private fun ButtonsBarForFriends(
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
-    Box(
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
+
+        Spacer(
+            modifier = Modifier.size(IconButtonDefaults.smallContainerSize())
+        )
+
+        Spacer(
+            modifier = Modifier.weight(1f)
+        )
+
         GridOrListSelector(
             isColumn = isColumn,
             onIsColumnChange = { isColumn ->
@@ -913,20 +933,22 @@ private fun ButtonsBarForFriends(
                     PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
                 }
             },
-            modifier = Modifier.align(Alignment.Center)
+        )
+
+        Spacer(
+            modifier = Modifier.weight(1f)
         )
 
         if (onEditClick != null)
-            IconButton(
+            IconButtonWithTooltip(
                 onClick = {
                     onEditClick(!isInEditMode)
                 },
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                Icon(
-                    imageVector = if (isInEditMode) Icons.Outlined.Done else Icons.Outlined.PushPin,
-                    contentDescription = stringResource(Res.string.edit)
-                )
-            }
+                icon = if (isInEditMode) Icons.Outlined.Done else Icons.Outlined.PushPin,
+                contentDescription = if (isInEditMode)
+                    stringResource(Res.string.done)
+                else
+                    stringResource(Res.string.pin),
+            )
     }
 }

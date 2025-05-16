@@ -15,7 +15,7 @@ interface CustomSpotifyMappingsDao {
     @Query(
         """
         SELECT * FROM $tableName
-        WHERE artist = :artist and album = ""
+        WHERE artist = :artist and album = ''
         ORDER BY _id DESC LIMIT 1
     """
     )

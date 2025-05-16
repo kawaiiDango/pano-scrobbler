@@ -144,5 +144,8 @@ class PanoNativeComponents(
 
         @JvmStatic
         external fun isSingleInstance(name: String): Boolean
+
+        @JvmStatic
+        external fun applyDarkModeToWindow(handle: Long)
     }
 }

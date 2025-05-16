@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -35,19 +34,19 @@ import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -55,7 +54,9 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -99,8 +100,6 @@ import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.back
-import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.librefm
@@ -372,28 +371,40 @@ fun IconButtonWithTooltip(
     onClick: () -> Unit,
     contentDescription: String,
     modifier: Modifier = Modifier,
+    filledStyle: Boolean = false,
     enabled: Boolean = true,
     tint: Color = MaterialTheme.colorScheme.secondary,
 ) {
-    // todo find out why this freezes
-//    TooltipBox(
-//        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-//        tooltip = { PlainTooltip { Text(contentDescription) } },
-//        state = rememberTooltipState(),
-//        modifier = modifier,
-//    ) {
-    IconButton(
-        onClick = onClick,
-        enabled = enabled,
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        tooltip = { PlainTooltip { Text(contentDescription) } },
+        state = rememberTooltipState(),
         modifier = modifier,
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = tint
-        )
+        if (filledStyle) {
+            FilledTonalIconButton(
+                onClick = onClick,
+                enabled = enabled,
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = contentDescription,
+                    tint = tint
+                )
+            }
+        } else {
+            IconButton(
+                onClick = onClick,
+                enabled = enabled,
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = contentDescription,
+                    tint = tint
+                )
+            }
+        }
     }
-//    }
 }
 
 @Composable
@@ -415,62 +426,6 @@ fun ButtonWithIcon(
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Text(text)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheetDialogParent(
-    onDismiss: () -> Unit,
-    onBack: (() -> Unit)?,
-    padding: Boolean,
-    skipPartiallyExpanded: Boolean = PlatformStuff.isDesktop,
-    content: @Composable (modifier: Modifier) -> Unit,
-) {
-    val isTabletUi = LocalNavigationType.current != PanoNavigationType.BOTTOM_NAVIGATION
-
-    val sheetState =
-        rememberModalBottomSheetState(skipPartiallyExpanded = isTabletUi || skipPartiallyExpanded)
-    val sheetGesturesEnabled = remember { !PlatformStuff.isTv && !PlatformStuff.isDesktop }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        dragHandle = if (PlatformStuff.isTv || PlatformStuff.isDesktop) null
-        else {
-            { BottomSheetDefaults.DragHandle() }
-        },
-        sheetGesturesEnabled = sheetGesturesEnabled,
-        sheetState = sheetState,
-    ) {
-        if (onBack != null) {
-            IconButtonWithTooltip(
-                icon = Icons.AutoMirrored.Outlined.ArrowBack,
-                onClick = onBack,
-                contentDescription = stringResource(Res.string.back),
-                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
-            )
-        } else if (PlatformStuff.isDesktop) {
-            IconButtonWithTooltip(
-                icon = Icons.Outlined.Close,
-                onClick = onDismiss,
-                contentDescription = stringResource(Res.string.close),
-                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
-            )
-        }
-
-        content(
-            Modifier
-                .fillMaxWidth()
-                .then(
-                    if (padding)
-                        if (PlatformStuff.isTv || PlatformStuff.isDesktop)
-                            Modifier.padding(24.dp)
-                        else
-                            Modifier.padding(horizontal = 24.dp)
-                    else
-                        Modifier
-                )
-        )
     }
 }
 

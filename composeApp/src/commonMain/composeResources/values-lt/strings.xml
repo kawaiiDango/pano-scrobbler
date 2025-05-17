@@ -150,7 +150,6 @@
     <string name="share_sig">(per „Pano Scrobbler“)</string>
     <string name="share">Bendrinti</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Keisti tinklelio dydį</string>
     <string name="pinch_to_zoom">Prispauskite, kad padidinti</string>
     <string name="more_info">Daugiau informacijos</string>
     <string name="more" comment="More options menu in short">Daugiau</string>
@@ -329,7 +328,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar norite įjungti šablono redagavimo taisyklę: „%1$s“?</string>
     <string name="show_persistent_noti">Rodyti nuolatinį pranešimą</string>
     <string name="fix_it_desc">Tai gali padėti išlaikyti skrobuoklio veikimą fone kai kuriuose įrenginiuose.</string>
-    <string name="persistent_noti_desc">Ilgai prispauskite, kad paslėpti</string>
     <string name="scrobbler_off">Skrobuoklis išjungtas</string>
     <string name="scrobbler_on">Skrobuoklis aktyvus</string>
     <string name="duration">Trukmė</string>
@@ -351,7 +349,6 @@
     <string name="pref_master_qs_hint">Taip pat galima perjungti iš sparčiųjų nustatymų plytelės</string>
     <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
     <string name="pref_master_qs_already_addded">Sparčiųjų nustatymų plytelė jau pridėta.</string>
-    <string name="pref_noti_q">Jei piktograma nerodoma, galima skatinti pranešimą.</string>
     <string name="pref_noti">Pranešimai</string>
     <string name="pref_noti_categories">Pranešimų kategorijos</string>
     <string name="pref_scrobble_noti">Skroblo pranešimai</string>

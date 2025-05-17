@@ -134,7 +134,6 @@
     <string name="share_sig">(pomoću aplikacije Pano Scrobbler)</string>
     <string name="share">Podijeli</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Promijeni veličinu mreže</string>
     <string name="pinch_to_zoom">Zumiranje prstima</string>
     <string name="more_info">Više informacija</string>
     <string name="more" comment="More options menu in short">Više</string>
@@ -313,7 +312,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Želite li omogućiti pravilo za šablonsko uređivanje: %1$s?</string>
     <string name="show_persistent_noti">Prikaži trajnu obavijest</string>
     <string name="fix_it_desc">Ovo može pomoći za pokretanje scrobblera u pozadini na nekim uređajima</string>
-    <string name="persistent_noti_desc">Za skrivanje ovoga dugo pritisnite</string>
     <string name="scrobbler_off">Scrobbler onemogućen</string>
     <string name="scrobbler_on">Scrobbler aktivan</string>
     <string name="duration">Trajanje</string>
@@ -335,7 +333,6 @@
     <string name="pref_master_qs_hint">Može se omogućiti i u brzim postavkama</string>
     <string name="pref_master_qs_add">Dodaj pločicu brzih postavki</string>
     <string name="pref_master_qs_already_addded">Pločica brzih postavki već je dodana</string>
-    <string name="pref_noti_q">Možete promovirati obavijest, ako se ikona ne prikazuje</string>
     <string name="pref_noti">Obavijesti</string>
     <string name="pref_noti_categories">Kategorije obavijesti</string>
     <string name="pref_scrobble_noti">Obavijesti scrobbleanja</string>

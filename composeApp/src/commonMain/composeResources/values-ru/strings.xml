@@ -150,7 +150,6 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share">Поделиться</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Легенда</string>
-    <string name="grid_size">Изменить размер сетки</string>
     <string name="pinch_to_zoom">Ущипните для увеличения</string>
     <string name="more_info">Подробнее</string>
     <string name="more" comment="More options menu in short">Ещё</string>
@@ -329,7 +328,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Хотите включить правило шаблона редактирования: %1$s?</string>
     <string name="show_persistent_noti">Показывать постоянное уведомление</string>
     <string name="fix_it_desc">Это может помочь поддерживать работу скробблера в фоновом режиме на некоторых устройствах</string>
-    <string name="persistent_noti_desc">Нажмите и удерживайте, чтобы скрыть это</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="duration">Продолжительность</string>
@@ -351,7 +349,6 @@
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
     <string name="pref_master_qs_add">Добавить плитку быстрых настроек</string>
     <string name="pref_master_qs_already_addded">Плитка быстрых настроек уже добавлена</string>
-    <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
     <string name="pref_noti">Уведомления</string>
     <string name="pref_noti_categories">Категории уведомлений</string>
     <string name="pref_scrobble_noti">Уведомления скробблинга</string>

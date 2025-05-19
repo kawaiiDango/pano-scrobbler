@@ -8,6 +8,8 @@ import com.arn.scrobble.media.PlaybackInfo
 import com.arn.scrobble.media.ScrobbleQueue
 import com.arn.scrobble.media.SessionInfo
 import com.arn.scrobble.media.listenForPlayingTrackEvents
+import com.arn.scrobble.onboarding.WebViewEvent
+import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
 import com.arn.scrobble.utils.Stuff
@@ -48,6 +50,20 @@ class PanoNativeComponents(
     fun onTrayMenuItemClicked(id: String) {
         _onTrayMenuItemClicked(id)
     }
+
+    fun onWebViewCookies(event: String) {
+        val event = Stuff.myJson.decodeFromString<WebViewEvent>(event)
+        GlobalScope.launch {
+            WebViewEventFlows.event.emit(event)
+        }
+    }
+
+    fun onWebViewPageLoad(url: String) {
+        GlobalScope.launch {
+            WebViewEventFlows.pageLoaded.emit(url)
+        }
+    }
+
 
     companion object {
         private const val TAG = "native_components"
@@ -147,5 +163,14 @@ class PanoNativeComponents(
 
         @JvmStatic
         external fun applyDarkModeToWindow(handle: Long)
+
+        @JvmStatic
+        external fun launchWebView(url: String, callbackPrefix: String)
+
+        @JvmStatic
+        external fun getWebViewCookiesFor(url: String)
+
+        @JvmStatic
+        external fun quitWebView()
     }
 }

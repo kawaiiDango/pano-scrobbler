@@ -311,10 +311,10 @@ class TimePeriodsGenerator(
             endTime: Long = System.currentTimeMillis(),
         ) = TimePeriod(endTime - toDuration(registeredTime, endTime), endTime, name = "")
 
-        fun scrobblingActivity(
+        fun forListeningActivity(
             timePeriodp: TimePeriod,
             registeredTime: Long,
-        ): List<TimePeriod> {
+        ): ListeningActivity {
 
             var timePeriod = timePeriodp.copy()
             if (timePeriodp.lastfmPeriod != null) {
@@ -376,7 +376,10 @@ class TimePeriodsGenerator(
 
             timePeriods.forEach { it.name = formatter(it) }
 
-            return timePeriods.asReversed()
+            return ListeningActivity(
+                timePeriodsToCounts = timePeriods.asReversed().associateWith { 0 },
+                type = type
+            )
         }
     }
 
@@ -429,3 +432,8 @@ enum class AllPeriods {
     YEAR,
     ALL_TIME
 }
+
+data class ListeningActivity(
+    val timePeriodsToCounts: Map<TimePeriod, Int> = emptyMap(),
+    val type: TimePeriodType = TimePeriodType.CUSTOM,
+)

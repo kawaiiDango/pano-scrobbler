@@ -187,14 +187,14 @@ data class ListenBrainzActivityData(
         val from_ts: Long,
         @Serializable(with = TimeSerializer::class)
         val last_updated: Long,
-        val listening_activity: List<ListeningActivity>,
+        val listening_activity: List<ListenBrainzListeningActivity>,
         @Serializable(with = TimeSerializer::class)
         val to_ts: Long
     )
 }
 
 @Serializable
-data class ListeningActivity(
+data class ListenBrainzListeningActivity(
     @Serializable(with = TimeSerializer::class)
     val from_ts: Long,
     val listen_count: Int,
@@ -202,3 +202,7 @@ data class ListeningActivity(
     @Serializable(with = TimeSerializer::class)
     val to_ts: Long
 )
+
+enum class ListenbrainzRanges {
+    this_week, this_month, this_year, week, month, year, quarter, half_yearly, all_time
+}

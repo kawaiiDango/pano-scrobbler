@@ -61,6 +61,7 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
+import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.showTrackShareSheet
@@ -125,6 +126,48 @@ private fun TrackDropdownMenu(
         onDismissRequest = onDismissRequest,
         modifier = modifier
     ) {
+        @Composable
+        fun copyItem() {
+            if (!PlatformStuff.isTv) {
+                DropdownMenuItem(
+                    onClick = {
+                        PlatformStuff.copyToClipboard(track.artist.name + " - " + track.name)
+                        onDismissRequest()
+                    },
+                    text = {
+                        Text(stringResource(Res.string.copy))
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.ContentCopy,
+                            contentDescription = null
+                        )
+                    }
+                )
+            }
+        }
+
+        @Composable
+        fun searchItem() {
+            DropdownMenuItem(
+                onClick = {
+                    scope.launch {
+                        PlatformStuff.launchSearchIntent(track, pkgName)
+                    }
+                    onDismissRequest()
+                },
+                text = {
+                    Text(stringResource(Res.string.search))
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+
         if (user.isSelf) {
             when (menuLevel) {
                 TrackMenuLevel.Root -> {
@@ -312,23 +355,8 @@ private fun TrackDropdownMenu(
                         )
                     }
 
-                    DropdownMenuItem(
-                        onClick = {
-                            scope.launch {
-                                PlatformStuff.launchSearchIntent(track, pkgName)
-                            }
-                            onDismissRequest()
-                        },
-                        text = {
-                            Text(stringResource(Res.string.search))
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = null
-                            )
-                        }
-                    )
+                    searchItem()
+                    copyItem()
 
                     if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
                         DropdownMenuItem(
@@ -345,24 +373,6 @@ private fun TrackDropdownMenu(
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Outlined.Share,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-
-                    if (!PlatformStuff.isTv) {
-                        DropdownMenuItem(
-                            onClick = {
-                                PlatformStuff.copyToClipboard(track.artist.name + " - " + track.name)
-                                onDismissRequest()
-                            },
-                            text = {
-                                Text(stringResource(Res.string.copy))
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.ContentCopy,
                                     contentDescription = null
                                 )
                             }
@@ -438,23 +448,8 @@ private fun TrackDropdownMenu(
                 }
             }
         } else {
-            DropdownMenuItem(
-                onClick = {
-                    scope.launch {
-                        PlatformStuff.launchSearchIntent(track, pkgName)
-                    }
-                    onDismissRequest()
-                },
-                text = {
-                    Text(stringResource(Res.string.search))
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = null
-                    )
-                }
-            )
+            searchItem()
+            copyItem()
         }
     }
 }
@@ -700,6 +695,12 @@ fun LazyListScope.scrobblesListItems(
                         .then(
                             if (expandedIdx() == i)
                                 Modifier.fillParentMaxHeight()
+                            else
+                                Modifier
+                        )
+                        .then(
+                            if (trackPeek == null)
+                                Modifier.shimmerWindowBounds()
                             else
                                 Modifier
                         )

@@ -30,7 +30,9 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Session
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
+import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
@@ -481,7 +483,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         timePeriod: TimePeriod,
         user: UserCached?,
         cacheStrategy: CacheStrategy,
-    ): Map<TimePeriod, Int> {
+    ): ListeningActivity {
         fun String.transformName(): String {
             return if (timePeriod.lastfmPeriod == LastfmPeriod.OVERALL)
                 "'" + takeLast(2) // 4 digit year
@@ -489,7 +491,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 take(3).trim()
         }
 
-        timePeriod.tag ?: return emptyMap()
+        timePeriod.tag ?: return ListeningActivity()
         val username = user?.name ?: userAccount.user.name
         val n = when (TimeUnit.MILLISECONDS.toDays(timePeriod.end - timePeriod.start)) {
             in 367 until Long.MAX_VALUE -> 10
@@ -505,7 +507,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             }
 
 
-        return result.getOrNull()?.payload?.listening_activity
+        val timePeriodsMap = result.getOrNull()?.payload?.listening_activity
             ?.takeLast(n)
             ?.associate {
                 TimePeriod(
@@ -515,6 +517,19 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     it.time_range.transformName()
                 ) to it.listen_count
             } ?: emptyMap()
+
+        val type = when (timePeriod.tag) {
+            ListenbrainzRanges.all_time.name -> TimePeriodType.YEAR
+            ListenbrainzRanges.year.name, ListenbrainzRanges.this_year.name, ListenbrainzRanges.half_yearly.name
+                -> TimePeriodType.MONTH
+
+            else -> TimePeriodType.DAY
+        }
+
+        return ListeningActivity(
+            timePeriodsToCounts = timePeriodsMap,
+            type = type,
+        )
     }
 
     companion object {
@@ -555,8 +570,4 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             return result.map { Session(it.user_name, userAccountTemp.authKey) }
         }
     }
-}
-
-enum class ListenbrainzRanges {
-    this_week, this_month, this_year, week, month, year, quarter, half_yearly, all_time
 }

@@ -165,20 +165,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(projects.extrasNonplay)
             implementation(libs.androidx.sqlite.bundled)
-
-            val platform = when {
-                os.isWindows -> "win"
-                os.isMacOsX -> "mac"
-                else -> "linux"
-            }
-            val javafxVersion = libs.versions.javafx.get()
-
-            implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
-            implementation("org.openjfx:javafx-swing:$javafxVersion:$platform")
-            implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")
-            implementation("org.openjfx:javafx-controls:$javafxVersion:$platform")
-            implementation("org.openjfx:javafx-media:$javafxVersion:$platform")
-            implementation("org.openjfx:javafx-web:$javafxVersion:$platform")
         }
     }
 
@@ -357,8 +343,6 @@ compose.desktop {
         jvmArgs += listOf(
             "-Djava.library.path=$libraryPath",
             "-Ddev.resources.dir.name=$resourcesDirName",
-            // use sw rendering on linux instead of es2, fixes the no text on webview bug on arch
-            "-Dprism.order=sw",
 //            "-XX:NativeMemoryTracking=detail",
             "-XX:+UseSerialGC",
             "-XX:+UseAdaptiveSizePolicy",
@@ -372,7 +356,7 @@ compose.desktop {
         nativeDistributions {
             val formats = when {
                 os.isWindows -> {
-                    mutableSetOf(TargetFormat.AppImage, TargetFormat.Exe)
+                    mutableSetOf(TargetFormat.AppImage)
                 }
 
                 os.isLinux -> {
@@ -391,6 +375,7 @@ compose.desktop {
             targetFormats = formats
             packageVersion = "$verName.0"
             vendor = "kawaiiDango"
+            packageName = appNameWithoutSpaces
 
             appResourcesRootDir = project.layout.projectDirectory.dir("resources")
 
@@ -407,15 +392,13 @@ compose.desktop {
                 upgradeUuid = "85173f4e-ca52-4ec9-b77f-c2e0b1ff4209"
                 msiPackageVersion = packageVersion
                 exePackageVersion = packageVersion
-                packageName = appName
                 menuGroup = appName
-                description = appName
+                description = appNameWithoutSpaces
                 iconFile = project.layout.projectDirectory.dir("resources")
                     .file("windows/app_icon.ico")
             }
 
             linux {
-                packageName = appNameWithoutSpaces
                 menuGroup = appNameWithoutSpaces
                 description = appNameWithoutSpaces
                 iconFile = project.layout.projectDirectory.dir("resources")
@@ -497,11 +480,11 @@ tasks.register<DefaultTask>("generateSha256") {
     }
 }
 
-tasks.register<Zip>("zipAppImage") {
-    from("build/compose/binaries/main-release/app")
-    archiveFileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.zip"
-    destinationDirectory = file("dist")
-}
+//tasks.register<Zip>("zipAppImage") {
+//    from("build/compose/binaries/main-release/app")
+//    archiveFileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.zip"
+//    destinationDirectory = file("dist")
+//}
 
 tasks.register<Copy>("copyGithubReleaseApk") {
     from("build/outputs/apk/releaseGithub")
@@ -513,17 +496,17 @@ tasks.register<Copy>("copyGithubReleaseApk") {
     )
 }
 
-tasks.register<Copy>("copyReleaseMsi") {
-    val fileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.msi"
-
-    from("build/compose/binaries/main-release/msi")
-    into("dist")
-    include("*.msi")
-    rename(
-        "(.*).msi",
-        fileName
-    )
-}
+//tasks.register<Copy>("copyReleaseExe") {
+//    val fileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.exe"
+//
+//    from("build/compose/binaries/main-release/exe")
+//    into("dist")
+//    include("*.exe")
+//    rename(
+//        "(.*).exe",
+//        fileName
+//    )
+//}
 
 tasks.register<Copy>("copyReleaseDmg") {
     val fileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.dmg"
@@ -538,7 +521,7 @@ tasks.register<Copy>("copyReleaseDmg") {
 
 tasks.register<Exec>("packageLinuxAppImage") {
 
-    val executableDir = file("build/compose/binaries/main-release/app/Pano Scrobbler")
+    val executableDir = file("build/compose/binaries/main-release/app/pano-scrobbler")
     val appDir = file("build/compose/binaries/main-release/app/PanoScrobbler.AppDir")
     val appimageFilesDir = file("appimage-files")
     val distDir = file("dist")
@@ -590,20 +573,32 @@ tasks.register<Exec>("packageLinuxAppImage") {
     )
 }
 
+tasks.register<Exec>("packageWindowsNsis") {
+    val executableDir = file("build/compose/binaries/main-release/app/pano-scrobbler")
+    val nsisFilesDir = file("nsis-files")
+    val distDir = file("dist")
+
+    val distFile = File(distDir, "$appNameWithoutSpaces-$verCode-$resourcesDirName.exe")
+    val nsisScriptFile = File(nsisFilesDir, "install-script.nsi")
+    commandLine(
+        "makensis",
+        "/DOUTFILE=" + distFile.absolutePath,
+        "/DAPPDIR=" + executableDir.absolutePath,
+        "/DVERSION_CODE=$verCode",
+        "/DVERSION_NAME=$verNameWithDate",
+        nsisScriptFile.absolutePath
+    )
+}
+
 afterEvaluate {
     if (os.isWindows)
         tasks.named("packageReleaseAppImage") {
-            finalizedBy(tasks.named("zipAppImage"))
+            finalizedBy(tasks.named("packageWindowsNsis"))
         }
 
     if (os.isLinux)
         tasks.named("packageReleaseAppImage") {
             finalizedBy(tasks.named("packageLinuxAppImage"))
-        }
-
-    if (os.isWindows)
-        tasks.named("packageReleaseMsi") {
-            finalizedBy(tasks.named("copyReleaseMsi"))
         }
 
     if (os.isMacOsX)

@@ -14,6 +14,7 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.UserCached.Companion.toUserCached
 import com.arn.scrobble.api.cache.CacheStrategy
+import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.utils.PlatformStuff
@@ -352,15 +353,15 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
 
     override suspend fun getListeningActivity(
         timePeriod: TimePeriod, user: UserCached?, cacheStrategy: CacheStrategy,
-    ): Map<TimePeriod, Int> {
+    ): ListeningActivity {
         val username = user?.name ?: userAccount.user.name
         val registeredTime = user?.registeredTime ?: userAccount.user.registeredTime
 
-        val timePeriods = TimePeriodsGenerator.scrobblingActivity(
+        val listeningActivity = TimePeriodsGenerator.forListeningActivity(
             timePeriod, registeredTime
         )
 
-        return timePeriods.associateWith {
+        val timePeriodsToCounts = listeningActivity.timePeriodsToCounts.mapValues { (it, _) ->
             if (it.start < System.currentTimeMillis()) {
                 getRecents(
                     username = username,
@@ -372,6 +373,8 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             } else
                 0
         }
+
+        return listeningActivity.copy(timePeriodsToCounts = timePeriodsToCounts)
     }
 
 

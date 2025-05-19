@@ -60,7 +60,7 @@ expect object PlatformStuff {
 
     fun loadApplicationLabel(pkgName: String): String
 
-    fun getWebviewCookies(uri: String): Map<String, String>
+    suspend fun getWebviewCookies(uri: String): Map<String, String>
 
     fun clearWebviewCookies()
 

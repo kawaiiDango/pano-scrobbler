@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -23,24 +22,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.MediumFlexibleTopAppBar
+import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarHost
@@ -48,9 +44,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.WideNavigationRail
+import androidx.compose.material3.WideNavigationRailItem
+import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -62,7 +62,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -152,7 +152,6 @@ fun PanoAppContent(
     val currentUser by remember { derivedStateOf { currentUserOther ?: currentUserSelf } }
 
     val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val pullToRefreshState = rememberPullToRefreshState()
     val pullToRefreshStateForTabs =
         remember { mutableStateMapOf<Int, PanoPullToRefreshStateForTab>() }
@@ -218,7 +217,7 @@ fun PanoAppContent(
         val currentNavType = LocalNavigationType.current
         PermanentNavigationDrawer(
             drawerContent = {
-                if (currentNavType == PanoNavigationType.NAVIGATION_RAIL) {
+                if (currentNavType != PanoNavigationType.BOTTOM_NAVIGATION) {
                     PanoNavigationRail(
                         tabs = if (showTabs)
                             (tabData.values.firstOrNull() ?: emptyList())
@@ -238,56 +237,27 @@ fun PanoAppContent(
                         userp = currentUser,
                         drawerData = drawerData,
                     )
-                } else if (currentNavType == PanoNavigationType.PERMANENT_NAVIGATION_DRAWER) {
-                    PanoNavigationDrawerContent(
-                        tabs = if (showTabs) (tabData.values.firstOrNull()
-                            ?: emptyList()) else emptyList(),
-                        selectedTabIdx = selectedTabIdx,
-                        fabData = fabData,
-                        onNavigate = { navController.navigate(it) },
-                        onOpenDialog = { currentDialogArgs = it },
-                        onBack = { navController.popBackStack() },
-                        onTabClicked = { pos, tab ->
-                            selectedTabIdx = pos
-                        },
-                        otherUserp = currentUserOther,
-                        drawerData = drawerData,
-                        drawSnowfall = viewModel.isItChristmas,
-                        navMetadataList = navMetadata.takeIf { showNavMetadata } ?: emptyList(),
-                    )
                 }
             },
         ) {
 
             Scaffold(
                 modifier = Modifier
-                    .then(
-                        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv)
-                            Modifier
-                                .pullToRefresh(
-                                    state = pullToRefreshState,
-                                    isRefreshing = pullToRefreshStateForTabs.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
-                                    enabled = !pullToRefreshStateForTabs.values.all { it == PanoPullToRefreshStateForTab.Disabled },
-                                    onRefresh = {
-                                        // find the right tab
-                                        pullToRefreshStateForTabs.entries
-                                            .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
-                                            ?.key
-                                            ?.let { id ->
-                                                viewModel.notifyPullToRefresh(id)
-                                            }
-                                    }
-                                )
-                        else
-                            Modifier
+                    .pullToRefresh(
+                        state = pullToRefreshState,
+                        isRefreshing = pullToRefreshStateForTabs.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
+                        enabled = (!PlatformStuff.isDesktop && !PlatformStuff.isTv) && !pullToRefreshStateForTabs.values.all { it == PanoPullToRefreshStateForTab.Disabled },
+                        onRefresh = {
+                            // find the right tab
+                            pullToRefreshStateForTabs.entries
+                                .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
+                                ?.key
+                                ?.let { id ->
+                                    viewModel.notifyPullToRefresh(id)
+                                }
+                        }
                     )
-                    .nestedScroll(topBarScrollBehavior.nestedScrollConnection)
-                    .then(
-                        if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION)
-                            Modifier.nestedScroll(bottomBarScrollBehavior.nestedScrollConnection)
-                        else
-                            Modifier
-                    ),
+                    .nestedScroll(topBarScrollBehavior.nestedScrollConnection),
                 topBar = {
                     PanoTopAppBar(
                         titlesMap.values.firstOrNull() ?: "",
@@ -304,7 +274,6 @@ fun PanoAppContent(
                             onTabClicked = { pos, tab ->
                                 selectedTabIdx = pos
                             },
-                            scrollBehavior = bottomBarScrollBehavior,
                             onProfileClicked = {
                                 currentDialogArgs = PanoDialog.NavPopup(
                                     otherUser = if (!it.isSelf) it else null,
@@ -434,6 +403,7 @@ fun PanoAppContent(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PanoFab(
     fabData: PanoFabData,
@@ -443,7 +413,7 @@ private fun PanoFab(
     modifier: Modifier = Modifier,
 ) {
     if (LocalNavigationType.current == PanoNavigationType.PERMANENT_NAVIGATION_DRAWER) {
-        ExtendedFloatingActionButton(
+        SmallExtendedFloatingActionButton(
             onClick = {
                 if (fabData.route == PanoRoute.SpecialGoBack)
                     onBack()
@@ -463,7 +433,7 @@ private fun PanoFab(
                     text = stringResource(fabData.stringRes),
                 )
             },
-            modifier = modifier
+            modifier = modifier.padding(16.dp)
         )
     } else {
         FloatingActionButton(
@@ -475,7 +445,7 @@ private fun PanoFab(
                 else if (fabData.dialog != null)
                     onOpenDialog(fabData.dialog)
             },
-            modifier = modifier
+            modifier = modifier.padding(16.dp)
         ) {
             Icon(
                 imageVector = fabData.icon,
@@ -486,7 +456,7 @@ private fun PanoFab(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PanoTopAppBar(
     title: String,
@@ -495,7 +465,7 @@ private fun PanoTopAppBar(
     scrollBehavior: () -> TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
-    MediumTopAppBar(
+    MediumFlexibleTopAppBar(
         modifier = modifier,
         title = {
             Text(
@@ -523,6 +493,7 @@ private fun PanoTopAppBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PanoNavigationRail(
     tabs: List<PanoTab>,
@@ -536,71 +507,84 @@ private fun PanoNavigationRail(
     userp: UserCached?,
     drawerData: DrawerData?,
 ) {
-    NavigationRail(
-        windowInsets = WindowInsets.safeDrawing.only(
-            WindowInsetsSides.Vertical + WindowInsetsSides.Start
-        ),
-        header = {
-            Spacer(Modifier.padding(top = verticalOverscanPadding()))
+    val expandedByDefault = when (LocalNavigationType.current) {
+        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> true
+        PanoNavigationType.NAVIGATION_RAIL,
+        PanoNavigationType.BOTTOM_NAVIGATION -> false
+    }
 
-            fabData?.let { fabData ->
+    val state = rememberWideNavigationRailState(
+        if (expandedByDefault)
+            WideNavigationRailValue.Expanded
+        else
+            WideNavigationRailValue.Collapsed
+    )
+
+    LaunchedEffect(expandedByDefault) {
+        if (expandedByDefault) {
+            state.expand()
+        } else {
+            state.collapse()
+        }
+    }
+
+    WideNavigationRail(
+        state = state,
+        header = {
+            if (fabData != null) {
                 PanoFab(
                     fabData,
                     onBack = onBack,
                     onNavigate = onNavigate,
                     onOpenDialog = onOpenDialog,
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
                 )
-            }
+            } else {
+                val user = tabs.filterIsInstance<PanoTab.Profile>().firstOrNull()?.user ?: userp
 
-            val user = tabs.filterIsInstance<PanoTab.Profile>().firstOrNull()?.user ?: userp
-
-            if (user != null) {
-                NavigationRailItem(
-                    selected = false,
-                    onClick = { onProfileClicked(user) },
-                    icon = {
-                        AvatarOrInitials(
-                            avatarUrl = when {
-                                !user.isSelf -> user.largeImage
-                                user.isSelf && drawerData != null -> drawerData.profilePicUrl
-                                else -> null
-                            },
-                            avatarInitialLetter = user.name.first(),
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = user.name,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .width(80.dp)
-                )
+                if (user != null) {
+                    WideNavigationRailItem(
+                        selected = false,
+                        onClick = { onProfileClicked(user) },
+                        railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
+                        icon = {
+                            AvatarOrInitials(
+                                avatarUrl = when {
+                                    !user.isSelf -> user.largeImage
+                                    user.isSelf && drawerData != null -> drawerData.profilePicUrl
+                                    else -> null
+                                },
+                                avatarInitialLetter = user.name.first(),
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = user.name,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(vertical = 16.dp)
+                    )
+                }
             }
         },
         modifier = Modifier
-//            .padding(vertical = verticalOverscanPadding())
             .fillMaxHeight()
     ) {
-        Spacer(Modifier.weight(1f))
-
         tabs.filter { it !is PanoTab.Profile }
             .forEachIndexed { index, tabMetadata ->
-                NavigationRailItem(
+                WideNavigationRailItem(
                     selected = index == selectedTabIdx,
                     onClick = {
                         if (index != selectedTabIdx) {
                             onTabClicked(index, tabMetadata)
                         }
                     },
+                    railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
                     icon = {
                         Icon(
                             imageVector = tabMetadata.icon,
@@ -614,12 +598,8 @@ private fun PanoNavigationRail(
                             overflow = TextOverflow.Ellipsis
                         )
                     },
-                    modifier = Modifier
-                        .width(80.dp)
                 )
             }
-
-        Spacer(Modifier.weight(1f))
     }
 }
 
@@ -629,13 +609,12 @@ private fun PanoBottomNavigationBar(
     tabs: List<PanoTab>,
     selectedTabIdx: Int,
     onTabClicked: (pos: Int, PanoTab) -> Unit,
-    scrollBehavior: BottomAppBarScrollBehavior,
     onProfileClicked: (UserCached) -> Unit,
     drawerData: DrawerData?,
 ) {
-    BottomAppBar(
+    NavigationBar(
         modifier = Modifier.fillMaxWidth(),
-        scrollBehavior = scrollBehavior
+//        scrollBehavior = scrollBehavior
     ) {
         tabs.forEachIndexed { index, tabMetadata ->
 
@@ -737,7 +716,7 @@ private fun PanoNavigationDrawerContent(
                     onOpenDialog = onOpenDialog,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
-                        .align(CenterHorizontally)
+                        .align(Alignment.CenterHorizontally)
                 )
             }
             if (tabs.isNotEmpty())

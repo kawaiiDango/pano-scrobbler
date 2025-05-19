@@ -90,10 +90,13 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
 import pano_scrobbler.composeapp.generated.resources.charts
+import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.charts_no_data
 import pano_scrobbler.composeapp.generated.resources.create_collage
+import pano_scrobbler.composeapp.generated.resources.days
 import pano_scrobbler.composeapp.generated.resources.hidden_tags
 import pano_scrobbler.composeapp.generated.resources.listening_activity
+import pano_scrobbler.composeapp.generated.resources.months
 import pano_scrobbler.composeapp.generated.resources.not_enough_data
 import pano_scrobbler.composeapp.generated.resources.num_albums
 import pano_scrobbler.composeapp.generated.resources.num_artists
@@ -101,6 +104,8 @@ import pano_scrobbler.composeapp.generated.resources.num_tracks
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.tag_cloud
 import pano_scrobbler.composeapp.generated.resources.tracks
+import pano_scrobbler.composeapp.generated.resources.weeks
+import pano_scrobbler.composeapp.generated.resources.years
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -425,15 +430,25 @@ private fun TagCloudContent(
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ListeningActivityContent(
-    listeningActivity: Map<TimePeriod, Int>?,
+    listeningActivity: ListeningActivity?,
     modifier: Modifier = Modifier,
 ) {
     val isLoading by remember(listeningActivity) { mutableStateOf(listeningActivity == null) }
     val xLabels by remember(listeningActivity) {
-        mutableStateOf(listeningActivity?.keys?.map { it.name } ?: emptyList<String>())
+        mutableStateOf(listeningActivity?.timePeriodsToCounts?.keys?.map { it.name }
+            ?: emptyList<String>())
     }
     val yValues by remember(listeningActivity) {
-        mutableStateOf(listeningActivity?.values?.map { it.toFloat() } ?: emptyList<Float>())
+        mutableStateOf(listeningActivity?.timePeriodsToCounts?.values?.map { it.toFloat() }
+            ?: emptyList<Float>())
+    }
+
+    val typeStringRes = when (listeningActivity?.type) {
+        TimePeriodType.YEAR -> Res.string.years
+        TimePeriodType.MONTH -> Res.string.months
+        TimePeriodType.WEEK -> Res.string.weeks
+        TimePeriodType.DAY -> Res.string.days
+        else -> Res.string.charts_custom
     }
 
     val yValuesMax by remember(yValues) { mutableFloatStateOf(yValues.maxOrNull() ?: 0f) }
@@ -452,7 +467,7 @@ private fun ListeningActivityContent(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(240.dp)
                 .then(
                     if (isLoading) Modifier
                         .shimmerWindowBounds()
@@ -461,12 +476,12 @@ private fun ListeningActivityContent(
                 )
         ) {
             EmptyText(
-                visible = listeningActivity?.isEmpty() == true,
+                visible = listeningActivity?.timePeriodsToCounts?.isEmpty() == true,
                 text = stringResource(Res.string.charts_no_data),
             )
 
             listeningActivity?.let { listeningActivity ->
-                if (listeningActivity.isNotEmpty()) {
+                if (listeningActivity.timePeriodsToCounts.isNotEmpty()) {
                     XYGraph(
                         xAxisModel = remember(xLabels) { CategoryAxisModel(xLabels) },
                         yAxisModel = rememberFloatLinearAxisModel(
@@ -477,6 +492,7 @@ private fun ListeningActivityContent(
                         ),
                         yAxisTitle = stringResource(Res.string.scrobbles),
                         yAxisLabels = { it.toInt().toString() },
+                        xAxisTitle = stringResource(typeStringRes),
                         xAxisLabels = { it },
                         modifier = Modifier
                             .fillMaxSize()

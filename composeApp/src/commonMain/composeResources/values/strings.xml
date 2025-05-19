@@ -340,6 +340,7 @@
     <string name="weeks">Weeks</string>
     <string name="monthly">Monthly</string>
     <string name="months">Months</string>
+    <string name="days">Days</string>
     <string name="years"
         comment="For the charts menu which displays year by year"
         >Years</string>

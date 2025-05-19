@@ -9,9 +9,9 @@ import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageResult
@@ -19,6 +19,7 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Session
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
+import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.PackageNameMetadata.englishLabel
@@ -251,9 +252,9 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         timePeriod: TimePeriod,
         user: UserCached?,
         cacheStrategy: CacheStrategy,
-    ): Map<TimePeriod, Int> {
+    ): ListeningActivity {
         // no op
-        return emptyMap()
+        return ListeningActivity()
     }
 
     @Serializable

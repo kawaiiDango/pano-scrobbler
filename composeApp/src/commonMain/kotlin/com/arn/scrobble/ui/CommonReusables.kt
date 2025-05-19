@@ -35,10 +35,11 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -507,6 +508,7 @@ fun SimpleHeaderItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VerifyButton(
     doStuff: () -> Unit,
@@ -544,7 +546,7 @@ fun VerifyButton(
                     .height(60.dp)
             ) {
                 if (verifying) {
-                    CircularProgressIndicator()
+                    CircularWavyProgressIndicator()
                 } else {
                     OutlinedButton(
                         onClick = {

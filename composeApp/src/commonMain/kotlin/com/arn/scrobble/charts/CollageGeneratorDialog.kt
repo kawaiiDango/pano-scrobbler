@@ -13,7 +13,8 @@ import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -83,6 +84,7 @@ data class IconPaintersForCollage(
     val colors: List<Color>
 )
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CollageGeneratorDialog(
     collageType: Int,
@@ -271,7 +273,7 @@ fun CollageGeneratorDialog(
                 .padding(end = 16.dp),
         ) {
             if (progress != 1f) {
-                CircularProgressIndicator(
+                CircularWavyProgressIndicator(
                     progress = { progress },
                 )
             } else {

@@ -7,6 +7,7 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.cache.CacheStrategy
+import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.forms.FormDataContent
@@ -70,8 +71,8 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
         timePeriod: TimePeriod,
         user: UserCached?,
         cacheStrategy: CacheStrategy,
-    ): Map<TimePeriod, Int> {
-        return emptyMap()
+    ): ListeningActivity {
+        return ListeningActivity()
     }
 
     companion object {

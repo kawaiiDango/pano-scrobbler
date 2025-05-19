@@ -289,7 +289,7 @@ actual object PlatformStuff {
         }
     }
 
-    actual fun getWebviewCookies(uri: String): Map<String, String> {
+    actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
         CookieManager.getInstance().getCookie(uri)?.let {
             val map = mutableMapOf<String, String>()
             it.split(";").forEach { cookie ->

@@ -81,7 +81,7 @@ class ChartsVM : ViewModel() {
     }
         .cachedIn(viewModelScope)
 
-    private val _listeningActivity = MutableStateFlow<Map<TimePeriod, Int>?>(null)
+    private val _listeningActivity = MutableStateFlow<ListeningActivity?>(null)
     val listeningActivity = _listeningActivity.asStateFlow()
 
     private val _tagCloud = MutableStateFlow<Map<String, Float>?>(null)
@@ -99,7 +99,7 @@ class ChartsVM : ViewModel() {
         viewModelScope.launch {
 
             if (artists.isEmpty()) {
-                _listeningActivity.value = emptyMap()
+                _listeningActivity.value = ListeningActivity()
                 return@launch
             }
 
@@ -107,8 +107,8 @@ class ChartsVM : ViewModel() {
                 ?.getListeningActivity(timePeriod, user)
 
             la?.let {
-                if (it.all { it.value == 0 })
-                    _listeningActivity.value = emptyMap()
+                if (it.timePeriodsToCounts.all { it.value == 0 })
+                    _listeningActivity.value = ListeningActivity()
                 else
                     _listeningActivity.value = it
             }

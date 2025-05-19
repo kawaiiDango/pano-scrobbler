@@ -1,0 +1,8 @@
+{
+    "nsis.compiler.customArguments": [
+        "/DOUTFILE=..\\dist\\test\\pano-nsis-test.exe",
+        "/DAPPDIR=..\\build\\compose\\binaries\\main-release\\app\\pano-scrobbler",
+        "/DVERSION_CODE=400",
+        "/DVERSION_NAME=4.0"
+    ]
+}

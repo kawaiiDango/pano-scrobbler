@@ -21,9 +21,10 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SwipeLeftAlt
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumExtendedFloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,6 +73,7 @@ import pano_scrobbler.composeapp.generated.resources.pro_support
 import pano_scrobbler.composeapp.generated.resources.purchase_pending
 import pano_scrobbler.composeapp.generated.resources.thank_you
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BillingScreen(
     viewModel: MainViewModel,
@@ -164,7 +166,7 @@ fun BillingScreen(
         Box(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            ExtendedFloatingActionButton(
+            MediumExtendedFloatingActionButton(
                 onClick = {
                     if (proProductDetails != null) {
                         if (PlatformStuff.isNonPlayBuild) {

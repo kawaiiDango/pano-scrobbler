@@ -17,6 +17,7 @@ import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.api.pleroma.Pleroma
+import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -82,7 +83,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         timePeriod: TimePeriod,
         user: UserCached?,
         cacheStrategy: CacheStrategy = CacheStrategy.NETWORK_ONLY,
-    ): Map<TimePeriod, Int>
+    ): ListeningActivity
 
 
     suspend fun getChartsWithStonks(

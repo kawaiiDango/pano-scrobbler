@@ -15,6 +15,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -81,6 +82,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.isSupported
 import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
@@ -89,6 +91,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
@@ -202,69 +205,73 @@ fun MusicEntryListItem(
             )
                 .padding(8.dp)
         ) { weightModifier ->
-            Box(
+
+            BoxWithConstraints(
                 modifier = weightModifier
-                    .then(
-                        if (fixedImageHeight)
-                            Modifier
-                                .size(60.dp)
-                        else if (isColumn)
-                            Modifier.fillMaxWidth()
-                        else
-                            Modifier
-                    )
-                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                    .backgroundForShimmer(forShimmer)
             ) {
-                AsyncImage(
-                    model = remember(forShimmer, entry, isColumn, fetchAlbumImageIfMissing) {
-                        if (forShimmer)
+                val boxSize = min(maxWidth, maxHeight)
+
+                Box(
+                    modifier = Modifier
+                        .then(
+                            if (fixedImageHeight)
+                                Modifier
+                                    .size(60.dp)
+                            else
+                                Modifier.size(boxSize)
+                        )
+                        .backgroundForShimmer(forShimmer)
+                ) {
+                    AsyncImage(
+                        model = remember(forShimmer, entry, isColumn, fetchAlbumImageIfMissing) {
+                            if (forShimmer)
+                                null
+                            else
+                                ImageRequest.Builder(context)
+                                    .data(
+                                        imageUrlOverride
+                                            ?: MusicEntryImageReq(
+                                                entry,
+                                                isHeroImage = isColumn,
+                                                fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
+                                            )
+                                    )
+                                    .placeholderMemoryCacheKey(imageMemoryCacheKey)
+                                    .listener(
+                                        onSuccess = { req, res ->
+                                            imageMemoryCacheKey = res.memoryCacheKey
+                                        }
+                                    )
+                                    .build()
+                        },
+                        fallback = placeholderImageVectorPainter(null),
+                        error = if (!isPending)
+                            placeholderImageVectorPainter(entry)
+                        else
+                            placeholderImageVectorPainter(entry, Icons.Outlined.HourglassEmpty),
+                        // this placeholder overrides the one set in model
+                        placeholder = if (imageMemoryCacheKey != null)
                             null
                         else
-                            ImageRequest.Builder(context)
-                                .data(
-                                    imageUrlOverride
-                                        ?: MusicEntryImageReq(
-                                            entry,
-                                            isHeroImage = isColumn,
-                                            fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
-                                        )
-                                )
-                                .placeholderMemoryCacheKey(imageMemoryCacheKey)
-                                .listener(
-                                    onSuccess = { req, res ->
-                                        imageMemoryCacheKey = res.memoryCacheKey
-                                    }
-                                )
-                                .build()
-                    },
-                    fallback = placeholderImageVectorPainter(null),
-                    error = if (!isPending)
-                        placeholderImageVectorPainter(entry)
-                    else
-                        placeholderImageVectorPainter(entry, Icons.Outlined.HourglassEmpty),
-                    // this placeholder overrides the one set in model
-                    placeholder = if (imageMemoryCacheKey != null)
-                        null
-                    else
-                        placeholderPainter(),
-                    contentDescription = stringResource(Res.string.album_art),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(MaterialTheme.shapes.medium)
-                        .then(if (onImageClick != null) Modifier.clickable(enabled = !forShimmer) { onImageClick() } else Modifier)
-                )
-
-                if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
-                    Icon(
-                        imageVector = if (entry.userloved == true) Icons.Outlined.Favorite else Icons.Outlined.HeartBroken,
-                        contentDescription = stringResource(if (entry.userloved == true) Res.string.loved else Res.string.hate),
-                        tint = MaterialTheme.colorScheme.secondary,
+                            placeholderPainter(),
+                        contentDescription = stringResource(Res.string.album_art),
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .rotate(11.25f)
-                            .offset(x = 6.dp, y = (-6).dp)
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.medium)
+                            .then(if (onImageClick != null) Modifier.clickable(enabled = !forShimmer) { onImageClick() } else Modifier)
                     )
+
+                    if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
+                        Icon(
+                            imageVector = if (entry.userloved == true) Icons.Outlined.Favorite else Icons.Outlined.HeartBroken,
+                            contentDescription = stringResource(if (entry.userloved == true) Res.string.loved else Res.string.hate),
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .rotate(11.25f)
+                                .offset(x = 6.dp, y = (-6).dp)
+                        )
+                    }
                 }
             }
 
@@ -442,7 +449,7 @@ fun NowPlayingSurface(
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
             .then(
-                if (nowPlaying) {
+                if (nowPlaying && BlendMode.Overlay.isSupported()) {
 
                     val infiniteTransition = rememberInfiniteTransition()
                     val progress by infiniteTransition.animateFloat(

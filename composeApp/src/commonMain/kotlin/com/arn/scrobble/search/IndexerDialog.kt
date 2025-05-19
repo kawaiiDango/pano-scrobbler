@@ -7,9 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ import pano_scrobbler.composeapp.generated.resources.full_index
 import pano_scrobbler.composeapp.generated.resources.full_index_desc
 import pano_scrobbler.composeapp.generated.resources.take_long_time
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun IndexerDialog(
     modifier: Modifier = Modifier,
@@ -77,7 +79,7 @@ fun IndexerDialog(
             visible = progress > 0f && progress < 1f,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            CircularProgressIndicator(
+            CircularWavyProgressIndicator(
                 progress = { progress },
             )
         }

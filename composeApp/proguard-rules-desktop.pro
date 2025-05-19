@@ -133,19 +133,5 @@
 # Keep important class metadata for serialization
 -keepattributes *Annotation*, Signature, InnerClasses#, EnclosingMethod, EnclosingClass
 
-# javafx
-
--keep class com.sun.javafx.tk.quantum.QuantumToolkit { *; }
--keep class com.sun.javafx.font.** { *; }
--keep class com.sun.javafx.geom.** { *; }
--keep class com.sun.javafx.scene.** { *; }
--keep class com.sun.prism.sw.** { *; }
--keep class com.sun.glass.** { *; }
--keep class com.sun.pisces.** { *; }
--keep class com.sun.webkit.** { *; }
--keep class com.sun.scenario.effect.** { *; }
--keep class javafx.scene.** { *; }
--dontwarn com.jogamp.**
-
 # Suppress warnings from the io.ktor network sockets classes
 -dontwarn io.ktor.network.sockets.**

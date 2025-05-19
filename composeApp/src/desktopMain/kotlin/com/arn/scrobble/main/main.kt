@@ -35,9 +35,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.toImageBitmap
 import com.arn.scrobble.utils.setAppLocale
-import com.arn.scrobble.webview.web.CustomURLStreamHandlerFactory
 import com.arn.scrobble.work.DesktopWorkManager
-import javafx.application.Platform
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -62,7 +60,6 @@ import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
 import java.awt.image.BufferedImage
-import java.net.URL
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
 
@@ -71,8 +68,6 @@ private fun init(lockName: String) {
 
     PanoNativeComponents.load()
     preventMultipleInstances(lockName)
-
-    URL.setURLStreamHandlerFactory(CustomURLStreamHandlerFactory())
 
     Stuff.mainPrefsInitialValue = runBlocking { PlatformStuff.mainPrefs.data.first() }
 
@@ -90,10 +85,6 @@ private fun init(lockName: String) {
     setAppLocale(Stuff.mainPrefsInitialValue.locale, force = false)
 
     PanoNativeComponents.load()
-    if (DesktopStuff.os == DesktopStuff.Os.Linux) {
-        // fix for javafx on linux
-        PanoNativeComponents.setEnvironmentVariable("GDK_BACKEND", "x11")
-    }
     PanoNativeComponents.init()
 //    test()
 }
@@ -255,17 +246,12 @@ fun main(args: Array<String>) {
             )
         }
 
-        LaunchedEffect(Unit) {
-            Platform.setImplicitExit(false)
-        }
-
         LaunchedEffect(windowShown) {
             if (!windowShown) {
                 delay(60.seconds)
                 // todo: cleanup, also make it 60 seconds
                 Logger.d { "running cleanup" }
                 SingletonImageLoader.reset()
-                Platform.exit()
             }
         }
 

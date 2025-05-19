@@ -23,6 +23,7 @@ import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
+import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.PlatformStuff.toHtmlAnnotatedString
@@ -188,9 +189,9 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         timePeriod: TimePeriod,
         user: UserCached?,
         cacheStrategy: CacheStrategy,
-    ): Map<TimePeriod, Int> {
+    ): ListeningActivity {
         // no op
-        return emptyMap()
+        return ListeningActivity()
     }
 
     private fun parseIso8601ToMillis(dateString: String): Long {

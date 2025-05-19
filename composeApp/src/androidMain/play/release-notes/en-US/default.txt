@@ -1,5 +1,6 @@
 - The app has been rewritten from ground up using Compose Multiplatform
 - Now available for Android, Windows and Linux
+- Uses Material 3 Expressive
 - The option to display a persistent notification on Android 14+ is back for non Play Store builds
 - This may help prevent the system from killing the app in the background on some devices
 - Tasker intents have been replaced with ContentProvider query URIs and an allowlist, which are more secure

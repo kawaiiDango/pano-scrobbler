@@ -1,22 +1,28 @@
 package com.arn.scrobble.onboarding
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.webview.web.WebView
-import com.arn.scrobble.webview.web.rememberWebViewNavigator
-import com.arn.scrobble.webview.web.rememberWebViewState
 import io.ktor.http.Url
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.use_browser
+import pano_scrobbler.composeapp.generated.resources.desktop_webview_message
+import pano_scrobbler.composeapp.generated.resources.pref_login
 
 @Composable
 actual fun WebViewScreen(
@@ -29,68 +35,31 @@ actual fun WebViewScreen(
     viewModel: WebViewVM,
     modifier: Modifier,
 ) {
-    val webViewState = rememberWebViewState(initialUrl)
-    val navigator = rememberWebViewNavigator()
-    val useBrowserText = stringResource(Res.string.use_browser)
+    var callbackHandled by remember { mutableStateOf(false) }
 
-    DisposableEffect(webViewState.pageTitle) {
-        onSetTitle(webViewState.pageTitle ?: "-")
+    val title = stringResource(Res.string.pref_login)
+
+    DisposableEffect(Unit) {
+        onSetTitle(title)
+
+        PanoNativeComponents.launchWebView(initialUrl, Stuff.DEEPLINK_PROTOCOL_NAME)
 
         onDispose {
             onSetTitle(null)
+            PanoNativeComponents.quitWebView()
         }
     }
 
-    LaunchedEffect(webViewState.errorsForCurrentRequest) {
-        val error = webViewState.errorsForCurrentRequest.firstOrNull()
-        if (error != null) {
-            val errorMsg = error.description
-            val errorMsgHtml = "<html><body><div align=\"center\">$errorMsg</div></body></html>"
-            navigator.loadHtml(
-                errorMsgHtml,
-                baseUrl = "about:blank",
-                mimeType = "text/html",
-                historyUrl = null
-            )
-        }
-    }
-
-    LaunchedEffect(webViewState.lastLoadedUrl) {
-        val lastLoadedUrl = webViewState.lastLoadedUrl ?: ""
-
-        if (Stuff.disallowedWebviewUrls.any { lastLoadedUrl.startsWith(it) }) {
-            val errorMsgHtml =
-                "<html><body><div align=\"center\"><h3>$useBrowserText</h3></div></body></html>"
-
-            navigator.loadHtml(
-                errorMsgHtml,
-                baseUrl = "about:blank",
-                mimeType = "text/html",
-                historyUrl = null
-            )
-        } else {
-            val lastLoadedUrlObj = Url(lastLoadedUrl)
-
-            if (lastLoadedUrlObj.protocol.name == Stuff.DEEPLINK_PROTOCOL_NAME && lastLoadedUrlObj.segments.isNotEmpty()) {
-                val callbackHandled =
+    LaunchedEffect(Unit) {
+        WebViewEventFlows.pageLoaded.collect { url ->
+            val urlObj = Url(url)
+            if (urlObj.protocol.name == Stuff.DEEPLINK_PROTOCOL_NAME && urlObj.segments.isNotEmpty()) {
+                callbackHandled =
                     viewModel.handleCallbackUrl(
-                        lastLoadedUrlObj,
+                        urlObj,
                         userAccountTemp!!,
                         pleromaOauthClientCreds
                     )
-
-                if (callbackHandled) {
-                    val loadingMsg = "⏳"
-                    val loadingMsgHtml =
-                        "<html><body><div align=\"center\"><h1>$loadingMsg</h1></div></body></html>"
-                    navigator.loadHtml(
-                        loadingMsgHtml,
-//                        baseUrl = "about:blank",
-                        mimeType = "text/html",
-                        historyUrl = null
-                    )
-                    onSetTitle("...")
-                }
             }
         }
     }
@@ -106,11 +75,19 @@ actual fun WebViewScreen(
     Column(
         modifier = modifier
     ) {
-        WebView(
-            state = webViewState,
-            navigator = navigator,
-            modifier = Modifier.fillMaxWidth().weight(1f),
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth().weight(1f)
+        ) {
+            Text(
+                text = if (callbackHandled) {
+                    "⏳"
+                } else {
+                    stringResource(Res.string.desktop_webview_message)
+                },
+                // the default color becomes black for some reason
+                color = MaterialTheme.colors.onPrimary
+            )
+        }
 
         bottomContent()
     }

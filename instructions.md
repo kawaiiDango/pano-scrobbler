@@ -72,4 +72,5 @@ and tapping on the "Copy last.fm session key" in the settings screen.
 ### For desktop:
 
 - If you intend to package a build for desktop, use OpenJDK 21 as your gradle JDK, as the built-in
-  one does not contain jpackage
+  one does not contain jpackage. Also have [makensis.exe](https://nsis.sourceforge.io/Main_Page) in
+  your PATH.

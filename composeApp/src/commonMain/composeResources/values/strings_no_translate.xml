@@ -47,6 +47,7 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="move_up" translatable="false">Move up</string>
     <string name="move_down" translatable="false">Move down</string>
     <string name="date_range" translatable="false">Select date range</string>
+    <string name="desktop_webview_message" translatable="false">Complete the action in the WebView window</string>
 
     <!-- strings for dev only stuff  -->
     <string name="force_exception" translatable="false">Force log an exception</string>

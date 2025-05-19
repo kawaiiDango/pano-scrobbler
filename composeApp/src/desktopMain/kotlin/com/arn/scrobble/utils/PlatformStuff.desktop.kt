@@ -17,6 +17,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.BaseBillingRepository
 import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -26,7 +27,9 @@ import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
@@ -152,16 +155,22 @@ actual object PlatformStuff {
 
     actual fun loadApplicationLabel(pkgName: String): String = pkgName
 
-    actual fun getWebviewCookies(uri: String): Map<String, String> {
-        val cookiesStr = CookieHandler.getDefault().get(URI(uri), emptyMap()).values.firstOrNull()
+    actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
+        val event = withTimeoutOrNull(1_000) {
+            WebViewEventFlows.event.onStart {
+                PanoNativeComponents.getWebViewCookiesFor(uri)
+            }.first()
+        }
 
-        return cookiesStr
-            ?.joinToString("; ")
-            ?.split(";")
-            ?.associate {
-                val (name, value) = it.trim().split("=", limit = 2)
+        if (event?.url?.startsWith(uri) == true) {
+            return event.cookies.associate {
+                val (name, value) = it.split("=", limit = 2)
                 name to value
-            } ?: emptyMap()
+            }
+        } else {
+            Logger.e("WebViewEvent url does not match or timed out")
+            return emptyMap()
+        }
     }
 
     actual fun clearWebviewCookies() {

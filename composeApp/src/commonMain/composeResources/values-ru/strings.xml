@@ -277,6 +277,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Лучшие скробблы %1$s</string>
     <string name="my_tags" comment="Tags, the user has added">Мои теги</string>
     <string name="close" comment="To close a dialog or something">Закрыть</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Закрыть</string>
     <string name="user_tags_hint" comment="To add a new tag">Новый тег</string>
     <string name="user_tags_empty">Вы не добавили ни одного тега</string>
     <string name="appwidget_loading">Загрузка…</string>

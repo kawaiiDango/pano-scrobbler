@@ -150,6 +150,8 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share">Поделиться</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Легенда</string>
+    <string name="grid" comment="Grid view">Сетка</string>
+    <string name="list" comment="Single column list view">Список</string>
     <string name="pinch_to_zoom">Ущипните для увеличения</string>
     <string name="more_info">Подробнее</string>
     <string name="more" comment="More options menu in short">Ещё</string>
@@ -175,6 +177,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Опции для этого элемента</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s обнаружено</string>
     <string name="new_player_prompt">Продолжать скробблинг из этого приложения?</string>
+    <string name="new_player_prompt_desktop">Перейдите в настройки, чтобы начать скробблинг из этого приложения</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Нет доступа к %1$s</string>
+    <string name="file_exists_confirm_overwrite">Файл уже существует. Нажмите еще раз для перезаписи.</string>
     <string name="no_scrobbles">Здесь пока нет песен…</string>
     <string name="no_friends">Пока не подписаны ни на кого…</string>
     <string name="channel_err" comment="Its a noun">Ошибки скробблинга</string>
@@ -318,7 +323,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Действия плеера</string>
     <string name="skip" comment="skip to next track">Пропустить</string>
     <string name="mute" comment="mute the sound">Выключить звук</string>
+    <string name="do_nothing" comment="do nothing on the media player">Ничего не делать</string>
     <string name="block" comment="block the track from scrobbling">Блокировать</string>
+    <string name="copy" comment="copy to clipboard">Копировать</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Скрытые теги</string>
     <string name="pin" comment="pin a friend to the top">Закрепить</string>
     <string name="unpin" comment="unpin a friend to the top">Открепить</string>
@@ -328,6 +335,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Хотите включить правило шаблона редактирования: %1$s?</string>
     <string name="show_persistent_noti">Показывать постоянное уведомление</string>
     <string name="fix_it_desc">Это может помочь поддерживать работу скробблера в фоновом режиме на некоторых устройствах</string>
+    <string name="persistent_noti_text">Нажмите, чтобы скрыть</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="duration">Продолжительность</string>
@@ -407,6 +415,7 @@
     <string name="pref_translate_credits">Авторы переводов</string>
     <string name="pref_oss_credits">Лицензия открытого ПО</string>
     <string name="pref_check_updates">Проверить обновления</string>
+    <string name="pref_native_file_picker">Использовать встроенный выбор файлов</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Доступно обновление: %1$s</string>
     <string name="download" comment="Its a verb">Скачать</string>
     <string name="changelog">Список изменений</string>

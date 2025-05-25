@@ -89,7 +89,7 @@
     <string name="album_art">Naslovnica albuma</string>
     <string name="artist_image">Slika izvođača</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nije moguće analizirati naslov</string>
-    <string name="network_error">Greška mreže</string>
+    <string name="network_error">Mrežna greška</string>
     <string name="disable_tls_verify">Ignoriraj TLS greške</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoriran</string>
     <string name="scrobble_ignored_save_edit">Lastfm je ignorirao uređivanje vjerojatno jer je scrobble prestar. Želite li ovo uređivanje spremiti za buduće scrobbleove?</string>
@@ -150,11 +150,11 @@
     <string name="library" comment="search within the library">Zbirka</string>
     <string name="global" comment="search globally across lastfm">Globalno</string>
     <string name="reindex">Brzo indeksiranje</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Označi svoje scrobblove</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeksiraj svoje scrobblove</string>
     <string name="full_index">Potpuno indeksiranje</string>
     <string name="take_long_time">Ovo može dugo potrajati</string>
-    <string name="full_index_desc">Koristi samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pretražio/la si top %1$s stvari u svakoj kategoriji.</string>
+    <string name="full_index_desc">Koristite ovo samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pretraženo je top %1$s stavki u svakoj kategoriji.</string>
     <string name="last_indexed" formatted="true" comment="%1= date">Posljednje indeksiranje %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Slika profila</string>
@@ -165,7 +165,7 @@
     <string name="cannot_access" comment="%1$s= the file or folder name">Pristup za %1$s nije dopušten</string>
     <string name="file_exists_confirm_overwrite">Datoteka postoji. Pritisnite ponovno za pisanje preko nje.</string>
     <string name="no_scrobbles">Ovdje još nema pjesama…</string>
-    <string name="no_friends">Ne pratiš nikoga…</string>
+    <string name="no_friends">Ne pratite nikoga još…</string>
     <string name="channel_err" comment="Its a noun">Greške kod scrobbleanja</string>
     <string name="new_app">Nova aplikacija</string>
     <string name="no_apps_enabled">Nijedna aplikacija nije omogućena</string>
@@ -353,7 +353,7 @@
     <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
     <string name="pref_spotify_remote">Scrobblaj Spotify s drugih uređaja</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Koristi približnu pretragu slike izvođača</string>
-    <string name="pref_link_heart_button_rating">Koristi tipku srca u obavijesti za označavanje favorita i u reproduktoru glazbe</string>
+    <string name="pref_link_heart_button_rating">Koristite tipku srca u obavijesti da biste pjesmu označili kao favorita i u reproduktoru glazbe</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Onemogući kontinuirano scrobblanje s mikrofona kada uređaj reproducira glazbu</string>
     <string name="pref_delay">Odgoda scrobbleanja (koje god će biti prvo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minute</string>
@@ -400,6 +400,9 @@
     <string name="pref_translate_credits">Popis prevoditelja</string>
     <string name="pref_oss_credits">Licence otvorenog koda</string>
     <string name="pref_check_updates">Provjeri ažuriranja</string>
+    <string name="pref_search_url_template">Predložak URL-a tražilice</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Koristite $query na mjestu pojma pretraživanja</string>
+    <string name="pref_native_file_picker">Koristi izvorni birač datoteka</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostupno ažuriranje: %1$s</string>
     <string name="download" comment="Its a verb">Preuzimanje</string>
     <string name="changelog">Popis promjena</string>
@@ -417,6 +420,7 @@
     <string name="pref_intents">Intentovi za Tasker itd.</string>
     <string name="copied">Kopirano!</string>
     <string name="lastfm_reauth">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Instanca slična servisu %1$s</string>
     <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Provjeri %1$s</string>
     <string name="artist_extra">Pjesme, albumi i slično</string>
@@ -487,7 +491,7 @@ Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom k
     <string name="billing_block">Blokiranje izvođača/pjesama i automatsko preskakanje ili utišavanje</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>
-    <string name="billing_scrobble_source">Zapamti i pregledaj aplikacije iz kojih si scrobblao i direktno pretraži u njima</string>
+    <string name="billing_scrobble_source">Zapamtite i pregledajte aplikacije iz kojih ste scrobblali i direktno pretražujte u njima</string>
     <string name="billing_regex_extract">Pisanje vlastitih pravila za izvlačenje metapodataka pomoću regexa</string>
     <string name="billing_max_devices_reached" formatted="true">Ovaj kôd već je korišten na maksimalnom broju uređaja (%1$d).</string>
 </resources>

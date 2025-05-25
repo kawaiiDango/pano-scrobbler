@@ -134,6 +134,8 @@
     <string name="share_sig">(pomoću aplikacije Pano Scrobbler)</string>
     <string name="share">Podijeli</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
+    <string name="grid" comment="Grid view">Mreža</string>
+    <string name="list" comment="Single column list view">Popis</string>
     <string name="pinch_to_zoom">Zumiranje prstima</string>
     <string name="more_info">Više informacija</string>
     <string name="more" comment="More options menu in short">Više</string>
@@ -159,6 +161,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcije za ovu stavku</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Aplikacija %1$s detektirana</string>
     <string name="new_player_prompt">Nastaviti scrobbleati ovu aplikaciju?</string>
+    <string name="new_player_prompt_desktop">Odite u postavke da biste scrobblali ovu aplikaciju</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Pristup za %1$s nije dopušten</string>
+    <string name="file_exists_confirm_overwrite">Datoteka postoji. Pritisnite ponovno za pisanje preko nje.</string>
     <string name="no_scrobbles">Ovdje još nema pjesama…</string>
     <string name="no_friends">Ne pratiš nikoga…</string>
     <string name="channel_err" comment="Its a noun">Greške kod scrobbleanja</string>
@@ -256,6 +261,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbleovi</string>
     <string name="my_tags" comment="Tags, the user has added">Moje oznake</string>
     <string name="close" comment="To close a dialog or something">Zatvori</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Izlaz</string>
     <string name="user_tags_hint" comment="To add a new tag">Nova oznaka</string>
     <string name="user_tags_empty">Niste dodali nijednu oznaku</string>
     <string name="appwidget_loading">Učitavanje…</string>
@@ -302,7 +308,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Radnje reproduktora glazbe</string>
     <string name="skip" comment="skip to next track">Preskoči</string>
     <string name="mute" comment="mute the sound">Utišaj</string>
+    <string name="do_nothing" comment="do nothing on the media player">Ne čini ništa</string>
     <string name="block" comment="block the track from scrobbling">Blokiraj</string>
+    <string name="copy" comment="copy to clipboard">Kopiraj</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skrivene oznake</string>
     <string name="pin" comment="pin a friend to the top">Prikvači</string>
     <string name="unpin" comment="unpin a friend to the top">Otkvači</string>
@@ -312,6 +320,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Želite li omogućiti pravilo za šablonsko uređivanje: %1$s?</string>
     <string name="show_persistent_noti">Prikaži trajnu obavijest</string>
     <string name="fix_it_desc">Ovo može pomoći za pokretanje scrobblera u pozadini na nekim uređajima</string>
+    <string name="persistent_noti_text">Dotaknite za sakrivanje</string>
     <string name="scrobbler_off">Scrobbler onemogućen</string>
     <string name="scrobbler_on">Scrobbler aktivan</string>
     <string name="duration">Trajanje</string>

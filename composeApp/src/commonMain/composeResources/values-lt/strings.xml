@@ -416,6 +416,9 @@
     <string name="pref_translate_credits">Vertimo kūrėjai</string>
     <string name="pref_oss_credits">Atvirojo kodo kūrėjai</string>
     <string name="pref_check_updates">Tikrinti naujinimus</string>
+    <string name="pref_search_url_template">Ieškoti URL šablono</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Naudokite $query kaip paieškos termino vietaženklį.</string>
+    <string name="pref_native_file_picker">Naudoti vietinį failų parinkiklį</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Yra naujinimas: %1$s</string>
     <string name="download" comment="Its a verb">Atsisiųsti</string>
     <string name="changelog">Pakeitimų žurnalas</string>
@@ -433,6 +436,7 @@
     <string name="pref_intents">„Tasker“ ketinimai ir pan.</string>
     <string name="copied">Nukopijuota!</string>
     <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti tapatybę.</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">„%1$s“ tipo serveris</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrinkite „%1$s“</string>
     <string name="artist_extra">Takeliai, albumai ir panašumai</string>

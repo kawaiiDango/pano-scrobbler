@@ -105,7 +105,6 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Comparteix</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Llegenda</string>
-    <string name="grid_size">Canvia la quadrícula</string>
     <string name="pinch_to_zoom">Pessiga per a ampliar</string>
     <string name="more_info">Més informació</string>
     <string name="rank_change_no_change">Sense canvis</string>
@@ -242,7 +241,6 @@
     <string name="username" comment="last.fm Username">Nom d\'usuari</string>
     <string name="pref_master">Fes scrobble</string>
     <string name="pref_master_qs_hint">També es pot ajustar des de la configuració ràpida</string>
-    <string name="pref_noti_q">Pots prioritzar la notificació, si la icona no apareix</string>
     <string name="pref_noti">Notificacions</string>
     <string name="pref_noti_categories">Categories de notificació</string>
     <string name="pref_scrobble_noti">Notificacions d\'scrobbles</string>

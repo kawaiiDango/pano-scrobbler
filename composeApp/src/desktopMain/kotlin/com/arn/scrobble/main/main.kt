@@ -28,6 +28,7 @@ import com.arn.scrobble.media.PlayingTrackNotificationState
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.themes.AppTheme
+import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
@@ -63,11 +64,12 @@ import java.awt.image.BufferedImage
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
 
-private fun init(lockName: String) {
+
+private fun init() {
     // init: run once
 
-    PanoNativeComponents.load()
-    preventMultipleInstances(lockName)
+    if (!PlatformStuff.isDebug)
+        preventMultipleInstances()
 
     Stuff.mainPrefsInitialValue = runBlocking { PlatformStuff.mainPrefs.data.first() }
 
@@ -89,8 +91,8 @@ private fun init(lockName: String) {
 //    test()
 }
 
-private fun preventMultipleInstances(uniqueId: String) {
-    val isSingleInstance = PanoNativeComponents.isSingleInstance(uniqueId)
+private fun preventMultipleInstances() {
+    val isSingleInstance = PanoNativeComponents.isSingleInstance()
 
     if (!isSingleInstance) {
         PanoNativeComponents.notify(
@@ -104,14 +106,45 @@ private fun preventMultipleInstances(uniqueId: String) {
 @OptIn(ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
-    val lockName = "pano-scrobbler-" + (cmdlineArgs.dataDir ?: "default-data-dir").hashCode()
-        .toString() + ".lock"
-    init(lockName)
+    DesktopStuff.setSystemPropertiesForGraalvm()
+    PanoNativeComponents.load()
+
+    if (cmdlineArgs.automationCommand != null) {
+        // handle automation command
+        PanoNativeComponents.sendAutomationCommand(
+            cmdlineArgs.automationCommand,
+            cmdlineArgs.automationArg ?: "",
+        )
+        return
+    }
+
+    var wmClassNameSet = false
+
+    init()
 
     return application {
+
+        if (DesktopStuff.os == DesktopStuff.Os.Linux && !wmClassNameSet) {
+            // set the WM class name to avoid issues with some Linux desktop environments
+            // do it after compose inits the swing framework, but before any window gets shown, else high dpi scaling breaks
+            try {
+                val awtAppClassNameField =
+                    Class.forName("sun.awt.X11.XToolkit").getDeclaredField("awtAppClassName")
+                awtAppClassNameField.isAccessible = true
+                awtAppClassNameField.set(null, "pano-scrobbler")
+            } catch (e: Exception) {
+                Logger.e(e) { "Failed to set AWT app class name" }
+            }
+
+            wmClassNameSet = true
+        }
+
         var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
         val windowState = rememberWindowState()
         val isSystemInDarkTheme = isSystemInDarkTheme()
+        val trayIconTheme by PlatformStuff.mainPrefs.data
+            .map { it.trayIconTheme }
+            .collectAsState(Stuff.mainPrefsInitialValue.trayIconTheme)
         var trayData by remember { mutableStateOf<PanoTrayUtils.TrayData?>(null) }
         val trayIconNotPlaying = painterResource(Res.drawable.vd_noti_persistent)
         val trayIconPlaying = painterResource(Res.drawable.vd_noti)
@@ -119,7 +152,7 @@ fun main(args: Array<String>) {
         val appIdToNames by PlatformStuff.mainPrefs.data
             .map { it.seenApps.associate { it.appId to it.friendlyLabel } }
             .collectAsState(emptyMap())
-        val windowOpenTrigger = remember { MutableSharedFlow<Unit>() }
+        val windowOpenTrigger = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
 
         fun onExit() {
             DesktopWorkManager.clearAll()
@@ -127,7 +160,7 @@ fun main(args: Array<String>) {
             exitApplication()
         }
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(trayIconTheme) {
             PanoNotifications.playingTrackTrayInfo.mapLatest {
                 val trayIconPainter = when {
                     it.isEmpty() -> trayIconNotPlaying
@@ -170,8 +203,14 @@ fun main(args: Array<String>) {
 
                             trayItems += PanoTrayUtils.ItemId.TrackName.withSuffix(appId) to
                                     playingState + trackInfo.title
+
                             trayItems += PanoTrayUtils.ItemId.ArtistName.withSuffix(appId) to
-                                    trackInfo.artist
+                                    "🎙️ " + trackInfo.artist
+
+                            if (trackInfo.album.isNotEmpty()) {
+                                trayItems += PanoTrayUtils.ItemId.AlbumName.withSuffix(appId) to
+                                        "💿 " + trackInfo.album
+                            }
 
                             trayItems += PanoTrayUtils.ItemId.Separator.name to ""
 
@@ -214,7 +253,11 @@ fun main(args: Array<String>) {
                     val iconSize = 64
 
                     val bmp = trayIconPainter.toImageBitmap(
-                        darkTint = !isSystemInDarkTheme,
+                        darkTint = when (trayIconTheme) {
+                            DayNightMode.SYSTEM -> !isSystemInDarkTheme
+                            DayNightMode.LIGHT -> false
+                            DayNightMode.DARK -> true
+                        },
                         size = Size(
                             iconSize.toFloat(),
                             iconSize.toFloat()
@@ -236,11 +279,8 @@ fun main(args: Array<String>) {
         LaunchedEffect(Unit) {
             trayMenuClickListener(
                 onOpenIfNeeded = {
-                    if (!windowShown) {
-                        windowShown = true
-                    } else {
-                        windowOpenTrigger.emit(Unit)
-                    }
+                    windowOpenTrigger.emit(Unit)
+                    windowShown = true
                 },
                 onExit = ::onExit
             )
@@ -337,7 +377,6 @@ fun main(args: Array<String>) {
 
                     windowOpenTrigger.collect {
                         window.toFront()
-                        window.windowHandle
                     }
                 }
 

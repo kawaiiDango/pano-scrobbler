@@ -27,6 +27,7 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.MissingResourceException
 import pano_scrobbler.composeapp.generated.resources.Res
 
 @Composable
@@ -34,8 +35,13 @@ fun OssCreditsScreen(
     modifier: Modifier = Modifier,
 ) {
     val libraries by rememberLibraries {
-        Res.readBytes("files/aboutlibraries.json").decodeToString()
+        try {
+            Res.readBytes("files/aboutlibraries.json").decodeToString()
+        } catch (e: MissingResourceException) {
+            "{}" // Fallback to empty JSON if the resource is missing
+        }
     }
+
     PanoLazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier

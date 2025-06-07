@@ -1,5 +1,6 @@
 package com.arn.scrobble.ui
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -77,4 +78,11 @@ actual fun PanoLazyVerticalGrid(
         modifier = modifier,
         content = content
     )
+}
+
+@Composable
+actual fun OptionalHorizontalScrollbar(
+    state: ScrollState,
+    modifier: Modifier,
+) {
 }

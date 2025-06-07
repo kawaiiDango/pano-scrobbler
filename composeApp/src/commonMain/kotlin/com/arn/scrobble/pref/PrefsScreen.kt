@@ -28,6 +28,7 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.utils.LocaleUtils
@@ -43,15 +44,19 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.auto
+import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.copy_sk
 import pano_scrobbler.composeapp.generated.resources.crowdin_link
+import pano_scrobbler.composeapp.generated.resources.dark
 import pano_scrobbler.composeapp.generated.resources.debug_menu
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
 import pano_scrobbler.composeapp.generated.resources.github_link
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
+import pano_scrobbler.composeapp.generated.resources.light
+import pano_scrobbler.composeapp.generated.resources.min_track_duration
 import pano_scrobbler.composeapp.generated.resources.notification_channel_blocked
 import pano_scrobbler.composeapp.generated.resources.num_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.num_regex_edits
@@ -74,7 +79,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_lists
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
-import pano_scrobbler.composeapp.generated.resources.pref_native_file_picker
 import pano_scrobbler.composeapp.generated.resources.pref_now_playing
 import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
@@ -92,6 +96,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_spotify_remote
 import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.pref_translate
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
+import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import java.util.Calendar
@@ -116,8 +121,6 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.scrobblerEnabled } }
     val allowedPackages by
     remember { derivedStateOf { mainPrefsData.allowedPackages } }
-    val allowedAutomationPackages by
-    remember { derivedStateOf { mainPrefsData.allowedAutomationPackages } }
     val seenAppsMap by
     remember { derivedStateOf { mainPrefsData.seenApps.associate { it.appId to it.friendlyLabel } } }
     val scrobbleSpotifyRemote by
@@ -126,6 +129,7 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.autoDetectAppsP } }
     val delayPercent by remember { derivedStateOf { mainPrefsData.delayPercentP } }
     val delaySecs by remember { derivedStateOf { mainPrefsData.delaySecsP } }
+    val minDurationSecs by remember { derivedStateOf { mainPrefsData.minDurationSecsP } }
     val showScrobbleSources by
     remember { derivedStateOf { mainPrefsData.showScrobbleSources } }
     val searchInSource by remember { derivedStateOf { mainPrefsData.searchInSource } }
@@ -141,8 +145,8 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.preventDuplicateAmbientScrobbles } }
     val submitNowPlaying by
     remember { derivedStateOf { mainPrefsData.submitNowPlaying } }
-    val useNativeFilePicker by
-    remember { derivedStateOf { mainPrefsData.useNativeFilePicker } }
+    val trayIconTheme by
+    remember { derivedStateOf { mainPrefsData.trayIconTheme } }
     val notiPersistent by
     remember { derivedStateOf { mainPrefsData.notiPersistent } }
     val checkForUpdates by
@@ -161,6 +165,7 @@ fun PrefsScreen(
     val numRegexEdits by PanoDb.db.getRegexEditsDao().count().collectAsStateWithLifecycle(0)
     val numBlockedMetadata by PanoDb.db.getBlockedMetadataDao().count()
         .collectAsStateWithLifecycle(0)
+    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
 
     val scope = rememberCoroutineScope()
 
@@ -169,7 +174,6 @@ fun PrefsScreen(
             isAddedToStartup = isAddedToStartup()
         }
     }
-
 
 
     PanoLazyColumn(modifier = modifier) {
@@ -230,7 +234,7 @@ fun PrefsScreen(
 
                 SwitchPref(
                     text = stringResource(Res.string.pref_auto_detect),
-                    summary = if (!notiEnabled && !PlatformStuff.isDesktop) stringResource(Res.string.notification_channel_blocked) else null,
+                    summary = if (!notiEnabled) stringResource(Res.string.notification_channel_blocked) else null,
                     value = autoDetectApps,
                     enabled = notiEnabled,
                     copyToSave = { copy(autoDetectApps = it) },
@@ -246,31 +250,27 @@ fun PrefsScreen(
         }
 
         item(MainPrefs::delayPercentP.name) {
-            if (delayPercent > 0) {
-                SliderPref(
-                    text = stringResource(Res.string.pref_delay_per),
-                    value = delayPercent.toFloat(),
-                    copyToSave = { copy(delayPercent = it) },
-                    min = MainPrefs.PREF_DELAY_PER_MIN,
-                    max = MainPrefs.PREF_DELAY_PER_MAX,
-                    increments = 1,
-                    stringRepresentation = { "${it}%" }
-                )
-            }
+            SliderPref(
+                text = stringResource(Res.string.pref_delay_per),
+                value = delayPercent.toFloat(),
+                copyToSave = { copy(delayPercent = it) },
+                min = MainPrefs.PREF_DELAY_PER_MIN,
+                max = MainPrefs.PREF_DELAY_PER_MAX,
+                increments = 1,
+                stringRepresentation = { "${it}%" }
+            )
         }
 
         item(MainPrefs::delaySecsP.name) {
-            if (delaySecs > 0) {
-                SliderPref(
-                    text = stringResource(Res.string.pref_delay_mins),
-                    value = delaySecs.toFloat(),
-                    copyToSave = { copy(delaySecs = it) },
-                    min = MainPrefs.PREF_DELAY_SECS_MIN,
-                    max = MainPrefs.PREF_DELAY_SECS_MAX,
-                    increments = 10,
-                    stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
-                )
-            }
+            SliderPref(
+                text = stringResource(Res.string.pref_delay_mins),
+                value = delaySecs.toFloat(),
+                copyToSave = { copy(delaySecs = it) },
+                min = MainPrefs.PREF_DELAY_SECS_MIN,
+                max = MainPrefs.PREF_DELAY_SECS_MAX,
+                increments = 5,
+                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
+            )
         }
 
         stickyHeader("personalization_header") {
@@ -283,11 +283,31 @@ fun PrefsScreen(
         item(MainPrefs::themeName.name) {
             TextPref(
                 text = stringResource(Res.string.pref_themes),
-                onNavigateToBilling = onNavigateToBilling,
+                locked = !isLicenseValid,
                 onClick = {
                     onNavigate(PanoRoute.ThemeChooser)
                 }
             )
+        }
+
+        if (PlatformStuff.isDesktop) {
+            item(MainPrefs::trayIconTheme.name) {
+                DropdownPref(
+                    text = stringResource(Res.string.pref_tray_icon_theme),
+                    selectedValue = trayIconTheme,
+                    values = DayNightMode.entries,
+                    toLabel = {
+                        stringResource(
+                            when (it) {
+                                DayNightMode.SYSTEM -> Res.string.auto
+                                DayNightMode.LIGHT -> Res.string.light
+                                DayNightMode.DARK -> Res.string.dark
+                            }
+                        )
+                    },
+                    copyToSave = { copy(trayIconTheme = it) }
+                )
+            }
         }
 
         prefChartsWidget(this)
@@ -424,7 +444,8 @@ fun PrefsScreen(
                 ),
                 onClick = {
                     onNavigate(PanoRoute.BlockedMetadatas)
-                }
+                },
+                locked = !isLicenseValid,
             )
         }
 
@@ -531,14 +552,16 @@ fun PrefsScreen(
             )
         }
 
-        if (PlatformStuff.isDesktop) {
-            item(MainPrefs::useNativeFilePicker.name) {
-                SwitchPref(
-                    text = stringResource(Res.string.pref_native_file_picker),
-                    value = useNativeFilePicker,
-                    copyToSave = { copy(useNativeFilePicker = it) }
-                )
-            }
+        item(MainPrefs::minDurationSecsP.name) {
+            SliderPref(
+                text = stringResource(Res.string.min_track_duration),
+                value = minDurationSecs.toFloat(),
+                copyToSave = { copy(minDurationSecs = it) },
+                min = MainPrefs.PREF_MIN_DURATON_SECS_MIN,
+                max = MainPrefs.PREF_MIN_DURATON_SECS_MAX,
+                increments = 5,
+                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
+            )
         }
 
         if (PlatformStuff.isNonPlayBuild) {
@@ -553,18 +576,16 @@ fun PrefsScreen(
 
         prefPersistentNoti(this, notiPersistent)
 
-        if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            prefAutomation(
-                this,
-                onNavigateToAutomation = {
-                    onNavigate(
-                        PanoRoute.Automation(
-                            allowedPackages = allowedAutomationPackages.toList()
-                        )
-                    )
-                },
-                onNavigateToBilling = onNavigateToBilling
-            )
+        if (!PlatformStuff.isTv) {
+            item("automation") {
+                TextPref(
+                    text = stringResource(Res.string.automation),
+                    onClick = {
+                        onNavigate(PanoRoute.AutomationInfo)
+                    },
+                    locked = !isLicenseValid,
+                )
+            }
         }
 
         prefCrashReporter(this, crashReporterEnabled)
@@ -712,12 +733,6 @@ fun PrefsScreen(
         }
     }
 }
-
-expect fun prefAutomation(
-    listScope: LazyListScope,
-    onNavigateToAutomation: () -> Unit,
-    onNavigateToBilling: () -> Unit,
-)
 
 expect fun prefNotifications(listScope: LazyListScope)
 

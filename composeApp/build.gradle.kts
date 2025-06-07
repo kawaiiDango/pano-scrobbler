@@ -2,6 +2,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
@@ -9,10 +10,11 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.io.FileFilter
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Path
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -48,7 +50,8 @@ val archAmd64 = arrayOf("amd64", "x86_64")
 val archArm64 = arrayOf("aarch64", "arm64")
 
 val isReleaseBuild = gradle.startParameter.taskNames.any {
-    it.contains("proguard", ignoreCase = true) || it.contains("release", ignoreCase = true)
+    it.contains("proguard", ignoreCase = true) || it.contains("release", ignoreCase = true) ||
+            it.contains("packageUberJarForCurrentOS", ignoreCase = true)
 }
 val resourcesDirName = when {
     os.isMacOsX && arch in archAmd64 -> "macos-x64"
@@ -259,6 +262,11 @@ android {
         create("releaseGithub") {
             initWith(getByName("release"))
             versionNameSuffix = " GH"
+
+            configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+                nativeSymbolUploadEnabled = false
+            }
         }
     }
 
@@ -312,22 +320,35 @@ aboutLibraries {
         configPath = File("aboutLibsConfig")
         fetchRemoteLicense = false
         fetchRemoteFunding = false
-        export {
-            excludeFields = listOf(
-                "developers",
-                "funding",
-                "description",
-                "organization",
-                "content",
-                "connection",
-                "developerConnection"
-            )
-            exportVariant = "release"
-        }
         license.strictMode = StrictMode.FAIL
         library.duplicationMode = DuplicateMode.MERGE
         android.registerAndroidTasks = false
     }
+
+    export {
+        excludeFields = listOf(
+            "developers",
+            "funding",
+            "description",
+            "organization",
+            "content",
+            "connection",
+            "developerConnection"
+        )
+    }
+
+    exports {
+        create("release") {
+            outputFile = file("src/androidRelease/composeResources/files/aboutlibraries.json")
+        }
+        create("releaseGithub") {
+            outputFile = file("src/androidReleaseGithub/composeResources/files/aboutlibraries.json")
+        }
+        create("desktop") {
+            outputFile = file("src/desktopMain/composeResources/files/aboutlibraries.json")
+        }
+    }
+
 }
 
 compose.desktop {
@@ -340,8 +361,12 @@ compose.desktop {
             "./resources/$resourcesDirName"
 
         // ZGC starts with ~70MB minimized and goes down to ~160MB after re-minimizing
-        jvmArgs += listOf(
+        jvmArgs += listOfNotNull(
             "-Djava.library.path=$libraryPath",
+            if (os.isLinux)
+                "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED"
+            else
+                null,
             "-Ddev.resources.dir.name=$resourcesDirName",
 //            "-XX:NativeMemoryTracking=detail",
             "-XX:+UseSerialGC",
@@ -355,37 +380,18 @@ compose.desktop {
 
         nativeDistributions {
             val formats = when {
-                os.isWindows -> {
-                    mutableSetOf(TargetFormat.AppImage)
-                }
-
-                os.isLinux -> {
-                    mutableSetOf(TargetFormat.AppImage)
-                }
-
-                os.isMacOsX -> {
-                    mutableSetOf(TargetFormat.Dmg)
-                }
-
-                else -> {
-                    throw IllegalStateException("Unsupported OS: $os")
-                }
+                os.isWindows -> mutableSetOf(TargetFormat.AppImage)
+                os.isLinux -> mutableSetOf(TargetFormat.AppImage)
+                os.isMacOsX -> mutableSetOf(TargetFormat.Dmg)
+                else -> throw IllegalStateException("Unsupported OS: $os")
             }
 
             targetFormats = formats
-            packageVersion = "$verName.0"
+            packageVersion = verName
             vendor = "kawaiiDango"
             packageName = appNameWithoutSpaces
 
             appResourcesRootDir = project.layout.projectDirectory.dir("resources")
-
-            modules(
-                "java.net.http",
-//                "jdk.jsobject",
-                "jdk.unsupported",
-                "jdk.unsupported.desktop",
-                "jdk.xml.dom"
-            )
 
             windows {
                 dirChooser = true
@@ -394,15 +400,13 @@ compose.desktop {
                 exePackageVersion = packageVersion
                 menuGroup = appName
                 description = appNameWithoutSpaces
-                iconFile = project.layout.projectDirectory.dir("resources")
-                    .file("windows/app_icon.ico")
+                iconFile = file("app-icons/pano-scrobbler.ico")
             }
 
             linux {
                 menuGroup = appNameWithoutSpaces
                 description = appNameWithoutSpaces
-                iconFile = project.layout.projectDirectory.dir("resources")
-                    .file("linux/app_icon.png")
+                iconFile = file("app-icons/pano-scrobbler.png")
             }
 
             macOS {
@@ -412,8 +416,7 @@ compose.desktop {
                 description = appName
                 appStore = false
 
-                iconFile = project.layout.projectDirectory.dir("resources")
-                    .file("macos/app_icon.icns")
+                iconFile = file("app-icons/pano-scrobbler.icns")
             }
         }
 
@@ -429,7 +432,7 @@ compose.desktop {
     }
 }
 
-tasks.register<ComposeHotRun>("runHot") {
+tasks.withType<ComposeHotRun>().configureEach {
     mainClass = "com.arn.scrobble.main.MainKt"
     jvmArgs = (jvmArgs ?: emptyList()) + listOf(
         "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
@@ -458,12 +461,12 @@ tasks.register<ComposeHotRun>("runHot") {
 }
 
 tasks.register<DefaultTask>("generateSha256") {
-    val distFile = file("dist")
+    val distDir = file("dist")
 
     doLast {
-        distFile.listFiles { file ->
-            file.isFile && !file.name.endsWith(".sha256")
-        }?.forEach { file ->
+        distDir.listFiles { file ->
+            file.isFile && !file.name.endsWith(".sha256") && !file.name.endsWith(".txt")
+        }?.map { file ->
             val digest = MessageDigest.getInstance("SHA-256")
             file.inputStream().use { fis ->
                 val buffer = ByteArray(8192)
@@ -473,16 +476,20 @@ tasks.register<DefaultTask>("generateSha256") {
                 }
             }
             val hash = digest.digest().joinToString("") { "%02x".format(it) }
-            file.let { File(it.parent, "${it.name}.sha256") }
-                .writeText("$hash  ${file.name}")
-            println("SHA-256 checksum file created: ${file.name}.sha256")
+            "$hash  ${file.name}"
+        }?.let {
+            val text = it.joinToString("\n")
+            val sumFile = File(distDir, "SHA256SUMS.txt")
+            sumFile.writeText(text)
+
+            println("SHA256SUMS.txt generated")
         }
     }
 }
 
 //tasks.register<Zip>("zipAppImage") {
 //    from("build/compose/binaries/main-release/app")
-//    archiveFileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.zip"
+//    archiveFileName = "$appNameWithoutSpaces-$resourcesDirName.zip"
 //    destinationDirectory = file("dist")
 //}
 
@@ -492,12 +499,12 @@ tasks.register<Copy>("copyGithubReleaseApk") {
     include("*-releaseGithub.apk")
     rename(
         "(.*)-releaseGithub.apk",
-        "$appNameWithoutSpaces-$verCode-android-universal.apk"
+        "$appNameWithoutSpaces-android-universal.apk"
     )
 }
 
 //tasks.register<Copy>("copyReleaseExe") {
-//    val fileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.exe"
+//    val fileName = "$appNameWithoutSpaces-$resourcesDirName.exe"
 //
 //    from("build/compose/binaries/main-release/exe")
 //    into("dist")
@@ -509,7 +516,7 @@ tasks.register<Copy>("copyGithubReleaseApk") {
 //}
 
 tasks.register<Copy>("copyReleaseDmg") {
-    val fileName = "$appNameWithoutSpaces-$verCode-$resourcesDirName.dmg"
+    val fileName = "$appNameWithoutSpaces-$resourcesDirName.dmg"
     from("build/compose/binaries/main-release/dmg")
     into("dist")
     include("*.dmg")
@@ -521,37 +528,48 @@ tasks.register<Copy>("copyReleaseDmg") {
 
 tasks.register<Exec>("packageLinuxAppImage") {
 
-    val executableDir = file("build/compose/binaries/main-release/app/pano-scrobbler")
-    val appDir = file("build/compose/binaries/main-release/app/PanoScrobbler.AppDir")
+    val executableDir = file("build/compose/native/$resourcesDirName")
+    val appDir = file("build/compose/native/PanoScrobbler.AppDir")
     val appimageFilesDir = file("appimage-files")
     val distDir = file("dist")
+    val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
+    val desktopFile = file("appimage-files/pano-scrobbler.desktop")
 
     doFirst {
         // Create the AppDir structure. Copy all your distribution files.
         appDir.deleteRecursively()
         appDir.mkdirs()
-        File(appDir, "usr").mkdirs()
+        File(appDir, "usr/bin").mkdirs()
+
 
         // Copy the distribution files to the AppDir.
-        executableDir.copyRecursively(File("$appDir/usr"))
+        executableDir.copyRecursively(File("$appDir/usr/bin/"))
 
-        // Copy the PNG icon from the resources to the AppDir root.
-        val iconSource = File("$appDir/usr/lib/app/resources/app_icon.png")
-        val iconDest = File("$appDir/pano-scrobbler.png")
-        if (iconSource.exists()) {
-            iconSource.copyTo(iconDest, overwrite = true)
-        } else {
-            throw GradleException("Icon not found at ${iconSource.absolutePath}")
-        }
+        // copy the icon
+        val iconDir = File(appDir, "usr/share/icons/hicolor/scalable/apps")
+        iconDir.mkdirs()
 
-        // Copy the desktop file and AppRun script to the AppDir.
+        iconFile.copyTo(File(iconDir, "pano-scrobbler.svg"), overwrite = true)
 
-        appimageFilesDir
-            .listFiles(FileFilter { it.isFile && !it.name.lowercase().endsWith(".appimage") })
-            ?.forEach {
-                val destFile = File(appDir, it.name)
-                it.copyTo(destFile, overwrite = true)
-            }
+        val rootIconFile = File(appDir, "pano-scrobbler.svg")
+        Files.createSymbolicLink(
+            rootIconFile.toPath(),
+            Path.of(
+                "usr/share/icons/hicolor/scalable/apps/pano-scrobbler.svg"
+            ),
+        )
+
+        // Copy the desktop file
+        desktopFile.copyTo(File(appDir, desktopFile.name), overwrite = true)
+
+        // create the AppRun file as a symlink to the main executable
+        val appRunFile = File(appDir, "AppRun")
+        Files.createSymbolicLink(
+            appRunFile.toPath(),
+            Path.of(
+                "usr/bin/pano-scrobbler"
+            ),
+        )
     }
 
     val apppImageToolFile = File(appimageFilesDir, "appimagetool-x86_64.AppImage")
@@ -565,7 +583,13 @@ tasks.register<Exec>("packageLinuxAppImage") {
         )
     }
 
-    val distFile = File(distDir, "$appNameWithoutSpaces-$verCode-$resourcesDirName.AppImage")
+    val distFile = File(distDir, "$appNameWithoutSpaces-$resourcesDirName.AppImage")
+
+    environment(
+        "ARCH" to "x86_64",
+        "VERSION" to verName,
+    )
+
     commandLine(
         apppImageToolFile.absolutePath,
         appDir.absolutePath,
@@ -574,36 +598,120 @@ tasks.register<Exec>("packageLinuxAppImage") {
 }
 
 tasks.register<Exec>("packageWindowsNsis") {
-    val executableDir = file("build/compose/binaries/main-release/app/pano-scrobbler")
+    val executableDir = file("build/compose/native/$resourcesDirName")
     val nsisFilesDir = file("nsis-files")
     val distDir = file("dist")
 
-    val distFile = File(distDir, "$appNameWithoutSpaces-$verCode-$resourcesDirName.exe")
+    val distFile = File(distDir, "$appNameWithoutSpaces-$resourcesDirName.exe")
     val nsisScriptFile = File(nsisFilesDir, "install-script.nsi")
+    val iconFile = file("app-icons/pano-scrobbler.ico")
+
     commandLine(
         "makensis",
         "/DOUTFILE=" + distFile.absolutePath,
         "/DAPPDIR=" + executableDir.absolutePath,
         "/DVERSION_CODE=$verCode",
         "/DVERSION_NAME=$verNameWithDate",
+        "/DICON_FILE=" + iconFile.absolutePath,
         nsisScriptFile.absolutePath
     )
 }
 
+// graalvm plugin doesnt seem to support this project structure, so directly use the command
+tasks.register<Exec>("buildNativeImage") {
+    val graalvmHome = System.getenv("GRAALVM_HOME")
+    val javaHome = System.getenv("JAVA_HOME")
+
+    val jarFile =
+        file("build/compose/jars/$appNameWithoutSpaces-$resourcesDirName-$verName.jar")
+    val outputDir = file("build/compose/native/$resourcesDirName")
+    val outputFile = File(outputDir, appNameWithoutSpaces)
+
+    val reachabilityFiles = file("rechability-metadata/$resourcesDirName")
+    val jawtDirName = if (os.isWindows)
+        "bin"
+    else
+        "lib"
+    val jawtDir = File(outputDir, jawtDirName)
+    val jawtFile = when {
+        os.isWindows -> file("$graalvmHome/bin/jawt.dll")
+        os.isLinux -> file("$graalvmHome/lib/libjawt.so")
+        else -> throw IllegalStateException("Unsupported OS: $os")
+    }
+
+    val winAppResFile = file("app-icons/exe-res.res")
+
+    val panoNativeComponentsName = if (os.isWindows)
+        "pano_native_components.dll"
+    else
+        "libpano_native_components.so"
+    val panoNativeComponentsFile = file("resources/$resourcesDirName/$panoNativeComponentsName")
+
+    val command = listOfNotNull(
+        if (os.isWindows)
+            "$graalvmHome\\bin\\native-image.cmd"
+        else
+            "$graalvmHome/bin/native-image",
+        "--strict-image-heap",
+        "--no-fallback",
+        "-march=x86-64-v2",
+        if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
+        "-H:+UnlockExperimentalVMOptions",
+        "-Dcompose.application.configure.swing.globals=true",
+        "-H:ConfigurationFileDirectories=" + reachabilityFiles.absolutePath,
+        "-Djava.awt.headless=false",
+        "-H:+ReportExceptionStackTraces",
+        "-R:MaxHeapSize=300M",
+        "-H:+AddAllCharsets",
+        if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
+        if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,
+        if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.absolutePath}\"" else null,
+        "-jar",
+        jarFile.absolutePath,
+        outputFile.absolutePath
+    )
+
+    commandLine(command)
+
+    // env check
+    doFirst {
+        if (graalvmHome.isNullOrEmpty() || graalvmHome != javaHome) {
+            throw GradleException("GRAALVM_HOME should be set and should be equal to JAVA_HOME")
+        }
+        outputDir.mkdirs()
+    }
+
+    doLast {
+        // copy jawt
+        jawtDir.mkdirs()
+        jawtFile.copyTo(File(jawtDir, jawtFile.name), overwrite = true)
+
+        // copy native components
+        panoNativeComponentsFile.copyTo(
+            File(outputDir, panoNativeComponentsFile.name),
+            overwrite = true
+        )
+    }
+}
+
 afterEvaluate {
-    if (os.isWindows)
-        tasks.named("packageReleaseAppImage") {
-            finalizedBy(tasks.named("packageWindowsNsis"))
-        }
-
-    if (os.isLinux)
-        tasks.named("packageReleaseAppImage") {
-            finalizedBy(tasks.named("packageLinuxAppImage"))
-        }
-
     if (os.isMacOsX)
         tasks.named("packageReleaseDmg") {
             finalizedBy(tasks.named("copyReleaseDmg"))
+        }
+
+    tasks.named("packageUberJarForCurrentOS") {
+        finalizedBy(tasks.named("buildNativeImage"))
+    }
+
+    if (os.isLinux)
+        tasks.named("buildNativeImage") {
+            finalizedBy(tasks.named("packageLinuxAppImage"))
+        }
+
+    if (os.isWindows)
+        tasks.named("buildNativeImage") {
+            finalizedBy(tasks.named("packageWindowsNsis"))
         }
 
     tasks.named("packageReleaseGithub") {
@@ -822,11 +930,17 @@ android {
             keyAlias = localProperties["release.alias"]
             keyPassword = localProperties["release.password"]
         }
+        register("releaseGithub") {
+            storeFile = file(localProperties["releaseGithub.keystore"]!!)
+            storePassword = localProperties["releaseGithub.storePassword"]
+            keyAlias = localProperties["releaseGithub.alias"]
+            keyPassword = localProperties["releaseGithub.password"]
+        }
     }
 
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("releaseGithub")
         }
 
         getByName("release") {
@@ -834,7 +948,7 @@ android {
         }
 
         getByName("releaseGithub") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("releaseGithub")
         }
     }
 }

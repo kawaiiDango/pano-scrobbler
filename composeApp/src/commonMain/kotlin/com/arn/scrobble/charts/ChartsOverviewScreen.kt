@@ -3,6 +3,7 @@ package com.arn.scrobble.charts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,11 +42,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,6 +66,7 @@ import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.ExpandableHeaderMenu
+import com.arn.scrobble.ui.OptionalHorizontalScrollbar
 import com.arn.scrobble.ui.TextHeaderItem
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
@@ -434,13 +439,17 @@ private fun ListeningActivityContent(
     modifier: Modifier = Modifier,
 ) {
     val isLoading by remember(listeningActivity) { mutableStateOf(listeningActivity == null) }
-    val xLabels by remember(listeningActivity) {
-        mutableStateOf(listeningActivity?.timePeriodsToCounts?.keys?.map { it.name }
-            ?: emptyList<String>())
+    val xData by remember(listeningActivity) {
+        mutableStateOf(
+            listeningActivity?.timePeriodsToCounts?.keys?.toList()
+                ?: emptyList()
+        )
     }
-    val yValues by remember(listeningActivity) {
-        mutableStateOf(listeningActivity?.timePeriodsToCounts?.values?.map { it.toFloat() }
-            ?: emptyList<Float>())
+    val yData by remember(listeningActivity) {
+        mutableStateOf(
+            listeningActivity?.timePeriodsToCounts?.values?.map { it.toFloat() }?.toList()
+                ?: emptyList()
+        )
     }
 
     val typeStringRes = when (listeningActivity?.type) {
@@ -451,9 +460,13 @@ private fun ListeningActivityContent(
         else -> Res.string.charts_custom
     }
 
-    val yValuesMax by remember(yValues) { mutableFloatStateOf(yValues.maxOrNull() ?: 0f) }
+    val yValuesMax by remember(yData) { mutableFloatStateOf(yData.maxOrNull() ?: 0f) }
 
     val tintColor = MaterialTheme.colorScheme.secondary
+
+    val scrollstate = rememberScrollState()
+    var boxWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
 
     Column(
         modifier = modifier
@@ -474,6 +487,12 @@ private fun ListeningActivityContent(
                         .backgroundForShimmer(true, shape = MaterialTheme.shapes.extraLarge)
                     else Modifier
                 )
+                .onSizeChanged {
+                    boxWidth = with(density) {
+                        it.width.toDp()
+                    }
+                }
+                .horizontalScroll(scrollstate)
         ) {
             EmptyText(
                 visible = listeningActivity?.timePeriodsToCounts?.isEmpty() == true,
@@ -481,9 +500,9 @@ private fun ListeningActivityContent(
             )
 
             listeningActivity?.let { listeningActivity ->
-                if (listeningActivity.timePeriodsToCounts.isNotEmpty()) {
+                if (listeningActivity.timePeriodsToCounts.isNotEmpty() && boxWidth > 0.dp) {
                     XYGraph(
-                        xAxisModel = remember(xLabels) { CategoryAxisModel(xLabels) },
+                        xAxisModel = remember(xData) { CategoryAxisModel(xData) },
                         yAxisModel = rememberFloatLinearAxisModel(
                             range = 0f..1.2f * yValuesMax,
                             minViewExtent = 1f,
@@ -493,16 +512,15 @@ private fun ListeningActivityContent(
                         yAxisTitle = stringResource(Res.string.scrobbles),
                         yAxisLabels = { it.toInt().toString() },
                         xAxisTitle = stringResource(typeStringRes),
-                        xAxisLabels = { it },
+                        xAxisLabels = { it.name },
                         modifier = Modifier
-                            .fillMaxSize()
+                            .width(max(boxWidth, (xData.size * 24).dp))
                     ) {
                         VerticalBarPlot(
-                            xData = xLabels,
-                            yData = yValues,
+                            xData = xData,
+                            yData = yData,
                             bar = {
-                                val currentYValue = yValues[it]
-                                val density = LocalDensity.current
+                                val currentYValue = yData[it]
                                 val fontSizeDp = with(density) {
                                     MaterialTheme.typography.labelSmall.fontSize.toDp()
                                 }
@@ -538,6 +556,7 @@ private fun ListeningActivityContent(
                 }
             }
         }
+        OptionalHorizontalScrollbar(scrollstate)
     }
 }
 

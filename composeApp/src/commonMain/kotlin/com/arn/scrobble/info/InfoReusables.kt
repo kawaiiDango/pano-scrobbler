@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -21,6 +23,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +58,7 @@ fun InfoWikiText(
     onExpandToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var overflows by remember { mutableStateOf(false) }
     var displayText = text
     val idx =
         displayText.indexOf("<a href=\"http://www.last.fm").takeIf { it != -1 }
@@ -81,23 +88,34 @@ fun InfoWikiText(
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = if (expanded) Int.MAX_VALUE else maxLinesWhenCollapsed,
                 overflow = TextOverflow.Ellipsis,
+                onTextLayout = {
+                    if (!expanded) {
+                        overflows = it.hasVisualOverflow
+                    }
+                },
                 modifier = Modifier
                     .weight(1f)
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable(onClick = onExpandToggle)
+                    .then(
+                        if (overflows)
+                            Modifier.clip(MaterialTheme.shapes.medium)
+                                .clickable(onClick = onExpandToggle)
+                        else Modifier
+                    )
                     .padding(8.dp)
             )
 
-            Icon(
-                imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
-                contentDescription = stringResource(
-                    if (expanded)
-                        Res.string.collapse
-                    else
-                        Res.string.show_all
-                ),
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
+            if (overflows) {
+                Icon(
+                    imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                    contentDescription = stringResource(
+                        if (expanded)
+                            Res.string.collapse
+                        else
+                            Res.string.show_all
+                    ),
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
         }
     }
 }
@@ -105,8 +123,8 @@ fun InfoWikiText(
 @Composable
 fun InfoCounts(
     countPairs: List<Pair<String, Number?>>,
-    avatarUrl: String? = null,
-    avatarInitialLetter: Char? = null,
+    avatarUrl: String?,
+    avatarName: String?,
     firstItemIsUsers: Boolean,
     onClickFirstItem: (() -> Unit)? = null,
     forShimmer: Boolean = false,
@@ -161,7 +179,11 @@ fun InfoCounts(
                     if (index == 0 && firstItemIsUsers) {
                         AvatarOrInitials(
                             avatarUrl = avatarUrl,
-                            avatarInitialLetter = avatarInitialLetter,
+                            avatarName = avatarName,
+                            modifier = Modifier
+                                .padding(6.dp)
+                                .size(24.dp)
+                                .clip(CircleShape),
                         )
                     } else {
                         Text(
@@ -242,6 +264,6 @@ private fun InfoCountsPreview() {
         onClickFirstItem = {},
         avatarUrl = null,
         firstItemIsUsers = true,
-        avatarInitialLetter = 'L'
+        avatarName = "LA"
     )
 }

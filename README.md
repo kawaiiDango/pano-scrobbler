@@ -1,43 +1,35 @@
 ## <img src="composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg" alt="app icon" width="32"/> Pano Scrobbler
 
 [play-store]: img/play-store.svg
-
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
-
 [github]: img/github.svg
-
 [github-link]: https://github.com/kawaiiDango/pano-scrobbler/releases
-
 [fdroid]: img/fdroid.svg
-
 [fdroid-link]: https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
-
 [ko-fi]: img/ko-fi.svg
-
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
-
 [crowdin]: img/crowdin.svg
-
 [crowdin-link]: https://crowdin.com/project/pscrobbler
 
 <img src="https://i.imgur.com/pgETfhc.png" alt="scrobbles" width="150"/> <img src="https://i.imgur.com/Q7yPi2z.png" alt="friends" width="150"/> <img src="https://i.imgur.com/MUhcyBw.png" alt="charts" width="150"/> <img src="https://i.imgur.com/aikbtGR.png" alt="random" width="150"/>
 
 ### Downloads
 
-**Android (phones, tablets and TVs):**
+**Android (phones, tablets, TVs and Chromebooks):**
 
 [![play-store][play-store]][play-store-link] [![github][github]][github-link] [![fdroid][fdroid]][fdroid-link]
 
 ### Translate
+
 [![translate][crowdin]][crowdin-link]
 
 ## [FAQ](faq.md) • [Privacy](privacy-policy.md) • [Compiling](instructions.md) • [TV](tv.md)
 
 ### Features:
 
-- Supports phones, TVs, tablets, and Android desktops, including Windows 11
+- Supports phones, TVs, tablets, Chromebooks
 - No ads ever
-- Scrobbles to Lastfm, Librefm, GNUfm, ListenBrainz, Maloja, Pleroma
+- Scrobbles to Lastfm, Librefm, ListenBrainz, Maloja, Pleroma and other compatible services
 - \* Scrobble to a CSV or JSONL file locally
 - \* Interactive notification- view song info, edit, love, cancel, or block songs directly from the
   notification
@@ -47,7 +39,6 @@
 - Extract or Fix metadata such as "Remastered" with regex pattern edits
 - Block artists, songs, etc., and automatically skip or mute when they play
 - Check what your followed users are listening to and view their stats
-- Identify and scrobble a song from the microphone
 - \* Scrobble from the S app and Pixel Now Playing
 - Import and export settings, edits, and blocklists
 - View charts with change indicators for specific time periods,
@@ -57,15 +48,16 @@
 - Get a random song, album, or artist from your listening history
 - Search Lastfm for a songs, artists, or albums
 - Fetch albums and album artists from Lastfm, if missing, before scrobbling
-- \* Get your top scrobbles digests as a notification at the end of every week and month
+- \* Get your top scrobbles digests as a notification at the end of every week, month and year
 - Add or remove personal tags from the info screen
 - Mix and match themes
-- \* Broadcast Intents for automation apps
+- \* Control Pano Scrobbler from automation apps like Tasker
 - Remember and see apps you scrobbled from and play directly in them
 
-Features marked with * are not available on TV due to OS limitations.
+Features marked with \* are not available on TV due to OS limitations.
 
 ### Credits
+
 - Inspiration from Musixmatch's FloatingLyrics
 - YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler) and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
 - Icons from [pictogrammers.com](https://pictogrammers.com) and [material.io](https://material.io)
@@ -75,7 +67,9 @@ Thanks to the amazing [translators](composeApp/src/commonMain/composeResources/f
 reported bugs and helped me with this project.
 
 ### Disclaimer
+
 This project is not affiliated with Last.fm, or any other scrobbling service.
 
 ### License
+
 Pano Scrobbler is licensed under the GNU General Public License v3 (GPL-3) (http://www.gnu.org/copyleft/gpl.html).

@@ -7,6 +7,7 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
+import com.arn.scrobble.api.Requesters.setJsonBody
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
@@ -34,9 +35,7 @@ import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
 import io.ktor.http.Url
-import io.ktor.http.contentType
 import io.ktor.http.parameters
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
@@ -75,8 +74,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         )
 
         return client.postResult<String>("api/v1/pleroma/scrobble") {
-            contentType(ContentType.Application.Json)
-            setBody(pleromaTrack)
+            setJsonBody(pleromaTrack)
         }.map { ScrobbleIgnored(false) }
     }
 
@@ -207,8 +205,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     companion object {
         suspend fun createApp(apiRoot: String, redirectUri: String) =
             Requesters.genericKtorClient.postResult<PleromaOauthClientCreds>("$apiRoot/api/v1/apps") {
-                contentType(ContentType.Application.Json)
-                setBody(
+                setJsonBody(
                     CreateAppRequest(
                         client_name = BuildKonfig.APP_NAME,
                         redirect_uris = redirectUri,

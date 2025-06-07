@@ -2,12 +2,12 @@
 !define DEV_NAME "kawaiiDango"
 !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 !define EXE_NAME "pano-scrobbler.exe"
-!define ICON_REL_PATH "app\resources\app_icon.ico"
 !define APP_GUID "85173f4e-ca52-4ec9-b77f-c2e0b1ff4209"
+!define APP_AUMID "com.arn.scrobble"
 
 !define MULTIUSER_EXECUTIONLEVEL Standard
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
-!define STARTUP_KEY "Software\Microsoft\Windows\CurrentVersion\Run"
+!define LOCALSERVER32_KEY "SOFTWARE\Classes\CLSID\${APP_GUID}\LocalServer32"
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${UNINSTKEY}"
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "CurrentUser"
 !define MULTIUSER_INSTALLMODE_INSTDIR "${APP_NAME}"
@@ -19,6 +19,7 @@
 !include MultiUser.nsh
 !include MUI2.nsh
 !include FileFunc.nsh
+!include shortcut-properties.nsh
 
 !ifndef OUTFILE
   !error "You must define OUTFILE (e.g. /DOUTFILE=Installer.exe)"
@@ -32,21 +33,24 @@
 !ifndef VERSION_NAME
   !error "You must define VERSION_NAME (e.g. /DVERSION_NAME=1.2.3)"
 !endif
+!ifndef ICON_FILE
+  !error "You must define ICON_FILE (e.g. /DICON_FILE=app-icon.ico)"
+!endif
 
 Name "${APP_NAME} ${VERSION_NAME}"
 OutFile "${OUTFILE}"
 
 SetCompressor /SOLID BZIP2
 
-!define MUI_ICON "${APPDIR}\${ICON_REL_PATH}"
+!define MUI_ICON "${ICON_FILE}"
 
 Var StartWithWindows
-Var CreateStartMenu
 Var LaunchApp
 Var VersionCodePrev
 Var InstallModePrev
 Var InstallLocationPrev
 Var InstallMode
+Var UninstallRemoveUserData
 
 !macro KILL_IF_RUNNING
   ; Kill running app process before upgrade, up to 3 attempts
@@ -104,6 +108,7 @@ Page Custom PageInstallOptions PageInstallOptions_Leave
 
 !insertmacro MUI_PAGE_INSTFILES
 
+UninstPage Custom un.PageRemoveUserData un.PageRemoveUserData_Leave
 !insertmacro MUI_UNPAGE_INSTFILES
 
 !insertmacro MUI_LANGUAGE "English"
@@ -119,6 +124,14 @@ Function .onInit
     Call MultiUser.InstallMode.AllUsers
   ${ElseIf} $InstallModePrev == 2
     Call MultiUser.InstallMode.CurrentUser
+  ${Else}
+    UserInfo::GetAccountType
+    Pop $0
+    ${If} $0 != "admin"
+      Call ModeSelect_Install_CurrentUser
+    ${Else}
+      Call ModeSelect_Install_AllUsers
+    ${EndIf}
   ${EndIf}
 
 FunctionEnd
@@ -153,7 +166,6 @@ FunctionEnd
 Function SkipIfUpgrade
   ${If} $InstallModePrev != ""
   ${AndIf} $InstallMode > 0
-    StrCpy $LaunchApp 1 ; launch app after upgrade
     Abort ; skip this page if upgrading
   ${EndIf}
 FunctionEnd
@@ -232,6 +244,13 @@ Function PageModeSelect
 
   ${NSD_OnClick} $4 ModeSelect_Extract
 
+  ${NSD_CreateLabel} 0 80u 100% 12u "This application needs Microsoft Visual C++ Redistributable to run."
+  Pop $5
+
+  ${NSD_CreateButton} 0 96u 50% 12u "Download Visual C++ Redistributable"
+  Pop $6
+
+  ${NSD_OnClick} $6 OpenVcRedistLink
 
   nsDialogs::Show
 FunctionEnd
@@ -256,6 +275,10 @@ Function ModeSelect_Upgrade
   StrCpy $InstallMode $InstallModePrev
 FunctionEnd
 
+Function OpenVcRedistLink
+  ExecShell "open" "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+FunctionEnd
+
 Function PageModeSelect_Leave
   ${If} $InstallMode == 1
     UserInfo::GetAccountType
@@ -274,7 +297,6 @@ FunctionEnd
 
 Function PageInstallOptions
   ${If} $InstallMode >= 1
-  ${AndIf} $InstallModePrev == ""
     nsDialogs::Create 1018
     Pop $0
 
@@ -285,12 +307,6 @@ Function PageInstallOptions
     ${NSD_SetState} $1 1
     StrCpy $StartWithWindows 1
     ${NSD_OnClick} $1 InstallOpt_ToggleStartWithWindows
-
-    ${NSD_CreateCheckbox} 0 16u 100% 12u "Create Start Menu shortcut"
-    Pop $2
-    ${NSD_SetState} $2 1
-    StrCpy $CreateStartMenu 1
-    ${NSD_OnClick} $2 InstallOpt_ToggleStartMenu
 
     ${NSD_CreateCheckbox} 0 32u 100% 12u "Launch ${APP_NAME} after installation"
     Pop $3
@@ -306,10 +322,6 @@ FunctionEnd
 
 Function InstallOpt_ToggleStartWithWindows
   ${NSD_GetState} $1 $StartWithWindows
-FunctionEnd
-
-Function InstallOpt_ToggleStartMenu
-  ${NSD_GetState} $2 $CreateStartMenu
 FunctionEnd
 
 Function InstallOpt_ToggleLaunchApp
@@ -358,7 +370,7 @@ Section "Install/Extract"
     WriteUninstaller "$INSTDIR\Uninstall.exe"
 
     ; Set icon for Add/Remove Programs
-    WriteRegStr ShCtx "${UNINST_KEY}" "DisplayIcon" "$INSTDIR\${ICON_REL_PATH}"
+    WriteRegStr ShCtx "${UNINST_KEY}" "DisplayIcon" "$INSTDIR\${EXE_NAME}"
     WriteRegStr ShCtx "${UNINST_KEY}" "DisplayName" "${APP_NAME}"
     WriteRegStr ShCtx "${UNINST_KEY}" "Publisher" "${DEV_NAME}"
     WriteRegStr ShCtx "${UNINST_KEY}" "DisplayVersion" "${VERSION_NAME}"
@@ -372,16 +384,22 @@ Section "Install/Extract"
     ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
     IntFmt $0 "0x%08X" $0
     WriteRegDWORD ShCtx "${UNINST_KEY}" "EstimatedSize" "$0"
- 
+
+
+    ; Start Menu shortcut (install mode)
+    ; $OUTDIR is used for the working directory
+
+    CreateShortCut "$SMPROGRAMS\${APP_NAME}.lnk" "$INSTDIR\${EXE_NAME}"
+    !insertmacro ShortcutSetToastProperties "$SMPROGRAMS\${APP_NAME}.lnk" "${APP_GUID}" "${APP_AUMID}"
+    ; Add the needed Registry Key (https://docs.microsoft.com/en-us/windows/win32/com/localserver32)
+    WriteRegStr ShCtx "${LOCALSERVER32_KEY}" "" "$INSTDIR\${EXE_NAME}"
+
 
     ; Start with Windows (install mode)
     ${If} $StartWithWindows == 1
-      WriteRegStr HKCU "${STARTUP_KEY}" "${APP_NAME}" '"$INSTDIR\${EXE_NAME}" --minimized'
-    ${EndIf}
-
-    ; Start Menu shortcut (install mode)
-    ${If} $CreateStartMenu == 1
-      CreateShortCut "$SMPROGRAMS\${APP_NAME}.lnk" "$INSTDIR\${EXE_NAME}" "" "$INSTDIR\${ICON_REL_PATH}"
+      CreateShortCut "$SMSTARTUP\${APP_NAME}.lnk" "$INSTDIR\${EXE_NAME}" " --minimized"
+    ${Else}
+      Delete "$SMSTARTUP\${APP_NAME}.lnk"
     ${EndIf}
   ${EndIf}
 
@@ -397,6 +415,32 @@ Section -Post
 SectionEnd
 
 ;--------------------------------
+; Uninstaller Custom Page
+
+Function un.PageRemoveUserData
+  nsDialogs::Create 1018
+  Pop $0
+
+  !insertmacro MUI_HEADER_TEXT "Uninstall Options" ""
+
+  ${NSD_CreateCheckbox} 0 0 100% 12u "Remove user data (settings, cache, etc.)"
+  Pop $1
+  ${NSD_SetState} $1 0
+  StrCpy $UninstallRemoveUserData 0
+  ${NSD_OnClick} $1 un.ToggleRemoveUserData
+
+  nsDialogs::Show
+FunctionEnd
+
+Function un.ToggleRemoveUserData
+  ${NSD_GetState} $1 $UninstallRemoveUserData
+FunctionEnd
+
+Function un.PageRemoveUserData_Leave
+  ; Nothing needed, value is already set
+FunctionEnd
+
+;--------------------------------
 ; Uninstaller Section
 
 Section "Uninstall"
@@ -405,21 +449,21 @@ Section "Uninstall"
 
   ; Remove registry keys
   DeleteRegKey ShCtx "${UNINST_KEY}"
-  DeleteRegValue HKCU "${STARTUP_KEY}" "${APP_NAME}"
   DeleteRegKey ShCtx "Software\${APP_NAME}"
+  DeleteRegKey ShCtx "${LOCALSERVER32_KEY}"
 
   ; Remove Start Menu shortcut
   Delete "$SMPROGRAMS\${APP_NAME}.lnk"
+  Delete "$SMSTARTUP\${APP_NAME}.lnk"
 
   ; Remove installed files
   RMDir /r "$INSTDIR"
 
-  ; Ask about user data
-  MessageBox MB_YESNO|MB_ICONQUESTION "Remove user data?" IDYES RemoveUserData
-  Goto SkipUserData
-  RemoveUserData:
+  ; Remove user data if checked
+  SetShellVarContext current  ; Otherwise, uses ProgramData
+  ${If} $UninstallRemoveUserData == 1
     RMDir /r "$APPDATA\pano-scrobbler"
-  SkipUserData:
+  ${EndIf}
 
 SectionEnd
 

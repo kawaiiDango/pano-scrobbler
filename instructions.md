@@ -16,14 +16,19 @@ object Tokens {
     // RS256 public key, used to verify the license
     const val LICENSE_PUBLIC_KEY_BASE64 = ""
     const val PLAY_BILLING_PUBLIC_KEY_BASE64 = ""
-    const val EMBEDDED_SERVER_KEYSTORE_PASSWORD = "" // password for the embedded https server BKS keystore, used for importing settings over local network
+    // password for the embedded https server BKS keystore, used for importing settings over local network
+    const val EMBEDDED_SERVER_KEYSTORE_PASSWORD = ""
 }
 ```
 
 - Comment out the lines below `// remove if not needed` in composeApp/build.gradle.kts
 
-- To generate the licenses file, run
-  `composeApp:exportLibraryDefinitions -PaboutLibraries.exportPath=src/commonMain/composeResources/files/ -PaboutLibraries.exportVariant=release`
+- To generate the licenses files, run
+```
+./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub
+./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=release
+./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
+```
 
 ### For Android:
 
@@ -71,6 +76,7 @@ and tapping on the "Copy last.fm session key" in the settings screen.
 
 ### For desktop:
 
-- If you intend to package a build for desktop, use OpenJDK 21 as your gradle JDK, as the built-in
-  one does not contain jpackage. Also have [makensis.exe](https://nsis.sourceforge.io/Main_Page) in
-  your PATH.
+- If you intend to package a build for desktop,
+  use [Bellsoft's GraalVM based on OpenJDK 21](https://bell-sw.com/pages/downloads/native-image-kit/)
+  as your gradle JDK and run gradle packageUberJarForCurrentOS. Also
+  have [makensis.exe](https://nsis.sourceforge.io/Main_Page) in your PATH for Windows.

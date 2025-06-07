@@ -5,7 +5,6 @@ import android.widget.ImageView
 import android.widget.ListView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,7 +48,6 @@ import pano_scrobbler.composeapp.generated.resources.appwidget_shadow
 import pano_scrobbler.composeapp.generated.resources.cancel
 import pano_scrobbler.composeapp.generated.resources.ok
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChartsWidgetConfigScreen(
     isPinned: Boolean,

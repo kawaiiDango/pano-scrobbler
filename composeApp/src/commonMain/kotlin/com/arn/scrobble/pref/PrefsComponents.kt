@@ -100,7 +100,7 @@ fun SwitchPref(
                     )
                 else if (locked)
                     Modifier.clickable {
-                        onNavigateToBilling.invoke()
+                        onNavigateToBilling()
                     }
                 else
                     Modifier
@@ -142,29 +142,16 @@ fun TextPref(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     summary: String? = null,
-    enabled: Boolean = true,
-    onNavigateToBilling: (() -> Unit)? = null,
+    locked: Boolean = false,
 ) {
-    val enabled =
-        if (onNavigateToBilling != null) PlatformStuff.billingRepository.isLicenseValid else enabled
-    val locked = onNavigateToBilling != null && !PlatformStuff.billingRepository.isLicenseValid
-
     Column(
         modifier = modifier
             .defaultMinSize(minHeight = 56.dp)
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .then(
-                if (enabled)
-                    Modifier.clickable(onClick = onClick)
-                else if (locked)
-                    Modifier.clickable {
-                        onNavigateToBilling.invoke()
-                    }
-                else Modifier
-            )
+            .clickable(onClick = onClick)
             .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding())
-            .alpha(if (enabled) 1f else 0.5f),
+            .alpha(if (locked) 0.5f else 1f),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -193,7 +180,7 @@ fun TextFieldDialogPref(
     modifier: Modifier = Modifier,
 ) {
     var dialogShown by rememberSaveable { mutableStateOf(false) }
-    var textFieldValue by rememberSaveable(value) { mutableStateOf(value) }
+    val textFieldValue by rememberSaveable(value) { mutableStateOf(value) }
     val scope = rememberCoroutineScope()
     var isError by rememberSaveable { mutableStateOf(false) }
 
@@ -208,11 +195,15 @@ fun TextFieldDialogPref(
         BasicAlertDialog(
             onDismissRequest = { dialogShown = false }
         ) {
-            Surface {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+            ) {
+                var textFieldValueInDialog by rememberSaveable { mutableStateOf(textFieldValue) }
+
                 Column {
                     OutlinedTextField(
-                        value = textFieldValue,
-                        onValueChange = { textFieldValue = it },
+                        value = textFieldValueInDialog,
+                        onValueChange = { textFieldValueInDialog = it },
                         label = { Text(hint) },
                         isError = isError,
                         modifier = Modifier.padding(16.dp)
@@ -220,14 +211,14 @@ fun TextFieldDialogPref(
 
                     TextButton(
                         onClick = {
-                            if (textFieldValue.isEmpty()) {
-                                textFieldValue = Stuff.DEFAULT_SEARCH_URL
+                            if (textFieldValueInDialog.isEmpty()) {
+                                textFieldValueInDialog = Stuff.DEFAULT_SEARCH_URL
                             }
 
-                            if (validate(textFieldValue)) {
+                            if (validate(textFieldValueInDialog)) {
                                 scope.launch {
                                     PlatformStuff.mainPrefs.updateData {
-                                        it.copyToSave(textFieldValue)
+                                        it.copyToSave(textFieldValueInDialog)
                                     }
                                 }
                                 isError = false
@@ -250,7 +241,7 @@ fun <T> DropdownPref(
     text: String,
     selectedValue: T,
     values: Iterable<T>,
-    toLabel: (T) -> String,
+    toLabel: @Composable (T) -> String,
     copyToSave: MainPrefs.(T) -> MainPrefs,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -401,7 +392,7 @@ fun SliderPref(
                     scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
                 },
                 valueRange = min.toFloat()..max.toFloat(),
-                steps = (max - min) / increments,
+                steps = ((max - min) / increments) - 1,
                 enabled = !PlatformStuff.isTv,
                 modifier = Modifier
                     .weight(1f)

@@ -64,6 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.touchlab.kermit.Logger
 import coil3.compose.AsyncImage
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -90,7 +91,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -136,7 +136,7 @@ fun FriendsScreen(
     val friends = viewModel.friends.collectAsLazyPagingItems()
     val totalFriends by viewModel.totalFriends.collectAsStateWithLifecycle()
     val friendsExtraDataMap by viewModel.friendsExtraDataMap.collectAsStateWithLifecycle()
-    val friendsExtraDataMapState = remember { mutableStateMapOf<String, Result<FriendExtraData>>() }
+    val friendsExtraDataMapState = remember { mutableStateMapOf<String, FriendExtraData>() }
     val pinnedFriends = if (PlatformStuff.billingRepository.isLicenseValid) {
         viewModel.pinnedFriends.collectAsStateWithLifecycle()
     } else {
@@ -177,7 +177,7 @@ fun FriendsScreen(
     LaunchedEffect(friendsExtraDataMap) {
         friendsExtraDataMapState.putAll(friendsExtraDataMap)
         if (lastExpandedFriendUsername != null) {
-            val newExtraData = friendsExtraDataMapState[lastExpandedFriendUsername]?.getOrNull()
+            val newExtraData = friendsExtraDataMapState[lastExpandedFriendUsername]
             if (newExtraData != null) {
                 dialogFriendExtraDataFlow.emit(newExtraData)
             }
@@ -191,7 +191,7 @@ fun FriendsScreen(
             onTitleChange(followingText)
     }
 
-    LaunchedEffect(gridState) {
+    LaunchedEffect(gridState, lastFriendsRefreshTime) {
         snapshotFlow { gridState.layoutInfo.visibleItemsInfo.map { it.key } }
             .collectLatest { visibleKeys ->
                 visibleKeys
@@ -199,9 +199,9 @@ fun FriendsScreen(
                     .forEach { key -> // key is the username
                         val cachedData = friendsExtraDataMapState[key]
                         if (cachedData == null ||
-                            (System.currentTimeMillis() - (cachedData.getOrNull()?.lastUpdated
-                                ?: 0) > Stuff.RECENTS_REFRESH_INTERVAL)
+                            (System.currentTimeMillis() - cachedData.lastUpdated > Stuff.FRIENDS_REFRESH_INTERVAL)
                         ) {
+                            Logger.d { "Loading extra data for friend: $key" }
                             viewModel.loadFriendsRecents(key)
                         }
                     }
@@ -238,7 +238,7 @@ fun FriendsScreen(
 
     AutoRefreshEffect(
         lastRefreshTime = lastFriendsRefreshTime,
-        interval = Stuff.RECENTS_REFRESH_INTERVAL * 2,
+        interval = Stuff.FRIENDS_REFRESH_INTERVAL,
         shouldRefresh = {
             sortedFriends == null &&
                     gridState.firstVisibleItemIndex < 4
@@ -250,8 +250,7 @@ fun FriendsScreen(
         val dialogArgs = PanoDialog.Friend(
             friend = friend,
             isPinned = friend.name in pinnedUsernamesSet.value,
-            extraData = friendsExtraDataMapState[friend.name]?.getOrNull(),
-            extraDataError = friendsExtraDataMapState[friend.name]?.exceptionOrNull()?.redactedMessage,
+            extraData = friendsExtraDataMapState[friend.name],
         )
         lastExpandedFriendUsername = friend.name
 
@@ -280,7 +279,10 @@ fun FriendsScreen(
                 .fillMaxSize()
         ) {
 
-            item(span = { GridItemSpan(maxLineSpan) }) {
+            item(
+                key = "header row",
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
                 ButtonsBarForFriends(
                     isColumn = isColumn,
                     isInEditMode = isInEditMode,
@@ -300,8 +302,7 @@ fun FriendsScreen(
                 ) { friend ->
                     FriendItem(
                         friend,
-                        extraData = friendsExtraDataMapState[friend.name]?.getOrNull(),
-                        extraDataError = friendsExtraDataMapState[friend.name]?.exceptionOrNull()?.redactedMessage,
+                        extraData = friendsExtraDataMapState[friend.name],
                         isPinned = false,
                         showPinConfig = false,
                         onExpand = { expandFriend(friend) },
@@ -319,8 +320,7 @@ fun FriendsScreen(
                 ) { idx, friend ->
                     FriendItem(
                         friend,
-                        extraData = friendsExtraDataMapState[friend.name]?.getOrNull(),
-                        extraDataError = friendsExtraDataMapState[friend.name]?.exceptionOrNull()?.redactedMessage,
+                        extraData = friendsExtraDataMapState[friend.name],
                         isPinned = true,
                         onExpand = { expandFriend(friend) },
                         isColumn = isColumn,
@@ -366,8 +366,7 @@ fun FriendsScreen(
                         } else {
                             FriendItem(
                                 friend,
-                                extraData = friendsExtraDataMapState[friend.name]?.getOrNull(),
-                                extraDataError = friendsExtraDataMapState[friend.name]?.exceptionOrNull()?.redactedMessage,
+                                extraData = friendsExtraDataMapState[friend.name],
                                 isPinned = false,
                                 showPinConfig = user.isSelf && isInEditMode,
                                 onPinUnpin = { pin ->
@@ -447,7 +446,6 @@ fun FriendDialog(
     isPinned: Boolean,
     extraData: FriendExtraData?,
     extraDataFlow: Flow<FriendExtraData>,
-    extraDataError: String?,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
@@ -469,7 +467,6 @@ fun FriendDialog(
             )
         },
         extraData = extraData,
-        extraDataError = extraDataError,
         isPinned = isPinned,
         showPinConfig = false,
         expanded = true,
@@ -498,7 +495,6 @@ private fun FriendItemShimmer(
         friend,
         forShimmer = true,
         extraData = null,
-        extraDataError = null,
         isPinned = false,
         showPinConfig = false,
         isColumn = isColumn,
@@ -535,7 +531,6 @@ private fun FriendItemRowOrColumn(
 private fun FriendItem(
     friend: UserCached,
     extraData: FriendExtraData?,
-    extraDataError: String?,
     isPinned: Boolean,
     showPinConfig: Boolean,
     isColumn: Boolean,
@@ -573,7 +568,7 @@ private fun FriendItem(
             ) {
                 AvatarOrInitials(
                     avatarUrl = friend.largeImage,
-                    avatarInitialLetter = friend.name.first(),
+                    avatarName = friend.name,
                     textStyle = if (expanded) MaterialTheme.typography.displayLarge else MaterialTheme.typography.titleLarge,
                     modifier = Modifier
                         .size(
@@ -693,7 +688,7 @@ private fun FriendItem(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .then(
-                            if (forShimmer || (extraData == null && extraDataError == null))
+                            if (forShimmer || extraData == null)
                                 Modifier.shimmerWindowBounds()
                             else
                                 Modifier
@@ -721,7 +716,7 @@ private fun FriendItem(
                         )
                         .clip(MaterialTheme.shapes.small)
 
-                    if (extraDataError != null) {
+                    if (extraData?.errorMessage != null) {
                         Icon(
                             imageVector = Icons.Outlined.ErrorOutline,
                             contentDescription = stringResource(Res.string.network_error),
@@ -761,7 +756,7 @@ private fun FriendItem(
                     ) {
                         Text(
                             text = track?.name
-                                ?: extraDataError
+                                ?: extraData?.errorMessage
                                 ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = 1,

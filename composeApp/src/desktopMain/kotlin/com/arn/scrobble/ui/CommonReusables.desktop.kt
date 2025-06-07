@@ -21,7 +21,7 @@ actual fun AppIcon(
 
     AvatarOrInitials(
         avatarUrl = null,
-        avatarInitialLetter = name.first(),
+        avatarName = name,
         textStyle = MaterialTheme.typography.titleSmall,
         modifier = modifier.clip(CircleShape),
     )

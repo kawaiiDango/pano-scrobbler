@@ -2,7 +2,6 @@ package com.arn.scrobble.edits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
@@ -13,7 +12,6 @@ import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
@@ -115,9 +113,8 @@ class EditScrobbleViewModel : ViewModel() {
             duration = origScrobbleData.duration,
             packageName = origScrobbleData.packageName,
         )
-        val lastfmScrobblable =
-            Scrobblables.all.value.firstOrNull { it.userAccount.type == AccountType.LASTFM }
-        val lastfmScrobbleResult: Result<ScrobbleIgnored>
+        val scrobblable = Scrobblables.current.value
+        val scrobbleResult: Result<ScrobbleIgnored>
 
         val origTrackObj = Track(
             origTrack,
@@ -177,26 +174,25 @@ class EditScrobbleViewModel : ViewModel() {
             }
         }
 
-        // edit lastfm first
-        if (lastfmScrobblable != null) {
-            lastfmScrobbleResult = lastfmScrobblable.scrobble(scrobbleData)
-            if (lastfmScrobbleResult.map { it.ignored }.getOrNull() == true) {
+        if (scrobblable != null) {
+            scrobbleResult = scrobblable.scrobble(scrobbleData)
+            if (scrobbleResult.map { it.ignored }.getOrNull() == true) {
                 return Result.failure(ScrobbleIgnoredException(timeMillis, ::saveEdit))
             } else {
                 if (!isNowPlaying) {
                     // The user might submit the edit after it has been scrobbled, so delete anyways
-                    val deleteResult = lastfmScrobblable.delete(origTrackObj)
+                    val deleteResult = scrobblable.delete(origTrackObj)
                     if (deleteResult.isSuccess)
                         CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
                     else if (deleteResult.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException) {
                         return Result.failure(deleteResult.exceptionOrNull()!!)
                     }
                 } else {
-                    lastfmScrobblable.updateNowPlaying(scrobbleData)
+                    scrobblable.updateNowPlaying(scrobbleData)
                 }
 
                 if (rescrobbleRequired)
-                    lastfmScrobblable.scrobble(scrobbleData)
+                    scrobblable.scrobble(scrobbleData)
             }
 
             val _artist = Artist(artist)
@@ -210,28 +206,6 @@ class EditScrobbleViewModel : ViewModel() {
 
             CachedTracksDao.deltaUpdateAll(trackObj, 1, DirtyUpdate.BOTH)
         }
-
-
-        // scrobble everywhere else (delete first)
-        Scrobblables.all.value
-            .filter {
-                it.userAccount.type != AccountType.LASTFM &&
-                        it.userAccount.type != AccountType.PLEROMA &&
-                        it.userAccount.type != AccountType.FILE
-
-            }
-            .forEach {
-                if (!isNowPlaying)
-                    it.delete(origTrackObj)
-                // ListenBrainz cannot have two scrobbles with the same timestamp and delete is not immediate
-                // so add 1 sec
-                if (it is ListenBrainz)
-                    it.scrobble(scrobbleData.copy(timestamp = scrobbleData.timestamp + 1000))
-                else
-                    it.scrobble(scrobbleData)
-                if (isNowPlaying)
-                    it.updateNowPlaying(scrobbleData)
-            }
 
         // track player
         scrobbleData.packageName?.let {

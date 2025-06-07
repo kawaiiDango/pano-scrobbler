@@ -27,6 +27,8 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.utils.PanoTimeFormatter
+import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -46,6 +48,7 @@ fun TrackHistoryScreen(
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
+    val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps.associate { it.appId to it.friendlyLabel } }
     var expandedIdx by rememberSaveable { mutableIntStateOf(-1) }
 
     LaunchedEffect(user, track) {
@@ -96,6 +99,7 @@ fun TrackHistoryScreen(
             deletedTracksSet = deletedTracksSet,
             editedTracksMap = editedTracksMap,
             pkgMap = pkgMap,
+            seenApps = seenApps,
             fetchAlbumImageIfMissing = false,
             showFullMenu = true,
             showLove = false,

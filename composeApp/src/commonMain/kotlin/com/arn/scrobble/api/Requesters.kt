@@ -14,7 +14,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.NoTransformationFoundException
-import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpTimeout
@@ -25,11 +24,19 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.JsonConvertException
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -78,7 +85,7 @@ object Requesters {
                 validateResponse { response ->
                     if (response.status.isSuccess()) return@validateResponse
                     try {
-                        val errorResponse = response.body<ApiErrorResponse>()
+                        val errorResponse = response.parseJsonBody<ApiErrorResponse>()
                         throw ApiException(errorResponse.code, errorResponse.message)
                     } catch (e: NoTransformationFoundException) {
                         throw ApiException(response.status.value, response.status.description, e)
@@ -99,10 +106,13 @@ object Requesters {
         withContext(Dispatchers.IO) {
             val resp = get(urlString, block)
             try {
-                val body = resp.body<T>()
+                val body = if (T::class == String::class)
+                    resp.bodyAsText() as T
+                else
+                    resp.parseJsonBody<T>()
                 Result.success(body)
             } catch (e: JsonConvertException) {
-                val errorResponse = resp.body<ApiErrorResponse>()
+                val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
@@ -119,10 +129,13 @@ object Requesters {
         withContext(Dispatchers.IO) {
             val resp = post(urlString, block)
             try {
-                val body = resp.body<T>()
+                val body = if (T::class == String::class)
+                    resp.bodyAsText() as T
+                else
+                    resp.parseJsonBody<T>()
                 Result.success(body)
             } catch (e: JsonConvertException) {
-                val errorResponse = resp.body<ApiErrorResponse>()
+                val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
@@ -151,7 +164,7 @@ object Requesters {
                     )
                 }
 
-                val body = resp.body<T>()
+                val body = resp.parseJsonBody<T>()
                 Result.success(body)
                 val pageEntries = transform(body)
                 val customPageAttr = pageAttrTransform(body)
@@ -167,7 +180,7 @@ object Requesters {
                 )
                 Result.success(pr)
             } catch (e: JsonConvertException) {
-                val errorResponse = resp.body<ApiErrorResponse>()
+                val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
         }
@@ -175,5 +188,18 @@ object Requesters {
         throw e
     } catch (e: Exception) {
         Result.failure(e)
+    }
+
+    // doing it like this avoids reflection according to graalvm
+    suspend inline fun <reified T> HttpResponse.parseJsonBody(): T {
+        return bodyAsChannel().toInputStream().use {
+            Stuff.myJson.decodeFromStream<T>(it)
+        }
+    }
+
+    inline fun <reified T> HttpRequestBuilder.setJsonBody(body: T) {
+        contentType(ContentType.Application.Json)
+        val jsonBody = Stuff.myJson.encodeToString(body)
+        setBody(jsonBody)
     }
 }

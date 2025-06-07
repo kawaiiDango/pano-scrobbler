@@ -33,6 +33,7 @@ data class MainPrefs(
     private val autoDetectApps: Boolean = true,
     private val delaySecs: Int = PREF_DELAY_SECS_DEFAULT,
     private val delayPercent: Int = PREF_DELAY_PER_DEFAULT,
+    private val minDurationSecs: Int = PREF_MIN_DURATON_SECS_DEFAULT,
     val scrobbleSpotifyRemote: Boolean = false,
     val linkHeartButtonToRating: Boolean = false,
     val preventDuplicateAmbientScrobbles: Boolean = false,
@@ -103,7 +104,7 @@ data class MainPrefs(
     val lastLicenseCheckTime: Long = -1,
     val lastPendingScrobblesFailureTime: Long = -1,
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
-    val useNativeFilePicker: Boolean = true,
+    val trayIconTheme: DayNightMode = DayNightMode.SYSTEM,
     val cookies: Map<String, CookieSerializable> = emptyMap(),
 ) {
 
@@ -118,6 +119,9 @@ data class MainPrefs(
 
     val delayPercentP
         get() = delayPercent.coerceIn(PREF_DELAY_PER_MIN, PREF_DELAY_PER_MAX)
+
+    val minDurationSecsP
+        get() = minDurationSecs.coerceIn(PREF_MIN_DURATON_SECS_MIN, PREF_MIN_DURATON_SECS_MAX)
 
     val demoModeP
         get() = demoMode && PlatformStuff.isDebug
@@ -165,7 +169,6 @@ data class MainPrefs(
         preventDuplicateAmbientScrobbles = prefs.preventDuplicateAmbientScrobbles,
         firstDayOfWeek = prefs.firstDayOfWeek,
         searchUrlTemplate = prefs.searchUrlTemplate,
-        useNativeFilePicker = prefs.useNativeFilePicker,
         allowedPackages = prefs.allowedPackages
     )
 
@@ -173,6 +176,7 @@ data class MainPrefs(
         scrobblerEnabled = this.scrobblerEnabled,
         delaySecs = this.delaySecsP,
         delayPercent = this.delayPercentP,
+        minDurationSecs = this.minDurationSecsP,
         submitNowPlaying = this.submitNowPlaying,
         fetchAlbum = this.fetchAlbum,
         autoDetectApps = this.autoDetectAppsP,
@@ -189,7 +193,6 @@ data class MainPrefs(
         preventDuplicateAmbientScrobbles = this.preventDuplicateAmbientScrobbles,
         firstDayOfWeek = this.firstDayOfWeek,
         searchUrlTemplate = this.searchUrlTemplate,
-        useNativeFilePicker = this.useNativeFilePicker,
         allowedPackages = this.allowedPackages,
     )
 
@@ -202,6 +205,9 @@ data class MainPrefs(
         const val PREF_DELAY_PER_DEFAULT = 50
         const val PREF_DELAY_PER_MIN = 30
         const val PREF_DELAY_PER_MAX = 95
+        const val PREF_MIN_DURATON_SECS_DEFAULT = 30
+        const val PREF_MIN_DURATON_SECS_MIN = 10
+        const val PREF_MIN_DURATON_SECS_MAX = 60
     }
 }
 
@@ -227,6 +233,7 @@ data class MainPrefsPublic(
     val scrobblerEnabled: Boolean,
     val delaySecs: Int,
     val delayPercent: Int,
+    val minDurationSecs: Int = MainPrefs.PREF_MIN_DURATON_SECS_DEFAULT,
     val submitNowPlaying: Boolean,
     val fetchAlbum: Boolean,
     val autoDetectApps: Boolean,
@@ -242,7 +249,6 @@ data class MainPrefsPublic(
     val spotifyArtistSearchApproximate: Boolean,
     val preventDuplicateAmbientScrobbles: Boolean,
     val firstDayOfWeek: Int,
-    val searchUrlTemplate: String,
-    val useNativeFilePicker: Boolean,
+    val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
     val allowedPackages: Set<String>,
 )

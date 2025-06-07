@@ -86,6 +86,17 @@ object AndroidStuff {
 //        }
 //    }
 
+    fun isDkmaNeeded(): Boolean {
+        val packages = Stuff.STARTUPMGR_INTENTS.map { it.first }.toSet()
+        return packages.any {
+            try {
+                application.packageManager.getApplicationInfo(it, 0)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
+        }
+    }
 
     fun createForegroundInfoNotification(title: String): ForegroundInfo {
         val context = application

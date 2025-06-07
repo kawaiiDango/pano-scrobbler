@@ -4,32 +4,27 @@ import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
+import com.arn.scrobble.api.Requesters.parseJsonBody
 import com.arn.scrobble.api.cache.ExpirationPolicy
 import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.request.forms.FormDataContent
+import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
-import io.ktor.http.parametersOf
+import io.ktor.http.parameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class SpotifyRequester {
     private val mainPrefs = PlatformStuff.mainPrefs
-    private val authMutex by lazy { Mutex() }
     private val client: HttpClient by lazy {
         Requesters.genericKtorClient.config {
             install(CustomCachePlugin) {
@@ -51,40 +46,32 @@ class SpotifyRequester {
                     }
 
                     refreshTokens {
-                        val spotifyAccessToken =
-                            mainPrefs.data.map { it.spotifyAccessToken }.first()
-                        val spotifyAccessTokenExpires =
-                            mainPrefs.data.map { it.spotifyAccessTokenExpires }.first()
-
-                        authMutex.withLock {
-                            if (spotifyAccessTokenExpires >= System.currentTimeMillis())
-                                return@withLock
-
-                            withContext(Dispatchers.IO) {
-                                client.post("https://accounts.spotify.com/api/token") {
-                                    markAsRefreshTokenRequest()
-                                    header(
-                                        HttpHeaders.Authorization,
-                                        "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}"
-                                    )
-                                    setBody(
-                                        FormDataContent(
-                                            parametersOf("grant_type", "client_credentials")
-                                        )
-                                    )
+                        val tokenResponse = withContext(Dispatchers.IO) {
+                            client.submitForm(
+                                url = "https://accounts.spotify.com/api/token",
+                                formParameters = parameters {
+                                    append("grant_type", "client_credentials")
                                 }
-                                    .body<SpotifyTokenResponse>()
-                                    .let { response ->
-                                        mainPrefs.updateData {
-                                            it.copy(
-                                                spotifyAccessToken = response.access_token,
-                                                spotifyAccessTokenExpires = System.currentTimeMillis() + (response.expires_in - 60) * 1000
-                                            )
-                                        }
-                                    }
+                            ) {
+                                markAsRefreshTokenRequest()
+
+                                header(
+                                    HttpHeaders.Authorization,
+                                    "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}"
+                                )
+                            }.parseJsonBody<SpotifyTokenResponse>()
+                        }
+
+                        if (!PlatformStuff.isDesktop) {
+                            mainPrefs.updateData {
+                                it.copy(
+                                    spotifyAccessToken = tokenResponse.access_token,
+                                    spotifyAccessTokenExpires = System.currentTimeMillis() + (tokenResponse.expires_in - 60) * 1000
+                                )
                             }
                         }
-                        BearerTokens(spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
+
+                        BearerTokens(tokenResponse.access_token, Tokens.SPOTIFY_REFRESH_TOKEN)
                     }
                 }
             }

@@ -11,9 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.AwtWindow
 import com.arn.scrobble.filepicker.FilePickerScreen
+import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformFile
-import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.create
@@ -33,8 +32,8 @@ actual fun FilePicker(
     onDismiss: () -> Unit,
     onFilePicked: (PlatformFile) -> Unit,
 ) {
-
-    val useNativeFilePicker by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.useNativeFilePicker }
+    // freezes or gives a segmentation fault on Linux
+    val useNativeFilePicker = DesktopStuff.os == DesktopStuff.Os.Windows
 
     val fileMode by remember(mode) {
         mutableIntStateOf(
@@ -96,7 +95,7 @@ actual fun FilePicker(
                 onDismissRequest = { onDismiss() },
                 content = {
                     Surface(
-                        shape = MaterialTheme.shapes.medium,
+                        shape = MaterialTheme.shapes.extraLarge,
                     ) {
                         FilePickerScreen(
                             title = title,
@@ -108,7 +107,8 @@ actual fun FilePicker(
                             }
                         )
                     }
-                })
+                }
+            )
         }
     }
 }

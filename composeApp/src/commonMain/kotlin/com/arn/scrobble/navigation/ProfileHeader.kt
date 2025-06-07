@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -73,7 +72,6 @@ import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.reports
 
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProfileHeader(
     otherUser: UserCached?,
@@ -94,11 +92,11 @@ fun ProfileHeader(
     }
 
 
-    val initial by remember(displayText) {
+    val userName by remember(displayText) {
         mutableStateOf(
             when {
-                otherUser != null -> otherUser.name.first()
-                else -> currentScrobblable?.userAccount?.user?.name?.first()
+                otherUser != null -> otherUser.name
+                else -> currentScrobblable?.userAccount?.user?.name
             }
         )
     }
@@ -138,7 +136,7 @@ fun ProfileHeader(
             ) {
                 AvatarOrInitials(
                     avatarUrl = profilePicUrl,
-                    avatarInitialLetter = initial,
+                    avatarName = userName,
                     modifier = Modifier
                         .padding(8.dp)
                         .size(48.dp)
@@ -165,7 +163,7 @@ fun ProfileHeader(
             ) {
                 AvatarOrInitials(
                     avatarUrl = profilePicUrl,
-                    avatarInitialLetter = initial,
+                    avatarName = userName,
                     textStyle = MaterialTheme.typography.displayLarge,
                     modifier = Modifier
                         .padding(bottom = 24.dp)
@@ -292,7 +290,10 @@ fun ProfileHeaderDropdown(
                 accounts.filterNot { it == Scrobblables.current.value }.forEach {
                     DropdownMenuItem(
                         text = {
-                            Text(accountTypeLabel(it.userAccount.type) + ": " + it.userAccount.user.name)
+                            Text(
+                                accountTypeLabel(it.userAccount.type) + ": " + it.userAccount.user.name,
+                                maxLines = 1
+                            )
                         },
                         leadingIcon = {
                             Icon(

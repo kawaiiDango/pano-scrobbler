@@ -81,7 +81,7 @@ private fun AvatarOrInitialsPreview() {
     MaterialTheme {
         AvatarOrInitials(
             avatarUrl = null,
-            avatarInitialLetter = 'A',
+            avatarName = "Some Avatar Name",
             textStyle = MaterialTheme.typography.displayLarge,
             modifier = Modifier
                 .padding(8.dp)

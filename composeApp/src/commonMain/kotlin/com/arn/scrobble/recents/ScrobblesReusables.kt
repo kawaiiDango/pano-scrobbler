@@ -54,6 +54,7 @@ import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
@@ -466,6 +467,7 @@ fun LazyListScope.scrobblesPlaceholdersAndErrors(
                     onEntryClick = {},
                     modifier = Modifier
                         .fillMaxWidth()
+                        .shimmerWindowBounds()
                         .animateItem()
                 )
             }
@@ -606,6 +608,7 @@ fun LazyListScope.scrobblesListItems(
     deletedTracksSet: Set<Track>,
     editedTracksMap: Map<Track, Track>,
     pkgMap: Map<Long, String>,
+    seenApps: Map<String, String>,
     fetchAlbumImageIfMissing: Boolean,
     showFullMenu: Boolean,
     showLove: Boolean,
@@ -644,12 +647,16 @@ fun LazyListScope.scrobblesListItems(
 
                 var menuVisible by remember { mutableStateOf(false) }
 
-                val pkgName = track.date?.let { pkgMap[it] }
+                val appItem = remember(track) {
+                    track.date
+                        ?.let { pkgMap[it] }
+                        ?.let { AppItem(it, seenApps[it] ?: "") }
+                }
 
                 MusicEntryListItem(
                     entry = track,
-                    appId = pkgName,
-                    onEntryClick = { onTrackClick(track, pkgName) },
+                    appItem = appItem,
+                    onEntryClick = { onTrackClick(track, appItem?.appId) },
                     isColumn = expandedIdx() == i,
                     fixedImageHeight = expandedIdx() != i,
                     onImageClick = {
@@ -664,7 +671,7 @@ fun LazyListScope.scrobblesListItems(
                     menuContent = {
                         TrackDropdownMenu(
                             track = track,
-                            pkgName = pkgName,
+                            pkgName = appItem?.appId,
                             onOpenDialog = onOpenDialog,
                             user = user,
                             origTrack = trackPeek,
@@ -738,6 +745,7 @@ fun LazyListScope.pendingScrobblesListItems(
     headerText: String,
     headerIcon: ImageVector,
     items: List<PendingScrobble>,
+    seenApps: Map<String, String>,
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
     onItemClick: (MusicEntry) -> Unit,
@@ -774,10 +782,13 @@ fun LazyListScope.pendingScrobblesListItems(
             )
         }
         var menuVisible by remember { mutableStateOf(false) }
+        val appItem = remember(item) {
+            item.packageName.let { AppItem(it, seenApps[it] ?: "") }
+        }
 
         MusicEntryListItem(
             musicEntry,
-            appId = item.packageName,
+            appItem = appItem,
             onEntryClick = { onItemClick(musicEntry) },
             onMenuClick = { menuVisible = true },
             isPending = true,

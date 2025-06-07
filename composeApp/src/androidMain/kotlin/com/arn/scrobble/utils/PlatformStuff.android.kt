@@ -90,7 +90,7 @@ actual object PlatformStuff {
 
     actual fun getDeviceIdentifier(): String {
         val name = Build.BRAND + "|" + Build.MODEL + "|" + Build.DEVICE + "|" + Build.BOARD
-        return name.sha256()
+        return name.sha256Truncated()
     }
 
     actual val isDebug = BuildConfig.DEBUG
@@ -113,18 +113,6 @@ actual object PlatformStuff {
     actual val isNonPlayBuild = ExtrasConsts.isNonPlayBuild
 
     actual val platformSubstring = "android"
-
-    actual fun isDkmaNeeded(): Boolean {
-        val packages = Stuff.STARTUPMGR_INTENTS.map { it.first }.toSet()
-        return packages.any {
-            try {
-                application.packageManager.getApplicationInfo(it, 0)
-                true
-            } catch (e: PackageManager.NameNotFoundException) {
-                false
-            }
-        }
-    }
 
     actual val isTestLab by lazy {
         Settings.System.getString(
@@ -311,13 +299,18 @@ actual object PlatformStuff {
         val clipboard = ContextCompat.getSystemService(application, ClipboardManager::class.java)!!
         val clip = ClipData.newPlainText(BuildKonfig.APP_NAME, text)
         clipboard.setPrimaryClip(clip)
-        GlobalScope.launch {
-            globalSnackbarFlow.emit(
-                PanoSnackbarVisuals(
-                    message = getString(Res.string.copied),
-                    isError = false,
+
+        // Starting in Android 13, the system displays a standard visual confirmation when content is added to the clipboard.
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            GlobalScope.launch {
+                globalSnackbarFlow.emit(
+                    PanoSnackbarVisuals(
+                        message = getString(Res.string.copied),
+                        isError = false,
+                    )
                 )
-            )
+            }
         }
     }
 

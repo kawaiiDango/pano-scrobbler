@@ -1,18 +1,22 @@
 package com.arn.scrobble.api.lastfm
 
 import com.arn.scrobble.api.Requesters
-import io.ktor.client.call.body
+import com.arn.scrobble.api.Requesters.parseJsonBody
+import com.arn.scrobble.utils.Stuff
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.Url
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.json.decodeFromStream
 
 
 object LastfmUnscrobbler {
@@ -46,7 +50,7 @@ object LastfmUnscrobbler {
             }
 
             if (response.status == HttpStatusCode.OK) {
-                val success = response.body<DeleteScrobbleResponse>().result
+                val success = response.parseJsonBody<DeleteScrobbleResponse>().result
 
                 if (!success)
                     throw IllegalStateException("LastfmUnscrobbler: error unscrobbling")

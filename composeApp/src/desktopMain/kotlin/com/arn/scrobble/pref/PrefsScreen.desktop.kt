@@ -22,14 +22,6 @@ actual fun prefNotifications(listScope: LazyListScope) {
     // no-op
 }
 
-actual fun prefAutomation(
-    listScope: LazyListScope,
-    onNavigateToAutomation: () -> Unit,
-    onNavigateToBilling: () -> Unit,
-) {
-    // no-op
-}
-
 actual fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean) {
     // no-op
 }
@@ -39,16 +31,19 @@ actual fun addToStartup(
     isAdded: Boolean,
     onAddedChanged: (Boolean) -> Unit,
 ) {
-    listScope.item("startup") {
-        SwitchPref(
-            text = stringResource(Res.string.run_on_start),
-            value = isAdded,
-            copyToSave = {
-                DesktopStuff.addOrRemoveFromStartup(it)
-                onAddedChanged(it)
-                this
-            }
-        )
+    // only implemented for Linux
+    if (DesktopStuff.os == DesktopStuff.Os.Linux) {
+        listScope.item("startup") {
+            SwitchPref(
+                text = stringResource(Res.string.run_on_start),
+                value = isAdded,
+                copyToSave = {
+                    DesktopStuff.addOrRemoveFromStartup(it)
+                    onAddedChanged(it)
+                    this
+                }
+            )
+        }
     }
 }
 

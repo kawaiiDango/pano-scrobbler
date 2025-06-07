@@ -154,9 +154,7 @@ sealed interface PanoRoute {
 
 
     @Serializable
-    data class Automation(
-        val allowedPackages: List<String>,
-    ) : PanoRoute
+    data object AutomationInfo : PanoRoute
 
     @Serializable
     data object Help : PanoRoute

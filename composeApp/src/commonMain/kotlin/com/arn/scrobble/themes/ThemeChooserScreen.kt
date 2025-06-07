@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -37,8 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
@@ -57,13 +54,12 @@ import pano_scrobbler.composeapp.generated.resources.low
 import pano_scrobbler.composeapp.generated.resources.medium
 import pano_scrobbler.composeapp.generated.resources.system_colors
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ThemeChooserScreen(
     onNavigateToBilling: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val licenseState by PlatformStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
+    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
     var themeName: String? by rememberSaveable { mutableStateOf(null) }
     var dynamic: Boolean? by rememberSaveable { mutableStateOf(null) }
     var dayNightMode: DayNightMode? by rememberSaveable { mutableStateOf(null) }
@@ -73,7 +69,7 @@ fun ThemeChooserScreen(
     DisposableEffect(Unit) {
         onDispose {
             if (themeName != null && dynamic != null && dayNightMode != null && contrastMode != null) {
-                if (licenseState == LicenseState.VALID) {
+                if (isLicenseValid) {
                     GlobalScope.launch {
                         PlatformStuff.mainPrefs.updateData {
                             it.copy(
@@ -118,7 +114,7 @@ fun ThemeChooserScreen(
                     onClick = {
                         themeName = themeObj.name
                     },
-                    enabled = dynamic != true,
+                    enabled = isLicenseValid && dynamic != true,
                     modifier = Modifier
                 )
             }
@@ -129,8 +125,9 @@ fun ThemeChooserScreen(
         ) {
             DayNightMode.entries.forEach {
                 FilterChip(
-                    label = { it.label() },
+                    label = { it.Label() },
                     selected = dayNightMode == it,
+                    enabled = isLicenseValid,
                     onClick = {
                         dayNightMode = it
                     }
@@ -151,8 +148,8 @@ fun ThemeChooserScreen(
         ) {
             ContrastMode.entries.forEach {
                 FilterChip(
-                    label = { it.label() },
-                    enabled = dynamic != true,
+                    label = { it.Label() },
+                    enabled = isLicenseValid && dynamic != true,
                     selected = contrastMode == it,
                     onClick = {
                         contrastMode = it
@@ -165,6 +162,7 @@ fun ThemeChooserScreen(
             LabeledCheckbox(
                 text = stringResource(Res.string.system_colors),
                 checked = dynamic == true,
+                enabled = isLicenseValid,
                 onCheckedChange = { dynamic = it }
             )
         }
@@ -172,7 +170,7 @@ fun ThemeChooserScreen(
 }
 
 @Composable
-private fun DayNightMode.label() {
+private fun DayNightMode.Label() {
     when (this) {
         DayNightMode.LIGHT -> Text(stringResource(Res.string.light))
         DayNightMode.DARK -> Text(stringResource(Res.string.dark))
@@ -181,7 +179,7 @@ private fun DayNightMode.label() {
 }
 
 @Composable
-private fun ContrastMode.label() {
+private fun ContrastMode.Label() {
     when (this) {
         ContrastMode.LOW -> Text(stringResource(Res.string.low))
         ContrastMode.MEDIUM -> Text(stringResource(Res.string.medium))
@@ -233,6 +231,7 @@ private fun ThemeSwatch(
             toggleButtonShapes.pressedShape,
             toggleButtonShapes.checkedShape
         ),
+        enabled = enabled,
         modifier = modifier
             .size(72.dp)
             .alpha(if (enabled) 1f else 0.5f)

@@ -71,7 +71,7 @@ data class PlayingTrackInfo(
         name = title,
         artist = Artist(artist),
         album = album.ifEmpty { null }
-            ?.let { Album(album, albumArtist.ifEmpty { null }?.let { Artist(it) }) },
+            ?.let { Album(album, Artist(albumArtist.ifEmpty { artist })) },
         userplaycount = userPlayCount,
         userloved = userLoved,
         duration = durationMillis,

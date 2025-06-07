@@ -21,12 +21,30 @@ import kotlin.math.min
 class ScrobbleQueue(
     private val scope: CoroutineScope,
 ) {
+    private data class ScrobbleTimingPrefs(
+        val delayPercent: Int,
+        val delaySecs: Int,
+        val minDurationSecs: Int,
+    )
+
     private val delayPercentAndSecs =
-        PlatformStuff.mainPrefs.data.map { it.delayPercentP to it.delaySecsP }
+        PlatformStuff.mainPrefs.data.map {
+            ScrobbleTimingPrefs(
+                delayPercent = it.delayPercentP,
+                delaySecs = it.delaySecsP,
+                minDurationSecs = it.minDurationSecsP
+            )
+        }
             .stateIn(
                 scope,
                 SharingStarted.Lazily,
-                Stuff.mainPrefsInitialValue.let { it.delayPercentP to it.delaySecsP })
+                Stuff.mainPrefsInitialValue.let {
+                    ScrobbleTimingPrefs(
+                        delayPercent = it.delayPercentP,
+                        delaySecs = it.delaySecsP,
+                        minDurationSecs = it.minDurationSecsP
+                    )
+                })
 
     // delays scrobbling this hash until it becomes null again
     private var lockedHash: Int? = null
@@ -91,7 +109,7 @@ class ScrobbleQueue(
         if (trackInfo.title.isEmpty() || has(trackInfo.hash))
             return
 
-        val (delayPercent, delaySecs) = delayPercentAndSecs.value
+        val scrobbleTimingPrefs = delayPercentAndSecs.value
 
         trackInfo.artist = MetadataUtils.sanitizeArtist(trackInfo.artist)
         trackInfo.album = MetadataUtils.sanitizeAlbum(trackInfo.album)
@@ -103,15 +121,15 @@ class ScrobbleQueue(
 
         var finalDelay: Long
         if (fixedDelay == null) {
-            val delayMillis = delaySecs.toLong() * 1000
-            val delayFraction = delayPercent / 100.0
+            val delayMillis = scrobbleTimingPrefs.delaySecs * 1000L
+            val delayFraction = scrobbleTimingPrefs.delayPercent / 100.0
             val delayMillisFraction = if (trackInfo.durationMillis > 0)
                 (trackInfo.durationMillis * delayFraction).toLong()
             else
                 Long.MAX_VALUE
 
             finalDelay = min(delayMillisFraction, delayMillis)
-                .coerceAtLeast(10 * 1000) // don't scrobble < 10 seconds
+                .coerceAtLeast(scrobbleTimingPrefs.minDurationSecs * 1000L) // don't scrobble < n seconds
 
             finalDelay = (finalDelay - trackInfo.timePlayed)
                 .coerceAtLeast(1000)// deal with negative or 0 delay

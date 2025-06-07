@@ -41,7 +41,6 @@ actual object PanoNotifications {
         return NotificationCompat.Builder(context)
             .setShowWhen(false)
             .setColor(notiColor)
-            .setAutoCancel(true)
             .setCustomBigContentView(null)
     }
 
@@ -112,7 +111,6 @@ actual object PanoNotifications {
 
         val style = MediaStyle()
         val nb = buildNotification()
-            .setAutoCancel(false)
             .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -135,7 +133,7 @@ actual object PanoNotifications {
                 }
             }
 
-        if (trackInfo.userPlayCount > 0)
+        if (trackInfo.userPlayCount > 0) {
             nb.setContentTitle(
                 state + Stuff.formatBigHyphen(
                     trackInfo.artist,
@@ -149,9 +147,10 @@ actual object PanoNotifications {
                         "~" + trackInfo.userPlayCount.format()
                     )
                 )
-        else
+        } else {
             nb.setContentTitle(state + trackInfo.title)
                 .setContentText(trackInfo.artist)
+        }
 
         if (nowPlaying) {
             val editDialogArgs = PanoDialog.EditScrobble(
@@ -215,7 +214,6 @@ actual object PanoNotifications {
             )
 
         val nb = buildNotification()
-            .setAutoCancel(false)
             .setChannelId(Stuff.CHANNEL_NOTI_SCR_ERR)
             .setSmallIcon(R.drawable.vd_noti_err)
             .setContentIntent(editPi)
@@ -314,6 +312,7 @@ actual object PanoNotifications {
             .setStyle(
                 MediaStyle().setShowActionsInCompactView(0, 1)
             )
+            .setAutoCancel(true)
             .build()
         notificationManager.notify(Stuff.CHANNEL_NOTI_NEW_APP, 0, n)
     }

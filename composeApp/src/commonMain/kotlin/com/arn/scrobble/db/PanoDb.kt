@@ -30,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
-//        AutoMigration(from = 14, to = 15),
     ],
 )
 abstract class PanoDb : RoomDatabase() {

@@ -6,6 +6,7 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
+import com.arn.scrobble.api.Requesters.setJsonBody
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
@@ -72,8 +73,7 @@ class Maloja(userAccount: UserAccountSerializable) :
         )
 
         return client.postResult<String>("newscrobble") {
-            contentType(ContentType.Application.Json)
-            setBody(scrobble)
+            setJsonBody(scrobble)
         }.map { ScrobbleIgnored(false) }
     }
 

@@ -22,15 +22,12 @@ actual fun transformMediaMetadata(
 
     when (trackInfo.appId) {
         Stuff.PACKAGE_APPLE_MUSIC_WIN -> {
-            // remove  - Single,  - EP at the end
-            artist = MetadataUtils.removeSingleEp(artist)
-            val idx = artist.lastIndexOf(" — ")
-            if (idx != -1) {
-                // The left part becomes the artist; the right part becomes the album.
-                val newArtist = artist.substring(0, idx).trim()
-                val newAlbum = artist.substring(idx + 3).trim()
-                artist = newArtist
-                album = newAlbum
+            val splits = artist.split(" — ")
+
+            if (splits.size >= 2) {
+                // sometimes there are 3 splits, like "Artist — Album - EP — Artist"
+                artist = splits[0].trim()
+                album = MetadataUtils.removeSingleEp(splits[1].trim())
                 albumArtist = "" // contains the same malformed value as artist
             }
         }

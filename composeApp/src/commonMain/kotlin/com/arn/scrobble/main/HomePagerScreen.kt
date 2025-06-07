@@ -1,6 +1,6 @@
 package com.arn.scrobble.main
 
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.PowerSettingsNew
@@ -132,7 +132,7 @@ fun HomePagerScreen(
                 onTitleChange = {
                     scrobblesTitle = it
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxSize()
             )
 
             PanoTab.Following -> FriendsScreen(
@@ -146,7 +146,7 @@ fun HomePagerScreen(
                     followingTitle = it
                 },
                 dialogFriendExtraDataFlow = mainViewModel.friendExtraData,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxSize()
             )
 
             PanoTab.Charts -> ChartsOverviewScreen(
@@ -157,7 +157,7 @@ fun HomePagerScreen(
                     chartsTitle = it
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
             )
 
             else -> {

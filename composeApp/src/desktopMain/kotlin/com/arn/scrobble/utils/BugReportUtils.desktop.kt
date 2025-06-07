@@ -5,8 +5,8 @@ import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.bug_report
 import pano_scrobbler.composeapp.generated.resources.email
-import java.io.File
 import java.net.URLEncoder
+
 
 actual object BugReportUtils {
     actual suspend fun mail() {
@@ -42,7 +42,7 @@ actual object BugReportUtils {
     }
 
     actual fun saveLogsToFile(): String? {
-        val logsDir = File(PlatformStuff.filesDir, "logs")
+        val logsDir = DesktopStuff.logsDir
 
         if (!logsDir.exists()) {
             return null

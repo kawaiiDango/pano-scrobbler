@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.AlertDialogOk
+import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -49,6 +50,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.billing_block
 import pano_scrobbler.composeapp.generated.resources.billing_max_devices_reached
 import pano_scrobbler.composeapp.generated.resources.billing_pin_friends
@@ -64,7 +66,6 @@ import pano_scrobbler.composeapp.generated.resources.ko_fi
 import pano_scrobbler.composeapp.generated.resources.ko_fi_link
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.not_found
-import pano_scrobbler.composeapp.generated.resources.pref_automation
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
 import pano_scrobbler.composeapp.generated.resources.pref_themes
@@ -101,8 +102,8 @@ fun BillingScreen(
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)
             Icons.Outlined.FavoriteBorder to stringResource(Res.string.pref_link_heart_button_rating)
         else null,
-        if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)
-            Icons.AutoMirrored.Outlined.Rule to stringResource(Res.string.pref_automation)
+        if (!PlatformStuff.isTv)
+            Icons.AutoMirrored.Outlined.Rule to stringResource(Res.string.automation)
         else null,
         Icons.Outlined.SwipeLeftAlt to stringResource(Res.string.billing_regex_extract),
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)
@@ -271,10 +272,10 @@ fun BillingScreen(
             )
         }
 
-        IconButtonWithTooltip(
+        ButtonWithIcon(
             onClick = onNavigateToTroubleshoot,
             icon = Icons.AutoMirrored.Outlined.HelpOutline,
-            contentDescription = stringResource(Res.string.help),
+            text = stringResource(Res.string.help),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
     }

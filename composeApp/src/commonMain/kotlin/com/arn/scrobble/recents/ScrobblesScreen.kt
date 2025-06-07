@@ -1,8 +1,8 @@
 package com.arn.scrobble.recents
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -38,7 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -94,7 +94,7 @@ private enum class ScrobblesType {
     RANDOM,
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScrobblesScreen(
     user: UserCached,
@@ -118,13 +118,13 @@ fun ScrobblesScreen(
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
+    val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps.associate { it.appId to it.friendlyLabel } }
     val scrobblerEnabled by viewModel.scrobblerEnabled.collectAsStateWithLifecycle()
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
     val currentAccoutType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var expandedIdx by rememberSaveable { mutableIntStateOf(-1) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
-    var stickyHeaderHeight by remember { mutableIntStateOf(0) }
     val pendingScrobblesheader =
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
     val canShowTrackFullMenu by remember(selectedType, currentAccoutType) {
@@ -195,7 +195,7 @@ fun ScrobblesScreen(
             listState.layoutInfo.visibleItemsInfo.find {
                 it.key == key
             }?.let {
-                listState.scrollToItem(it.index, -stickyHeaderHeight)
+                listState.animateScrollToItem(it.index)
             }
         }
     }
@@ -254,133 +254,137 @@ fun ScrobblesScreen(
             text = stringResource(Res.string.no_scrobbles)
         )
 
-        PanoLazyColumn(
-            state = listState,
-            modifier = modifier
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
         ) {
             if (showChips) {
-                stickyHeader(key = "header_chips") {
-                    ScrobblesTypeSelector(
-                        selectedType = selectedType,
-                        timeJumpMillis = timeJumpMillis,
-                        registeredTime = user.registeredTime,
-                        onTypeSelected = { type, _timeJumpMillis ->
-                            when (type) {
-                                ScrobblesType.RANDOM -> {
-                                    onNavigate(PanoRoute.Random(user))
-                                }
-
-                                ScrobblesType.RECENTS,
-                                ScrobblesType.LOVED,
-                                    -> {
-                                    selectedType = type
-                                }
-
-                                ScrobblesType.TIME_JUMP -> {
-                                    timeJumpMillis = _timeJumpMillis
-                                    selectedType = type
-                                }
+                ScrobblesTypeSelector(
+                    selectedType = selectedType,
+                    timeJumpMillis = timeJumpMillis,
+                    registeredTime = user.registeredTime,
+                    onTypeSelected = { type, timeJumpMillisp ->
+                        when (type) {
+                            ScrobblesType.RANDOM -> {
+                                onNavigate(PanoRoute.Random(user))
                             }
-                        },
-                        onRefresh = {
-                            if (tracks.loadState.refresh is LoadState.NotLoading) {
-                                tracks.refresh()
+
+                            ScrobblesType.RECENTS,
+                            ScrobblesType.LOVED,
+                                -> {
+                                selectedType = type
+                                timeJumpMillis = null
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                            .onSizeChanged {
-                                stickyHeaderHeight = it.height
-                            },
-                    )
-                }
+
+                            ScrobblesType.TIME_JUMP -> {
+                                timeJumpMillis = timeJumpMillisp
+                                selectedType = type
+                            }
+                        }
+                    },
+                    onRefresh = {
+                        if (tracks.loadState.refresh is LoadState.NotLoading) {
+                            tracks.refresh()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
-            if (!scrobblerEnabled || scrobblerRunning == false) {
-                item("notice") {
-                    val menuItemText =
-                        stringResource(
+            PanoLazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            ) {
+
+                if (!scrobblerEnabled || scrobblerRunning == false) {
+                    item("notice") {
+                        val menuItemText =
+                            stringResource(
+                                if (scrobblerEnabled)
+                                    Res.string.fix_it_title
+                                else
+                                    Res.string.enable
+                            )
+
+                        val text = stringResource(
                             if (scrobblerEnabled)
-                                Res.string.fix_it_title
+                                Res.string.not_running
                             else
-                                Res.string.enable
+                                Res.string.scrobbler_off
                         )
 
-                    val text = stringResource(
-                        if (scrobblerEnabled)
-                            Res.string.not_running
-                        else
-                            Res.string.scrobbler_off
-                    )
-
-                    ExpandableHeaderMenu(
-                        title = text,
-                        icon = Icons.Outlined.Info,
-                        menuItemText = menuItemText,
-                        onMenuItemClick = {
-                            if (scrobblerEnabled) {
-                                onOpenDialog(PanoDialog.FixIt)
-                            } else {
-                                val hasNotificationListenerPerms =
-                                    PlatformStuff.isNotificationListenerEnabled()
-
-                                if (!hasNotificationListenerPerms) {
-                                    onNavigate(PanoRoute.Onboarding)
+                        ExpandableHeaderMenu(
+                            title = text,
+                            icon = Icons.Outlined.Info,
+                            menuItemText = menuItemText,
+                            onMenuItemClick = {
+                                if (scrobblerEnabled) {
+                                    onOpenDialog(PanoDialog.FixIt)
                                 } else {
-                                    onNavigate(PanoRoute.Prefs)
+                                    val hasNotificationListenerPerms =
+                                        PlatformStuff.isNotificationListenerEnabled()
+
+                                    if (!hasNotificationListenerPerms) {
+                                        onNavigate(PanoRoute.Onboarding)
+                                    } else {
+                                        onNavigate(PanoRoute.Prefs)
+                                    }
                                 }
-                            }
 
-                            viewModel.updateScrobblerServiceStatus()
-                        },
-                    )
-                }
-            }
-
-            if (selectedType == ScrobblesType.RECENTS) {
-                pendingScrobblesListItems(
-                    headerText = pendingScrobblesheader,
-                    headerIcon = Icons.Outlined.HourglassEmpty,
-                    items = pendingScrobbles,
-                    expanded = pendingScrobblesExpanded,
-                    onToggle = {
-                        pendingScrobblesExpanded = it
-                    },
-                    onItemClick = {
-                        onTrackClick(it as Track, null)
-                    },
-                )
-
-                if (pendingScrobbles.isNotEmpty()) {
-                    item("pending_divider") {
-                        HorizontalDivider()
+                                viewModel.updateScrobblerServiceStatus()
+                            },
+                        )
                     }
                 }
+
+                if (selectedType == ScrobblesType.RECENTS) {
+                    pendingScrobblesListItems(
+                        headerText = pendingScrobblesheader,
+                        headerIcon = Icons.Outlined.HourglassEmpty,
+                        items = pendingScrobbles,
+                        seenApps = seenApps,
+                        expanded = pendingScrobblesExpanded,
+                        onToggle = {
+                            pendingScrobblesExpanded = it
+                        },
+                        onItemClick = {
+                            onTrackClick(it as Track, null)
+                        },
+                    )
+
+                    if (pendingScrobbles.isNotEmpty()) {
+                        item("pending_divider") {
+                            HorizontalDivider()
+                        }
+                    }
+                }
+
+                scrobblesListItems(
+                    tracks = tracks,
+                    user = user,
+                    deletedTracksSet = deletedTracksSet,
+                    editedTracksMap = editedTracksMap,
+                    pkgMap = pkgMap,
+                    seenApps = seenApps,
+                    fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,
+                    showFullMenu = canShowTrackFullMenu,
+                    showLove = true,
+                    showHate = currentAccoutType == AccountType.LISTENBRAINZ,
+                    expandedIdx = { expandedIdx },
+                    onExpand = {
+                        if (expandedIdx == 0 && it == -1)
+                            canExpandNowPlaying = false
+                        else if (it == 0)
+                            canExpandNowPlaying = true
+
+                        expandedIdx = it
+                    },
+                    onOpenDialog = onOpenDialog,
+                    viewModel = viewModel,
+                )
+
+                scrobblesPlaceholdersAndErrors(tracks = tracks)
             }
-
-            scrobblesListItems(
-                tracks = tracks,
-                user = user,
-                deletedTracksSet = deletedTracksSet,
-                editedTracksMap = editedTracksMap,
-                pkgMap = pkgMap,
-                fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,
-                showFullMenu = canShowTrackFullMenu,
-                showLove = true,
-                showHate = currentAccoutType == AccountType.LISTENBRAINZ,
-                expandedIdx = { expandedIdx },
-                onExpand = {
-                    if (expandedIdx == 0 && it == -1)
-                        canExpandNowPlaying = false
-                    else if (it == 0)
-                        canExpandNowPlaying = true
-
-                    expandedIdx = it
-                },
-                onOpenDialog = onOpenDialog,
-                viewModel = viewModel,
-            )
-
-            scrobblesPlaceholdersAndErrors(tracks = tracks)
         }
     }
 }

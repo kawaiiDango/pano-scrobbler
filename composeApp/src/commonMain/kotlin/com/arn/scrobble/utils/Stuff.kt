@@ -92,6 +92,7 @@ object Stuff {
     const val EXTRA_EVENT = "event"
 
     const val RECENTS_REFRESH_INTERVAL = 30 * 1000L
+    const val FRIENDS_REFRESH_INTERVAL = 60 * 1000L
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
@@ -494,9 +495,11 @@ object Stuff {
 }
 
 
-fun String.sha256() =
+fun String.sha256Truncated() =
     MessageDigest.getInstance("SHA-256")
         .digest(toByteArray())
+        .take(6)
+        .toByteArray()
         .encodeBase64()
 
 val Throwable.redactedMessage: String

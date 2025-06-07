@@ -23,7 +23,7 @@ import com.arn.scrobble.themes.colors.Themeff9803
 import com.arn.scrobble.themes.colors.Themeffeb3c
 
 enum class DayNightMode {
-    LIGHT, DARK, SYSTEM
+    SYSTEM, LIGHT, DARK
 }
 
 enum class ContrastMode {

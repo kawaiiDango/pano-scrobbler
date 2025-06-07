@@ -16,13 +16,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface PanoDialog {
 
+    sealed interface NestedScrollable
+
     @Serializable
     data class NavPopup(
         val otherUser: UserCached?,
     ) : PanoDialog
 
     @Serializable
-    data object Changelog : PanoDialog
+    data object Changelog : PanoDialog, NestedScrollable
 
     @Serializable
     data object ChartsLegend : PanoDialog
@@ -30,7 +32,7 @@ sealed interface PanoDialog {
     @Serializable
     data class UpdateAvailable(
         val githubReleases: GithubReleases,
-    ) : PanoDialog
+    ) : PanoDialog, NestedScrollable
 
 
     @Serializable
@@ -44,7 +46,7 @@ sealed interface PanoDialog {
     ) : PanoDialog
 
     @Serializable
-    data class TagInfo(val tag: Tag) : PanoDialog
+    data class TagInfo(val tag: Tag) : PanoDialog, NestedScrollable
 
     @Serializable
     data class MusicEntryInfo(
@@ -53,8 +55,7 @@ sealed interface PanoDialog {
         val track: Track? = null,
         val user: UserCached,
         val pkgName: String? = null,
-    ) : PanoDialog
-
+    ) : PanoDialog, NestedScrollable
 
     @Serializable
     data object Index : PanoDialog
@@ -82,7 +83,6 @@ sealed interface PanoDialog {
         val friend: UserCached,
         val isPinned: Boolean,
         val extraData: FriendExtraData?,
-        val extraDataError: String?,
     ) : PanoDialog
 
 }

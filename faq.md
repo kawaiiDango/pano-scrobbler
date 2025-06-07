@@ -69,7 +69,7 @@ In-app scrobble from mic has been removed, in favour of using Shazam/AutoShazam.
 Tasker intents have been replaced with ContentProvider query URIs and an allowlist, which are more
 secure.
 
-### [desktop] How do I launch the app as minimized?
+### [desktop] How do I launch the app as minimized to tray?
 
 Use the `--minimized` or `-m` command line argument.
 
@@ -79,8 +79,10 @@ Use the `--data-dir` or `-d` command line argument, followed by the path to the 
 
 ### [desktop] How do I correctly scrobble media playing on a web browser?
 
-Browsers are not supported. Use WebScrobbler for that instead.
+Web browsers or browser-like apps are not supported. Use WebScrobbler for web browsers.
 
-### [desktop] The file picker freezes on certain Linux distros
+### [desktop] The app does not show notifications on Windows
 
-Disable the native file picker in settings as a workaround.
+To show notifications on Windows, the app's ID must be registered with the OS and linked to its
+start menu shortcut. This is done by the installer in install mode. So, it won't work if you
+are using it portable mode or have removed the start menu shortcut.

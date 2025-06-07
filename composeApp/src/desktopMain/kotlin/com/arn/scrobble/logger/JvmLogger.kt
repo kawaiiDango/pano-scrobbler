@@ -6,6 +6,7 @@ import co.touchlab.kermit.Message
 import co.touchlab.kermit.MessageStringFormatter
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.Tag
+import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
 import java.io.File
 import java.io.PrintStream
@@ -27,7 +28,8 @@ class JvmLogger(
 
             if (logToFile) {
                 // Create a log file handler with rolling files (100K per file and max of 3 files)
-                val logsDir = File(PlatformStuff.filesDir, "logs").also { it.mkdirs() }
+                val logsDir = DesktopStuff.logsDir
+                logsDir.mkdirs()
 
                 val fileHandler = FileHandler(
                     logsDir.absolutePath + "/pano-scrobbler-%u-%g.log",

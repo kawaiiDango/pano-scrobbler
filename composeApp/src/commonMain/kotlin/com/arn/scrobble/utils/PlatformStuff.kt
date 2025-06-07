@@ -39,8 +39,6 @@ expect object PlatformStuff {
 
     val platformSubstring: String
 
-    fun isDkmaNeeded(): Boolean
-
     val isTestLab: Boolean
 
     fun String.toHtmlAnnotatedString(): AnnotatedString

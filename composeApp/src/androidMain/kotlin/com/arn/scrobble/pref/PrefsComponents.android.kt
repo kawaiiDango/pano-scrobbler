@@ -32,7 +32,7 @@ fun TextPrefPreview() {
         TextPref(
             text = "Add to Quick Settings",
             onClick = { },
-            onNavigateToBilling = { }
+            locked = true
         )
     }
 }

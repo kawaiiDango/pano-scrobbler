@@ -59,13 +59,18 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -136,13 +141,14 @@ import pano_scrobbler.composeapp.generated.resources.show_all
 import pano_scrobbler.composeapp.generated.resources.time_just_now
 import kotlin.math.abs
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MusicEntryListItem(
     entry: MusicEntry,
     onEntryClick: () -> Unit,
     modifier: Modifier = Modifier,
     isPending: Boolean = false,
-    appId: String? = null,
+    appItem: AppItem? = null,
     fixedImageHeight: Boolean = true,
     fetchAlbumImageIfMissing: Boolean = false,
     index: Int? = null,
@@ -409,14 +415,20 @@ fun MusicEntryListItem(
                             Icon(
                                 imageVector = Icons.Rounded.PlayArrow,
                                 contentDescription = stringResource(Res.string.time_just_now),
-                                modifier = Modifier.size(19.dp)
+                                modifier = Modifier.size(22.dp)
                             )
-                        } else if (appId != null) {
-                            AppIcon(
-                                appItem = AppItem(appId, ""),
-                                modifier = Modifier
-                                    .size(19.dp)
-                            )
+                        } else if (appItem != null) {
+                            TooltipBox(
+                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+                                tooltip = { PlainTooltip { Text(appItem.friendlyLabel) } },
+                                state = rememberTooltipState(),
+                            ) {
+                                AppIcon(
+                                    appItem = appItem,
+                                    modifier = Modifier
+                                        .size(22.dp)
+                                )
+                            }
                         }
 
                         IconButton(
@@ -708,10 +720,11 @@ fun GoToDetailsHeaderItem(
     enabled: Boolean = true,
 ) {
     Surface(
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.medium,
         shadowElevation = 4.dp,
         modifier = modifier
             .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
             .clickable(enabled = enabled, onClick = onClick)
     ) {
         Row(

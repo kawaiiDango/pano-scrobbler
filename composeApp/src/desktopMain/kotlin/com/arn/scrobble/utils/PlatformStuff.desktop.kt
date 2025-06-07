@@ -63,8 +63,6 @@ actual object PlatformStuff {
 
     actual val platformSubstring = DesktopStuff.os.name.lowercase()
 
-    actual fun isDkmaNeeded() = false
-
     actual val isTestLab = false
 
     actual val filesDir by lazy {
@@ -107,8 +105,7 @@ actual object PlatformStuff {
     }
 
     actual fun getDeviceIdentifier(): String {
-        val name = PanoNativeComponents.getMachineId()
-        return name.sha256()
+        return PanoNativeComponents.getMachineId().sha256Truncated()
     }
 
     actual suspend fun launchSearchIntent(

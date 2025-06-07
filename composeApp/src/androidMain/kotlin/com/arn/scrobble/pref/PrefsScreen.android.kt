@@ -28,7 +28,6 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.fix_it_desc
-import pano_scrobbler.composeapp.generated.resources.pref_automation
 import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
@@ -128,22 +127,6 @@ actual fun prefChartsWidget(listScope: LazyListScope) {
                 onClick = {
                     requestPinWidget(context)
                 }
-            )
-        }
-    }
-}
-
-actual fun prefAutomation(
-    listScope: LazyListScope,
-    onNavigateToAutomation: () -> Unit,
-    onNavigateToBilling: () -> Unit,
-) {
-    if (!PlatformStuff.isTv) {
-        listScope.item("automation") {
-            TextPref(
-                text = stringResource(Res.string.pref_automation),
-                onClick = onNavigateToAutomation,
-                onNavigateToBilling = onNavigateToBilling,
             )
         }
     }

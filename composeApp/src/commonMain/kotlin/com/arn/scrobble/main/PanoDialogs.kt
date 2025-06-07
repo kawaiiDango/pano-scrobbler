@@ -14,17 +14,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -51,8 +47,6 @@ import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -62,7 +56,7 @@ import pano_scrobbler.composeapp.generated.resources.close
 @Composable
 private fun PanoDialogs(
     dialogArgs: PanoDialog,
-    onDismiss: () -> Unit,
+    onDismissRequest: () -> Unit,
     onBack: (() -> Unit)?,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
@@ -72,7 +66,8 @@ private fun PanoDialogs(
     BottomSheetDialogParent(
         padding = dialogArgs !is PanoDialog.MusicEntryInfo,
         onBack = onBack,
-        onDismiss = onDismiss
+        isNestedScrollable = dialogArgs is PanoDialog.NestedScrollable,
+        onDismissRequest = onDismissRequest
     ) { modifier ->
         when (dialogArgs) {
             is PanoDialog.NavPopup -> {
@@ -161,7 +156,7 @@ private fun PanoDialogs(
                     blockedMetadata = dialogArgs.blockedMetadata,
                     ignoredArtist = dialogArgs.ignoredArtist,
                     hash = dialogArgs.hash,
-                    onDismiss = onDismiss,
+                    onDismiss = onDismissRequest,
                     onNavigateToBilling = {
                         onNavigate(PanoRoute.Billing)
                     },
@@ -187,14 +182,14 @@ private fun PanoDialogs(
                             mainViewModel.notifyEdit(dialogArgs.origTrack, it)
                         }
 
-                        onDismiss()
+                        onDismissRequest()
                     },
                     onReauthenticate = {
-                        onDismiss()
+                        onDismissRequest()
                         onNavigate(LoginDestinations.route(AccountType.LASTFM))
                     },
                     onNavigateToRegexEdits = {
-                        onDismiss()
+                        onDismissRequest()
                         onNavigate(PanoRoute.RegexEdits)
                     },
                     modifier = modifier
@@ -207,7 +202,6 @@ private fun PanoDialogs(
                     isPinned = dialogArgs.isPinned,
                     extraData = dialogArgs.extraData,
                     extraDataFlow = mainViewModel.friendExtraData,
-                    extraDataError = dialogArgs.extraDataError,
                     onNavigate = onNavigate,
                     onOpenDialog = onOpenDialog,
                     modifier = modifier
@@ -221,7 +215,7 @@ private fun PanoDialogs(
 fun PanoDialogStack(
     initialDialogArgs: PanoDialog?,
     onNavigate: (PanoRoute) -> Unit,
-    onDismiss: () -> Unit,
+    onDismissRequest: () -> Unit,
     navMetadataList: () -> List<PanoNavMetadata>?,
     mainViewModel: MainViewModel,
 ) {
@@ -256,14 +250,14 @@ fun PanoDialogStack(
     if (dialogStack.isNotEmpty()) {
         PanoDialogs(
             dialogArgs = dialogStack.last(),
-            onDismiss = onDismiss,
+            onDismissRequest = onDismissRequest,
             onBack = if (dialogStack.size == 1)
                 null
             else {
                 { popDialogArgs() }
             },
             onNavigate = { route ->
-                onDismiss()
+                onDismissRequest()
                 onNavigate(route)
             },
             onOpenDialog = { pushDialogArgs(it) },
@@ -276,9 +270,10 @@ fun PanoDialogStack(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BottomSheetDialogParent(
-    onDismiss: () -> Unit,
+    onDismissRequest: () -> Unit,
     onBack: (() -> Unit)?,
     padding: Boolean,
+    isNestedScrollable: Boolean, // disabling nested scrolling is a workaround until google fixes it
     skipPartiallyExpanded: Boolean = PlatformStuff.isTv || PlatformStuff.isDesktop,
     content: @Composable (modifier: Modifier) -> Unit,
 ) {
@@ -292,39 +287,13 @@ private fun BottomSheetDialogParent(
 //                    )
 
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
+        skipPartiallyExpanded = skipPartiallyExpanded
     )
 
-    var sheetGesturesEnabled by remember { mutableStateOf(!PlatformStuff.isTv && !PlatformStuff.isDesktop) }
-    var lastScroll by remember { mutableIntStateOf(0) }
-
-    if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-        LaunchedEffect(Unit) {
-            snapshotFlow { scrollState.value }
-                .distinctUntilChanged()
-                .collectLatest { value ->
-                    val max = scrollState.maxValue
-                    val delta = value - lastScroll
-                    lastScroll = value
-
-                    sheetGesturesEnabled = when {
-                        // inner contents do not overflow
-                        (!scrollState.canScrollBackward && !scrollState.canScrollForward) -> true
-                        // intercept scroll only if inner contents are scrolling
-                        !scrollState.isScrollInProgress -> true
-                        // At top and scrolling up (dragging down)
-                        value == 0 && delta < 0 -> true
-                        // At bottom and scrolling down (dragging up)
-                        value == max && delta > 0 -> true
-                        // Not at an edge, disable sheet gestures
-                        else -> false
-                    }
-                }
-        }
-    }
+    val sheetGesturesEnabled by remember { mutableStateOf(!PlatformStuff.isTv && !PlatformStuff.isDesktop) }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onDismissRequest,
         dragHandle = if (PlatformStuff.isTv || PlatformStuff.isDesktop) null
         else {
             { BottomSheetDefaults.DragHandle() }
@@ -343,12 +312,12 @@ private fun BottomSheetDialogParent(
                 )
             }
 
-        } else if (PlatformStuff.isDesktop) {
+        } else if (!sheetGesturesEnabled) {
             IconButton(
                 onClick = {
                     scope.launch {
                         sheetState.hide()
-                        onDismiss()
+                        onDismissRequest()
                     }
                 },
                 modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
@@ -372,7 +341,7 @@ private fun BottomSheetDialogParent(
                     else
                         Modifier
                 )
-                .verticalScroll(scrollState)
+                .verticalScroll(scrollState, enabled = isNestedScrollable)
         )
     }
 }

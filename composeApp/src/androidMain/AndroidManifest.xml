@@ -201,7 +201,7 @@
         </service>
 
         <provider
-            android:name=".providers.AutomationProvider"
+            android:name=".automation.AutomationProvider"
             android:authorities="${applicationId}.automation"
             android:exported="true"
             android:grantUriPermissions="true"

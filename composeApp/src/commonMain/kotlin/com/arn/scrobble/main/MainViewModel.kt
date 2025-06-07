@@ -251,6 +251,7 @@ class MainViewModel : ViewModel() {
             val lastUpdateCheckTime = mainPrefs.data.map { it.lastUpdateCheckTime }.first()
             Github.checkForUpdates(
                 client = Requesters.genericKtorClient,
+                json = Stuff.myJson,
                 currentVersionCode = BuildKonfig.VER_CODE,
                 lastUpdateCheckTime = lastUpdateCheckTime ?: 0,
                 setLastUpdateCheckTime = { time ->

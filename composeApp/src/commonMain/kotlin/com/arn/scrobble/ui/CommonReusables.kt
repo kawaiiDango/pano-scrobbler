@@ -1,11 +1,6 @@
 package com.arn.scrobble.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.repeatable
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -22,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
@@ -67,18 +61,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -569,11 +560,8 @@ fun VerifyButton(
 @Composable
 fun AvatarOrInitials(
     avatarUrl: String?,
-    avatarInitialLetter: Char?,
-    modifier: Modifier = Modifier
-        .padding(8.dp)
-        .size(24.dp)
-        .clip(CircleShape),
+    avatarName: String?,
+    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     if (!avatarUrl.isNullOrEmpty()) {
@@ -584,10 +572,14 @@ fun AvatarOrInitials(
             contentDescription = stringResource(Res.string.profile_pic),
             modifier = modifier,
         )
-    } else if (avatarInitialLetter != null) {
+    } else if (avatarName != null) {
         val themeAttributes = LocalThemeAttributes.current
         val index =
-            abs(avatarInitialLetter.hashCode()) % themeAttributes.allOnSecondaryContainerColors.size
+            abs(avatarName.hashCode()) % themeAttributes.allOnSecondaryContainerColors.size
+
+        val initials = avatarName.split(" ", limit = 2)
+            .joinToString("") { it.take(1) }
+            .takeIf { it.isNotEmpty() } ?: " "
 
         Box(
             contentAlignment = Alignment.Center,
@@ -595,7 +587,7 @@ fun AvatarOrInitials(
                 .background(themeAttributes.allSecondaryContainerColors[index])
         ) {
             Text(
-                text = avatarInitialLetter.uppercase(),
+                text = initials.uppercase(),
                 style = textStyle,
                 softWrap = false,
                 textAlign = TextAlign.Center,
@@ -652,7 +644,6 @@ fun ListLoadError(
     }
 }
 
-
 @Composable
 fun Modifier.backgroundForShimmer(
     isShimmer: Boolean,
@@ -663,29 +654,6 @@ fun Modifier.backgroundForShimmer(
     return clip(shape)
         .background(Color.Gray.copy(alpha = 0.3f))
 }
-
-fun Modifier.shake(enabled: Boolean) = composed(
-
-    factory = {
-        val scale by animateFloatAsState(
-            targetValue = if (enabled) .9f else 1f,
-            animationSpec = repeatable(
-                iterations = 5,
-                animation = tween(durationMillis = 50, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            )
-        )
-
-        Modifier.graphicsLayer {
-            scaleX = if (enabled) scale else 1f
-            scaleY = if (enabled) scale else 1f
-        }
-    },
-    inspectorInfo = debugInspectorInfo {
-        name = "shake"
-        properties["enabled"] = enabled
-    }
-)
 
 @Composable
 fun horizontalOverscanPadding(): Dp {

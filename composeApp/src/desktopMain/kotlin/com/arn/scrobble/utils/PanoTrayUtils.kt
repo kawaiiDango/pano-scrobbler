@@ -26,6 +26,7 @@ object PanoTrayUtils {
     enum class ItemId {
         TrackName,
         ArtistName,
+        AlbumName,
         Separator,
         Love,
         Edit,

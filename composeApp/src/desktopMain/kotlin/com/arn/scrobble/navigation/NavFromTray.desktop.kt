@@ -42,6 +42,14 @@ actual fun NavFromTrayEffect(
                     onOpenDialog(dialog)
                 }
 
+                PanoTrayUtils.ItemId.AlbumName -> {
+                    val dialog = PanoDialog.MusicEntryInfo(
+                        album = scrobblingTrackInfo.toTrack().album,
+                        user = user
+                    )
+                    onOpenDialog(dialog)
+                }
+
                 PanoTrayUtils.ItemId.Edit -> {
                     val dialog = PanoDialog.EditScrobble(
                         scrobbleData = scrobblingTrackInfo.toScrobbleData(),

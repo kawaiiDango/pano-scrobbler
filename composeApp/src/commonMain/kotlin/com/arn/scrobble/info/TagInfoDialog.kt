@@ -70,6 +70,8 @@ fun TagInfoDialog(
                 stringResource(Res.string.taggings) to info?.count
             ),
             firstItemIsUsers = false,
+            avatarUrl = null,
+            avatarName = null,
             forShimmer = info == null
         )
 

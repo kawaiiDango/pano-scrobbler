@@ -29,11 +29,18 @@
     <string name="csv" translatable="false">CSV</string>
     <string name="jsonl" translatable="false">JSONL</string>
     <string name="special_app_access" translatable="false">Special app access</string>
+    <string name="automation_intents" translatable="false">Broadcast intents</string>
+    <string name="automation_cp" translatable="false">ContentProvider URIs</string>
 
     <!--  strings for unfinalized stuff  -->
-    <string name="pref_automation">Control Pano Scrobbler from other apps</string>
-    <string name="pref_automation_desc">Use these ContentProvider query URIs to control Pano Scrobbler from automation apps</string>
-    <string name="pref_automation_tasker">e.g. For Tasker, use Action > SQL Query, set the mode to "URI Formatted" and URI to one of these. Replace &lt;packageName&gt; with your app's package name.</string>
+    <string name="automation">Control Pano Scrobbler from automation apps</string>
+    <string name="automation_cli">Command line arguments</string>
+    <string name="automation_cli_info">Run the pano-scrobbler executable with one of these command line arguments, while an instance is already running.</string>
+    <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted" and URI to one of these.</string>
+    <string name="automation_replace_app_id" formatted="true"
+        comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop"
+        >Replace %1$s with that of the app.</string>
+
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
 If you had donated $%1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi or BuyMeACoffee with your email address and the code will be manually mailed to you.
@@ -47,7 +54,19 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="move_up" translatable="false">Move up</string>
     <string name="move_down" translatable="false">Move down</string>
     <string name="date_range" translatable="false">Select date range</string>
+    <string name="pref_tray_icon_theme" translatable="false">Tray icon color</string>
+    <string name="min_track_duration" translatable="false">Scrobble tracks longer than</string>
     <string name="desktop_webview_message" translatable="false">Complete the action in the WebView window</string>
+    <string name="desktop_webview_linux_deps" translatable="false">If the WebView does not work, try installing these dependencies:
+
+Arch Linux / Manjaro:
+sudo pacman -S webkit2gtk-4.1
+
+Debian / Ubuntu:
+sudo apt install libwebkit2gtk-4.1-0
+
+Fedora
+sudo dnf install webkit2gtk4.1</string>
 
     <!-- strings for dev only stuff  -->
     <string name="force_exception" translatable="false">Force log an exception</string>

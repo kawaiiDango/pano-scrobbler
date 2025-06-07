@@ -185,7 +185,7 @@ actual fun OnboardingScreen(
         listOfNotNull(
             OnboardingStepType.LOGIN,
             OnboardingStepType.NOTIFICATION_LISTENER,
-            if (PlatformStuff.isDkmaNeeded() && !PlatformStuff.isNotificationListenerEnabled())
+            if (AndroidStuff.isDkmaNeeded() && !PlatformStuff.isNotificationListenerEnabled())
                 OnboardingStepType.DKMA
             else null,
             OnboardingStepType.CHOOSE_APPS,

@@ -6,11 +6,11 @@ import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -34,11 +34,17 @@ class DesktopMediaListener(
 
 
     fun start() {
-        val listeningStarted = CompletableDeferred<Unit>()
+        PanoNativeComponents.startListeningMediaInThread()
 
         scope.launch {
-            listeningStarted.await()
-            allowedPackages.collectLatest { allowed ->
+            delay(1500)
+
+            combine(scrobblerEnabled, allowedPackages) { scrobblerEnabled, allowedPackages ->
+                if (!scrobblerEnabled) {
+                    emptySet()
+                } else
+                    allowedPackages
+            }.collectLatest { allowed ->
                 val keysToKeep = sessionTrackersMap.keys
                     .filter { shouldScrobble(it.substringBefore('|')) }
                     .toSet()
@@ -48,20 +54,6 @@ class DesktopMediaListener(
                 PanoNativeComponents.setAllowedAppIds(allowedApps.toTypedArray())
                 removeSessions(keysToKeep)
                 platformActiveSessionsChanged(sessionInfos)
-            }
-        }
-
-        scope.launch {
-            scrobblerEnabled.collectLatest { enabled ->
-                if (enabled) {
-                    PanoNativeComponents.startListeningMediaInThread()
-                    delay(1500)
-                    if (!listeningStarted.isCompleted) {
-                        listeningStarted.complete(Unit)
-                    }
-                } else {
-                    PanoNativeComponents.stopListeningMedia()
-                }
             }
         }
     }

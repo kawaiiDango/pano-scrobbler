@@ -2,9 +2,9 @@ package com.arn.scrobble.api.license
 
 import com.arn.scrobble.billing.Security
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.util.decodeBase64Bytes
@@ -52,9 +52,12 @@ object LicenseChecker {
         return runCatching {
             client.post(url) {
                 contentType(ContentType.Application.Json)
-                setBody(lcr)
+                val jsonBodyString = Json.encodeToString(lcr)
+                setBody(jsonBodyString)
             }
-                .body<LicenseCheckResponse>()
+                .bodyAsText().let {
+                    Json.decodeFromString<LicenseCheckResponse>(it)
+                }
         }
     }
 

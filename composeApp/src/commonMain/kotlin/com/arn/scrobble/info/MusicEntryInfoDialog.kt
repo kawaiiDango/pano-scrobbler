@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -506,7 +505,7 @@ private fun InfoCountsForMusicEntry(
             stringResource(Res.string.scrobbles) to entry.playcount,
         ),
         avatarUrl = user.largeImage.takeIf { it.isNotEmpty() },
-        avatarInitialLetter = user.name.first(),
+        avatarName = user.name,
         firstItemIsUsers = entry.userplaycount != null,
         onClickFirstItem = if ((entry.userplaycount ?: 0) > 0 && entry is Track) {
             {
@@ -622,7 +621,7 @@ private fun InfoActionsRow(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColumnScope.InfoTags(
     tags: List<Tag>,
@@ -722,7 +721,7 @@ private fun ColumnScope.InfoTags(
     }
 }
 
-@OptIn(ExperimentalKoalaPlotApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 private fun TrackFeaturesPlot(
     trackWithFeatures: TrackWithFeatures,

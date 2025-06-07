@@ -1,7 +1,7 @@
 package com.arn.scrobble.utils
 
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.PanoNativeComponents
+import com.arn.scrobble.automation.Automation
 import java.io.File
 
 object DesktopStuff {
@@ -15,28 +15,25 @@ object DesktopStuff {
 
     private const val DATA_DIR_ARG = "data-dir"
 
-    private val execPath by lazy {
-        System.getenv("APPIMAGE")
-            ?.ifEmpty { null }
-            ?: System.getProperty("jpackage.app-path")
-                ?.ifEmpty { null }
-    }
-
-    val resourcesPath by lazy {
-        System.getProperty("compose.application.resources.dir")!!
-    }
+    private val execDirPath =
+        File(ProcessHandle.current().info().command().get()).parentFile.absolutePath
 
     val appDataRoot: String by lazy {
         cmdlineArgs.dataDir ?: getDefaultDataDir()
     }
 
-    val iconPath: String by lazy {
-        val ext = when (os) {
-            Os.Windows -> "ico"
-            Os.Linux -> "png"
-            Os.Macos -> "icns"
+    val webViewDir by lazy {
+        File(appDataRoot, "webview")
+    }
+
+    val logsDir by lazy { File(appDataRoot, "logs") }
+
+    val iconPath by lazy {
+        when (os) {
+            Os.Windows -> "$execDirPath\\pano-scrobbler.ico"
+            Os.Linux -> System.getenv("APPDIR")?.let { "$it/pano-scrobbler.svg" }
+            Os.Macos -> null
         }
-        File(resourcesPath, "app_icon.$ext").absolutePath
     }
 
     val os by lazy {
@@ -53,6 +50,8 @@ object DesktopStuff {
     fun parseCmdlineArgs(args: Array<String>): CmdlineArgs {
         var minimized = false
         var dataDir: String? = null
+        var automationCommand: String? = null
+        var automationArg: String? = null
 
         var index = 0
         while (index < args.size) {
@@ -70,6 +69,20 @@ object DesktopStuff {
                     }
                 }
 
+                "--${Automation.ENABLE}",
+                "--${Automation.DISABLE}",
+                "--${Automation.LOVE}",
+                "--${Automation.UNLOVE}",
+                "--${Automation.CANCEL}",
+                "--${Automation.ALLOWLIST}",
+                "--${Automation.BLOCKLIST}" -> {
+                    automationCommand = args[index].removePrefix("--")
+                    index++
+                    if (index < args.size) {
+                        automationArg = args[index]
+                    }
+                }
+
                 else -> {
                     println("Unknown argument ignored: ${args[index]}")
                 }
@@ -77,37 +90,46 @@ object DesktopStuff {
             index++
         }
 
-        return CmdlineArgs(minimized, dataDir).also {
+        return CmdlineArgs(
+            minimized = minimized,
+            dataDir = dataDir,
+            automationCommand = automationCommand,
+            automationArg = automationArg
+        ).also {
             cmdlineArgs = it
         }
     }
 
     fun addOrRemoveFromStartup(add: Boolean) {
-        val execPath = execPath ?: return
         when (os) {
             Os.Windows -> {
-                // windows. add or remove registry key in HKCU\Software\Microsoft\Windows\CurrentVersion\Run
-                PanoNativeComponents.addRemoveStartupWin(execPath, add)
+                // not implemented. will not implement for windows
             }
 
             Os.Linux -> {
                 // linux. create or delete .desktop file in ~/.config/autostart
 
+                val appImagePath = System.getenv("APPIMAGE") ?: return
                 val desktopFile =
                     File(
                         System.getProperty("user.home"),
                         ".config/autostart/${BuildKonfig.APP_NAME}.desktop"
                     )
+
+                desktopFile.parentFile.mkdirs()
+
                 if (add) {
                     desktopFile.writeText(
                         """
                         [Desktop Entry]
                         Type=Application
                         Name=${BuildKonfig.APP_NAME}
-                        Comment=${BuildKonfig.APP_NAME}
-                        Exec="$execPath" --$MINIMIZED_ARG
+                        Comment=Feature packed music tracker
+                        Terminal=false
+                        Exec="$appImagePath" --$MINIMIZED_ARG
                         X-GNOME-Autostart-enabled=true
-                        Categories=Utility
+                        StartupWMClass=pano-scrobbler
+                        Categories=Utility;
                         """.trimIndent()
                     )
                 } else {
@@ -122,25 +144,24 @@ object DesktopStuff {
     }
 
     fun isAddedToStartup(): Boolean {
-        when (os) {
+        return when (os) {
             Os.Windows -> {
-
-                val execPath = execPath ?: return false
-                return PanoNativeComponents.isAddedToStartupWin(execPath)
+                // not implemented. will not implement for windows
+                false
             }
 
             Os.Linux -> {
-
+                val appImagePath = System.getenv("APPIMAGE") ?: return false
                 val desktopFile =
                     File(
                         System.getProperty("user.home"),
                         ".config/autostart/${BuildKonfig.APP_NAME}.desktop"
                     )
-                return desktopFile.exists() && desktopFile.readText().contains(execPath ?: "")
+                desktopFile.exists() && desktopFile.readText().contains(appImagePath)
             }
 
             Os.Macos -> {
-                return false
+                false
             }
         }
     }
@@ -167,6 +188,26 @@ object DesktopStuff {
                 }
             }.absolutePath
         }
+    }
+
+    fun setSystemPropertiesForGraalvm() {
+        var prop = "java.home"
+        if (System.getProperty(prop) == null) {
+            System.setProperty(prop, execDirPath)
+
+            prop = "compose.application.configure.swing.globals"
+            if (System.getProperty(prop) == null)
+                System.setProperty(prop, "true")
+
+            prop = "java.library.path"
+            if (System.getProperty(prop) == null)
+                System.setProperty(prop, execDirPath)
+
+            prop = "skiko.data.path"
+            if (System.getProperty(prop) == null)
+                System.setProperty(prop, File(PlatformStuff.cacheDir, "skiko").absolutePath)
+        }
+
     }
 
 }

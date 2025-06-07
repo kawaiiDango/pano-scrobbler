@@ -20,25 +20,16 @@ abstract class MediaListener(
     protected val blockedPackages =
         mainPrefs.data.map { it.blockedPackages }
             .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.blockedPackages)
-
+    
     protected val allowedPackages =
         mainPrefs.data.map { it.allowedPackages }
             .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.allowedPackages)
 
     protected val scrobblerEnabled =
-        mainPrefs.data.map { it.scrobblerEnabled }
-            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.scrobblerEnabled)
-
-    protected val autoDetectApps =
-        mainPrefs.data.map { it.autoDetectAppsP }
-            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.autoDetectAppsP)
-
-    protected val loggedIn =
-        mainPrefs.data.map { it.scrobbleAccounts.isNotEmpty() }
+        mainPrefs.data.map { it.scrobblerEnabled && it.scrobbleAccounts.isNotEmpty() }
             .stateIn(
-                scope,
-                SharingStarted.Lazily,
-                Stuff.mainPrefsInitialValue.scrobbleAccounts.isNotEmpty()
+                scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.scrobblerEnabled &&
+                        Stuff.mainPrefsInitialValue.scrobbleAccounts.isNotEmpty()
             )
 
     private val packageTagTrackMap = mutableMapOf<String, PlayingTrackInfo>()
@@ -77,9 +68,7 @@ abstract class MediaListener(
     abstract fun hasOtherPlayingControllers(thisTrackInfo: PlayingTrackInfo): Boolean
 
     protected fun shouldScrobble(appId: String): Boolean {
-        val should = scrobblerEnabled.value && loggedIn.value &&
-                (appId in allowedPackages.value)
-
+        val should = scrobblerEnabled.value && (appId in allowedPackages.value)
         return should
     }
 

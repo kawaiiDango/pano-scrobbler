@@ -47,6 +47,7 @@ import com.arn.scrobble.onboarding.PleromaLoginScreen
 import com.arn.scrobble.onboarding.WebViewScreen
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.pref.AppListScreen
+import com.arn.scrobble.pref.AutomationInfoScreen
 import com.arn.scrobble.pref.DeleteAccountScreen
 import com.arn.scrobble.pref.ExportScreen
 import com.arn.scrobble.pref.ImportScreen
@@ -68,6 +69,8 @@ import com.arn.scrobble.utils.Stuff.format
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.automation_cli
+import pano_scrobbler.composeapp.generated.resources.automation_cp
 import pano_scrobbler.composeapp.generated.resources.choose_an_app
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.delete_account
@@ -719,6 +722,22 @@ fun NavGraphBuilder.panoNavGraph(
             onOpenDialog = onOpenDialog,
             editDataFlow = mainViewModel.editDataFlow,
             modifier = modifier()
+        )
+    }
+
+    composable<PanoRoute.AutomationInfo> {
+        onSetTitleString(
+            it.id, stringResource(
+                if (PlatformStuff.isDesktop)
+                    Res.string.automation_cli
+                else
+                    Res.string.automation_cp
+            )
+        )
+
+        AutomationInfoScreen(
+            onNavigate = navigate,
+            modifier = modifier().padding(panoContentPadding())
         )
     }
 

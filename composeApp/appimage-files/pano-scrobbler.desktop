@@ -1,9 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=Pano Scrobbler
-Exec=AppRun
+Comment=Feature packed music tracker
+StartupWMClass=pano-scrobbler
+Exec=AppRun %U
 Icon=pano-scrobbler
-Categories=Utility
+Categories=Utility;
 Terminal=false
 StartupNotify=true
 NoDisplay=false

@@ -2,6 +2,7 @@ package com.arn.scrobble
 
 import androidx.annotation.Keep
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.media.DesktopMediaListener
 import com.arn.scrobble.media.MetadataInfo
 import com.arn.scrobble.media.PlaybackInfo
@@ -17,40 +18,67 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Keep
-class PanoNativeComponents(
-    private val _onActiveSessionsChanged: (List<SessionInfo>) -> Unit,
-    private val _onMetadataChanged: (MetadataInfo) -> Unit,
-    private val _onPlaybackStateChanged: (PlaybackInfo) -> Unit,
-    private val _onTrayMenuItemClicked: (String) -> Unit,
-) {
+object PanoNativeComponents {
+    var desktopMediaListener: DesktopMediaListener? = null
+    private const val TAG = "pano_native_components"
 
-    fun onLogInfo(msg: String) {
-        Logger.i(msg, tag = TAG)
+    fun load() {
+        System.loadLibrary("pano_native_components")
     }
 
-    fun onLogWarn(msg: String) {
-        Logger.w(msg, tag = TAG)
+    fun init() {
+        val scrobbleQueue = ScrobbleQueue(GlobalScope)
+        desktopMediaListener = DesktopMediaListener(
+            GlobalScope,
+            scrobbleQueue
+        )
+
+        Thread {
+            startEventLoop()
+        }.start()
+
+        desktopMediaListener!!.start()
+
+        GlobalScope.launch {
+            listenForPlayingTrackEvents(scrobbleQueue, desktopMediaListener!!)
+        }
     }
 
+    fun startListeningMediaInThread() {
+        Thread {
+            startListeningMedia()
+            Logger.i("startListeningMediaInThread finished")
+        }.start()
+    }
+
+
+    // jni callbacks
+
+
+    @JvmStatic
     fun onActiveSessionsChanged(json: String) {
         val sessionInfos = Stuff.myJson.decodeFromString<List<SessionInfo>>(json)
-        _onActiveSessionsChanged(sessionInfos)
+        desktopMediaListener?.platformActiveSessionsChanged(sessionInfos)
     }
 
+    @JvmStatic
     fun onMetadataChanged(json: String) {
         val metadataInfo = Stuff.myJson.decodeFromString<MetadataInfo>(json)
-        _onMetadataChanged(metadataInfo)
+        desktopMediaListener?.platformMetadataChanged(metadataInfo)
     }
 
+    @JvmStatic
     fun onPlaybackStateChanged(json: String) {
         val playbackInfo = Stuff.myJson.decodeFromString<PlaybackInfo>(json)
-        _onPlaybackStateChanged(playbackInfo)
+        desktopMediaListener?.platformPlaybackStateChanged(playbackInfo)
     }
 
+    @JvmStatic
     fun onTrayMenuItemClicked(id: String) {
-        _onTrayMenuItemClicked(id)
+        PanoTrayUtils.onTrayMenuItemClickedFn(id)
     }
 
+    @JvmStatic
     fun onWebViewCookies(event: String) {
         val event = Stuff.myJson.decodeFromString<WebViewEvent>(event)
         GlobalScope.launch {
@@ -58,119 +86,95 @@ class PanoNativeComponents(
         }
     }
 
+    @JvmStatic
     fun onWebViewPageLoad(url: String) {
         GlobalScope.launch {
             WebViewEventFlows.pageLoaded.emit(url)
         }
     }
 
-
-    companion object {
-        private const val TAG = "native_components"
-
-        fun load() {
-            System.loadLibrary("native_components")
-        }
-
-        fun init() {
-            val scrobbleQueue = ScrobbleQueue(GlobalScope)
-            val desktopMediaListener = DesktopMediaListener(
-                GlobalScope,
-                scrobbleQueue
-            )
-            val instance = PanoNativeComponents(
-                _onActiveSessionsChanged = desktopMediaListener::platformActiveSessionsChanged,
-                _onMetadataChanged = desktopMediaListener::platformMetadataChanged,
-                _onPlaybackStateChanged = desktopMediaListener::platformPlaybackStateChanged,
-                _onTrayMenuItemClicked = PanoTrayUtils::onTrayMenuItemClickedFn
-            )
-
-            Thread {
-                startEventLoop(instance)
-            }.start()
-
-            desktopMediaListener.start()
-
-            GlobalScope.launch {
-                listenForPlayingTrackEvents(scrobbleQueue, desktopMediaListener)
-            }
-        }
-
-        fun startListeningMediaInThread() {
-            Thread {
-                startListeningMedia()
-                Logger.i("startListeningMediaInThread finished")
-            }.start()
-        }
-
-        @JvmStatic
-        external fun stopListeningMedia()
-
-        @JvmStatic
-        external fun setAllowedAppIds(appIds: Array<String>)
-
-        @JvmStatic
-        private external fun startEventLoop(callback: PanoNativeComponents)
-
-        @JvmStatic
-        external fun stopEventLoop()
-
-        @JvmStatic
-        private external fun startListeningMedia()
-
-        @JvmStatic
-        external fun ping(input: String): String
-
-        @JvmStatic
-        external fun skip(appId: String)
-
-        @JvmStatic
-        external fun mute(appId: String)
-
-        @JvmStatic
-        external fun unmute(appId: String)
-
-        @JvmStatic
-        external fun notify(
-            title: String,
-            body: String,
-            iconPath: String = DesktopStuff.iconPath
-        )
-
-        @JvmStatic
-        external fun setTray(
-            tooltip: String,
-            argb: IntArray,
-            iconSize: Int,
-            menuItemIds: Array<String>,
-            menuItemTexts: Array<String>
-        )
-
-        @JvmStatic
-        external fun getMachineId(): String
-
-        @JvmStatic
-        external fun addRemoveStartupWin(exePath: String, add: Boolean): Boolean
-
-        @JvmStatic
-        external fun isAddedToStartupWin(exePath: String): Boolean
-
-        @JvmStatic
-        external fun setEnvironmentVariable(key: String, value: String)
-
-        @JvmStatic
-        external fun isSingleInstance(name: String): Boolean
-
-        @JvmStatic
-        external fun applyDarkModeToWindow(handle: Long)
-
-        @JvmStatic
-        external fun launchWebView(url: String, callbackPrefix: String)
-
-        @JvmStatic
-        external fun getWebViewCookiesFor(url: String)
-
-        @JvmStatic
-        external fun quitWebView()
+    @JvmStatic
+    fun onLogInfo(msg: String) {
+        Logger.i(msg, tag = TAG)
     }
+
+    @JvmStatic
+    fun onLogWarn(msg: String) {
+        Logger.w(msg, tag = TAG)
+    }
+
+    @JvmStatic
+    fun onReceiveAutomationCommand(command: String, arg: String) {
+        val wasSuccessFul = Automation.executeAction(command, arg.ifEmpty { null }, null)
+        if (!wasSuccessFul) {
+            Logger.w("command '$command' failed")
+        }
+    }
+
+
+    // external
+
+    @JvmStatic
+    external fun stopListeningMedia()
+
+    @JvmStatic
+    external fun setAllowedAppIds(appIds: Array<String>)
+
+    @JvmStatic
+    private external fun startEventLoop()
+
+    @JvmStatic
+    private external fun startListeningMedia()
+
+    @JvmStatic
+    external fun ping(input: String): String
+
+    @JvmStatic
+    external fun skip(appId: String)
+
+    @JvmStatic
+    external fun mute(appId: String)
+
+    @JvmStatic
+    external fun unmute(appId: String)
+
+    @JvmStatic
+    external fun notify(
+        title: String,
+        body: String,
+        iconPath: String = DesktopStuff.iconPath ?: "",
+    )
+
+    @JvmStatic
+    external fun setTray(
+        tooltip: String,
+        argb: IntArray,
+        iconSize: Int,
+        menuItemIds: Array<String>,
+        menuItemTexts: Array<String>
+    )
+
+    @JvmStatic
+    external fun getMachineId(): String
+
+    @JvmStatic
+    external fun setEnvironmentVariable(key: String, value: String)
+
+    @JvmStatic
+    external fun isSingleInstance(): Boolean
+
+    @JvmStatic
+    external fun applyDarkModeToWindow(handle: Long)
+
+    @JvmStatic
+    external fun launchWebView(url: String, callbackPrefix: String, dataDir: String)
+
+    @JvmStatic
+    external fun getWebViewCookiesFor(url: String)
+
+    @JvmStatic
+    external fun quitWebView()
+
+    @JvmStatic
+    external fun sendAutomationCommand(command: String, arg: String)
 }

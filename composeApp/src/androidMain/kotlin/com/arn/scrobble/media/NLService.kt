@@ -52,42 +52,27 @@ class NLService : NotificationListenerService() {
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase?.applyAndroidLocaleLegacy() ?: return)
     }
-
-    //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9
-//    override fun onStartCommand(intent: Intent, flags: Int, startId: Int) =
-//        Service.START_STICKY
-
-
-// this prevents the service from starting on N+
-//    override fun onBind(intent: Intent): IBinder? {
-//        return null
-//    }
-
+    
     override fun onListenerConnected() {
         //    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
         //    onCreate seems to get called only once in those cases.
-        //    also unreliable on lp and mm
+        //    also unreliable on lp and mm, which i am no longer supporting anyway
         // just gate them with an inited flag
 
 
         if (!inited) {
+            inited = true
+
             job = SupervisorJob()
             coroutineScope = CoroutineScope(Dispatchers.Main + job!!)
 
-            // API 23 bug, force run them on Main thread
-            coroutineScope.launch {
-//                if (BuildConfig.DEBUG)
+            if (BuildConfig.DEBUG)
                 toast(R.string.scrobbler_on)
-                init()
-            }
+            init()
         }
     }
 
-
-    private suspend fun init() {
-        // set it to true right away in case onListenerConnected gets called again before init has finished
-        inited = true
-
+    private fun init() {
         val filter = IntentFilter().apply {
             addAction(iCANCEL)
             addAction(iLOVE)
@@ -139,7 +124,7 @@ class NLService : NotificationListenerService() {
         }
 
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
-        val persistentNoti = mainPrefs.data.map { it.notiPersistent }.first()
+        val persistentNoti = Stuff.mainPrefsInitialValue.notiPersistent
         if (persistentNoti && AndroidStuff.canShowPersistentNotiIfEnabled) {
             try {
                 PersistentNotificationService.start()
@@ -189,9 +174,7 @@ class NLService : NotificationListenerService() {
         if (BuildConfig.DEBUG)
             toast(R.string.scrobbler_off)
 
-        if (inited) {
-            destroy()
-        }
+        destroy()
     }
 
     private suspend fun shouldScrobbleFromNoti(pkgName: String): Boolean {

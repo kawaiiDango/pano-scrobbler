@@ -3,7 +3,6 @@ package com.arn.scrobble.edits
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -98,7 +98,6 @@ import pano_scrobbler.composeapp.generated.resources.track
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RegexEditsAddScreen(
     mainViewModel: MainViewModel,
@@ -155,7 +154,7 @@ fun RegexEditsAddScreen(
     }
 
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
-    val proStatus = PlatformStuff.billingRepository.isLicenseValid
+    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
 
     fun buildRegexEdit() = if (extractMode) {
         RegexEdit(
@@ -250,7 +249,9 @@ fun RegexEditsAddScreen(
                         extractionAlbum = album
                         extractionArtist = artist
                         extractionAlbumArtist = albumArtist
-                    })
+                    },
+                    enabled = isLicenseValid,
+                )
             }
 
             ErrorText(errorText)
@@ -318,7 +319,7 @@ fun RegexEditsAddScreen(
                 if (PlatformStuff.isJava8OrGreater) {
                     FilterChip(
                         leadingIcon = {
-                            if (!proStatus)
+                            if (!isLicenseValid)
                                 Icon(
                                     imageVector = Icons.Outlined.Lock,
                                     contentDescription = null
@@ -326,12 +327,10 @@ fun RegexEditsAddScreen(
                         },
                         selected = extractMode,
                         onClick = {
-                            if (proStatus)
-                                extractMode = true
-                            else
-                                onNavigate(PanoRoute.Billing)
+                            extractMode = true
                         },
-                        label = { Text(stringResource(Res.string.edit_extract)) }
+                        label = { Text(stringResource(Res.string.edit_extract)) },
+                        modifier = Modifier.alpha(if (!isLicenseValid) 0.5f else 1f),
                     )
                 }
             }
@@ -383,6 +382,10 @@ fun RegexEditsAddScreen(
 
                         if (validationResult.isFailure) {
                             errorText = validationResult.exceptionOrNull()?.redactedMessage
+                        } else if (
+                            !isLicenseValid && re.extractionPatterns != null
+                        ) {
+                            onNavigate(PanoRoute.Billing)
                         } else {
                             withContext(Dispatchers.IO) {
                                 dao.insert(listOf(re))
@@ -410,11 +413,14 @@ private fun ExtractionFields(
         extractionArtist: String,
         extractionAlbumArtist: String,
     ) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val labelPrefix = stringResource(Res.string.edit_regex) + ": "
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
     ) {
         OutlinedTextField(
             value = extractionTrack,
@@ -426,6 +432,7 @@ private fun ExtractionFields(
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
+            enabled = enabled
         )
 
         OutlinedTextField(
@@ -438,6 +445,7 @@ private fun ExtractionFields(
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
+            enabled = enabled
         )
 
         OutlinedTextField(
@@ -450,6 +458,7 @@ private fun ExtractionFields(
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
+            enabled = enabled
         )
 
         OutlinedTextField(
@@ -461,7 +470,8 @@ private fun ExtractionFields(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
-            )
+            ),
+            enabled = enabled
         )
 
         Text(
@@ -478,7 +488,6 @@ private fun ExtractionFields(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ReplacementFields(
     regexPattern: String,
@@ -621,7 +630,6 @@ fun getLabelForField(field: String): String {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AppSelector(
     appItems: Iterable<AppItem>,

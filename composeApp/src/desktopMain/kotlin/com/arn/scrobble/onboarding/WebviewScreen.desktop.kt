@@ -1,11 +1,8 @@
 package com.arn.scrobble.onboarding
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +14,7 @@ import androidx.compose.ui.Modifier
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.http.Url
 import org.jetbrains.compose.resources.stringResource
@@ -42,7 +40,11 @@ actual fun WebViewScreen(
     DisposableEffect(Unit) {
         onSetTitle(title)
 
-        PanoNativeComponents.launchWebView(initialUrl, Stuff.DEEPLINK_PROTOCOL_NAME)
+        PanoNativeComponents.launchWebView(
+            initialUrl,
+            Stuff.DEEPLINK_PROTOCOL_NAME,
+            DesktopStuff.webViewDir.absolutePath
+        )
 
         onDispose {
             onSetTitle(null)
@@ -75,19 +77,13 @@ actual fun WebViewScreen(
     Column(
         modifier = modifier
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth().weight(1f)
-        ) {
-            Text(
-                text = if (callbackHandled) {
-                    "⏳"
-                } else {
-                    stringResource(Res.string.desktop_webview_message)
-                },
-                // the default color becomes black for some reason
-                color = MaterialTheme.colors.onPrimary
-            )
-        }
+        Text(
+            text = if (callbackHandled) {
+                "⏳"
+            } else {
+                stringResource(Res.string.desktop_webview_message)
+            },
+        )
 
         bottomContent()
     }

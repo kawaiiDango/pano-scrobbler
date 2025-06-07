@@ -21,7 +21,6 @@ captures
 *.backup
 /build
 /composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
-/composeApp/src/commonMain/composeResources/files/aboutlibraries.json
 /composeApp/resources/**/*.so
 /composeApp/resources/**/*.dll
 /composeApp/resources/**/*.dylib
@@ -35,7 +34,8 @@ captures
 /composeApp/src/releaseGithub/generated
 /composeApp/src/androidMain/res/**/strings-np.xml
 /composeApp/src/androidMain/res/**/strings-android.xml
-/composeApp/src/commonMain/composeResources/files/embedded_server.bks
+/composeApp/src/**/composeResources/files/embedded_server.bks
+/composeApp/src/**/composeResources/files/aboutlibraries.json
 crowdin.properties
 Gemfile.lock
 .jekyll-cache

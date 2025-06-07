@@ -35,10 +35,10 @@ curl -L -o "metadata/${PACKAGE}/en-US/phoneScreenshots/3charts.png" "https://i.i
 curl -L -o "metadata/${PACKAGE}/en-US/phoneScreenshots/4random.png" "https://i.imgur.com/aikbtGR.png"
 
 # copy icon
-cp ../../composeApp/resources/linux/app_icon.png "metadata/${PACKAGE}/en-US/icon.png"
+cp ../../composeApp/app-icons/pano-scrobbler.png "metadata/${PACKAGE}/en-US/icon.png"
 
 # Run fdroid update
 fdroid update --create-metadata --use-date-from-apk
 
 # Replace the default icon
-cp ../../composeApp/resources/linux/app_icon.png repo/icons/icon.png
+cp ../../composeApp/app-icons/pano-scrobbler.png repo/icons/icon.png

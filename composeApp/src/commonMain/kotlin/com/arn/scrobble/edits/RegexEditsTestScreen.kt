@@ -3,7 +3,6 @@ package com.arn.scrobble.edits
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -54,7 +53,6 @@ import pano_scrobbler.composeapp.generated.resources.num_matches
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import pano_scrobbler.composeapp.generated.resources.track
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RegexEditsTestScreen(
     mainViewModel: MainViewModel,

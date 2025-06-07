@@ -25,7 +25,7 @@ class BillingRepository(
                 "${clientData.appName} Supporter",
                 "${clientData.appName} Supporter",
                 "Become a ${clientData.appName} supporter",
-                "$6 or more (one time)",
+                "$5 or more (one time)",
             )
 
         _proProductDetails.value = productDetails

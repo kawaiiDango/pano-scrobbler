@@ -13,5 +13,5 @@ your account is hosted:
 
 - For listenbrainz.org: [listenbrainz.org/profile/delete](https://listenbrainz.org/profile/delete)
 
-For self-hosted custom servers such as GNU FM, Custom Listenbrainz, Maloja and Pleroma, check their
+For self-hosted custom servers such as Last.fm-like servers, ListenBrainz-like servers, Maloja and Pleroma, check their
 respective documentations.

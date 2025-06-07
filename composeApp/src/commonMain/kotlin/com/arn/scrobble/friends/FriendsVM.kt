@@ -14,6 +14,7 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,8 +26,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.no_scrobbles
@@ -36,7 +37,7 @@ import pano_scrobbler.composeapp.generated.resources.pin_limit_reached
 class FriendsVM : ViewModel() {
     private val mainPrefs = PlatformStuff.mainPrefs
     private val _friendsExtraDataMap =
-        MutableStateFlow<Map<String, Result<FriendExtraData>>>(emptyMap())
+        MutableStateFlow<Map<String, FriendExtraData>>(emptyMap())
     val friendsExtraDataMap = _friendsExtraDataMap.asStateFlow()
     private val _totalCount = MutableStateFlow(0)
     val totalFriends = _totalCount.asStateFlow()
@@ -53,7 +54,7 @@ class FriendsVM : ViewModel() {
     val pinnedUsernamesSet = pinnedFriends.mapLatest { it.map { it.name }.toSet() }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
-    private val friendsRecentsSemaphore = Semaphore(2)
+    private val friendsRecentsMutex = Mutex()
 
     private val _lastFriendsRefreshTime = MutableStateFlow(System.currentTimeMillis())
     val lastFriendsRefreshTime = _lastFriendsRefreshTime.asStateFlow()
@@ -92,10 +93,11 @@ class FriendsVM : ViewModel() {
     }
 
     suspend fun loadFriendsRecents(username: String) {
-        if (friendsExtraDataMap.value[username]?.isFailure == true) return
+        if (friendsExtraDataMap.value[username]?.errorMessage != null) return
 
         delay(Stuff.FRIENDS_RECENTS_DELAY)
-        _friendsExtraDataMap.value += username to friendsRecentsSemaphore.withPermit {
+
+        _friendsExtraDataMap.value += username to friendsRecentsMutex.withLock {
             Scrobblables.current.value!!.getRecents(
                 1,
                 username,
@@ -111,6 +113,13 @@ class FriendsVM : ViewModel() {
                 track = pr.entries.first(),
                 playCount = pr.attr.total,
                 lastUpdated = System.currentTimeMillis()
+            )
+        }.getOrElse {
+            FriendExtraData(
+                track = null,
+                playCount = null,
+                lastUpdated = System.currentTimeMillis(),
+                errorMessage = it.redactedMessage
             )
         }
     }
@@ -192,10 +201,10 @@ class FriendsVM : ViewModel() {
     fun sortByTime(friends: List<UserCached>) {
         val now = System.currentTimeMillis()
         _sortedFriends.value = friends.sortedByDescending {
-            if (friendsExtraDataMap.value[it.name]?.isSuccess == true)
-                friendsExtraDataMap.value[it.name]!!.getOrNull()!!.track.date ?: now
-            else
+            if (friendsExtraDataMap.value[it.name]?.errorMessage != null)
                 0 //put users with errors at the end
+            else
+                friendsExtraDataMap.value[it.name]?.track?.date ?: now
         }
     }
 
@@ -205,9 +214,7 @@ class FriendsVM : ViewModel() {
 
     fun markExtraDataAsStale() {
         _friendsExtraDataMap.value = _friendsExtraDataMap.value.mapValues { (key, value) ->
-            value.map {
-                it.copy(lastUpdated = 0)
-            }
+            value.copy(lastUpdated = 0)
         }
     }
 

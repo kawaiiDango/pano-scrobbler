@@ -43,9 +43,13 @@ class SessListener(
 
     private val scrobbleSpotifyRemote = mainPrefs.data.map { it.scrobbleSpotifyRemote }
         .stateIn(
-            scope, SharingStarted.Lazily,
+            scope, SharingStarted.Eagerly,
             Stuff.mainPrefsInitialValue.scrobbleSpotifyRemote
         )
+
+    private val autoDetectApps =
+        mainPrefs.data.map { it.autoDetectAppsP }
+            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.autoDetectAppsP)
 
     init {
         scope.launch {

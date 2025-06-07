@@ -9,6 +9,7 @@ import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
+import com.arn.scrobble.api.Requesters.setJsonBody
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
@@ -21,7 +22,6 @@ import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ImageSize
 import com.arn.scrobble.api.lastfm.LastFmImage
-import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageEntries
@@ -40,12 +40,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
-import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.appendIfNameAbsent
-import java.util.concurrent.TimeUnit
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -101,8 +101,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         )
 
         return client.postResult<ListenBrainzResponse>("submit-listens") {
-            contentType(ContentType.Application.Json)
-            setBody(listen)
+            setJsonBody(listen)
         }.map { if (it.isOk) ScrobbleIgnored(false) else ScrobbleIgnored(true) }
     }
 
@@ -165,8 +164,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         }
 
         return client.postResult<ListenBrainzResponse>("feedback/recording-feedback") {
-            contentType(ContentType.Application.Json)
-            setBody(ListenBrainzFeedback(mbid, msid, score))
+            setJsonBody(ListenBrainzFeedback(mbid, msid, score))
         }.map {
             if (it.isOk) ScrobbleIgnored(false) else ScrobbleIgnored(true)
         }
@@ -231,7 +229,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     val oldestListenTs = it.payload.oldest_listen_ts
                     val oldestListenTsInPage = it.payload.listens.lastOrNull()?.listened_at
                     val totalPages =
-                        if (oldestListenTsInPage != null && oldestListenTsInPage > oldestListenTs)
+                        if (oldestListenTsInPage != null && oldestListenTs != null && oldestListenTsInPage > oldestListenTs)
                             page + 1
                         else
                             page
@@ -272,8 +270,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         val msid = track.msid ?: return Result.success(Unit) // ignore error
 
         return client.postResult<ListenBrainzResponse>("delete-listen") {
-            contentType(ContentType.Application.Json)
-            setBody(ListenBrainzDeleteRequest(track.date, msid))
+            setJsonBody(ListenBrainzDeleteRequest(track.date, msid))
         }.map { }
     }
 
@@ -484,21 +481,9 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         user: UserCached?,
         cacheStrategy: CacheStrategy,
     ): ListeningActivity {
-        fun String.transformName(): String {
-            return if (timePeriod.lastfmPeriod == LastfmPeriod.OVERALL)
-                "'" + takeLast(2) // 4 digit year
-            else
-                take(3).trim()
-        }
 
         timePeriod.tag ?: return ListeningActivity()
         val username = user?.name ?: userAccount.user.name
-        val n = when (TimeUnit.MILLISECONDS.toDays(timePeriod.end - timePeriod.start)) {
-            in 367 until Long.MAX_VALUE -> 10
-            in 90 until 367 -> 12
-            in 10 until 90 -> 10
-            else -> 7
-        }
 
         val result =
             client.getResult<ListenBrainzActivityData>("stats/user/$username/listening-activity") {
@@ -506,25 +491,41 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 cacheStrategy(cacheStrategy)
             }
 
+        val type = when (timePeriod.tag) {
+            ListenbrainzRanges.all_time.name -> TimePeriodType.YEAR
+
+            ListenbrainzRanges.year.name,
+            ListenbrainzRanges.this_year.name,
+            ListenbrainzRanges.half_yearly.name
+                -> TimePeriodType.MONTH
+
+            else -> TimePeriodType.DAY
+        }
+
+
+        val dateFormatter = when (type) {
+            TimePeriodType.YEAR -> SimpleDateFormat("''yy", Locale.getDefault())
+            TimePeriodType.MONTH -> SimpleDateFormat("MM", Locale.getDefault())
+            TimePeriodType.DAY -> SimpleDateFormat("dd.\nMM", Locale.getDefault())
+            else -> null
+        }
+
+//        val n = when (type) {
+//            TimePeriodType.YEAR -> 10
+//            TimePeriodType.MONTH -> 12
+//            else -> 15
+//        }
 
         val timePeriodsMap = result.getOrNull()?.payload?.listening_activity
-            ?.takeLast(n)
+//            ?.takeLast(n)
             ?.associate {
                 TimePeriod(
                     it.from_ts,
                     it.to_ts,
                     null,
-                    it.time_range.transformName()
+                    dateFormatter?.format(it.from_ts) ?: it.time_range
                 ) to it.listen_count
             } ?: emptyMap()
-
-        val type = when (timePeriod.tag) {
-            ListenbrainzRanges.all_time.name -> TimePeriodType.YEAR
-            ListenbrainzRanges.year.name, ListenbrainzRanges.this_year.name, ListenbrainzRanges.half_yearly.name
-                -> TimePeriodType.MONTH
-
-            else -> TimePeriodType.DAY
-        }
 
         return ListeningActivity(
             timePeriodsToCounts = timePeriodsMap,

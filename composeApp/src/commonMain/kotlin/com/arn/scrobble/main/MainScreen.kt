@@ -393,7 +393,7 @@ fun PanoAppContent(
             PanoDialogStack(
                 initialDialogArgs = currentDialogArgs,
                 onNavigate = navController::navigate,
-                onDismiss = { currentDialogArgs = null },
+                onDismissRequest = { currentDialogArgs = null },
                 navMetadataList = { navMetadata },
                 mainViewModel = viewModel,
             )
@@ -553,7 +553,7 @@ private fun PanoNavigationRail(
                                     user.isSelf && drawerData != null -> drawerData.profilePicUrl
                                     else -> null
                                 },
-                                avatarInitialLetter = user.name.first(),
+                                avatarName = user.name,
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
@@ -640,7 +640,7 @@ private fun PanoBottomNavigationBar(
                                     tabMetadata.user.isSelf && drawerData != null -> drawerData.profilePicUrl
                                     else -> null
                                 },
-                            avatarInitialLetter = tabMetadata.user.name.first(),
+                            avatarName = tabMetadata.user.name,
                             modifier = Modifier
                                 .size(24.dp)
                                 .clip(CircleShape)

@@ -40,7 +40,7 @@
         <item quantity="other">%1$s件のパターン訂正</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="other">%1$s件のブロックされたメタデータ</item>
+        <item quantity="other">%1$s件のブロックしたメタデータ</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="other">%1$d分</item>
@@ -102,7 +102,8 @@
     <string name="share_sig">(Pano Scrobblerより)</string>
     <string name="share">共有</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">アイコン説明</string>
-    <string name="grid_size">グリッドサイズを変更</string>
+    <string name="grid" comment="Grid view">グリッド</string>
+    <string name="list" comment="Single column list view">リスト</string>
     <string name="pinch_to_zoom">ピンチ操作で拡大</string>
     <string name="more_info">詳細</string>
     <string name="more" comment="More options menu in short">詳細</string>
@@ -127,6 +128,7 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">この項目のオプション</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$sの検出</string>
     <string name="new_player_prompt">このアプリをScrobbleしますか？</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">%1$sにアクセスできません</string>
     <string name="no_scrobbles">曲はまだありません…</string>
     <string name="no_friends">まだ誰もフォローしていません…</string>
     <string name="channel_err" comment="Its a noun">Scrobbleの障害</string>
@@ -270,8 +272,10 @@
     <string name="player_actions" comment="music player actions such as skip/mute">プレーヤー操作</string>
     <string name="skip" comment="skip to next track">スキップ</string>
     <string name="mute" comment="mute the sound">ミュート</string>
+    <string name="do_nothing" comment="do nothing on the media player">何もしない</string>
     <string name="block" comment="block the track from scrobbling">ブロック</string>
-    <string name="hidden_tags" comment="Tags that should not be shown to the user">非表示のタグ</string>
+    <string name="copy" comment="copy to clipboard">コピー</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">非表示にしたタグ</string>
     <string name="pin" comment="pin a friend to the top">ピン留め</string>
     <string name="unpin" comment="unpin a friend to the top">ピン留め解除</string>
     <string name="pin_limit_reached" formatted="true">ピン留め上限に達しました (%1$d)</string>
@@ -280,7 +284,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">パターン訂正ルール: %1$sを有効化しますか？</string>
     <string name="show_persistent_noti">通知を永続的に表示する</string>
     <string name="fix_it_desc">これらは、一部デバイスにおいてバックグラウンドでScrobbleサービスを実行するのに役立ちます</string>
-    <string name="persistent_noti_desc">長押しで非表示</string>
     <string name="scrobbler_off">Scrobbler停止中</string>
     <string name="scrobbler_on">Scrobbler稼働中</string>
     <string name="total_listen_time">合計リスニング時間</string>
@@ -301,7 +304,6 @@
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>
     <string name="pref_master_qs_add">クイック設定タイルを追加</string>
     <string name="pref_master_qs_already_addded">クイック設定タイルはすでに追加されています</string>
-    <string name="pref_noti_q">アイコンが表示されない場合、通知を促せます</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知のカテゴリ</string>
     <string name="pref_scrobble_noti">Scrobbleの通知</string>
@@ -355,7 +357,7 @@
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">対応アプリのみ</string>
     <string name="pref_lists" comment="Such as edits list and block lists">リスト</string>
     <string name="pref_regex_edits">パターン訂正</string>
-    <string name="pref_blocked_metadata" comment="Block things from scrobbling">ブロックされたメタデータ</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">ブロックしたメタデータ</string>
     <string name="pref_translate">このアプリを翻訳</string>
     <string name="pref_translate_credits">翻訳協力者</string>
     <string name="pref_oss_credits">オープンソースクレジット</string>
@@ -415,6 +417,13 @@
     <string name="password">パスワード</string>
     <string name="open_existing" comment="Append to an existing file">既存に追加</string>
     <string name="create" comment="Create a new file">作成</string>
+    <string name="ok">OK</string>
+    <string name="cancel">キャンセル</string>
+    <string name="back">戻る</string>
+    <string name="done">完了</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">再試行</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">ログを保存</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">コントラスト</string>
     <!--  pro  -->
     <string name="get_pro">このアプリを支援</string>
     <string name="help">ヘルプ</string>

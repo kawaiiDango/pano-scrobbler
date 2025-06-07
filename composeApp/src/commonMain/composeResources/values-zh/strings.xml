@@ -102,7 +102,8 @@
     <string name="share_sig">（发送自 Pano Scrobbler）</string>
     <string name="share">分享</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">图注</string>
-    <string name="grid_size">更改网格尺寸</string>
+    <string name="grid" comment="Grid view">网格</string>
+    <string name="list" comment="Single column list view">列表</string>
     <string name="pinch_to_zoom">双指缩放</string>
     <string name="more_info">更多信息</string>
     <string name="more" comment="More options menu in short">更多</string>
@@ -271,7 +272,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">播放器操作</string>
     <string name="skip" comment="skip to next track">跳过</string>
     <string name="mute" comment="mute the sound">静音</string>
+    <string name="do_nothing" comment="do nothing on the media player">不进行任何操作</string>
     <string name="block" comment="block the track from scrobbling">屏蔽</string>
+    <string name="copy" comment="copy to clipboard">复制</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">隐藏标签</string>
     <string name="pin" comment="pin a friend to the top">钉选</string>
     <string name="unpin" comment="unpin a friend to the top">取消钉选</string>
@@ -281,7 +284,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">您想启用 %1$s 这条编辑模板规则吗？</string>
     <string name="show_persistent_noti">显示一条常驻通知</string>
     <string name="fix_it_desc">用于保证记录器在某些设备上维持后台运行</string>
-    <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
     <string name="duration">持续时间</string>
@@ -303,7 +305,6 @@
     <string name="pref_master_qs_hint">也可通过快速设置开关触发</string>
     <string name="pref_master_qs_add">添加快速设置开关</string>
     <string name="pref_master_qs_already_addded">已经添加过快速设置开关</string>
-    <string name="pref_noti_q">如果图标不显示，您可以手动提升通知优先级</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知类别</string>
     <string name="pref_scrobble_noti">记录通知</string>
@@ -379,6 +380,7 @@
     <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">%1$s类实例</string>
     <string name="failed_encode_url">无法对 URL 进行编码</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">勾选 %1$s</string>
     <string name="artist_extra">曲目、专辑 &amp; 相似艺术家</string>

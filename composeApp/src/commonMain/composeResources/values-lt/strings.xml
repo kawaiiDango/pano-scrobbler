@@ -150,7 +150,8 @@
     <string name="share_sig">(per „Pano Scrobbler“)</string>
     <string name="share">Bendrinti</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Keisti tinklelio dydį</string>
+    <string name="grid" comment="Grid view">Tinklelis</string>
+    <string name="list" comment="Single column list view">Sąrašas</string>
     <string name="pinch_to_zoom">Prispauskite, kad padidinti</string>
     <string name="more_info">Daugiau informacijos</string>
     <string name="more" comment="More options menu in short">Daugiau</string>
@@ -176,6 +177,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Šio elemento parinktys</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Aptikta „%1$s“</string>
     <string name="new_player_prompt">Toliau skrobuolinti šią programėlę?</string>
+    <string name="new_player_prompt_desktop">Eikite į nustatymus, kad pradėtumėte skrobuolinti šią programėlę</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Negalima pasiekti „%1$s“.</string>
+    <string name="file_exists_confirm_overwrite">Failas egzistuoja. Spauskite dar kartą, kad perrašyti.</string>
     <string name="no_scrobbles">Čia dar nėra dainų…</string>
     <string name="no_friends">Dar nė vieno nesekate…</string>
     <string name="channel_err" comment="Its a noun">Skroblo klaidos</string>
@@ -273,6 +277,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s geriausi skroblai</string>
     <string name="my_tags" comment="Tags, the user has added">Mano žymės</string>
     <string name="close" comment="To close a dialog or something">Uždaryti</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Išeiti</string>
     <string name="user_tags_hint" comment="To add a new tag">Nauja žymė</string>
     <string name="user_tags_empty">Nepridėjote jokių žymių</string>
     <string name="appwidget_loading">Įkeliama…</string>
@@ -319,7 +324,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
     <string name="skip" comment="skip to next track">Praleisti</string>
     <string name="mute" comment="mute the sound">Nutildyti</string>
+    <string name="do_nothing" comment="do nothing on the media player">Daryti nieko</string>
     <string name="block" comment="block the track from scrobbling">Blokuoti</string>
+    <string name="copy" comment="copy to clipboard">Kopijuoti</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Paslėptos žymės</string>
     <string name="pin" comment="pin a friend to the top">Prisegti</string>
     <string name="unpin" comment="unpin a friend to the top">Atsegti</string>
@@ -329,7 +336,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar norite įjungti šablono redagavimo taisyklę: „%1$s“?</string>
     <string name="show_persistent_noti">Rodyti nuolatinį pranešimą</string>
     <string name="fix_it_desc">Tai gali padėti išlaikyti skrobuoklio veikimą fone kai kuriuose įrenginiuose.</string>
-    <string name="persistent_noti_desc">Ilgai prispauskite, kad paslėpti</string>
+    <string name="persistent_noti_text">Palieskite, kad paslėpti šį</string>
     <string name="scrobbler_off">Skrobuoklis išjungtas</string>
     <string name="scrobbler_on">Skrobuoklis aktyvus</string>
     <string name="duration">Trukmė</string>
@@ -351,7 +358,6 @@
     <string name="pref_master_qs_hint">Taip pat galima perjungti iš sparčiųjų nustatymų plytelės</string>
     <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
     <string name="pref_master_qs_already_addded">Sparčiųjų nustatymų plytelė jau pridėta.</string>
-    <string name="pref_noti_q">Jei piktograma nerodoma, galima skatinti pranešimą.</string>
     <string name="pref_noti">Pranešimai</string>
     <string name="pref_noti_categories">Pranešimų kategorijos</string>
     <string name="pref_scrobble_noti">Skroblo pranešimai</string>
@@ -410,6 +416,9 @@
     <string name="pref_translate_credits">Vertimo kūrėjai</string>
     <string name="pref_oss_credits">Atvirojo kodo kūrėjai</string>
     <string name="pref_check_updates">Tikrinti naujinimus</string>
+    <string name="pref_search_url_template">Ieškoti URL šablono</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Naudokite $query kaip paieškos termino vietaženklį.</string>
+    <string name="pref_native_file_picker">Naudoti vietinį failų parinkiklį</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Yra naujinimas: %1$s</string>
     <string name="download" comment="Its a verb">Atsisiųsti</string>
     <string name="changelog">Pakeitimų žurnalas</string>
@@ -427,6 +436,7 @@
     <string name="pref_intents">„Tasker“ ketinimai ir pan.</string>
     <string name="copied">Nukopijuota!</string>
     <string name="lastfm_reauth">Norint redaguoti arba ištrinti skroblus, reikia iš naujo nustatyti tapatybę.</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">„%1$s“ tipo serveris</string>
     <string name="failed_encode_url">Nepavyko užkoduoti URL.</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Patikrinkite „%1$s“</string>
     <string name="artist_extra">Takeliai, albumai ir panašumai</string>

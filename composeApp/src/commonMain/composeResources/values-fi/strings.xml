@@ -114,7 +114,6 @@
     <string name="share_sig">(Pano Scrobblerin kautta)</string>
     <string name="share">Jaa</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Selite</string>
-    <string name="grid_size">Muuta ruudukon kokoa</string>
     <string name="pinch_to_zoom">Nipistä suurentaaksesi</string>
     <string name="more_info">Lisätietoa</string>
     <string name="more" comment="More options menu in short">Lisää</string>
@@ -278,7 +277,6 @@
     <string name="use_channel" comment="(Use youtube channel name)">Käytä kanavan nimeä</string>
     <string name="show_persistent_noti">Näytä pysyvä ilmoitus</string>
     <string name="fix_it_desc">Nämä voivat auttaa pitämään scrobblerin käynnissä taustalla joillakin laitteilla</string>
-    <string name="persistent_noti_desc">Paina pitkään piilottaaksesi tämän</string>
     <string name="scrobbler_off">Scrobblaaja pois päältä</string>
     <string name="scrobbler_on">Scrobblaaja päällä</string>
     <string name="acoustic" comment="(Acoustic music)">Akustinen</string>

@@ -105,7 +105,6 @@
     <string name="share_sig">(μέσω Pano Scrobbler)</string>
     <string name="share">Κοινοποίηση</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Υπόμνημα</string>
-    <string name="grid_size">Αλλαγή μεγέθους πλέγματος</string>
     <string name="pinch_to_zoom">Τσιμπήστε για μεγέθυνση</string>
     <string name="more_info">Περισσότερες πληροφορίες</string>
     <string name="rank_change_no_change">Καμία αλλαγή</string>
@@ -262,7 +261,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Θα θέλατε να ενεργοποιήσετε τον κανόνα επεξεργασίας μοτίβου: %1$s;</string>
     <string name="show_persistent_noti">Ενεργοποίηση συνεχών ειδοποιήσεων</string>
     <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
-    <string name="persistent_noti_desc">Πατήστε παρατεταμένα για απόκρυψη</string>
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
     <string name="enable" comment="To enable the scrobbler">Ενεργοποιήση</string>
@@ -275,7 +273,6 @@
     <string name="pref_master_qs_hint">Μπορεί επίσης να ρυθμιστεί από το πλακίδιο γρήγορων ρυθμίσεων</string>
     <string name="pref_master_qs_add">Προσθέστε το πλακίδιο Γρήγορων Ρυθμίσεων</string>
     <string name="pref_master_qs_already_addded">Το πλακίδιο Γρήγορων Ρυθμίσεων έχει ήδη προστεθεί</string>
-    <string name="pref_noti_q">Μπορείτε να προωθήσετε την ειδοποίηση, αν το εικονίδιο δεν εμφανίζεται</string>
     <string name="pref_noti">Ειδοποιήσεις</string>
     <string name="pref_noti_categories">Κατηγορίες ειδοποιήσεων</string>
     <string name="pref_scrobble_noti">Ειδοποιήσεις scrobble</string>

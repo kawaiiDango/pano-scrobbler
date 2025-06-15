@@ -115,7 +115,6 @@
     <string name="share_sig">(via Pano Scrobbeler)</string>
     <string name="share">Delen</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Rastergrootte wijzigen</string>
     <string name="pinch_to_zoom">Knijpen om te zoomen</string>
     <string name="more_info">Meer informatie</string>
     <string name="more" comment="More options menu in short">Meer</string>
@@ -283,7 +282,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Wilt u deze patroon bewerkingsregel inschakelen: %1$s?</string>
     <string name="show_persistent_noti">Aanhoudende notificaties weergeven</string>
     <string name="fix_it_desc">Deze kunnen helpen om de scrobbler in de achtergrond op sommige apparaten actief te houden</string>
-    <string name="persistent_noti_desc">Lang ingedrukt houden om dit te verbergen</string>
     <string name="scrobbler_off">Scrobbler uitgeschakeld</string>
     <string name="scrobbler_on">Scrobbler actief</string>
     <string name="acoustic" comment="(Acoustic music)">Akoestisch</string>
@@ -303,7 +301,6 @@
     <string name="pref_master_qs_hint">Kan ook via de snelle instellingen tegel worden aangezet.</string>
     <string name="pref_master_qs_add">Voeg tegel snelle instellingen toe</string>
     <string name="pref_master_qs_already_addded">Tegel snelle instellingen is al toegevoegd</string>
-    <string name="pref_noti_q">Je kunt de melding promoten, als het pictogram niet wordt weergegeven</string>
     <string name="pref_noti">Meldingen</string>
     <string name="pref_noti_categories">Meldingscategorieën</string>
     <string name="pref_scrobble_noti">Scrobble meldingen</string>

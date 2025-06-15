@@ -102,7 +102,6 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">공유하기</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">범례</string>
-    <string name="grid_size">그리드 크기 조절</string>
     <string name="pinch_to_zoom">두 손가락으로 확대</string>
     <string name="more_info">더 알아보기</string>
     <string name="more" comment="More options menu in short">더보기</string>
@@ -281,7 +280,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">패턴 편집 규칙을 활성화 하시겠습니까: %1$s?</string>
     <string name="show_persistent_noti">지속적인 알림 표시</string>
     <string name="fix_it_desc">몇몇 기기에서 스크로블러의 백그라운드 실행을 유지하는 데 도움이 될 수 있습니다.</string>
-    <string name="persistent_noti_desc">길게 눌러 숨기기</string>
     <string name="scrobbler_off">스크로블러 비활성화</string>
     <string name="scrobbler_on">스크로블러 활성화</string>
     <string name="duration">길이</string>
@@ -302,7 +300,6 @@
     <string name="pref_master_qs_hint">빠른 설정 타일에서도 전환할 수 있습니다</string>
     <string name="pref_master_qs_add">빠른 설정 타일 추가하기</string>
     <string name="pref_master_qs_already_addded">빠른 설정 타일이 이미 추가되었습니다</string>
-    <string name="pref_noti_q">아이콘이 보이지 않으면 알림을 띄웁니다</string>
     <string name="pref_noti">알림</string>
     <string name="pref_noti_categories">알림 카테고리</string>
     <string name="pref_scrobble_noti">스크로블 알림</string>

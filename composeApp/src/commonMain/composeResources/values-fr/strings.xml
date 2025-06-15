@@ -118,7 +118,6 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Partager</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Légende</string>
-    <string name="grid_size">Changer la taille de la grille</string>
     <string name="pinch_to_zoom">Pincer pour zoomer</string>
     <string name="more_info">Plus d\'informations</string>
     <string name="more" comment="More options menu in short">Plus</string>
@@ -296,7 +295,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Voulez-vous rendre cette régle d\'édition répétitive pour ce schéma %1$s?</string>
     <string name="show_persistent_noti">Afficher une notification permanente</string>
     <string name="fix_it_desc">Cela peut aider à continuer de faire fonctionner le scrobbler en arrière-plan sur certains appareils</string>
-    <string name="persistent_noti_desc">Appuyez longuement pour masquer ceci</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
     <string name="scrobbler_on">Scrobbler activé</string>
     <string name="duration">Durée</string>
@@ -318,7 +316,6 @@
     <string name="pref_master_qs_hint">Peut également être activé depuis le bouton de paramétrage rapide</string>
     <string name="pref_master_qs_add">Ajouter une option de paramétrage rapide</string>
     <string name="pref_master_qs_already_addded">L\'option de paramétrage rapide est déjà configurée</string>
-    <string name="pref_noti_q">Vous pouvez revoir la priorité de la notification si l\'icône n\'apparaît pas</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_noti_categories">Catégories de notification</string>
     <string name="pref_scrobble_noti">Notifications de scrobble</string>

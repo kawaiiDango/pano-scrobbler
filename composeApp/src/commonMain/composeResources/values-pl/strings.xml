@@ -144,7 +144,6 @@
     <string name="share_sig">(przez Pano Scrobbler)</string>
     <string name="share">Udostępnij</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="grid_size">Zmień rozmiar siatki</string>
     <string name="pinch_to_zoom">Uszczypnij, aby powiększyć</string>
     <string name="more_info">Więcej informacji</string>
     <string name="more" comment="More options menu in short">Więcej</string>
@@ -315,7 +314,6 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Czy chcesz włączyć regułę edycji szablonu: %1$s?</string>
     <string name="show_persistent_noti">Pokaż stałe powiadomienie</string>
     <string name="fix_it_desc">Mogą one pomóc utrzymać scrobbler na niektórych urządzeniach w tle</string>
-    <string name="persistent_noti_desc">Przytrzymaj, aby ukryć</string>
     <string name="scrobbler_off">Scrobbler wyłączony</string>
     <string name="scrobbler_on">Scrobbler aktywny</string>
     <string name="duration">Czas trwania</string>
@@ -337,7 +335,6 @@
     <string name="pref_master_qs_hint">Może to być również przełączane z kafelka szybkich ustawień</string>
     <string name="pref_master_qs_add">Dodaj kafelek szybkich ustawień</string>
     <string name="pref_master_qs_already_addded">Kafelek szybkich ustawień jest już dodany</string>
-    <string name="pref_noti_q">Możesz edytować powiadomienia, jeśli ikona się nie wyświetla</string>
     <string name="pref_noti">Powiadomienia</string>
     <string name="pref_noti_categories">Kategorie powiadomień</string>
     <string name="pref_scrobble_noti">Powiadomienia o scrobblach</string>

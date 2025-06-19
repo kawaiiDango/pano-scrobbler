@@ -218,6 +218,7 @@
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
     <string name="months">Meses</string>
+    <string name="days"></string>
     <string name="years" comment="For the charts menu which displays year by year">Anos</string>
     <string name="charts_overall">Geral</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Atividade de reprodução</string>

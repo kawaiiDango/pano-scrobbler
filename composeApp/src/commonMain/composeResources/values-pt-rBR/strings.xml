@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobble</item>
-        <item quantity="other">%1$s scrobbles</item>
+        <item quantity="one">%1$s Artista</item>
+        <item quantity="other">%1$s scrobble</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
         <item quantity="one">%1$s Hoje</item>
@@ -13,7 +13,7 @@
         <item quantity="other">%1$s ouvintes</item>
     </plurals>
     <plurals name="num_days">
-        <item quantity="one">%1$s dia</item>
+        <item quantity="one">%1$s Dia</item>
         <item quantity="other">%1$s dias</item>
     </plurals>
     <plurals name="num_weeks">
@@ -49,7 +49,7 @@
         <item quantity="other">%1$s edições</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$s edição padrão</item>
+        <item quantity="one">%1$s Edição padrão</item>
         <item quantity="other">%1$s edições de padrão</item>
     </plurals>
     <plurals name="num_blocked_metadata">
@@ -58,7 +58,7 @@
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minutos</item>
-        <item quantity="other">%1$d minutos</item>
+        <item quantity="other">%1$d Minutos</item>
     </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s Pendente(s)</item>
@@ -77,7 +77,7 @@
     <string name="disable_tls_verify">Ignorar erros de TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de salvar esta edição para futuros scrobbles em vez disso?</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Campo(s) necessários estão vazios</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Campos necessários estão vazios</string>
     <string name="artist">Artista</string>
     <string name="artists">Artistas</string>
     <string name="top_artists" comment="Top artists the user has listened to">Principais artistas</string>

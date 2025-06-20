@@ -250,6 +250,7 @@
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
     <string name="months">Месяцы</string>
+    <string name="days">Дни</string>
     <string name="years" comment="For the charts menu which displays year by year">Годы</string>
     <string name="charts_overall">За все время</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Активность прослушивания</string>

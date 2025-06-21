@@ -27,10 +27,9 @@ import pano_scrobbler.composeapp.generated.resources.not_found
 fun InfoPagerScreen(
     musicEntry: Artist,
     user: UserCached,
-    pkgName: String?,
+    appId: String?,
     onSetTabData: (String, List<PanoTab>?) -> Unit,
     tabIdx: Int,
-    initialTabIdx: Int,
     onSetTabIdx: (Int) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
@@ -56,7 +55,6 @@ fun InfoPagerScreen(
     }
 
     PanoPager(
-        initialPage = initialTabIdx,
         selectedPage = tabIdx,
         onSelectPage = onSetTabIdx,
         totalPages = tabsList.count(),
@@ -93,7 +91,7 @@ fun InfoPagerScreen(
                         track = it as? Track,
                         artist = it as? Artist,
                         album = it as? Album,
-                        pkgName = pkgName,
+                        appId = appId,
                         user = user
                     )
                 )

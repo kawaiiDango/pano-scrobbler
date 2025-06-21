@@ -58,10 +58,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             "method" to "track.updateNowPlaying",
             "artist" to scrobbleData.artist,
             "track" to scrobbleData.track,
-            "duration" to scrobbleData.duration?.div(1000)?.toString(),
+            "duration" to scrobbleData.safeDuration()?.div(1000)?.toString(),
             "album" to scrobbleData.album,
             "trackNumber" to scrobbleData.trackNumber?.toString(),
-            "mbid" to scrobbleData.mbid,
             "albumArtist" to scrobbleData.albumArtist,
             "sk" to userAccount.authKey,
             "api_key" to apiKey,
@@ -78,10 +77,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             "method" to "track.scrobble",
             "artist" to scrobbleData.artist,
             "track" to scrobbleData.track,
-            "duration" to scrobbleData.duration?.div(1000)?.toString(),
+            "duration" to scrobbleData.safeDuration()?.div(1000)?.toString(),
             "album" to scrobbleData.album,
             "trackNumber" to scrobbleData.trackNumber?.toString(),
-            "mbid" to scrobbleData.mbid,
             "albumArtist" to scrobbleData.albumArtist,
             "timestamp" to (scrobbleData.timestamp / 1000).toString(),
             "chosenByUser" to "1",
@@ -106,10 +104,9 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         scrobbleDatas.forEachIndexed { index, scrobbleData ->
             params["artist[$index]"] = scrobbleData.artist
             params["track[$index]"] = scrobbleData.track
-            params["duration[$index]"] = scrobbleData.duration?.div(1000)?.toString()
+            params["duration[$index]"] = scrobbleData.safeDuration()?.div(1000)?.toString()
             params["album[$index]"] = scrobbleData.album
             params["trackNumber[$index]"] = scrobbleData.trackNumber?.toString()
-            params["mbid[$index]"] = scrobbleData.mbid
             params["albumArtist[$index]"] = scrobbleData.albumArtist
             params["timestamp[$index]"] = (scrobbleData.timestamp / 1000).toString()
             params["chosenByUser[$index]"] = "1"

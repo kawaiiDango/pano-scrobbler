@@ -35,6 +35,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.ExtrasConsts
+import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -51,10 +52,8 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff.application
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.copied
@@ -145,15 +144,13 @@ actual object PlatformStuff {
 
     actual fun openInBrowser(url: String) {
         if (isTv) {
-            GlobalScope.launch {
-                globalSnackbarFlow.emit(
-                    PanoSnackbarVisuals(
-                        message = getString(Res.string.tv_url_notice) + "\n" + url,
-                        isError = false,
-                        duration = SnackbarDuration.Long
-                    )
+            globalSnackbarFlow.tryEmit(
+                PanoSnackbarVisuals(
+                    message = application.getString(R.string.tv_url_notice) + "\n" + url,
+                    isError = false,
+                    duration = SnackbarDuration.Long
                 )
-            }
+            )
             return
         }
 
@@ -163,21 +160,19 @@ actual object PlatformStuff {
 
             application.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
-            GlobalScope.launch {
-                globalSnackbarFlow.emit(
-                    PanoSnackbarVisuals(
-                        message = getString(Res.string.no_browser),
-                        isError = true,
-                    )
+            globalSnackbarFlow.tryEmit(
+                PanoSnackbarVisuals(
+                    message = application.getString(R.string.no_browser),
+                    isError = true,
                 )
-            }
+            )
         }
     }
 
 
     actual suspend fun launchSearchIntent(
         musicEntry: MusicEntry,
-        pkgName: String?,
+        appId: String?,
     ) {
         val searchInSource = mainPrefs.data.map { it.searchInSource }.first()
 
@@ -225,13 +220,13 @@ actual object PlatformStuff {
 
             putExtra(SearchManager.QUERY, searchQuery)
 
-            if (pkgName != null && billingRepository.isLicenseValid && searchInSource)
-                `package` = pkgName
+            if (appId != null && billingRepository.isLicenseValid && searchInSource)
+                `package` = appId
         }
         try {
             application.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            if (pkgName != null) {
+            if (appId != null) {
                 try {
                     intent.`package` = null
                     application.startActivity(intent)
@@ -267,13 +262,13 @@ actual object PlatformStuff {
 
     }
 
-    actual fun loadApplicationLabel(pkgName: String): String {
+    actual fun loadApplicationLabel(appId: String): String {
         return try {
             application.packageManager.getApplicationLabel(
-                application.packageManager.getApplicationInfo(pkgName, 0)
+                application.packageManager.getApplicationInfo(appId, 0)
             ).toString()
         } catch (e: PackageManager.NameNotFoundException) {
-            pkgName
+            appId
         }
     }
 
@@ -303,14 +298,12 @@ actual object PlatformStuff {
         // Starting in Android 13, the system displays a standard visual confirmation when content is added to the clipboard.
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            GlobalScope.launch {
-                globalSnackbarFlow.emit(
-                    PanoSnackbarVisuals(
-                        message = getString(Res.string.copied),
-                        isError = false,
-                    )
+            globalSnackbarFlow.tryEmit(
+                PanoSnackbarVisuals(
+                    message = application.getString(R.string.copied),
+                    isError = false,
                 )
-            }
+            )
         }
     }
 

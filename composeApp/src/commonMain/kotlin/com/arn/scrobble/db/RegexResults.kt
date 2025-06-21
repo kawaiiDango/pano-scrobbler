@@ -1,9 +1,9 @@
 package com.arn.scrobble.db
 
+import com.arn.scrobble.api.lastfm.ScrobbleData
+
 data class RegexResults(
-    val fieldsMatched: Map<String, Set<RegexEdit>>,
+    val matches: Set<RegexEdit>,
+    val scrobbleData: ScrobbleData?,
     val blockPlayerAction: BlockPlayerAction?,
-) {
-    val isEdit = fieldsMatched.values.any { it.isNotEmpty() } && blockPlayerAction == null
-    val isBlock = fieldsMatched.values.any { it.isNotEmpty() } && blockPlayerAction != null
-}
+)

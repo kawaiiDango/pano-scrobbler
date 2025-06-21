@@ -78,7 +78,7 @@ class SpotifyRequester {
         }
     }
 
-    suspend fun search(query: String, type: SpotifySearchType, limit: Int = 5) =
+    suspend fun search(query: String, type: SpotifySearchType, limit: Int) =
         client.getResult<SpotifySearchResponse>("https://api.spotify.com/v1/search") {
             parameter("q", query)
             parameter("type", type.name)

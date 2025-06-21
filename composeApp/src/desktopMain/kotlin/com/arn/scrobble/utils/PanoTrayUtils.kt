@@ -1,9 +1,7 @@
 package com.arn.scrobble.utils
 
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 
 object PanoTrayUtils {
     class TrayData(
@@ -14,13 +12,12 @@ object PanoTrayUtils {
         val menuItemTexts: Array<String>,
     )
 
-    private val _onTrayMenuItemClicked = MutableSharedFlow<String>(replay = 1)
+    private val _onTrayMenuItemClicked =
+        MutableSharedFlow<String>(replay = 1, extraBufferCapacity = 1)
     val onTrayMenuItemClicked = _onTrayMenuItemClicked.asSharedFlow()
 
     fun onTrayMenuItemClickedFn(id: String) {
-        GlobalScope.launch {
-            _onTrayMenuItemClicked.emit(id)
-        }
+        _onTrayMenuItemClicked.tryEmit(id)
     }
 
     enum class ItemId {

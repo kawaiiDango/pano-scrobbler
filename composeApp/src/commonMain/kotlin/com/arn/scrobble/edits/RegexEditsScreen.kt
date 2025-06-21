@@ -2,6 +2,7 @@ package com.arn.scrobble.edits
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,26 +13,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material.icons.outlined.FindReplace
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.SwipeLeftAlt
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,36 +44,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.db.RegexEditFields
-import com.arn.scrobble.icons.AlbumArtist
+import com.arn.scrobble.icons.MatchCase
 import com.arn.scrobble.icons.PanoIcons
-import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.DraggableItem
-import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.ErrorText
+import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.dragContainer
 import com.arn.scrobble.ui.horizontalOverscanPadding
-import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.rememberDragDropState
-import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import org.jetbrains.compose.resources.pluralStringResource
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.cancel
+import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.edit_drag_handle
 import pano_scrobbler.composeapp.generated.resources.edit_max_patterns
-import pano_scrobbler.composeapp.generated.resources.edit_no_presets_available
-import pano_scrobbler.composeapp.generated.resources.edit_preset_name
 import pano_scrobbler.composeapp.generated.resources.edit_presets
-import pano_scrobbler.composeapp.generated.resources.edit_presets_available
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
 import pano_scrobbler.composeapp.generated.resources.move_down
 import pano_scrobbler.composeapp.generated.resources.move_up
-import pano_scrobbler.composeapp.generated.resources.num_regex_edits
 
 @Composable
 fun RegexEditsScreen(
@@ -87,138 +74,169 @@ fun RegexEditsScreen(
     viewModel: RegexEditsVM = viewModel { RegexEditsVM() },
 ) {
     val regexEdits by viewModel.regexes.collectAsStateWithLifecycle()
-    var regexEditsReordered by remember { mutableStateOf<List<RegexEdit>?>(null) }
-    val limitReached by viewModel.limitReached.collectAsStateWithLifecycle()
+    var regexEditsReordered by remember { mutableStateOf(regexEdits) }
 
-    val presetsAvailable by viewModel.presetsAvailable.collectAsStateWithLifecycle()
-    var showPresetsDialog by remember { mutableStateOf(false) }
-    val limitReachedMessage = if (limitReached) {
-        stringResource(Res.string.edit_max_patterns, Stuff.MAX_PATTERNS)
-    } else {
-        null
+    val presetsWithState by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        val presetsEnabled = it.regexPresets
+
+        RegexPresets.filteredPresets.map {
+            it to (it.name in presetsEnabled)
+        }
     }
 
     LaunchedEffect(regexEdits) {
         regexEditsReordered = regexEdits
     }
 
-    Column(
+    RegexEditsList(
+        regexEdits = regexEditsReordered,
+        presetsWithState = presetsWithState,
+        onItemClick = {
+            onNavigateToEdit(it)
+        },
+        onMoveItem = { fromIndex, toIndex ->
+            if (fromIndex == toIndex) return@RegexEditsList
+            if (fromIndex < 0 || toIndex < 0) return@RegexEditsList
+            if (fromIndex >= regexEditsReordered.size || toIndex >= regexEditsReordered.size) return@RegexEditsList
+
+            regexEditsReordered = regexEditsReordered.toMutableList()
+                .apply { add(toIndex, removeAt(fromIndex)) }
+        },
+        onDragEnd = {
+            regexEditsReordered.mapIndexed { index, regex ->
+                regex.copy(order = index)
+            }.let { viewModel.upsertAll(it) }
+        },
+        onPresetToggled = viewModel::updatePreset,
+        onNavigateToTest = onNavigateToTest,
         modifier = modifier
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(panoContentPadding(bottom = false)),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            AssistChip(
-                onClick = onNavigateToTest,
-                label = { Text(text = stringResource(Res.string.edit_regex_test)) })
-
-            AssistChip(
-                onClick = {
-                    showPresetsDialog = true
-                },
-                label = { Text(text = stringResource(Res.string.edit_presets)) })
-        }
-
-        ErrorText(limitReachedMessage, modifier = Modifier.padding(vertical = 16.dp))
-
-        EmptyText(
-            visible = regexEditsReordered?.isEmpty() == true,
-            text = pluralStringResource(Res.plurals.num_regex_edits, 0, 0)
-        )
-
-
-        RegexEditsList(
-            regexEdits = regexEditsReordered,
-            onItemClick = {
-                onNavigateToEdit(RegexPresets.getPossiblePreset(it))
-            },
-            onMoveItem = { fromIndex, toIndex ->
-                val _regexEditsReordered = regexEditsReordered ?: return@RegexEditsList
-
-                if (fromIndex == toIndex) return@RegexEditsList
-                if (fromIndex < 0 || toIndex < 0) return@RegexEditsList
-                if (fromIndex >= _regexEditsReordered.size || toIndex >= _regexEditsReordered.size) return@RegexEditsList
-
-                regexEditsReordered = _regexEditsReordered.toMutableList()
-                    .apply { add(toIndex, removeAt(fromIndex)) }
-            },
-            onDragEnd = {
-                regexEditsReordered?.mapIndexed { index, regex ->
-                    regex.copy(order = index)
-                }?.let { viewModel.upsertAll(it) }
-            },
-        )
-    }
-
-    if (showPresetsDialog) {
-        PresetsDialog(
-            presetsAvailable = presetsAvailable,
-            onDismissRequest = { showPresetsDialog = false },
-            onPresetSelected = { preset ->
-                viewModel.insertPreset(preset)
-                showPresetsDialog = false
-            }
-        )
-    }
+    )
 }
 
 
 @Composable
 private fun RegexEditsList(
-    regexEdits: List<RegexEdit>?,
+    presetsWithState: List<Pair<RegexPreset, Boolean>>,
+    regexEdits: List<RegexEdit>,
     onItemClick: (RegexEdit) -> Unit,
     onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
     onDragEnd: () -> Unit,
+    onPresetToggled: (RegexPreset, Boolean) -> Unit,
+    onNavigateToTest: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    val nonRegexItemsCount = 3 + RegexPresets.filteredPresets.size
+
     val listState = rememberLazyListState()
     val dragDropState =
         rememberDragDropState(
             listState,
             onDragEnd = onDragEnd
         ) { fromIndex, toIndex ->
-            onMoveItem(fromIndex, toIndex)
+            onMoveItem(fromIndex - nonRegexItemsCount, toIndex - nonRegexItemsCount)
         }
+
 
     PanoLazyColumn(
         state = listState,
-        modifier = Modifier.dragContainer(dragDropState),
+        modifier = modifier.dragContainer(dragDropState),
     ) {
-        if (regexEdits == null) {
-            val listForShimmer = List(10) {
-                RegexEdit(_id = it)
-            }
-            items(listForShimmer, key = { it._id }) {
-                RegexEditItem(
-                    regexEdit = it,
-                    forShimmer = true,
-                    canMoveUp = false,
-                    canMoveDown = false,
-                    onKeypressMoveItem = { _, _ -> },
-                    onItemClick = { },
-                    modifier = Modifier.shimmerWindowBounds().animateItem(),
-                )
-            }
-        } else {
-            itemsIndexed(regexEdits, key = { _, item -> item._id }) { index, item ->
-                DraggableItem(dragDropState, index) { isDragging ->
-                    RegexEditItem(
-                        regexEdit = item,
-                        onItemClick = { onItemClick(it) },
-                        canMoveUp = index > 0,
-                        canMoveDown = index < regexEdits.size - 1,
-                        onKeypressMoveItem = { f, t ->
-                            onMoveItem(f, t)
-                            onDragEnd()
-                        },
-                        modifier = Modifier.alpha(if (isDragging) 0.5f else 1f)
-                    )
+        item(key = "test_button") {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem(),
+            ) {
+                OutlinedButton(
+                    onClick = onNavigateToTest,
+                ) {
+                    Text(text = stringResource(Res.string.edit_regex_test))
                 }
             }
         }
+
+        item(key = "presets_header") {
+            Text(
+                text = stringResource(Res.string.edit_presets),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalOverscanPadding(), vertical = 4.dp)
+                    .animateItem()
+            )
+        }
+
+        items(presetsWithState, key = { it.first }) { (preset, enabled) ->
+            PresetItem(
+                preset = preset,
+                isEnabled = enabled,
+                onToggle = { isEnabled ->
+                    onPresetToggled(preset, isEnabled)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem()
+            )
+        }
+
+        item(key = "custom_header") {
+            if (regexEdits.size >= Stuff.MAX_PATTERNS) {
+                Text(
+                    text = stringResource(Res.string.edit_max_patterns),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = horizontalOverscanPadding(), vertical = 4.dp)
+                        .animateItem()
+                )
+            } else {
+                Text(
+                    text = stringResource(Res.string.charts_custom),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = horizontalOverscanPadding(), vertical = 4.dp)
+                        .animateItem()
+                )
+            }
+        }
+
+        itemsIndexed(regexEdits, key = { _, item -> item._id }) { index, item ->
+            DraggableItem(dragDropState, index + nonRegexItemsCount) { isDragging ->
+                RegexEditItem(
+                    regexEdit = item,
+                    onItemClick = onItemClick,
+                    canMoveUp = (index + nonRegexItemsCount) > 0,
+                    canMoveDown = index < regexEdits.size - 1,
+                    onKeypressMoveItem = { f, t ->
+                        onMoveItem(f, t)
+                        onDragEnd()
+                    },
+                    modifier = Modifier.alpha(if (isDragging) 0.5f else 1f)
+                )
+            }
+        }
     }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun PresetItem(
+    preset: RegexPreset,
+    isEnabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LabeledCheckbox(
+        checked = isEnabled,
+        onCheckedChange = onToggle,
+        text = RegexPresets.getString(preset),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = horizontalOverscanPadding())
+    )
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -232,17 +250,9 @@ private fun RegexEditItem(
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
 ) {
-    val regexEdit = remember(regexEdit) { RegexPresets.getPossiblePreset(regexEdit) }
     val modifierIcons = getModifierIcons(regexEdit)
 
-    val name = if (regexEdit.preset == null) {
-        regexEdit.name ?: regexEdit.pattern
-    } else {
-        stringResource(
-            Res.string.edit_preset_name,
-            RegexPresets.getString(regexEdit.preset)
-        )
-    }
+    val name = regexEdit.name
 
     Row(
         modifier = modifier
@@ -300,29 +310,12 @@ private fun RegexEditItem(
                 .backgroundForShimmer(forShimmer)
         ) {
             Text(
-                text = name ?: "",
+                text = name,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            if (regexEdit.replacement.isNotEmpty()) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.FindReplace,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = regexEdit.replacement,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
@@ -345,61 +338,13 @@ private fun RegexEditItem(
 private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
     val m = mutableListOf<ImageVector>()
 
-    regexEdit.fields?.forEach {
-        when (it) {
-            RegexEditFields.TRACK -> m += Icons.Outlined.MusicNote
-            RegexEditFields.ALBUM -> m += Icons.Outlined.Album
-            RegexEditFields.ALBUM_ARTIST -> m += PanoIcons.AlbumArtist
-            RegexEditFields.ARTIST -> m += Icons.Outlined.Mic
-        }
-    }
+    if (regexEdit.blockPlayerAction != null) m += Icons.Outlined.Block
+    else if (regexEdit.replacement == null) m += Icons.Outlined.SwipeLeftAlt
+    else m += Icons.Outlined.FindReplace
 
-    if (regexEdit.extractionPatterns != null) m += Icons.Outlined.SwipeLeftAlt
-    if (!regexEdit.packages.isNullOrEmpty()) m += Icons.Outlined.Apps
-    if (regexEdit.caseSensitive) m += PanoIcons.AlbumArtist
-    if (regexEdit.replaceAll) m += Icons.Outlined.Public
-    if (regexEdit.continueMatching) m += Icons.Outlined.ChevronRight
+    if (regexEdit.appIds.isNotEmpty()) m += Icons.Outlined.Apps
+    if (regexEdit.caseSensitive) m += PanoIcons.MatchCase
+    if (regexEdit.replacement?.replaceAll == true) m += Icons.Outlined.Public
 
     return m
-}
-
-@Composable
-private fun PresetsDialog(
-    presetsAvailable: List<String>,
-    onDismissRequest: () -> Unit,
-    onPresetSelected: (String) -> Unit,
-) {
-    if (presetsAvailable.isNotEmpty()) {
-        AlertDialog(
-            onDismissRequest = onDismissRequest,
-            title = {
-                Text(text = stringResource(Res.string.edit_presets_available))
-            },
-            text = {
-                Column {
-                    presetsAvailable.forEach { preset ->
-                        Text(
-                            text = RegexPresets.getString(preset),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable { onPresetSelected(preset) }
-                                .padding(16.dp)
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = onDismissRequest) {
-                    Text(text = stringResource(Res.string.cancel))
-                }
-            }
-        )
-    } else {
-        AlertDialogOk(
-            onConfirmation = onDismissRequest,
-            text = stringResource(Res.string.edit_no_presets_available)
-        )
-
-    }
 }

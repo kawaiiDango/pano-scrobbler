@@ -22,7 +22,6 @@ import kotlinx.serialization.Transient
 @Serializable
 data class SimpleEdit(
     @PrimaryKey(autoGenerate = true)
-    @Transient
     val _id: Int = 0,
 
     @SerialName("hash")

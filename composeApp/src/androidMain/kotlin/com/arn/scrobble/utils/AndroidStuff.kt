@@ -36,9 +36,12 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import java.io.File
 import java.util.Locale
+import kotlin.properties.Delegates
 
 object AndroidStuff {
     lateinit var application: Application
+
+    var isMainProcess by Delegates.notNull<Boolean>()
 
     const val updateCurrentOrImmutable =
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

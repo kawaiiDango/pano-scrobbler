@@ -49,14 +49,14 @@ expect object PlatformStuff {
 
     suspend fun launchSearchIntent(
         musicEntry: MusicEntry,
-        pkgName: String?,
+        appId: String?,
     )
 
     fun isNotiChannelEnabled(channelId: String): Boolean
 
     fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb>
 
-    fun loadApplicationLabel(pkgName: String): String
+    fun loadApplicationLabel(appId: String): String
 
     suspend fun getWebviewCookies(uri: String): Map<String, String>
 

@@ -1,52 +1,79 @@
 package com.arn.scrobble.media
 
-import com.arn.scrobble.api.lastfm.Album
-import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.MusicEntryAttr
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
-import kotlinx.serialization.Serializable
+import java.util.Objects
 
-@Serializable
-data class PlayingTrackInfo(
+class PlayingTrackInfo(
     val appId: String,
     val sessionId: String,
-
-    var title: String = "",
-    var origTitle: String = "",
-
-    var album: String = "",
-    var origAlbum: String = "",
-
-    var artist: String = "",
-    var origArtist: String = "",
-
-    var albumArtist: String = "",
-    var origAlbumArtist: String = "",
-
-    var playStartTime: Long = 0,
-    var durationMillis: Long = 0,
-    var scrobbleAtMonotonicTime: Long = 0,
-    var hash: Int = 0,
-    var isPlaying: Boolean = false,
-    var userPlayCount: Int = 0,
-    var userLoved: Boolean = false,
-    var ignoreOrigArtist: Boolean = false,
-    var canDoFallbackScrobble: Boolean = false,
-
-    var lastScrobbleHash: Int = 0,
-    var lastSubmittedScrobbleHash: Int = 0,
-    var timePlayed: Long = 0L,
-
-    val hasBlockedTag: Boolean = (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(sessionId) == true ||
-            Stuff.BLOCKED_MEDIA_SESSION_TAGS[appId]
-                ?.contains(sessionId) == true),
 ) {
+    var title: String = ""
+        private set
+    var origTitle: String = ""
+        private set
 
-    fun putOriginals(artist: String, title: String) = putOriginals(artist, title, "", "")
+    var album: String = ""
+        private set
 
-    fun putOriginals(artist: String, title: String, album: String, albumArtist: String) {
+    var origAlbum: String = ""
+        private set
+
+    var artist: String = ""
+        private set
+    var origArtist: String = ""
+        private set
+
+    var albumArtist: String = ""
+        private set
+    var origAlbumArtist: String = ""
+        private set
+
+    var playStartTime: Long = 0
+        private set
+
+    var durationMillis: Long = 0
+        private set
+
+    var hash: Int = 0
+        private set
+
+    var isPlaying: Boolean = false
+        private set
+
+    var userPlayCount: Int = 0
+        private set
+
+    var userLoved: Boolean = false
+        private set
+
+    var lastScrobbleHash: Int = 0
+        private set
+
+    var lastSubmittedScrobbleHash: Int = 0
+        private set
+
+    var timePlayed: Long = 0L
+        private set
+
+    var preprocessed: Boolean = false
+        private set
+
+    val hasBlockedTag: Boolean =
+        (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(sessionId) == true ||
+                Stuff.BLOCKED_MEDIA_SESSION_TAGS[appId]
+                    ?.contains(sessionId) == true)
+
+    fun putOriginals(artist: String, title: String) = putOriginals(artist, title, "", "", 0)
+
+    fun putOriginals(
+        artist: String,
+        title: String,
+        album: String,
+        albumArtist: String,
+        durationMillis: Long
+    ) {
         origArtist = artist
         this.artist = artist
         origTitle = title
@@ -55,52 +82,65 @@ data class PlayingTrackInfo(
         this.album = album
         origAlbumArtist = albumArtist
         this.albumArtist = albumArtist
+
+        this.durationMillis = durationMillis
+        hash = Objects.hash(albumArtist, artist, album, title, appId, sessionId)
+        preprocessed = false
     }
 
-    fun toScrobbleData() = ScrobbleData(
-        track = title,
-        artist = artist,
-        album = album,
-        albumArtist = albumArtist,
+    fun prepareForScrobbling() {
+        if (!preprocessed) {
+            artist = MetadataUtils.sanitizeArtist(origArtist)
+            album = MetadataUtils.sanitizeAlbum(origAlbum)
+            albumArtist = MetadataUtils.sanitizeAlbumArtist(origAlbumArtist)
+            userPlayCount = 0
+            userLoved = false
+        }
+
+        isPlaying = true
+        playStartTime = System.currentTimeMillis()
+        lastScrobbleHash = hash
+        lastSubmittedScrobbleHash = 0
+    }
+
+    fun updateUserProps(
+        userPlayCount: Int = this.userPlayCount,
+        userLoved: Boolean = this.userLoved,
+    ) {
+        this.userPlayCount = userPlayCount
+        this.userLoved = userLoved
+    }
+
+    fun resetTimePlayed() {
+        timePlayed = 0L
+    }
+
+    fun addTimePlayed() {
+        timePlayed += System.currentTimeMillis() - playStartTime
+    }
+
+    fun toScrobbleData(useOriginals: Boolean) = ScrobbleData(
+        track = if (useOriginals) origTitle else title,
+        artist = if (useOriginals) origArtist else artist,
+        album = (if (useOriginals) origAlbum else album).ifEmpty { null },
+        albumArtist = (if (useOriginals) origAlbumArtist else albumArtist).ifEmpty { null },
         timestamp = playStartTime,
         duration = durationMillis.takeIf { it >= 30000L },
-        packageName = appId,
+        appId = appId,
     )
 
-    fun toTrack() = Track(
-        name = title,
-        artist = Artist(artist),
-        album = album.ifEmpty { null }
-            ?.let { Album(album, Artist(albumArtist.ifEmpty { artist })) },
-        userplaycount = userPlayCount,
-        userloved = userLoved,
-        duration = durationMillis,
-        _attr = MusicEntryAttr(
-            nowplaying = isPlaying,
-        ),
-    )
-
-    fun updateMetaFrom(p: PlayingTrackInfo): PlayingTrackInfo {
-        title = p.title
-        album = p.album
-        artist = p.artist
-        albumArtist = p.albumArtist
-        userLoved = p.userLoved
-        userPlayCount = p.userPlayCount
-        return this
-    }
-
-    fun updateMetaFrom(sd: ScrobbleData): PlayingTrackInfo {
+    fun putPreprocessedData(sd: ScrobbleData) {
         title = sd.track
-        album = sd.album ?: ""
+        album = sd.album.orEmpty()
         artist = sd.artist
-        albumArtist = sd.albumArtist ?: ""
-        return this
+        albumArtist = sd.albumArtist.orEmpty()
+        preprocessed = true
     }
 
     fun markAsScrobbled() {
         if (lastScrobbleHash == hash) {
             lastSubmittedScrobbleHash = hash
+            isPlaying = false
         }
     }
 }

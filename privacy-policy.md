@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated on 2025, May 14 UTC_
+_Last updated on 2025, June 21 UTC_
 
 Applicable to the Pano Scrobbler app version 4.0 and later.
 
@@ -26,8 +26,8 @@ metadata, to the previously mentioned music tracking services of your choice. To
 artists, the name of the artist is sent to Spotify. If you are using the version downloaded from
 Google Play and automatic error reporting is enabled, an anonymous, resettable device identifier is
 sent to Firebase Crashlytics. If you are using the non-Google Play version and have entered the
-unlock key, a hash of a device identifier as well as the unlock key is sent to the backend server to
-check its validity and prevent its abuse.
+unlock key, a truncated hash of a device identifier as well as the unlock key is sent to the backend
+server to check its validity and to limit the number of devices it can be used on.
 
 ### Third Party Services
 

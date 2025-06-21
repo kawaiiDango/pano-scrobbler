@@ -8,7 +8,6 @@ import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.ComposeHotRun
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -63,8 +62,6 @@ val resourcesDirName = when {
     else -> throw IllegalStateException("Unsupported platform: $os $arch")
 }
 
-val pathSeperator = File.pathSeparator!!
-
 val versionFile = file("version.txt")
 var verCode: Int
 if (versionFile.canRead()) {
@@ -85,10 +82,6 @@ val verNameWithDate =
 val appId = "com.arn.scrobble"
 val appName = "Pano Scrobbler"
 val appNameWithoutSpaces = "pano-scrobbler"
-
-composeCompiler {
-    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
-}
 
 kotlin {
     androidTarget {
@@ -115,6 +108,7 @@ kotlin {
             implementation(libs.documentfile)
             implementation(libs.harmony)
             implementation(libs.coil.gif)
+            implementation(libs.androidx.sqlite.framework)
 
 //            implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 
@@ -151,7 +145,9 @@ kotlin {
             implementation(libs.paging.common)
             implementation(projects.androidxMod.androidx.paging.compose)
             implementation(libs.navigation.compose)
-            implementation(libs.compose.adaptive)
+            implementation(libs.adaptive)
+            implementation(libs.adaptive.layout)
+            implementation(libs.adaptive.navigation)
             implementation(libs.koalaplot.core)
             implementation(libs.nanohttpd)
             implementation(libs.androidx.room.runtime)
@@ -355,19 +351,23 @@ compose.desktop {
     application {
         mainClass = "com.arn.scrobble.main.MainKt"
 
-        val libraryPath = if (isReleaseBuild)
+        val libraryPathRel = if (isReleaseBuild)
             "\$APPDIR/resources"
         else
-            "./resources/$resourcesDirName"
+            File(
+                project.layout.projectDirectory.dir("resources").asFile,
+                resourcesDirName
+            ).absolutePath
+
+        val libraryPath = File(libraryPathRel).absolutePath
 
         // ZGC starts with ~70MB minimized and goes down to ~160MB after re-minimizing
         jvmArgs += listOfNotNull(
-            "-Djava.library.path=$libraryPath",
+            "-Dpano.native.components.path=$libraryPath",
             if (os.isLinux)
                 "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED"
             else
                 null,
-            "-Ddev.resources.dir.name=$resourcesDirName",
 //            "-XX:NativeMemoryTracking=detail",
             "-XX:+UseSerialGC",
             "-XX:+UseAdaptiveSizePolicy",
@@ -433,10 +433,13 @@ compose.desktop {
 }
 
 tasks.withType<ComposeHotRun>().configureEach {
+    val libraryPath =
+        File(project.layout.projectDirectory.dir("resources").asFile, resourcesDirName).absolutePath
+
     mainClass = "com.arn.scrobble.main.MainKt"
     jvmArgs = (jvmArgs ?: emptyList()) + listOf(
-        "-Djava.library.path=\$APPDIR/resources${pathSeperator}./resources/$resourcesDirName",
-        "-Ddev.resources.dir.name=$resourcesDirName",
+        "-Dpano.native.components.path=$libraryPath",
+        "-Dcompose.application.configure.swing.globals=true",
     )
     val appDataRoot = when {
         os.isWindows -> {
@@ -479,10 +482,10 @@ tasks.register<DefaultTask>("generateSha256") {
             "$hash  ${file.name}"
         }?.let {
             val text = it.joinToString("\n")
-            val sumFile = File(distDir, "SHA256SUMS.txt")
+            val sumFile = File(distDir, "sha256sums.txt")
             sumFile.writeText(text)
 
-            println("SHA256SUMS.txt generated")
+            println("sha256sums.txt generated")
         }
     }
 }
@@ -660,15 +663,24 @@ tasks.register<Exec>("buildNativeImage") {
         "-Dcompose.application.configure.swing.globals=true",
         "-H:ConfigurationFileDirectories=" + reachabilityFiles.absolutePath,
         "-Djava.awt.headless=false",
-        "-H:+ReportExceptionStackTraces",
         "-R:MaxHeapSize=300M",
         "-H:+AddAllCharsets",
+        "-H:+IncludeAllLocales",
+//        "-g",
+//        "--enable-monitoring=nmt",
+        "--enable-native-access=ALL-UNNAMED",
+//        "-H:+ForeignAPISupport",
+        "-H:InitialCollectionPolicy=BySpaceAndTime",
+        "-H:MaxSurvivorSpaces=0",
+        "--gc=serial",
+        "-R:MaxHeapFree=20M",
         if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
         if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,
         if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.absolutePath}\"" else null,
         "-jar",
         jarFile.absolutePath,
-        outputFile.absolutePath
+        "-o",
+        outputFile.absolutePath,
     )
 
     commandLine(command)

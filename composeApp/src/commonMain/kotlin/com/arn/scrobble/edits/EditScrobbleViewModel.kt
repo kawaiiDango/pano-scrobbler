@@ -16,12 +16,9 @@ import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
-import com.arn.scrobble.media.PlayingTrackNotifyEvent
-import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
@@ -55,14 +52,12 @@ class EditScrobbleViewModel : ViewModel() {
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
-        hash: Int?,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val r = validateAsync(
                 origScrobbleData,
                 newScrobbleData,
                 msid,
-                hash,
             ).recoverCatching {
                 if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
                     throw LastfmUnscrobbler.CookiesInvalidatedException(getString(Res.string.lastfm_reauth))
@@ -85,13 +80,12 @@ class EditScrobbleViewModel : ViewModel() {
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
-        hash: Int?,
     ): Result<ScrobbleData> {
         val track = newScrobbleData.track.trim()
         val origTrack = origScrobbleData.track
-        var album = newScrobbleData.album?.trim() ?: ""
-        val origAlbum = origScrobbleData.album ?: ""
-        var albumArtist = newScrobbleData.albumArtist?.trim() ?: ""
+        var album = newScrobbleData.album?.trim()?.ifEmpty { null }
+        val origAlbum = origScrobbleData.album
+        var albumArtist = newScrobbleData.albumArtist?.trim()?.ifEmpty { null }
         val artist = newScrobbleData.artist.trim()
         val origArtist = origScrobbleData.artist
         val timeMillis = origScrobbleData.timestamp
@@ -99,19 +93,20 @@ class EditScrobbleViewModel : ViewModel() {
 
         val regexEditsLearnt = PlatformStuff.mainPrefs.data.map { it.regexEditsLearnt }.first()
         val fetchAlbum = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
-        val fetchAlbumAndAlbumArtist = album.isBlank() && origAlbum.isBlank() && fetchAlbum
+        val fetchAlbumAndAlbumArtist =
+            album.isNullOrBlank() && origAlbum.isNullOrBlank() && fetchAlbum
         val rescrobbleRequired = !isNowPlaying && (fetchAlbumAndAlbumArtist ||
                 (track.equals(origTrack, ignoreCase = true) &&
                         artist.equals(origArtist, ignoreCase = true)
-                        && (album != origAlbum || albumArtist.isNotBlank())))
-        val scrobbleData = ScrobbleData(
+                        && (album != origAlbum || !albumArtist.isNullOrBlank())))
+        var scrobbleData = ScrobbleData(
             artist = artist,
             track = track,
             timestamp = if (timeMillis > 0) timeMillis else System.currentTimeMillis(),
             album = album,
             albumArtist = albumArtist,
             duration = origScrobbleData.duration,
-            packageName = origScrobbleData.packageName,
+            appId = origScrobbleData.appId,
         )
         val scrobblable = Scrobblables.current.value
         val scrobbleResult: Result<ScrobbleIgnored>
@@ -129,11 +124,11 @@ class EditScrobbleViewModel : ViewModel() {
                 val dao = PanoDb.db.getSimpleEditsDao()
                 val e = SimpleEdit(
                     artist = artist,
-                    album = album,
-                    albumArtist = albumArtist,
+                    album = album ?: "",
+                    albumArtist = albumArtist ?: "",
                     track = track,
                     origArtist = origArtist,
-                    origAlbum = origAlbum,
+                    origAlbum = origAlbum ?: "",
                     origTrack = origTrack,
                 )
                 dao.insertReplaceLowerCase(e)
@@ -162,14 +157,14 @@ class EditScrobbleViewModel : ViewModel() {
                 .getInfo(newTrack)
                 .getOrNull()
 
-            if (album.isBlank() && fetchedTrack?.album != null) {
+            if (album.isNullOrBlank() && fetchedTrack?.album != null) {
                 album = fetchedTrack.album.name
-                scrobbleData.album = fetchedTrack.album.name
+                scrobbleData = scrobbleData.copy(album = album)
                 _updatedAlbum.emit(album)
             }
-            if (albumArtist.isBlank() && fetchedTrack?.album?.artist != null) {
+            if (albumArtist.isNullOrBlank() && fetchedTrack?.album?.artist != null) {
                 albumArtist = fetchedTrack.album.artist.name
-                scrobbleData.albumArtist = albumArtist
+                scrobbleData = scrobbleData.copy(albumArtist = albumArtist)
                 _updatedAlbumArtist.emit(albumArtist)
             }
         }
@@ -199,7 +194,7 @@ class EditScrobbleViewModel : ViewModel() {
 
             val trackObj = Track(
                 track,
-                Album(album, _artist),
+                album?.let { Album(it, _artist) },
                 _artist,
                 date = timeMillis
             )
@@ -208,7 +203,7 @@ class EditScrobbleViewModel : ViewModel() {
         }
 
         // track player
-        scrobbleData.packageName?.let {
+        scrobbleData.appId?.let {
             val scrobbleSource =
                 ScrobbleSource(timeMillis = scrobbleData.timestamp, pkg = it)
             PanoDb.db.getScrobbleSourcesDao().insert(scrobbleSource)
@@ -217,45 +212,34 @@ class EditScrobbleViewModel : ViewModel() {
         saveEdit()
 
         // suggest regex edit
-        if (!regexEditsLearnt) {
-            val dao = PanoDb.db.getRegexEditsDao()
-
-            val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets().first()
-                .map { it.preset }.toSet())
-                .mapIndexed { index, key ->
-                    RegexPresets.getPossiblePreset(
-                        RegexEdit(order = index, preset = key)
-                    )
-                }
-
-            if (presetsAvailable.isNotEmpty()) {
-                val suggestedRegexReplacements = dao.performRegexReplace(
-                    scrobbleData,
-                    null,
-                    presetsAvailable,
-                ).fieldsMatched
-
-                val firstSuggestion =
-                    suggestedRegexReplacements.values.firstOrNull { it.isNotEmpty() }?.firstOrNull()
-
-                val replacementsInEdit =
-                    dao.performRegexReplace(scrobbleData, null, presetsAvailable)
-
-                if (firstSuggestion != null && !replacementsInEdit.isEdit) {
-                    _suggestRegexEdit.emit(firstSuggestion)
-                }
-            }
-        }
-
-        if (!isNowPlaying && hash != null) {
-            val cancelEvent = PlayingTrackNotifyEvent.TrackCancelled(
-                hash = hash,
-                showUnscrobbledNotification = false,
-                markAsScrobbled = false
-            )
-
-            notifyPlayingTrackEvent(cancelEvent)
-        }
+//        if (!regexEditsLearnt) {
+//            val dao = PanoDb.db.getRegexEditsDao()
+//
+//            val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets().first()
+//                .map { it.preset }.toSet())
+//                .mapIndexed { index, key ->
+//                    RegexPresets.getPossiblePreset(
+//                        RegexEdit(order = index, preset = key)
+//                    )
+//                }
+//
+//            if (presetsAvailable.isNotEmpty()) {
+//                val suggestedRegexReplacements = dao.performRegexReplace(
+//                    scrobbleData,
+//                    presetsAvailable,
+//                ).fieldsMatched
+//
+//                val firstSuggestion =
+//                    suggestedRegexReplacements.values.firstOrNull { it.isNotEmpty() }?.firstOrNull()
+//
+//                val replacementsInEdit =
+//                    dao.performRegexReplace(scrobbleData, presetsAvailable)
+//
+//                if (firstSuggestion != null && replacementsInEdit.scrobbleData == null) {
+//                    _suggestRegexEdit.emit(firstSuggestion)
+//                }
+//            }
+//        }
 
         return Result.success(scrobbleData)
     }

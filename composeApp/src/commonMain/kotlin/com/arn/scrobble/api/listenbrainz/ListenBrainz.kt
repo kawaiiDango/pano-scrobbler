@@ -91,7 +91,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         release_name = if (!scrobbleData.album.isNullOrEmpty()) scrobbleData.album else null,
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
-                            duration_ms = scrobbleData.duration?.takeIf { it > 30000 },
+                            duration_ms = scrobbleData.safeDuration(),
                             submission_client = BuildKonfig.APP_NAME,
                             submission_client_version = (BuildKonfig.VER_CODE / 100f).toString(),
                         )

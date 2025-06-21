@@ -2,7 +2,6 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.PanoNativeComponents
-import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -24,12 +23,12 @@ class DesktopMediaListener(
     private val sessionTrackersMap = mutableMapOf<String, SessionTracker>()
     private var sessionInfos: List<SessionInfo> = emptyList()
 
-    private val seenAppIds =
-        PlatformStuff.mainPrefs.data.mapLatest { it.seenApps.map { it.appId }.toSet() }
+    private val seenApps =
+        PlatformStuff.mainPrefs.data.mapLatest { it.seenApps }
             .stateIn(
                 scope,
                 SharingStarted.Eagerly,
-                Stuff.mainPrefsInitialValue.seenApps.map { it.appId }.toSet()
+                Stuff.mainPrefsInitialValue.seenApps
             )
 
 
@@ -65,17 +64,16 @@ class DesktopMediaListener(
             return
 
         val unseenAppItems = sessions
-            .filter { it.app_id !in seenAppIds.value }
-            .map { AppItem(it.app_id, it.app_name) }
-            .toSet()
+            .filter { it.app_id !in seenApps.value }
+            .map { it.app_id to it.app_name }
 
         if (unseenAppItems.isNotEmpty()) {
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(seenApps = it.seenApps + unseenAppItems) }
             }
 
-            unseenAppItems.forEach {
-                PanoNotifications.notifyAppDetected(it.appId, it.friendlyLabel)
+            unseenAppItems.forEach { (appId, friendlyLabel) ->
+                PanoNotifications.notifyAppDetected(appId, friendlyLabel)
             }
         }
 
@@ -97,8 +95,7 @@ class DesktopMediaListener(
                         putTrackInfo(session.app_id, it)
                     }
 
-            sessionTrackersMap[session.app_id] =
-                SessionTracker(playingTrackInfo)
+            sessionTrackersMap[session.app_id] = SessionTracker(playingTrackInfo)
         }
 //            }
 //        }
@@ -180,16 +177,12 @@ class DesktopMediaListener(
         trackInfo.isPlaying && trackInfo.title.isNotBlank() && trackInfo.artist.isNotBlank()
 
 
-    override fun hasOtherPlayingControllers(thisTrackInfo: PlayingTrackInfo): Boolean {
+    override fun hasOtherPlayingControllers(appId: String, sessionId: String): Boolean {
         return sessionTrackersMap.entries.any { (sessionKey, sessionTracker) ->
-            sessionKey.startsWith(thisTrackInfo.appId + "|") &&
-                    sessionKey != thisTrackInfo.appId + "|" + thisTrackInfo.sessionId &&
+            sessionKey.startsWith("$appId|") &&
+                    sessionKey != "$appId|$sessionId" &&
                     sessionTracker.isMediaPlaying()
         }
-    }
-
-    override fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {
-        return false
     }
 
     fun platformMetadataChanged(metadata: MetadataInfo) {
@@ -204,12 +197,12 @@ class DesktopMediaListener(
             return
         }
 
-        val (metadata, canDoFallbackScrobble) = transformMediaMetadata(
+        val metadata = transformMediaMetadata(
             sessionTracker.trackInfo,
             metadata
         )
 
-        sessionTracker.metadataChanged(metadata, canDoFallbackScrobble)
+        sessionTracker.metadataChanged(metadata)
     }
 
     fun platformPlaybackStateChanged(playbackInfo: PlaybackInfo) {

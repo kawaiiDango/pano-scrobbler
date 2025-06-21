@@ -1,42 +1,36 @@
 package com.arn.scrobble.friends
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -46,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,46 +61,36 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import co.touchlab.kermit.Logger
-import coil3.compose.AsyncImage
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.AvatarOrInitials
+import com.arn.scrobble.ui.DraggableItem
 import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.GridOrListSelector
-import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.ListLoadError
-import com.arn.scrobble.ui.NowPlayingSurface
-import com.arn.scrobble.ui.PanoLazyVerticalGrid
+import com.arn.scrobble.ui.MusicEntryListItem
+import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
-import com.arn.scrobble.ui.minGridSize
-import com.arn.scrobble.ui.placeholderImageVectorPainter
-import com.arn.scrobble.ui.placeholderPainter
+import com.arn.scrobble.ui.dragContainer
+import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
+import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.album_art
-import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.following
 import pano_scrobbler.composeapp.generated.resources.from
 import pano_scrobbler.composeapp.generated.resources.move_down
-import pano_scrobbler.composeapp.generated.resources.move_left
-import pano_scrobbler.composeapp.generated.resources.move_right
 import pano_scrobbler.composeapp.generated.resources.move_up
 import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.no_friends
@@ -115,7 +101,7 @@ import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.sort
-import pano_scrobbler.composeapp.generated.resources.time_just_now
+import pano_scrobbler.composeapp.generated.resources.track
 import pano_scrobbler.composeapp.generated.resources.unpin
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,7 +114,6 @@ fun FriendsScreen(
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
-    dialogFriendExtraDataFlow: MutableSharedFlow<FriendExtraData>,
     modifier: Modifier = Modifier,
     viewModel: FriendsVM = viewModel { FriendsVM() },
 ) {
@@ -137,20 +122,21 @@ fun FriendsScreen(
     val totalFriends by viewModel.totalFriends.collectAsStateWithLifecycle()
     val friendsExtraDataMap by viewModel.friendsExtraDataMap.collectAsStateWithLifecycle()
     val friendsExtraDataMapState = remember { mutableStateMapOf<String, FriendExtraData>() }
-    val pinnedFriends = if (PlatformStuff.billingRepository.isLicenseValid) {
+    val pinnedFriends by if (PlatformStuff.billingRepository.isLicenseValid && user.isSelf) {
         viewModel.pinnedFriends.collectAsStateWithLifecycle()
     } else {
         remember { mutableStateOf(emptyList()) }
     }
-    val pinnedUsernamesSet = if (PlatformStuff.billingRepository.isLicenseValid) {
-        viewModel.pinnedUsernamesSet.collectAsStateWithLifecycle()
-    } else {
-        remember { mutableStateOf(emptySet()) }
+    var pinnedFriendsReordered by remember { mutableStateOf(pinnedFriends) }
+
+    val pinnedUsernamesSet by remember(pinnedFriendsReordered) {
+        mutableStateOf(pinnedFriends.map { it.name }.toSet())
     }
-    var isInEditMode by rememberSaveable { mutableStateOf(false) }
     val sortedFriends by viewModel.sortedFriends.collectAsStateWithLifecycle()
     val lastFriendsRefreshTime by viewModel.lastFriendsRefreshTime.collectAsStateWithLifecycle()
-    var lastExpandedFriendUsername by remember { mutableStateOf<String?>(null) }
+    var lastFriendsRecentsRefreshTime by rememberSaveable(lastFriendsRefreshTime) {
+        mutableLongStateOf(lastFriendsRefreshTime)
+    }
     val sortable by remember(
         friends.loadState.append,
         friends.itemCount,
@@ -166,9 +152,25 @@ fun FriendsScreen(
         }
     }
 
-    val gridState = rememberLazyGridState()
+    val listState = rememberLazyListState()
+    val dragDropState =
+        rememberDragDropState(
+            listState,
+            onDragEnd = {
+                pinnedFriendsReordered.let { viewModel.savePins(it) }
+            }
+        ) { fromIndex, toIndex ->
+            pinnedFriendsReordered =
+                viewModel.movePin(pinnedFriendsReordered, fromIndex, toIndex)
+        }
+
     val followingText = stringResource(Res.string.following)
-    val isColumn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.gridSingleColumn }
+
+    LaunchedEffect(pinnedFriends) {
+        if (PlatformStuff.billingRepository.isLicenseValid) {
+            pinnedFriendsReordered = pinnedFriends
+        }
+    }
 
     LaunchedEffect(user) {
         viewModel.setUser(user)
@@ -176,12 +178,6 @@ fun FriendsScreen(
 
     LaunchedEffect(friendsExtraDataMap) {
         friendsExtraDataMapState.putAll(friendsExtraDataMap)
-        if (lastExpandedFriendUsername != null) {
-            val newExtraData = friendsExtraDataMapState[lastExpandedFriendUsername]
-            if (newExtraData != null) {
-                dialogFriendExtraDataFlow.emit(newExtraData)
-            }
-        }
     }
 
     LaunchedEffect(totalFriends) {
@@ -191,8 +187,8 @@ fun FriendsScreen(
             onTitleChange(followingText)
     }
 
-    LaunchedEffect(gridState, lastFriendsRefreshTime) {
-        snapshotFlow { gridState.layoutInfo.visibleItemsInfo.map { it.key } }
+    LaunchedEffect(listState, lastFriendsRecentsRefreshTime) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.map { it.key } }
             .collectLatest { visibleKeys ->
                 visibleKeys
                     .filterIsInstance<String>()
@@ -217,8 +213,6 @@ fun FriendsScreen(
             }
         )
 
-        lastExpandedFriendUsername = null
-
         onPauseOrDispose {
             onSetRefreshing(PanoPullToRefreshStateForTab.Disabled)
         }
@@ -237,25 +231,19 @@ fun FriendsScreen(
 
 
     AutoRefreshEffect(
-        lastRefreshTime = lastFriendsRefreshTime,
+        lastRefreshTime = lastFriendsRecentsRefreshTime,
         interval = Stuff.FRIENDS_REFRESH_INTERVAL,
-        shouldRefresh = {
-            sortedFriends == null &&
-                    gridState.firstVisibleItemIndex < 4
+        doRefresh = {
+            if (sortedFriends == null && listState.firstVisibleItemIndex < 4) {
+                viewModel.markExtraDataAsStale()
+                lastFriendsRecentsRefreshTime = System.currentTimeMillis()
+                true
+            } else {
+                false
+            }
         },
         lazyPagingItems = friends,
     )
-
-    fun expandFriend(friend: UserCached) {
-        val dialogArgs = PanoDialog.Friend(
-            friend = friend,
-            isPinned = friend.name in pinnedUsernamesSet.value,
-            extraData = friendsExtraDataMapState[friend.name],
-        )
-        lastExpandedFriendUsername = friend.name
-
-        onOpenDialog(dialogArgs)
-    }
 
     PanoPullToRefresh(
         state = pullToRefreshState,
@@ -265,36 +253,16 @@ fun FriendsScreen(
 
         EmptyText(
             visible = friends.loadState.refresh is LoadState.NotLoading &&
-                    friends.itemCount == 0,
+                    friends.itemCount == 0 && pinnedFriendsReordered.isEmpty(),
             text = stringResource(Res.string.no_friends)
         )
 
-        PanoLazyVerticalGrid(
-            columns = if (isColumn)
-                GridCells.Fixed(1)
-            else
-                GridCells.Adaptive(minSize = minGridSize()),
-            state = gridState,
+        PanoLazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
+                .dragContainer(dragDropState)
         ) {
-
-            item(
-                key = "header row",
-                span = { GridItemSpan(maxLineSpan) }
-            ) {
-                ButtonsBarForFriends(
-                    isColumn = isColumn,
-                    isInEditMode = isInEditMode,
-                    onEditClick = if (user.isSelf && sortedFriends == null) {
-                        { isInEditMode = it }
-                    } else
-                        null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-
             if (sortedFriends != null) {
                 items(
                     sortedFriends!!,
@@ -303,84 +271,108 @@ fun FriendsScreen(
                     FriendItem(
                         friend,
                         extraData = friendsExtraDataMapState[friend.name],
-                        isPinned = false,
-                        showPinConfig = false,
-                        onExpand = { expandFriend(friend) },
-                        isColumn = isColumn,
+                        canPinUnpin = false,
+                        onNavigateToScrobbles = {
+                            onNavigate(PanoRoute.OthersHomePager(it))
+                        },
+                        onNavigateToTrackInfo = { track, user ->
+                            onOpenDialog(
+                                PanoDialog.MusicEntryInfo(
+                                    track = track,
+                                    user = user,
+                                )
+                            )
+                        },
                         modifier = Modifier.animateItem()
                     )
                 }
-                return@PanoLazyVerticalGrid // return early
+                return@PanoLazyColumn // return early
             }
 
             if (user.isSelf && PlatformStuff.billingRepository.isLicenseValid) {
                 itemsIndexed(
-                    pinnedFriends.value,
+                    pinnedFriendsReordered,
                     key = { idx, friend -> friend.name }
                 ) { idx, friend ->
-                    FriendItem(
-                        friend,
-                        extraData = friendsExtraDataMapState[friend.name],
-                        isPinned = true,
-                        onExpand = { expandFriend(friend) },
-                        isColumn = isColumn,
-                        showPinConfig = user.isSelf && isInEditMode,
-                        onPinUnpin = { pin ->
-                            if (PlatformStuff.billingRepository.isLicenseValid) {
-                                if (pin)
-                                    viewModel.addPinAndSave(friend)
-                                else
-                                    viewModel.removePinAndSave(friend)
-                            } else {
-                                onNavigate(PanoRoute.Billing)
-                            }
-                        },
-                        onMoveLeft = if (idx == 0) null else {
-                            {
-                                viewModel.movePinAndSave(friend.name, false)
-                            }
-                        },
-                        onMoveRight = if (idx == pinnedFriends.value.lastIndex) null else {
-                            {
-                                viewModel.movePinAndSave(friend.name, true)
-                            }
-                        },
-                        modifier = Modifier.animateItem()
-                    )
+
+                    DraggableItem(dragDropState, idx) { isDragging ->
+                        FriendItem(
+                            friend,
+                            extraData = friendsExtraDataMapState[friend.name],
+                            pinIndex = idx,
+                            canPinUnpin = user.isSelf,
+                            onPinUnpin = { pin ->
+                                if (PlatformStuff.billingRepository.isLicenseValid) {
+                                    if (pin && friend.name !in pinnedUsernamesSet)
+                                        viewModel.addPinAndSave(friend)
+                                    else if (!pin && friend.name in pinnedUsernamesSet)
+                                        viewModel.removePinAndSave(friend)
+                                } else {
+                                    onNavigate(PanoRoute.Billing)
+                                }
+                            },
+                            isLastPin = idx == pinnedFriendsReordered.size - 1,
+                            onMove = { f, t ->
+                                pinnedFriendsReordered =
+                                    viewModel.movePin(pinnedFriendsReordered, f, t)
+                            },
+                            onNavigateToScrobbles = {
+                                onNavigate(PanoRoute.OthersHomePager(it))
+                            },
+                            onNavigateToTrackInfo = { track, user ->
+                                onOpenDialog(
+                                    PanoDialog.MusicEntryInfo(
+                                        track = track,
+                                        user = user,
+                                    )
+                                )
+                            },
+                            modifier = Modifier
+                                .alpha(if (isDragging) 0.5f else 1f)
+                                .animateItem()
+                        )
+                    }
                 }
             }
 
             for (i in 0 until friends.itemCount) {
                 val friendPeek = friends.peek(i)
-                if (friendPeek == null || friendPeek.name !in pinnedUsernamesSet.value) {
+                if (friendPeek == null || friendPeek.name !in pinnedUsernamesSet) {
                     item(
-                        key = friendPeek?.name ?: i
+                        key = friendPeek?.name
                     ) {
                         val friend = friends[i]
 
                         if (friend == null) {
                             FriendItemShimmer(
-                                isColumn = isColumn,
                                 modifier = Modifier.animateItem()
                             )
                         } else {
                             FriendItem(
                                 friend,
                                 extraData = friendsExtraDataMapState[friend.name],
-                                isPinned = false,
-                                showPinConfig = user.isSelf && isInEditMode,
+                                canPinUnpin = user.isSelf,
                                 onPinUnpin = { pin ->
                                     if (PlatformStuff.billingRepository.isLicenseValid) {
-                                        if (pin)
+                                        if (pin && friend.name !in pinnedUsernamesSet)
                                             viewModel.addPinAndSave(friend)
-                                        else
+                                        else if (!pin && friend.name in pinnedUsernamesSet)
                                             viewModel.removePinAndSave(friend)
                                     } else {
                                         onNavigate(PanoRoute.Billing)
                                     }
                                 },
-                                onExpand = { expandFriend(friend) },
-                                isColumn = isColumn,
+                                onNavigateToScrobbles = {
+                                    onNavigate(PanoRoute.OthersHomePager(it))
+                                },
+                                onNavigateToTrackInfo = { track, user ->
+                                    onOpenDialog(
+                                        PanoDialog.MusicEntryInfo(
+                                            track = track,
+                                            user = user,
+                                        )
+                                    )
+                                },
                                 modifier = Modifier.animateItem()
                             )
                         }
@@ -393,7 +385,6 @@ fun FriendsScreen(
                     loadState.refresh is LoadState.Loading -> {
                         items(8) { // don't put key here, top items are not scrolled to initially, otherwise
                             FriendItemShimmer(
-                                isColumn = isColumn,
                                 modifier = Modifier.animateItem()
                             )
                         }
@@ -407,7 +398,7 @@ fun FriendsScreen(
                         }
 
                         if (error != null) {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
+                            item {
                                 ListLoadError(
                                     modifier = Modifier.animateItem(),
                                     throwable = error.error,
@@ -419,16 +410,18 @@ fun FriendsScreen(
             }
 
             if (sortable) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Box {
+                item {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
                         OutlinedButton(
                             onClick = {
-                                isInEditMode = false
                                 viewModel.sortByTime(friends.itemSnapshotList.items)
-                                scope.launch { gridState.animateScrollToItem(0) }
+                                scope.launch { listState.animateScrollToItem(0) }
                             },
                             modifier = Modifier
-                                .align(Alignment.Center)
                                 .padding(16.dp)
                         ) {
                             Text(text = stringResource(Res.string.sort))
@@ -441,44 +434,7 @@ fun FriendsScreen(
 }
 
 @Composable
-fun FriendDialog(
-    friend: UserCached,
-    isPinned: Boolean,
-    extraData: FriendExtraData?,
-    extraDataFlow: Flow<FriendExtraData>,
-    onNavigate: (PanoRoute) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val extraData by extraDataFlow.collectAsStateWithLifecycle(initialValue = extraData)
-
-    FriendItem(
-        friend = friend,
-        onNavigateToScrobbles = {
-            onNavigate(PanoRoute.OthersHomePager(it))
-        },
-        onNavigateToTrackInfo = { track, user ->
-            onOpenDialog(
-                PanoDialog.MusicEntryInfo(
-                    track = track,
-                    user = user,
-                    pkgName = null
-                )
-            )
-        },
-        extraData = extraData,
-        isPinned = isPinned,
-        showPinConfig = false,
-        expanded = true,
-        isColumn = false,
-        onExpand = { },
-        modifier = modifier
-    )
-}
-
-@Composable
 private fun FriendItemShimmer(
-    isColumn: Boolean,
     modifier: Modifier = Modifier
 ) {
     val friend = remember {
@@ -495,35 +451,11 @@ private fun FriendItemShimmer(
         friend,
         forShimmer = true,
         extraData = null,
-        isPinned = false,
-        showPinConfig = false,
-        isColumn = isColumn,
+        canPinUnpin = false,
+        onNavigateToScrobbles = {},
+        onNavigateToTrackInfo = { track, user -> },
         modifier = modifier
     )
-}
-
-@Composable
-private fun FriendItemRowOrColumn(
-    isColumn: Boolean,
-    modifier: Modifier,
-    content: @Composable () -> Unit,
-) {
-    if (!isColumn) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = modifier
-        ) {
-            content()
-        }
-    } else {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = modifier
-                .padding(vertical = 16.dp)
-        ) {
-            content()
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -531,78 +463,68 @@ private fun FriendItemRowOrColumn(
 private fun FriendItem(
     friend: UserCached,
     extraData: FriendExtraData?,
-    isPinned: Boolean,
-    showPinConfig: Boolean,
-    isColumn: Boolean,
-    forShimmer: Boolean = false,
-    expanded: Boolean = false,
-    onExpand: () -> Unit = {},
-    onPinUnpin: (Boolean) -> Unit = {},
-    onMoveLeft: (() -> Boolean)? = null,
-    onMoveRight: (() -> Boolean)? = null,
-    onNavigateToScrobbles: (UserCached) -> Unit = {},
-    onNavigateToTrackInfo: (Track, UserCached) -> Unit = { _, _ -> },
+    canPinUnpin: Boolean,
+    onNavigateToScrobbles: (UserCached) -> Unit,
+    onNavigateToTrackInfo: (Track, UserCached) -> Unit,
     modifier: Modifier = Modifier,
+    forShimmer: Boolean = false,
+    pinIndex: Int? = null,
+    onPinUnpin: (Boolean) -> Unit = {},
+    onMove: (Int, Int) -> Unit = { _, _ -> },
+    isLastPin: Boolean = false,
 ) {
     val playCount = remember(extraData) { extraData?.playCount }
     val track = remember(extraData) { extraData?.track }
     val scope = rememberCoroutineScope()
+    var detailsShown by remember { mutableStateOf(false) }
 
-    FriendItemRowOrColumn(
-        isColumn = isColumn,
-        modifier = modifier
-            .padding(4.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .clickable(enabled = !expanded && !showPinConfig && !forShimmer, onClick = onExpand)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.padding(horizontal = 4.dp)
     ) {
         Column(
-            modifier = if (isColumn)
-                Modifier
-                    .width(110.dp)
-            else
-                Modifier
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .width(72.dp)
+                .padding(vertical = 16.dp)
+                .clip(MaterialTheme.shapes.medium)
+                .clickable(
+                    enabled = !forShimmer,
+                    onClick = { detailsShown = true })
         ) {
             Box(
                 modifier = Modifier
-                    .padding(6.dp).align(Alignment.CenterHorizontally)
+                    .size(72.dp)
             ) {
                 AvatarOrInitials(
                     avatarUrl = friend.largeImage,
                     avatarName = friend.name,
-                    textStyle = if (expanded) MaterialTheme.typography.displayLarge else MaterialTheme.typography.titleLarge,
+                    textStyle = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
-                        .size(
-                            if (expanded) 200.dp else 64.dp
-                        )
-                        .clip(
-                            if (expanded)
-                                MaterialTheme.shapes.large
-                            else
-                                CircleShape
-                        )
+                        .matchParentSize()
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
                         .then(if (forShimmer) Modifier.shimmerWindowBounds() else Modifier)
                         .then(
-                            if (isPinned)
+                            if (pinIndex != null)
                                 Modifier.border(
                                     width = 2.dp,
                                     color = MaterialTheme.colorScheme.secondary,
-                                    shape = if (expanded)
-                                        MaterialTheme.shapes.large
-                                    else
-                                        CircleShape
+                                    shape = CircleShape
                                 )
                             else
                                 Modifier
                         )
                 )
 
-                if (isPinned) {
+                if (pinIndex != null) {
                     Icon(
                         imageVector = Icons.Filled.PushPin,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier
-                            .size(16.dp)
                             .align(Alignment.TopEnd)
                     )
                 }
@@ -614,15 +536,56 @@ private fun FriendItem(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
+        }
 
-            if (expanded) {
-                if (friend.realname.isNotEmpty())
-                    Text(
-                        text = friend.realname,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+        if (extraData?.errorMessage != null) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ErrorOutline,
+                    contentDescription = stringResource(Res.string.network_error),
+                )
+
+                Text(
+                    text = extraData.errorMessage,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        } else {
+            MusicEntryListItem(
+                entry = track ?: getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS),
+                onEntryClick = {
+                    if (track != null)
+                        onNavigateToTrackInfo(track, friend)
+                },
+                forShimmer = track == null,
+                modifier = if (track == null)
+                    Modifier
+                        .shimmerWindowBounds()
+                else
+                    Modifier
+            )
+        }
+
+        if (detailsShown) {
+            DropdownMenu(
+                expanded = true,
+                onDismissRequest = { detailsShown = false },
+            ) {
+                val textModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+
+                Text(
+                    text = friend.realname.ifEmpty { friend.name },
+                    style = MaterialTheme.typography.titleLargeEmphasized,
+                    modifier = textModifier,
+                )
 
                 if (friend.country.isNotEmpty() && friend.country != "None")
                     Text(
@@ -630,9 +593,8 @@ private fun FriendItem(
                             Res.string.from,
                             friend.country + " " + Stuff.getCountryFlag(friend.country)
                         ),
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = textModifier,
                     )
 
                 if (playCount != null) {
@@ -649,301 +611,179 @@ private fun FriendItem(
                                 playCount,
                                 playCount.format()
                             ),
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = textModifier,
                     )
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp)
-                ) {
-                    OutlinedButton(onClick = { onNavigateToScrobbles(friend) }) {
-                        Text(text = stringResource(Res.string.scrobbles))
-                    }
-
-                    if (!PlatformStuff.isTv) {
-                        IconButtonWithTooltip(
-                            onClick = {
-                                PlatformStuff.openInBrowser(friend.url)
-                            },
-                            icon = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = stringResource(Res.string.profile)
-                        )
-                    }
-                }
-            }
-        }
-
-        if (!showPinConfig) {
-            NowPlayingSurface(
-                nowPlaying = track?.isNowPlaying == true,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .then(
-                            if (forShimmer || extraData == null)
-                                Modifier.shimmerWindowBounds()
-                            else
-                                Modifier
-                        )
-                        .then(
-                            if (track?.isNowPlaying != true)
-                                Modifier.background(
-                                    MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    MaterialTheme.shapes.large
-                                )
-                            else
-                                Modifier
-                        )
-                        .padding(vertical = 8.dp)
-                ) {
-                    val imageModifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .size(
-                            if (expanded)
-                                64.dp
-                            else if (isColumn)
-                                64.dp
-                            else
-                                42.dp
-                        )
-                        .clip(MaterialTheme.shapes.small)
-
-                    if (extraData?.errorMessage != null) {
-                        Icon(
-                            imageVector = Icons.Outlined.ErrorOutline,
-                            contentDescription = stringResource(Res.string.network_error),
-                            modifier = imageModifier
-                        )
-                    } else {
-                        AsyncImage(
-                            model = remember(track) {
-                                track?.let {
-                                    MusicEntryImageReq(
-                                        musicEntry = it as MusicEntry,
-                                        fetchAlbumInfoIfMissing = false,
-                                    )
-                                }
-                            },
-                            fallback = placeholderImageVectorPainter(null),
-                            error = placeholderImageVectorPainter(track),
-                            placeholder = placeholderPainter(),
-                            contentDescription = stringResource(Res.string.album_art),
-                            modifier = imageModifier
-                        )
-                    }
-
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(MaterialTheme.shapes.small)
-                            .then(
-                                if (expanded && track != null)
-                                    Modifier.clickable {
-                                        onNavigateToTrackInfo(track, friend)
-                                    }
-                                else
-                                    Modifier
-                            )
-                    ) {
-                        Text(
-                            text = track?.name
-                                ?: extraData?.errorMessage
-                                ?: "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = track?.artist?.name ?: "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Box(
-                            modifier = if (!isColumn)
-                                Modifier
-                                    .align(Alignment.End)
-                                    .padding(end = 4.dp)
-                            else
-                                Modifier
-                                    .align(Alignment.Start)
-                                    .padding(start = 4.dp)
-                        ) {
-                            Text(
-                                text = track?.date?.let { PanoTimeFormatter.relative(it) } ?: "",
-                                style = MaterialTheme.typography.bodySmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Clip,
-                            )
-
-                            if (track?.isNowPlaying == true) {
-                                Icon(
-                                    imageVector = Icons.Rounded.PlayArrow,
-                                    contentDescription = stringResource(Res.string.time_just_now),
-                                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .align(Alignment.CenterEnd)
-                                )
+                if (pinIndex != null) {
+                    PinControls(
+                        isPinned = true,
+                        onPinUnpin = onPinUnpin,
+                        onMoveUp = if (pinIndex > 0) {
+                            {
+                                onMove(pinIndex, pinIndex - 1)
                             }
-                        }
-                    }
+                        } else
+                            null,
+                        onMoveDown = if (!isLastPin) {
+                            {
+                                onMove(pinIndex, pinIndex + 1)
+                            }
+                        } else
+                            null,
+                    )
+                }
 
-                    if (expanded && track != null) {
-                        IconButton(
-                            onClick = {
-                                scope.launch {
-                                    PlatformStuff.launchSearchIntent(track, null)
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                        ) {
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.History,
+                            contentDescription = stringResource(Res.string.profile),
+                        )
+                    },
+                    text = {
+                        Text(stringResource(Res.string.scrobbles))
+                    },
+                    onClick = {
+                        detailsShown = false
+                        onNavigateToScrobbles(friend)
+                    },
+                )
+
+                if (pinIndex == null && canPinUnpin) {
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.PushPin,
+                                contentDescription = stringResource(Res.string.pin),
+                            )
+                        },
+                        text = {
+                            Text(stringResource(Res.string.pin))
+                        },
+                        onClick = {
+                            onPinUnpin(true)
+                        },
+                    )
+                }
+
+                if (track is Track) {
+                    DropdownMenuItem(
+                        leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
                                 contentDescription = stringResource(Res.string.search),
                             )
-                        }
-                    }
-                }
-            }
-        } else {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ButtonGroup(
-                    overflowIndicator = {}
-                ) {
-                    if (isPinned) {
-                        customItem(
-                            buttonGroupContent = {
-                                OutlinedButton(
-                                    enabled = onMoveLeft != null,
-                                    onClick = {
-                                        onMoveLeft?.invoke()
-                                    },
-                                ) {
-                                    Icon(
-                                        imageVector = if (!isColumn)
-                                            Icons.AutoMirrored.Outlined.KeyboardArrowLeft
-                                        else
-                                            Icons.Outlined.KeyboardArrowUp,
-                                        contentDescription = stringResource(
-                                            if (!isColumn)
-                                                Res.string.move_left
-                                            else
-                                                Res.string.move_up
-                                        ),
-                                    )
-                                }
-                            }, menuContent = {})
-                    }
+                        },
+                        text = {
+                            Text(
+                                stringResource(Res.string.search) + ": " +
+                                        stringResource(Res.string.track)
+                            )
+                        },
+                        onClick = {
+                            detailsShown = false
 
-                    customItem(
-                        buttonGroupContent = {
-                            ToggleButton(
-                                checked = isPinned,
-                                onCheckedChange = {
-                                    onPinUnpin(!isPinned)
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                                    contentDescription = stringResource(
-                                        if (isPinned) Res.string.unpin else Res.string.pin
-                                    )
-                                )
+                            scope.launch {
+                                PlatformStuff.launchSearchIntent(track, null)
                             }
-                        }, menuContent = {})
+                        },
+                    )
+                }
 
-                    if (isPinned) {
-                        customItem(
-                            buttonGroupContent = {
-                                OutlinedButton(
-                                    enabled = onMoveRight != null,
-                                    onClick = {
-                                        onMoveRight?.invoke()
-                                    },
-                                ) {
-                                    Icon(
-                                        imageVector = if (!isColumn)
-                                            Icons.AutoMirrored.Outlined.KeyboardArrowRight
-                                        else
-                                            Icons.Outlined.KeyboardArrowDown,
-                                        contentDescription = stringResource(
-                                            if (!isColumn)
-                                                Res.string.move_right
-                                            else
-                                                Res.string.move_down
-                                        ),
-                                    )
-                                }
-                            }, menuContent = {})
-                    }
+                if (friend.url.isNotEmpty() || !PlatformStuff.isTv) {
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.OpenInBrowser,
+                                contentDescription = stringResource(Res.string.profile),
+                            )
+                        },
+                        text = {
+                            Text(
+                                stringResource(Res.string.profile)
+                            )
+                        },
+                        onClick = {
+                            detailsShown = false
+
+                            PlatformStuff.openInBrowser(friend.url)
+                        },
+                    )
                 }
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ButtonsBarForFriends(
-    isColumn: Boolean,
-    isInEditMode: Boolean,
-    onEditClick: ((Boolean) -> Unit)?,
+private fun PinControls(
+    isPinned: Boolean,
+    onPinUnpin: (Boolean) -> Unit,
+    onMoveUp: (() -> Unit)?,
+    onMoveDown: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    val scope = rememberCoroutineScope()
-    Row(
+    Box(
+        contentAlignment = Alignment.Center,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp)
     ) {
+        ButtonGroup(
+            overflowIndicator = {}
+        ) {
+            if (isPinned) {
+                customItem(
+                    buttonGroupContent = {
+                        OutlinedButton(
+                            enabled = onMoveUp != null,
+                            onClick = {
+                                onMoveUp?.invoke()
+                            },
+                        ) {
+                            Icon(
+                                imageVector =
+                                    Icons.Outlined.KeyboardArrowUp,
+                                contentDescription = stringResource(Res.string.move_up),
+                            )
+                        }
+                    }, menuContent = {})
+            }
 
-        Spacer(
-            modifier = Modifier.size(IconButtonDefaults.smallContainerSize())
-        )
+            customItem(
+                buttonGroupContent = {
+                    ToggleButton(
+                        checked = isPinned,
+                        onCheckedChange = {
+                            onPinUnpin(!isPinned)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                            contentDescription = stringResource(
+                                if (isPinned) Res.string.unpin else Res.string.pin
+                            )
+                        )
+                    }
+                }, menuContent = {})
 
-        Spacer(
-            modifier = Modifier.weight(1f)
-        )
-
-        GridOrListSelector(
-            isColumn = isColumn,
-            onIsColumnChange = { isColumn ->
-                scope.launch {
-                    PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
-                }
-            },
-        )
-
-        Spacer(
-            modifier = Modifier.weight(1f)
-        )
-
-        if (onEditClick != null)
-            IconButtonWithTooltip(
-                onClick = {
-                    onEditClick(!isInEditMode)
-                },
-                icon = if (isInEditMode) Icons.Outlined.Done else Icons.Outlined.PushPin,
-                contentDescription = if (isInEditMode)
-                    stringResource(Res.string.done)
-                else
-                    stringResource(Res.string.pin),
-            )
+            if (isPinned) {
+                customItem(
+                    buttonGroupContent = {
+                        OutlinedButton(
+                            enabled = onMoveDown != null,
+                            onClick = {
+                                onMoveDown?.invoke()
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.KeyboardArrowDown,
+                                contentDescription = stringResource(Res.string.move_down),
+                            )
+                        }
+                    }, menuContent = {})
+            }
+        }
     }
 }

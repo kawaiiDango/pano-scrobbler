@@ -5,7 +5,7 @@
 !define APP_GUID "85173f4e-ca52-4ec9-b77f-c2e0b1ff4209"
 !define APP_AUMID "com.arn.scrobble"
 
-!define MULTIUSER_EXECUTIONLEVEL Standard
+!define MULTIUSER_EXECUTIONLEVEL Highest
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 !define LOCALSERVER32_KEY "SOFTWARE\Classes\CLSID\${APP_GUID}\LocalServer32"
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${UNINSTKEY}"
@@ -47,10 +47,8 @@ SetCompressor /SOLID BZIP2
 Var StartWithWindows
 Var LaunchApp
 Var VersionCodePrev
-Var InstallModePrev
-Var InstallLocationPrev
-Var InstallMode
 Var UninstallRemoveUserData
+Var IsExtractMode
 
 !macro KILL_IF_RUNNING
   ; Kill running app process before upgrade, up to 3 attempts
@@ -81,18 +79,8 @@ Var UninstallRemoveUserData
   done_kill:
 !macroend
 
-!macro GET_PREVIOUS_INSTALL_MODE
-  ReadRegStr $0 HKCU "${UNINSTKEY}" "InstallLocation"
-  ${If} $0 != ""
-    StrCpy $InstallModePrev 2
-    StrCpy $InstallLocationPrev $0
-  ${Else}
-    ReadRegStr $0 HKLM "${UNINSTKEY}" "InstallLocation"
-    ${If} $0 != ""
-      StrCpy $InstallModePrev 1
-      StrCpy $InstallLocationPrev $0
-    ${EndIf}
-  ${EndIf}
+!macro GET_PREVIOUS_INSTALL_PROPS
+  ReadRegDWORD $VersionCodePrev ShCtx "${UNINST_KEY}" "VersionCode"
 !macroend
 
 ;--------------------------------
@@ -117,55 +105,19 @@ Function .onInit
   SetRegView 64
   
   !insertmacro MULTIUSER_INIT
-
-  !insertmacro GET_PREVIOUS_INSTALL_MODE
-
-  ${If} $InstallModePrev == 1
-    Call MultiUser.InstallMode.AllUsers
-  ${ElseIf} $InstallModePrev == 2
-    Call MultiUser.InstallMode.CurrentUser
-  ${Else}
-    UserInfo::GetAccountType
-    Pop $0
-    ${If} $0 != "admin"
-      Call ModeSelect_Install_CurrentUser
-    ${Else}
-      Call ModeSelect_Install_AllUsers
-    ${EndIf}
-  ${EndIf}
-
+  !insertmacro GET_PREVIOUS_INSTALL_PROPS
 FunctionEnd
 
 Function un.onInit
   SetRegView 64
 
   !insertmacro MULTIUSER_UNINIT
-
-  !insertmacro GET_PREVIOUS_INSTALL_MODE
-
-  ${If} $InstallModePrev == 1
-    Call un.MultiUser.InstallMode.AllUsers
-
-    UserInfo::GetAccountType
-    Pop $0
-    ${If} $0 != "admin"
-      ; Relaunch as admin
-      ExecShell "runas" "$EXEPATH"
-      Quit
-    ${Else}
-      ; $INSTDIR gets set as AppData\Local\Temp\~nsu.tmp after run as admin, so manually set it
-      StrCpy $INSTDIR $InstallLocationPrev
-    ${EndIf}
-
-  ${ElseIf} $InstallModePrev == 2
-    Call un.MultiUser.InstallMode.CurrentUser
-  ${EndIf}
-
+  !insertmacro GET_PREVIOUS_INSTALL_PROPS
 FunctionEnd
 
 Function SkipIfUpgrade
-  ${If} $InstallModePrev != ""
-  ${AndIf} $InstallMode > 0
+  ${If} $VersionCodePrev != ""
+  ${AndIf} $IsExtractMode != 1
     Abort ; skip this page if upgrading
   ${EndIf}
 FunctionEnd
@@ -197,28 +149,23 @@ Function PageModeSelect
 
   !insertmacro MUI_HEADER_TEXT "Choose installation mode:" ""
 
-  ${If} $InstallModePrev != ""
+  ${If} $VersionCodePrev != ""
 
       ${NSD_CreateRadioButton} 0 16u 100% 12u "Upgrade existing installation"
       Pop $2
 
-      ${If} $InstallMode != 0
+      ${If} $IsExtractMode != 1
         ${NSD_SetState} $2 1
-        StrCpy $InstallMode $InstallModePrev
       ${EndIf}
 
       ${NSD_OnClick} $2 ModeSelect_Upgrade
       
   ${Else}
-    
-    ${If} $InstallMode == ""
-      StrCpy $InstallMode 1 ; default to install for all users
-    ${EndIf}
-
     ${NSD_CreateRadioButton} 0 16u 100% 12u "Install for all users"
     Pop $2
 
-    ${If} $InstallMode == 1
+    ${If} $MultiUser.InstallMode == "AllUsers"
+    ${AndIf} $IsExtractMode != 1
       ${NSD_SetState} $2 1
     ${EndIf}
 
@@ -227,7 +174,8 @@ Function PageModeSelect
     ${NSD_CreateRadioButton} 0 32u 100% 12u "Install for current user only"
     Pop $3
 
-    ${If} $InstallMode == 2
+    ${If} $MultiUser.InstallMode == "CurrentUser"
+    ${AndIf} $IsExtractMode != 1
       ${NSD_SetState} $3 1
     ${EndIf}
       
@@ -238,7 +186,7 @@ Function PageModeSelect
   ${NSD_CreateRadioButton} 0 48u 100% 12u "Extract only (portable, no registry changes)"
   Pop $4
 
-  ${If} $InstallMode == 0
+  ${If} $IsExtractMode == 1
     ${NSD_SetState} $4 1
   ${EndIf}
 
@@ -256,23 +204,23 @@ Function PageModeSelect
 FunctionEnd
 
 Function ModeSelect_Install_AllUsers
-  StrCpy $InstallMode 1
-  Call MultiUser.InstallMode.AllUsers 
+  StrCpy $IsExtractMode 0
+  Call MultiUser.InstallMode.AllUsers
 FunctionEnd
 
 Function ModeSelect_Install_CurrentUser
-  StrCpy $InstallMode 2
+  StrCpy $IsExtractMode 0
   Call MultiUser.InstallMode.CurrentUser
 FunctionEnd
 
 Function ModeSelect_Extract
-  StrCpy $InstallMode 0
+  StrCpy $IsExtractMode 1
   Call MultiUser.InstallMode.CurrentUser
   StrCpy $INSTDIR "$EXEDir\${APP_NAME}"
 FunctionEnd
 
 Function ModeSelect_Upgrade
-  StrCpy $InstallMode $InstallModePrev
+  StrCpy $IsExtractMode 0
 FunctionEnd
 
 Function OpenVcRedistLink
@@ -280,15 +228,6 @@ Function OpenVcRedistLink
 FunctionEnd
 
 Function PageModeSelect_Leave
-  ${If} $InstallMode == 1
-    UserInfo::GetAccountType
-    Pop $0
-    ${If} $0 != "admin"
-      ; Relaunch as admin with mode parameter
-      ExecShell "runas" "$EXEPATH" "/InstallMode=1"
-      Quit
-    ${EndIf}
-  ${EndIf}
 
 FunctionEnd
 
@@ -296,7 +235,7 @@ FunctionEnd
 ; Page: Install Options (only for Install mode)
 
 Function PageInstallOptions
-  ${If} $InstallMode >= 1
+  ${If} $IsExtractMode != 1
     nsDialogs::Create 1018
     Pop $0
 
@@ -339,7 +278,7 @@ Section "Install/Extract"
   SetOutPath "$INSTDIR"
 
   ; Version check (if install mode)
-  ${If} $InstallMode >= 1
+  ${If} $IsExtractMode != 1
     ReadRegDWORD $VersionCodePrev ShCtx "${UNINST_KEY}" "VersionCode"
     ${If} $VersionCodePrev <> ""
       ${If} $VersionCodePrev > ${VERSION_CODE}
@@ -362,7 +301,7 @@ Section "Install/Extract"
   ; Copy files
   File /r "${APPDIR}\*"
 
-  ${If} $InstallMode >= 1
+  ${If} $IsExtractMode != 1
     ;Store installation folder
     WriteRegStr ShCtx "Software\${APP_NAME}" "" $INSTDIR
 
@@ -410,7 +349,8 @@ SectionEnd
 
 Section -Post
   ${If} $LaunchApp == 1
-    Exec '"$INSTDIR\${EXE_NAME}"'
+    ; explorer.exe makes it run as unelevated
+    ExecWait 'explorer.exe "$INSTDIR\${EXE_NAME}"'
   ${EndIf}
 SectionEnd
 

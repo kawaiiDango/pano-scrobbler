@@ -10,6 +10,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.PendingScrobblesWork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -113,7 +114,7 @@ class ScrobblesVM : ViewModel() {
         viewModelScope.launch {
             PendingScrobblesWork.getProgress()
                 .collectLatest {
-                    if (!it.state.isFinished) {
+                    if (it.state == CommonWorkState.RUNNING || it.state == CommonWorkState.FAILED) {
                         val snackbarData = PanoSnackbarVisuals(
                             message = it.message,
                             isError = it.isError

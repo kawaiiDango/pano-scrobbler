@@ -13,7 +13,6 @@ import com.arn.scrobble.api.spotify.SpotifyRequester
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.HttpClient
-import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpTimeout
@@ -36,6 +35,7 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
@@ -60,8 +60,7 @@ object Requesters {
             if (!Stuff.isRunningInTest) {
 
                 install(UserAgent) {
-                    agent =
-                        BuildKonfig.APP_NAME + " " + (BuildKonfig.VER_CODE / 100f)
+                    agent = BuildKonfig.APP_NAME + " " + (BuildKonfig.VER_CODE / 100f)
                 }
 
                 install(HttpCache) {
@@ -87,7 +86,7 @@ object Requesters {
                     try {
                         val errorResponse = response.parseJsonBody<ApiErrorResponse>()
                         throw ApiException(errorResponse.code, errorResponse.message)
-                    } catch (e: NoTransformationFoundException) {
+                    } catch (e: SerializationException) {
                         throw ApiException(response.status.value, response.status.description, e)
                     }
                 }

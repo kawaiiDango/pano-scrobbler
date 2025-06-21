@@ -5,7 +5,6 @@ albums
 tracks
 search
 settings
-from_mic
 charts_no_data
 blocked_metadata_noti
 edit
@@ -14,6 +13,7 @@ mute
 new_player
 new_player_prompt
 no
+yes
 num_scrobbles_noti
 scrobbler_off
 scrobbler_on
@@ -22,18 +22,8 @@ state_unscrobbled
 tap_to_edit
 unlove
 unscrobble
-yes
-num_scrobbles_noti
-create_collage
-graph_weekly
-graph_yearly
-top_albums
-top_artists
-top_tracks
 show_persistent_noti
 persistent_noti_text
-pending_scrobbles_noti
-reindex
 channel_err
 monthly
 new_app
@@ -45,3 +35,6 @@ charts_overall
 num_years
 num_months
 num_weeks
+no_browser
+tv_url_notice
+copied

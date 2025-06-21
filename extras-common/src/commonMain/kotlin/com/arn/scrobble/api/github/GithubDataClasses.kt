@@ -16,8 +16,7 @@ data class GithubReleases(
 
     fun getDownloadUrl(platformSubstring: String): List<GithubReleaseAsset> =
         assets.filter {
-            it.name.contains(platformSubstring) &&
-                    !it.name.endsWith(".sha256")
+            it.name.contains(platformSubstring)
         }
 }
 

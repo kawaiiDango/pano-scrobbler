@@ -31,10 +31,7 @@ import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.parameter
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
 import io.ktor.http.Url
-import io.ktor.http.contentType
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
@@ -67,7 +64,7 @@ class Maloja(userAccount: UserAccountSerializable) :
             title = scrobbleData.track,
             album = scrobbleData.album,
             albumartists = scrobbleData.albumArtist?.let { listOf(it) },
-            length = scrobbleData.duration,
+            length = scrobbleData.safeDuration(),
             time = scrobbleData.timestamp,
             key = userAccount.authKey
         )

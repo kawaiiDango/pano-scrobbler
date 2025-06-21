@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Album
@@ -12,14 +13,17 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.HeartBroken
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +67,7 @@ import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.shimmerWindowBounds
+import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.showTrackShareSheet
@@ -84,6 +89,7 @@ import pano_scrobbler.composeapp.generated.resources.hate
 import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.more
+import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.share
@@ -96,28 +102,28 @@ private enum class TrackMenuLevel {
     Block
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TrackDropdownMenu(
     track: Track,
-    pkgName: String?,
+    appId: String?,
     onOpenDialog: (PanoDialog) -> Unit,
     user: UserCached,
-    origTrack: Track?,
+    onEdit: (() -> Unit)?,
     onLove: ((Boolean) -> Unit)?,
     onHate: ((Boolean) -> Unit)?,
     onDelete: (() -> Unit)?,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    skipFirstLevel: Boolean,
     modifier: Modifier = Modifier,
 ) {
 
     var menuLevel by remember(expanded) {
         mutableStateOf(
-            if (!skipFirstLevel)
-                TrackMenuLevel.Root
-            else
+            if (onEdit == null && onLove == null && onHate == null && onDelete == null)
                 TrackMenuLevel.More
+            else
+                TrackMenuLevel.Root
         )
     }
     val scope = rememberCoroutineScope()
@@ -153,7 +159,7 @@ private fun TrackDropdownMenu(
             DropdownMenuItem(
                 onClick = {
                     scope.launch {
-                        PlatformStuff.launchSearchIntent(track, pkgName)
+                        PlatformStuff.launchSearchIntent(track, appId)
                     }
                     onDismissRequest()
                 },
@@ -210,39 +216,23 @@ private fun TrackDropdownMenu(
                         )
                     }
 
-                    DropdownMenuItem(
-                        onClick = {
-                            onDismissRequest()
-
-                            val sd = ScrobbleData(
-                                track = track.name,
-                                artist = track.artist.name,
-                                album = track.album?.name,
-                                timestamp = track.date ?: 0,
-                                albumArtist = null,
-                                duration = null,
-                                packageName = null
-                            )
-
-                            val dialogArgs = PanoDialog.EditScrobble(
-                                origTrack = origTrack,
-                                scrobbleData = sd,
-                                msid = track.msid,
-                                hash = null
-                            )
-
-                            onOpenDialog(dialogArgs)
-                        },
-                        text = {
-                            Text(stringResource(Res.string.edit))
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Edit,
-                                contentDescription = null
-                            )
-                        }
-                    )
+                    if (onEdit != null) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onDismissRequest()
+                                onEdit.invoke()
+                            },
+                            text = {
+                                Text(stringResource(Res.string.edit))
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
 
                     if (onDelete != null && track.date != null && track.date > 0) {
                         DropdownMenuItem(
@@ -308,10 +298,20 @@ private fun TrackDropdownMenu(
 
                 TrackMenuLevel.More -> {
                     DropdownMenuItem(
-                        onClick = {},
-                        enabled = false,
+                        onClick = {
+                            menuLevel = TrackMenuLevel.Root
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = null
+                            )
+                        },
                         text = {
-                            Text(stringResource(Res.string.more))
+                            Text(
+                                stringResource(Res.string.more),
+                                style = MaterialTheme.typography.titleMediumEmphasized
+                            )
                         },
                     )
 
@@ -383,10 +383,22 @@ private fun TrackDropdownMenu(
 
                 TrackMenuLevel.Block -> {
                     DropdownMenuItem(
-                        onClick = {},
-                        enabled = false,
+                        onClick = {
+                            menuLevel = TrackMenuLevel.More
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = null
+                            )
+                        },
                         text = {
-                            Text(stringResource(Res.string.block))
+                            Text(
+                                stringResource(
+                                    Res.string.block
+                                ),
+                                style = MaterialTheme.typography.titleMediumEmphasized
+                            )
                         },
                     )
 
@@ -504,7 +516,7 @@ fun PendingDropdownMenu(
         onDismissRequest = onDismissRequest,
         modifier = modifier
     ) {
-        PendingScrobbleServicesDesc(pendingScrobble)
+        PendingScrobbleDesc(pendingScrobble)
 
         if (pendingScrobble.event == ScrobbleEvent.scrobble) {
             DropdownMenuItem(
@@ -512,14 +524,14 @@ fun PendingDropdownMenu(
                     GlobalScope.launch {
                         withContext(Dispatchers.IO) {
                             val track = Track(
-                                pendingScrobble.track,
-                                pendingScrobble.album.ifEmpty { null }?.let {
+                                pendingScrobble.scrobbleData.track,
+                                pendingScrobble.scrobbleData.album?.let {
                                     Album(
                                         it,
-                                        pendingScrobble.albumArtist.ifEmpty { null }
+                                        pendingScrobble.scrobbleData.albumArtist
                                             ?.let { Artist(it) })
                                 },
-                                Artist(pendingScrobble.artist)
+                                Artist(pendingScrobble.scrobbleData.artist)
                             )
 
                             ScrobbleEverywhere.loveOrUnlove(track, true)
@@ -568,13 +580,13 @@ fun PendingDropdownMenu(
 }
 
 @Composable
-private fun PendingScrobbleServicesDesc(
+private fun PendingScrobbleDesc(
     pendingScrobble: PendingScrobble,
 ) {
     val currentScrobblableType = remember { Scrobblables.current.value?.userAccount?.type }
     val accountTypesList = mutableListOf<AccountType>()
     AccountType.entries.forEach {
-        if (pendingScrobble.state and (1 shl it.ordinal) != 0)
+        if (pendingScrobble.services and (1 shl it.ordinal) != 0)
             accountTypesList += it
     }
 
@@ -600,6 +612,43 @@ private fun PendingScrobbleServicesDesc(
             }
         )
     }
+
+    if (pendingScrobble.lastFailedTimestamp != null) {
+        DropdownMenuItem(
+            onClick = {},
+            enabled = false,
+            text = {
+                Text(
+                    (pendingScrobble.lastFailedReason ?: stringResource(Res.string.network_error))
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.ErrorOutline,
+                    contentDescription = null
+                )
+            }
+        )
+
+        DropdownMenuItem(
+            onClick = {},
+            enabled = false,
+            text = {
+                Text(
+                    PanoTimeFormatter.relative(
+                        pendingScrobble.lastFailedTimestamp,
+                        withPreposition = true
+                    )
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Schedule,
+                    contentDescription = null
+                )
+            }
+        )
+    }
 }
 
 fun LazyListScope.scrobblesListItems(
@@ -610,16 +659,17 @@ fun LazyListScope.scrobblesListItems(
     pkgMap: Map<Long, String>,
     seenApps: Map<String, String>,
     fetchAlbumImageIfMissing: Boolean,
-    showFullMenu: Boolean,
-    showLove: Boolean,
-    showHate: Boolean,
+    canLove: Boolean,
+    canHate: Boolean,
+    canEdit: Boolean,
+    canDelete: Boolean,
     expandedIdx: () -> Int,
     onExpand: (Int) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     viewModel: ScrobblesVM,
 ) {
-    fun onTrackClick(track: Track, pkgName: String?) {
-        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, pkgName = pkgName))
+    fun onTrackClick(track: Track, appId: String?) {
+        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, appId = appId))
     }
 
     for (i in 0 until tracks.itemCount) {
@@ -671,11 +721,32 @@ fun LazyListScope.scrobblesListItems(
                     menuContent = {
                         TrackDropdownMenu(
                             track = track,
-                            pkgName = appItem?.appId,
+                            appId = appItem?.appId,
                             onOpenDialog = onOpenDialog,
                             user = user,
-                            origTrack = trackPeek,
-                            onLove = if (showLove) {
+                            onEdit = if (canEdit) {
+                                {
+                                    val sd = ScrobbleData(
+                                        track = track.name,
+                                        artist = track.artist.name,
+                                        album = track.album?.name,
+                                        timestamp = track.date ?: 0,
+                                        albumArtist = null,
+                                        duration = null,
+                                        appId = null
+                                    )
+
+                                    val dialogArgs = PanoDialog.EditScrobble(
+                                        origTrack = trackPeek,
+                                        scrobbleData = sd,
+                                        msid = track.msid,
+                                        hash = null
+                                    )
+
+                                    onOpenDialog(dialogArgs)
+                                }
+                            } else null,
+                            onLove = if (canLove) {
                                 {
                                     viewModel.editTrack(
                                         trackPeek!!,
@@ -683,7 +754,7 @@ fun LazyListScope.scrobblesListItems(
                                     )
                                 }
                             } else null,
-                            onHate = if (showHate) {
+                            onHate = if (canHate) {
                                 {
                                     viewModel.editTrack(
                                         trackPeek!!,
@@ -691,9 +762,12 @@ fun LazyListScope.scrobblesListItems(
                                     )
                                 }
                             } else null,
-                            onDelete = { viewModel.removeTrack(trackPeek!!) },
+                            onDelete = if (canDelete) {
+                                {
+                                    viewModel.removeTrack(trackPeek!!)
+                                }
+                            } else null,
                             expanded = menuVisible,
-                            skipFirstLevel = !showFullMenu,
                             onDismissRequest = { menuVisible = false }
                         )
                     },
@@ -745,6 +819,7 @@ fun LazyListScope.pendingScrobblesListItems(
     headerText: String,
     headerIcon: ImageVector,
     items: List<PendingScrobble>,
+    showScrobbleSources: Boolean,
     seenApps: Map<String, String>,
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
@@ -772,18 +847,20 @@ fun LazyListScope.pendingScrobblesListItems(
     ) { item ->
         val musicEntry = remember {
             Track(
-                name = item.track,
-                artist = Artist(item.artist),
-                album = item.album.ifEmpty { null }?.let { Album(it) },
-                date = item.timestamp,
-                duration = item.duration,
+                name = item.scrobbleData.track,
+                artist = Artist(item.scrobbleData.artist),
+                album = item.scrobbleData.album?.let { Album(it) },
+                date = item.scrobbleData.timestamp,
+                duration = item.scrobbleData.duration,
                 userloved = item.event == ScrobbleEvent.love,
                 userHated = item.event == ScrobbleEvent.unlove,
             )
         }
         var menuVisible by remember { mutableStateOf(false) }
         val appItem = remember(item) {
-            item.packageName.let { AppItem(it, seenApps[it] ?: "") }
+            if (showScrobbleSources)
+                item.scrobbleData.appId?.let { AppItem(it, seenApps[it] ?: "") }
+            else null
         }
 
         MusicEntryListItem(

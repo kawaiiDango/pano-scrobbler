@@ -10,6 +10,6 @@ data class WebViewEvent(
 )
 
 object WebViewEventFlows {
-    val event = MutableSharedFlow<WebViewEvent>()
-    val pageLoaded = MutableSharedFlow<String>()
+    val event = MutableSharedFlow<WebViewEvent>(extraBufferCapacity = 1)
+    val pageLoaded = MutableSharedFlow<String>(extraBufferCapacity = 1)
 }

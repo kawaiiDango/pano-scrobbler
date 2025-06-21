@@ -1,19 +1,17 @@
 package com.arn.scrobble.utils
 
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.media.PlayingTrackInfo
-import com.arn.scrobble.media.ScrobbleError
+import com.arn.scrobble.media.PlayingTrackNotifyEvent
 
 expect object PanoNotifications {
-    fun notifyScrobble(trackInfo: PlayingTrackInfo, nowPlaying: Boolean)
+    fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling)
 
-    fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError)
-
-    fun notifyOtherError(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError)
+    fun notifyError(event: PlayingTrackNotifyEvent.Error)
 
     fun notifyAppDetected(appId: String, appLabel: String)
 
-    fun notifyUnscrobbled(trackInfo: PlayingTrackInfo)
+    fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int)
 
     suspend fun notifyDigest(timePeriod: TimePeriod, resultsList: List<Pair<Int, String>>)
 

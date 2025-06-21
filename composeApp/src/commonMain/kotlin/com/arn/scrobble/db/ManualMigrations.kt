@@ -38,13 +38,15 @@ object ManualMigrations {
 
     private val MIGRATION_14_15 = object : Migration(14, 15) {
         override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE ${PendingScrobblesDao.tableName} ADD COLUMN event TEXT NOT NULL DEFAULT ''")
-            connection.execSQL("UPDATE ${PendingScrobblesDao.tableName} SET event = 'scrobble' WHERE event = ''")
-
-            connection.execSQL("ALTER TABLE ${PendingScrobblesDao.tableName} ADD COLUMN packageName TEXT NOT NULL DEFAULT ''")
+            // destructive migration for pendingScrobbles
             connection.execSQL("DROP TABLE IF EXISTS PendingLoves")
+            connection.execSQL("DROP TABLE IF EXISTS ${PendingScrobblesDao.tableName}")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `${PendingScrobblesDao.tableName}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `event` TEXT NOT NULL, `services` INTEGER NOT NULL, `lastFailedTimestamp` INTEGER, `lastFailedReason` TEXT, `artist` TEXT NOT NULL, `track` TEXT NOT NULL, `album` TEXT, `timestamp` INTEGER NOT NULL, `trackNumber` INTEGER, `albumArtist` TEXT, `duration` INTEGER, `appId` TEXT)")
 
-            connection.execSQL("ALTER TABLE regexEdits ADD COLUMN blockPlayerAction TEXT")
+            // destructive migration for regexEdits
+            connection.execSQL("DROP TABLE `${RegexEditsDao.tableName}`")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `${RegexEditsDao.tableName}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `order` INTEGER NOT NULL, `name` TEXT NOT NULL, `appIds` TEXT NOT NULL, `caseSensitive` INTEGER NOT NULL, `blockPlayerAction` TEXT, `searchTrack` TEXT NOT NULL, `searchAlbum` TEXT NOT NULL, `searchArtist` TEXT NOT NULL, `searchAlbumArtist` TEXT NOT NULL, `replacementTrack` TEXT, `replacementAlbum` TEXT, `replacementArtist` TEXT, `replacementAlbumArtist` TEXT, `replaceAll` INTEGER)")
+            connection.execSQL("CREATE INDEX IF NOT EXISTS `index_regexEdits_order` ON `${RegexEditsDao.tableName}` (`order`)")
 
             connection.execSQL(
                 """

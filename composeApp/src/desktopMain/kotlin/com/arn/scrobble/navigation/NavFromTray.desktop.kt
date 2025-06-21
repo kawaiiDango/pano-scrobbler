@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.media.PlayingTrackNotificationState
+import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
 
@@ -20,15 +20,16 @@ actual fun NavFromTrayEffect(
             val playingTrackTrayInfo = PanoNotifications.playingTrackTrayInfo.value
 
             val user = Scrobblables.currentScrobblableUser ?: return@collect
-            val scrobblingTrackInfo =
-                (playingTrackTrayInfo[suffix] as? PlayingTrackNotificationState.Scrobbling)
-                    ?.trackInfo
+            val scrobblingEvent =
+                (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackScrobbling)
                     ?: return@collect
+            val scrobbleData = scrobblingEvent.scrobbleData
+
 
             when (itemId) {
                 PanoTrayUtils.ItemId.TrackName -> {
                     val dialog = PanoDialog.MusicEntryInfo(
-                        track = scrobblingTrackInfo.toTrack(),
+                        track = scrobbleData.toTrack(),
                         user = user
                     )
                     onOpenDialog(dialog)
@@ -36,7 +37,7 @@ actual fun NavFromTrayEffect(
 
                 PanoTrayUtils.ItemId.ArtistName -> {
                     val dialog = PanoDialog.MusicEntryInfo(
-                        artist = scrobblingTrackInfo.toTrack().artist,
+                        artist = scrobbleData.toTrack().artist,
                         user = user
                     )
                     onOpenDialog(dialog)
@@ -44,7 +45,7 @@ actual fun NavFromTrayEffect(
 
                 PanoTrayUtils.ItemId.AlbumName -> {
                     val dialog = PanoDialog.MusicEntryInfo(
-                        album = scrobblingTrackInfo.toTrack().album,
+                        album = scrobbleData.toTrack().album,
                         user = user
                     )
                     onOpenDialog(dialog)
@@ -52,40 +53,39 @@ actual fun NavFromTrayEffect(
 
                 PanoTrayUtils.ItemId.Edit -> {
                     val dialog = PanoDialog.EditScrobble(
-                        scrobbleData = scrobblingTrackInfo.toScrobbleData(),
-                        hash = scrobblingTrackInfo.hash
+                        scrobbleData = scrobblingEvent.origScrobbleData,
+                        hash = scrobblingEvent.hash
                     )
                     onOpenDialog(dialog)
                 }
 
                 PanoTrayUtils.ItemId.Block -> {
                     val blockedMetadata = BlockedMetadata(
-                        track = scrobblingTrackInfo.title,
-                        artist = scrobblingTrackInfo.artist,
-                        album = scrobblingTrackInfo.album,
-                        albumArtist = scrobblingTrackInfo.albumArtist,
+                        track = scrobbleData.track,
+                        artist = scrobbleData.artist,
+                        album = scrobbleData.album.orEmpty(),
+                        albumArtist = scrobbleData.albumArtist.orEmpty(),
                     )
 
                     val dialog = PanoDialog.BlockedMetadataAdd(
                         blockedMetadata = blockedMetadata,
-                        hash = scrobblingTrackInfo.hash
+                        hash = scrobblingEvent.hash
                     )
 
                     onOpenDialog(dialog)
                 }
 
                 PanoTrayUtils.ItemId.Error -> {
-                    val errorState =
-                        (playingTrackTrayInfo[suffix] as? PlayingTrackNotificationState.Error)
+                    val errorEvent =
+                        (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.Error)
                             ?: return@collect
 
-                    val trackInfo = errorState.trackInfo
-                    val scrobbleError = errorState.scrobbleError
+                    val scrobbleError = errorEvent.scrobbleError
 
                     if (scrobbleError.canFixMetadata) {
                         val dialog = PanoDialog.EditScrobble(
-                            scrobbleData = trackInfo.toScrobbleData(),
-                            hash = trackInfo.hash
+                            scrobbleData = errorEvent.scrobbleData,
+                            hash = scrobblingEvent.hash
                         )
                         onOpenDialog(dialog)
                     }

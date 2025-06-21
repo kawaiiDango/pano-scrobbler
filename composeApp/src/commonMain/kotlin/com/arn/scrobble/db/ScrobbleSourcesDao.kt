@@ -11,8 +11,8 @@ interface ScrobbleSourcesDao {
     @Query("SELECT * FROM $tableName ORDER BY _id DESC")
     suspend fun all(): List<ScrobbleSource>
 
-    @Query("SELECT * FROM $tableName WHERE timeMillis >= :start AND timeMillis <= :end ORDER BY timeMillis ASC")
-    suspend fun selectBetween(start: Long, end: Long): List<ScrobbleSource>
+    @Query("SELECT * FROM $tableName WHERE timeMillis >= :earliest AND timeMillis <= :latest ORDER BY timeMillis ASC")
+    suspend fun selectBetween(earliest: Long, latest: Long): List<ScrobbleSource>
 
     @Query("SELECT count(1) FROM $tableName")
     suspend fun count(): Int

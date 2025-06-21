@@ -10,13 +10,11 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.main.MainActivity
-import com.arn.scrobble.media.NLService
-import com.arn.scrobble.media.PlayingTrackInfo
+import com.arn.scrobble.media.PlayingTrackEventReceiver
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
-import com.arn.scrobble.media.ScrobbleError
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.utils.Stuff.format
@@ -25,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.create_collage
 import pano_scrobbler.composeapp.generated.resources.digest_monthly
 import pano_scrobbler.composeapp.generated.resources.digest_weekly
 import pano_scrobbler.composeapp.generated.resources.graph_yearly
@@ -45,65 +44,59 @@ actual object PanoNotifications {
     }
 
 
-    actual fun notifyScrobble(trackInfo: PlayingTrackInfo, nowPlaying: Boolean) {
+    actual fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
         if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
             return
 
         val cancelEvent = PlayingTrackNotifyEvent.TrackCancelled(
-            hash = trackInfo.hash,
+            hash = event.hash,
             showUnscrobbledNotification = true,
-            markAsScrobbled = true
         )
 
         val loveUnloveEvent = PlayingTrackNotifyEvent.TrackLovedUnloved(
-            hash = trackInfo.hash,
-            loved = !trackInfo.userLoved
+            hash = event.hash,
+            loved = !event.userLoved
         )
 
-        val loveAction = if (trackInfo.userLoved) {
-            val i = Intent(NLService.iUNLOVE)
-                .setPackage(context.packageName)
-                .putExtra(Stuff.EXTRA_EVENT, Stuff.myJson.encodeToString(loveUnloveEvent))
-
-            val loveIntent = PendingIntent.getBroadcast(
-                context, 4, i,
-                AndroidStuff.updateCurrentOrImmutable
-            )
-            AndroidStuff.getNotificationAction(
-                R.drawable.vd_heart_filled,
-                "\uD83E\uDD0D",
-                context.getString(R.string.unlove),
-                loveIntent
-            )
-        } else {
-            val i = Intent(NLService.iLOVE)
-                .setPackage(context.packageName)
-                .putExtra(Stuff.EXTRA_EVENT, Stuff.myJson.encodeToString(loveUnloveEvent))
-
-            val loveIntent = PendingIntent.getBroadcast(
-                context, 3, i,
-                AndroidStuff.updateCurrentOrImmutable
-            )
-            AndroidStuff.getNotificationAction(
-                R.drawable.vd_heart,
-                "\uD83E\uDD0D",
-                context.getString(R.string.love),
-                loveIntent
-            )
-        }
-
-        val i = Intent(NLService.iCANCEL)
+        val loveIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
             .setPackage(context.packageName)
-            .putExtra(Stuff.EXTRA_EVENT, Stuff.myJson.encodeToString(cancelEvent))
+            .putExtra(
+                PlayingTrackEventReceiver.EXTRA_EVENT,
+                Stuff.myJson.encodeToString(loveUnloveEvent)
+            )
+            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, loveUnloveEvent::class.simpleName)
+
+        val lovePi = PendingIntent.getBroadcast(
+            context, 4, loveIntent,
+            AndroidStuff.updateCurrentOrImmutable
+        )
+
+        val loveAction = AndroidStuff.getNotificationAction(
+            if (event.userLoved) R.drawable.vd_heart_filled else R.drawable.vd_heart,
+            if (event.userLoved) "❤️" else "🤍",
+            context.getString(
+                if (event.userLoved) R.string.unlove
+                else R.string.love
+            ),
+            lovePi
+        )
+
+        val cancelIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
+            .setPackage(context.packageName)
+            .putExtra(
+                PlayingTrackEventReceiver.EXTRA_EVENT,
+                Stuff.myJson.encodeToString(cancelEvent)
+            )
+            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, cancelEvent::class.simpleName)
 
         val cancelToastIntent = PendingIntent.getBroadcast(
-            context, 5, i,
+            context, 5, cancelIntent,
             AndroidStuff.updateCurrentOrImmutable
         )
 
 
         val state =
-            if (nowPlaying)
+            if (event.nowPlaying)
                 ""
 //                    "▷ "
             else
@@ -120,8 +113,8 @@ actual object PanoNotifications {
                 val user = Scrobblables.currentScrobblableUser
                 if (user != null) {
                     val dialogArgs = PanoDialog.MusicEntryInfo(
-                        track = trackInfo.toTrack(),
-                        pkgName = null,
+                        track = event.scrobbleData.toTrack(),
+                        appId = null,
                         user = user
                     )
 
@@ -133,29 +126,29 @@ actual object PanoNotifications {
                 }
             }
 
-        if (trackInfo.userPlayCount > 0) {
+        if (event.userPlayCount > 0) {
             nb.setContentTitle(
                 state + Stuff.formatBigHyphen(
-                    trackInfo.artist,
-                    trackInfo.title
+                    event.scrobbleData.artist,
+                    event.scrobbleData.track
                 )
             )
                 .setContentText(
                     context.resources.getQuantityString(
                         R.plurals.num_scrobbles_noti,
-                        trackInfo.userPlayCount,
-                        "~" + trackInfo.userPlayCount.format()
+                        event.userPlayCount,
+                        "~" + event.userPlayCount.format()
                     )
                 )
         } else {
-            nb.setContentTitle(state + trackInfo.title)
-                .setContentText(trackInfo.artist)
+            nb.setContentTitle(state + event.scrobbleData.track)
+                .setContentText(event.scrobbleData.artist)
         }
 
-        if (nowPlaying) {
+        if (event.nowPlaying) {
             val editDialogArgs = PanoDialog.EditScrobble(
-                scrobbleData = trackInfo.toScrobbleData(),
-                hash = trackInfo.hash
+                scrobbleData = event.origScrobbleData,
+                hash = event.hash
             )
 
             val editDeepLinkUri = DeepLinkUtils.buildDeepLink(editDialogArgs)
@@ -185,73 +178,58 @@ actual object PanoNotifications {
         }
 
         try {
-            notificationManager.notify(trackInfo.appId, 0, nb.build())
+            notificationManager.notify(event.scrobbleData.appId, 0, nb.build())
         } catch (e: RuntimeException) {
             val nExpandable = nb.setLargeIcon(null as Bitmap?)
                 .setStyle(null)
                 .build()
-            notificationManager.notify(trackInfo.appId, 0, nExpandable)
+            notificationManager.notify(event.scrobbleData.appId, 0, nExpandable)
         }
     }
 
-    actual fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val editDialogArgs = PanoDialog.EditScrobble(
-            scrobbleData = trackInfo.toScrobbleData(),
-            hash = trackInfo.hash
-        )
-
-        val editDeepLinkUri = DeepLinkUtils.buildDeepLink(editDialogArgs)
-
-        val editPi =
-            DeepLinkUtils.createDestinationPendingIntent(editDeepLinkUri)
-
-        val subtitleSpanned = if (scrobbleError.description != null)
-            Html.fromHtml(scrobbleError.description)
-        else
-            Stuff.formatBigHyphen(
-                trackInfo.artist,
-                trackInfo.title
+    actual fun notifyError(event: PlayingTrackNotifyEvent.Error) {
+        val subtitle = event.scrobbleError.description
+            ?: Stuff.formatBigHyphen(
+                event.scrobbleData.artist,
+                event.scrobbleData.track
             )
+
+        val title = if (event.scrobbleError.canFixMetadata)
+            context.getString(R.string.tap_to_edit) +
+                    " • " + event.scrobbleError.title
+        else
+            event.scrobbleError.title
 
         val nb = buildNotification()
-            .setChannelId(Stuff.CHANNEL_NOTI_SCR_ERR)
             .setSmallIcon(R.drawable.vd_noti_err)
-            .setContentIntent(editPi)
-            .setContentText(subtitleSpanned)
-            .setContentTitle(
-                "${trackInfo.title} " + context.getString(R.string.tap_to_edit)
-            )
+            .setContentTitle(title)
+            .setContentText(subtitle)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .setBigContentTitle(scrobbleError.title)
-                    .bigText(subtitleSpanned)
+                    .setBigContentTitle(event.scrobbleError.title)
+                    .bigText(subtitle)
             )
+            .also {
+                if (event.scrobbleError.canFixMetadata) {
+                    val editDialogArgs = PanoDialog.EditScrobble(
+                        scrobbleData = event.scrobbleData,
+                        hash = event.hash
+                    )
 
-        notificationManager.notify(trackInfo.appId, 0, nb.build())
-    }
+                    val editDeepLinkUri = DeepLinkUtils.buildDeepLink(editDialogArgs)
 
-    actual fun notifyOtherError(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val intent = Intent(context, MainActivity::class.java)
-        val launchIntent = PendingIntent.getActivity(
-            context, 8, intent,
-            AndroidStuff.updateCurrentOrImmutable
-        )
+                    val editPi =
+                        DeepLinkUtils.createDestinationPendingIntent(editDeepLinkUri)
 
-        val nb = buildNotification()
-            .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
-            .setSmallIcon(R.drawable.vd_noti_err)
-            .setContentIntent(launchIntent)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setContentText(scrobbleError.description) //required on recent oneplus devices
+                    it.setContentIntent(editPi)
+                    it.setChannelId(Stuff.CHANNEL_NOTI_SCR_ERR)
+                } else {
+                    it.setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
+                }
+            }
 
-        nb.setStyle(
-            NotificationCompat.BigTextStyle()
-                .setBigContentTitle(scrobbleError.title)
-                .bigText(scrobbleError.description)
-        )
-
-        notificationManager.notify(scrobbleError.appId, 0, nb.build())
+        notificationManager.notify(event.scrobbleData.appId, 0, nb.build())
     }
 
     actual fun notifyAppDetected(appId: String, appLabel: String) {
@@ -265,17 +243,26 @@ actual object PanoNotifications {
             allowed = false
         )
 
-        val blockIntent = Intent(NLService.iAPP_ALLOWED_BLOCKED)
+        val blockIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
             .setPackage(context.packageName)
-            .putExtra(Stuff.EXTRA_EVENT, Stuff.myJson.encodeToString(blockEvent))
+            .putExtra(
+                PlayingTrackEventReceiver.EXTRA_EVENT,
+                Stuff.myJson.encodeToString(blockEvent)
+            )
+            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, blockEvent::class.simpleName)
         val blockPi = PendingIntent.getBroadcast(
             context, 1, blockIntent,
             AndroidStuff.updateCurrentOrImmutable
         )
 
-        val allowIntent = Intent(NLService.iAPP_ALLOWED_BLOCKED)
+        val allowIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
             .setPackage(context.packageName)
-            .putExtra(Stuff.EXTRA_EVENT, Stuff.myJson.encodeToString(allowEvent))
+            .putExtra(
+                PlayingTrackEventReceiver.EXTRA_EVENT,
+                Stuff.myJson.encodeToString(allowEvent)
+            )
+            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, allowEvent::class.simpleName)
+
         val allowPi = PendingIntent.getBroadcast(
             context, 2, allowIntent,
             AndroidStuff.updateCurrentOrImmutable
@@ -318,20 +305,20 @@ actual object PanoNotifications {
     }
 
 
-    actual fun notifyUnscrobbled(trackInfo: PlayingTrackInfo) {
+    actual fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
         val delayTime = 4000L
 
         val blockedMetadata = BlockedMetadata(
-            track = trackInfo.title,
-            album = trackInfo.album,
-            artist = trackInfo.artist,
-            albumArtist = trackInfo.albumArtist,
+            track = scrobbleData.track,
+            album = scrobbleData.album.orEmpty(),
+            artist = scrobbleData.artist,
+            albumArtist = scrobbleData.albumArtist.orEmpty(),
         )
 
         val dialogArgs = PanoDialog.BlockedMetadataAdd(
             blockedMetadata = blockedMetadata,
-            ignoredArtist = trackInfo.origArtist,
-            hash = trackInfo.hash
+//            ignoredArtist = trackInfo.origArtist,
+            hash = hash
         )
 
         val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
@@ -349,11 +336,11 @@ actual object PanoNotifications {
             )
             .setContentIntent(blockPi)
             .setTimeoutAfter(delayTime)
-        notificationManager.notify(trackInfo.appId, 0, nb.build())
+        notificationManager.notify(scrobbleData.appId, 0, nb.build())
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             GlobalScope.launch {
                 delay(delayTime)
-                notificationManager.cancel(trackInfo.appId, 0)
+                notificationManager.cancel(scrobbleData.appId, 0)
             }
     }
 
@@ -409,7 +396,7 @@ actual object PanoNotifications {
                 AndroidStuff.getNotificationAction(
                     R.drawable.vd_mosaic,
                     "🖼️",
-                    context.getString(R.string.create_collage),
+                    getString(Res.string.create_collage),
                     launchPi
                 )
             )

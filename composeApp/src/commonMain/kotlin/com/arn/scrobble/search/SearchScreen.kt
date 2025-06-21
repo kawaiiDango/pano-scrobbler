@@ -1,8 +1,5 @@
 package com.arn.scrobble.search
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +40,6 @@ import com.arn.scrobble.ui.SearchBox
 import com.arn.scrobble.ui.expandableSublist
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.panoContentPadding
-import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
@@ -136,14 +132,10 @@ fun SearchScreen(
             visible = hasLoaded && searchResults?.isEmpty == true,
         )
 
-        AnimatedVisibility(
-            hasLoaded,
-            enter = fadeIn(),
-            exit = fadeOut(),
+        PanoLazyColumn(
+            modifier = Modifier.fillMaxSize()
         ) {
-            PanoLazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            if (hasLoaded) {
                 expandableSublist(
                     headerText = artistsText,
                     headerIcon = Icons.Outlined.Mic,
@@ -197,22 +189,8 @@ fun SearchScreen(
                         )
                     }
                 }
-            }
-        }
-        AnimatedVisibility(
-            searchResults != null && !hasLoaded,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            PanoLazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .shimmerWindowBounds()
-            ) {
-                items(
-                    10,
-                    key = { it }
-                ) {
+            } else if (searchResults != null) {
+                items(10) {
                     MusicEntryListItem(
                         getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS),
                         forShimmer = true,

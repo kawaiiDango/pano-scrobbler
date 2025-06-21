@@ -6,7 +6,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -66,6 +70,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -78,6 +83,7 @@ import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.edit_regex
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
 import pano_scrobbler.composeapp.generated.resources.help
+import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.maloja
 import pano_scrobbler.composeapp.generated.resources.my_scrobbles
@@ -87,14 +93,15 @@ import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
-import pano_scrobbler.composeapp.generated.resources.pref_regex_edits
 import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.random_text
+import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.settings
 import pano_scrobbler.composeapp.generated.resources.simple_edits
+import pano_scrobbler.composeapp.generated.resources.spotify
 import kotlin.reflect.typeOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,9 +110,7 @@ fun NavGraphBuilder.panoNavGraph(
     onSetOtherUser: (UserCached?) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
-    tabIdx: () -> Int,
     onSetTabData: (String, List<PanoTab>?) -> Unit,
-    onSetTabIdx: (Int) -> Unit,
     navigate: (PanoRoute) -> Unit,
     onOnboardingFinished: () -> Unit,
     goBack: () -> Unit,
@@ -150,14 +155,25 @@ fun NavGraphBuilder.panoNavGraph(
         val initialTab by PlatformStuff.mainPrefs.data
             .collectAsStateWithInitialValue { it.lastHomePagerTab }
 
+        var tabIdx by rememberSaveable { mutableIntStateOf(initialTab) }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
+                if (backStackEntryId == it.id)
+                    tabIdx = tab
+            }
+        }
+
         if (currentUserSelf != null) {
             HomePagerScreen(
                 user = currentUserSelf!!,
                 onSetOtherUser = onSetOtherUser,
                 onSetTitle = { title -> onSetTitle(it.id, title) },
-                tabIdx = tabIdx(),
-                initialTabIdx = initialTab,
-                onSetTabIdx = onSetTabIdx,
+                tabIdx = tabIdx,
+                onSetTabIdx = { tab ->
+                    tabIdx = tab
+                    mainViewModel.setTabIdx(it.id, tab)
+                },
                 onSetTabData = onSetTabData,
                 onSetNavMetadataList = onSetNavMetadataList,
                 onNavigate = navigate,
@@ -177,14 +193,24 @@ fun NavGraphBuilder.panoNavGraph(
         )
     ) {
         val arguments = it.toRoute<PanoRoute.OthersHomePager>()
+        var tabIdx by rememberSaveable { mutableIntStateOf(0) }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
+                if (backStackEntryId == it.id)
+                    tabIdx = tab
+            }
+        }
 
         HomePagerScreen(
             user = arguments.user,
             onSetOtherUser = onSetOtherUser,
             onSetTitle = { title -> onSetTitle(it.id, title) },
-            initialTabIdx = 0,
-            tabIdx = tabIdx(),
-            onSetTabIdx = onSetTabIdx,
+            tabIdx = tabIdx,
+            onSetTabIdx = { tab ->
+                tabIdx = tab
+                mainViewModel.setTabIdx(it.id, tab)
+            },
             onSetTabData = onSetTabData,
             onSetNavMetadataList = onSetNavMetadataList,
             onNavigate = navigate,
@@ -208,7 +234,7 @@ fun NavGraphBuilder.panoNavGraph(
         RandomScreen(
             user = arguments.user,
             onOpenDialog = onOpenDialog,
-            modifier = modifier().addColumnPadding()
+            modifier = modifier().padding(panoContentPadding())
         )
     }
 
@@ -267,7 +293,13 @@ fun NavGraphBuilder.panoNavGraph(
         )
     }
 
-    composable<PanoRoute.Billing> {
+    composable<PanoRoute.Billing>(
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Billing::class.simpleName
+            }
+        )
+    ) {
         onSetTitleString(it.id, "")
         BillingScreen(
             onBack = goBack,
@@ -317,11 +349,11 @@ fun NavGraphBuilder.panoNavGraph(
     }
 
     composable<PanoRoute.RegexEdits> {
-        onSetTitleRes(it.id, Res.string.pref_regex_edits)
+        onSetTitleRes(it.id, Res.string.regex_rules)
         RegexEditsScreen(
             onNavigateToTest = { navigate(PanoRoute.RegexEditsTest) },
             onNavigateToEdit = { navigate(PanoRoute.RegexEditsAdd(it)) },
-            modifier = modifier()
+            modifier = modifier().padding(panoContentPadding())
         )
     }
 
@@ -337,7 +369,7 @@ fun NavGraphBuilder.panoNavGraph(
             regexEdit = arguments.regexEdit,
             onNavigate = navigate,
             onBack = goBack,
-            modifier = modifier().padding(panoContentPadding())
+            modifier = modifier().addColumnPadding()
         )
     }
 
@@ -392,7 +424,10 @@ fun NavGraphBuilder.panoNavGraph(
             typeOf<Album?>() to serializableType<Album?>(),
         )
     ) {
-        onSetTitleRes(it.id, Res.string.search)
+        onSetTitleString(
+            it.id,
+            stringResource(Res.string.search) + ": " + stringResource(Res.string.spotify)
+        )
 
         val arguments = it.toRoute<PanoRoute.ImageSearch>()
 
@@ -555,7 +590,10 @@ fun NavGraphBuilder.panoNavGraph(
             }
         )
     ) {
-        onSetTitleRes(it.id, Res.string.search)
+        onSetTitleString(
+            it.id,
+            stringResource(Res.string.search) + ": " + stringResource(Res.string.lastfm)
+        )
 
         SearchScreen(
             onOpenDialog = onOpenDialog,
@@ -601,22 +639,36 @@ fun NavGraphBuilder.panoNavGraph(
         )
     ) {
         val arguments = it.toRoute<PanoRoute.MusicEntryInfoPager>()
+        var tabIdx by rememberSaveable {
+            mutableIntStateOf(
+                when (arguments.type) {
+                    Stuff.TYPE_ARTISTS -> 0
+                    Stuff.TYPE_ALBUMS -> 1
+                    Stuff.TYPE_TRACKS -> 2
+                    else -> 0
+                }
+            )
+        }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
+                if (backStackEntryId == it.id)
+                    tabIdx = tab
+            }
+        }
 
         onSetTitleString(it.id, arguments.artist.name)
 
         InfoPagerScreen(
             musicEntry = arguments.artist,
             user = arguments.user,
-            pkgName = arguments.pkgName,
-            tabIdx = tabIdx(),
-            onSetTabData = onSetTabData,
-            onSetTabIdx = onSetTabIdx,
-            initialTabIdx = when (arguments.type) {
-                Stuff.TYPE_ARTISTS -> 0
-                Stuff.TYPE_ALBUMS -> 1
-                Stuff.TYPE_TRACKS -> 2
-                else -> 0
+            appId = arguments.appId,
+            tabIdx = tabIdx,
+            onSetTabIdx = { tab ->
+                tabIdx = tab
+                mainViewModel.setTabIdx(it.id, tab)
             },
+            onSetTabData = onSetTabData,
             onOpenDialog = onOpenDialog,
             modifier = modifier()
         )
@@ -629,18 +681,32 @@ fun NavGraphBuilder.panoNavGraph(
         )
     ) {
         val arguments = it.toRoute<PanoRoute.ChartsPager>()
+        var tabIdx by rememberSaveable {
+            mutableIntStateOf(
+                when (arguments.type) {
+                    Stuff.TYPE_ARTISTS -> 0
+                    Stuff.TYPE_ALBUMS -> 1
+                    Stuff.TYPE_TRACKS -> 2
+                    else -> 0
+                }
+            )
+        }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
+                if (backStackEntryId == it.id)
+                    tabIdx = tab
+            }
+        }
 
         ChartsPagerScreen(
             user = arguments.user,
-            tabIdx = tabIdx(),
-            onSetTabIdx = onSetTabIdx,
-            onSetTabData = onSetTabData,
-            initialTabIdx = when (arguments.type) {
-                Stuff.TYPE_ARTISTS -> 0
-                Stuff.TYPE_ALBUMS -> 1
-                Stuff.TYPE_TRACKS -> 2
-                else -> 0
+            tabIdx = tabIdx,
+            onSetTabIdx = { tab ->
+                tabIdx = tab
+                mainViewModel.setTabIdx(it.id, tab)
             },
+            onSetTabData = onSetTabData,
             onSetTitle = { title -> onSetTitle(it.id, title) },
             onOpenDialog = onOpenDialog,
             modifier = modifier()
@@ -674,7 +740,7 @@ fun NavGraphBuilder.panoNavGraph(
         SimilarTracksScreen(
             musicEntry = arguments.track,
             user = arguments.user,
-            pkgName = arguments.pkgName,
+            appId = arguments.appId,
             onOpenDialog = onOpenDialog,
             modifier = modifier()
         )

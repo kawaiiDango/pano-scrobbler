@@ -11,7 +11,7 @@ actual typealias PlatformMediaMetadata = MediaMetadata
 actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
-): Pair<MetadataInfo, Boolean> {
+): MetadataInfo {
 
     var albumArtist =
         metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
@@ -80,10 +80,17 @@ actual fun transformMediaMetadata(
 
         Stuff.PACKAGE_SPOTIFY -> {
             // goddamn spotify
-            if (albumArtist.isNotEmpty() && albumArtist != artist &&
-                !MetadataUtils.isVariousArtists(albumArtist)
-            )
-                artist = albumArtist
+
+            // this is now done in regex presets
+//            if (albumArtist.isNotEmpty() && albumArtist != artist &&
+//                !MetadataUtils.isVariousArtists(albumArtist)
+//            )
+//                artist = albumArtist
+
+            // this is for removing "smart shuffle" etc
+            val idx = artist.lastIndexOf(" • ")
+            if (idx != -1)
+                artist = artist.substring(0, idx)
         }
 
         Stuff.PACKAGE_NINTENDO_MUSIC -> {
@@ -97,14 +104,14 @@ actual fun transformMediaMetadata(
         }
     }
 
-    if (trackInfo.appId in Stuff.IGNORE_ARTIST_META)
-        trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
+//    if (trackInfo.appId in Stuff.IGNORE_ARTIST_META)
+//        trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
 
     // auto generated artist channels usually have square videos
-    val canDoFallbackScrobble = trackInfo.ignoreOrigArtist && (
-            trackInfo.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
-                    youtubeHeight > 0 && youtubeWidth > 0 && youtubeHeight == youtubeWidth
-            )
+//    val canDoFallbackScrobble = trackInfo.ignoreOrigArtist && (
+//            trackInfo.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
+//                    youtubeHeight > 0 && youtubeWidth > 0 && youtubeHeight == youtubeWidth
+//            )
 
     val metadataInfo = MetadataInfo(
         app_id = trackInfo.appId,
@@ -116,5 +123,5 @@ actual fun transformMediaMetadata(
         duration = durationMillis,
     )
 
-    return metadataInfo to canDoFallbackScrobble
+    return metadataInfo
 }

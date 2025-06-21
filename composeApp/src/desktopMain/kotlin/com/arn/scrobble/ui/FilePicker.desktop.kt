@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.window.AwtWindow
+import androidx.compose.ui.awt.AwtWindow
 import com.arn.scrobble.filepicker.FilePickerScreen
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformFile
@@ -33,7 +33,7 @@ actual fun FilePicker(
     onFilePicked: (PlatformFile) -> Unit,
 ) {
     // freezes or gives a segmentation fault on Linux
-    val useNativeFilePicker = DesktopStuff.os == DesktopStuff.Os.Windows
+    val useNativeFilePicker = DesktopStuff.os != DesktopStuff.Os.Linux
 
     val fileMode by remember(mode) {
         mutableIntStateOf(

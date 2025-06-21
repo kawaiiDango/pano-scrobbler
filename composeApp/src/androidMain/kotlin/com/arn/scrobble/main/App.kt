@@ -37,6 +37,7 @@ class App : Application(), Configuration.Provider {
 
     override fun onCreate() {
         AndroidStuff.application = this
+        AndroidStuff.isMainProcess = isMainProcess()
 
         super.onCreate()
 
@@ -54,7 +55,8 @@ class App : Application(), Configuration.Provider {
         )
 
         // the built in content provider initializer only runs in the main process
-        val crashlyticsEnabled = isMainProcess() && Stuff.mainPrefsInitialValue.crashReporterEnabled
+        val crashlyticsEnabled = AndroidStuff.isMainProcess &&
+                Stuff.mainPrefsInitialValue.crashReporterEnabled
 
         if (crashlyticsEnabled) {
             val crashlyticsKeys = mapOf(

@@ -19,7 +19,7 @@ import pano_scrobbler.composeapp.generated.resources.not_found
 fun SimilarTracksScreen(
     musicEntry: Track,
     user: UserCached,
-    pkgName: String?,
+    appId: String?,
     onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
@@ -50,7 +50,7 @@ fun SimilarTracksScreen(
             onOpenDialog(
                 PanoDialog.MusicEntryInfo(
                     track = it as Track,
-                    pkgName = pkgName,
+                    appId = appId,
                     user = user
                 )
             )

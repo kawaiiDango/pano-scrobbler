@@ -1,176 +1,238 @@
 package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.ScrobbleEverywhere
-import com.arn.scrobble.utils.MetadataUtils
+import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.PriorityQueue
-import kotlin.math.min
+import kotlinx.coroutines.withTimeout
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.parse_error
+import pano_scrobbler.composeapp.generated.resources.scrobble_ignored
 
 
 class ScrobbleQueue(
     private val scope: CoroutineScope,
 ) {
-    private data class ScrobbleTimingPrefs(
-        val delayPercent: Int,
-        val delaySecs: Int,
-        val minDurationSecs: Int,
-    )
-
-    private val delayPercentAndSecs =
-        PlatformStuff.mainPrefs.data.map {
-            ScrobbleTimingPrefs(
-                delayPercent = it.delayPercentP,
-                delaySecs = it.delaySecsP,
-                minDurationSecs = it.minDurationSecsP
-            )
-        }
-            .stateIn(
-                scope,
-                SharingStarted.Lazily,
-                Stuff.mainPrefsInitialValue.let {
-                    ScrobbleTimingPrefs(
-                        delayPercent = it.delayPercentP,
-                        delaySecs = it.delaySecsP,
-                        minDurationSecs = it.minDurationSecsP
-                    )
-                })
-
     // delays scrobbling this hash until it becomes null again
     private var lockedHash: Int? = null
 
     private val tickEveryMs = 500L
 
-    private val tracksCopyPQ = PriorityQueue<PlayingTrackInfo>(20) { a, b ->
-        (a.scrobbleAtMonotonicTime - b.scrobbleAtMonotonicTime).toInt()
-    }
-
-    private var tickerJob: Job? = null
-    private var lastNpTask: Job? = null
-
+    private val scrobbleTasks = mutableMapOf<Int, Job>()
 
     // ticker, only handles empty messages and messagePQ
     // required because uptimeMillis pauses / slows down in deep sleep
 
-    private fun startTickerIfNeeded() {
-        if (tickerJob?.isActive == true) return
-
-        tickerJob = scope.launch {
-            while (tracksCopyPQ.isNotEmpty()) {
-                delay(tickEveryMs)
-                val queuedMessage = tracksCopyPQ.peek()
-                if (queuedMessage != null && queuedMessage.hash != lockedHash &&
-                    queuedMessage.scrobbleAtMonotonicTime <= PlatformStuff.monotonicTimeMs()
-                ) {
-                    tracksCopyPQ.remove(queuedMessage)
-                    submitScrobble(queuedMessage)
-                }
-            }
+    private fun prune() {
+        scrobbleTasks.entries.removeAll { (hash, job) ->
+            job.isCancelled || job.isCompleted
         }
     }
 
     fun shutdown() {
-        tickerJob?.cancel()
-        tracksCopyPQ.clear()
+        scrobbleTasks.forEach { (_, job) ->
+            job.cancel()
+        }
+
+        scrobbleTasks.clear()
     }
 
-    fun has(hash: Int) = tracksCopyPQ.any { it.hash == hash }
-
-    fun reschedule(hash: Int, newElapsedRealtime: Long) {
-        tracksCopyPQ.find { it.hash == hash }
-            ?.scrobbleAtMonotonicTime = newElapsedRealtime
-    }
+    fun has(hash: Int) =
+        scrobbleTasks[hash]?.let { !(it.isCancelled || it.isCompleted) } == true
 
     fun setLockedHash(hash: Int?) {
         lockedHash = hash
     }
 
-    fun addScrobble(trackInfo: PlayingTrackInfo) =
-        trackInfo.copy().also {
-            tracksCopyPQ.add(it)
-            startTickerIfNeeded()
-        }
-
-    fun nowPlaying(
+    fun scrobble(
         trackInfo: PlayingTrackInfo,
         appIsAllowListed: Boolean,
-        fixedDelay: Long? = null,
+        delay: Long,
     ) {
         if (trackInfo.title.isEmpty() || has(trackInfo.hash))
             return
 
-        val scrobbleTimingPrefs = delayPercentAndSecs.value
+        val submitAtTime = PlatformStuff.monotonicTimeMs() + delay
+        val hash = trackInfo.hash
+        trackInfo.prepareForScrobbling()
+        val scrobbleData = trackInfo.toScrobbleData(useOriginals = false)
+        val origScrobbleData = trackInfo.toScrobbleData(useOriginals = true)
 
-        trackInfo.artist = MetadataUtils.sanitizeArtist(trackInfo.artist)
-        trackInfo.album = MetadataUtils.sanitizeAlbum(trackInfo.album)
-        trackInfo.albumArtist = MetadataUtils.sanitizeAlbumArtist(trackInfo.albumArtist)
-        trackInfo.userPlayCount = 0
-        trackInfo.userLoved = false
+        suspend fun scheduleSubmit(sd: ScrobbleData) {
+            Logger.d { "will submit in ${submitAtTime - PlatformStuff.monotonicTimeMs()}ms" }
+            // tick every n milliseconds
+            while (submitAtTime > PlatformStuff.monotonicTimeMs() || hash == lockedHash) {
+                delay(tickEveryMs)
+            }
 
-        trackInfo.isPlaying = true
+            // launch it in a separate scope, so that it does not get cancelled
+            scope.launch(Dispatchers.IO) {
+                ScrobbleEverywhere.scrobble(sd)
+            }
 
-        var finalDelay: Long
-        if (fixedDelay == null) {
-            val delayMillis = scrobbleTimingPrefs.delaySecs * 1000L
-            val delayFraction = scrobbleTimingPrefs.delayPercent / 100.0
-            val delayMillisFraction = if (trackInfo.durationMillis > 0)
-                (trackInfo.durationMillis * delayFraction).toLong()
-            else
-                Long.MAX_VALUE
-
-            finalDelay = min(delayMillisFraction, delayMillis)
-                .coerceAtLeast(scrobbleTimingPrefs.minDurationSecs * 1000L) // don't scrobble < n seconds
-
-            finalDelay = (finalDelay - trackInfo.timePlayed)
-                .coerceAtLeast(1000)// deal with negative or 0 delay
-        } else {
-            finalDelay = fixedDelay
+            notifyPlayingTrackEvent(
+                PlayingTrackNotifyEvent.TrackScrobbling(
+                    hash = hash,
+                    scrobbleData = sd,
+                    origScrobbleData = origScrobbleData,
+                    nowPlaying = false,
+                    userLoved = trackInfo.userLoved,
+                    userPlayCount = trackInfo.userPlayCount
+                )
+            )
         }
 
-        val submitTime = PlatformStuff.monotonicTimeMs() + finalDelay
-        trackInfo.scrobbleAtMonotonicTime = submitTime
-        val trackInfoCopy = addScrobble(trackInfo)
+        notifyPlayingTrackEvent(
+            PlayingTrackNotifyEvent.TrackScrobbling(
+                hash = hash,
+                scrobbleData = scrobbleData,
+                origScrobbleData = origScrobbleData,
+                nowPlaying = true,
+                userLoved = trackInfo.userLoved,
+                userPlayCount = trackInfo.userPlayCount
+            )
+        )
 
-        lastNpTask?.cancel()
-        lastNpTask = scope.launch(Dispatchers.IO) {
-            ScrobbleEverywhere.scrobble(true, trackInfoCopy)
-        }
-
-        PanoNotifications.notifyScrobble(trackInfo, nowPlaying = true)
         if (!appIsAllowListed) {
             PanoNotifications.notifyAppDetected(
                 trackInfo.appId,
                 PlatformStuff.loadApplicationLabel(trackInfo.appId)
             )
         }
+
+        prune()
+        scrobbleTasks[trackInfo.hash]?.cancel()
+        scrobbleTasks[trackInfo.hash] = scope.launch(Dispatchers.IO) {
+            // some players put the previous song and then switch to the current song in like 150ms
+            // potentially wasting an api call. sleep and throw cancellation exception in that case
+            delay(Stuff.META_WAIT)
+
+            if (trackInfo.preprocessed) {
+                scheduleSubmit(trackInfo.toScrobbleData(false))
+                return@launch
+            }
+
+            val preprocessResult = ScrobbleEverywhere.preprocessMetadata(scrobbleData)
+
+            when {
+                preprocessResult.blockPlayerAction != null -> {
+                    notifyPlayingTrackEvent(
+                        PlayingTrackNotifyEvent.TrackCancelled(
+                            hash = hash,
+                            blockPlayerAction = preprocessResult.blockPlayerAction,
+                            showUnscrobbledNotification = false
+                        )
+                    )
+                }
+
+                preprocessResult.titleParseFailed -> {
+                    notifyPlayingTrackEvent(
+                        PlayingTrackNotifyEvent.Error(
+                            hash = hash,
+                            scrobbleError = ScrobbleError(
+                                getString(Res.string.parse_error),
+                                null,
+                                trackInfo.appId,
+                                canFixMetadata = true
+                            ),
+                            scrobbleData = scrobbleData.copy(albumArtist = "")
+                        )
+                    )
+                }
+
+                else -> {
+                    trackInfo.putPreprocessedData(preprocessResult.scrobbleData)
+
+                    notifyPlayingTrackEvent(
+                        PlayingTrackNotifyEvent.TrackScrobbling(
+                            hash = hash,
+                            scrobbleData = preprocessResult.scrobbleData,
+                            origScrobbleData = origScrobbleData,
+                            nowPlaying = true,
+                            userLoved = trackInfo.userLoved,
+                            userPlayCount = trackInfo.userPlayCount
+                        )
+                    )
+
+                    val npResults = withTimeout(submitAtTime - PlatformStuff.monotonicTimeMs()) {
+                        ScrobbleEverywhere.nowPlaying(preprocessResult.scrobbleData)
+                    }
+
+                    if (npResults.values.any { !it.isSuccess }) {
+                        launch {
+                            notifyScrobbleError(
+                                npResults,
+                                scrobbleData,
+                                hash
+                            )
+                        }
+                    }
+
+                    scheduleSubmit(preprocessResult.scrobbleData)
+                }
+            }
+        }
     }
 
-    private fun submitScrobble(trackInfoCopy: PlayingTrackInfo) {
-        // if it somehow reached here, don't scrobble
-//        if (mediaListener.hasOtherPlayingControllers(trackInfoCopy) == true && trackInfoCopy.hasBlockedTag)
-//            return
 
-        scope.launch(Dispatchers.IO) {
-            notifyPlayingTrackEvent(PlayingTrackNotifyEvent.TrackScrobbled(trackInfoCopy))
-            ScrobbleEverywhere.scrobble(false, trackInfoCopy)
+    private suspend fun notifyScrobbleError(
+        scrobbleResults: Map<Scrobblable, Result<ScrobbleIgnored>>,
+        scrobbleData: ScrobbleData,
+        hash: Int
+    ) {
+        val failedTextLines = mutableListOf<String>()
+        var ignored = false
+        scrobbleResults.forEach { (scrobblable, result) ->
+            if (result.isFailure) {
+                val exception = scrobbleResults[scrobblable]?.exceptionOrNull()
+
+                val errMsg = exception?.redactedMessage
+                failedTextLines += scrobblable.userAccount.type.name + ": $errMsg"
+            } else if (result.isSuccess && result.getOrThrow().ignored) {
+                failedTextLines += scrobblable.userAccount.type.name + ": " +
+                        getString(Res.string.scrobble_ignored)
+                ignored = true
+            }
         }
 
+        if (failedTextLines.isNotEmpty()) {
+            val failedText = failedTextLines.joinToString("\n")
+            Logger.w { "failedText= $failedText" }
+            if (ignored && scrobbleData.appId != null) {
+                notifyPlayingTrackEvent(
+                    PlayingTrackNotifyEvent.Error(
+                        hash = hash,
+                        scrobbleData = scrobbleData,
+                        scrobbleError = ScrobbleError(
+                            failedText,
+                            null,
+                            scrobbleData.appId,
+                            canFixMetadata = true
+                        ),
+                    )
+                )
+            }
+        }
     }
 
     fun remove(hash: Int) {
-        if (hash == lockedHash) return
+        if (hash == lockedHash) {
+            Logger.d { "$hash locked" }
+            return
+        }
 
+        scrobbleTasks.remove(hash)?.cancel()
         Logger.d { "$hash cancelled" }
-        tracksCopyPQ.removeAll { it.hash == hash }
     }
 }

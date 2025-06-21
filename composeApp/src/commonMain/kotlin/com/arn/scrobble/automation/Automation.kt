@@ -1,5 +1,6 @@
 package com.arn.scrobble.automation
 
+import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.utils.PlatformStuff
@@ -15,6 +16,8 @@ object Automation {
     const val CANCEL = "cancel"
     const val ALLOWLIST = "allowlist"
     const val BLOCKLIST = "blocklist"
+
+    const val DESKTOP_FOCUS_EXISTING = "focus-existing"
 
     const val PREFIX = "com.arn.scrobble.automation"
 
@@ -55,7 +58,7 @@ object Automation {
                 val event = PlayingTrackNotifyEvent.TrackCancelled(
                     hash = null,
                     showUnscrobbledNotification = false,
-                    markAsScrobbled = true
+                    blockPlayerAction = BlockPlayerAction.ignore
                 )
 
                 notifyPlayingTrackEvent(event)

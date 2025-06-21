@@ -10,7 +10,6 @@ import android.media.AudioManager
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
 import android.os.Build
-import android.os.SystemClock
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.content.ContextCompat
@@ -33,7 +32,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.Objects
 
 class NLService : NotificationListenerService() {
     private val mainPrefs = PlatformStuff.mainPrefs
@@ -47,12 +45,23 @@ class NLService : NotificationListenerService() {
             AudioManager::class.java
         )!!
     }
+
+    private val deviceInteractiveReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == Intent.ACTION_SCREEN_ON) {
+                coroutineScope.launch {
+                    mainPrefs.updateData { it.copy(lastInteractiveTime = System.currentTimeMillis()) }
+                }
+            }
+        }
+    }
+
     private var inited = false
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase?.applyAndroidLocaleLegacy() ?: return)
     }
-    
+
     override fun onListenerConnected() {
         //    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
         //    onCreate seems to get called only once in those cases.
@@ -73,20 +82,12 @@ class NLService : NotificationListenerService() {
     }
 
     private fun init() {
-        val filter = IntentFilter().apply {
-            addAction(iCANCEL)
-            addAction(iLOVE)
-            addAction(iUNLOVE)
-            addAction(iAPP_ALLOWED_BLOCKED)
-            addAction(iSCROBBLE_SUBMIT_LOCK)
-
-            addAction(Intent.ACTION_SCREEN_ON)
-        }
+        val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
         ContextCompat.registerReceiver(
             applicationContext,
-            nlserviceReciver,
+            deviceInteractiveReceiver,
             filter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED
         )
 
         val sessManager = ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
@@ -150,15 +151,11 @@ class NLService : NotificationListenerService() {
 
         Logger.i { "destroy" }
         try {
-            applicationContext.unregisterReceiver(nlserviceReciver)
+            applicationContext.unregisterReceiver(deviceInteractiveReceiver)
         } catch (e: IllegalArgumentException) {
-            Logger.w { "nlservicereciver wasn't registered" }
+            Logger.w { "deviceInteractiveReceiver wasn't registered" }
         }
 
-        try {
-            applicationContext.unregisterReceiver(nlserviceReciverWithPermission)
-        } catch (e: IllegalArgumentException) {
-        }
         if (sessListener != null) {
             sessListener?.removeSessions(setOf<MediaSession.Token>())
             ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
@@ -256,113 +253,29 @@ class NLService : NotificationListenerService() {
 
         if (meta != null) {
             val (artist, title) = meta
-            val hash = Objects.hash(artist, "", title, pkgName)
-            if (trackInfo != null && trackInfo.hash == hash) {
-                val scrobbleTimeReached =
-                    SystemClock.elapsedRealtime() >= trackInfo.scrobbleAtMonotonicTime
-                if (!scrobbleTimeReached && !scrobbleQueue.has(hash)) { //"resume" scrobbling
-                    scrobbleQueue.addScrobble(trackInfo.copy())
+            // different song, scrobble it
+            trackInfo?.let { scrobbleQueue.remove(it.hash) }
+            val newTrackInfo = PlayingTrackInfo(
+                appId = pkgName,
+                sessionId = TAG_NOTI
+            )
+            newTrackInfo.putOriginals(artist, title)
 
-                    PanoNotifications.notifyScrobble(
-                        trackInfo,
-                        nowPlaying = scrobbleQueue.has(trackInfo.hash)
-                    )
-
-                    Logger.i { "${this::scrobbleFromNoti.name} rescheduling" }
-                } else if (System.currentTimeMillis() - trackInfo.playStartTime < Stuff.NOTI_SCROBBLE_INTERVAL) {
-                    Logger.i("${this::scrobbleFromNoti.name} ignoring possible duplicate")
-                }
-            } else {
-                // different song, scrobble it
-                trackInfo?.let { scrobbleQueue.remove(it.hash) }
-                val newTrackInfo = PlayingTrackInfo(
-                    playStartTime = System.currentTimeMillis(),
-                    hash = hash,
-                    appId = pkgName,
-                    sessionId = TAG_NOTI
+            sessListener?.putTrackInfo("$pkgName|$TAG_NOTI", newTrackInfo)
+            coroutineScope.launch {
+                scrobbleQueue.scrobble(
+                    trackInfo = newTrackInfo,
+                    appIsAllowListed =
+                        mainPrefs.data.map { it.allowedPackages }.first().contains(pkgName),
+                    delay = 30 * 1000L
                 )
-                newTrackInfo.putOriginals(artist, title)
-
-                sessListener?.putTrackInfo("$pkgName|$TAG_NOTI", newTrackInfo)
-                coroutineScope.launch {
-                    scrobbleQueue.nowPlaying(
-                        trackInfo = newTrackInfo,
-                        appIsAllowListed =
-                            mainPrefs.data.map { it.allowedPackages }.first().contains(pkgName),
-                        fixedDelay = 30 * 1000L
-                    )
-                }
             }
         } else {
             Logger.w("${this::scrobbleFromNoti.name} parse failed")
         }
     }
 
-    suspend fun onBroadcastReceived(intent: Intent) {
-        when (intent.action) {
-            iCANCEL -> {
-                val event = intent.getStringExtra(Stuff.EXTRA_EVENT)?.let {
-                    Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.TrackCancelled>(it)
-                } ?: return
-
-                notifyPlayingTrackEvent(event)
-            }
-
-            iLOVE, iUNLOVE -> {
-                val event = intent.getStringExtra(Stuff.EXTRA_EVENT)?.let {
-                    Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.TrackLovedUnloved>(it)
-                } ?: return
-
-                notifyPlayingTrackEvent(event)
-            }
-
-            iAPP_ALLOWED_BLOCKED -> {
-                val event = intent.getStringExtra(Stuff.EXTRA_EVENT)?.let {
-                    Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.AppAllowedBlocked>(it)
-                } ?: return
-
-                notifyPlayingTrackEvent(event)
-            }
-
-            Intent.ACTION_SCREEN_ON -> {
-                mainPrefs.updateData { it.copy(lastInteractiveTime = System.currentTimeMillis()) }
-            }
-
-            iSCROBBLE_SUBMIT_LOCK -> {
-                val event = intent.getStringExtra(Stuff.EXTRA_EVENT)?.let {
-                    Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.TrackScrobbleLocked>(it)
-                } ?: return
-
-                notifyPlayingTrackEvent(event)
-            }
-        }
-    }
-
-    private val nlserviceReciver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            coroutineScope.launch {
-                onBroadcastReceived(intent)
-            }
-        }
-    }
-
-    private val nlserviceReciverWithPermission = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            coroutineScope.launch {
-                onBroadcastReceived(intent)
-            }
-        }
-    }
-
     companion object {
-        const val iCANCEL = "com.arn.scrobble.CANCEL"
-        const val iLOVE = "com.arn.scrobble.LOVE"
-        const val iUNLOVE = "com.arn.scrobble.UNLOVE"
-        const val iAPP_ALLOWED_BLOCKED = "com.arn.scrobble.ALLOW_BLOCK_APP"
-        const val iSCROBBLE_SUBMIT_LOCK = "com.arn.scrobble.SCROBBLE_SUBMIT_LOCK"
-        const val BROADCAST_PERMISSION =
-            "com.arn.scrobble.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-
         const val TAG_NOTI = "noti"
     }
 }

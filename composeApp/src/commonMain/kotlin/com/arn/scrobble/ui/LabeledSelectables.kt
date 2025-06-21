@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 
@@ -28,6 +29,7 @@ fun LabeledCheckbox(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     textStyle: TextStyle = LocalTextStyle.current,
+    maxLines: Int = 2,
 ) {
     Row(
         modifier = modifier
@@ -52,6 +54,8 @@ fun LabeledCheckbox(
         Text(
             text = text,
             style = textStyle,
+            maxLines = maxLines,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(start = 16.dp)
         )
     }

@@ -218,27 +218,13 @@ class SessListener(
         ) && !metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
 
 
-    override fun hasOtherPlayingControllers(thisTrackInfo: PlayingTrackInfo): Boolean {
+    override fun hasOtherPlayingControllers(appId: String, sessionId: String): Boolean {
         return controllersMap.values.any { (controller, cb) ->
-            controller.packageName == thisTrackInfo.appId
-                    && controller.tagCompat != thisTrackInfo.sessionId &&
+            controller.packageName == appId
+                    && controller.tagCompat != sessionId &&
                     controller.isMediaPlaying()
 //                        && !cb.trackInfo.hasBlockedTag
         }
-    }
-
-    override fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {
-        return if (
-            trackInfo.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && trackInfo.album.isNotEmpty() ||
-            trackInfo.appId == Stuff.PACKAGE_YOUTUBE_TV && trackInfo.album.isNotEmpty() ||
-            trackInfo.appId == Stuff.PACKAGE_YMUSIC &&
-            trackInfo.album.replace("YMusic", "").isNotEmpty()
-        )
-            false
-        else (trackInfo.appId in Stuff.IGNORE_ARTIST_META &&
-                !trackInfo.artist.endsWith("- Topic"))
-//                (trackInfo.appId in Stuff.browserPackages &&
-//                        trackInfo.artist.isUrlOrDomain())
     }
 
     inner class ControllerCallback(
@@ -260,7 +246,7 @@ class SessListener(
 //            if (PlatformStuff.isDebug)
 //                metadata.dump()
 
-            val (metadataInfo, canDoFallbackScrobble) = transformMediaMetadata(trackInfo, metadata)
+            val metadataInfo = transformMediaMetadata(trackInfo, metadata)
 
             Logger.i {
                 "onMetadataChanged ${metadataInfo.artist} (${metadataInfo.album_artist}) [${metadataInfo.album}] ~ ${metadataInfo.title} " +
@@ -269,7 +255,7 @@ class SessListener(
 
 
 
-            sessionTracker.metadataChanged(metadataInfo, canDoFallbackScrobble)
+            sessionTracker.metadataChanged(metadataInfo)
         }
 
         @Synchronized

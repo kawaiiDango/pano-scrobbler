@@ -3,8 +3,8 @@ package com.arn.scrobble.charts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -40,12 +40,9 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.PanoDialog
-import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
-import com.arn.scrobble.ui.MusicEntryGridItem
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.shimmerWindowBounds
@@ -78,11 +75,8 @@ fun RandomScreen(
     val type by PlatformStuff.mainPrefs.data.map { it.lastRandomType }
         .collectAsStateWithLifecycle(Stuff.TYPE_TRACKS)
     var timePeriod by rememberSaveable(saver = jsonSerializableSaver<TimePeriod?>()) {
-        mutableStateOf(
-            null
-        )
+        mutableStateOf(null)
     }
-    val isLandscape = LocalNavigationType.current != PanoNavigationType.BOTTOM_NAVIGATION
 
     val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
         .collectAsStateWithLifecycle(false)
@@ -129,62 +123,47 @@ fun RandomScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            if (isLandscape) {
-                RandomTypeSelector(
-                    type = type,
-                    onSameClick = {
-                        load(type, true)
-                    },
-                    onMenuItemClick = { newType ->
-                        load(newType)
-                    },
-                )
-            }
 
-            AnimatedVisibility(
-                visible = type != Stuff.TYPE_LOVES,
-                modifier = Modifier.weight(1f)
-            ) {
-                TimePeriodSelector(
-                    user = user,
-                    viewModel = chartsPeriodViewModel,
-                    onSelected = { curr, prev ->
-                        timePeriod = curr
-                        load(type)
-                    },
-                )
-            }
+        AnimatedVisibility(
+            visible = type != Stuff.TYPE_LOVES,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            TimePeriodSelector(
+                user = user,
+                viewModel = chartsPeriodViewModel,
+                onSelected = { curr, prev ->
+                    timePeriod = curr
+                    load(type)
+                },
+            )
         }
 
-        Box(
-            modifier =
-                if (isLandscape) Modifier
-                    .heightIn(max = 400.dp)
-                    .weight(1f)
-                else Modifier.widthIn(max = 400.dp)
+        BoxWithConstraints(
+            modifier = Modifier.weight(1f)
         ) {
-            val musicEntryOrPlaceholder =
-                musicEntry.takeIf { hasLoaded } ?: getMusicEntryPlaceholderItem(
-                    if (type == -1 || type == Stuff.TYPE_LOVES) Stuff.TYPE_TRACKS else type
-                )
+            val isLandscape = (maxWidth * 0.7f) > maxHeight
 
-            if (hasLoaded) {
-                ErrorText(
-                    errorText = error?.redactedMessage,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Center)
-                )
-            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier =
+                    if (isLandscape) Modifier
+                        .heightIn(max = 400.dp)
+                    else Modifier.widthIn(max = 400.dp)
+            ) {
+                val musicEntryOrPlaceholder =
+                    musicEntry.takeIf { hasLoaded } ?: getMusicEntryPlaceholderItem(
+                        if (type == -1 || type == Stuff.TYPE_LOVES) Stuff.TYPE_TRACKS else type
+                    )
 
-            if (error == null) {
-                if (isLandscape) {
+                if (hasLoaded) {
+                    ErrorText(
+                        errorText = error?.redactedMessage,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
+
+                if (error == null) {
                     MusicEntryListItem(
                         entry = musicEntryOrPlaceholder,
                         forShimmer = !hasLoaded,
@@ -193,24 +172,7 @@ fun RandomScreen(
                             musicEntry?.let { onEntryClick(it) }
                         },
                         fixedImageHeight = false,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .then(
-                                if (!hasLoaded) Modifier.shimmerWindowBounds()
-                                else Modifier
-                            )
-                    )
-                } else {
-                    MusicEntryGridItem(
-                        entry = musicEntryOrPlaceholder,
-                        showArtist = true,
-                        forShimmer = !hasLoaded,
-                        fetchAlbumImageIfMissing = !isTimePeriodContinuous,
-                        index = null,
-                        stonksDelta = null,
-                        onClick = {
-                            musicEntry?.let { onEntryClick(it) }
-                        },
+                        isColumn = !isLandscape,
                         modifier = Modifier
                             .fillMaxSize()
                             .then(
@@ -221,19 +183,16 @@ fun RandomScreen(
                 }
             }
         }
+        RandomTypeSelector(
+            type = type,
+            onSameClick = {
+                load(type, true)
+            },
+            onMenuItemClick = { newType ->
+                load(newType)
+            },
+        )
 
-
-        if (!isLandscape) {
-            RandomTypeSelector(
-                type = type,
-                onSameClick = {
-                    load(type, true)
-                },
-                onMenuItemClick = { newType ->
-                    load(newType)
-                },
-            )
-        }
     }
 }
 

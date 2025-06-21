@@ -83,6 +83,18 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".media.PlayingTrackEventReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":bgScrobbler">
+            <intent-filter>
+                <action android:name="${applicationId}.PLAYING_TRACK_EVENT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="androidx.core.widget.RemoteViewsCompatService"
             android:exported="false"
@@ -228,6 +240,12 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+
+        <!--   Do it with reflection instead to make it work for multi process     -->
+        <provider
+            android:authorities="${applicationId}.resources.AndroidContextProvider"
+            android:name="org.jetbrains.compose.resources.AndroidContextProvider"
+            tools:node="remove" />
 
     </application>
 

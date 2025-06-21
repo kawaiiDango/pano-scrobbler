@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Entity(
     tableName = BlockedMetadataDao.tableName,
@@ -13,7 +12,6 @@ import kotlinx.serialization.Transient
 @Serializable
 data class BlockedMetadata(
     @PrimaryKey(autoGenerate = true)
-    @Transient
     val _id: Int = 0,
 
     // SQLite (unlike SQL Server) chose that multiple NULL values do not count towards uniqueness in an index.

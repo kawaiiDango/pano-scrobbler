@@ -108,7 +108,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 timestamp = System.currentTimeMillis(),
                 albumArtist = track.album?.artist?.name,
                 duration = track.duration,
-                packageName = null
+                appId = null
             )
 
             val action = if (love) ScrobbleEvent.love else ScrobbleEvent.unlove
@@ -312,9 +312,9 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 album = scrobbleData.album,
                 albumArtist = scrobbleData.albumArtist,
                 durationMs = scrobbleData.duration,
-                mediaPlayerPackage = scrobbleData.packageName,
-                mediaPlayerName = scrobbleData.packageName?.let { PackageName(it).englishLabel },
-                mediaPlayerVersion = scrobbleData.packageName?.let { PackageName(it).version },
+                mediaPlayerPackage = scrobbleData.appId,
+                mediaPlayerName = scrobbleData.appId?.let { PackageName(it).englishLabel },
+                mediaPlayerVersion = scrobbleData.appId?.let { PackageName(it).version },
                 event = event
             )
         }

@@ -2,16 +2,23 @@ package com.arn.scrobble.edits
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +44,7 @@ import pano_scrobbler.composeapp.generated.resources.album
 import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.corrected
+import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.original
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import pano_scrobbler.composeapp.generated.resources.save
@@ -81,6 +89,15 @@ fun SimpleEditsAddScreen(
         }
     }
 
+    fun onDelete() {
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                simpleEdit?.let { PanoDb.db.getSimpleEditsDao().delete(it) }
+            }
+            onBack()
+        }
+    }
+
     Column(
         modifier = modifier,
     ) {
@@ -106,21 +123,21 @@ fun SimpleEditsAddScreen(
                 modifier = Modifier.fillMaxWidth()
 
             )
-            OutlinedTextField(
-                value = origAlbum,
-                onValueChange = { origAlbum = it },
-                label = { Text(stringResource(Res.string.album)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth()
 
-            )
             OutlinedTextField(
                 value = origArtist,
                 onValueChange = { origArtist = it },
                 label = { Text(stringResource(Res.string.artist)) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth()
+            )
 
+            OutlinedTextField(
+                value = origAlbum,
+                onValueChange = { origAlbum = it },
+                label = { Text(stringResource(Res.string.album)) },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                modifier = Modifier.fillMaxWidth()
             )
 
             Text(
@@ -141,6 +158,14 @@ fun SimpleEditsAddScreen(
             )
 
             OutlinedTextField(
+                value = artist,
+                onValueChange = { artist = it },
+                label = { Text(stringResource(Res.string.artist)) },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
                 value = album,
                 onValueChange = { album = it },
                 label = { Text(stringResource(Res.string.album)) },
@@ -148,13 +173,6 @@ fun SimpleEditsAddScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
-                value = artist,
-                onValueChange = { artist = it },
-                label = { Text(stringResource(Res.string.artist)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth()
-            )
             OutlinedTextField(
                 value = albumArtist,
                 onValueChange = { albumArtist = it },
@@ -171,13 +189,38 @@ fun SimpleEditsAddScreen(
             }
         }
 
-        ButtonWithIcon(
-            onClick = ::onDone,
-            text = stringResource(Res.string.save),
-            icon = Icons.Outlined.Check,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(8.dp)
-        )
+        Surface(
+            tonalElevation = 4.dp,
+            shadowElevation = 4.dp,
+            shape = CircleShape,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(
+                    modifier = Modifier.weight(1f)
+                )
+
+                if (simpleEdit != null) {
+                    IconButton(
+                        onClick = ::onDelete
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(Res.string.delete),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
+
+                ButtonWithIcon(
+                    onClick = ::onDone,
+                    icon = Icons.Outlined.Check,
+                    text = stringResource(Res.string.save),
+                )
+            }
+        }
     }
 }

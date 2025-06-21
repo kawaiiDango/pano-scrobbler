@@ -22,8 +22,9 @@ object PanoNativeComponents {
     var desktopMediaListener: DesktopMediaListener? = null
     private const val TAG = "pano_native_components"
 
+    @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
-        System.loadLibrary("pano_native_components")
+        System.load(DesktopStuff.getLibraryPath("pano_native_components"))
     }
 
     fun init() {
@@ -81,16 +82,12 @@ object PanoNativeComponents {
     @JvmStatic
     fun onWebViewCookies(event: String) {
         val event = Stuff.myJson.decodeFromString<WebViewEvent>(event)
-        GlobalScope.launch {
-            WebViewEventFlows.event.emit(event)
-        }
+        WebViewEventFlows.event.tryEmit(event)
     }
 
     @JvmStatic
     fun onWebViewPageLoad(url: String) {
-        GlobalScope.launch {
-            WebViewEventFlows.pageLoaded.emit(url)
-        }
+        WebViewEventFlows.pageLoaded.tryEmit(url)
     }
 
     @JvmStatic
@@ -104,10 +101,14 @@ object PanoNativeComponents {
     }
 
     @JvmStatic
-    fun onReceiveAutomationCommand(command: String, arg: String) {
-        val wasSuccessFul = Automation.executeAction(command, arg.ifEmpty { null }, null)
-        if (!wasSuccessFul) {
-            Logger.w("command '$command' failed")
+    fun onReceiveIpcCommand(command: String, arg: String) {
+        if (command == Automation.DESKTOP_FOCUS_EXISTING) {
+            PanoTrayUtils.onTrayMenuItemClickedFn(PanoTrayUtils.ItemId.Open.name)
+        } else {
+            val wasSuccessFul = Automation.executeAction(command, arg.ifEmpty { null }, null)
+            if (!wasSuccessFul) {
+                Logger.w("command '$command' failed")
+            }
         }
     }
 
@@ -161,9 +162,6 @@ object PanoNativeComponents {
     external fun setEnvironmentVariable(key: String, value: String)
 
     @JvmStatic
-    external fun isSingleInstance(): Boolean
-
-    @JvmStatic
     external fun applyDarkModeToWindow(handle: Long)
 
     @JvmStatic
@@ -176,5 +174,5 @@ object PanoNativeComponents {
     external fun quitWebView()
 
     @JvmStatic
-    external fun sendAutomationCommand(command: String, arg: String)
+    external fun sendIpcCommand(command: String, arg: String): Boolean
 }

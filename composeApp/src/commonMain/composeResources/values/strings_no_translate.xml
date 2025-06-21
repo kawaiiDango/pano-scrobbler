@@ -11,6 +11,7 @@
     <string name="bmc_link" translatable="false">https://buymeacoffee.com/kawaiidango</string>
     <string name="ko_fi" translatable="false">Ko-fi (Uses Paypal)</string>
     <string name="bmc" translatable="false">BuyMeACoffee (Uses Stripe)</string>
+    <string name="spotify" translatable="false">Spotify</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
@@ -20,11 +21,13 @@
     <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s</string>
     <string name="edit_case_sensitive_aa" translatable="false">Aa</string>
 
-    <string name="preset_remastered" translatable="false">Remastered</string>
-    <string name="preset_explicit" translatable="false">Explicit / Clean</string>
-    <string name="preset_album_version" translatable="false">Album version</string>
+    <string name="preset_remastered" translatable="false">Remove: Remastered</string>
+    <string name="preset_explicit" translatable="false">Remove: Explicit / Clean</string>
+    <string name="preset_album_version" translatable="false">Remove: Album version</string>
     <string name="preset_single" translatable="false">Single</string>
-    <string name="preset_ep" translatable="false">EP</string>
+    <string name="preset_album_artist_as_artist" translatable="false">Album artist as artist (Spotify)</string>
+    <string name="preset_title_parse" translatable="false">Parse title (YouTube etc)</string>
+    <string name="preset_title_parse_with_fallback" translatable="false">Parse title with fallback (YouTube Music etc)</string>
     <string name="charts_num_text" formatted="true" translatable="false" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="csv" translatable="false">CSV</string>
     <string name="jsonl" translatable="false">JSONL</string>
@@ -33,6 +36,11 @@
     <string name="automation_cp" translatable="false">ContentProvider URIs</string>
 
     <!--  strings for unfinalized stuff  -->
+    <string name="reload"
+        comment="Reload or refresh"
+        >Reload</string>
+    <string name="download_it">Get it for other platforms: Windows, Linux and Android</string>
+    <string name="regex_rules">Regex rules</string>
     <string name="automation">Control Pano Scrobbler from automation apps</string>
     <string name="automation_cli">Command line arguments</string>
     <string name="automation_cli_info">Run the pano-scrobbler executable with one of these command line arguments, while an instance is already running.</string>
@@ -43,7 +51,7 @@
 
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
-If you had donated $%1$d or more before %2$s, or did not get the automated mail for some reason, send me a message on Ko-Fi or BuyMeACoffee with your email address and the code will be manually mailed to you.
+If you had donated $%1$d or more before %2$s, or did not get the automated email for some reason, send me a message on Ko-Fi or BuyMeACoffee with your email address and I will manually email the code to you.
 
 Already purchased through Google Play?
 

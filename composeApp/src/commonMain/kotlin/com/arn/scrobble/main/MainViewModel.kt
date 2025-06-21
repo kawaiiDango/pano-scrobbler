@@ -2,6 +2,7 @@ package com.arn.scrobble.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavDestination
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
@@ -19,11 +20,9 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.friends.FriendExtraData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -52,19 +51,19 @@ class MainViewModel : ViewModel() {
     val canIndex = mainPrefs.data.map { it.lastMaxIndexTime }.map {
         PlatformStuff.isDebug && Scrobblables.current.value is LastFm &&
                 System.currentTimeMillis() - (it ?: 0) > TimeUnit.HOURS.toMillis(12)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    }
 
     private val _editData = MutableSharedFlow<Pair<Track, ScrobbleData>>()
     val editDataFlow = _editData.asSharedFlow()
 
-    private val _updateAvailablity = MutableSharedFlow<GithubReleases>()
+    private val _updateAvailablity = MutableSharedFlow<GithubReleases>(extraBufferCapacity = 1)
     val updateAvailability = _updateAvailablity.asSharedFlow()
 
-    val friendExtraData = MutableSharedFlow<FriendExtraData>()
+    private val _tabIdx =
+        MutableSharedFlow<Pair<String, Int>>(replay = 1, extraBufferCapacity = 1)
+    val tabIdx = _tabIdx.asSharedFlow()
 
     private val _pullToRefreshTriggered = MutableSharedFlow<Int>()
-
-    private val _currentUser = MutableStateFlow<UserCached?>(null)
 
     private val repository = PlatformStuff.billingRepository
 
@@ -72,23 +71,6 @@ class MainViewModel : ViewModel() {
 
     private val _selectedPackages = MutableSharedFlow<Pair<List<AppItem>, List<AppItem>>>()
     val selectedPackages = _selectedPackages.asSharedFlow()
-
-    val drawerData = mainPrefs.data.map { it.drawerData }
-        .combine(_currentUser) { drawerData, user ->
-
-            if (user?.isSelf == true) {
-                Scrobblables.current.value?.userAccount?.type?.let { type ->
-                    drawerData[type]
-                }
-            } else if (user != null) {
-                lastDrawerDataRefreshTime = System.currentTimeMillis()
-
-                Scrobblables.current.value
-                    ?.loadDrawerData(user.name)
-
-            } else
-                null
-        }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     var pendingSubmitAttempted = false
 
@@ -179,6 +161,10 @@ class MainViewModel : ViewModel() {
         queryPurchasesAsync()
 
         checkForUpdatesIfNeeded()
+    }
+
+    fun setTabIdx(backStackEntryId: String, tabIdx: Int) {
+        _tabIdx.tryEmit(backStackEntryId to tabIdx)
     }
 
     fun checkAndStoreLicense(receipt: String) {

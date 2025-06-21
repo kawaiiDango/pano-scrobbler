@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -106,6 +107,7 @@ fun SimpleEditsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SimpleEditItem(
     edit: SimpleEdit,
@@ -147,24 +149,20 @@ private fun SimpleEditItem(
         ) {
             Text(
                 text = edit.track,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMediumEmphasized,
             )
+
+            Text(
+                text = edit.artist,
+                style = MaterialTheme.typography.bodyLargeEmphasized,
+            )
+
             if (edit.album.isNotBlank()) {
                 Text(
                     text = edit.album,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-
                 )
             }
-            Text(
-                text = edit.artist,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .padding(start = 16.dp)
-
-            )
         }
 
         EditsDeleteMenu(

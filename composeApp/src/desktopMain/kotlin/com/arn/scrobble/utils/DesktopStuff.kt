@@ -199,9 +199,9 @@ object DesktopStuff {
             if (System.getProperty(prop) == null)
                 System.setProperty(prop, "true")
 
-            prop = "java.library.path"
-            if (System.getProperty(prop) == null)
-                System.setProperty(prop, execDirPath)
+//            prop = "java.library.path"
+//            if (System.getProperty(prop) == null)
+//                System.setProperty(prop, execDirPath)
 
             prop = "skiko.data.path"
             if (System.getProperty(prop) == null)
@@ -210,4 +210,16 @@ object DesktopStuff {
 
     }
 
+    fun getLibraryPath(name: String): String {
+        val libDir = System.getProperty("pano.native.components.path")
+            ?.ifEmpty { null }
+            ?.let { File(it).absolutePath }
+            ?: execDirPath
+
+        return when (os) {
+            Os.Windows -> "$libDir\\$name.dll"
+            Os.Linux -> "$libDir/lib$name.so"
+            Os.Macos -> "$libDir/$name.dylib"
+        }
+    }
 }

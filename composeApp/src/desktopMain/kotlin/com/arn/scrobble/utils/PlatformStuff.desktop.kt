@@ -24,17 +24,12 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.Stuff.billingClientData
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
 import io.ktor.http.encodeURLPath
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.copied
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
@@ -110,7 +105,7 @@ actual object PlatformStuff {
 
     actual suspend fun launchSearchIntent(
         musicEntry: MusicEntry,
-        pkgName: String?,
+        appId: String?,
     ) {
         val searchUrlTemplate = mainPrefs.data.map { it.searchUrlTemplate }.first()
 
@@ -150,7 +145,7 @@ actual object PlatformStuff {
 
     }
 
-    actual fun loadApplicationLabel(pkgName: String): String = pkgName
+    actual fun loadApplicationLabel(appId: String): String = appId
 
     actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
         val event = withTimeoutOrNull(1_000) {
@@ -179,14 +174,12 @@ actual object PlatformStuff {
         val stringSelection = StringSelection(text)
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         clipboard.setContents(stringSelection, null)
-        GlobalScope.launch {
-            globalSnackbarFlow.emit(
-                PanoSnackbarVisuals(
-                    message = getString(Res.string.copied),
-                    isError = false,
-                )
+        globalSnackbarFlow.tryEmit(
+            PanoSnackbarVisuals(
+                message = "Copied",
+                isError = false,
             )
-        }
+        )
     }
 
     actual fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream) {

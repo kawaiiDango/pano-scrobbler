@@ -32,7 +32,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.icons.AlbumArtist
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -73,10 +72,7 @@ fun EditScrobbleDialog(
     var albumArtist by rememberSaveable { mutableStateOf(scrobbleData.albumArtist ?: "") }
     var albumArtistVisible by rememberSaveable { mutableStateOf(!scrobbleData.albumArtist.isNullOrEmpty()) }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
-    val regexRecommendation by viewModel.regexRecommendation.collectAsStateWithLifecycle()
-    var regexRecommendationShown by remember { mutableStateOf(false) }
     var reauthenticateButtonShown by remember { mutableStateOf(false) }
-
 
     val doEdit = {
         val newScrobbleData = scrobbleData.copy(
@@ -89,7 +85,6 @@ fun EditScrobbleDialog(
             origScrobbleData = scrobbleData,
             newScrobbleData = newScrobbleData,
             msid = msid,
-            hash = hash
         )
     }
 
@@ -99,7 +94,7 @@ fun EditScrobbleDialog(
                 PlayingTrackNotifyEvent.TrackScrobbleLocked(
                     hash = hash,
                     locked = true
-                )
+                ),
             )
         }
 
@@ -109,7 +104,7 @@ fun EditScrobbleDialog(
                     PlayingTrackNotifyEvent.TrackScrobbleLocked(
                         hash = hash,
                         locked = false
-                    )
+                    ),
                 )
             }
         }
@@ -137,11 +132,6 @@ fun EditScrobbleDialog(
         }
     }
 
-    LaunchedEffect(regexRecommendation) {
-        regexRecommendationShown = regexRecommendation != null
-    }
-
-
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
@@ -157,17 +147,17 @@ fun EditScrobbleDialog(
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            value = album,
-            onValueChange = { album = it },
-            label = { Text(stringResource(Res.string.album_optional)) },
+            value = artist,
+            onValueChange = { artist = it },
+            label = { Text(stringResource(Res.string.artist)) },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
         )
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            value = artist,
-            onValueChange = { artist = it },
-            label = { Text(stringResource(Res.string.artist)) },
+            value = album,
+            onValueChange = { album = it },
+            label = { Text(stringResource(Res.string.album_optional)) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction =
                     if (albumArtistVisible)
@@ -245,22 +235,22 @@ fun EditScrobbleDialog(
         }
     }
 
-    if (regexRecommendationShown && regexRecommendation != null) {
-        ShowRegexRecommendation(
-            regexRecommendation = regexRecommendation!!,
-            onDismissRequest = { regexRecommendationShown = false },
-            onNavigateToRegexEdits = onNavigateToRegexEdits
-        )
-    }
+//    if (regexRecommendationShown && regexRecommendation != null) {
+//        ShowRegexRecommendation(
+//            regexRecommendation = regexRecommendation!!,
+//            onDismissRequest = { regexRecommendationShown = false },
+//            onNavigateToRegexEdits = onNavigateToRegexEdits
+//        )
+//    }
 }
 
 @Composable
 private fun ShowRegexRecommendation(
-    regexRecommendation: RegexEdit,
+    regexPreset: RegexPreset,
     onDismissRequest: () -> Unit,
     onNavigateToRegexEdits: () -> Unit,
 ) {
-    val presetName = RegexPresets.getString(regexRecommendation.preset!!)
+    val presetName = RegexPresets.getString(regexPreset)
     val scope = rememberCoroutineScope()
 
     AlertDialog(

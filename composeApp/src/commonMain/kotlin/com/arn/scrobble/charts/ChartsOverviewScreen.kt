@@ -227,7 +227,7 @@ fun ChartsOverviewScreen(
                         PanoDialog.MusicEntryInfo(
                             artist = it as Artist,
                             user = user,
-                            pkgName = null
+                            appId = null
                         )
                     )
                 },
@@ -261,7 +261,7 @@ fun ChartsOverviewScreen(
                         PanoDialog.MusicEntryInfo(
                             album = it as Album,
                             user = user,
-                            pkgName = null
+                            appId = null
                         )
                     )
                 },
@@ -295,7 +295,7 @@ fun ChartsOverviewScreen(
                         PanoDialog.MusicEntryInfo(
                             track = it as Track,
                             user = user,
-                            pkgName = null
+                            appId = null
                         )
                     )
                 },

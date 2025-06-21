@@ -37,7 +37,6 @@ import pano_scrobbler.composeapp.generated.resources.tracks
 fun ChartsPagerScreen(
     user: UserCached,
     tabIdx: Int,
-    initialTabIdx: Int,
     onSetTabData: (String, List<PanoTab>?) -> Unit,
     onSetTabIdx: (Int) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
@@ -138,7 +137,6 @@ fun ChartsPagerScreen(
         )
 
         PanoPager(
-            initialPage = initialTabIdx,
             selectedPage = tabIdx,
             onSelectPage = onSetTabIdx,
             totalPages = tabsList.count(),
@@ -175,7 +173,7 @@ fun ChartsPagerScreen(
                             track = it as? Track,
                             artist = it as? Artist,
                             album = it as? Album,
-                            pkgName = null,
+                            appId = null,
                             user = user
                         )
                     )

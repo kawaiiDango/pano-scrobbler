@@ -12,11 +12,19 @@ actual suspend fun AppListVM.load(
 ) {
     val seenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }.first()
 
-    val musicPlayers = seenApps
-        .sortedBy { it.friendlyLabel.lowercase() }
-
     if (checkDefaultApps)
-        onSetSelectedPackages(musicPlayers.map { it.appId }.toSet())
+        onSetSelectedPackages(seenApps.keys)
+
+    val musicPlayers = seenApps.toList()
+        .sortedBy { (appId, friendlyLabel) ->
+            friendlyLabel.lowercase()
+        }
+        .map { (appId, friendlyLabel) ->
+            AppItem(
+                appId = appId,
+                label = friendlyLabel,
+            )
+        }
 
     onSetAppList(AppList(musicPlayers, emptyList()))
     onSetHasLoaded()

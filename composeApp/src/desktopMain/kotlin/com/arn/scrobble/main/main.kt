@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toPainter
 import androidx.compose.ui.window.Notification
@@ -22,9 +21,9 @@ import co.touchlab.kermit.Severity
 import coil3.SingletonImageLoader
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
+import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.logger.JvmLogger
-import com.arn.scrobble.media.PlayingTrackNotificationState
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.themes.AppTheme
@@ -86,13 +85,15 @@ private fun init() {
 
     setAppLocale(Stuff.mainPrefsInitialValue.locale, force = false)
 
-    PanoNativeComponents.load()
     PanoNativeComponents.init()
 //    test()
 }
 
 private fun preventMultipleInstances() {
-    val isSingleInstance = PanoNativeComponents.isSingleInstance()
+    val isSingleInstance = !PanoNativeComponents.sendIpcCommand(
+        Automation.DESKTOP_FOCUS_EXISTING,
+        "",
+    )
 
     if (!isSingleInstance) {
         PanoNativeComponents.notify(
@@ -103,7 +104,6 @@ private fun preventMultipleInstances() {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
     DesktopStuff.setSystemPropertiesForGraalvm()
@@ -111,7 +111,7 @@ fun main(args: Array<String>) {
 
     if (cmdlineArgs.automationCommand != null) {
         // handle automation command
-        PanoNativeComponents.sendAutomationCommand(
+        PanoNativeComponents.sendIpcCommand(
             cmdlineArgs.automationCommand,
             cmdlineArgs.automationArg ?: "",
         )
@@ -150,7 +150,7 @@ fun main(args: Array<String>) {
         val trayIconPlaying = painterResource(Res.drawable.vd_noti)
         val trayIconError = painterResource(Res.drawable.vd_noti_err)
         val appIdToNames by PlatformStuff.mainPrefs.data
-            .map { it.seenApps.associate { it.appId to it.friendlyLabel } }
+            .map { it.seenApps }
             .collectAsState(emptyMap())
         val windowOpenTrigger = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
 
@@ -164,18 +164,16 @@ fun main(args: Array<String>) {
             PanoNotifications.playingTrackTrayInfo.mapLatest {
                 val trayIconPainter = when {
                     it.isEmpty() -> trayIconNotPlaying
-                    it.values.any { it is PlayingTrackNotificationState.Error } -> trayIconError
+                    it.values.any { it is PlayingTrackNotifyEvent.Error } -> trayIconError
                     else -> trayIconPlaying
                 }
 
-                val tooltip = it.entries.firstOrNull {
-                    val it = it.value
-                    it is PlayingTrackNotificationState.Scrobbling
-                }?.let { (appId, it) ->
-                    it.trackInfo.title + "\n" +
-                            it.trackInfo.artist + "\n" +
-                            (appIdToNames[appId] ?: appId)
-                }
+                val tooltip = it.entries.firstOrNull()
+                    ?.let { (appId, it) ->
+                        it.scrobbleData.track + "\n" +
+                                it.scrobbleData.artist + "\n" +
+                                (appIdToNames[appId] ?: appId)
+                    }
                     ?: BuildKonfig.APP_NAME
 
 
@@ -185,8 +183,8 @@ fun main(args: Array<String>) {
 
                 it.forEach { (appId, playingTrackState) ->
                     when (playingTrackState) {
-                        is PlayingTrackNotificationState.Scrobbling -> {
-                            val trackInfo = playingTrackState.trackInfo
+                        is PlayingTrackNotifyEvent.TrackScrobbling -> {
+                            val scrobbleData = playingTrackState.scrobbleData
                             val nowPlaying = playingTrackState.nowPlaying
 
                             val playingState =
@@ -196,20 +194,20 @@ fun main(args: Array<String>) {
                                     "[✓] "
 
                             val lovedString =
-                                if (trackInfo.userLoved)
+                                if (playingTrackState.userLoved)
                                     "❤️ " + getString(Res.string.unlove)
                                 else
                                     "🤍 " + getString(Res.string.love)
 
                             trayItems += PanoTrayUtils.ItemId.TrackName.withSuffix(appId) to
-                                    playingState + trackInfo.title
+                                    playingState + scrobbleData.track
 
                             trayItems += PanoTrayUtils.ItemId.ArtistName.withSuffix(appId) to
-                                    "🎙️ " + trackInfo.artist
+                                    "🎙️ " + scrobbleData.artist
 
-                            if (trackInfo.album.isNotEmpty()) {
+                            if (!scrobbleData.album.isNullOrEmpty()) {
                                 trayItems += PanoTrayUtils.ItemId.AlbumName.withSuffix(appId) to
-                                        "💿 " + trackInfo.album
+                                        "💿 " + scrobbleData.album
                             }
 
                             trayItems += PanoTrayUtils.ItemId.Separator.name to ""
@@ -230,7 +228,7 @@ fun main(args: Array<String>) {
                                     getString(Res.string.copy)
                         }
 
-                        is PlayingTrackNotificationState.Error -> {
+                        is PlayingTrackNotifyEvent.Error -> {
                             val scrobbleError = playingTrackState.scrobbleError
 
                             trayItems += PanoTrayUtils.ItemId.Error.withSuffix(appId) to
@@ -376,6 +374,7 @@ fun main(args: Array<String>) {
                         PanoNativeComponents.applyDarkModeToWindow(window.windowHandle)
 
                     windowOpenTrigger.collect {
+                        window.isMinimized = false
                         window.toFront()
                     }
                 }
@@ -413,7 +412,7 @@ private suspend fun trayMenuClickListener(
 
             PanoTrayUtils.ItemId.Error -> {
                 val errorState =
-                    (playingTrackTrayInfo[suffix] as? PlayingTrackNotificationState.Error)
+                    (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.Error)
                         ?: return@collect
 
                 val scrobbleError = errorState.scrobbleError
@@ -424,17 +423,17 @@ private suspend fun trayMenuClickListener(
             }
 
             else -> {
-                val scrobblingTrackInfo =
-                    (playingTrackTrayInfo[suffix] as? PlayingTrackNotificationState.Scrobbling)
-                        ?.trackInfo
+                val scrobblingState =
+                    (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackScrobbling)
                         ?: return@collect
+                val scrobbleData = scrobblingState.scrobbleData
 
                 when (itemId) {
                     PanoTrayUtils.ItemId.Love -> {
                         notifyPlayingTrackEvent(
                             PlayingTrackNotifyEvent.TrackLovedUnloved(
-                                hash = scrobblingTrackInfo.hash,
-                                loved = !scrobblingTrackInfo.userLoved
+                                hash = scrobblingState.hash,
+                                loved = !scrobblingState.userLoved
                             )
                         )
                     }
@@ -442,15 +441,14 @@ private suspend fun trayMenuClickListener(
                     PanoTrayUtils.ItemId.Cancel -> {
                         notifyPlayingTrackEvent(
                             PlayingTrackNotifyEvent.TrackCancelled(
-                                hash = scrobblingTrackInfo.hash,
+                                hash = scrobblingState.hash,
                                 showUnscrobbledNotification = false,
-                                markAsScrobbled = true
                             )
                         )
                     }
 
                     PanoTrayUtils.ItemId.Copy -> {
-                        val text = "${scrobblingTrackInfo.artist} - ${scrobblingTrackInfo.title}"
+                        val text = "${scrobbleData.artist} - ${scrobbleData.track}"
                         PlatformStuff.copyToClipboard(text)
                     }
 

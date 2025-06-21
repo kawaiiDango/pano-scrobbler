@@ -1,76 +1,246 @@
 package com.arn.scrobble.edits
 
 import androidx.compose.runtime.Composable
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.db.RegexEditFields
+import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
+import com.arn.scrobble.utils.MetadataUtils
+import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.not_found
+import pano_scrobbler.composeapp.generated.resources.preset_album_artist_as_artist
 import pano_scrobbler.composeapp.generated.resources.preset_album_version
-import pano_scrobbler.composeapp.generated.resources.preset_ep
 import pano_scrobbler.composeapp.generated.resources.preset_explicit
 import pano_scrobbler.composeapp.generated.resources.preset_remastered
-import pano_scrobbler.composeapp.generated.resources.preset_single
+import pano_scrobbler.composeapp.generated.resources.preset_title_parse
+import pano_scrobbler.composeapp.generated.resources.preset_title_parse_with_fallback
+
+enum class RegexPreset {
+    parse_title,
+    parse_title_with_fallback,
+    remastered_track,
+    explicit_track,
+    album_ver_track,
+    album_artist_as_artist,
+}
+
+data class RegexPresetsResult(
+    val scrobbleData: ScrobbleData,
+    val appliedPresets: List<RegexPreset>,
+)
+
+class TitleParseException : IllegalStateException("Title parsing failed")
 
 object RegexPresets {
-    private val presets = mapOf(
-        "remastered_track" to (
-                Res.string.preset_remastered to
-                        RegexEdit(
-                            pattern = "^(.+) [(\\[\\/\\-][^()\\[\\]]*?re-?mastere?d?[^)\\[\\]]*?([)\\]\\-\\/]|\$)",
-                            replacement = "$1",
-                            fields = setOf(RegexEditFields.TRACK, RegexEditFields.ALBUM),
-                        )
-                ),
-        "explicit_track" to (
-                Res.string.preset_explicit to
-                        RegexEdit(
-                            pattern = "^(.*) (- |\\(|\\[|\\/)(explicit|clean)( .*?version| edit(ed)?)?[\\)\\]]?\$",
-                            replacement = "$1",
-                            fields = setOf(RegexEditFields.TRACK, RegexEditFields.ALBUM),
-                        )
-                ),
-        "album_ver_track" to (
-                Res.string.preset_album_version to
-                        RegexEdit(
-                            pattern = "^(.*) (- |\\(|\\[|\\/)(.+ )?album (.*?version|edit(ed)?).*?[\\)\\]]?\$",
-                            replacement = "\$1",
-                            fields = setOf(RegexEditFields.TRACK),
-                        )
-                ),
-        "ep" to (
-                Res.string.preset_ep to
-                        RegexEdit(
-                            pattern = " (- )?E\\.?P\\.?$",
-                            replacement = "",
-                            fields = setOf(RegexEditFields.ALBUM),
-                            caseSensitive = true
-                        )
-                ),
-        "single" to (
-                Res.string.preset_single to
-                        RegexEdit(
-                            pattern = "^(.*) (- |\\(|\\[|\\/)single( version| edit(ed)?)?[\\)\\]]?\$",
-                            replacement = "$1",
-                            fields = setOf(RegexEditFields.TRACK, RegexEditFields.ALBUM),
-                        )
-                ),
+
+    val defaultPresets = listOf(
+        RegexPreset.parse_title,
+        RegexPreset.parse_title_with_fallback,
+        RegexPreset.remastered_track,
+        RegexPreset.album_artist_as_artist,
+    )
+    private val androidOnlyPresets = listOf(
+        RegexPreset.parse_title,
+        RegexPreset.parse_title_with_fallback,
+        RegexPreset.album_artist_as_artist,
     )
 
-    val presetKeys = presets.keys
+    private val desktopOnlyPresets = emptyList<RegexPreset>()
 
-    @Composable
-    fun getString(key: String): String {
-        return stringResource(presets[key]?.first ?: Res.string.not_found)
+    val filteredPresets by lazy {
+        RegexPreset.entries.filterNot {
+            if (!PlatformStuff.isDesktop)
+                it in desktopOnlyPresets
+            else
+                it in androidOnlyPresets
+        }
     }
 
-    fun getPossiblePreset(regexEdit: RegexEdit) = presets[regexEdit.preset]?.second
-        ?.copy(
-            _id = regexEdit._id,
-            order = regexEdit.order,
-            preset = regexEdit.preset,
-            caseSensitive = regexEdit.caseSensitive,
-            continueMatching = true,
+    @Throws(TitleParseException::class)
+    suspend fun applyAllPresets(scrobbleData: ScrobbleData): RegexPresetsResult? {
+        var newScrobbleData: ScrobbleData? = null
+        val appliedPresets = mutableListOf<RegexPreset>()
+
+        val presetNames = PlatformStuff.mainPrefs.data.map { it.regexPresets }.first()
+
+        filteredPresets
+            .filter { it.name in presetNames }
+            .forEach { preset ->
+                val sd = applyPreset(preset, newScrobbleData ?: scrobbleData)
+
+                if (sd != null) {
+                    appliedPresets.add(preset)
+                    newScrobbleData = sd
+                }
+            }
+
+        return newScrobbleData?.let {
+            RegexPresetsResult(
+                scrobbleData = it,
+                appliedPresets = appliedPresets,
+            )
+        }
+
+    }
+
+    private fun applyPreset(
+        regexPreset: RegexPreset,
+        scrobbleData: ScrobbleData,
+    ): ScrobbleData? {
+        var regexEdit: RegexEdit? = null
+        var newScrobbleData: ScrobbleData? = null
+
+        when (regexPreset) {
+            RegexPreset.album_artist_as_artist -> {
+                if (scrobbleData.appId == Stuff.PACKAGE_SPOTIFY &&
+                    !scrobbleData.albumArtist.isNullOrEmpty() &&
+                    scrobbleData.albumArtist != scrobbleData.artist &&
+                    !MetadataUtils.isVariousArtists(scrobbleData.albumArtist)
+                ) {
+                    newScrobbleData = scrobbleData.copy(
+                        artist = scrobbleData.albumArtist,
+                        albumArtist = null,
+                    )
+                }
+            }
+
+            RegexPreset.parse_title -> {
+                val parseTitle = shouldParseTitle(scrobbleData) &&
+                        scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
+
+                if (parseTitle) {
+                    val (parsedArtist, parsedTitle) = MetadataUtils.parseYoutubeTitle(scrobbleData.track)
+                    if (!parsedArtist.isNullOrEmpty() && !parsedTitle.isNullOrEmpty()) {
+                        newScrobbleData = scrobbleData.copy(
+                            artist = parsedArtist,
+                            track = parsedTitle,
+                            album = null,
+                            albumArtist = null,
+                        )
+                    } else {
+                        // no fallback
+                        throw TitleParseException()
+                    }
+                }
+            }
+
+            RegexPreset.parse_title_with_fallback -> {
+                val parseTitle = shouldParseTitle(scrobbleData) &&
+                        scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
+
+                if (parseTitle) {
+                    val (parsedArtist, parsedTitle) = MetadataUtils.parseYoutubeTitle(scrobbleData.track)
+                    if (!parsedArtist.isNullOrEmpty() && !parsedTitle.isNullOrEmpty()) {
+                        newScrobbleData = scrobbleData.copy(
+                            artist = parsedArtist,
+                            track = parsedTitle,
+                            album = null,
+                            albumArtist = null,
+                        )
+                    }
+                }
+            }
+
+            RegexPreset.remastered_track -> {
+                val pattern =
+                    "^(.*) (- |\\(|\\[|\\/)(.+ )?album (.*?version|edit(ed)?).*?[\\)\\]]?\$"
+                val replacement = "$1"
+
+                regexEdit = RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = pattern,
+                        searchAlbum = pattern,
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = replacement,
+                        replacementAlbum = replacement,
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                    appIds = emptySet(),
+                )
+            }
+
+            RegexPreset.explicit_track -> {
+                val pattern =
+                    "^(.*) (- |\\(|\\[|\\/)(explicit|clean)( .*?version| edit(ed)?)?[\\)\\]]?\$"
+                val replacement = "$1"
+
+                regexEdit = RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = pattern,
+                        searchAlbum = pattern,
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = replacement,
+                        replacementAlbum = replacement,
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                    appIds = emptySet(),
+                )
+            }
+
+            RegexPreset.album_ver_track -> {
+                val pattern =
+                    "^(.*) (- |\\(|\\[|\\/)(.+ )?album (.*?version|edit(ed)?).*?[\\)\\]]?\$"
+                val replacement = "$1"
+
+                regexEdit = RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = pattern,
+                        searchAlbum = "",
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = replacement,
+                        replacementAlbum = "",
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                    appIds = emptySet(),
+                )
+            }
+        }
+
+        if (regexEdit != null) {
+            newScrobbleData = performRegexReplace(scrobbleData, listOf(regexEdit)).scrobbleData
+        }
+
+        return newScrobbleData
+    }
+
+    @Composable
+    fun getString(regexPreset: RegexPreset) = when (regexPreset) {
+        RegexPreset.remastered_track -> stringResource(Res.string.preset_remastered)
+        RegexPreset.explicit_track -> stringResource(Res.string.preset_explicit)
+        RegexPreset.album_ver_track -> stringResource(Res.string.preset_album_version)
+        RegexPreset.album_artist_as_artist -> stringResource(Res.string.preset_album_artist_as_artist)
+        RegexPreset.parse_title -> stringResource(Res.string.preset_title_parse)
+        RegexPreset.parse_title_with_fallback -> stringResource(Res.string.preset_title_parse_with_fallback)
+    }
+
+
+    private fun shouldParseTitle(scrobbleData: ScrobbleData): Boolean {
+        return if (
+            scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && !scrobbleData.album.isNullOrEmpty() ||
+            scrobbleData.appId == Stuff.PACKAGE_YOUTUBE_TV && !scrobbleData.album.isNullOrEmpty() ||
+            scrobbleData.appId == Stuff.PACKAGE_YMUSIC &&
+            scrobbleData.album?.replace("YMusic", "")?.isNotEmpty() == true
         )
-        ?: regexEdit
+            false
+        else (scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK &&
+                !scrobbleData.artist.endsWith("- Topic"))
+    }
 }

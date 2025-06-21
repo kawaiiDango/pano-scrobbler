@@ -1,5 +1,7 @@
 package com.arn.scrobble.media
 
-actual fun notifyPlayingTrackEventWithIpc(event: PlayingTrackNotifyEvent) {
-    NotImplementedError("Not implemented for desktop")
+actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
+    if (globalTrackEventFlow.subscriptionCount.value > 0) {
+        globalTrackEventFlow.tryEmit(event)
+    }
 }

@@ -84,10 +84,7 @@ fun BlockedMetadatasScreen(
         ) {
             if (blockedMetadatas == null) {
                 val shimmerEdits = List(10) { BlockedMetadata(track = " ", _id = it) }
-                items(
-                    shimmerEdits,
-                    key = { it._id }
-                ) {
+                items(shimmerEdits) {
                     BlockedMetadataItem(
                         it,
                         forShimmer = true,

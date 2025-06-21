@@ -70,6 +70,7 @@ private fun BlockedMetadataAddContent(
     var useChannel by rememberSaveable { mutableStateOf(false) }
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
     val emptyText = stringResource(Res.string.required_fields_empty)
+    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
 
     LaunchedEffect(useChannel) {
         if (ignoredArtist != null) {
@@ -92,6 +93,19 @@ private fun BlockedMetadataAddContent(
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
+            enabled = isLicenseValid,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = artist,
+            onValueChange = { artist = it },
+            label = { Text(stringResource(Res.string.artist_channel)) },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            enabled = isLicenseValid,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -102,17 +116,9 @@ private fun BlockedMetadataAddContent(
             label = { Text(stringResource(Res.string.album)) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
-            ), modifier = Modifier
-                .fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = artist,
-            onValueChange = { artist = it },
-            label = { Text(stringResource(Res.string.artist_channel)) },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            ), modifier = Modifier
+            ),
+            enabled = isLicenseValid,
+            modifier = Modifier
                 .fillMaxWidth()
         )
 
@@ -123,6 +129,7 @@ private fun BlockedMetadataAddContent(
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
+            enabled = isLicenseValid,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -131,46 +138,19 @@ private fun BlockedMetadataAddContent(
             LabeledCheckbox(
                 text = stringResource(Res.string.use_channel),
                 checked = useChannel,
-                onCheckedChange = { useChannel = it }
+                onCheckedChange = { useChannel = it },
+                enabled = isLicenseValid,
             )
         }
 
-        Text(
-            text = stringResource(Res.string.player_actions),
+        BlockPlayerActions(
+            blockPlayerAction = blockPlayerAction,
+            onChange = { blockPlayerAction = it },
+            enabled = isLicenseValid,
         )
 
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            FilterChip(
-                selected = blockPlayerAction == BlockPlayerAction.skip,
-                onClick = {
-                    blockPlayerAction = BlockPlayerAction.skip
-                },
-                label = { Text(stringResource(Res.string.skip)) }
-            )
-            FilterChip(
-                selected = blockPlayerAction == BlockPlayerAction.mute,
-                onClick = {
-                    blockPlayerAction = BlockPlayerAction.mute
-                },
-                label = { Text(stringResource(Res.string.mute)) }
-            )
-            FilterChip(
-                selected = blockPlayerAction == BlockPlayerAction.ignore,
-                onClick = {
-                    blockPlayerAction = BlockPlayerAction.ignore
-                },
-                label = { Text(stringResource(Res.string.do_nothing)) }
-            )
-        }
-
         InfoText(
-            text = stringResource(Res.string.blocked_metadata_info)
-                .replace("ℹ️", "")
-                .trimStart(),
+            text = stringResource(Res.string.blocked_metadata_info),
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -178,7 +158,7 @@ private fun BlockedMetadataAddContent(
 
         OutlinedButton(
             onClick = {
-                if (!PlatformStuff.billingRepository.isLicenseValid) {
+                if (!isLicenseValid) {
                     onNavigateToBilling()
                 } else {
                     val newBlockedMetadata = blockedMetadata.copy(
@@ -203,6 +183,51 @@ private fun BlockedMetadataAddContent(
 }
 
 @Composable
+fun BlockPlayerActions(
+    blockPlayerAction: BlockPlayerAction,
+    onChange: (BlockPlayerAction) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(Res.string.player_actions),
+        )
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = blockPlayerAction == BlockPlayerAction.skip,
+                onClick = {
+                    onChange(BlockPlayerAction.skip)
+                },
+                label = { Text(stringResource(Res.string.skip)) },
+                enabled = enabled,
+            )
+            FilterChip(
+                selected = blockPlayerAction == BlockPlayerAction.mute,
+                onClick = {
+                    onChange(BlockPlayerAction.mute)
+                },
+                label = { Text(stringResource(Res.string.mute)) },
+                enabled = enabled,
+            )
+            FilterChip(
+                selected = blockPlayerAction == BlockPlayerAction.ignore,
+                onClick = {
+                    onChange(BlockPlayerAction.ignore)
+                },
+                label = { Text(stringResource(Res.string.do_nothing)) },
+                enabled = enabled,
+            )
+        }
+    }
+}
+
+@Composable
 fun BlockedMetadataAddDialog(
     blockedMetadata: BlockedMetadata,
     ignoredArtist: String?,
@@ -216,19 +241,20 @@ fun BlockedMetadataAddDialog(
     BlockedMetadataAddContent(
         blockedMetadata = blockedMetadata,
         ignoredArtist = ignoredArtist,
-        onSave = {
+        onSave = { blockedMetadata ->
             scope.launch {
                 withContext(Dispatchers.IO) {
                     PanoDb.db.getBlockedMetadataDao()
-                        .insertLowerCase(listOf(it), ignore = false)
+                        .insertLowerCase(listOf(blockedMetadata), ignore = false)
                 }
 
                 if (hash != null) {
                     notifyPlayingTrackEvent(
-                        PlayingTrackNotifyEvent.TrackBlocked(
+                        PlayingTrackNotifyEvent.TrackCancelled(
                             hash = hash,
-                            blockedMetadata = blockedMetadata,
-                        )
+                            showUnscrobbledNotification = false,
+                            blockPlayerAction = blockedMetadata.blockPlayerAction,
+                        ),
                     )
                 }
 

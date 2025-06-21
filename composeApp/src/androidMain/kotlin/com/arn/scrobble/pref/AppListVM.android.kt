@@ -30,8 +30,10 @@ actual suspend fun AppListVM.load(
 
     fun Collection<ApplicationInfo>.sortAndTransform(): List<AppItem> {
         val (selectedList, unselectedList) = this
-            .sortedWith(ApplicationInfo.DisplayNameComparator(packageManager))
             .map { AppItem(it.packageName, packageManager.getApplicationLabel(it).toString()) }
+            .sortedWith { a, b ->
+                a.friendlyLabel.compareTo(b.label, true)
+            }
             .partition { it.appId in selectedPackages.value }
         return selectedList + unselectedList
     }

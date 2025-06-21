@@ -491,7 +491,7 @@
     <string name="edit_regex_warning"
         comment="shown before adding a custom pattern edit"
         >⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
-    <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them</string>
+    <string name="blocked_metadata_info">Filling in more than one of these fields will apply an AND operator between them</string>
     <string name="blocked_metadata_noti"
         comment="to block and skip a track from scrobbling and playing"
         >Tap to block and skip</string>
@@ -581,11 +581,11 @@
     <string name="pref_noti_categories">Notification categories</string>
     <string name="pref_scrobble_noti">Scrobble notifications</string>
     <string name="pref_lockscreen_noti">Lockscreen notifications</string>
-    <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
+    <string name="pref_offline_info">Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from"
         comment="Scrobble from (these apps)"
         >Scrobble from</string>
-    <string name="pref_enabled_apps_summary">ℹ️ Supports apps that reveal music metadata. To avoid double scrobbles from Spotify, enable it only in one place.</string>
+    <string name="pref_enabled_apps_summary">Supports apps that reveal music metadata. To avoid double scrobbles from Spotify, enable it only in one place.</string>
     <string name="pref_enabled_apps_title">Choose apps</string>
     <string name="pref_auto_detect">Automatically scrobble from new apps</string>
     <string name="pref_spotify_remote">Scrobble Spotify playing on other devices</string>

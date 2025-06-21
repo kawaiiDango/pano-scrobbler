@@ -90,6 +90,9 @@ data class ArtistItem(
 ) : SpotifyMusicItem {
     val mediumImageUrl: String?
         get() = images?.getOrNull(images.size - 2)?.url
+    val largeImageUrl: String?
+        get() = images?.firstOrNull()?.url
+
 }
 
 @Serializable
@@ -148,6 +151,9 @@ data class AlbumItem(
 ) : SpotifyMusicItem {
     val mediumImageUrl: String?
         get() = images?.getOrNull(images.size - 2)?.url
+    val largeImageUrl: String?
+        get() = images?.firstOrNull()?.url
+
 }
 
 enum class SpotifySearchType {

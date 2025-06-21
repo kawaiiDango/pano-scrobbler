@@ -40,8 +40,11 @@ interface PendingScrobblesDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(ps: PendingScrobble)
 
-    @Query("UPDATE $tableName SET state = state & :loggedInAccountsBitset")
+    @Query("UPDATE $tableName SET services = services & :loggedInAccountsBitset")
     suspend fun removeLoggedOutAccounts(loggedInAccountsBitset: Int)
+
+    @Query("UPDATE $tableName SET lastFailedTimestamp = :lastFailedTimestamp, lastFailedReason = :lastFailedReason WHERE _id IN (:ids)")
+    suspend fun logFailure(ids: List<Int>, lastFailedTimestamp: Long?, lastFailedReason: String?)
 
     @Delete
     suspend fun delete(ps: PendingScrobble)
@@ -49,7 +52,7 @@ interface PendingScrobblesDao {
     @Query("DELETE FROM $tableName WHERE _id IN (:ids)")
     suspend fun delete(ids: List<Int>)
 
-    @Query("DELETE FROM $tableName WHERE state = 0")
+    @Query("DELETE FROM $tableName WHERE services = 0")
     suspend fun deleteStateZero()
 
     @Query("DELETE FROM $tableName")

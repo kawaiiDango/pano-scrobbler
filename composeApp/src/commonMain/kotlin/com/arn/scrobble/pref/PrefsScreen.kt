@@ -1,6 +1,7 @@
 package com.arn.scrobble.pref
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -22,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
@@ -31,10 +34,12 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.getCurrentLocale
 import com.arn.scrobble.utils.setAppLocale
 import kotlinx.coroutines.Dispatchers
@@ -53,13 +58,13 @@ import pano_scrobbler.composeapp.generated.resources.debug_menu
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
+import pano_scrobbler.composeapp.generated.resources.download_it
 import pano_scrobbler.composeapp.generated.resources.github_link
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
 import pano_scrobbler.composeapp.generated.resources.notification_channel_blocked
 import pano_scrobbler.composeapp.generated.resources.num_blocked_metadata
-import pano_scrobbler.composeapp.generated.resources.num_regex_edits
 import pano_scrobbler.composeapp.generated.resources.num_simple_edits
 import pano_scrobbler.composeapp.generated.resources.pref_about
 import pano_scrobbler.composeapp.generated.resources.pref_auto_detect
@@ -98,6 +103,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_translate
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
+import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import java.util.Calendar
 import java.util.Locale
@@ -121,8 +127,8 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.scrobblerEnabled } }
     val allowedPackages by
     remember { derivedStateOf { mainPrefsData.allowedPackages } }
-    val seenAppsMap by
-    remember { derivedStateOf { mainPrefsData.seenApps.associate { it.appId to it.friendlyLabel } } }
+    val seenApps by
+    remember { derivedStateOf { mainPrefsData.seenApps } }
     val scrobbleSpotifyRemote by
     remember { derivedStateOf { mainPrefsData.scrobbleSpotifyRemote } }
     val autoDetectApps by
@@ -203,7 +209,7 @@ fun PrefsScreen(
         item(MainPrefs::allowedPackages.name) {
             AppIconsPref(
                 packageNames = allowedPackages,
-                seenAppsMap = seenAppsMap,
+                seenAppsMap = seenApps,
                 summary = stringResource(Res.string.pref_enabled_apps_summary),
                 onClick = {
                     onNavigate(
@@ -424,11 +430,7 @@ fun PrefsScreen(
 
         item("regex_edits") {
             TextPref(
-                text = pluralStringResource(
-                    Res.plurals.num_regex_edits,
-                    numRegexEdits,
-                    numRegexEdits
-                ),
+                text = "(${numRegexEdits.format()}) " + stringResource(Res.string.regex_rules),
                 onClick = {
                     onNavigate(PanoRoute.RegexEdits)
                 }
@@ -460,23 +462,12 @@ fun PrefsScreen(
             val autoString = stringResource(Res.string.auto)
             val currentLocale = remember(locale) { getCurrentLocale(locale) }
 
-            val localesMap = remember {
+            val localesMap = remember(locale) {
                 val autoEntry = mapOf("auto" to autoString)
-                LocaleUtils.localesSet.associateWith {
-                    val localeObj = Locale.forLanguageTag(it)
-                    val displayLanguage = localeObj.displayLanguage
-
-                    val suffix = when (localeObj.language) {
-                        in LocaleUtils.showScriptSet -> " (${localeObj.displayScript})"
-                        in LocaleUtils.showCountrySet -> localeObj.displayCountry
-                            .ifEmpty { null }
-                            ?.let { " ($it)" } ?: ""
-
-                        else -> ""
-                    }
-
-                    displayLanguage + suffix
-                }.let { autoEntry + it }
+                LocaleUtils.localesMap().let {
+                    if (PlatformStuff.isDesktop) it
+                    else autoEntry + it
+                }
             }
 
             DropdownPref(
@@ -680,12 +671,39 @@ fun PrefsScreen(
             val githubLink = stringResource(Res.string.github_link)
 
             TextPref(
-                text = "v " + BuildKonfig.VER_NAME,
+                text = stringResource(Res.string.download_it),
                 summary = githubLink,
                 onClick = {
                     PlatformStuff.openInBrowser(githubLink)
                 }
             )
+        }
+
+        item(key = "version") {
+            Text(
+                text = "v " + BuildKonfig.VER_NAME,
+                modifier = Modifier.padding(
+                    vertical = 16.dp,
+                    horizontal = horizontalOverscanPadding()
+                )
+
+            )
+        }
+
+        if (PlatformStuff.isDesktop) {
+            item(key = "ram") {
+                val runtime = remember { Runtime.getRuntime() }
+                val totalMemory = remember { runtime.totalMemory() / (1024 * 1024) }
+                val freeMemory = remember { runtime.freeMemory() / (1024 * 1024) }
+                Text(
+                    "RAM: ${totalMemory - freeMemory} MB / $totalMemory MB",
+                    modifier = Modifier.padding(
+                        vertical = 16.dp,
+                        horizontal = horizontalOverscanPadding()
+                    )
+
+                )
+            }
         }
 
         if (PlatformStuff.isDebug) {

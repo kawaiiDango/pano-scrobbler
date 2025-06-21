@@ -6,6 +6,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -14,15 +15,17 @@ import com.arn.scrobble.utils.PlatformStuff
 
 @Composable
 fun PanoPager(
-    initialPage: Int,
     selectedPage: Int,
     onSelectPage: (Int) -> Unit,
     totalPages: Int,
     modifier: Modifier = Modifier,
     content: @Composable (page: Int) -> Unit,
 ) {
-    var firstPageChange by rememberSaveable { mutableStateOf(false) }
+    val initialPage by rememberSaveable { mutableIntStateOf(selectedPage) }
+
     if (!PlatformStuff.isTv) {
+        var firstPageChange by rememberSaveable { mutableStateOf(false) }
+
         val pagerState = rememberPagerState(
             initialPage = initialPage,
             pageCount = { totalPages }

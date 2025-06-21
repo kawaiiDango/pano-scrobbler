@@ -6,16 +6,22 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 data class ScrobbleData(
-    var artist: String,
-    var track: String,
-    var album: String?,
-    var timestamp: Long,
-    var trackNumber: Int? = null,
-    var mbid: String? = null,
-    var albumArtist: String?,
-    var duration: Long?,
-    var packageName: String?
+    val artist: String,
+    val track: String,
+    val album: String?,
+    val timestamp: Long,
+    val trackNumber: Int? = null,
+    val albumArtist: String?,
+    val duration: Long?,
+    val appId: String?
 ) {
-    override fun toString() =
-        "ScrobbleData(artist='$artist', track='$track', album=$album, timestamp=$timestamp, trackNumber=$trackNumber, mbid=$mbid, albumArtist=$albumArtist, duration=$duration, packageName=redacted)"
+    fun safeDuration() = duration?.takeIf { it >= 30_000 }
+
+    fun toTrack() = Track(
+        name = track,
+        artist = Artist(artist),
+        album = album?.ifEmpty { null }
+            ?.let { Album(album, Artist(albumArtist.orEmpty().ifEmpty { artist })) },
+        duration = duration,
+    )
 }

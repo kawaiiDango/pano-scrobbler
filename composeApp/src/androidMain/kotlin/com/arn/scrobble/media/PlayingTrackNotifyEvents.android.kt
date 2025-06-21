@@ -5,63 +5,23 @@ import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
 
 
-actual fun notifyPlayingTrackEventWithIpc(event: PlayingTrackNotifyEvent) {
-    val context = AndroidStuff.application
-
-    when (event) {
-        is PlayingTrackNotifyEvent.TrackScrobbleLocked -> {
-            if (event.hash == -1) return
-
-            // do not scrobble until the dialog is dismissed
-
-            val intent = Intent(NLService.iSCROBBLE_SUBMIT_LOCK)
-                .setPackage(context.packageName)
-                .putExtra(
-                    Stuff.EXTRA_EVENT,
-                    Stuff.myJson.encodeToString(event)
-                )
-
-            context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
+actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
+    if (!AndroidStuff.isMainProcess) {
+        if (globalTrackEventFlow.subscriptionCount.value > 0) {
+            globalTrackEventFlow.tryEmit(event)
         }
-
-        is PlayingTrackNotifyEvent.TrackCancelled -> {
-            val intent = Intent(NLService.iCANCEL)
-                .setPackage(context.packageName)
-                .putExtra(
-                    Stuff.EXTRA_EVENT,
-                    Stuff.myJson.encodeToString(event)
-                )
-
-            context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
-        }
-
-        is PlayingTrackNotifyEvent.TrackLovedUnloved -> {
-            val intent = Intent(
-                if (event.loved) NLService.iLOVE
-                else NLService.iUNLOVE
+        // else scrobbler service is not running, do nothing
+    } else {
+        val context = AndroidStuff.application
+        val intent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
+            .setPackage(context.packageName)
+            .putExtra(
+                PlayingTrackEventReceiver.EXTRA_EVENT,
+                Stuff.myJson.encodeToString(event)
+            ).putExtra(
+                PlayingTrackEventReceiver.EXTRA_EVENT_TYPE,
+                event::class.simpleName
             )
-                .setPackage(context.packageName)
-                .putExtra(
-                    Stuff.EXTRA_EVENT,
-                    Stuff.myJson.encodeToString(event)
-                )
-
-            context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
-        }
-
-        is PlayingTrackNotifyEvent.AppAllowedBlocked -> {
-            val intent = Intent(NLService.iAPP_ALLOWED_BLOCKED)
-                .setPackage(context.packageName)
-                .putExtra(
-                    Stuff.EXTRA_EVENT,
-                    Stuff.myJson.encodeToString(event)
-                )
-
-            context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
-        }
-
-        else -> {
-            // Do nothing
-        }
+        context.sendBroadcast(intent)
     }
 }

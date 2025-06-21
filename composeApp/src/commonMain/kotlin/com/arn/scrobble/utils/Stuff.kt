@@ -89,7 +89,6 @@ object Stuff {
     const val DEFAULT_SEARCH_URL = "spotify://search/\$query"
 
     const val EXTRA_PINNED = "pinned"
-    const val EXTRA_EVENT = "event"
 
     const val RECENTS_REFRESH_INTERVAL = 30 * 1000L
     const val FRIENDS_REFRESH_INTERVAL = 60 * 1000L
@@ -99,7 +98,7 @@ object Stuff {
     const val CHARTS_WIDGET_REFRESH_INTERVAL = 60 * 60 * 1000L
     const val TRACK_INFO_WINDOW = 3 * 60 * 1000L
     const val TRACK_INFO_REQUESTS = 2
-    const val META_WAIT = 400L
+    const val META_WAIT = 800L
     const val SCROBBLE_FROM_MIC_DELAY = 3 * 1000L
     const val MIN_LISTENER_COUNT = 5
     const val MAX_HISTORY_ITEMS = 20
@@ -170,7 +169,7 @@ object Stuff {
     const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
     const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
-    val IGNORE_ARTIST_META = setOf(
+    val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",
         "com.vanced.android.youtube",
         "com.google.android.ogyoutube",
@@ -181,18 +180,6 @@ object Stuff {
         "com.liskovsoft.smarttubetv",
         "app.revanced.android.youtube",
         "app.rvx.android.youtube",
-
-        PACKAGE_YOUTUBE_MUSIC,
-        "com.vanced.android.apps.youtube.music",
-        "app.revanced.android.apps.youtube.music",
-
-        PACKAGE_NEWPIPE,
-        PACKAGE_YMUSIC,
-        PACKAGE_NICOBOX,
-        PACKAGE_SOUNDCLOUD,
-
-        // radios
-        "tunein.player",
     )
 
     val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
@@ -297,9 +284,9 @@ object Stuff {
     }
 
 
-    val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>() }
+    val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>(extraBufferCapacity = 1) }
 
-    val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>() }
+    val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>(extraBufferCapacity = 1) }
 
     fun Number.format() = numberFormat.format(this)!!
 

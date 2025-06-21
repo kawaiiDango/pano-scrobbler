@@ -265,6 +265,8 @@ fun TimePeriodSelector(
                             }
                         }
                     },
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
                 )
 
                 PeriodTypeSelector(

@@ -44,7 +44,6 @@ import pano_scrobbler.composeapp.generated.resources.settings
 @Composable
 fun HomePagerScreen(
     user: UserCached,
-    initialTabIdx: Int,
     tabIdx: Int,
     onSetTabIdx: (Int) -> Unit,
     onSetTitle: (String?) -> Unit,
@@ -113,7 +112,6 @@ fun HomePagerScreen(
     }
 
     PanoPager(
-        initialPage = initialTabIdx,
         selectedPage = tabIdx,
         onSelectPage = onSetTabIdx,
         totalPages = remember(tabsList) { tabsList.count { it !is PanoTab.Profile } },
@@ -145,7 +143,6 @@ fun HomePagerScreen(
                 onTitleChange = {
                     followingTitle = it
                 },
-                dialogFriendExtraDataFlow = mainViewModel.friendExtraData,
                 modifier = Modifier.fillMaxSize()
             )
 

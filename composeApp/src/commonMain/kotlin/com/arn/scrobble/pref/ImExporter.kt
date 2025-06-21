@@ -2,7 +2,6 @@ package com.arn.scrobble.pref
 
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.db.Converters
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.RegexEditsDao.Companion.import
@@ -12,7 +11,11 @@ import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNames
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToStream
 import java.io.OutputStream
 
@@ -29,18 +32,18 @@ class ImExporter {
 
     suspend fun export(writer: OutputStream): Boolean {
 
-        val appPrefs = AppPrefs(
+        val exportData = ExportData(
             pano_version = BuildKonfig.VER_CODE,
             simple_edits = db.getSimpleEditsDao().allFlow().first().asReversed(),
             blocked_metadata = db.getBlockedMetadataDao().allFlow().first().asReversed(),
-            regex_edits = db.getRegexEditsDao().allWithoutLimit(),
+            regex_rules = db.getRegexEditsDao().allWithoutLimit(),
             scrobble_sources = null,
             settings = PlatformStuff.mainPrefs.data.first().toPublicPrefs()
         )
 
         // write to file
         return try {
-            json.encodeToStream(appPrefs, writer)
+            json.encodeToStream(ExportDataSerializer, exportData, writer)
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -53,18 +56,18 @@ class ImExporter {
     }
 
     suspend fun exportPrivateData(writer: OutputStream): Boolean {
-        val appPrefsPrivate = AppPrefs(
+        val exportDataPrivate = ExportData(
             pano_version = BuildKonfig.VER_CODE,
             scrobble_sources = db.getScrobbleSourcesDao().all().asReversed(),
             settings = null,
             simple_edits = null,
-            regex_edits = null,
+            regex_rules = null,
             blocked_metadata = null,
         )
 
         // write to file
         return try {
-            json.encodeToStream(appPrefsPrivate, writer)
+            json.encodeToStream(ExportDataSerializer, exportDataPrivate, writer)
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -75,67 +78,117 @@ class ImExporter {
     }
 
     suspend fun import(jsonText: String, editsMode: EditsMode, settings: Boolean): Boolean {
-        val appPrefs: AppPrefs = try {
+        val exportData: ExportData = try {
             json.decodeFromString(jsonText)
         } catch (e: Exception) {
             e.printStackTrace()
             return false
         }
 
-        if (settings && appPrefs.settings != null) {
+        if (settings && exportData.settings != null) {
             PlatformStuff.mainPrefs.updateData {
-                it.updateFromPublicPrefs(appPrefs.settings)
+                it.updateFromPublicPrefs(exportData.settings)
             }
         }
 
         if (editsMode == EditsMode.EDITS_NOPE) return true
 
         if (editsMode == EditsMode.EDITS_REPLACE_ALL) {
-            if (appPrefs.simple_edits != null)
+            if (exportData.simple_edits != null)
                 db.getSimpleEditsDao().nuke()
-            if (appPrefs.regex_edits != null)
+            if (exportData.regex_rules != null || exportData.regex_edits_legacy != null)
                 db.getRegexEditsDao().nuke()
-            if (appPrefs.blocked_metadata != null)
+            if (exportData.blocked_metadata != null)
                 db.getBlockedMetadataDao().nuke()
-            if (appPrefs.scrobble_sources != null)
+            if (exportData.scrobble_sources != null)
                 db.getScrobbleSourcesDao().nuke()
         }
 
-        appPrefs.regex_edits?.map {
-            if (it.fieldCompat != null) {
-                it.copy(fields = Converters.fromCommaSeperatedString(it.fieldCompat))
-            } else
-                it
-        }
+        val modifiedRegexEdits = exportData.regex_edits_legacy?.mapNotNull {
+            if (it.preset != null) return@mapNotNull null
+
+            if (it.extractionPatterns == null) {
+                val fields = it.fields?.map { field ->
+                    val f = if (field == "albumartist") "albumArtist" else field
+                    RegexEdit.Field.valueOf(f)
+                }?.toSet() ?: emptySet()
+
+                if (fields.isEmpty()) return@mapNotNull null
+
+                RegexEdit(
+                    name = it.name ?: "Untitled",
+                    order = it.order,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = it.pattern?.takeIf { fields.contains(RegexEdit.Field.track) }
+                            .orEmpty(),
+                        searchAlbum = it.pattern?.takeIf { fields.contains(RegexEdit.Field.album) }
+                            .orEmpty(),
+                        searchArtist = it.pattern?.takeIf { fields.contains(RegexEdit.Field.artist) }
+                            .orEmpty(),
+                        searchAlbumArtist = it.pattern?.takeIf { fields.contains(RegexEdit.Field.albumArtist) }
+                            .orEmpty(),
+                    ),
+
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = it.replacement.takeIf { fields.contains(RegexEdit.Field.track) }
+                            .orEmpty(),
+                        replacementAlbum = it.replacement.takeIf { fields.contains(RegexEdit.Field.album) }
+                            .orEmpty(),
+                        replacementArtist = it.replacement.takeIf { fields.contains(RegexEdit.Field.artist) }
+                            .orEmpty(),
+                        replacementAlbumArtist = it.replacement.takeIf { fields.contains(RegexEdit.Field.albumArtist) }
+                            .orEmpty(),
+                        replaceAll = it.replaceAll,
+                    ),
+                    appIds = it.packages ?: emptySet(),
+                    caseSensitive = it.caseSensitive,
+                )
+            } else {
+                RegexEdit(
+                    name = it.name ?: "Untitled",
+                    order = it.order,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = it.extractionPatterns.extractionTrack,
+                        searchAlbum = it.extractionPatterns.extractionAlbum,
+                        searchArtist = it.extractionPatterns.extractionArtist,
+                        searchAlbumArtist = it.extractionPatterns.extractionAlbumArtist,
+                    ),
+                    appIds = it.packages ?: emptySet(),
+                    caseSensitive = it.caseSensitive,
+                )
+            }
+        } ?: exportData.regex_rules
 
         when (editsMode) {
             EditsMode.EDITS_REPLACE_ALL, EditsMode.EDITS_REPLACE_EXISTING -> {
-                appPrefs.simple_edits?.let { db.getSimpleEditsDao().insert(it) }
-                appPrefs.regex_edits?.let { db.getRegexEditsDao().import(it) }
-                appPrefs.blocked_metadata?.let { db.getBlockedMetadataDao().insert(it) }
+                exportData.simple_edits?.let { db.getSimpleEditsDao().insert(it) }
+                modifiedRegexEdits?.let { db.getRegexEditsDao().import(it) }
+                exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insert(it) }
             }
 
             EditsMode.EDITS_KEEP_EXISTING -> {
-                appPrefs.simple_edits?.let { db.getSimpleEditsDao().insertIgnore(it) }
-                appPrefs.regex_edits?.let { db.getRegexEditsDao().import(it) }
-                appPrefs.blocked_metadata?.let { db.getBlockedMetadataDao().insertIgnore(it) }
+                exportData.simple_edits?.let { db.getSimpleEditsDao().insertIgnore(it) }
+                modifiedRegexEdits?.let { db.getRegexEditsDao().import(it) }
+                exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insertIgnore(it) }
             }
 
             else -> {}
         }
-        appPrefs.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }
+        exportData.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }
 
         return true
     }
 }
 
 @Serializable
-private data class AppPrefs(
+private data class ExportData(
     val pano_version: Int,
 
     @JsonNames("edits")
     val simple_edits: List<SimpleEdit>?,
-    val regex_edits: List<RegexEdit>?,
+    @JsonNames("regex_edits")
+    val regex_edits_legacy: List<RegexEditLegacy>? = null,
+    val regex_rules: List<RegexEdit>?,
     val blocked_metadata: List<BlockedMetadata>?,
     val scrobble_sources: List<ScrobbleSource>?,
     val settings: MainPrefsPublic?,
@@ -146,4 +199,51 @@ enum class EditsMode {
     EDITS_REPLACE_ALL,
     EDITS_REPLACE_EXISTING,
     EDITS_KEEP_EXISTING,
+}
+
+@Serializable
+private data class RegexEditLegacy(
+    val order: Int = -1,
+    val preset: String? = null,
+    val name: String? = null,
+    val pattern: String? = null,
+    val replacement: String = "",
+
+    val extractionPatterns: ExtractionPatternsLegacy? = null,
+
+    val fields: Set<String>? = null,
+
+    val packages: Set<String>? = null,
+    val replaceAll: Boolean = false,
+    val caseSensitive: Boolean = false,
+    val continueMatching: Boolean = false,
+)
+
+@Serializable
+private data class ExtractionPatternsLegacy(
+    val extractionTrack: String,
+    val extractionAlbum: String,
+    val extractionArtist: String,
+    val extractionAlbumArtist: String,
+)
+
+private object ExportDataSerializer :
+    JsonTransformingSerializer<ExportData>(ExportData.serializer()) {
+    override fun transformSerialize(element: JsonElement) = removeIdRecursively(element)
+
+    private fun removeIdRecursively(element: JsonElement): JsonElement = when (element) {
+        is JsonObject -> buildJsonObject {
+            element.forEach { (k, v) ->
+                // remove database ID fields
+                if (k != "_id") put(k, removeIdRecursively(v))
+            }
+        }
+
+        is kotlinx.serialization.json.JsonArray ->
+            kotlinx.serialization.json.buildJsonArray {
+                element.forEach { add(removeIdRecursively(it)) }
+            }
+
+        else -> element
+    }
 }

@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -36,8 +35,7 @@ import pano_scrobbler.composeapp.generated.resources.pin_limit_reached
 
 class FriendsVM : ViewModel() {
     private val mainPrefs = PlatformStuff.mainPrefs
-    private val _friendsExtraDataMap =
-        MutableStateFlow<Map<String, FriendExtraData>>(emptyMap())
+    private val _friendsExtraDataMap = MutableStateFlow<Map<String, FriendExtraData>>(emptyMap())
     val friendsExtraDataMap = _friendsExtraDataMap.asStateFlow()
     private val _totalCount = MutableStateFlow(0)
     val totalFriends = _totalCount.asStateFlow()
@@ -50,9 +48,6 @@ class FriendsVM : ViewModel() {
             ?: emptyList()
     }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    val pinnedUsernamesSet = pinnedFriends.mapLatest { it.map { it.name }.toSet() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
     private val friendsRecentsMutex = Mutex()
 
@@ -124,14 +119,12 @@ class FriendsVM : ViewModel() {
         }
     }
 
-    fun addPinAndSave(user: UserCached): Boolean {
-        if (!PlatformStuff.billingRepository.isLicenseValid || pinnedFriends.value.size >= Stuff.MAX_PINNED_FRIENDS) return false
+    fun addPinAndSave(user: UserCached) {
+        if (!PlatformStuff.billingRepository.isLicenseValid) return
 
         val newUser = user.copy(order = pinnedFriends.value.size)
 
-        val willBeAdded = newUser.name !in pinnedUsernamesSet.value
-
-        if (willBeAdded) {
+        if (pinnedFriends.value.size < Stuff.MAX_PINNED_FRIENDS) {
             viewModelScope.launch {
                 mainPrefs.updateData {
                     it.copy(
@@ -154,48 +147,41 @@ class FriendsVM : ViewModel() {
                 Stuff.globalSnackbarFlow.emit(snackbarData)
             }
         }
-        return willBeAdded
     }
 
-    fun removePinAndSave(user: UserCached): Boolean {
-        val willBeRemoved = user.name in pinnedUsernamesSet.value
-
-        if (willBeRemoved) {
-            viewModelScope.launch {
-                mainPrefs.updateData {
-                    it.copy(
-                        pinnedFriends = it.pinnedFriends +
-                                (it.currentAccountType to (it.pinnedFriends.getOrDefault(
-                                    it.currentAccountType, emptySet()
-                                ) - user))
-                    )
-                }
-            }
-        }
-
-        return willBeRemoved
-    }
-
-
-    fun movePinAndSave(username: String, right: Boolean): Boolean {
-        val from = pinnedFriends.value.indexOfFirst { it.name == username }
-        if (from == -1) return false
-        val to = (if (right) from + 1 else from - 1).coerceIn(0, pinnedFriends.value.size - 1)
-        if (from == to) return false
-
+    fun removePinAndSave(user: UserCached) {
         viewModelScope.launch {
-            val newList = pinnedFriends.value.toMutableList()
-            val friend = newList.removeAt(from)
-            newList.add(to, friend)
-            val newListOrdered = newList.mapIndexed { index, it ->
-                it.copy(order = index)
-            }
             mainPrefs.updateData {
-                it.copy(pinnedFriends = it.pinnedFriends + (it.currentAccountType to newListOrdered))
+                it.copy(
+                    pinnedFriends = it.pinnedFriends +
+                            (it.currentAccountType to (it.pinnedFriends.getOrDefault(
+                                it.currentAccountType, emptySet()
+                            ) - user))
+                )
             }
         }
+    }
 
-        return true
+
+    fun savePins(pinnedFriends: List<UserCached>) {
+        viewModelScope.launch {
+            mainPrefs.updateData {
+                it.copy(pinnedFriends = it.pinnedFriends + (it.currentAccountType to pinnedFriends))
+            }
+        }
+    }
+
+    fun movePin(pinnedFriends: List<UserCached>, from: Int, to: Int): List<UserCached> {
+        if (from < 0 || from >= pinnedFriends.size || to < 0 || to >= pinnedFriends.size) return pinnedFriends
+        if (from == to) return pinnedFriends
+
+        val newList = pinnedFriends.toMutableList()
+        val friend = newList.removeAt(from)
+        newList.add(to, friend)
+
+        return newList.mapIndexed { index, it ->
+            it.copy(order = index)
+        }
     }
 
     fun sortByTime(friends: List<UserCached>) {

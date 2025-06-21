@@ -62,7 +62,6 @@ interface SimpleEditsDao {
 
         suspend fun SimpleEditsDao.performEdit(
             scrobbleData: ScrobbleData,
-            allowBlankAlbumArtist: Boolean = true,
         ): SimpleEdit? {
             val artist = scrobbleData.artist
             val album = scrobbleData.album
@@ -74,21 +73,13 @@ interface SimpleEditsDao {
             else
                 artist.hashCode().toString() + album.hashCode().toString() + track.hashCode()
                     .toString()
-            val edit =
-                findByNamesOrHash(
-                    artist.lowercase(),
-                    album?.lowercase() ?: "",
-                    track.lowercase(),
-                    hash
-                )
-            if (edit != null) {
-                scrobbleData.artist = edit.artist
-                scrobbleData.album = edit.album
-                scrobbleData.track = edit.track
-                if (edit.albumArtist.isNotBlank() || allowBlankAlbumArtist)
-                    scrobbleData.albumArtist = edit.albumArtist
-            }
-            return edit
+
+            return findByNamesOrHash(
+                artist.lowercase(),
+                album?.lowercase() ?: "",
+                track.lowercase(),
+                hash
+            )?.takeIf { it.artist.isNotEmpty() && it.track.isNotEmpty() }
         }
 
         suspend fun SimpleEditsDao.insertReplaceLowerCase(e: SimpleEdit) {

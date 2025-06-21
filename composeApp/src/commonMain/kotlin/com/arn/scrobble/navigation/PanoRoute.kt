@@ -130,7 +130,7 @@ sealed interface PanoRoute {
         val artist: Artist,
         val user: UserCached,
         val type: Int,
-        val pkgName: String? = null,
+        val appId: String? = null,
     ) : PanoRoute
 
     @Serializable
@@ -143,7 +143,7 @@ sealed interface PanoRoute {
     data class SimilarTracks(
         val track: Track,
         val user: UserCached,
-        val pkgName: String? = null,
+        val appId: String? = null,
     ) : PanoRoute
 
     @Serializable

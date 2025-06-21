@@ -134,7 +134,6 @@ fun AppListScreen(
         ) {
             items(
                 count,
-                key = { it }
             ) {
                 AppListItem(
                     appItem = null,

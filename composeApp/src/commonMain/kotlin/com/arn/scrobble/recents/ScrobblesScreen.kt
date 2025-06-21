@@ -1,6 +1,5 @@
 package com.arn.scrobble.recents
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,11 +22,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,7 +85,7 @@ import pano_scrobbler.composeapp.generated.resources.not_running
 import pano_scrobbler.composeapp.generated.resources.num_pending
 import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.recents
-import pano_scrobbler.composeapp.generated.resources.retry
+import pano_scrobbler.composeapp.generated.resources.reload
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.time_jump
@@ -91,7 +94,6 @@ private enum class ScrobblesType {
     RECENTS,
     LOVED,
     TIME_JUMP,
-    RANDOM,
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,20 +116,34 @@ fun ScrobblesScreen(
     var timeJumpMillis by rememberSaveable { mutableStateOf<Long?>(null) }
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val lastRecentsRefreshTime by viewModel.lastRecentsRefreshTime.collectAsStateWithLifecycle()
-    val pendingScrobbles by viewModel.pendingScrobbles.collectAsStateWithLifecycle()
+    val pendingScrobbles by
+    if (user.isSelf)
+        viewModel.pendingScrobbles.collectAsStateWithLifecycle()
+    else
+        remember { mutableStateOf(emptyList()) }
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
-    val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps.associate { it.appId to it.friendlyLabel } }
+    val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     val scrobblerEnabled by viewModel.scrobblerEnabled.collectAsStateWithLifecycle()
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
+    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
     val currentAccoutType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var expandedIdx by rememberSaveable { mutableIntStateOf(-1) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
     val pendingScrobblesheader =
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
-    val canShowTrackFullMenu by remember(selectedType, currentAccoutType) {
+    val canLove by remember(currentAccoutType) {
+        mutableStateOf(
+            currentAccoutType !in arrayOf(
+                AccountType.MALOJA,
+                AccountType.PLEROMA,
+            )
+        )
+    }
+
+    val canEditOrDelete by remember(selectedType, currentAccoutType) {
         mutableStateOf(
             selectedType != ScrobblesType.LOVED && currentAccoutType !in arrayOf(
                 AccountType.FILE,
@@ -137,15 +153,13 @@ fun ScrobblesScreen(
         )
     }
 
-    fun onTrackClick(track: Track, pkgName: String?) {
-        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, pkgName = pkgName))
+
+    fun onTrackClick(track: Track, appId: String?) {
+        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, appId = appId))
     }
 
     LaunchedEffect(user, selectedType, timeJumpMillis) {
         when (selectedType) {
-            ScrobblesType.RANDOM -> {
-            }
-
             ScrobblesType.LOVED -> {
                 viewModel.setScrobblesInput(
                     ScrobblesInput(
@@ -232,8 +246,13 @@ fun ScrobblesScreen(
     AutoRefreshEffect(
         lastRefreshTime = lastRecentsRefreshTime,
         interval = Stuff.RECENTS_REFRESH_INTERVAL,
-        shouldRefresh = {
-            selectedType == ScrobblesType.RECENTS && listState.firstVisibleItemIndex < 4
+        doRefresh = {
+            if (selectedType == ScrobblesType.RECENTS && listState.firstVisibleItemIndex < 4) {
+                tracks.refresh()
+                true
+            } else {
+                false
+            }
         },
         lazyPagingItems = tracks,
     )
@@ -265,10 +284,6 @@ fun ScrobblesScreen(
                     registeredTime = user.registeredTime,
                     onTypeSelected = { type, timeJumpMillisp ->
                         when (type) {
-                            ScrobblesType.RANDOM -> {
-                                onNavigate(PanoRoute.Random(user))
-                            }
-
                             ScrobblesType.RECENTS,
                             ScrobblesType.LOVED,
                                 -> {
@@ -286,6 +301,9 @@ fun ScrobblesScreen(
                         if (tracks.loadState.refresh is LoadState.NotLoading) {
                             tracks.refresh()
                         }
+                    },
+                    onNavigateToRandom = {
+                        onNavigate(PanoRoute.Random(user))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -337,7 +355,7 @@ fun ScrobblesScreen(
                     }
                 }
 
-                if (selectedType == ScrobblesType.RECENTS) {
+                if (selectedType == ScrobblesType.RECENTS && user.isSelf) {
                     pendingScrobblesListItems(
                         headerText = pendingScrobblesheader,
                         headerIcon = Icons.Outlined.HourglassEmpty,
@@ -347,6 +365,7 @@ fun ScrobblesScreen(
                         onToggle = {
                             pendingScrobblesExpanded = it
                         },
+                        showScrobbleSources = showScrobbleSources,
                         onItemClick = {
                             onTrackClick(it as Track, null)
                         },
@@ -367,9 +386,10 @@ fun ScrobblesScreen(
                     pkgMap = pkgMap,
                     seenApps = seenApps,
                     fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,
-                    showFullMenu = canShowTrackFullMenu,
-                    showLove = true,
-                    showHate = currentAccoutType == AccountType.LISTENBRAINZ,
+                    canLove = canLove,
+                    canEdit = canEditOrDelete,
+                    canDelete = canEditOrDelete,
+                    canHate = currentAccoutType == AccountType.LISTENBRAINZ,
                     expandedIdx = { expandedIdx },
                     onExpand = {
                         if (expandedIdx == 0 && it == -1)
@@ -389,6 +409,41 @@ fun ScrobblesScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun ScrobblesTypeSelectorButton(
+    type: ScrobblesType?,
+    checked: Boolean,
+    text: String,
+    imageVector: ImageVector,
+    onTypeSelected: (ScrobblesType?) -> Unit,
+) {
+    OutlinedToggleButton(
+        checked = checked,
+        onCheckedChange = {
+            if (it)
+                onTypeSelected(type)
+        },
+    ) {
+        if (checked) {
+            Icon(imageVector, contentDescription = text)
+            Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+            Text(text = text, maxLines = 1)
+        } else {
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+                tooltip = { PlainTooltip { Text(text) } },
+                state = rememberTooltipState(),
+            ) {
+                Icon(
+                    imageVector,
+                    contentDescription = text
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ScrobblesTypeSelector(
@@ -397,6 +452,7 @@ private fun ScrobblesTypeSelector(
     registeredTime: Long,
     onTypeSelected: (ScrobblesType, Long?) -> Unit,
     onRefresh: () -> Unit,
+    onNavigateToRandom: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var timeJumpMenuShown by remember { mutableStateOf(false) }
@@ -407,55 +463,40 @@ private fun ScrobblesTypeSelector(
             ButtonGroupDefaults.HorizontalArrangement.spacing,
             alignment = Alignment.CenterHorizontally
         ),
-        modifier = modifier.background(
-            MaterialTheme.colorScheme.surfaceContainerHigh,
-            MaterialTheme.shapes.large
-        )
+        modifier = modifier
     ) {
         if (PlatformStuff.isDesktop || PlatformStuff.isTv) {
-            OutlinedToggleButton(
+            ScrobblesTypeSelectorButton(
+                type = null,
                 checked = false,
-                onCheckedChange = {
-                    if (it)
-                        onRefresh()
-                },
-            ) {
-                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(Res.string.retry))
-            }
-        }
-
-        OutlinedToggleButton(
-            checked = selectedType == ScrobblesType.RECENTS,
-            onCheckedChange = {
-                if (it)
-                    onTypeSelected(ScrobblesType.RECENTS, null)
-            },
-        ) {
-            Icon(Icons.Rounded.History, contentDescription = stringResource(Res.string.recents))
-
-            if (selectedType == ScrobblesType.RECENTS) {
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = stringResource(Res.string.recents), maxLines = 1)
-            }
-        }
-
-        OutlinedToggleButton(
-            checked = selectedType == ScrobblesType.LOVED,
-            onCheckedChange = {
-                if (it)
-                    onTypeSelected(ScrobblesType.LOVED, null)
-            },
-        ) {
-            Icon(
-                Icons.Rounded.FavoriteBorder,
-                contentDescription = stringResource(Res.string.loved)
+                text = stringResource(Res.string.reload),
+                imageVector = Icons.Rounded.Refresh,
+                onTypeSelected = {
+                    onRefresh()
+                }
             )
-
-            if (selectedType == ScrobblesType.LOVED) {
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = stringResource(Res.string.loved), maxLines = 1)
-            }
         }
+
+        ScrobblesTypeSelectorButton(
+            type = ScrobblesType.RECENTS,
+            checked = selectedType == ScrobblesType.RECENTS,
+            text = stringResource(Res.string.recents),
+            imageVector = Icons.Rounded.History,
+            onTypeSelected = {
+                if (it != null)
+                    onTypeSelected(it, null)
+            }
+        )
+        ScrobblesTypeSelectorButton(
+            type = ScrobblesType.LOVED,
+            checked = selectedType == ScrobblesType.LOVED,
+            text = stringResource(Res.string.loved),
+            imageVector = Icons.Rounded.FavoriteBorder,
+            onTypeSelected = {
+                if (it != null)
+                    onTypeSelected(it, null)
+            }
+        )
 
         OutlinedToggleButton(
             checked = selectedType == ScrobblesType.TIME_JUMP,
@@ -466,14 +507,14 @@ private fun ScrobblesTypeSelector(
                     timeJumpMenuShown = true
             },
         ) {
-            Icon(
-                combineImageVectors(
-                    getPeriodTypeIcon(TimePeriodType.CUSTOM),
-                    Icons.Outlined.ArrowDropDown
-                ), contentDescription = stringResource(Res.string.time_jump)
+            val painter = combineImageVectors(
+                getPeriodTypeIcon(TimePeriodType.CUSTOM),
+                Icons.Outlined.ArrowDropDown
             )
 
             if (selectedType == ScrobblesType.TIME_JUMP) {
+                Icon(painter, contentDescription = stringResource(Res.string.time_jump))
+
                 Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
                 Text(
                     if (timeJumpMillis == null)
@@ -482,6 +523,14 @@ private fun ScrobblesTypeSelector(
                         PanoTimeFormatter.relative(timeJumpMillis),
                     maxLines = 1
                 )
+            } else {
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+                    tooltip = { PlainTooltip { Text(stringResource(Res.string.time_jump)) } },
+                    state = rememberTooltipState(),
+                ) {
+                    Icon(painter, contentDescription = stringResource(Res.string.time_jump))
+                }
             }
 
             DropdownMenu(
@@ -529,20 +578,15 @@ private fun ScrobblesTypeSelector(
             }
         }
 
-        OutlinedToggleButton(
-            checked = selectedType == ScrobblesType.RANDOM,
-            onCheckedChange = {
-                if (it)
-                    onTypeSelected(ScrobblesType.RANDOM, null)
-            },
-        ) {
-            Icon(Icons.Outlined.Casino, contentDescription = stringResource(Res.string.random_text))
-
-            if (selectedType == ScrobblesType.RANDOM) {
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = stringResource(Res.string.random_text), maxLines = 1)
+        ScrobblesTypeSelectorButton(
+            type = null,
+            checked = false,
+            text = stringResource(Res.string.random_text),
+            imageVector = Icons.Outlined.Casino,
+            onTypeSelected = {
+                onNavigateToRandom()
             }
-        }
+        )
     }
 
     if (datePickerShown) {

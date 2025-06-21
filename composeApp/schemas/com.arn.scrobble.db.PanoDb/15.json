@@ -2,57 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 15,
-    "identityHash": "1f7313bf6569d88076b4a637e308dc4d",
+    "identityHash": "4c0346e150e88428f467af8856f18251",
     "entities": [
       {
         "tableName": "PendingScrobbles",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `artist` TEXT NOT NULL, `albumArtist` TEXT NOT NULL, `duration` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `autoCorrected` INTEGER NOT NULL, `event` TEXT NOT NULL, `packageName` TEXT NOT NULL, `state` INTEGER NOT NULL, `state_timestamp` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `event` TEXT NOT NULL, `services` INTEGER NOT NULL, `lastFailedTimestamp` INTEGER, `lastFailedReason` TEXT, `artist` TEXT NOT NULL, `track` TEXT NOT NULL, `album` TEXT, `timestamp` INTEGER NOT NULL, `trackNumber` INTEGER, `albumArtist` TEXT, `duration` INTEGER, `appId` TEXT)",
         "fields": [
           {
             "fieldPath": "_id",
             "columnName": "_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "track",
-            "columnName": "track",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "album",
-            "columnName": "album",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "artist",
-            "columnName": "artist",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "albumArtist",
-            "columnName": "albumArtist",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "duration",
-            "columnName": "duration",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "timestamp",
-            "columnName": "timestamp",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "autoCorrected",
-            "columnName": "autoCorrected",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -63,22 +21,63 @@
             "notNull": true
           },
           {
-            "fieldPath": "packageName",
-            "columnName": "packageName",
+            "fieldPath": "services",
+            "columnName": "services",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastFailedTimestamp",
+            "columnName": "lastFailedTimestamp",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastFailedReason",
+            "columnName": "lastFailedReason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scrobbleData.artist",
+            "columnName": "artist",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "state",
-            "columnName": "state",
+            "fieldPath": "scrobbleData.track",
+            "columnName": "track",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scrobbleData.album",
+            "columnName": "album",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scrobbleData.timestamp",
+            "columnName": "timestamp",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "state_timestamp",
-            "columnName": "state_timestamp",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "scrobbleData.trackNumber",
+            "columnName": "trackNumber",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scrobbleData.albumArtist",
+            "columnName": "albumArtist",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scrobbleData.duration",
+            "columnName": "duration",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scrobbleData.appId",
+            "columnName": "appId",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -177,7 +176,7 @@
       },
       {
         "tableName": "regexEdits",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `order` INTEGER NOT NULL, `preset` TEXT, `name` TEXT, `pattern` TEXT, `replacement` TEXT NOT NULL, `fields` TEXT, `packages` TEXT, `replaceAll` INTEGER NOT NULL, `caseSensitive` INTEGER NOT NULL, `continueMatching` INTEGER NOT NULL, `blockPlayerAction` TEXT, `extractionTrack` TEXT, `extractionAlbum` TEXT, `extractionArtist` TEXT, `extractionAlbumArtist` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `order` INTEGER NOT NULL, `name` TEXT NOT NULL, `appIds` TEXT NOT NULL, `caseSensitive` INTEGER NOT NULL, `blockPlayerAction` TEXT, `searchTrack` TEXT NOT NULL, `searchAlbum` TEXT NOT NULL, `searchArtist` TEXT NOT NULL, `searchAlbumArtist` TEXT NOT NULL, `replacementTrack` TEXT, `replacementAlbum` TEXT, `replacementArtist` TEXT, `replacementAlbumArtist` TEXT, `replaceAll` INTEGER)",
         "fields": [
           {
             "fieldPath": "_id",
@@ -192,40 +191,15 @@
             "notNull": true
           },
           {
-            "fieldPath": "preset",
-            "columnName": "preset",
-            "affinity": "TEXT"
-          },
-          {
             "fieldPath": "name",
             "columnName": "name",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "pattern",
-            "columnName": "pattern",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "replacement",
-            "columnName": "replacement",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "fields",
-            "columnName": "fields",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "packages",
-            "columnName": "packages",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "replaceAll",
-            "columnName": "replaceAll",
-            "affinity": "INTEGER",
+            "fieldPath": "appIds",
+            "columnName": "appIds",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -235,35 +209,58 @@
             "notNull": true
           },
           {
-            "fieldPath": "continueMatching",
-            "columnName": "continueMatching",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "blockPlayerAction",
             "columnName": "blockPlayerAction",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "extractionPatterns.extractionTrack",
-            "columnName": "extractionTrack",
+            "fieldPath": "search.searchTrack",
+            "columnName": "searchTrack",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "search.searchAlbum",
+            "columnName": "searchAlbum",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "search.searchArtist",
+            "columnName": "searchArtist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "search.searchAlbumArtist",
+            "columnName": "searchAlbumArtist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "replacement.replacementTrack",
+            "columnName": "replacementTrack",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "extractionPatterns.extractionAlbum",
-            "columnName": "extractionAlbum",
+            "fieldPath": "replacement.replacementAlbum",
+            "columnName": "replacementAlbum",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "extractionPatterns.extractionArtist",
-            "columnName": "extractionArtist",
+            "fieldPath": "replacement.replacementArtist",
+            "columnName": "replacementArtist",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "extractionPatterns.extractionAlbumArtist",
-            "columnName": "extractionAlbumArtist",
+            "fieldPath": "replacement.replacementAlbumArtist",
+            "columnName": "replacementAlbumArtist",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacement.replaceAll",
+            "columnName": "replaceAll",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -273,15 +270,6 @@
           ]
         },
         "indices": [
-          {
-            "name": "index_regexEdits_preset",
-            "unique": true,
-            "columnNames": [
-              "preset"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_regexEdits_preset` ON `${TABLE_NAME}` (`preset`)"
-          },
           {
             "name": "index_regexEdits_order",
             "unique": false,
@@ -701,7 +689,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1f7313bf6569d88076b4a637e308dc4d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4c0346e150e88428f467af8856f18251')"
     ]
   }
 }

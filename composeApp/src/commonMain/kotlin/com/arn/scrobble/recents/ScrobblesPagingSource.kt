@@ -96,10 +96,13 @@ class ScrobblesPagingSource(
                 PlatformStuff.billingRepository.isLicenseValid &&
                 PlatformStuff.mainPrefs.data.map { it.showScrobbleSources }.first()
             ) {
-                val start = entries.lastOrNull()?.date
-                val end = entries.find { it.date != null }?.date
-                if (start != null && end != null) {
-                    val scrobbleSources = scrobbleSourcesDao.selectBetween(start, end)
+                val earliest = entries.lastOrNull()?.date
+                val latest = entries.find { it.date != null }?.date
+                if (earliest != null && latest != null) {
+                    val scrobbleSources = scrobbleSourcesDao.selectBetween(
+                        earliest - Stuff.SCROBBLE_SOURCE_THRESHOLD,
+                        latest + Stuff.SCROBBLE_SOURCE_THRESHOLD
+                    )
 
                     val treeMap = TreeMap<Long, ScrobbleSource>()
                     for (source in scrobbleSources) {

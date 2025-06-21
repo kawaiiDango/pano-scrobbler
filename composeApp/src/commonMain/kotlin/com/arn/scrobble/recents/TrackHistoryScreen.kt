@@ -48,7 +48,7 @@ fun TrackHistoryScreen(
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
-    val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps.associate { it.appId to it.friendlyLabel } }
+    val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     var expandedIdx by rememberSaveable { mutableIntStateOf(-1) }
 
     LaunchedEffect(user, track) {
@@ -101,9 +101,10 @@ fun TrackHistoryScreen(
             pkgMap = pkgMap,
             seenApps = seenApps,
             fetchAlbumImageIfMissing = false,
-            showFullMenu = true,
-            showLove = false,
-            showHate = false,
+            canEdit = true,
+            canDelete = true,
+            canLove = false,
+            canHate = false,
             expandedIdx = { expandedIdx },
             onExpand = { expandedIdx = it },
             onOpenDialog = onOpenDialog,

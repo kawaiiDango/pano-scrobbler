@@ -7,12 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import java.awt.SystemColor.text
 
 @Dao
 interface RegexEditsDao {
@@ -28,11 +25,8 @@ interface RegexEditsDao {
     @Query("SELECT MAX(`order`) FROM $tableName")
     suspend fun maxOrder(): Int?
 
-    @Query("SELECT * FROM $tableName WHERE preset IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    fun allPresets(): Flow<List<RegexEdit>>
-
-    @Query("SELECT count(1) FROM $tableName WHERE packages IS NOT NULL")
-    fun hasPkgNameFlow(): Flow<Boolean>
+    @Query("SELECT count(1) FROM $tableName WHERE appIds IS NOT NULL")
+    fun hasAppIdFlow(): Flow<Boolean>
 
     @Query("UPDATE $tableName SET `order` = `order` + 1")
     suspend fun shiftDown()
@@ -63,189 +57,227 @@ interface RegexEditsDao {
                 insertIgnore(toInsert)
         }
 
-        fun RegexEdit.countNamedCaptureGroups(): Map<String, Int> {
-            val extractionPatterns = extractionPatterns ?: return emptyMap()
+        fun RegexEdit.countNamedCaptureGroups(): Map<RegexEdit.Field, Int> {
 
-            return arrayOf(
-                RegexEditFields.TRACK,
-                RegexEditFields.ALBUM,
-                RegexEditFields.ARTIST,
-                RegexEditFields.ALBUM_ARTIST,
-            ).associateWith { groupName ->
+            return RegexEdit.Field.entries.associateWith { field ->
                 arrayOf(
-                    extractionPatterns.extractionTrack,
-                    extractionPatterns.extractionAlbum,
-                    extractionPatterns.extractionArtist,
-                    extractionPatterns.extractionAlbumArtist,
+                    search.searchTrack,
+                    search.searchAlbum,
+                    search.searchArtist,
+                    search.searchAlbumArtist,
                 )
                     .filterNot { it.isEmpty() }
-                    .sumOf { it.split("(?<$groupName>").size - 1 }
+                    .sumOf { it.split("(?<$field>").size - 1 }
             }
         }
 
-        suspend fun RegexEditsDao.performRegexReplace(
+        fun performRegexReplace(
             scrobbleData: ScrobbleData,
-            pkgName: String? = null, // null means all
-            regexEditsp: List<RegexEdit>? = null, // null means all
+            regexEdits: List<RegexEdit>
         ): RegexResults {
-            val matchesMap = mutableMapOf(
-                RegexEditFields.ARTIST to mutableSetOf<RegexEdit>(),
-                RegexEditFields.ALBUM to mutableSetOf(),
-                RegexEditFields.ALBUM_ARTIST to mutableSetOf(),
-                RegexEditFields.TRACK to mutableSetOf(),
-            )
+            val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
 
-            var blockPlayerAction: BlockPlayerAction? = null
-
-            val regexEdits =
-                regexEditsp ?: allFlow().first().map { RegexPresets.getPossiblePreset(it) }
-
-            fun replaceOrBlockField(textp: String, field: String): String {
-                var text: String = textp
-                regexEdits.filter {
-                    it.pattern != null &&
-                            it.fields != null &&
-                            field in it.fields &&
-                            (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages)
+            regexEdits
+                .filter {
+                    it.appIds.isEmpty() || scrobbleData.appId in it.appIds
                 }.forEach { regexEdit ->
-                    val regexOptions = mutableSetOf<RegexOption>()
-                    if (!regexEdit.caseSensitive)
-                        regexOptions += RegexOption.IGNORE_CASE
+                    val scrobbleDataToMatches = listOf(
+                        scrobbleData.track to regexEdit.search.searchTrack,
+                        scrobbleData.album.orEmpty() to regexEdit.search.searchAlbum,
+                        scrobbleData.artist to regexEdit.search.searchArtist,
+                        scrobbleData.albumArtist.orEmpty() to regexEdit.search.searchAlbumArtist
+                    ).map { (fieldData, regexStr) ->
+                        val regexOptions = mutableSetOf<RegexOption>()
+                        if (!regexEdit.caseSensitive)
+                            regexOptions += RegexOption.IGNORE_CASE
 
-                    val regex = regexEdit.pattern!!.toRegex(regexOptions)
+                        val regex = runCatching { regexStr.toRegex(regexOptions) }
+                            .onFailure {
+                                Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
+                            }
+                            .getOrNull()
 
-                    if (regex.containsMatchIn(text)) {
-                        matchesMap[field]?.add(regexEdit)
+                        fieldData to regex?.find(fieldData)
+                    }
 
-                        if (regexEdit.blockPlayerAction != null) {
-                            if (PlatformStuff.billingRepository.isLicenseValid) {
-                                blockPlayerAction = regexEdit.blockPlayerAction
-                                return textp
-                            } else {
-                                return@forEach
+                    val allFieldDataMatched = scrobbleDataToMatches.count { (_, match) ->
+                        match != null
+                    } == scrobbleDataToMatches.size
+
+                    if (allFieldDataMatched) {
+                        when (regexEdit.mode()) {
+                            RegexMode.Block -> {
+                                if (isLicenseValid)
+                                    return RegexResults(
+                                        matches = setOf(regexEdit),
+                                        scrobbleData = null,
+                                        blockPlayerAction = regexEdit.blockPlayerAction,
+                                    )
+                            }
+
+                            RegexMode.Extract -> {
+                                if (isLicenseValid && PlatformStuff.isJava8OrGreater) {
+                                    val newScrobbleData = extract(
+                                        scrobbleData,
+                                        scrobbleDataToMatches
+                                    )
+                                    if (newScrobbleData != null) {
+                                        return RegexResults(
+                                            scrobbleData = newScrobbleData,
+                                            blockPlayerAction = null,
+                                            matches = setOf(regexEdit),
+                                        )
+                                    }
+                                }
+                            }
+
+                            RegexMode.ReplaceFirst, RegexMode.ReplaceAll -> {
+                                val newScrobbleData =
+                                    runCatching { replace(scrobbleData, regexEdit) }
+                                        .onFailure {
+                                            Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
+                                        }
+                                        .getOrNull()
+
+                                if (newScrobbleData != null) {
+                                    return RegexResults(
+                                        scrobbleData = newScrobbleData,
+                                        blockPlayerAction = null,
+                                        matches = setOf(regexEdit),
+                                    )
+                                }
                             }
                         }
-
-                        kotlin.runCatching {
-                            text = if (regexEdit.replaceAll)
-                                text.replace(regex, regexEdit.replacement).trim()
-                            else
-                                text.replaceFirst(regex, regexEdit.replacement).trim()
-                        }
-
-                        if (!regexEdit.continueMatching)
-                            return text
                     }
                 }
-                return text
-            }
-
-            fun extract() {
-                regexEdits
-                    .filter {
-                        it.extractionPatterns != null &&
-                                (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages)
-                    }.forEachIndexed { _, regexEdit ->
-                        val extractionPatterns = regexEdit.extractionPatterns!!
-
-                        val scrobbleDataToRegexes = mapOf(
-                            scrobbleData.track to extractionPatterns.extractionTrack,
-                            scrobbleData.album to extractionPatterns.extractionAlbum,
-                            scrobbleData.artist to extractionPatterns.extractionArtist,
-                            scrobbleData.albumArtist to extractionPatterns.extractionAlbumArtist,
-                        ).mapValues { (key, value) ->
-                            if (regexEdit.caseSensitive)
-                                value.toRegex()
-                            else
-                                value.toRegex(RegexOption.IGNORE_CASE)
-                        }
-
-                        val namedCaptureGroupsCount = regexEdit.countNamedCaptureGroups()
-
-                        val extractionsMap = arrayOf(
-                            RegexEditFields.TRACK,
-                            RegexEditFields.ALBUM,
-                            RegexEditFields.ARTIST,
-                            RegexEditFields.ALBUM_ARTIST,
-                        ).associateWith { groupName ->
-                            scrobbleDataToRegexes.forEach { (sdField, regex) ->
-                                if (regex.pattern.isEmpty() || sdField.isNullOrEmpty()) return@forEach
-                                val namedGroups =
-                                    regex.find(sdField)?.groups ?: return@forEach
-                                val groupValue =
-                                    runCatching { namedGroups[groupName] }.getOrNull()
-                                        ?: return@forEach
-
-                                return@associateWith groupValue.value
-                            }
-                            null
-                        }
-
-                        val allFound = extractionsMap.all { (sdField, extraction) ->
-                            val count = namedCaptureGroupsCount[sdField] ?: 0
-                            count == 1 && extraction != null ||
-                                    count == 0 && extraction == null
-                        }
-
-                        if (allFound) {
-                            extractionsMap.forEach { (sdField, extraction) ->
-                                if (extraction != null)
-                                    matchesMap[sdField.lowercase()]?.add(regexEdit)
-                            }
-
-                            scrobbleData.track = extractionsMap[RegexEditFields.TRACK] ?: ""
-                            scrobbleData.album = extractionsMap[RegexEditFields.ALBUM] ?: ""
-                            scrobbleData.artist = extractionsMap[RegexEditFields.ARTIST] ?: ""
-                            scrobbleData.albumArtist =
-                                extractionsMap[RegexEditFields.ALBUM_ARTIST] ?: ""
-
-                            if (!regexEdit.continueMatching)
-                                return
-                        }
-
-
-                    }
-            }
-
-
-            try {
-                mapOf(
-                    RegexEditFields.TRACK to scrobbleData.track,
-                    RegexEditFields.ALBUM to scrobbleData.album,
-                    RegexEditFields.ARTIST to scrobbleData.artist,
-                    RegexEditFields.ALBUM_ARTIST to scrobbleData.albumArtist,
-                ).map { (field, value) ->
-                    if (!value.isNullOrEmpty()) {
-                        val newValue = replaceOrBlockField(value, field)
-                        if (blockPlayerAction != null)
-                            return RegexResults(
-                                blockPlayerAction = blockPlayerAction,
-                                fieldsMatched = matchesMap,
-                            )
-                        else
-                            newValue
-                    } else {
-                        value
-                    }
-                }.let { (track, album, artist, albumArtist) ->
-                    scrobbleData.track = track!!
-                    scrobbleData.album = album
-                    scrobbleData.artist = artist!!
-                    scrobbleData.albumArtist = albumArtist
-                }
-
-                // needs java 8
-                if (PlatformStuff.billingRepository.isLicenseValid && PlatformStuff.isJava8OrGreater)
-                    extract()
-            } catch (e: IllegalArgumentException) {
-                Logger.w(e) { "regex error" }
-            }
 
             return RegexResults(
-                blockPlayerAction = blockPlayerAction,
-                fieldsMatched = matchesMap,
+                scrobbleData = null,
+                blockPlayerAction = null,
+                matches = emptySet(),
             )
         }
 
+        private fun extract(
+            scrobbleData: ScrobbleData,
+            scrobbleDataToMatches: List<Pair<String, MatchResult?>>
+        ): ScrobbleData? {
+            var newTrack: String? = null
+            var newArtist: String? = null
+            var newAlbum: String? = null
+            var newAlbumArtist: String? = null
+
+            scrobbleDataToMatches.forEach { (_, match) ->
+
+                if (newTrack == null)
+                    newTrack = try {
+                        match?.groups?.get(RegexEdit.Field.track.name)?.value
+                    } catch (_: IllegalArgumentException) {
+                        null
+                    }
+
+                if (newArtist == null)
+                    newArtist = try {
+                        match?.groups?.get(RegexEdit.Field.artist.name)?.value
+                    } catch (_: IllegalArgumentException) {
+                        null
+                    }
+
+                if (newAlbum == null)
+                    newAlbum = try {
+                        match?.groups?.get(RegexEdit.Field.album.name)?.value
+                    } catch (_: IllegalArgumentException) {
+                        null
+                    }
+
+                if (newAlbumArtist == null)
+                    newAlbumArtist = try {
+                        match?.groups?.get(RegexEdit.Field.albumArtist.name)?.value
+                    } catch (_: IllegalArgumentException) {
+                        null
+                    }
+            }
+
+
+            if (!newTrack.isNullOrEmpty() && !newArtist.isNullOrEmpty()) {
+                return scrobbleData.copy(
+                    track = newTrack,
+                    artist = newArtist,
+                    album = newAlbum,
+                    albumArtist = newAlbumArtist,
+                )
+            }
+
+            return null
+        }
+
+        private fun replace(
+            scrobbleData: ScrobbleData,
+            regexEdit: RegexEdit
+        ): ScrobbleData? {
+            if (regexEdit.replacement == null) return null
+
+            val regexOptions = mutableSetOf<RegexOption>()
+            if (!regexEdit.caseSensitive)
+                regexOptions += RegexOption.IGNORE_CASE
+
+            val newTrack: String?
+            val newArtist: String?
+            val newAlbum: String?
+            val newAlbumArtist: String?
+
+            val trackRegex = regexEdit.search.searchTrack.toRegex(regexOptions)
+            val albumRegex = regexEdit.search.searchAlbum.toRegex(regexOptions)
+            val artistRegex = regexEdit.search.searchArtist.toRegex(regexOptions)
+            val albumArtistRegex = regexEdit.search.searchAlbumArtist.toRegex(regexOptions)
+
+            if (!regexEdit.replacement.replaceAll) {
+                newTrack = trackRegex.replace(
+                    scrobbleData.track,
+                    regexEdit.replacement.replacementTrack
+                )
+                newAlbum = albumRegex.replace(
+                    scrobbleData.album.orEmpty(),
+                    regexEdit.replacement.replacementAlbum
+                )
+                newArtist = artistRegex.replace(
+                    scrobbleData.artist,
+                    regexEdit.replacement.replacementArtist
+                )
+                newAlbumArtist = albumArtistRegex.replace(
+                    scrobbleData.albumArtist.orEmpty(),
+                    regexEdit.replacement.replacementAlbumArtist
+                )
+            } else {
+                newTrack = trackRegex.replaceFirst(
+                    scrobbleData.track,
+                    regexEdit.replacement.replacementTrack
+                )
+                newAlbum = albumRegex.replaceFirst(
+                    scrobbleData.album.orEmpty(),
+                    regexEdit.replacement.replacementAlbum
+                )
+                newArtist = artistRegex.replaceFirst(
+                    scrobbleData.artist,
+                    regexEdit.replacement.replacementArtist
+                )
+                newAlbumArtist = albumArtistRegex.replaceFirst(
+                    scrobbleData.albumArtist.orEmpty(),
+                    regexEdit.replacement.replacementAlbumArtist
+                )
+            }
+
+
+            if (newTrack.isNotEmpty() && newArtist.isNotEmpty()) {
+                return scrobbleData.copy(
+                    track = newTrack,
+                    artist = newArtist,
+                    album = newAlbum.ifEmpty { null },
+                    albumArtist = newAlbumArtist.ifEmpty { null },
+                )
+            }
+
+            return null
+        }
     }
 }

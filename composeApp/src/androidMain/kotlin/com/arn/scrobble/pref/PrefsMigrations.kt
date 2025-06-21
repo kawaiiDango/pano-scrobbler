@@ -76,8 +76,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             sharedPreferences.getLong("last_full_indexed_scrobble_time", -1).takeIf { it != -1L }
         val lastDeltaIndexedScrobbleTime =
             sharedPreferences.getLong("last_delta_indexed_scrobble_time", -1).takeIf { it != -1L }
-        val gridColumnsToAdd = sharedPreferences.getInt("grid_columns_to_add", 0)
-        val gridSingleColumn = sharedPreferences.getBoolean("grid_single_column", false)
         val regexLearnt = sharedPreferences.getBoolean("regex_learnt", false)
         val regexEditsLearnt = sharedPreferences.getBoolean("regex_edits_learnt", false)
         val reorderFriendsLearnt = sharedPreferences.getBoolean("reorder_friends_learnt", false)
@@ -156,8 +154,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             lastDeltaIndexTime = lastDeltaIndexTime,
             lastFullIndexedScrobbleTime = lastFullIndexedScrobbleTime,
             lastDeltaIndexedScrobbleTime = lastDeltaIndexedScrobbleTime,
-            gridColumnsToAdd = gridColumnsToAdd,
-            gridSingleColumn = gridSingleColumn,
             regexLearnt = regexLearnt,
             regexEditsLearnt = regexEditsLearnt,
             reorderFriendsLearnt = reorderFriendsLearnt,

@@ -28,9 +28,9 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
 import com.arn.scrobble.charts.HiddenTagsDialog
+import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.edits.BlockedMetadataAddDialog
 import com.arn.scrobble.edits.EditScrobbleDialog
-import com.arn.scrobble.friends.FriendDialog
 import com.arn.scrobble.info.MusicEntryInfoDialog
 import com.arn.scrobble.info.TagInfoDialog
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -67,6 +67,7 @@ private fun PanoDialogs(
         padding = dialogArgs !is PanoDialog.MusicEntryInfo,
         onBack = onBack,
         isNestedScrollable = dialogArgs is PanoDialog.NestedScrollable,
+        forceSkipPartiallyExpanded = dialogArgs !is PanoDialog.NestedScrollable,
         onDismissRequest = onDismissRequest
     ) { modifier ->
         when (dialogArgs) {
@@ -124,7 +125,7 @@ private fun PanoDialogs(
             is PanoDialog.MusicEntryInfo -> {
                 MusicEntryInfoDialog(
                     musicEntry = dialogArgs.artist ?: dialogArgs.album ?: dialogArgs.track!!,
-                    pkgName = dialogArgs.pkgName,
+                    appId = dialogArgs.appId,
                     user = dialogArgs.user,
                     onNavigate = onNavigate,
                     onOpenDialog = onOpenDialog,
@@ -172,10 +173,17 @@ private fun PanoDialogs(
                     onDone = {
                         if (dialogArgs.hash != null) { // from notification
                             notifyPlayingTrackEvent(
+                                PlayingTrackNotifyEvent.TrackScrobbleLocked(
+                                    hash = dialogArgs.hash,
+                                    locked = false
+                                ),
+                            )
+
+                            notifyPlayingTrackEvent(
                                 PlayingTrackNotifyEvent.TrackCancelled(
                                     hash = dialogArgs.hash,
                                     showUnscrobbledNotification = false,
-                                    markAsScrobbled = true,
+                                    blockPlayerAction = BlockPlayerAction.ignore,
                                 )
                             )
                         } else if (dialogArgs.origTrack != null) { // from scrobble history
@@ -192,18 +200,6 @@ private fun PanoDialogs(
                         onDismissRequest()
                         onNavigate(PanoRoute.RegexEdits)
                     },
-                    modifier = modifier
-                )
-            }
-
-            is PanoDialog.Friend -> {
-                FriendDialog(
-                    friend = dialogArgs.friend,
-                    isPinned = dialogArgs.isPinned,
-                    extraData = dialogArgs.extraData,
-                    extraDataFlow = mainViewModel.friendExtraData,
-                    onNavigate = onNavigate,
-                    onOpenDialog = onOpenDialog,
                     modifier = modifier
                 )
             }
@@ -274,7 +270,7 @@ private fun BottomSheetDialogParent(
     onBack: (() -> Unit)?,
     padding: Boolean,
     isNestedScrollable: Boolean, // disabling nested scrolling is a workaround until google fixes it
-    skipPartiallyExpanded: Boolean = PlatformStuff.isTv || PlatformStuff.isDesktop,
+    forceSkipPartiallyExpanded: Boolean,
     content: @Composable (modifier: Modifier) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -287,7 +283,7 @@ private fun BottomSheetDialogParent(
 //                    )
 
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = skipPartiallyExpanded
+        skipPartiallyExpanded = forceSkipPartiallyExpanded || PlatformStuff.isTv || PlatformStuff.isDesktop
     )
 
     val sheetGesturesEnabled by remember { mutableStateOf(!PlatformStuff.isTv && !PlatformStuff.isDesktop) }

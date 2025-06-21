@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 class MusicEntryImageInterceptor : Interceptor {
 
     private val delayMs = 400L
-    private val musicEntryCache by lazy { LruCache<String, OptionalString>(500) }
+    private val musicEntryCache by lazy { LruCache<String, FetchedImageUrls>(500) }
     private val semaphore = Semaphore(2)
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
     private val spotifyArtistSearchApproximate by lazy { PlatformStuff.mainPrefs.data.map { it.spotifyArtistSearchApproximate } }
@@ -35,50 +35,71 @@ class MusicEntryImageInterceptor : Interceptor {
         val entry = musicEntryImageReq.musicEntry
         val key = MusicEntryReqKeyer.genKey(musicEntryImageReq)
         val cachedOptional = musicEntryCache[key]
-        var fetchedImageUrl = cachedOptional?.value
+
+        var fetchedImageUrls = cachedOptional
 
         if (cachedOptional == null) {
             withContext(Dispatchers.IO) {
-                fetchedImageUrl = when (entry) {
+                fetchedImageUrls = when (entry) {
                     is Artist -> {
                         semaphore.withPermit {
                             delay(delayMs)
 
                             val customMapping = customSpotifyMappingsDao.searchArtist(entry.name)
-                            val imageUrl = if (customMapping != null) {
+                            val imageUrls = if (customMapping != null) {
                                 if (customMapping.spotifyId != null) {
                                     Requesters.spotifyRequester.artist(
                                         customMapping.spotifyId
-                                    ).getOrNull()?.mediumImageUrl
+                                    ).getOrNull()?.let {
+                                        FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
+                                    }
                                 } else {
-                                    customMapping.fileUri
+                                    FetchedImageUrls(customMapping.fileUri)
                                 }
                             } else {
                                 Requesters.spotifyRequester.search(
                                     entry.name,
                                     SpotifySearchType.artist,
-                                    1
+                                    3
                                 ).getOrNull()
                                     ?.artists
                                     ?.items
-                                    ?.firstOrNull()
-                                    ?.takeIf {
+                                    ?.find {
                                         if (spotifyArtistSearchApproximate.first())
                                             it.popularity != null && it.popularity > 0
                                         else
                                             it.name.equals(entry.name, ignoreCase = true)
                                     }
-                                    ?.mediumImageUrl
+                                    ?.let {
+                                        FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
+                                    }
                             }
-                            imageUrl
+                            imageUrls
                         }
                     }
 
-                    is Album -> {
-                        val customMapping = customSpotifyMappingsDao.searchAlbum(
-                            entry.artist!!.name,
-                            entry.name
-                        )
+                    is Album,
+                    is Track -> {
+                        val album = when (entry) {
+                            is Album -> entry
+                            is Track -> entry.album
+                            else -> null
+                        }
+
+                        val artist = when (entry) {
+                            is Track -> entry.album?.artist ?: entry.artist
+                            is Album -> entry.artist
+                            else -> null
+                        }
+
+                        val customMapping = if (album != null && artist != null) {
+                            customSpotifyMappingsDao.searchAlbum(
+                                artist.name,
+                                album.name
+                            )
+                        } else {
+                            null
+                        }
 
                         if (customMapping != null) {
                             if (customMapping.spotifyId != null) {
@@ -86,49 +107,54 @@ class MusicEntryImageInterceptor : Interceptor {
                                     delay(delayMs)
                                     Requesters.spotifyRequester.album(
                                         customMapping.spotifyId
-                                    ).getOrNull()?.mediumImageUrl
+                                    ).getOrNull()?.let {
+                                        FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
+                                    }
                                 }
                             } else
-                                customMapping.fileUri
+                                FetchedImageUrls(customMapping.fileUri)
                         } else {
-                            val webp300 = entry.webp300
+                            var webp300 = album?.webp300
                             val needImage = webp300 == null ||
                                     StarMapper.STAR_PATTERN in webp300
 
-                            if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing)
+                            if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing) {
                                 semaphore.withPermit {
                                     delay(delayMs)
-                                    Requesters.lastfmUnauthedRequester.getInfo(entry)
-                                        .getOrNull()?.webp300
+                                    val albumOrTrack =
+                                        Requesters.lastfmUnauthedRequester.getInfo(entry)
+                                            .getOrNull()
+
+                                    webp300 = when (albumOrTrack) {
+                                        is Album -> albumOrTrack.webp300
+                                        is Track -> albumOrTrack.album?.webp300
+                                        else -> null
+                                    }
                                 }
-                            else
-                                webp300
+                            }
+
+                            if (!webp300.isNullOrEmpty()) {
+                                FetchedImageUrls(
+                                    webp300,
+                                    webp300
+                                        .takeIf { it.startsWith("https://lastfm.freetls.fastly.net") }
+                                        ?.replace("300x300", "600x600")
+                                )
+                            } else {
+                                FetchedImageUrls(null)
+                            }
                         }
                     }
-
-                    is Track -> {
-                        val webp300 = entry.album?.webp300
-                        val needImage = webp300 == null ||
-                                StarMapper.STAR_PATTERN in webp300
-
-                        if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing)
-                            semaphore.withPermit {
-                                delay(delayMs)
-                                Requesters.lastfmUnauthedRequester.getInfo(entry)
-                                    .getOrNull()?.album?.webp300
-                            }
-                        else
-                            webp300
-                    }
                 }
-                musicEntryCache.put(key, OptionalString(fetchedImageUrl))
+                musicEntryCache.put(key, fetchedImageUrls ?: FetchedImageUrls(null))
             }
         }
 
-        if (musicEntryImageReq.isHeroImage && (entry is Album || entry is Track) &&
-            fetchedImageUrl?.startsWith("https://lastfm.freetls.fastly.net") == true
-        )
-            fetchedImageUrl = fetchedImageUrl.replace("300x300", "600x600")
+        val fetchedImageUrl = if (musicEntryImageReq.isHeroImage) {
+            fetchedImageUrls?.largeImage ?: fetchedImageUrls?.mediumImage
+        } else {
+            fetchedImageUrls?.mediumImage
+        }
 
         val request = chain.request.newBuilder()
             .data(fetchedImageUrl ?: "")
@@ -141,5 +167,5 @@ class MusicEntryImageInterceptor : Interceptor {
         musicEntryCache.remove(MusicEntryReqKeyer.genKey(MusicEntryImageReq(entry)))
     }
 
-    private data class OptionalString(val value: String?)
+    private data class FetchedImageUrls(val mediumImage: String?, val largeImage: String? = null)
 }

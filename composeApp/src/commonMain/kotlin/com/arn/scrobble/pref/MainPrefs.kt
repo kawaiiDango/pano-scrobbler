@@ -10,9 +10,11 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
+import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.themes.ContrastMode
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.themes.ThemeUtils
+import com.arn.scrobble.ui.GridMode
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.serialization.Serializable
@@ -29,7 +31,7 @@ data class MainPrefs(
     val allowedPackages: Set<String> = emptySet(),
     val blockedPackages: Set<String> = emptySet(),
     val allowedAutomationPackages: Set<String> = emptySet(),
-    val seenApps: Set<AppItem> = emptySet(),
+    val seenApps: Map<String, String> = emptyMap(),
     private val autoDetectApps: Boolean = true,
     private val delaySecs: Int = PREF_DELAY_SECS_DEFAULT,
     private val delayPercent: Int = PREF_DELAY_PER_DEFAULT,
@@ -72,8 +74,7 @@ data class MainPrefs(
     val lastDeltaIndexTime: Long? = null,
     val lastFullIndexedScrobbleTime: Long? = null,
     val lastDeltaIndexedScrobbleTime: Long? = null,
-    val gridColumnsToAdd: Int = 0,
-    val gridSingleColumn: Boolean = false,
+    val gridMode: GridMode = GridMode.GRID,
     val regexLearnt: Boolean = false,
     val regexEditsLearnt: Boolean = false,
     val reorderFriendsLearnt: Boolean = false,
@@ -106,6 +107,8 @@ data class MainPrefs(
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
     val trayIconTheme: DayNightMode = DayNightMode.SYSTEM,
     val cookies: Map<String, CookieSerializable> = emptyMap(),
+    // keep this as a string and not as an enum, in case i delete presets later
+    val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
 ) {
 
     val autoDetectAppsP
@@ -169,7 +172,8 @@ data class MainPrefs(
         preventDuplicateAmbientScrobbles = prefs.preventDuplicateAmbientScrobbles,
         firstDayOfWeek = prefs.firstDayOfWeek,
         searchUrlTemplate = prefs.searchUrlTemplate,
-        allowedPackages = prefs.allowedPackages
+        allowedPackages = prefs.allowedPackages,
+        regexPresets = prefs.regexPresets,
     )
 
     fun toPublicPrefs() = MainPrefsPublic(
@@ -194,6 +198,7 @@ data class MainPrefs(
         firstDayOfWeek = this.firstDayOfWeek,
         searchUrlTemplate = this.searchUrlTemplate,
         allowedPackages = this.allowedPackages,
+        regexPresets = this.regexPresets,
     )
 
     companion object {
@@ -250,5 +255,6 @@ data class MainPrefsPublic(
     val preventDuplicateAmbientScrobbles: Boolean,
     val firstDayOfWeek: Int,
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
+    val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
     val allowedPackages: Set<String>,
 )

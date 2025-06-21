@@ -8,7 +8,7 @@ actual typealias PlatformMediaMetadata = MetadataInfo
 actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
-): Pair<MetadataInfo, Boolean> {
+): MetadataInfo {
     var artist = metadata.artist.trim()
     var album = metadata.album.trim()
     var title = metadata.title.trim()
@@ -16,9 +16,6 @@ actual fun transformMediaMetadata(
     val trackNumber = metadata.track_number
     // a -1 value on my windows implementation means, a timeline info event hasn't been received yet
     var durationMillis = metadata.duration
-
-    val canDoFallbackScrobble = trackInfo.ignoreOrigArtist &&
-            trackInfo.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
 
     when (trackInfo.appId) {
         Stuff.PACKAGE_APPLE_MUSIC_WIN -> {
@@ -49,5 +46,5 @@ actual fun transformMediaMetadata(
         duration = durationMillis,
     )
 
-    return metadataInfo to canDoFallbackScrobble
+    return metadataInfo
 }

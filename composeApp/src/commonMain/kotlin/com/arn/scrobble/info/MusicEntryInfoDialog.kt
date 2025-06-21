@@ -146,7 +146,7 @@ import kotlin.math.roundToInt
 @Composable
 fun MusicEntryInfoDialog(
     musicEntry: MusicEntry,
-    pkgName: String?,
+    appId: String?,
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
@@ -194,7 +194,7 @@ fun MusicEntryInfoDialog(
                 track = it as? Track,
                 album = it as? Album,
                 artist = it as? Artist,
-                pkgName = pkgName,
+                appId = appId,
                 user = user
             )
         )
@@ -237,10 +237,6 @@ fun MusicEntryInfoDialog(
             )
     ) {
         entries.forEachIndexed { index, (type, entry) ->
-            val imgRequest = remember(entry) {
-                MusicEntryImageReq(entry, fetchAlbumInfoIfMissing = true)
-            }
-
             InfoSimpleHeader(
                 text = entry.name,
                 icon = getMusicEntryIcon(type),
@@ -249,7 +245,9 @@ fun MusicEntryInfoDialog(
                     AnimatedVisibility(expandedHeaderType != type) {
                         if (entry is Album || entry is Artist) {
                             AsyncImage(
-                                model = imgRequest,
+                                model = remember(entry) {
+                                    MusicEntryImageReq(entry)
+                                },
                                 placeholder = placeholderPainter(),
                                 error = placeholderImageVectorPainter(
                                     entry,
@@ -279,7 +277,7 @@ fun MusicEntryInfoDialog(
             InfoActionsRow(
                 entry = entry,
                 originalEntry = viewModel.originalEntriesMap[type],
-                pkgName = pkgName,
+                appId = appId,
                 user = user,
                 showUserTagsButton = userTags[type] == null,
                 onUserTagsClick = { viewModel.loadTagsIfNeeded(type) },
@@ -320,7 +318,9 @@ fun MusicEntryInfoDialog(
                     if (entry is Album || entry is Artist) {
                         InfoBigPicture(
                             entry = entry,
-                            imgRequest = imgRequest,
+                            imgRequest = remember(entry) {
+                                MusicEntryImageReq(entry, isHeroImage = true)
+                            },
                             modifier = Modifier.padding(horizontal = 24.dp)
                         )
 
@@ -332,7 +332,7 @@ fun MusicEntryInfoDialog(
                                         onOpenDialog(
                                             PanoDialog.MusicEntryInfo(
                                                 track = it,
-                                                pkgName = pkgName,
+                                                appId = appId,
                                                 user = user
                                             )
                                         )
@@ -354,7 +354,7 @@ fun MusicEntryInfoDialog(
                                     onNavigate(
                                         PanoRoute.MusicEntryInfoPager(
                                             artist = entry as Artist,
-                                            pkgName = pkgName,
+                                            appId = appId,
                                             user = user,
                                             type = Stuff.TYPE_TRACKS
                                         )
@@ -377,7 +377,7 @@ fun MusicEntryInfoDialog(
                                     onNavigate(
                                         PanoRoute.MusicEntryInfoPager(
                                             artist = entry as Artist,
-                                            pkgName = pkgName,
+                                            appId = appId,
                                             user = user,
                                             type = Stuff.TYPE_ALBUMS
                                         )
@@ -400,7 +400,7 @@ fun MusicEntryInfoDialog(
                                     onNavigate(
                                         PanoRoute.MusicEntryInfoPager(
                                             artist = entry as Artist,
-                                            pkgName = pkgName,
+                                            appId = appId,
                                             user = user,
                                             type = Stuff.TYPE_ARTISTS
                                         )
@@ -425,7 +425,7 @@ fun MusicEntryInfoDialog(
                                 onNavigate(
                                     PanoRoute.SimilarTracks(
                                         track = entry,
-                                        pkgName = pkgName,
+                                        appId = appId,
                                         user = user
                                     )
                                 )
@@ -534,7 +534,7 @@ private fun InfoCountsForMusicEntry(
 private fun InfoActionsRow(
     entry: MusicEntry,
     originalEntry: MusicEntry?,
-    pkgName: String?,
+    appId: String?,
     user: UserCached,
     showUserTagsButton: Boolean,
     onUserTagsClick: () -> Unit,
@@ -589,7 +589,7 @@ private fun InfoActionsRow(
         IconButtonWithTooltip(
             onClick = {
                 scope.launch {
-                    PlatformStuff.launchSearchIntent(entry, pkgName)
+                    PlatformStuff.launchSearchIntent(entry, appId)
                 }
             },
             icon = Icons.Outlined.Search,

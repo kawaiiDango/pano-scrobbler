@@ -9,18 +9,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.util.Objects
+import kotlin.math.min
 
 abstract class MediaListener(
     val scope: CoroutineScope,
     private val scrobbleQueue: ScrobbleQueue,
 ) {
+    private data class ScrobbleTimingPrefs(
+        val delayPercent: Int,
+        val delaySecs: Int,
+        val minDurationSecs: Int,
+    )
+
     private val mainPrefs = PlatformStuff.mainPrefs
 
     protected val blockedPackages =
         mainPrefs.data.map { it.blockedPackages }
             .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.blockedPackages)
-    
+
     protected val allowedPackages =
         mainPrefs.data.map { it.allowedPackages }
             .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.allowedPackages)
@@ -31,6 +37,25 @@ abstract class MediaListener(
                 scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.scrobblerEnabled &&
                         Stuff.mainPrefsInitialValue.scrobbleAccounts.isNotEmpty()
             )
+
+    private val scrobbleTimingPrefs =
+        PlatformStuff.mainPrefs.data.map {
+            ScrobbleTimingPrefs(
+                delayPercent = it.delayPercentP,
+                delaySecs = it.delaySecsP,
+                minDurationSecs = it.minDurationSecsP
+            )
+        }
+            .stateIn(
+                scope,
+                SharingStarted.Eagerly,
+                Stuff.mainPrefsInitialValue.let {
+                    ScrobbleTimingPrefs(
+                        delayPercent = it.delayPercentP,
+                        delaySecs = it.delaySecsP,
+                        minDurationSecs = it.minDurationSecsP
+                    )
+                })
 
     private val packageTagTrackMap = mutableMapOf<String, PlayingTrackInfo>()
     protected var mutedHash: Int? = null
@@ -65,14 +90,12 @@ abstract class MediaListener(
         appIdsToKeep: Set<String>? = null,
     )
 
-    abstract fun hasOtherPlayingControllers(thisTrackInfo: PlayingTrackInfo): Boolean
+    abstract fun hasOtherPlayingControllers(appId: String, sessionId: String): Boolean
 
     protected fun shouldScrobble(appId: String): Boolean {
         val should = scrobblerEnabled.value && (appId in allowedPackages.value)
         return should
     }
-
-    abstract fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean
 
     open inner class SessionTracker(
         val trackInfo: PlayingTrackInfo,
@@ -83,7 +106,9 @@ abstract class MediaListener(
         var isMuted = false
 
         private fun scrobble() {
-            if (hasOtherPlayingControllers(trackInfo) && trackInfo.hasBlockedTag) {
+            if (hasOtherPlayingControllers(trackInfo.appId, trackInfo.sessionId) &&
+                trackInfo.hasBlockedTag
+            ) {
                 Logger.d { "multiple scrobblable controllers for ${trackInfo.appId}, ignoring ${trackInfo.sessionId}" }
                 pause()
                 return
@@ -91,23 +116,35 @@ abstract class MediaListener(
 
             Logger.d { "playing: timePlayed=${trackInfo.timePlayed} title=${trackInfo.title} hash=${trackInfo.hash}" }
 
-            trackInfo.playStartTime = System.currentTimeMillis()
             scrobbleQueue.remove(trackInfo.lastScrobbleHash)
-
-            trackInfo.lastScrobbleHash = trackInfo.hash
-            trackInfo.lastSubmittedScrobbleHash = 0
 
             // if another player tried to scrobble, unmute whatever was muted
             // if self was muted, clear the muted hash too
             unmute(clearMutedHash = isMuted)
 
-            scrobbleQueue.nowPlaying(
+            // calc delay
+            val delayMillis = scrobbleTimingPrefs.value.delaySecs * 1000L
+            val delayFraction = scrobbleTimingPrefs.value.delayPercent / 100.0
+            val delayMillisFraction = if (trackInfo.durationMillis > 0)
+                (trackInfo.durationMillis * delayFraction).toLong()
+            else
+                Long.MAX_VALUE
+
+            var finalDelay = min(delayMillisFraction, delayMillis)
+                .coerceAtLeast(scrobbleTimingPrefs.value.minDurationSecs * 1000L) // don't scrobble < n seconds
+
+            finalDelay = (finalDelay - trackInfo.timePlayed)
+                .coerceAtLeast(2000)// deal with negative or 0 delay
+
+            scrobbleQueue.scrobble(
                 trackInfo = trackInfo,
-                appIsAllowListed = trackInfo.appId in allowedPackages.value
+                appIsAllowListed = trackInfo.appId in allowedPackages.value,
+                delay = finalDelay,
             )
         }
 
-        fun metadataChanged(metadata: MetadataInfo, canDoFallbackScrobble: Boolean) {
+
+        fun metadataChanged(metadata: MetadataInfo) {
             val sameAsOld =
                 metadata.artist == trackInfo.origArtist &&
                         metadata.title == trackInfo.origTitle &&
@@ -120,16 +157,9 @@ abstract class MediaListener(
                     metadata.artist,
                     metadata.title,
                     metadata.album,
-                    metadata.album_artist
+                    metadata.album_artist,
+                    metadata.duration,
                 )
-
-                trackInfo.ignoreOrigArtist = shouldIgnoreOrigArtist(trackInfo)
-
-                trackInfo.canDoFallbackScrobble = canDoFallbackScrobble
-
-                trackInfo.durationMillis = metadata.duration
-                trackInfo.hash =
-                    Objects.hash(metadata.artist, metadata.album, metadata.title, trackInfo.appId)
 
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlaybackState == CommonPlaybackState.Playing)
                     unmute(clearMutedHash = isMuted)
@@ -141,7 +171,7 @@ abstract class MediaListener(
                     lastPlaybackState == CommonPlaybackState.Playing &&
                     metadata.artist.isNotEmpty() && metadata.title.isNotEmpty()
                 ) {
-                    trackInfo.timePlayed = 0
+                    trackInfo.resetTimePlayed()
                     scrobble()
                 }
             }
@@ -197,7 +227,7 @@ abstract class MediaListener(
                             return
 
                         if (trackInfo.hash != trackInfo.lastScrobbleHash || (playbackInfo.position >= 0L && isPossiblyAtStart))
-                            trackInfo.timePlayed = 0
+                            trackInfo.resetTimePlayed()
 
                         if (!scrobbleQueue.has(trackInfo.hash) &&
                             ((playbackInfo.position >= 0L && isPossiblyAtStart) ||
@@ -222,28 +252,22 @@ abstract class MediaListener(
         fun pause() {
             if (lastPlaybackState == CommonPlaybackState.Playing) {
                 if (scrobbleQueue.has(trackInfo.lastScrobbleHash))
-                    trackInfo.timePlayed += System.currentTimeMillis() - trackInfo.playStartTime
+                    trackInfo.addTimePlayed()
                 else
-                    trackInfo.timePlayed = 0
+                    trackInfo.resetTimePlayed()
             }
 
             scrobbleQueue.remove(
                 trackInfo.lastScrobbleHash,
             )
-            if (!hasOtherPlayingControllers(trackInfo))
+            if (!hasOtherPlayingControllers(trackInfo.appId, trackInfo.sessionId))
                 PanoNotifications.removeNotificationByTag(trackInfo.appId)
             if (isMuted)
                 unmute(clearMutedHash = false)
         }
 
         fun resetMeta() {
-            trackInfo.apply {
-                artist = ""
-                album = ""
-                title = ""
-                albumArtist = ""
-                durationMillis = 0L
-            }
+            trackInfo.putOriginals("", "")
         }
     }
 

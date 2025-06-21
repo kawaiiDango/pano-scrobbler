@@ -66,6 +66,7 @@ import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_logout
 import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.sure_tap_again
+import kotlin.math.roundToInt
 
 private val mainPrefs = PlatformStuff.mainPrefs
 
@@ -389,7 +390,7 @@ fun SliderPref(
                 value = internalValue.coerceIn(min.toFloat(), max.toFloat()),
                 onValueChange = { internalValue = it },
                 onValueChangeFinished = {
-                    scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.toInt()) } }
+                    scope.launch { mainPrefs.updateData { it.copyToSave(internalValue.roundToInt()) } }
                 },
                 valueRange = min.toFloat()..max.toFloat(),
                 steps = ((max - min) / increments) - 1,
@@ -431,7 +432,7 @@ fun SliderPref(
             }
 
             Text(
-                text = stringRepresentation(internalValue.toInt()),
+                text = stringRepresentation(internalValue.roundToInt()),
                 modifier = Modifier.padding(start = 16.dp)
             )
 

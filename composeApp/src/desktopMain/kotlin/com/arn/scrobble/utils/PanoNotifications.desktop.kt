@@ -2,10 +2,9 @@ package com.arn.scrobble.utils
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.lastfm.LastfmPeriod
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.media.PlayingTrackInfo
-import com.arn.scrobble.media.PlayingTrackNotificationState
-import com.arn.scrobble.media.ScrobbleError
+import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +22,7 @@ import pano_scrobbler.composeapp.generated.resources.top_tracks
 
 actual object PanoNotifications {
     private val _playingTrackTrayInfo =
-        MutableStateFlow<Map<String, PlayingTrackNotificationState>>(emptyMap())
+        MutableStateFlow<Map<String, PlayingTrackNotifyEvent.PlayingTrackState>>(emptyMap())
     val playingTrackTrayInfo = _playingTrackTrayInfo.asStateFlow()
 
     private var notify: ((String, String) -> Unit) = { title, text ->
@@ -35,25 +34,14 @@ actual object PanoNotifications {
         notify = fn
     }
 
-    actual fun notifyScrobble(trackInfo: PlayingTrackInfo, nowPlaying: Boolean) {
-        val playingTrackState = PlayingTrackNotificationState.Scrobbling(
-            trackInfo = trackInfo.copy(),
-            nowPlaying = nowPlaying
-        )
-        _playingTrackTrayInfo.value += trackInfo.appId to playingTrackState
-
+    actual fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
+        if (event.scrobbleData.appId != null)
+            _playingTrackTrayInfo.value += event.scrobbleData.appId to event
     }
 
-    actual fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val playingTrackState = PlayingTrackNotificationState.Error(
-            trackInfo = trackInfo.copy(),
-            scrobbleError = scrobbleError
-        )
-        _playingTrackTrayInfo.value += trackInfo.appId to playingTrackState
-    }
-
-    actual fun notifyOtherError(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        notifyBadMeta(trackInfo, scrobbleError)
+    actual fun notifyError(event: PlayingTrackNotifyEvent.Error) {
+        if (event.scrobbleData.appId != null)
+            _playingTrackTrayInfo.value += event.scrobbleData.appId to event
     }
 
     actual fun notifyAppDetected(appId: String, appLabel: String) {
@@ -65,7 +53,7 @@ actual object PanoNotifications {
         }
     }
 
-    actual fun notifyUnscrobbled(trackInfo: PlayingTrackInfo) {
+    actual fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
 
     }
 

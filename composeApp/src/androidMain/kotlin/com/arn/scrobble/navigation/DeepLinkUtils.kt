@@ -48,6 +48,10 @@ object DeepLinkUtils {
                         serializableType<UserCached>().serializeAsValue(route.user)
             }
 
+            is PanoRoute.Billing -> {
+                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Billing::class.simpleName
+            }
+
             is PanoRoute.ImageSearch -> {
                 val uri =
                     Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.ImageSearch::class.simpleName + "?" +

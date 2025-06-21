@@ -70,7 +70,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
             title = scrobbleData.track,
             album = scrobbleData.album,
             album_artist = scrobbleData.albumArtist,
-            length = scrobbleData.duration
+            length = scrobbleData.safeDuration()
         )
 
         return client.postResult<String>("api/v1/pleroma/scrobble") {

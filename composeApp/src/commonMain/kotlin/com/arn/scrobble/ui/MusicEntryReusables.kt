@@ -26,10 +26,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -41,8 +41,10 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.AllOut
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.FiberManualRecord
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.HeartBroken
@@ -141,7 +143,11 @@ import pano_scrobbler.composeapp.generated.resources.show_all
 import pano_scrobbler.composeapp.generated.resources.time_just_now
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class)
+enum class GridMode {
+    HERO, LIST, GRID
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MusicEntryListItem(
     entry: MusicEntry,
@@ -183,7 +189,6 @@ fun MusicEntryListItem(
                 Spacer(
                     modifier = Modifier
                         .safeContentPadding()
-                        .padding(bottom = 40.dp) // takes care of bottom nav padding as well as sticky header height
                 )
             }
         } else {
@@ -222,7 +227,7 @@ fun MusicEntryListItem(
                         .then(
                             if (fixedImageHeight)
                                 Modifier
-                                    .size(60.dp)
+                                    .size(72.dp)
                             else
                                 Modifier.size(boxSize)
                         )
@@ -238,7 +243,7 @@ fun MusicEntryListItem(
                                         imageUrlOverride
                                             ?: MusicEntryImageReq(
                                                 entry,
-                                                isHeroImage = isColumn,
+                                                isHeroImage = !fixedImageHeight,
                                                 fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                                             )
                                     )
@@ -268,14 +273,23 @@ fun MusicEntryListItem(
                     )
 
                     if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
+                        val loveHateModifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .rotate(11.25f)
+                            .offset(x = 6.dp, y = (-6).dp)
+
                         Icon(
                             imageVector = if (entry.userloved == true) Icons.Outlined.Favorite else Icons.Outlined.HeartBroken,
                             contentDescription = stringResource(if (entry.userloved == true) Res.string.loved else Res.string.hate),
                             tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .rotate(11.25f)
-                                .offset(x = 6.dp, y = (-6).dp)
+                            modifier = loveHateModifier
+                        )
+
+                        Icon(
+                            imageVector = Icons.Outlined.FavoriteBorder,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondary,
+                            modifier = loveHateModifier
                         )
                     }
                 }
@@ -285,7 +299,7 @@ fun MusicEntryListItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .requiredWidthIn(200.dp)
+                    .widthIn(200.dp)
                     .then(
                         if (isColumn)
                             Modifier.border(
@@ -365,7 +379,7 @@ fun MusicEntryListItem(
                             }
                             Text(
                                 text = if (forShimmer) "" else topText,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.labelMedium,
                             )
                         }
                     }
@@ -377,7 +391,7 @@ fun MusicEntryListItem(
                             "${index + 1}. $firstText"
                         else
                             firstText,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleMediumEmphasized,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -385,11 +399,9 @@ fun MusicEntryListItem(
                     if (secondText != null)
                         Text(
                             text = if (forShimmer) "" else secondText,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyLargeEmphasized,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .padding(start = 8.dp)
                         )
 
                     if (thirdText != null)
@@ -398,8 +410,6 @@ fun MusicEntryListItem(
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .padding(start = 8.dp)
                         )
 
                     if (progress != null) {
@@ -450,7 +460,7 @@ fun MusicEntryListItem(
 }
 
 @Composable
-fun NowPlayingSurface(
+private fun NowPlayingSurface(
     nowPlaying: Boolean,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
@@ -514,6 +524,7 @@ fun MusicEntryGridItem(
     modifier: Modifier = Modifier,
     imageUrlOverride: String? = null,
     fetchAlbumImageIfMissing: Boolean = false,
+    isHero: Boolean = false,
     progress: Float? = null,
     forShimmer: Boolean = false,
 ) {
@@ -530,6 +541,7 @@ fun MusicEntryGridItem(
             else imageUrlOverride
                 ?: MusicEntryImageReq(
                     entry,
+                    isHeroImage = isHero,
                     fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                 ),
             fallback = placeholderImageVectorPainter(null),
@@ -1004,55 +1016,60 @@ fun EntriesRow(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun GridOrListSelector(
-    isColumn: Boolean,
-    onIsColumnChange: (Boolean) -> Unit,
+    gridMode: GridMode,
+    onGridModeChange: (GridMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        ButtonGroup(
-            overflowIndicator = {}
-        ) {
-            customItem(
-                buttonGroupContent = {
-                    OutlinedToggleButton(
-                        checked = !isColumn,
-                        onCheckedChange = {
-                            if (it)
-                                onIsColumnChange(false)
-                        },
-                    ) {
-                        Icon(
-                            Icons.Outlined.GridView,
-                            contentDescription = stringResource(Res.string.grid)
-                        )
-                    }
-                }, menuContent = {})
+        ButtonGroup {
+            OutlinedToggleButton(
+                checked = gridMode == GridMode.HERO,
+                onCheckedChange = {
+                    if (it)
+                        onGridModeChange(GridMode.HERO)
+                },
+            ) {
+                Icon(
+                    Icons.Outlined.AllOut,
+                    contentDescription = stringResource(Res.string.expand)
+                )
+            }
 
-            customItem(
-                buttonGroupContent = {
-                    OutlinedToggleButton(
-                        checked = isColumn,
-                        onCheckedChange = {
-                            if (it)
-                                onIsColumnChange(true)
-                        },
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Outlined.List,
-                            contentDescription = stringResource(Res.string.list)
-                        )
-                    }
-                }, menuContent = {})
+            OutlinedToggleButton(
+                checked = gridMode == GridMode.GRID,
+                onCheckedChange = {
+                    if (it)
+                        onGridModeChange(GridMode.GRID)
+                },
+            ) {
+                Icon(
+                    Icons.Outlined.GridView,
+                    contentDescription = stringResource(Res.string.grid)
+                )
+            }
+
+            OutlinedToggleButton(
+                checked = gridMode == GridMode.LIST,
+                onCheckedChange = {
+                    if (it)
+                        onGridModeChange(GridMode.LIST)
+                },
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Outlined.List,
+                    contentDescription = stringResource(Res.string.list)
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun ButtonsBarForCharts(
-    isColumn: Boolean,
+    gridMode: GridMode,
     onCollageClick: (() -> Unit)?,
     onLegendClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
@@ -1074,10 +1091,10 @@ private fun ButtonsBarForCharts(
 
 
         GridOrListSelector(
-            isColumn = isColumn,
-            onIsColumnChange = { isColumn ->
+            gridMode = gridMode,
+            onGridModeChange = { gridMode ->
                 scope.launch {
-                    PlatformStuff.mainPrefs.updateData { it.copy(gridSingleColumn = isColumn) }
+                    PlatformStuff.mainPrefs.updateData { it.copy(gridMode = gridMode) }
                 }
             },
             modifier = Modifier
@@ -1117,7 +1134,7 @@ fun EntriesGridOrList(
 ) {
     val maxCount by remember(entries.loadState) { mutableFloatStateOf(maxCountEvaluater()) }
     val shimmer by remember(entries.loadState.refresh) { mutableStateOf(entries.loadState.refresh is LoadState.Loading) }
-    val isColumn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.gridSingleColumn }
+    val gridMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.gridMode }
 
     if (entries.itemCount == 0 && !shimmer) {
         Box(
@@ -1132,18 +1149,17 @@ fun EntriesGridOrList(
         }
     } else {
         PanoLazyVerticalGrid(
-            columns = if (isColumn)
-                GridCells.Fixed(1)
+            columns = if (gridMode == GridMode.GRID)
+                GridCells.Adaptive(minSize = minGridSize())
             else
-                GridCells.Adaptive(minSize = minGridSize()),
-            modifier = modifier
-                .fillMaxSize()
+                GridCells.Fixed(1),
+            modifier = modifier.fillMaxSize()
                 .then(if (shimmer) Modifier.shimmerWindowBounds() else Modifier)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
 
                 ButtonsBarForCharts(
-                    isColumn = isColumn,
+                    gridMode = gridMode,
                     onCollageClick = onCollageClick,
                     onLegendClick = onLegendClick,
                     modifier = Modifier
@@ -1154,7 +1170,15 @@ fun EntriesGridOrList(
             if (shimmer) {
                 items(8) { idx ->
 
-                    if (!isColumn) {
+                    if (gridMode == GridMode.LIST) {
+                        MusicEntryListItem(
+                            placeholderItem,
+                            forShimmer = true,
+                            onEntryClick = {},
+                            modifier = Modifier
+                                .animateItem()
+                        )
+                    } else {
                         MusicEntryGridItem(
                             placeholderItem,
                             forShimmer = true,
@@ -1166,14 +1190,6 @@ fun EntriesGridOrList(
                             modifier = Modifier
                                 .animateItem()
                         )
-                    } else {
-                        MusicEntryListItem(
-                            placeholderItem,
-                            forShimmer = true,
-                            onEntryClick = {},
-                            modifier = Modifier
-                                .animateItem()
-                        )
                     }
                 }
             }
@@ -1182,7 +1198,25 @@ fun EntriesGridOrList(
                 val entryNullable = entries[idx]
                 val entry = entryNullable ?: Artist(" ", listeners = idx.toLong())
 
-                if (!isColumn) {
+                if (gridMode == GridMode.LIST) {
+                    MusicEntryListItem(
+                        entry,
+                        forShimmer = entryNullable == null,
+                        onEntryClick = {
+                            onItemClick(entry)
+                        },
+                        progress = if (maxCount > 0) {
+                            entry.playcount?.toFloat()?.div(maxCount) ?: 0f
+                        } else
+                            entry.match,
+                        stonksDelta = entry.stonksDelta,
+                        fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
+                        //                    showArtist = showArtists,
+                        index = idx,
+                        modifier = Modifier
+                            .animateItem()
+                    )
+                } else {
                     MusicEntryGridItem(
                         entry,
                         forShimmer = entryNullable == null,
@@ -1197,24 +1231,7 @@ fun EntriesGridOrList(
                         fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
                         showArtist = showArtists,
                         index = idx,
-                        modifier = Modifier
-                            .animateItem()
-                    )
-                } else {
-                    MusicEntryListItem(
-                        entry,
-                        forShimmer = entryNullable == null,
-                        onEntryClick = {
-                            onItemClick(entry)
-                        },
-                        progress = if (maxCount > 0) {
-                            entry.playcount?.toFloat()?.div(maxCount) ?: 0f
-                        } else
-                            entry.match,
-                        stonksDelta = entry.stonksDelta,
-                        fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
-//                    showArtist = showArtists,
-                        index = idx,
+                        isHero = gridMode == GridMode.HERO,
                         modifier = Modifier
                             .animateItem()
                     )
@@ -1247,11 +1264,13 @@ fun getMusicEntryPlaceholderItem(type: Int, showScrobbleCount: Boolean = true): 
     return when (type) {
         Stuff.TYPE_TRACKS -> Track(
             name = "Track",
+            album = Album(
+                name = "Album",
+            ),
             artist = Artist(
                 name = "Artist",
             ),
             playcount = count,
-            album = null,
         )
 
         Stuff.TYPE_ALBUMS -> Album(

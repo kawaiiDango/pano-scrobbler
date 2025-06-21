@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 fun AutoRefreshEffect(
     lastRefreshTime: Long,
     interval: Long,
-    shouldRefresh: () -> Boolean,
+    doRefresh: () -> Boolean,
     lazyPagingItems: LazyPagingItems<*>,
 ) {
     val autoRefreshScope = rememberCoroutineScope()
@@ -34,11 +34,11 @@ fun AutoRefreshEffect(
 
                 if (lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
                     !lazyPagingItems.loadState.hasError &&
-                    lazyPagingItems.itemCount <= (Stuff.DEFAULT_PAGE_SIZE + 4) && // some of them are placeholders
-                    shouldRefresh()
+                    lazyPagingItems.itemCount <= (Stuff.DEFAULT_PAGE_SIZE + 4)// some of them are placeholders
+
                 ) {
-                    lazyPagingItems.refresh()
-                    tryAgain = false
+                    if (doRefresh())
+                        tryAgain = false
                 }
             }
         }

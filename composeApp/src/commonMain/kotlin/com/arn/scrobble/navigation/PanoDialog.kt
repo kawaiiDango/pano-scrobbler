@@ -9,7 +9,6 @@ import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.friends.FriendExtraData
 import kotlinx.serialization.Serializable
 
 
@@ -54,7 +53,7 @@ sealed interface PanoDialog {
         val album: Album? = null,
         val track: Track? = null,
         val user: UserCached,
-        val pkgName: String? = null,
+        val appId: String? = null,
     ) : PanoDialog, NestedScrollable
 
     @Serializable
@@ -76,13 +75,6 @@ sealed interface PanoDialog {
         val origTrack: Track? = null,
         val msid: String? = null,
         val hash: Int? = null,
-    ) : PanoDialog
-
-    @Serializable
-    data class Friend(
-        val friend: UserCached,
-        val isPinned: Boolean,
-        val extraData: FriendExtraData?,
     ) : PanoDialog
 
 }

@@ -21,6 +21,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -75,6 +76,14 @@ fun FilePickerScreen(
     var showHiddenFiles by remember { mutableStateOf(false) }
     val roots = remember { File.listRoots() }
     val scope = rememberCoroutineScope()
+    var fileName by remember {
+        mutableStateOf(
+            if (mode is FilePickerMode.Save)
+                mode.title + allowedExtensions.first()
+            else
+                null
+        )
+    }
 
     fun errorCannotAccess(file: File) {
         scope.launch {
@@ -200,11 +209,32 @@ fun FilePickerScreen(
                                 Icons.Outlined.VisibilityOff,
                             contentDescription = stringResource(Res.string.show_all),
                         )
+                    }
 
-                        if (mode is FilePickerMode.Save) {
+                    if (mode is FilePickerMode.Save) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            OutlinedTextField(
+                                value = fileName ?: "",
+                                onValueChange = { newFileName ->
+                                    fileName = newFileName
+                                    errorMessage = null
+                                },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                            )
+
                             FilledTonalIconButton(
                                 onClick = {
-                                    val fileName = mode.title + allowedExtensions.first()
+                                    if (fileName.isNullOrBlank()) {
+                                        errorMessage = "File name cannot be empty."
+                                        return@FilledTonalIconButton
+                                    }
+
                                     val newFile = File(currentDir, fileName)
 
                                     if (newFile.exists() && !canOverwrite) {

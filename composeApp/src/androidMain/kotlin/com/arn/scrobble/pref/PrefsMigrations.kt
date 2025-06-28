@@ -78,7 +78,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             sharedPreferences.getLong("last_delta_indexed_scrobble_time", -1).takeIf { it != -1L }
         val regexLearnt = sharedPreferences.getBoolean("regex_learnt", false)
         val regexEditsLearnt = sharedPreferences.getBoolean("regex_edits_learnt", false)
-        val reorderFriendsLearnt = sharedPreferences.getBoolean("reorder_friends_learnt", false)
         val squarePhotoLearnt = sharedPreferences.getBoolean("square_photo_learnt", false)
         val notificationsOnLockscreen = sharedPreferences.getBoolean("lockscreen_noti", false)
         val notiScrobbling = sharedPreferences.getBoolean("noti_scrobbling", true)
@@ -95,7 +94,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
         val lastUpdateCheckTime =
             sharedPreferences.getLong("last_update_check_time", -1).takeIf { it != -1L }
         val hiddenTags = sharedPreferences.getStringSet("hidden_tags", emptySet()) ?: emptySet()
-        val pinnedFriendsJson = sharedPreferences.getString("pinned_friends", null)
         val spotifyAccessToken =
             sharedPreferences.getString("spotify_access_token", "bad_token") ?: "bad_token"
         val spotifyAccessTokenExpires =
@@ -156,7 +154,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             lastDeltaIndexedScrobbleTime = lastDeltaIndexedScrobbleTime,
             regexLearnt = regexLearnt,
             regexEditsLearnt = regexEditsLearnt,
-            reorderFriendsLearnt = reorderFriendsLearnt,
             squarePhotoLearnt = squarePhotoLearnt,
             notificationsOnLockscreen = notificationsOnLockscreen,
             notiScrobbling = notiScrobbling,

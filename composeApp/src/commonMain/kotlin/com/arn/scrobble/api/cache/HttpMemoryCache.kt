@@ -40,4 +40,19 @@ class HttpMemoryCache(maxSize: Int) : CacheStorage {
     override suspend fun findAll(url: Url): Set<CachedResponseData> {
         return find(url, emptyMap())?.let { setOf(it) } ?: emptySet()
     }
+
+    override suspend fun remove(
+        url: Url,
+        varyKeys: Map<String, String>
+    ) {
+        mutex.withLock {
+            cache.remove(url)
+        }
+    }
+
+    override suspend fun removeAll(url: Url) {
+        mutex.withLock {
+            remove(url, emptyMap())
+        }
+    }
 }

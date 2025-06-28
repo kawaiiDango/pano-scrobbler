@@ -50,7 +50,7 @@ actual fun PanoLazyColumn(
     content: LazyListScope.() -> Unit,
 ) {
     Box(
-
+        modifier = modifier
     ) {
         LazyColumn(
             state = state,
@@ -58,7 +58,7 @@ actual fun PanoLazyColumn(
             reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
-            modifier = modifier.padding(end = scrollbarSize),
+            modifier = Modifier.padding(end = scrollbarSize),
             content = content
         )
 
@@ -83,7 +83,7 @@ actual fun PanoLazyVerticalGrid(
     content: LazyGridScope.() -> Unit,
 ) {
     Box(
-
+        modifier = modifier
     ) {
         LazyVerticalGrid(
             state = state,
@@ -92,7 +92,7 @@ actual fun PanoLazyVerticalGrid(
             reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
             horizontalArrangement = horizontalArrangement,
-            modifier = modifier.padding(end = scrollbarSize),
+            modifier = Modifier.padding(end = scrollbarSize),
             content = content
         )
 
@@ -121,7 +121,7 @@ actual fun PanoLazyRow(
     val scrollButtonsPadding = if (canScroll) 50.dp else 0.dp
 
     Box(
-
+        modifier = modifier
     ) {
         if (canScroll) {
             FilledTonalIconButton(
@@ -160,7 +160,7 @@ actual fun PanoLazyRow(
             reverseLayout = reverseLayout,
             horizontalArrangement = horizontalArrangement,
             verticalAlignment = verticalAlignment,
-            modifier = modifier.padding(
+            modifier = Modifier.padding(
                 vertical = scrollbarSize,
                 horizontal = scrollButtonsPadding
             ),

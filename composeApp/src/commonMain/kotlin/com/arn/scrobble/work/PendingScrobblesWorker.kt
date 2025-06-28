@@ -9,6 +9,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.db.AccountBitmaskConverter
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.utils.PlatformStuff
@@ -108,23 +109,23 @@ class PendingScrobblesWorker(
             val idsToDelete = mutableSetOf<Int>()
 
             entries.forEach { pendingScrobble ->
-                var state = pendingScrobble.services
+                val services = pendingScrobble.services -
+                        scrobbleResults.mapNotNull { (scrobblable, result) ->
+                            val err = result.exceptionOrNull() as? ApiException
 
-                scrobbleResults.forEach { (scrobblable, result) ->
-                    val err = result.exceptionOrNull() as? ApiException
+                            if (err?.code == 6 ||
+                                err?.code == 7 ||
+                                result.isSuccess
+                            ) {
+                                scrobblable.userAccount.type
+                            } else
+                                null
+                        }
 
-                    if (err?.code == 6 ||
-                        err?.code == 7 ||
-                        result.isSuccess
-                    ) {
-                        state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
-                    }
-                }
-
-                if (state == 0)
+                if (services.isEmpty())
                     idsToDelete += pendingScrobble._id
-                else if (state != pendingScrobble.services) {
-                    val newPendingScrobble = pendingScrobble.copy(services = state)
+                else if (services != pendingScrobble.services) {
+                    val newPendingScrobble = pendingScrobble.copy(services = services)
                     dao.update(newPendingScrobble)
                 }
             }
@@ -184,14 +185,15 @@ class PendingScrobblesWorker(
                 }
             }
 
-            var state = entry.services
+            val services = entry.services -
+                    loveResults.mapNotNull { (scrobblable, result) ->
+                        if (result.isSuccess)
+                            scrobblable.userAccount.type
+                        else
+                            null
+                    }
 
-            loveResults.forEach { (scrobblable, result) ->
-                if (result.isSuccess)
-                    state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
-            }
-
-            if (state == 0 && !MOCK)
+            if (services.isEmpty() && !MOCK)
                 dao.delete(entry)
             else {
                 val lastFailedTimestamp = System.currentTimeMillis()
@@ -199,7 +201,7 @@ class PendingScrobblesWorker(
                     ?.exceptionOrNull()?.redactedMessage?.take(100)
 
                 val newPendingLove = entry.copy(
-                    services = state,
+                    services = services,
                     lastFailedTimestamp = lastFailedTimestamp,
                     lastFailedReason = lastFailedReason
                 )
@@ -216,7 +218,7 @@ class PendingScrobblesWorker(
         if (failsMap[scrobblable.userAccount.type]!! > MAX_FAILURES_PER_SERVICE)
             return false
 
-        return (pl.services and (1 shl scrobblable.userAccount.type.ordinal)) != 0
+        return scrobblable.userAccount.type in pl.services
     }
 
     private fun filterForService(
@@ -227,18 +229,21 @@ class PendingScrobblesWorker(
             return emptyList()
 
         return pendingScrobbles.filter { pendingScrobble ->
-            pendingScrobble.services and (1 shl scrobblable.userAccount.type.ordinal) != 0
+            scrobblable.userAccount.type in pendingScrobble.services
         }
     }
 
     private suspend fun deleteForLoggedOutServices() {
-        var loggedInServicesBitset = 0
-        Scrobblables.all.value.forEach {
-            loggedInServicesBitset =
-                loggedInServicesBitset or (1 shl it.userAccount.type.ordinal)
-        }
-        dao.removeLoggedOutAccounts(loggedInServicesBitset)
-        dao.deleteStateZero()
+        val loggedOutAccounts =
+            AccountType.entries.toSet() - Scrobblables.all.value.map { it.userAccount.type }
+
+        val loggedOutAccountsBitset =
+            AccountBitmaskConverter.accountTypesToBitMask(loggedOutAccounts)
+
+        if (loggedOutAccounts.isNotEmpty())
+            dao.removeLoggedOutAccounts(loggedOutAccountsBitset)
+
+        dao.deleteEmptyAccounts()
     }
 
 

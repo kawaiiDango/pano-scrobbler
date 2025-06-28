@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.ImageNotSupported
@@ -117,6 +118,7 @@ import pano_scrobbler.composeapp.generated.resources.add_photo
 import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.artist_image
 import pano_scrobbler.composeapp.generated.resources.collapse
+import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.danceable
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.energetic
@@ -594,6 +596,19 @@ private fun InfoActionsRow(
             },
             icon = Icons.Outlined.Search,
             contentDescription = stringResource(Res.string.search),
+        )
+
+        IconButtonWithTooltip(
+            onClick = {
+                val text = when (entry) {
+                    is Track -> entry.artist.name + " " + entry.name
+                    is Album -> entry.artist?.name.orEmpty() + " " + entry.name
+                    is Artist -> entry.name
+                }
+                PlatformStuff.copyToClipboard(text)
+            },
+            icon = Icons.Outlined.ContentCopy,
+            contentDescription = stringResource(Res.string.copy),
         )
 
         if (entry.url != null && !PlatformStuff.isTv) {

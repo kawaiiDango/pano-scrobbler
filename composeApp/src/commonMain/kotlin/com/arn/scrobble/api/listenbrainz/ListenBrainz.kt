@@ -93,7 +93,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = scrobbleData.safeDuration(),
                             submission_client = BuildKonfig.APP_NAME,
-                            submission_client_version = (BuildKonfig.VER_CODE / 100f).toString(),
+                            submission_client_version = BuildKonfig.VER_NAME,
                         )
                     )
                 )

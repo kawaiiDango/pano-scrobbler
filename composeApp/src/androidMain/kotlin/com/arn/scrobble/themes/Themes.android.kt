@@ -21,6 +21,6 @@ actual fun getDynamicColorScheme(dark: Boolean): ColorScheme {
 }
 
 @Composable
-actual fun ProvideScrollbarStyle(content: @Composable () -> Unit) {
+actual fun AddAdditionalProviders(content: @Composable () -> Unit) {
     content()
 }

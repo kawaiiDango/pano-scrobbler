@@ -58,6 +58,7 @@ class DesktopMediaListener(
     }
 
     fun platformActiveSessionsChanged(sessions: List<SessionInfo>) {
+        this.sessionInfos = sessions
         Logger.d { "controllers: " + sessions.joinToString { it.app_id } }
 
         if (!scrobblerEnabled.value)
@@ -104,7 +105,6 @@ class DesktopMediaListener(
             sessions.map { it.app_id }.toSet(),
         )
 
-        this.sessionInfos = sessions
     }
 
     @Synchronized

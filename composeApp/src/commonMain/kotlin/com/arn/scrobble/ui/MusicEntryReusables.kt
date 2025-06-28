@@ -58,7 +58,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -1024,13 +1024,17 @@ fun GridOrListSelector(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        ButtonGroup {
+        Row(
+            Modifier.padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+        ) {
             OutlinedToggleButton(
                 checked = gridMode == GridMode.HERO,
                 onCheckedChange = {
                     if (it)
                         onGridModeChange(GridMode.HERO)
                 },
+                shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
             ) {
                 Icon(
                     Icons.Outlined.AllOut,
@@ -1044,6 +1048,7 @@ fun GridOrListSelector(
                     if (it)
                         onGridModeChange(GridMode.GRID)
                 },
+                shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
             ) {
                 Icon(
                     Icons.Outlined.GridView,
@@ -1057,6 +1062,7 @@ fun GridOrListSelector(
                     if (it)
                         onGridModeChange(GridMode.LIST)
                 },
+                shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
             ) {
                 Icon(
                     Icons.AutoMirrored.Outlined.List,

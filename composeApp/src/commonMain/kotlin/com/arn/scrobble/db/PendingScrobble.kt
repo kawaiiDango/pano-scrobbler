@@ -3,6 +3,8 @@ package com.arn.scrobble.db
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.lastfm.ScrobbleData
 
@@ -20,7 +22,9 @@ data class PendingScrobble(
     val scrobbleData: ScrobbleData,
 
     val event: ScrobbleEvent,
-    val services: Int = 0,
+
+    @field:TypeConverters(AccountBitmaskConverter::class)
+    val services: Set<AccountType> = emptySet(),
 
     val lastFailedTimestamp: Long? = null,
     val lastFailedReason: String? = null,

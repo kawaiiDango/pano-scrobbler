@@ -36,15 +36,10 @@ object DesktopStuff {
         }
     }
 
-    val os by lazy {
-        val osName = System.getProperty("os.name").lowercase()
-        if (osName.contains("windows")) {
-            Os.Windows
-        } else if (osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx")) {
-            Os.Macos
-        } else {
-            Os.Linux
-        }
+    val os = when (BuildKonfig.OS_ORDINAL) {
+        Os.Windows.ordinal -> Os.Windows
+        Os.Macos.ordinal -> Os.Macos
+        else -> Os.Linux
     }
 
     fun parseCmdlineArgs(args: Array<String>): CmdlineArgs {
@@ -199,9 +194,9 @@ object DesktopStuff {
             if (System.getProperty(prop) == null)
                 System.setProperty(prop, "true")
 
-//            prop = "java.library.path"
-//            if (System.getProperty(prop) == null)
-//                System.setProperty(prop, execDirPath)
+            prop = "sun.java2d.dpiaware"
+            if (System.getProperty(prop) == null)
+                System.setProperty(prop, "true")
 
             prop = "skiko.data.path"
             if (System.getProperty(prop) == null)

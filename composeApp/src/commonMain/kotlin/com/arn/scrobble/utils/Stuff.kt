@@ -247,6 +247,7 @@ object Stuff {
         Json {
             ignoreUnknownKeys = true
             explicitNulls = false
+            coerceInputValues = true
         }
     }
 

@@ -82,9 +82,9 @@ actual fun setAppLocale(lang: String?, force: Boolean) {
         AndroidStuff.application.applyAndroidLocaleLegacy(lang)
 }
 
-actual fun getCurrentLocale(localePref: String?): String {
+actual fun getCurrentLocale(localePref: String?): String? {
     return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        localePref ?: "auto"
+        localePref
     } else {
         AndroidStuff.application.getSystemService(LocaleManager::class.java)
             .applicationLocales
@@ -97,6 +97,6 @@ actual fun getCurrentLocale(localePref: String?): String {
                     it.language
                 else
                     null
-            } ?: "auto"
+            }
     }
 }

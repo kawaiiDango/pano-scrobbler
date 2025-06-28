@@ -1,5 +1,8 @@
 package com.arn.scrobble.themes
 
+import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
+import androidx.compose.foundation.LightDefaultContextMenuRepresentation
+import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.material3.ColorScheme
@@ -14,9 +17,15 @@ actual fun getDynamicColorScheme(dark: Boolean): ColorScheme {
 }
 
 @Composable
-actual fun ProvideScrollbarStyle(content: @Composable () -> Unit) {
+actual fun AddAdditionalProviders(content: @Composable () -> Unit) {
     val scrollbarColor = MaterialTheme.colorScheme.onSurfaceVariant
     val defaultScrollbarStyle = remember { defaultScrollbarStyle() }
+
+    val contextMenuRepresentation = if (LocalThemeAttributes.current.isDark) {
+        DarkDefaultContextMenuRepresentation
+    } else {
+        LightDefaultContextMenuRepresentation
+    }
 
     CompositionLocalProvider(
         LocalScrollbarStyle provides defaultScrollbarStyle.copy(
@@ -24,6 +33,8 @@ actual fun ProvideScrollbarStyle(content: @Composable () -> Unit) {
             hoverColor = scrollbarColor.copy(alpha = defaultScrollbarStyle.hoverColor.alpha),
         )
     ) {
-        content()
+        CompositionLocalProvider(LocalContextMenuRepresentation provides contextMenuRepresentation) {
+            content()
+        }
     }
 }

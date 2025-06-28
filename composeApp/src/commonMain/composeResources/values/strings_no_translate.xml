@@ -25,7 +25,7 @@
     <string name="preset_explicit" translatable="false">Remove: Explicit / Clean</string>
     <string name="preset_album_version" translatable="false">Remove: Album version</string>
     <string name="preset_single" translatable="false">Single</string>
-    <string name="preset_album_artist_as_artist" translatable="false">Album artist as artist (Spotify)</string>
+    <string name="preset_album_artist_as_artist" translatable="false">Album artist as artist with fallback (Spotify)</string>
     <string name="preset_title_parse" translatable="false">Parse title (YouTube etc)</string>
     <string name="preset_title_parse_with_fallback" translatable="false">Parse title with fallback (YouTube Music etc)</string>
     <string name="charts_num_text" formatted="true" translatable="false" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
@@ -65,16 +65,20 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="pref_tray_icon_theme" translatable="false">Tray icon color</string>
     <string name="min_track_duration" translatable="false">Scrobble tracks longer than</string>
     <string name="desktop_webview_message" translatable="false">Complete the action in the WebView window</string>
-    <string name="desktop_webview_linux_deps" translatable="false">If the WebView does not work, try installing these dependencies:
+    <string name="desktop_webview_not_loaded" translatable="false">Failed to load webview. Do you have the required dependencies installed?
 
-Arch Linux / Manjaro:
+Arch:
 sudo pacman -S webkit2gtk-4.1
 
-Debian / Ubuntu:
+Debian:
 sudo apt install libwebkit2gtk-4.1-0
 
-Fedora
-sudo dnf install webkit2gtk4.1</string>
+Fedora:
+sudo dnf install webkit2gtk4.1
+
+Windows:
+WebView2 provided by Microsoft Edge Chromium
+    </string>
 
     <!-- strings for dev only stuff  -->
     <string name="force_exception" translatable="false">Force log an exception</string>

@@ -9,13 +9,15 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
@@ -72,15 +74,6 @@ class CollageGeneratorVM : ViewModel() {
     private var maxProgress = 0f
     private val _errorText = MutableStateFlow<String?>(null)
     val errorText = _errorText.asSharedFlow()
-    private val captionStyle = TextStyle.Default.copy(
-        color = Color.White,
-        fontSize = 18.sp,
-        shadow = Shadow(
-            color = Color.Black,
-            offset = Offset.Zero,
-            blurRadius = 5f
-        )
-    )
     private lateinit var context: PlatformContext
 
     private val paddingPx = 16
@@ -239,6 +232,29 @@ class CollageGeneratorVM : ViewModel() {
         }
     }
 
+    private fun DrawScope.drawTextFillAndStroke(
+        textLayoutResult: TextLayoutResult,
+        topLeft: Offset = Offset.Zero
+    ) {
+        drawText(
+            textLayoutResult = textLayoutResult,
+            topLeft = topLeft,
+            color = Color.Black,
+            drawStyle = Stroke(2f),
+            shadow = Shadow(
+                color = Color.Black,
+                offset = Offset(0f, 0f),
+                blurRadius = 5f
+            )
+        )
+        drawText(
+            textLayoutResult = textLayoutResult,
+            topLeft = topLeft,
+            color = Color.White,
+        )
+    }
+
+
     private suspend fun fetchAndDrawImages(
         musicEntries: List<MusicEntry>,
         cols: Int,
@@ -380,57 +396,43 @@ class CollageGeneratorVM : ViewModel() {
 
                 var style: TextStyle
 
+                var tlr: TextLayoutResult
                 if (artist != null) {
-                    style = captionStyle.copy(fontSize = 17.sp)
-                    textY -= measureText(
+                    style = TextStyle.Default.copy(fontSize = 17.sp)
+                    tlr = measureText(
                         textMeasurer,
-                        scrobbleCount,
+                        artist,
                         style
-                    ).size.height
-                    drawText(
-                        textMeasurer,
-                        text = artist,
+                    )
+                    textY -= tlr.size.height
+                    drawTextFillAndStroke(
+                        textLayoutResult = tlr,
                         topLeft = Offset(x + paddingPx, textY),
-                        softWrap = false,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        size = textSize,
-                        style = style
                     )
                 }
 
-                style = captionStyle.copy(fontSize = 18.sp, fontWeight = FontWeight(700))
-                textY -= measureText(
+                style = TextStyle.Default.copy(fontSize = 18.sp, fontWeight = FontWeight(700))
+                tlr = measureText(
                     textMeasurer,
                     name,
                     style
-                ).size.height
-                drawText(
-                    textMeasurer,
-                    text = name,
+                )
+                textY -= tlr.size.height
+                drawTextFillAndStroke(
+                    tlr,
                     topLeft = Offset(x + paddingPx, textY),
-                    softWrap = false,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    size = textSize,
-                    style = style
                 )
 
-                style = captionStyle.copy(fontSize = 16.sp)
-                textY -= measureText(
+                style = TextStyle.Default.copy(fontSize = 16.sp)
+                tlr = measureText(
                     textMeasurer,
                     scrobbleCount,
                     style
-                ).size.height
-                drawText(
-                    textMeasurer,
-                    text = scrobbleCount,
+                )
+                textY -= tlr.size.height
+                drawTextFillAndStroke(
+                    tlr,
                     topLeft = Offset(x + paddingPx, textY),
-                    softWrap = false,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    size = textSize,
-                    style = style
                 )
 
             }
@@ -460,7 +462,7 @@ class CollageGeneratorVM : ViewModel() {
         var fontSize = 42
         var overflowed = true
         while (overflowed) {
-            val measurement = measureText(
+            val tlr = measureText(
                 textMeasurer,
                 text,
                 TextStyle.Default.copy(
@@ -468,7 +470,7 @@ class CollageGeneratorVM : ViewModel() {
                 ),
                 constraints = Constraints(maxWidth = width.toInt())
             )
-            overflowed = measurement.didOverflowWidth
+            overflowed = tlr.didOverflowWidth
             if (overflowed)
                 fontSize -= step
         }
@@ -520,7 +522,7 @@ class CollageGeneratorVM : ViewModel() {
         var brandTextWidth = if (isPro) 0 else measureText(
             textMeasurer,
             brandText,
-            captionStyle.copy(fontSize = 21.sp),
+            TextStyle.Default.copy(fontSize = 21.sp),
             2
         ).size.width
 

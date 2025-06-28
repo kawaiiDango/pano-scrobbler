@@ -39,6 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album
 import pano_scrobbler.composeapp.generated.resources.album_artist
+import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.artist_channel
 import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.blocked_metadata_info
@@ -101,7 +102,16 @@ private fun BlockedMetadataAddContent(
         OutlinedTextField(
             value = artist,
             onValueChange = { artist = it },
-            label = { Text(stringResource(Res.string.artist_channel)) },
+            label = {
+                Text(
+                    stringResource(
+                        if (PlatformStuff.isDesktop)
+                            Res.string.artist
+                        else
+                            Res.string.artist_channel
+                    )
+                )
+            },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -192,13 +202,15 @@ fun BlockPlayerActions(
     Column(
         modifier = modifier
     ) {
-        Text(
-            text = stringResource(Res.string.player_actions),
-        )
-
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Text(
+                text = stringResource(Res.string.player_actions),
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+
             FilterChip(
                 selected = blockPlayerAction == BlockPlayerAction.skip,
                 onClick = {

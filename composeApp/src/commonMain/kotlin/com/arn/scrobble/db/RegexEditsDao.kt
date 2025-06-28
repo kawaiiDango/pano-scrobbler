@@ -131,7 +131,7 @@ interface RegexEditsDao {
                                 }
                             }
 
-                            RegexMode.ReplaceFirst, RegexMode.ReplaceAll -> {
+                            RegexMode.Replace -> {
                                 val newScrobbleData =
                                     runCatching { replace(scrobbleData, regexEdit) }
                                         .onFailure {

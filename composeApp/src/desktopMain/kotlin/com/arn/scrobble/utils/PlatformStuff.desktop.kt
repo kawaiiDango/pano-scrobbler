@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.DesktopWebView
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -148,21 +149,25 @@ actual object PlatformStuff {
     actual fun loadApplicationLabel(appId: String): String = appId
 
     actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
-        val event = withTimeoutOrNull(1_000) {
-            WebViewEventFlows.event.onStart {
-                PanoNativeComponents.getWebViewCookiesFor(uri)
+        val maybeCookies = withTimeoutOrNull(1_000) {
+            WebViewEventFlows.cookies.onStart {
+                DesktopWebView.getWebViewCookiesFor(uri)
             }.first()
         }
 
-        if (event?.url?.startsWith(uri) == true) {
-            return event.cookies.associate {
-                val (name, value) = it.split("=", limit = 2)
-                name to value
-            }
+        if (maybeCookies != null) {
+            val (incomingUri, cookies) = maybeCookies
+
+            if (incomingUri.startsWith(uri))
+                return cookies.associate {
+                    val (name, value) = it.split("=", limit = 2)
+                    name to value
+                }
         } else {
-            Logger.e("WebViewEvent url does not match or timed out")
-            return emptyMap()
+            Logger.e("WebViewEvent timed out")
         }
+
+        return emptyMap()
     }
 
     actual fun clearWebviewCookies() {

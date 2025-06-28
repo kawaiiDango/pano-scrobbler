@@ -465,8 +465,7 @@ fun PrefsScreen(
             val localesMap = remember(locale) {
                 val autoEntry = mapOf("auto" to autoString)
                 LocaleUtils.localesMap().let {
-                    if (PlatformStuff.isDesktop) it
-                    else autoEntry + it
+                    autoEntry + it
                 }
             }
 
@@ -476,8 +475,9 @@ fun PrefsScreen(
                 values = localesMap.keys,
                 toLabel = { localesMap[it] ?: autoString },
                 copyToSave = {
-                    setAppLocale(lang = it, force = true)
-                    copy(locale = it.takeIf { it != "auto" })
+                    val l = it.takeIf { it != "auto" }
+                    setAppLocale(lang = l, force = true)
+                    copy(locale = l)
                 }
             )
         }
@@ -681,29 +681,12 @@ fun PrefsScreen(
 
         item(key = "version") {
             Text(
-                text = "v " + BuildKonfig.VER_NAME,
+                text = "v" + BuildKonfig.VER_NAME + " " + BuildKonfig.BUILD_DATE,
                 modifier = Modifier.padding(
                     vertical = 16.dp,
                     horizontal = horizontalOverscanPadding()
                 )
-
             )
-        }
-
-        if (PlatformStuff.isDesktop) {
-            item(key = "ram") {
-                val runtime = remember { Runtime.getRuntime() }
-                val totalMemory = remember { runtime.totalMemory() / (1024 * 1024) }
-                val freeMemory = remember { runtime.freeMemory() / (1024 * 1024) }
-                Text(
-                    "RAM: ${totalMemory - freeMemory} MB / $totalMemory MB",
-                    modifier = Modifier.padding(
-                        vertical = 16.dp,
-                        horizontal = horizontalOverscanPadding()
-                    )
-
-                )
-            }
         }
 
         if (PlatformStuff.isDebug) {

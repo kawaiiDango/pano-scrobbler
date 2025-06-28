@@ -15,6 +15,7 @@ import com.arn.scrobble.themes.ContrastMode
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.themes.ThemeUtils
 import com.arn.scrobble.ui.GridMode
+import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.serialization.Serializable
@@ -77,7 +78,6 @@ data class MainPrefs(
     val gridMode: GridMode = GridMode.GRID,
     val regexLearnt: Boolean = false,
     val regexEditsLearnt: Boolean = false,
-    val reorderFriendsLearnt: Boolean = false,
     val squarePhotoLearnt: Boolean = false,
     val changelogSeenHashcode: Int? = null,
     val searchHistory: List<String> = emptyList(),
@@ -103,12 +103,12 @@ data class MainPrefs(
     val receipt: String? = null,
     val receiptSignature: String? = null,
     val lastLicenseCheckTime: Long = -1,
-    val lastPendingScrobblesFailureTime: Long = -1,
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
     val trayIconTheme: DayNightMode = DayNightMode.SYSTEM,
     val cookies: Map<String, CookieSerializable> = emptyMap(),
     // keep this as a string and not as an enum, in case i delete presets later
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
+    val windowState: SerializableWindowState? = null,
 ) {
 
     val autoDetectAppsP

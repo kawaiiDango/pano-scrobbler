@@ -119,6 +119,12 @@
   "methods":[{"name":"serializer","parameterTypes":[] }]
 },
 {
+  "name":"com.arn.scrobble.navigation.PanoRoute$AutomationInfo",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"serializer","parameterTypes":[] }]
+},
+{
   "name":"com.arn.scrobble.navigation.PanoRoute$Billing",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,

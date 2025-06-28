@@ -9,8 +9,6 @@ import com.arn.scrobble.media.PlaybackInfo
 import com.arn.scrobble.media.ScrobbleQueue
 import com.arn.scrobble.media.SessionInfo
 import com.arn.scrobble.media.listenForPlayingTrackEvents
-import com.arn.scrobble.onboarding.WebViewEvent
-import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
 import com.arn.scrobble.utils.Stuff
@@ -80,27 +78,6 @@ object PanoNativeComponents {
     }
 
     @JvmStatic
-    fun onWebViewCookies(event: String) {
-        val event = Stuff.myJson.decodeFromString<WebViewEvent>(event)
-        WebViewEventFlows.event.tryEmit(event)
-    }
-
-    @JvmStatic
-    fun onWebViewPageLoad(url: String) {
-        WebViewEventFlows.pageLoaded.tryEmit(url)
-    }
-
-    @JvmStatic
-    fun onLogInfo(msg: String) {
-        Logger.i(msg, tag = TAG)
-    }
-
-    @JvmStatic
-    fun onLogWarn(msg: String) {
-        Logger.w(msg, tag = TAG)
-    }
-
-    @JvmStatic
     fun onReceiveIpcCommand(command: String, arg: String) {
         if (command == Automation.DESKTOP_FOCUS_EXISTING) {
             PanoTrayUtils.onTrayMenuItemClickedFn(PanoTrayUtils.ItemId.Open.name)
@@ -164,15 +141,9 @@ object PanoNativeComponents {
     @JvmStatic
     external fun applyDarkModeToWindow(handle: Long)
 
-    @JvmStatic
-    external fun launchWebView(url: String, callbackPrefix: String, dataDir: String)
-
-    @JvmStatic
-    external fun getWebViewCookiesFor(url: String)
-
-    @JvmStatic
-    external fun quitWebView()
-
-    @JvmStatic
     external fun sendIpcCommand(command: String, arg: String): Boolean
+
+    @JvmStatic
+    external fun getSystemLocale(): String
+
 }

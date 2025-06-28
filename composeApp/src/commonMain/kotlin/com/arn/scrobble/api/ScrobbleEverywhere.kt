@@ -1,6 +1,5 @@
 package com.arn.scrobble.api
 
-import androidx.collection.LruCache
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -45,7 +44,6 @@ object ScrobbleEverywhere {
 
         Logger.i { "preprocessMetadata " + scrobbleData.artist + " - " + scrobbleData.track }
 
-        var fallbackScrobbleData: ScrobbleData? = null
         val prefs = PlatformStuff.mainPrefs.data.first()
 
         suspend fun performEditsAndBlocks(runPresets: Boolean): PreprocessResult {
@@ -97,12 +95,7 @@ object ScrobbleEverywhere {
                     val presetsResult = RegexPresets.applyAllPresets(scrobbleData)
 
                     if (presetsResult != null) {
-                        // put the edits till now in fallbackScrobbleData
-                        if (presetsResult.appliedPresets.contains(RegexPreset.parse_title_with_fallback))
-                            fallbackScrobbleData = scrobbleData
-
                         scrobbleData = presetsResult.scrobbleData
-
                         presetsApplied = presetsResult.appliedPresets.toSet()
                     }
                 } catch (e: TitleParseException) {
@@ -137,21 +130,6 @@ object ScrobbleEverywhere {
                     album = track.album?.name,
                     albumArtist = track.album?.artist?.name,
                 )
-            }
-
-            if (preprocessResult.presetsApplied.contains(RegexPreset.parse_title)) {
-                val artistIsValid = track != null &&
-                        ((track.listeners ?: 0) >= Stuff.MIN_LISTENER_COUNT) ||
-                        getValidArtist(scrobbleData.artist) != null
-
-                // unrecognized artist
-                if (!artistIsValid) {
-                    return if (fallbackScrobbleData != null) {
-                        preprocessResult.copy(scrobbleData = fallbackScrobbleData)
-                    } else {
-                        preprocessResult.copy(titleParseFailed = true)
-                    }
-                }
             }
         }
 
@@ -213,23 +191,19 @@ object ScrobbleEverywhere {
             scrobbleResults.values.any { !it.isSuccess }
         ) {
             // failed
-            var state = 0
-            if (scrobbleResults.isEmpty())
-                Scrobblables.all.value.forEach {
-                    state = state or (1 shl it.userAccount.type.ordinal)
-                }
+            val services = if (scrobbleResults.isEmpty())
+                Scrobblables.all.value.map { it.userAccount.type }
             else
-                scrobbleResults.forEach { (scrobblable, result) ->
-                    if (!result.isSuccess) {
-                        state = state or (1 shl scrobblable.userAccount.type.ordinal)
+                scrobbleResults
+                    .mapNotNull { (scrobblable, result) ->
+                        if (!result.isSuccess) scrobblable.userAccount.type else null
                     }
-                }
 
             val dao = PanoDb.db.getPendingScrobblesDao()
             val entry = PendingScrobble(
                 scrobbleData = scrobbleData,
                 event = ScrobbleEvent.scrobble,
-                services = state,
+                services = services.toSet(),
                 lastFailedTimestamp = System.currentTimeMillis(),
                 lastFailedReason = scrobbleResults.values.firstOrNull { it.isFailure }
                     ?.exceptionOrNull()?.redactedMessage?.take(100)
@@ -273,11 +247,8 @@ object ScrobbleEverywhere {
         val allScrobblables = Scrobblables.all.value
         if (pl != null) {
             if (pl.event == ScrobbleEvent.unlove) {
-                var state = pl.services
-                allScrobblables.forEach {
-                    state = state or (1 shl it.userAccount.type.ordinal)
-                }
-                val newPl = pl.copy(services = state, event = ScrobbleEvent.love)
+                val services = pl.services + allScrobblables.map { it.userAccount.type }
+                val newPl = pl.copy(services = services, event = ScrobbleEvent.love)
                 dao.update(newPl)
             }
         } else {
@@ -286,10 +257,11 @@ object ScrobbleEverywhere {
             }.toMap()
 
             if (loveResults.values.any { !it.isSuccess }) {
-                var state = 0
-                loveResults.forEach { (scrobblable, result) ->
+                val services = loveResults.mapNotNull { (scrobblable, result) ->
                     if (!result.isSuccess)
-                        state = state or (1 shl scrobblable.userAccount.type.ordinal)
+                        scrobblable.userAccount.type
+                    else
+                        null
                 }
 
                 val scrobbleData = ScrobbleData(
@@ -305,21 +277,19 @@ object ScrobbleEverywhere {
                 val entry = PendingScrobble(
                     scrobbleData = scrobbleData,
                     event = ScrobbleEvent.love,
-                    services = state,
+                    services = services.toSet(),
                     lastFailedTimestamp = System.currentTimeMillis(),
                     lastFailedReason = loveResults.values.firstOrNull { it.isFailure }
                         ?.exceptionOrNull()?.redactedMessage?.take(100)
                 )
 
-                if (entry.services != 0) {
+                if (entry.services.isNotEmpty()) {
                     dao.insert(entry)
                     PendingScrobblesWork.checkAndSchedule()
                 }
             }
         }
     }
-
-    private val validArtistsCache = LruCache<String, String>(30)
 
     private var lastNpInfoTime = 0L
     private var lastNpInfoCount = 0
@@ -340,31 +310,10 @@ object ScrobbleEverywhere {
 
             Requesters.lastfmUnauthedRequester.getInfo(trackObj)
                 .onSuccess {
-                    validArtistsCache.put(artist, it.artist.name)
                     return it
                 }
         }
 
-        return null
-    }
-
-    private suspend fun getValidArtist(artist: String): String? {
-        if (validArtistsCache[artist] != null && validArtistsCache[artist]!!.isEmpty())
-            return null
-        else if (validArtistsCache[artist] != null)
-            return validArtistsCache[artist]
-        else if (Stuff.isOnline) {
-            val artistInfo = Requesters.lastfmUnauthedRequester.getInfo(Artist(artist))
-                .getOrNull()
-
-            if (artistInfo != null && artistInfo.name.trim() != "" &&
-                artistInfo.listeners!! >= Stuff.MIN_LISTENER_COUNT
-            ) {
-                validArtistsCache.put(artist, artistInfo.name)
-                return artistInfo.name
-            } else
-                validArtistsCache.put(artist, "")
-        }
         return null
     }
 

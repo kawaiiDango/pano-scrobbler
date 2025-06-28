@@ -86,7 +86,7 @@ fun AppTheme(
         colorScheme = colorScheme,
     ) {
         CompositionLocalProvider(LocalThemeAttributes provides themeAttributes) {
-            ProvideScrollbarStyle {
+            AddAdditionalProviders {
                 content()
             }
         }
@@ -123,4 +123,4 @@ fun AppPreviewTheme(content: @Composable () -> Unit) {
 expect fun getDynamicColorScheme(dark: Boolean): ColorScheme
 
 @Composable
-expect fun ProvideScrollbarStyle(content: @Composable () -> Unit)
+expect fun AddAdditionalProviders(content: @Composable () -> Unit)

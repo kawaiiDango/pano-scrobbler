@@ -1,3 +1,8 @@
+import com.android.build.api.instrumentation.AsmClassVisitorFactory
+import com.android.build.api.instrumentation.ClassContext
+import com.android.build.api.instrumentation.ClassData
+import com.android.build.api.instrumentation.InstrumentationParameters
+import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
@@ -9,6 +14,8 @@ import com.mikepenz.aboutlibraries.plugin.StrictMode
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.ComposeHotRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.FieldVisitor
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -17,6 +24,7 @@ import java.nio.file.Path
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
@@ -77,8 +85,7 @@ if (versionFile.canRead()) {
     throw GradleException("Could not read version.txt!")
 }
 val verName = "${verCode / 100}.${verCode % 100}"
-val verNameWithDate =
-    "$verName - ${SimpleDateFormat("YYYY, MMM dd").format(Date())}"
+val buildDate = SimpleDateFormat("YYYY, MMM dd", Locale.ENGLISH).format(Date())
 val appId = "com.arn.scrobble"
 val appName = "Pano Scrobbler"
 val appNameWithoutSpaces = "pano-scrobbler"
@@ -202,9 +209,11 @@ buildkonfig {
         buildConfigField(STRING, "APP_NAME", appName, const = true)
         buildConfigField(STRING, "APP_ID", appId, const = true)
         buildConfigField(INT, "VER_CODE", verCode.toString(), const = true)
-        buildConfigField(STRING, "VER_NAME", verNameWithDate, const = true)
+        buildConfigField(STRING, "VER_NAME", verName, const = true)
+        buildConfigField(STRING, "BUILD_DATE", buildDate, const = true)
         buildConfigField(STRING, "CHANGELOG", changelog, const = true)
         buildConfigField(BOOLEAN, "DEBUG", (!isReleaseBuild).toString(), const = true)
+
     }
 
     targetConfigs {
@@ -214,7 +223,15 @@ buildkonfig {
         }
 
         create("desktop") {
-//            buildConfigField(STRING, "name", "valueForNative")
+            buildConfigField(
+                INT, "OS_ORDINAL",
+                when {
+                    os.isWindows -> "0"
+                    os.isMacOsX -> "1"
+                    os.isLinux -> "2"
+                    else -> throw IllegalStateException("Unsupported OS: $os")
+                }, const = true
+            )
         }
     }
 }
@@ -231,8 +248,8 @@ android {
 //        targetSdkPreview = "Baklava"
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = verCode
-        versionName = verNameWithDate
-        setProperty("archivesBaseName", appNameWithoutSpaces)
+        versionName = verName
+        base.archivesName = appNameWithoutSpaces
 
     }
     buildFeatures {
@@ -364,10 +381,8 @@ compose.desktop {
         // ZGC starts with ~70MB minimized and goes down to ~160MB after re-minimizing
         jvmArgs += listOfNotNull(
             "-Dpano.native.components.path=$libraryPath",
-            if (os.isLinux)
-                "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED"
-            else
-                null,
+            "--enable-native-access=ALL-UNNAMED",
+            if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
 //            "-XX:NativeMemoryTracking=detail",
             "-XX:+UseSerialGC",
             "-XX:+UseAdaptiveSizePolicy",
@@ -432,14 +447,68 @@ compose.desktop {
     }
 }
 
+// 1. Add this class visitor in `buildSrc` or directly into your build script
+
+class FieldSkippingClassVisitor(
+    apiVersion: Int,
+    nextClassVisitor: ClassVisitor,
+) : ClassVisitor(apiVersion, nextClassVisitor) {
+
+    // Returning null from this method will cause the ClassVisitor to strip all fields from the class.
+    override fun visitField(
+        access: Int,
+        name: String?,
+        descriptor: String?,
+        signature: String?,
+        value: Any?
+    ): FieldVisitor? = null
+
+    abstract class Factory : AsmClassVisitorFactory<Parameters> {
+
+        private val excludedClasses
+            get() = parameters.get().classes.get()
+
+        override fun isInstrumentable(classData: ClassData): Boolean =
+            classData.className in excludedClasses
+
+        override fun createClassVisitor(
+            classContext: ClassContext,
+            nextClassVisitor: ClassVisitor
+        ): ClassVisitor {
+            return FieldSkippingClassVisitor(
+                apiVersion = instrumentationContext.apiVersion.get(),
+                nextClassVisitor = nextClassVisitor,
+            )
+        }
+    }
+
+    abstract class Parameters : InstrumentationParameters {
+        @get:Input
+        abstract val classes: SetProperty<String>
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.instrumentation.transformClassesWith(
+            FieldSkippingClassVisitor.Factory::class.java,
+            scope = InstrumentationScope.ALL,
+        ) { params ->
+            params.classes.add("io.ktor.client.plugins.Messages")
+        }
+    }
+}
+
 tasks.withType<ComposeHotRun>().configureEach {
     val libraryPath =
         File(project.layout.projectDirectory.dir("resources").asFile, resourcesDirName).absolutePath
 
     mainClass = "com.arn.scrobble.main.MainKt"
-    jvmArgs = (jvmArgs ?: emptyList()) + listOf(
+    jvmArgs = (jvmArgs ?: emptyList()) + listOfNotNull(
         "-Dpano.native.components.path=$libraryPath",
         "-Dcompose.application.configure.swing.globals=true",
+        "--enable-native-access=ALL-UNNAMED",
+        if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
     )
     val appDataRoot = when {
         os.isWindows -> {
@@ -614,7 +683,7 @@ tasks.register<Exec>("packageWindowsNsis") {
         "/DOUTFILE=" + distFile.absolutePath,
         "/DAPPDIR=" + executableDir.absolutePath,
         "/DVERSION_CODE=$verCode",
-        "/DVERSION_NAME=$verNameWithDate",
+        "/DVERSION_NAME=$verName",
         "/DICON_FILE=" + iconFile.absolutePath,
         nsisScriptFile.absolutePath
     )
@@ -644,11 +713,7 @@ tasks.register<Exec>("buildNativeImage") {
 
     val winAppResFile = file("app-icons/exe-res.res")
 
-    val panoNativeComponentsName = if (os.isWindows)
-        "pano_native_components.dll"
-    else
-        "libpano_native_components.so"
-    val panoNativeComponentsFile = file("resources/$resourcesDirName/$panoNativeComponentsName")
+    val nativeLibsDir = file("resources/$resourcesDirName/")
 
     val command = listOfNotNull(
         if (os.isWindows)
@@ -665,15 +730,16 @@ tasks.register<Exec>("buildNativeImage") {
         "-Djava.awt.headless=false",
         "-R:MaxHeapSize=300M",
         "-H:+AddAllCharsets",
-        "-H:+IncludeAllLocales",
 //        "-g",
 //        "--enable-monitoring=nmt",
         "--enable-native-access=ALL-UNNAMED",
-//        "-H:+ForeignAPISupport",
-        "-H:InitialCollectionPolicy=BySpaceAndTime",
         "-H:MaxSurvivorSpaces=0",
         "--gc=serial",
-        "-R:MaxHeapFree=20M",
+        if (Runtime.version().version().first() < 24) null else "-H:+ForeignAPISupport",
+        if (Runtime.version().version().first() < 24)
+            "-H:+IncludeAllLocales"
+        else
+            "--include-locales",
         if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
         if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,
         if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.absolutePath}\"" else null,
@@ -694,13 +760,15 @@ tasks.register<Exec>("buildNativeImage") {
     }
 
     doLast {
+//        println("Executing command:")
+//        println(command.joinToString(" "))
         // copy jawt
         jawtDir.mkdirs()
         jawtFile.copyTo(File(jawtDir, jawtFile.name), overwrite = true)
 
         // copy native components
-        panoNativeComponentsFile.copyTo(
-            File(outputDir, panoNativeComponentsFile.name),
+        nativeLibsDir.copyRecursively(
+            outputDir,
             overwrite = true
         )
     }
@@ -984,7 +1052,7 @@ githubRelease {
 //            "\n\n" + "Copied from Play Store what's new, may not be accurate for minor updates."
     body = changelog
     tagName = verCode.toString()
-    releaseName = verNameWithDate
+    releaseName = verName
     targetCommitish = "main"
 
     val assets = file("dist")

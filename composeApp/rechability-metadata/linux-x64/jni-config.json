@@ -17,6 +17,10 @@
   "allDeclaredMethods": true
 },
 {
+  "name":"com.arn.scrobble.DesktopWebView",
+  "allDeclaredMethods": true
+},
+{
   "name":"java.awt.AlphaComposite",
   "fields":[{"name":"extraAlpha"}, {"name":"rule"}]
 },

@@ -566,12 +566,13 @@ private fun PanoNavigationRail(
                             Text(
                                 text = user.name,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .widthIn(max = 100.dp)
                             )
                         },
                         modifier = Modifier
                             .padding(vertical = 16.dp)
-
                     )
                 }
             }
@@ -664,7 +665,9 @@ private fun PanoBottomNavigationBar(
                         else
                             stringResource(tabMetadata.titleRes),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .widthIn(max = 100.dp)
                     )
                 }
             )

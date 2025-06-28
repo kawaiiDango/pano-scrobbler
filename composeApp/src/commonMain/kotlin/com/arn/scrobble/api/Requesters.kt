@@ -60,7 +60,7 @@ object Requesters {
             if (!Stuff.isRunningInTest) {
 
                 install(UserAgent) {
-                    agent = BuildKonfig.APP_NAME + " " + (BuildKonfig.VER_CODE / 100f)
+                    agent = BuildKonfig.APP_NAME + " " + BuildKonfig.VER_NAME
                 }
 
                 install(HttpCache) {

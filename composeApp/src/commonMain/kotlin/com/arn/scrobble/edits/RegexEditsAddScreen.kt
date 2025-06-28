@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -109,7 +110,10 @@ fun RegexEditsAddScreen(
     var appItemsInited by rememberSaveable { mutableStateOf(false) }
 
     var regexMode by rememberSaveable {
-        mutableStateOf(regexEdit?.mode() ?: RegexMode.ReplaceFirst)
+        mutableStateOf(regexEdit?.mode() ?: RegexMode.Replace)
+    }
+    var replaceAll by rememberSaveable {
+        mutableStateOf(regexEdit?.replacement?.replaceAll ?: false)
     }
     var caseSensitive by rememberSaveable { mutableStateOf(regexEdit?.caseSensitive ?: false) }
 
@@ -170,7 +174,7 @@ fun RegexEditsAddScreen(
                 )
             }
 
-            RegexMode.ReplaceFirst, RegexMode.ReplaceAll -> {
+            RegexMode.Replace -> {
                 RegexEdit(
                     _id = regexEdit?._id ?: 0,
                     order = regexEdit?.order ?: -1,
@@ -181,7 +185,7 @@ fun RegexEditsAddScreen(
                         replacementAlbum,
                         replacementArtist,
                         replacementAlbumArtist,
-                        regexMode == RegexMode.ReplaceAll
+                        replaceAll
                     ),
                     appIds = appItems.map { it.appId }.toSet(),
                     caseSensitive = caseSensitive,
@@ -244,7 +248,7 @@ fun RegexEditsAddScreen(
 
             ErrorText(errorText)
 
-            AnimatedVisibility(regexMode == RegexMode.ReplaceFirst || regexMode == RegexMode.ReplaceAll) {
+            AnimatedVisibility(regexMode == RegexMode.Replace) {
                 Column {
                     SearchAndReplacePair(
                         label = stringResource(Res.string.track),
@@ -277,11 +281,35 @@ fun RegexEditsAddScreen(
                         onSearchChange = { searchAlbumArtist = it },
                         onReplacementChange = { replacementAlbumArtist = it }
                     )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            stringResource(Res.string.edit_replace),
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+
+                        FilterChip(
+                            selected = !replaceAll,
+                            onClick = { replaceAll = false },
+                            label = { Text(stringResource(Res.string.edit_first)) },
+                        )
+
+                        FilterChip(
+                            selected = replaceAll,
+                            onClick = { replaceAll = true },
+                            label = { Text(stringResource(Res.string.edit_all)) },
+                        )
+                    }
                 }
             }
 
             AnimatedVisibility(regexMode == RegexMode.Extract) {
-                Column {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     SearchFields(
                         headerText = stringResource(Res.string.search),
                         track = searchTrack,
@@ -308,8 +336,9 @@ fun RegexEditsAddScreen(
             }
 
             AnimatedVisibility(regexMode == RegexMode.Block) {
-                Column {
-
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     SearchFields(
                         headerText = stringResource(Res.string.search),
                         track = searchTrack,
@@ -329,9 +358,9 @@ fun RegexEditsAddScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    BlockOptions(
+                    BlockPlayerActions(
                         blockPlayerAction = blockPlayerAction,
-                        onBlockPlayerActionChange = { blockPlayerAction = it },
+                        onChange = { blockPlayerAction = it },
                         enabled = isLicenseValid,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -339,16 +368,12 @@ fun RegexEditsAddScreen(
             }
 
 
-            Text(
-                stringResource(Res.string.apps) + (
+            AppSelector(
+                label = stringResource(Res.string.apps) + (
                         if (regexMode != RegexMode.Extract && appItems.isEmpty())
                             ": " + stringResource(Res.string.edit_all)
                         else ""
                         ),
-                color = MaterialTheme.colorScheme.secondary
-            )
-
-            AppSelector(
                 appItems = appItems,
                 onNavigateToAppList = {
                     onNavigate(
@@ -385,10 +410,7 @@ fun RegexEditsAddScreen(
                 ButtonWithSpinner(
                     prefixText = null,
                     itemToTexts = mapOf(
-                        RegexMode.ReplaceFirst to stringResource(Res.string.edit_replace) +
-                                ": " + stringResource(Res.string.edit_first),
-                        RegexMode.ReplaceAll to stringResource(Res.string.edit_replace) +
-                                ": " + stringResource(Res.string.edit_all),
+                        RegexMode.Replace to stringResource(Res.string.edit_replace),
                         RegexMode.Extract to (if (!isLicenseValid) "🔒 " else "") +
                                 stringResource(Res.string.edit_extract),
                         RegexMode.Block to (if (!isLicenseValid) "🔒 " else "") +
@@ -593,27 +615,6 @@ private fun ExtractOptions(
 }
 
 @Composable
-private fun BlockOptions(
-    blockPlayerAction: BlockPlayerAction,
-    onBlockPlayerActionChange: (BlockPlayerAction) -> Unit,
-    enabled: Boolean,
-    modifier: Modifier
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-    ) {
-        BlockPlayerActions(
-            blockPlayerAction = blockPlayerAction,
-            onChange = {
-                onBlockPlayerActionChange(it)
-            },
-            enabled = enabled,
-        )
-    }
-}
-
-@Composable
 fun getIconForField(field: RegexEdit.Field): ImageVector {
     return when (field) {
         RegexEdit.Field.track -> Icons.Outlined.MusicNote
@@ -635,6 +636,7 @@ fun getLabelForField(field: RegexEdit.Field): String {
 
 @Composable
 private fun AppSelector(
+    label: String,
     appItems: Iterable<AppItem>,
     onNavigateToAppList: (List<String>) -> Unit,
     onAppItemRemoved: (AppItem) -> Unit,
@@ -642,8 +644,15 @@ private fun AppSelector(
 
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+
+        Text(
+            label,
+            color = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+
         appItems.forEach {
             AppItemChip(
                 appListItem = it,

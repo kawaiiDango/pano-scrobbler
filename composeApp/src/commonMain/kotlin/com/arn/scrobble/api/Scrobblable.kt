@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.serialization.Serializable
 
 
 abstract class Scrobblable(val userAccount: UserAccountSerializable) {
@@ -162,15 +163,16 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
 
 data class ScrobbleIgnored(val ignored: Boolean)
 
-enum class AccountType {
-    LASTFM,
-    LIBREFM,
-    GNUFM,
-    LISTENBRAINZ,
-    CUSTOM_LISTENBRAINZ,
-    MALOJA,
-    PLEROMA,
-    FILE
+@Serializable
+enum class AccountType(val id: Int) {
+    LASTFM(0),
+    LISTENBRAINZ(3),
+    LIBREFM(1),
+    CUSTOM_LISTENBRAINZ(4),
+    GNUFM(2),
+    MALOJA(5),
+    PLEROMA(6),
+    FILE(7)
 }
 
 object Scrobblables {

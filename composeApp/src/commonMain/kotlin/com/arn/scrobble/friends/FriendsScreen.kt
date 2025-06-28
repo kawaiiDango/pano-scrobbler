@@ -25,7 +25,7 @@ import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +33,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
@@ -726,63 +727,58 @@ private fun PinControls(
     onMoveDown: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
+    Row(
+        modifier = modifier.padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            ButtonGroupDefaults.ConnectedSpaceBetween,
+            Alignment.CenterHorizontally
+        ),
     ) {
-        ButtonGroup(
-            overflowIndicator = {}
-        ) {
-            if (isPinned) {
-                customItem(
-                    buttonGroupContent = {
-                        OutlinedButton(
-                            enabled = onMoveUp != null,
-                            onClick = {
-                                onMoveUp?.invoke()
-                            },
-                        ) {
-                            Icon(
-                                imageVector =
-                                    Icons.Outlined.KeyboardArrowUp,
-                                contentDescription = stringResource(Res.string.move_up),
-                            )
-                        }
-                    }, menuContent = {})
+        if (isPinned) {
+            OutlinedToggleButton(
+                enabled = onMoveUp != null,
+                checked = false,
+                onCheckedChange = {
+                    onMoveUp?.invoke()
+                },
+                shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
+            ) {
+                Icon(
+                    imageVector =
+                        Icons.Outlined.KeyboardArrowUp,
+                    contentDescription = stringResource(Res.string.move_up),
+                )
             }
+        }
 
-            customItem(
-                buttonGroupContent = {
-                    ToggleButton(
-                        checked = isPinned,
-                        onCheckedChange = {
-                            onPinUnpin(!isPinned)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                            contentDescription = stringResource(
-                                if (isPinned) Res.string.unpin else Res.string.pin
-                            )
-                        )
-                    }
-                }, menuContent = {})
+        ToggleButton(
+            checked = isPinned,
+            onCheckedChange = {
+                onPinUnpin(!isPinned)
+            },
+            shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
+        ) {
+            Icon(
+                imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                contentDescription = stringResource(
+                    if (isPinned) Res.string.unpin else Res.string.pin
+                )
+            )
+        }
 
-            if (isPinned) {
-                customItem(
-                    buttonGroupContent = {
-                        OutlinedButton(
-                            enabled = onMoveDown != null,
-                            onClick = {
-                                onMoveDown?.invoke()
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.KeyboardArrowDown,
-                                contentDescription = stringResource(Res.string.move_down),
-                            )
-                        }
-                    }, menuContent = {})
+        if (isPinned) {
+            OutlinedToggleButton(
+                enabled = onMoveDown != null,
+                checked = false,
+                onCheckedChange = {
+                    onMoveDown?.invoke()
+                },
+                shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.KeyboardArrowDown,
+                    contentDescription = stringResource(Res.string.move_down),
+                )
             }
         }
     }

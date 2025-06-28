@@ -1,24 +1,44 @@
 package com.arn.scrobble.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.SwingWindow
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.toPainter
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowDecoration
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
-import coil3.SingletonImageLoader
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
@@ -28,6 +48,7 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
+import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
@@ -39,6 +60,7 @@ import com.arn.scrobble.work.DesktopWorkManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -59,8 +81,16 @@ import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
-import java.awt.image.BufferedImage
+import java.awt.GraphicsEnvironment
+import java.awt.SystemTray
+import java.awt.Toolkit
+import java.awt.Window
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
+import java.awt.event.WindowEvent
+import java.awt.event.WindowListener
 import kotlin.system.exitProcess
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -140,7 +170,7 @@ fun main(args: Array<String>) {
         }
 
         var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
-        val windowState = rememberWindowState()
+        var windowCreated by remember { mutableStateOf(windowShown) }
         val isSystemInDarkTheme = isSystemInDarkTheme()
         val trayIconTheme by PlatformStuff.mainPrefs.data
             .map { it.trayIconTheme }
@@ -153,6 +183,24 @@ fun main(args: Array<String>) {
             .map { it.seenApps }
             .collectAsState(emptyMap())
         val windowOpenTrigger = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
+        val trayState = rememberTrayState()
+
+        // restore window state
+        val storedWindowState = Stuff.mainPrefsInitialValue.windowState
+        val windowState = rememberWindowState(
+            position = storedWindowState?.let {
+                WindowPosition(it.x.dp, it.y.dp)
+            }
+                ?: WindowPosition.PlatformDefault,
+            size = storedWindowState?.let {
+                DpSize(it.width.dp, it.height.dp)
+            }
+                ?: DpSize(800.dp, 600.dp),
+            placement = if (storedWindowState?.isMaximized == true)
+                WindowPlacement.Maximized
+            else
+                WindowPlacement.Floating
+        )
 
         fun onExit() {
             DesktopWorkManager.clearAll()
@@ -189,9 +237,9 @@ fun main(args: Array<String>) {
 
                             val playingState =
                                 if (nowPlaying)
-                                    ""
+                                    "▶️ "
                                 else
-                                    "[✓] "
+                                    "✔️ "
 
                             val lovedString =
                                 if (playingTrackState.userLoved)
@@ -248,7 +296,7 @@ fun main(args: Array<String>) {
             }
                 .distinctUntilChanged()
                 .collectLatest { (tooltip, trayIconPainter, trayItems) ->
-                    val iconSize = 64
+                    val iconSize = 128f
 
                     val bmp = trayIconPainter.toImageBitmap(
                         darkTint = when (trayIconTheme) {
@@ -256,20 +304,15 @@ fun main(args: Array<String>) {
                             DayNightMode.LIGHT -> false
                             DayNightMode.DARK -> true
                         },
-                        size = Size(
-                            iconSize.toFloat(),
-                            iconSize.toFloat()
-                        )
+                        size = Size(iconSize, iconSize)
                     )
-                    val argb = IntArray(bmp.width * bmp.height)
-                    bmp.readPixels(argb)
 
                     trayData = PanoTrayUtils.TrayData(
                         tooltip = tooltip,
-                        argb = argb,
-                        iconSize = iconSize,
-                        menuItemIds = trayItems.map { it.first }.toTypedArray(),
-                        menuItemTexts = trayItems.map { it.second }.toTypedArray()
+                        bitmap = bmp,
+                        iconSize = iconSize.toInt(),
+                        menuItemIds = trayItems.map { it.first },
+                        menuItemTexts = trayItems.map { it.second }
                     )
                 }
         }
@@ -278,27 +321,124 @@ fun main(args: Array<String>) {
             trayMenuClickListener(
                 onOpenIfNeeded = {
                     windowOpenTrigger.emit(Unit)
+                    windowCreated = true
                     windowShown = true
                 },
                 onExit = ::onExit
             )
         }
 
-        LaunchedEffect(windowShown) {
-            if (!windowShown) {
-                delay(60.seconds)
-                // todo: cleanup, also make it 60 seconds
-                Logger.d { "running cleanup" }
-                SingletonImageLoader.reset()
+        LaunchedEffect(Unit) {
+            snapshotFlow { windowState }
+                .debounce(10.seconds)
+                .collectLatest {
+                    val ws = SerializableWindowState(
+                        x = it.position.x.value,
+                        y = it.position.y.value,
+                        width = it.size.width.value,
+                        height = it.size.height.value,
+                        isMaximized = it.placement == WindowPlacement.Maximized,
+                    )
+                    PlatformStuff.mainPrefs.updateData { it.copy(windowState = ws) }
+                }
+        }
+
+        if (DesktopStuff.os != DesktopStuff.Os.Linux) {
+            // never deinit on linux, as it causes native memory leaks on reinit
+            LaunchedEffect(windowShown) {
+                if (!windowShown) {
+                    delay(5.minutes)
+                    Logger.i { "running cleanup" }
+                    windowCreated = false
+                }
             }
         }
 
-        // use the AWT tray for macOS instead
-        if (DesktopStuff.os == DesktopStuff.Os.Macos) {
-            val trayState = rememberTrayState()
+        // leak test
+//        LaunchedEffect(Unit) {
+//            while (true) {
+//                delay(1000)
+//                windowShown = !windowShown
+//            }
+//        }
 
-            LaunchedEffect(Unit) {
-                PanoNotifications.setNotifyFn { title, body ->
+        // the AWT tray doesn't work on KDE
+        if (DesktopStuff.os != DesktopStuff.Os.Linux) {
+
+            trayData?.let { trayData ->
+                Tray(
+                    icon = BitmapPainter(trayData.bitmap),
+                    tooltip = trayData.tooltip,
+                    state = trayState
+                )
+            }
+
+            var trayMouseListenerSet by remember { mutableStateOf(false) }
+            var trayClickedEvent by remember { mutableStateOf<PanoTrayUtils.TrayClickEvent?>(null) }
+
+            LaunchedEffect(trayData) {
+                if (!trayMouseListenerSet && trayData != null) {
+                    val trayIcon = SystemTray.getSystemTray().trayIcons?.firstOrNull()
+                    if (trayIcon != null) {
+                        trayIcon.addMouseListener(
+                            object : MouseListener {
+                                override fun mouseClicked(e: MouseEvent?) {
+                                    trayClickedEvent = PanoTrayUtils.TrayClickEvent(
+                                        x = e?.x ?: 0,
+                                        y = e?.y ?: 0,
+                                        button = e?.button ?: 0
+                                    )
+                                }
+
+                                override fun mousePressed(e: MouseEvent?) {
+                                }
+
+                                override fun mouseReleased(e: MouseEvent?) {
+                                }
+
+                                override fun mouseEntered(e: MouseEvent?) {
+                                }
+
+                                override fun mouseExited(e: MouseEvent?) {
+                                }
+                            }
+                        )
+                        trayMouseListenerSet = true
+                    }
+                }
+            }
+
+            if (trayClickedEvent != null && trayData != null) {
+                TrayWindow(
+                    x = trayClickedEvent!!.x,
+                    y = trayClickedEvent!!.y,
+                    menuItemIds = trayData!!.menuItemIds,
+                    menuItemTexts = trayData!!.menuItemTexts,
+                ) {
+                    trayClickedEvent = null
+                }
+            }
+        } else {
+            LaunchedEffect(trayData) {
+                trayData?.let { trayData ->
+                    PanoNativeComponents.setTray(
+                        tooltip = trayData.tooltip,
+                        argb = trayData.bitmap.let { bmp ->
+                            val argb = IntArray(bmp.width * bmp.height)
+                            bmp.readPixels(argb)
+                            argb
+                        },
+                        iconSize = trayData.iconSize,
+                        menuItemIds = trayData.menuItemIds.toTypedArray(),
+                        menuItemTexts = trayData.menuItemTexts.toTypedArray(),
+                    )
+                }
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            PanoNotifications.setNotifyFn { title, body ->
+                if (DesktopStuff.os == DesktopStuff.Os.Macos) {
                     trayState.sendNotification(
                         Notification(
                             title = title,
@@ -306,71 +446,22 @@ fun main(args: Array<String>) {
                             type = Notification.Type.Info
                         )
                     )
-                }
-            }
-
-            trayData?.let { trayData ->
-                Tray(
-                    icon = trayData.argb.let {
-                        val bufferedImage = BufferedImage(
-                            trayData.iconSize, trayData.iconSize, BufferedImage.TYPE_INT_ARGB
-                        )
-                        bufferedImage.setRGB(
-                            0,
-                            0,
-                            trayData.iconSize,
-                            trayData.iconSize,
-                            it,
-                            0,
-                            trayData.iconSize
-                        )
-                        bufferedImage.toPainter()
-                    },
-                    tooltip = trayData.tooltip,
-                    state = trayState
-                ) {
-                    trayData.menuItemIds.zip(trayData.menuItemTexts).forEach { (id, text) ->
-                        if (id == PanoTrayUtils.ItemId.Separator.name) {
-                            Separator()
-                        } else {
-                            Item(text = text) {
-                                PanoTrayUtils.onTrayMenuItemClickedFn(id)
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            LaunchedEffect(Unit) {
-                PanoNotifications.setNotifyFn { title, body ->
+                } else {
                     PanoNativeComponents.notify(title, body)
-                }
-            }
-
-            LaunchedEffect(trayData) {
-                trayData?.let { trayData ->
-                    PanoNativeComponents.setTray(
-                        tooltip = trayData.tooltip,
-                        argb = trayData.argb,
-                        iconSize = trayData.iconSize,
-                        menuItemIds = trayData.menuItemIds,
-                        menuItemTexts = trayData.menuItemTexts,
-                    )
                 }
             }
         }
 
-        if (windowShown) {
+        if (windowCreated) {
             Window(
-                onCloseRequest = {
-                    windowShown = false
-                },
+                onCloseRequest = { windowShown = false },
                 state = windowState,
                 title = BuildKonfig.APP_NAME,
+                visible = windowShown,
                 icon = painterResource(Res.drawable.ic_launcher_with_bg)
             ) {
                 LaunchedEffect(Unit) {
-                    if (isSystemInDarkTheme)
+                    if (isSystemInDarkTheme && DesktopStuff.os == DesktopStuff.Os.Windows)
                         PanoNativeComponents.applyDarkModeToWindow(window.windowHandle)
 
                     windowOpenTrigger.collect {
@@ -454,6 +545,136 @@ private suspend fun trayMenuClickListener(
 
                     else -> {
                         onOpenIfNeeded()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun TrayWindow(
+    x: Int,
+    y: Int,
+    menuItemIds: List<String>,
+    menuItemTexts: List<String>,
+    onDismiss: () -> Unit,
+) {
+    val densityFactor = remember {
+        // defaultScreenDevice changes on a multi-monitor setup, LocalDensity.current does not seem to update
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
+            .defaultScreenDevice
+            .defaultConfiguration
+            .defaultTransform.scaleX.toFloat()
+    }
+
+    // convert x, y to dp
+    val xDp = (x / densityFactor).dp
+    val yDp = (y / densityFactor).dp
+
+    SwingWindow(
+        onCloseRequest = onDismiss,
+        decoration = WindowDecoration.Undecorated(),
+        transparent = true,
+        resizable = false,
+        alwaysOnTop = true,
+        state = rememberWindowState(
+            position = WindowPosition(xDp, yDp),
+            size = DpSize.Unspecified,
+            placement = WindowPlacement.Floating
+        ),
+        init = { window ->
+            // hide it from the taskbar
+            window.type = Window.Type.UTILITY
+            window.addWindowListener(
+                object : WindowListener {
+
+                    override fun windowOpened(p0: WindowEvent?) {
+                        // Get screen size
+                        val screenSize = Toolkit.getDefaultToolkit().screenSize
+                        val winSize = window.size
+                        var newX = window.location.x
+                        var newY = window.location.y
+
+                        // Adjust X if out of bounds
+                        if (newX + winSize.width > screenSize.width) {
+                            newX = screenSize.width - winSize.width
+                        }
+                        if (newX < 0) newX = 0
+
+                        // Adjust Y if out of bounds
+                        if (newY + winSize.height > screenSize.height) {
+                            newY = screenSize.height - winSize.height
+                        }
+                        if (newY < 0) newY = 0
+
+                        window.setLocation(newX, newY)
+                    }
+
+                    override fun windowClosing(p0: WindowEvent?) {
+                    }
+
+                    override fun windowClosed(p0: WindowEvent?) {
+                    }
+
+                    override fun windowIconified(p0: WindowEvent?) {
+                    }
+
+                    override fun windowDeiconified(p0: WindowEvent?) {
+                    }
+
+                    override fun windowActivated(p0: WindowEvent?) {
+                    }
+
+                    override fun windowDeactivated(p0: WindowEvent?) {
+                        // close the window when deactivated
+                        onDismiss()
+                    }
+                }
+            )
+        }
+    ) {
+        AppTheme {
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                var actualWidth by remember { mutableStateOf(0) }
+
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = 200.dp)
+                        .padding(vertical = 8.dp)
+                        .onSizeChanged {
+                            actualWidth = it.width
+                        },
+                ) {
+                    menuItemIds.zip(menuItemTexts).forEach { (id, text) ->
+                        if (id == PanoTrayUtils.ItemId.Separator.name) {
+                            Spacer(
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                            )
+                        } else {
+                            Text(
+                                text = text,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .then(
+                                        if (actualWidth > 0)
+                                            Modifier.width(actualWidth.dp)
+                                        else
+                                            Modifier
+                                    )
+                                    .clickable {
+                                        PanoTrayUtils.onTrayMenuItemClickedFn(id)
+                                        onDismiss()
+                                    }
+                                    .padding(vertical = 4.dp, horizontal = 16.dp)
+                            )
+                        }
                     }
                 }
             }

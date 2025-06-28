@@ -35,7 +35,7 @@ actual object BugReportUtils {
         }
 
         var text = ""
-        text += BuildKonfig.APP_NAME + " v" + BuildKonfig.VER_NAME + "\n"
+        text += BuildKonfig.APP_NAME + " v" + BuildKonfig.VER_NAME + " " + BuildKonfig.BUILD_DATE + "\n"
         text += "Android " + Build.VERSION.RELEASE + "\n"
         text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 

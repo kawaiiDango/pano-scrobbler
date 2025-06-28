@@ -1,15 +1,22 @@
 package com.arn.scrobble.utils
 
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 object PanoTrayUtils {
-    class TrayData(
+    data class TrayData(
         val tooltip: String,
-        val argb: IntArray,
+        val bitmap: ImageBitmap,
         val iconSize: Int,
-        val menuItemIds: Array<String>,
-        val menuItemTexts: Array<String>,
+        val menuItemIds: List<String>,
+        val menuItemTexts: List<String>,
+    )
+
+    data class TrayClickEvent(
+        val x: Int,
+        val y: Int,
+        val button: Int,
     )
 
     private val _onTrayMenuItemClicked =

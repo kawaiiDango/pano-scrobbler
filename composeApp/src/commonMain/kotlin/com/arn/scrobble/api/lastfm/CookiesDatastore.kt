@@ -1,7 +1,7 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.api.lastfm.CookieSerializable.Companion.toCookieSerializable
+import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.http.Cookie
 import io.ktor.http.CookieEncoding
@@ -81,9 +81,5 @@ class CookiesDatastore : CookiesStorage {
 
     suspend fun clear() {
         mainPrefs.updateData { it.copy(cookies = emptyMap()) }
-    }
-
-    companion object {
-        const val LASTFM_COOKIES = "LastFmCookies"
     }
 }

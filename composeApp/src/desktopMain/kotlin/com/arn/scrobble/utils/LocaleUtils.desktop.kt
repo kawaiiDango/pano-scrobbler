@@ -1,24 +1,35 @@
 package com.arn.scrobble.utils
 
+import com.arn.scrobble.PanoNativeComponents
 import java.util.Locale
 
-// context is always null on desktop, lang = null indicates that the system locale should be set
+private var systemDefaultLocale: Locale? = null
+
+// lang = null indicates that the system locale should be set
 actual fun setAppLocale(lang: String?, force: Boolean) {
+    if (systemDefaultLocale == null) {
+        if (Runtime.version().version().first() >= 24) {
+            systemDefaultLocale = Locale.getDefault()
+        } else {
+            // for older graalvm, we need to get the system locale manually
+            val (lang, country) = PanoNativeComponents.getSystemLocale().split("-")
+            try {
+                systemDefaultLocale = Locale.of(lang, country)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     val locale = if (lang != null) {
         Locale.forLanguageTag(lang)
     } else {
-        // todo: auto mode does not work on graalvm native image
-        // the locale is hardcoded to build system's locale at build time
-//        val country = System.getProperty("user.country")
-//        val language = System.getProperty("user.language")
-//
-//        val locale = Locale.forLanguageTag("$language-$country")
-        Locale.ENGLISH
+        systemDefaultLocale ?: Locale.ENGLISH
     }
 
     Locale.setDefault(locale)
 }
 
-actual fun getCurrentLocale(localePref: String?): String {
-    return localePref ?: "en"
+actual fun getCurrentLocale(localePref: String?): String? {
+    return localePref
 }

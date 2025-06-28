@@ -20,6 +20,10 @@
   "allDeclaredMethods": true
 },
 {
+  "name":"com.arn.scrobble.DesktopWebView",
+  "allDeclaredMethods": true
+},
+{
   "name":"java.awt.AWTEvent",
   "fields":[{"name":"bdata"}, {"name":"consumed"}, {"name":"id"}]
 },
@@ -85,6 +89,14 @@
   "methods":[{"name":"<init>","parameterTypes":["int","int","int","int"] }]
 },
 {
+  "name":"java.awt.Menu",
+  "methods":[{"name":"countItemsImpl","parameterTypes":[] }, {"name":"getItemImpl","parameterTypes":["int"] }]
+},
+{
+  "name":"java.awt.MenuItem",
+  "fields":[{"name":"enabled"}, {"name":"label"}]
+},
+{
   "name":"java.awt.Point",
   "fields":[{"name":"x"}, {"name":"y"}],
   "methods":[{"name":"<init>","parameterTypes":["int","int"] }]
@@ -100,6 +112,10 @@
 {
   "name":"java.awt.Toolkit",
   "methods":[{"name":"getDefaultToolkit","parameterTypes":[] }, {"name":"getFontMetrics","parameterTypes":["java.awt.Font"] }]
+},
+{
+  "name":"java.awt.TrayIcon",
+  "fields":[{"name":"actionCommand"}, {"name":"id"}]
 },
 {
   "name":"java.awt.Window",
@@ -468,6 +484,10 @@
   "fields":[{"name":"sdCurrent"}]
 },
 {
+  "name":"sun.awt.windows.TranslucentWindowPainter$VIOptWindowPainter$1",
+  "methods":[{"name":"run","parameterTypes":[] }]
+},
+{
   "name":"sun.awt.windows.WCanvasPeer"
 },
 {
@@ -513,6 +533,10 @@
 {
   "name":"sun.awt.windows.WToolkit",
   "allDeclaredMethods": true
+},
+{
+  "name":"sun.awt.windows.WTrayIconPeer",
+  "methods":[{"name":"postEvent","parameterTypes":["java.awt.AWTEvent"] }, {"name":"updateImage","parameterTypes":[] }]
 },
 {
   "name":"sun.awt.windows.WWindowPeer",

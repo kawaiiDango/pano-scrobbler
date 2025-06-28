@@ -2,8 +2,10 @@ package com.arn.scrobble.recents
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -14,7 +16,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -417,24 +418,33 @@ private fun ScrobblesTypeSelectorButton(
     text: String,
     imageVector: ImageVector,
     onTypeSelected: (ScrobblesType?) -> Unit,
+    isFirst: Boolean = false,
+    isLast: Boolean = false,
 ) {
-    OutlinedToggleButton(
-        checked = checked,
-        onCheckedChange = {
-            if (it)
-                onTypeSelected(type)
-        },
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        tooltip = { PlainTooltip { Text(text) } },
+        state = rememberTooltipState(),
+        focusable = !checked,
+        enableUserInput = !checked,
     ) {
-        if (checked) {
-            Icon(imageVector, contentDescription = text)
-            Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-            Text(text = text, maxLines = 1)
-        } else {
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                tooltip = { PlainTooltip { Text(text) } },
-                state = rememberTooltipState(),
-            ) {
+        OutlinedToggleButton(
+            checked = checked,
+            onCheckedChange = {
+                if (it)
+                    onTypeSelected(type)
+            },
+            shapes = when {
+                isFirst -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                isLast -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+            },
+        ) {
+            if (checked) {
+                Icon(imageVector, contentDescription = text)
+                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                Text(text = text, maxLines = 1)
+            } else {
                 Icon(
                     imageVector,
                     contentDescription = text
@@ -458,12 +468,12 @@ private fun ScrobblesTypeSelector(
     var timeJumpMenuShown by remember { mutableStateOf(false) }
     var datePickerShown by rememberSaveable { mutableStateOf(false) }
 
-    ButtonGroup(
+    Row(
+        modifier = modifier.padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(
-            ButtonGroupDefaults.HorizontalArrangement.spacing,
-            alignment = Alignment.CenterHorizontally
+            ButtonGroupDefaults.ConnectedSpaceBetween,
+            Alignment.CenterHorizontally
         ),
-        modifier = modifier
     ) {
         if (PlatformStuff.isDesktop || PlatformStuff.isTv) {
             ScrobblesTypeSelectorButton(
@@ -473,7 +483,8 @@ private fun ScrobblesTypeSelector(
                 imageVector = Icons.Rounded.Refresh,
                 onTypeSelected = {
                     onRefresh()
-                }
+                },
+                isFirst = true
             )
         }
 
@@ -485,7 +496,8 @@ private fun ScrobblesTypeSelector(
             onTypeSelected = {
                 if (it != null)
                     onTypeSelected(it, null)
-            }
+            },
+            isFirst = !(PlatformStuff.isDesktop || PlatformStuff.isTv)
         )
         ScrobblesTypeSelectorButton(
             type = ScrobblesType.LOVED,
@@ -497,38 +509,40 @@ private fun ScrobblesTypeSelector(
                     onTypeSelected(it, null)
             }
         )
-
-        OutlinedToggleButton(
-            checked = selectedType == ScrobblesType.TIME_JUMP,
-            onCheckedChange = {
-                if ((it && selectedType != ScrobblesType.TIME_JUMP) ||
-                    (!it && selectedType == ScrobblesType.TIME_JUMP)
-                )
-                    timeJumpMenuShown = true
-            },
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(stringResource(Res.string.time_jump)) } },
+            state = rememberTooltipState(),
+            focusable = selectedType != ScrobblesType.TIME_JUMP,
+            enableUserInput = selectedType != ScrobblesType.TIME_JUMP,
         ) {
-            val painter = combineImageVectors(
-                getPeriodTypeIcon(TimePeriodType.CUSTOM),
-                Icons.Outlined.ArrowDropDown
-            )
-
-            if (selectedType == ScrobblesType.TIME_JUMP) {
-                Icon(painter, contentDescription = stringResource(Res.string.time_jump))
-
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(
-                    if (timeJumpMillis == null)
-                        stringResource(Res.string.time_jump)
-                    else
-                        PanoTimeFormatter.relative(timeJumpMillis),
-                    maxLines = 1
+            OutlinedToggleButton(
+                checked = selectedType == ScrobblesType.TIME_JUMP,
+                onCheckedChange = {
+                    if ((it && selectedType != ScrobblesType.TIME_JUMP) ||
+                        (!it && selectedType == ScrobblesType.TIME_JUMP)
+                    )
+                        timeJumpMenuShown = true
+                },
+                shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
+            ) {
+                val painter = combineImageVectors(
+                    getPeriodTypeIcon(TimePeriodType.CUSTOM),
+                    Icons.Outlined.ArrowDropDown
                 )
-            } else {
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                    tooltip = { PlainTooltip { Text(stringResource(Res.string.time_jump)) } },
-                    state = rememberTooltipState(),
-                ) {
+
+                if (selectedType == ScrobblesType.TIME_JUMP) {
+                    Icon(painter, contentDescription = stringResource(Res.string.time_jump))
+
+                    Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                    Text(
+                        if (timeJumpMillis == null)
+                            stringResource(Res.string.time_jump)
+                        else
+                            PanoTimeFormatter.relative(timeJumpMillis),
+                        maxLines = 1
+                    )
+                } else {
                     Icon(painter, contentDescription = stringResource(Res.string.time_jump))
                 }
             }
@@ -585,7 +599,8 @@ private fun ScrobblesTypeSelector(
             imageVector = Icons.Outlined.Casino,
             onTypeSelected = {
                 onNavigateToRandom()
-            }
+            },
+            isLast = true
         )
     }
 

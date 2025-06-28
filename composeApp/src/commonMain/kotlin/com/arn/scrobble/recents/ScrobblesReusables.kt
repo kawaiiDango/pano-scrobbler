@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.ScrobbleEverywhere
@@ -584,13 +583,7 @@ private fun PendingScrobbleDesc(
     pendingScrobble: PendingScrobble,
 ) {
     val currentScrobblableType = remember { Scrobblables.current.value?.userAccount?.type }
-    val accountTypesList = mutableListOf<AccountType>()
-    AccountType.entries.forEach {
-        if (pendingScrobble.services and (1 shl it.ordinal) != 0)
-            accountTypesList += it
-    }
-
-    if (accountTypesList.size == 1 && accountTypesList.first() == currentScrobblableType) {
+    if (pendingScrobble.services.size == 1 && pendingScrobble.services.first() == currentScrobblableType) {
 
     } else {
         DropdownMenuItem(
@@ -599,7 +592,7 @@ private fun PendingScrobbleDesc(
             text = {
                 Text(
                     stringResource(Res.string.scrobble_services) + ":\n" +
-                            accountTypesList.map {
+                            pendingScrobble.services.map {
                                 accountTypeLabel(it)
                             }.joinToString(", ")
                 )

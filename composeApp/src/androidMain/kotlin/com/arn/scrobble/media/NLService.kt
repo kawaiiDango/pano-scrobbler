@@ -163,7 +163,6 @@ class NLService : NotificationListenerService() {
             sessListener = null
             scrobbleQueue.shutdown()
         }
-        PanoDb.destroyInstance()
         job?.cancel()
     }
 

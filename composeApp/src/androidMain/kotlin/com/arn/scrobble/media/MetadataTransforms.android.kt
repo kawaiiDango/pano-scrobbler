@@ -114,12 +114,12 @@ actual fun transformMediaMetadata(
 //            )
 
     val metadataInfo = MetadataInfo(
-        app_id = trackInfo.appId,
+        appId = trackInfo.appId,
         title = title,
         artist = artist,
         album = album,
-        album_artist = albumArtist,
-        track_number = trackNumber,
+        albumArtist = albumArtist,
+        trackNumber = trackNumber,
         duration = durationMillis,
     )
 

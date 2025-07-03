@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.log10
 import kotlin.math.pow
@@ -27,7 +28,11 @@ import kotlin.math.pow
 class ChartsVM : ViewModel() {
 
     private val _input = MutableStateFlow<ChartsLoaderInput?>(null)
-    private val _inputDebounced = _input.debounce(300).filterNotNull()
+    private val _inputDebounced = _input.debounce(500)
+        .filterNotNull()
+        .onEach {
+            reset()
+        }
 
     private val pagingConfig = PagingConfig(
         pageSize = 50,
@@ -185,7 +190,7 @@ class ChartsVM : ViewModel() {
         }
     }
 
-    fun reset() {
+    private fun reset() {
         _listeningActivity.value = null
         _tagCloud.value = null
     }

@@ -43,7 +43,6 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.onboarding.FileLoginScreen
 import com.arn.scrobble.onboarding.GnufmLoginScreen
 import com.arn.scrobble.onboarding.ListenBrainzLoginScreen
-import com.arn.scrobble.onboarding.MalojaLoginScreen
 import com.arn.scrobble.onboarding.OnboardingScreen
 import com.arn.scrobble.onboarding.OobLibrefmLoginScreen
 import com.arn.scrobble.onboarding.OobPleromaLoginScreen
@@ -85,7 +84,6 @@ import pano_scrobbler.composeapp.generated.resources.edit_regex_test
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
-import pano_scrobbler.composeapp.generated.resources.maloja
 import pano_scrobbler.composeapp.generated.resources.my_scrobbles
 import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
@@ -109,7 +107,6 @@ fun NavGraphBuilder.panoNavGraph(
     onSetTitle: (String, String?) -> Unit,
     onSetOtherUser: (UserCached?) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
-    onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
     onSetTabData: (String, List<PanoTab>?) -> Unit,
     navigate: (PanoRoute) -> Unit,
     onOnboardingFinished: () -> Unit,
@@ -175,7 +172,6 @@ fun NavGraphBuilder.panoNavGraph(
                     mainViewModel.setTabIdx(it.id, tab)
                 },
                 onSetTabData = onSetTabData,
-                onSetNavMetadataList = onSetNavMetadataList,
                 onNavigate = navigate,
                 onOpenDialog = onOpenDialog,
                 pullToRefreshState = pullToRefreshState(),
@@ -212,7 +208,6 @@ fun NavGraphBuilder.panoNavGraph(
                 mainViewModel.setTabIdx(it.id, tab)
             },
             onSetTabData = onSetTabData,
-            onSetNavMetadataList = onSetNavMetadataList,
             onNavigate = navigate,
             onOpenDialog = onOpenDialog,
             pullToRefreshState = pullToRefreshState(),
@@ -505,14 +500,14 @@ fun NavGraphBuilder.panoNavGraph(
         )
     }
 
-    composable<PanoRoute.LoginMaloja> {
-        onSetTitleRes(it.id, Res.string.maloja)
-
-        MalojaLoginScreen(
-            onDone = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
+//    composable<PanoRoute.LoginMaloja> {
+//        onSetTitleRes(it.id, Res.string.maloja)
+//
+//        MalojaLoginScreen(
+//            onDone = goBack,
+//            modifier = modifier().addColumnPadding()
+//        )
+//    }
 
     composable<PanoRoute.LoginPleroma> {
         onSetTitleRes(it.id, Res.string.pleroma)

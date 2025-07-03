@@ -3,6 +3,7 @@ package com.arn.scrobble
 import androidx.annotation.Keep
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.automation.Automation
+import com.arn.scrobble.media.CommonPlaybackState
 import com.arn.scrobble.media.DesktopMediaListener
 import com.arn.scrobble.media.MetadataInfo
 import com.arn.scrobble.media.PlaybackInfo
@@ -11,14 +12,12 @@ import com.arn.scrobble.media.SessionInfo
 import com.arn.scrobble.media.listenForPlayingTrackEvents
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
-import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Keep
 object PanoNativeComponents {
     var desktopMediaListener: DesktopMediaListener? = null
-    private const val TAG = "pano_native_components"
 
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
@@ -31,10 +30,6 @@ object PanoNativeComponents {
             GlobalScope,
             scrobbleQueue
         )
-
-        Thread {
-            startEventLoop()
-        }.start()
 
         desktopMediaListener!!.start()
 
@@ -55,20 +50,48 @@ object PanoNativeComponents {
 
 
     @JvmStatic
-    fun onActiveSessionsChanged(json: String) {
-        val sessionInfos = Stuff.myJson.decodeFromString<List<SessionInfo>>(json)
+    fun onActiveSessionsChanged(appIds: Array<String>, appNames: Array<String>) {
+        val sessionInfos = appIds.zip(appNames).map { (appId, appName) ->
+            SessionInfo(
+                appId = appId,
+                appName = appName,
+            )
+        }
+
         desktopMediaListener?.platformActiveSessionsChanged(sessionInfos)
     }
 
     @JvmStatic
-    fun onMetadataChanged(json: String) {
-        val metadataInfo = Stuff.myJson.decodeFromString<MetadataInfo>(json)
+    fun onMetadataChanged(
+        appId: String,
+        title: String,
+        artist: String,
+        album: String,
+        albumArtist: String,
+        trackNumber: Int,
+        duration: Long
+    ) {
+        val metadataInfo = MetadataInfo(
+            appId = appId,
+            title = title,
+            artist = artist,
+            album = album,
+            albumArtist = albumArtist,
+            trackNumber = trackNumber,
+            duration = duration
+        )
+
         desktopMediaListener?.platformMetadataChanged(metadataInfo)
     }
 
     @JvmStatic
-    fun onPlaybackStateChanged(json: String) {
-        val playbackInfo = Stuff.myJson.decodeFromString<PlaybackInfo>(json)
+    fun onPlaybackStateChanged(appId: String, state: String, position: Long, canSkip: Boolean) {
+        val playbackInfo = PlaybackInfo(
+            appId = appId,
+            state = CommonPlaybackState.valueOf(state),
+            position = position,
+            canSkip = canSkip
+        )
         desktopMediaListener?.platformPlaybackStateChanged(playbackInfo)
     }
 
@@ -97,9 +120,6 @@ object PanoNativeComponents {
 
     @JvmStatic
     external fun setAllowedAppIds(appIds: Array<String>)
-
-    @JvmStatic
-    private external fun startEventLoop()
 
     @JvmStatic
     private external fun startListeningMedia()

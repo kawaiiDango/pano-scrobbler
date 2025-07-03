@@ -115,7 +115,6 @@ fun ChartsPagerScreen(
     }
 
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?) {
-        viewModel.reset()
         viewModel.setChartsInput(
             ChartsLoaderInput(
                 username = user.name,

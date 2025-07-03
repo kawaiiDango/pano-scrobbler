@@ -15,7 +15,6 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
-import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
@@ -170,7 +169,8 @@ enum class AccountType(val id: Int) {
     LIBREFM(1),
     CUSTOM_LISTENBRAINZ(4),
     GNUFM(2),
-    MALOJA(5),
+
+    //    MALOJA(5),
     PLEROMA(6),
     FILE(7)
 }
@@ -233,7 +233,7 @@ object Scrobblables {
             AccountType.CUSTOM_LISTENBRAINZ,
                 -> ListenBrainz(userAccount)
 
-            AccountType.MALOJA -> Maloja(userAccount)
+//            AccountType.MALOJA -> Maloja(userAccount)
 
             AccountType.PLEROMA -> Pleroma(userAccount)
 

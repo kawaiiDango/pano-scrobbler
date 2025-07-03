@@ -28,9 +28,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.datastore.core.MultiProcessDataStoreFactory
+import androidx.room.ExperimentalRoomApi
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.driver.AndroidSQLiteDriver
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.BuildKonfig
@@ -54,15 +54,12 @@ import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.copied
-import pano_scrobbler.composeapp.generated.resources.no_browser
 import pano_scrobbler.composeapp.generated.resources.no_player
-import pano_scrobbler.composeapp.generated.resources.tv_url_notice
 import java.io.File
 import java.io.OutputStream
 import java.net.Inet4Address
+import java.util.concurrent.TimeUnit
 
 actual object PlatformStuff {
 
@@ -251,15 +248,16 @@ actual object PlatformStuff {
         }
     }
 
+    @OptIn(ExperimentalRoomApi::class)
     actual fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb> {
         val dbFile = application.getDatabasePath("pendingScrobbles")
         return Room.databaseBuilder<PanoDb>(
             context = application,
             name = dbFile.absolutePath
         )
-            .setDriver(AndroidSQLiteDriver())
+//            .setDriver(AndroidSQLiteDriver())
             .enableMultiInstanceInvalidation()
-
+            .setAutoCloseTimeout(7, TimeUnit.MINUTES)
     }
 
     actual fun loadApplicationLabel(appId: String): String {

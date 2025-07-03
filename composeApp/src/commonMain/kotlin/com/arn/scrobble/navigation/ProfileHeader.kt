@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -29,7 +29,9 @@ import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,6 +75,7 @@ import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.reports
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ProfileHeader(
     otherUser: UserCached?,
@@ -111,18 +115,6 @@ fun ProfileHeader(
         )
     }
 
-    val snowflakes = remember { List(50) { generateRandomSnowflake() } }
-    val infiniteTransition = rememberInfiniteTransition(label = "SnowfallTransition")
-    var size by remember { mutableStateOf(IntSize.Zero) }
-    val offsetY by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 60000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "Snowfall"
-    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,20 +150,34 @@ fun ProfileHeader(
             }
 
         } else {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                AvatarOrInitials(
-                    avatarUrl = profilePicUrl,
-                    avatarName = userName,
-                    textStyle = MaterialTheme.typography.displayLarge,
-                    modifier = Modifier
-                        .padding(bottom = 24.dp)
-                        .aspectRatio(1f)
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.large)
-                        .then(
-                            if (drawSnowfall) Modifier
+            AvatarOrInitials(
+                avatarUrl = profilePicUrl,
+                avatarName = userName,
+                textStyle = MaterialTheme.typography.displayLarge,
+                modifier = Modifier
+                    .heightIn(max = 240.dp)
+                    .aspectRatio(1f, true)
+                    .clip(MaterialTheme.shapes.large)
+                    .then(
+                        if (drawSnowfall) {
+                            val snowflakes = remember { List(50) { generateRandomSnowflake() } }
+                            val infiniteTransition =
+                                rememberInfiniteTransition(label = "SnowfallTransition")
+                            var size by remember { mutableStateOf(IntSize.Zero) }
+                            val offsetY by infiniteTransition.animateFloat(
+                                initialValue = 0f,
+                                targetValue = 1000f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(
+                                        durationMillis = 60000,
+                                        easing = LinearEasing
+                                    ),
+                                    repeatMode = RepeatMode.Restart
+                                ),
+                                label = "Snowfall"
+                            )
+
+                            Modifier
                                 .onSizeChanged {
                                     size = it
                                 }
@@ -185,26 +191,52 @@ fun ProfileHeader(
                                             size.height
                                         )
                                     }
-                                } else Modifier
-                        )
+                                }
+                        } else
+                            Modifier
+                    )
+            )
+
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp)
+            ) {
+
+                Text(
+                    text = displayText,
+                    style = MaterialTheme.typography.titleLargeEmphasized,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .weight(1f, false)
                 )
 
                 ProfileHeaderDropdown(
                     currentUser = otherUser ?: currentScrobblable?.userAccount?.user,
                     accountType = currentScrobblable?.userAccount?.type,
                     onNavigate = onNavigate,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = (-4).dp)
                 )
-            }
 
-            Text(
-                text = displayText,
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+                if (drawerData != null && drawerData.scrobblesToday > 0) {
+                    TextWithIcon(
+                        icon = Icons.Outlined.Today,
+                        text = pluralStringResource(
+                            Res.plurals.num_scrobbles_today,
+                            drawerData.scrobblesToday,
+                            drawerData.scrobblesToday.format()
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .weight(1f, false)
+                    )
+                }
+            }
         }
 
         drawerData?.let { drawerData ->
@@ -218,6 +250,7 @@ fun ProfileHeader(
                     TextWithIcon(
                         icon = Icons.Outlined.PlayArrow,
                         text = drawerData.scrobblesTotal.format(),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
@@ -225,6 +258,7 @@ fun ProfileHeader(
                     TextWithIcon(
                         icon = Icons.Outlined.Mic,
                         text = drawerData.artistCount.format(),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
@@ -232,6 +266,7 @@ fun ProfileHeader(
                     TextWithIcon(
                         icon = Icons.Outlined.Album,
                         text = drawerData.albumCount.format(),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
@@ -239,20 +274,9 @@ fun ProfileHeader(
                     TextWithIcon(
                         icon = Icons.Outlined.MusicNote,
                         text = drawerData.trackCount.format(),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
-
-                if (drawerData.scrobblesToday > 0) {
-                    TextWithIcon(
-                        icon = Icons.Outlined.Today,
-                        text = pluralStringResource(
-                            Res.plurals.num_scrobbles_today,
-                            drawerData.scrobblesToday,
-                            drawerData.scrobblesToday.format()
-                        ),
-                    )
-                }
-
             }
         }
     }
@@ -287,7 +311,8 @@ fun ProfileHeaderDropdown(
             onDismissRequest = { dropDownShown = false },
         ) {
             if (currentUser.isSelf) {
-                accounts.filterNot { it == Scrobblables.current.value }.forEach {
+                val accountsFiltered = accounts.filterNot { it == Scrobblables.current.value }
+                accountsFiltered.forEach {
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -309,6 +334,11 @@ fun ProfileHeaderDropdown(
                         },
                     )
                 }
+
+                if (accountsFiltered.isNotEmpty())
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
             }
 
             if (!PlatformStuff.isTv) {
@@ -332,7 +362,12 @@ fun ProfileHeaderDropdown(
                     accountType == AccountType.LISTENBRAINZ
                 ) {
                     DropdownMenuItem(
-                        text = { Text(stringResource(Res.string.reports)) },
+                        text = {
+                            Text(
+                                stringResource(Res.string.reports),
+                                maxLines = 1
+                            )
+                        },
                         leadingIcon = {
                             Icon(
                                 Icons.Outlined.OpenInBrowser,

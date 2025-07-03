@@ -77,7 +77,6 @@ import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.NavFromTrayEffect
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoFabData
-import com.arn.scrobble.navigation.PanoNavMetadata
 import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTab
@@ -125,7 +124,6 @@ fun PanoAppContent(
 
     val titlesMap = remember { mutableStateMapOf<String, String>() }
     val tabData = remember { mutableStateMapOf<String, List<PanoTab>>() }
-    var navMetadata by remember { mutableStateOf<List<PanoNavMetadata>?>(null) }
     var currentDialogArgs by rememberSaveable(saver = jsonSerializableSaver<PanoDialog?>()) {
         mutableStateOf(null)
     }
@@ -381,7 +379,6 @@ fun PanoAppContent(
                                     },
                                     onSetOtherUser = { currentUserOther = it },
                                     onOpenDialog = { currentDialogArgs = it },
-                                    onSetNavMetadataList = { navMetadata = it },
                                     pullToRefreshState = { pullToRefreshState },
                                     onSetRefreshing = { id, prState ->
                                         pullToRefreshStateForTabs[id] = prState
@@ -396,7 +393,6 @@ fun PanoAppContent(
                         initialDialogArgs = currentDialogArgs,
                         onNavigate = navController::navigate,
                         onDismissRequest = { currentDialogArgs = null },
-                        navMetadataList = { navMetadata },
                         mainViewModel = viewModel,
                     )
                 }

@@ -2,7 +2,6 @@ package com.arn.scrobble.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavDestination
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
@@ -27,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -88,7 +88,7 @@ class MainViewModel : ViewModel() {
     val drawerDataFlow: StateFlow<DrawerData> =
         combine(
             Scrobblables.current.map { it?.userAccount?.user },
-            otherUserTrigger
+            otherUserTrigger.distinctUntilChanged()
         )
         { userSelf, userOther -> userSelf to userOther }
             .flatMapLatest { (userSelf, userOther) ->

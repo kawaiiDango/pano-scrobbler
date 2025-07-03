@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -135,10 +136,10 @@ fun ChartsOverviewScreen(
     val listeningActivity by viewModel.listeningActivity.collectAsStateWithLifecycle()
 
     val scrollState = rememberScrollState()
-    var tagCloudOffsetY by remember { mutableFloatStateOf(0f) }
-    var tagCloudVisible by remember { mutableStateOf(false) }
-    var listeningActivityOffsetY by remember { mutableFloatStateOf(0f) }
-    var listeningActivityVisible by remember { mutableStateOf(false) }
+    var tagCloudOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
+    var tagCloudVisible by rememberSaveable { mutableStateOf(false) }
+    var listeningActivityOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
+    var listeningActivityVisible by rememberSaveable { mutableStateOf(false) }
     val density = LocalDensity.current
 
     val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
@@ -159,7 +160,6 @@ fun ChartsOverviewScreen(
     }
 
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?) {
-        viewModel.reset()
         viewModel.setChartsInput(
             ChartsLoaderInput(
                 username = user.name,
@@ -360,8 +360,8 @@ private fun TagCloudContent(
     modifier: Modifier = Modifier,
 ) {
     var kumoBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    val color1 = MaterialTheme.colorScheme.secondary
-    val color2 = MaterialTheme.colorScheme.onBackground
+    val color1 = MaterialTheme.colorScheme.inverseSurface
+    val color2 = MaterialTheme.colorScheme.secondary
     var tagCloudSizePx by remember { mutableIntStateOf(0) }
     val isLoading by remember(tagCloud, kumoBitmap) {
         mutableStateOf(tagCloud == null || kumoBitmap == null && tagCloud.isNotEmpty())

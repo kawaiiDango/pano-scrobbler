@@ -59,14 +59,14 @@ class DesktopMediaListener(
 
     fun platformActiveSessionsChanged(sessions: List<SessionInfo>) {
         this.sessionInfos = sessions
-        Logger.d { "controllers: " + sessions.joinToString { it.app_id } }
+        Logger.d { "controllers: " + sessions.joinToString { it.appId } }
 
         if (!scrobblerEnabled.value)
             return
 
         val unseenAppItems = sessions
-            .filter { it.app_id !in seenApps.value }
-            .map { it.app_id to it.app_name }
+            .filter { it.appId !in seenApps.value }
+            .map { it.appId to it.appName }
 
         if (unseenAppItems.isNotEmpty()) {
             scope.launch {
@@ -80,7 +80,7 @@ class DesktopMediaListener(
 
 
         val sessionsFiltered = sessions.filter {
-            shouldScrobble(it.app_id) && it.app_id !in sessionTrackersMap
+            shouldScrobble(it.appId) && it.appId !in sessionTrackersMap
         }
 
 //        val tokens = mutableSetOf<MediaSession.Token>()
@@ -90,19 +90,19 @@ class DesktopMediaListener(
 //                if (controller.sessionToken !in controllersMap) {
 
             val playingTrackInfo =
-                findTrackInfoByKey(session.app_id)
+                findTrackInfoByKey(session.appId)
                 // there is no concept of session tag on desktop platforms
-                    ?: PlayingTrackInfo(session.app_id, "").also {
-                        putTrackInfo(session.app_id, it)
+                    ?: PlayingTrackInfo(session.appId, "").also {
+                        putTrackInfo(session.appId, it)
                     }
 
-            sessionTrackersMap[session.app_id] = SessionTracker(playingTrackInfo)
+            sessionTrackersMap[session.appId] = SessionTracker(playingTrackInfo)
         }
 //            }
 //        }
         // Now remove old sessions that are not longer active.
         removeSessions(
-            sessions.map { it.app_id }.toSet(),
+            sessions.map { it.appId }.toSet(),
         )
 
     }
@@ -189,10 +189,10 @@ class DesktopMediaListener(
         Logger.i { "metadata: $metadata" }
 
         val sessionTracker =
-            sessionTrackersMap[metadata.app_id] ?: return
+            sessionTrackersMap[metadata.appId] ?: return
 
 //        Info: (scrobbler) metadata: MetadataInfo(app_id=Spotify.exe, title=Advertisement, artist=Spotify, album=, album_artist=Spotify, track_number=0, duration=25417)
-        if (metadata.artist == "Spotify" && metadata.album_artist == "Spotify" && metadata.title == "Advertisement" && metadata.album.isEmpty()) {
+        if (metadata.artist == "Spotify" && metadata.albumArtist == "Spotify" && metadata.title == "Advertisement" && metadata.album.isEmpty()) {
             sessionTracker.resetMeta()
             return
         }
@@ -209,7 +209,7 @@ class DesktopMediaListener(
         Logger.i { "playbackInfo: $playbackInfo" }
 
         val sessionTracker =
-            sessionTrackersMap[playbackInfo.app_id] ?: return
+            sessionTrackersMap[playbackInfo.appId] ?: return
 
         val options = TransformMetadataOptions()
         val (commonPlaybackInfo, ignoreScrobble) =

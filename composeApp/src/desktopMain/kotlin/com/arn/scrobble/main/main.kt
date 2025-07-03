@@ -37,6 +37,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation.compose.rememberNavController
+import androidx.room.useReaderConnection
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
@@ -116,6 +117,13 @@ private fun init() {
     setAppLocale(Stuff.mainPrefsInitialValue.locale, force = false)
 
     PanoNativeComponents.init()
+
+    // do a dummy query before the application starts to prevent a segfault on Linux
+    // no idea why that happens, and why this fixes it
+    runBlocking {
+        PanoDb.db.useReaderConnection { }
+    }
+
 //    test()
 }
 
@@ -181,17 +189,13 @@ fun main(args: Array<String>) {
         val trayIconError = painterResource(Res.drawable.vd_noti_err)
         val appIdToNames by PlatformStuff.mainPrefs.data
             .map { it.seenApps }
-            .collectAsState(emptyMap())
+            .collectAsState(Stuff.mainPrefsInitialValue.seenApps)
         val windowOpenTrigger = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
         val trayState = rememberTrayState()
 
         // restore window state
         val storedWindowState = Stuff.mainPrefsInitialValue.windowState
         val windowState = rememberWindowState(
-            position = storedWindowState?.let {
-                WindowPosition(it.x.dp, it.y.dp)
-            }
-                ?: WindowPosition.PlatformDefault,
             size = storedWindowState?.let {
                 DpSize(it.width.dp, it.height.dp)
             }
@@ -203,9 +207,11 @@ fun main(args: Array<String>) {
         )
 
         fun onExit() {
+            PanoNativeComponents.stopListeningMedia()
             DesktopWorkManager.clearAll()
-            PanoDb.destroyInstance()
+            PanoDb.db.close()
             exitApplication()
+            exitProcess(0)
         }
 
         LaunchedEffect(trayIconTheme) {
@@ -333,8 +339,6 @@ fun main(args: Array<String>) {
                 .debounce(10.seconds)
                 .collectLatest {
                     val ws = SerializableWindowState(
-                        x = it.position.x.value,
-                        y = it.position.y.value,
                         width = it.size.width.value,
                         height = it.size.height.value,
                         isMaximized = it.placement == WindowPlacement.Maximized,
@@ -644,7 +648,7 @@ private fun TrayWindow(
 
                 Column(
                     modifier = Modifier
-                        .widthIn(max = 200.dp)
+                        .widthIn(max = 300.dp)
                         .padding(vertical = 8.dp)
                         .onSizeChanged {
                             actualWidth = it.width
@@ -659,7 +663,7 @@ private fun TrayWindow(
                         } else {
                             Text(
                                 text = text,
-                                maxLines = 2,
+                                maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
                                     .then(

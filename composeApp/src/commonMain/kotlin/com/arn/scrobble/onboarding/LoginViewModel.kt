@@ -7,11 +7,9 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
-import com.arn.scrobble.api.maloja.Maloja
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.utils.Stuff
-import io.ktor.http.parseUrl
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -114,30 +112,30 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun malojaLogin(apiRoot: String, token: String) {
-        viewModelScope.launch {
-            var apiRoot = apiRoot
-            val result = if (apiRoot.isNotBlank() && token.isNotBlank()) {
-                if (parseUrl(apiRoot) != null) {
-                    if (!apiRoot.endsWith('/'))
-                        apiRoot += '/'
-
-                    val userAccount = UserAccountTemp(
-                        AccountType.MALOJA,
-                        token,
-                        apiRoot,
-                    )
-                    Maloja.authAndGetSession(userAccount)
-                } else {
-                    Result.failure(IllegalArgumentException(getString(Res.string.failed_encode_url)))
-                }
-            } else {
-                Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
-            }
-
-            _result.emit(result)
-        }
-    }
+//    fun malojaLogin(apiRoot: String, token: String) {
+//        viewModelScope.launch {
+//            var apiRoot = apiRoot
+//            val result = if (apiRoot.isNotBlank() && token.isNotBlank()) {
+//                if (parseUrl(apiRoot) != null) {
+//                    if (!apiRoot.endsWith('/'))
+//                        apiRoot += '/'
+//
+//                    val userAccount = UserAccountTemp(
+//                        AccountType.MALOJA,
+//                        token,
+//                        apiRoot,
+//                    )
+//                    Maloja.authAndGetSession(userAccount)
+//                } else {
+//                    Result.failure(IllegalArgumentException(getString(Res.string.failed_encode_url)))
+//                }
+//            } else {
+//                Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
+//            }
+//
+//            _result.emit(result)
+//        }
+//    }
 
     fun pleromaLogin(
         userAccountTemp: UserAccountTemp,

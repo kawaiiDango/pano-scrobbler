@@ -137,10 +137,7 @@ fun ScrobblesScreen(
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
     val canLove by remember(currentAccoutType) {
         mutableStateOf(
-            currentAccoutType !in arrayOf(
-                AccountType.MALOJA,
-                AccountType.PLEROMA,
-            )
+            currentAccoutType != AccountType.PLEROMA,
         )
     }
 
@@ -148,7 +145,7 @@ fun ScrobblesScreen(
         mutableStateOf(
             selectedType != ScrobblesType.LOVED && currentAccoutType !in arrayOf(
                 AccountType.FILE,
-                AccountType.MALOJA,
+//                AccountType.MALOJA,
                 AccountType.PLEROMA,
             )
         )
@@ -517,7 +514,7 @@ private fun ScrobblesTypeSelector(
             enableUserInput = selectedType != ScrobblesType.TIME_JUMP,
         ) {
             OutlinedToggleButton(
-                checked = selectedType == ScrobblesType.TIME_JUMP,
+                checked = selectedType == ScrobblesType.TIME_JUMP || timeJumpMenuShown,
                 onCheckedChange = {
                     if ((it && selectedType != ScrobblesType.TIME_JUMP) ||
                         (!it && selectedType == ScrobblesType.TIME_JUMP)

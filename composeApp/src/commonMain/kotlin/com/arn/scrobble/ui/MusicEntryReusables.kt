@@ -1,11 +1,5 @@
 package com.arn.scrobble.ui
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -99,6 +93,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
@@ -465,6 +460,16 @@ private fun NowPlayingSurface(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    var isResumed by remember { mutableStateOf(false) }
+
+    LifecycleResumeEffect(Unit) {
+        isResumed = true
+
+        onPauseOrDispose {
+            isResumed = false
+        }
+    }
+
     Surface(
         shape = MaterialTheme.shapes.large,
         color = if (nowPlaying) MaterialTheme.colorScheme.secondaryContainer else Color.Unspecified,
@@ -473,14 +478,11 @@ private fun NowPlayingSurface(
             .then(
                 if (nowPlaying && BlendMode.Overlay.isSupported()) {
 
-                    val infiniteTransition = rememberInfiniteTransition()
-                    val progress by infiniteTransition.animateFloat(
-                        initialValue = -1f,
+                    val progress by customFpsInfiniteAnimation(
+                        initialValue = 0f,
                         targetValue = 1f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(20000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Reverse
-                        )
+                        durationMillis = 15_000,
+                        enabled = isResumed
                     )
                     val spotlightColor = MaterialTheme.colorScheme.inverseSurface
                     var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }

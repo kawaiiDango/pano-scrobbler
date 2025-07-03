@@ -26,7 +26,6 @@ fun PanoMainDialogContent(
             DeepLinkUtils.handleNavigationFromInfoScreen(it)
         },
         onDismissRequest = onFinish,
-        navMetadataList = { emptyList() },
         mainViewModel = viewModel,
     )
 }

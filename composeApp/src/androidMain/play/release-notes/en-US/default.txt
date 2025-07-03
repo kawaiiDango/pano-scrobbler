@@ -10,6 +10,7 @@
 - Play Store purchases will no longer be available in the Github builds, which is in line with the Play Store policies
 - Tasker intents have been replaced with ContentProvider query URIs and an allowlist, which are more secure
 - In-app scrobble from mic has been removed, in favour of using Shazam/AutoShazam
+- Native Maloja support has been removed, in favour of using their ListenBrainz API
 - Regex edits logic has changed. Now supports blocking scrobbles
 - Pending scrobbles now show their last attempt timestamp and why they failed
 - Targets Android 16, dropped support for Android 6

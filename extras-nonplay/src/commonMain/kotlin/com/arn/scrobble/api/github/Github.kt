@@ -32,7 +32,9 @@ object Github {
             if (releases.versionCode > currentVersionCode) {
                 return releases
             }
-        }.onFailure { it.printStackTrace() }
+        }.onFailure {
+            System.err.println("Failed to check for updates: ${it.message}")
+        }
 
         return null
     }

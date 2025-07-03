@@ -149,7 +149,7 @@ abstract class MediaListener(
                 metadata.artist == trackInfo.origArtist &&
                         metadata.title == trackInfo.origTitle &&
                         metadata.album == trackInfo.origAlbum &&
-                        metadata.album_artist == trackInfo.origAlbumArtist
+                        metadata.albumArtist == trackInfo.origAlbumArtist
             val onlyDurationUpdated = sameAsOld && metadata.duration != trackInfo.durationMillis
 
             if (!sameAsOld || onlyDurationUpdated) {
@@ -157,7 +157,7 @@ abstract class MediaListener(
                     metadata.artist,
                     metadata.title,
                     metadata.album,
-                    metadata.album_artist,
+                    metadata.albumArtist,
                     metadata.duration,
                 )
 

@@ -585,6 +585,7 @@ private fun FriendItem(
                 Text(
                     text = friend.realname.ifEmpty { friend.name },
                     style = MaterialTheme.typography.titleLargeEmphasized,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = textModifier,
                 )
 

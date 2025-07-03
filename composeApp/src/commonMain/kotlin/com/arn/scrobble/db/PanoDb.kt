@@ -1,6 +1,7 @@
 package com.arn.scrobble.db
 
 import androidx.room.AutoMigration
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.arn.scrobble.utils.PlatformStuff
@@ -32,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
         AutoMigration(from = 13, to = 14),
     ],
 )
+@ConstructedBy(PanoDbConstructor::class)
 abstract class PanoDb : RoomDatabase() {
     abstract fun getPendingScrobblesDao(): PendingScrobblesDao
     abstract fun getSimpleEditsDao(): SimpleEditsDao
@@ -44,23 +46,10 @@ abstract class PanoDb : RoomDatabase() {
     abstract fun getCustomSpotifyMappingsDao(): CustomSpotifyMappingsDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: PanoDb? = null
-
-        val db
-            get(): PanoDb = INSTANCE ?: synchronized(this) {
-                PlatformStuff.getDatabaseBuilder()
-                    .addMigrations(*ManualMigrations.all)
-                    .setQueryCoroutineContext(Dispatchers.IO)
-                    .fallbackToDestructiveMigrationOnDowngrade(true)
-                    .build()
-                    .also { INSTANCE = it }
-            }
-
-        fun destroyInstance() {
-            INSTANCE?.close()
-            INSTANCE = null
-        }
-
+        val db = PlatformStuff.getDatabaseBuilder()
+            .addMigrations(*ManualMigrations.all)
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .fallbackToDestructiveMigrationOnDowngrade(true)
+            .build()
     }
 }

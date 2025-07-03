@@ -30,8 +30,8 @@ captures
 /composeApp/src/commonTest/kotlin/com/arn/scrobble/AuthTest.kt
 /composeApp/src/desktopTest/kotlin/com/arn/scrobble/DesktopAuthTests.kt
 /composeApp/dist
-/composeApp/src/release/generated
-/composeApp/src/releaseGithub/generated
+composeApp/src/androidRelease/generated
+composeApp/src/androidReleaseGithub/generated
 /composeApp/src/androidMain/res/**/strings-np.xml
 /composeApp/src/androidMain/res/**/strings-android.xml
 /composeApp/src/**/composeResources/files/embedded_server.bks
@@ -40,6 +40,4 @@ crowdin.properties
 Gemfile.lock
 .jekyll-cache
 _site/
-composeApp/src/androidRelease/generated/baselineProfiles
-composeApp/src/androidReleaseGithub/generated/baselineProfiles
 composeApp/appimage-files/appimagetool-*.AppImage

@@ -17,6 +17,7 @@ object Journeys {
             device.findObject(By.res("login_type_dropdown")).click()
             device.wait(Until.hasObject(By.text("Last.fm-like instance")), TIMEOUT)
             device.findObject(By.text("Last.fm-like instance")).click()
+            device.wait(Until.hasObject(By.res("login_url")), TIMEOUT)
             device.findObject(By.res("login_url")).text = "test_creds_${Secrets.type}"
             device.findObject(By.res("login_username")).text = Secrets.username
             device.findObject(By.res("login_password")).text = Secrets.sessionKey

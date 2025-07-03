@@ -1,12 +1,6 @@
 package com.arn.scrobble.main
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.PowerSettingsNew
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
@@ -23,7 +17,6 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.charts.ChartsOverviewScreen
 import com.arn.scrobble.friends.FriendsScreen
 import com.arn.scrobble.navigation.PanoDialog
-import com.arn.scrobble.navigation.PanoNavMetadata
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.recents.ScrobblesScreen
@@ -33,12 +26,6 @@ import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.get_pro
-import pano_scrobbler.composeapp.generated.resources.help
-import pano_scrobbler.composeapp.generated.resources.quit
-import pano_scrobbler.composeapp.generated.resources.search
-import pano_scrobbler.composeapp.generated.resources.settings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +36,6 @@ fun HomePagerScreen(
     onSetTitle: (String?) -> Unit,
     onSetTabData: (String, List<PanoTab>?) -> Unit,
     onSetOtherUser: (UserCached?) -> Unit,
-    onSetNavMetadataList: (List<PanoNavMetadata>) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     pullToRefreshState: PullToRefreshState,
@@ -98,7 +84,6 @@ fun HomePagerScreen(
             onSetOtherUser(user)
         else
             onSetOtherUser(null)
-        onSetNavMetadataList(getHomePagerNavMetadata())
         onDispose {
             if (user.isSelf) {
                 // use lastTabIdx because tabIdx somehow becomes 0 in onDispose
@@ -163,42 +148,6 @@ fun HomePagerScreen(
     }
 }
 
-private fun getHomePagerNavMetadata() = listOfNotNull(
-    if (!PlatformStuff.billingRepository.isLicenseValid)
-        PanoNavMetadata(
-            titleRes = Res.string.get_pro,
-            icon = Icons.Outlined.WorkspacePremium,
-            route = PanoRoute.Billing,
-        ) else
-        null,
-    PanoNavMetadata(
-        titleRes = Res.string.settings,
-        icon = Icons.Outlined.Settings,
-        route = PanoRoute.Prefs,
-    ),
-    PanoNavMetadata(
-        titleRes = Res.string.search,
-        icon = Icons.Outlined.Search,
-        route = PanoRoute.Search,
-    ),
-
-    if (!PlatformStuff.isTv)
-        PanoNavMetadata(
-            titleRes = Res.string.help,
-            icon = Icons.AutoMirrored.Outlined.HelpOutline,
-            route = PanoRoute.Help,
-        ) else
-        null,
-
-    if (PlatformStuff.isDesktop)
-        PanoNavMetadata(
-            titleRes = Res.string.quit,
-            icon = Icons.Outlined.PowerSettingsNew,
-            route = PanoRoute.Exit,
-        ) else
-        null,
-)
-
 private fun getTabData(user: UserCached, accountType: AccountType): List<PanoTab> {
     return when (accountType) {
         AccountType.LASTFM,
@@ -219,7 +168,7 @@ private fun getTabData(user: UserCached, accountType: AccountType): List<PanoTab
             PanoTab.Profile(user),
         )
 
-        AccountType.MALOJA,
+//        AccountType.MALOJA,
         AccountType.PLEROMA,
         AccountType.FILE,
             -> listOf(

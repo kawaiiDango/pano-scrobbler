@@ -249,7 +249,7 @@ class SessListener(
             val metadataInfo = transformMediaMetadata(trackInfo, metadata)
 
             Logger.i {
-                "onMetadataChanged ${metadataInfo.artist} (${metadataInfo.album_artist}) [${metadataInfo.album}] ~ ${metadataInfo.title} " +
+                "onMetadataChanged ${metadataInfo.artist} (${metadataInfo.albumArtist}) [${metadataInfo.album}] ~ ${metadataInfo.title} " +
                         "duration=${metadataInfo.duration} lastState=${sessionTracker.lastPlaybackState}, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()}}"
             }
 

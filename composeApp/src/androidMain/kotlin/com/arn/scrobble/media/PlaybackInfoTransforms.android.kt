@@ -23,10 +23,10 @@ actual fun transformPlaybackState(
     val position = playbackInfo.position
 
     val commonPlaybackInfo = PlaybackInfo(
-        app_id = trackInfo.appId,
+        appId = trackInfo.appId,
         state = commonPlaybackState,
         position = position,
-        can_skip = playbackInfo.actions and PlaybackState.ACTION_SKIP_TO_NEXT != 0L
+        canSkip = playbackInfo.actions and PlaybackState.ACTION_SKIP_TO_NEXT != 0L
     )
 
     var ignoreScrobble = false

@@ -3,14 +3,23 @@ package com.arn.scrobble.billing
 import android.app.Activity
 import android.app.Application
 import co.touchlab.kermit.Logger
-import com.android.billingclient.api.*
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClient.ProductType
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.util.*
 
 
 class BillingRepository(
@@ -38,6 +47,7 @@ class BillingRepository(
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
             ) // required or app will crash
+            .enableAutoServiceReconnection()
             .setListener(this)
             .build()
     }
@@ -54,7 +64,6 @@ class BillingRepository(
     override fun onBillingSetupFinished(billingResult: BillingResult) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
-                resetReconnectTimer()
                 fetchProductDetails(clientData.proProductId)
 
                 // this runs in a separate thread anyways
@@ -89,7 +98,7 @@ class BillingRepository(
      *   been called.
      **/
     override fun onBillingServiceDisconnected() {
-        retryBillingConnectionWithExponentialBackoff()
+        // now handled by enableAutoServiceReconnection()
     }
 
     /**
@@ -247,10 +256,10 @@ class BillingRepository(
             )
             .build()
 
-        playStoreBillingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsList ->
+        playStoreBillingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsResult ->
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
-                    proProductDetailsList = productDetailsList
+                    proProductDetailsList = productDetailsResult.productDetailsList
                     findProProduct()?.let {
                         _proProductDetails.tryEmit(
                             MyProductDetails(
@@ -320,10 +329,6 @@ class BillingRepository(
                 runBlocking {
                     queryPurchasesAsync()
                 }
-            }
-
-            BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> {
-                retryBillingConnectionWithExponentialBackoff()
             }
 
             else -> {

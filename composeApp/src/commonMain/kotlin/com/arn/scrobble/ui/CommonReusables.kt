@@ -1,6 +1,7 @@
 package com.arn.scrobble.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -54,7 +55,9 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -90,6 +93,7 @@ import com.arn.scrobble.utils.redactedMessage
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.delete
@@ -98,7 +102,6 @@ import pano_scrobbler.composeapp.generated.resources.librefm
 import pano_scrobbler.composeapp.generated.resources.like_instance
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.login_submit
-import pano_scrobbler.composeapp.generated.resources.maloja
 import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.pleroma
@@ -417,7 +420,7 @@ fun ButtonWithIcon(
             modifier = Modifier.size(ButtonDefaults.IconSize)
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text)
+        Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -644,6 +647,35 @@ fun ListLoadError(
     }
 }
 
+
+@Composable
+fun customFpsInfiniteAnimation(
+    initialValue: Float,
+    targetValue: Float,
+    durationMillis: Int,
+    enabled: Boolean = true,
+    frameDelay: Long = 1000L / 24
+): State<Float> {
+    val animatable = remember { Animatable(initialValue) }
+    var direction by remember { mutableFloatStateOf(1f) } // 1f: forward, -1f: reverse
+    var playhead by remember { mutableFloatStateOf(0f) } // 0f=start, 1f=end
+
+    LaunchedEffect(enabled) {
+        while (enabled) {
+            val totalFrames = (durationMillis / frameDelay).toInt()
+            val nextFrame = playhead + direction / totalFrames
+            playhead = nextFrame.coerceIn(0f, 1f)
+            val value = initialValue + (targetValue - initialValue) * playhead
+            animatable.snapTo(value)
+            if (playhead >= 1f) direction = -1f
+            if (playhead <= 0f) direction = 1f
+            delay(frameDelay)
+        }
+    }
+
+    return animatable.asState()
+}
+
 @Composable
 fun Modifier.backgroundForShimmer(
     isShimmer: Boolean,
@@ -746,7 +778,7 @@ fun accountTypeLabel(accountType: AccountType) = when (accountType) {
         stringResource(Res.string.listenbrainz)
     )
 
-    AccountType.MALOJA -> stringResource(Res.string.maloja)
+//    AccountType.MALOJA -> stringResource(Res.string.maloja)
     AccountType.PLEROMA -> stringResource(Res.string.pleroma)
     AccountType.FILE -> stringResource(Res.string.scrobble_to_file)
 }

@@ -58,8 +58,8 @@ sealed interface PanoRoute {
     @Serializable
     data object LoginPleroma : PanoRoute
 
-    @Serializable
-    data object LoginMaloja : PanoRoute
+//    @Serializable
+//    data object LoginMaloja : PanoRoute
 
     @Serializable
     data object LoginGnufm : PanoRoute

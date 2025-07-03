@@ -44,6 +44,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.util.appendIfNameAbsent
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.ceil
@@ -548,7 +549,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 validateToken.user_name ?: return Result.failure(ApiException(-1, "Invalid token"))
                 val isCustom = userAccountTemp.apiRoot != Stuff.LISTENBRAINZ_API_ROOT
                 val profileUrl = if (isCustom)
-                    userAccountTemp.apiRoot + validateToken.user_name
+                    userAccountTemp.apiRoot!!.toHttpUrl()
+                        .let { url -> url.scheme + "://" + url.host }
                 else
                     "https://listenbrainz.org/user/${validateToken.user_name}"
 

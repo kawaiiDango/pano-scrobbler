@@ -12,8 +12,8 @@ actual fun transformMediaMetadata(
     var artist = metadata.artist.trim()
     var album = metadata.album.trim()
     var title = metadata.title.trim()
-    var albumArtist = metadata.album_artist.trim()
-    val trackNumber = metadata.track_number
+    var albumArtist = metadata.albumArtist.trim()
+    val trackNumber = metadata.trackNumber
     // a -1 value on my windows implementation means, a timeline info event hasn't been received yet
     var durationMillis = metadata.duration
 
@@ -37,12 +37,12 @@ actual fun transformMediaMetadata(
     }
 
     val metadataInfo = MetadataInfo(
-        app_id = metadata.app_id,
+        appId = metadata.appId,
         title = title,
         artist = artist,
         album = album,
-        album_artist = albumArtist,
-        track_number = trackNumber,
+        albumArtist = albumArtist,
+        trackNumber = trackNumber,
         duration = durationMillis,
     )
 

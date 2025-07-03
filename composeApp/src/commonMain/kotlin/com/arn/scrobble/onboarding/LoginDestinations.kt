@@ -37,7 +37,7 @@ object LoginDestinations {
         AccountType.GNUFM -> PanoRoute.LoginGnufm
         AccountType.LISTENBRAINZ -> PanoRoute.LoginListenBrainz
         AccountType.CUSTOM_LISTENBRAINZ -> PanoRoute.LoginCustomListenBrainz
-        AccountType.MALOJA -> PanoRoute.LoginMaloja
+//        AccountType.MALOJA -> PanoRoute.LoginMaloja
         AccountType.PLEROMA -> PanoRoute.LoginPleroma
         AccountType.FILE -> PanoRoute.LoginFile
     }

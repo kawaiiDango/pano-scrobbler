@@ -12,7 +12,7 @@ import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.compose.reload.ComposeHotRun
+import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
@@ -115,7 +115,7 @@ kotlin {
             implementation(libs.documentfile)
             implementation(libs.harmony)
             implementation(libs.coil.gif)
-            implementation(libs.androidx.sqlite.framework)
+//            implementation(libs.androidx.sqlite.framework)
 
 //            implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 
@@ -503,6 +503,7 @@ tasks.withType<ComposeHotRun>().configureEach {
     val libraryPath =
         File(project.layout.projectDirectory.dir("resources").asFile, resourcesDirName).absolutePath
 
+    isAutoReloadEnabled = true
     mainClass = "com.arn.scrobble.main.MainKt"
     jvmArgs = (jvmArgs ?: emptyList()) + listOfNotNull(
         "-Dpano.native.components.path=$libraryPath",

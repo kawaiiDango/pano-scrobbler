@@ -17,7 +17,7 @@ actual fun NavGraphBuilder.panoPlatformSpecificNavGraph(
     dialog<PanoRoute.Exit> {
         LaunchedEffect(Unit) {
             DesktopWorkManager.clearAll()
-            PanoDb.destroyInstance()
+            PanoDb.db.close()
             exitProcess(0)
         }
     }

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.ArrowDropDownCircle
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.CalendarViewMonth
 import androidx.compose.material.icons.outlined.CalendarViewWeek
@@ -285,7 +286,7 @@ fun TimePeriodSelector(
                     trailingIcon = {
                         if (timePeriod == selectedPeriod) {
                             Icon(
-                                imageVector = Icons.Outlined.ArrowDropDown,
+                                imageVector = Icons.Outlined.ArrowDropDownCircle,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary
                             )

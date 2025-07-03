@@ -196,61 +196,61 @@ fun GnufmLoginScreen(
     }
 }
 
-@Composable
-fun MalojaLoginScreen(
-    onDone: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = viewModel { LoginViewModel() },
-) {
-    val result by viewModel.result.collectAsStateWithLifecycle(null)
-    var token by rememberSaveable { mutableStateOf("") }
-    var apiRoot by rememberSaveable { mutableStateOf("https://") }
-    val doLogin = {
-        viewModel.malojaLogin(apiRoot, token)
-    }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-    ) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = apiRoot,
-            singleLine = true,
-            onValueChange = { apiRoot = it },
-            label = { Text(stringResource(Res.string.api_url)) },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Uri,
-                capitalization = KeyboardCapitalization.None,
-                imeAction = ImeAction.Next
-            )
-        )
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = token,
-            singleLine = true,
-            onValueChange = { token = it },
-            label = { Text(stringResource(Res.string.pref_token_label)) },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.None,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    doLogin()
-                }
-            )
-        )
-
-        VerifyButton(
-            result = result,
-            onDone = onDone,
-            doStuff = doLogin
-        )
-    }
-}
+//@Composable
+//fun MalojaLoginScreen(
+//    onDone: () -> Unit,
+//    modifier: Modifier = Modifier,
+//    viewModel: LoginViewModel = viewModel { LoginViewModel() },
+//) {
+//    val result by viewModel.result.collectAsStateWithLifecycle(null)
+//    var token by rememberSaveable { mutableStateOf("") }
+//    var apiRoot by rememberSaveable { mutableStateOf("https://") }
+//    val doLogin = {
+//        viewModel.malojaLogin(apiRoot, token)
+//    }
+//
+//    Column(
+//        verticalArrangement = Arrangement.spacedBy(16.dp),
+//        modifier = modifier
+//    ) {
+//        OutlinedTextField(
+//            modifier = Modifier.fillMaxWidth(),
+//            value = apiRoot,
+//            singleLine = true,
+//            onValueChange = { apiRoot = it },
+//            label = { Text(stringResource(Res.string.api_url)) },
+//            keyboardOptions = KeyboardOptions(
+//                keyboardType = KeyboardType.Uri,
+//                capitalization = KeyboardCapitalization.None,
+//                imeAction = ImeAction.Next
+//            )
+//        )
+//
+//        OutlinedTextField(
+//            modifier = Modifier.fillMaxWidth(),
+//            value = token,
+//            singleLine = true,
+//            onValueChange = { token = it },
+//            label = { Text(stringResource(Res.string.pref_token_label)) },
+//            keyboardOptions = KeyboardOptions(
+//                keyboardType = KeyboardType.Text,
+//                capitalization = KeyboardCapitalization.None,
+//                imeAction = ImeAction.Done
+//            ),
+//            keyboardActions = KeyboardActions(
+//                onDone = {
+//                    doLogin()
+//                }
+//            )
+//        )
+//
+//        VerifyButton(
+//            result = result,
+//            onDone = onDone,
+//            doStuff = doLogin
+//        )
+//    }
+//}
 
 @Composable
 fun PleromaLoginScreen(

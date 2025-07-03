@@ -53,7 +53,21 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
 
         val scrobbleAccountsJson = sharedPreferences.getString("scrobble_accounts", null)
         val scrobbleAccounts = scrobbleAccountsJson?.let {
-            Stuff.myJson.decodeFromString<List<UserAccountSerializable>>(it)
+            val migratedJson =
+                if (scrobbleAccountsJson.contains("MALOJA") && !scrobbleAccountsJson.contains("CUSTOM_LISTENBRAINZ")) {
+                    scrobbleAccountsJson.replace(Regex("""\{"type":"MALOJA"(.*?"apiRoot":"(.*?)"(.*?))\}""")) { match ->
+                        val apiRoot = match.groupValues[2]
+                        val newApiRoot = apiRoot.trimEnd('/') + "/apis/listenbrainz/"
+                        match.value
+                            .replace("\"type\":\"MALOJA\"", "\"type\":\"CUSTOM_LISTENBRAINZ\"")
+                            .replace("\"apiRoot\":\"$apiRoot\"", "\"apiRoot\":\"$newApiRoot\"")
+                    }
+                } else {
+                    scrobbleAccountsJson.replace(Regex("""\{[^{}]*"type":"MALOJA"[^{}]*\},?"""), "")
+                        .replace(Regex(""",\s*]"""), "]") // Clean up trailing commas
+                }
+
+            Stuff.myJson.decodeFromString<List<UserAccountSerializable>>(migratedJson)
         } ?: emptyList()
         val currentAccountType =
             scrobbleAccounts.getOrNull(currentAccountIdx)?.type ?: AccountType.LASTFM

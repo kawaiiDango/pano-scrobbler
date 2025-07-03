@@ -37,7 +37,6 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.navigation.NavPopupDialog
 import com.arn.scrobble.navigation.PanoDialog
-import com.arn.scrobble.navigation.PanoNavMetadata
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.FixItDialog
 import com.arn.scrobble.onboarding.LoginDestinations
@@ -60,7 +59,6 @@ private fun PanoDialogs(
     onBack: (() -> Unit)?,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
-    navMetadataList: () -> List<PanoNavMetadata>?,
     mainViewModel: MainViewModel,
 ) {
     BottomSheetDialogParent(
@@ -77,7 +75,6 @@ private fun PanoDialogs(
                     drawerDataFlow = mainViewModel.drawerDataFlow,
                     drawSnowfall = mainViewModel.isItChristmas,
                     loadOtherUserDrawerData = mainViewModel::loadOtherUserDrawerData,
-                    navMetadataList = navMetadataList() ?: emptyList(),
                     onNavigate = onNavigate,
                     modifier = modifier
                 )
@@ -212,7 +209,6 @@ fun PanoDialogStack(
     initialDialogArgs: PanoDialog?,
     onNavigate: (PanoRoute) -> Unit,
     onDismissRequest: () -> Unit,
-    navMetadataList: () -> List<PanoNavMetadata>?,
     mainViewModel: MainViewModel,
 ) {
     val dialogStack = rememberSaveable(
@@ -257,7 +253,6 @@ fun PanoDialogStack(
                 onNavigate(route)
             },
             onOpenDialog = { pushDialogArgs(it) },
-            navMetadataList = navMetadataList,
             mainViewModel = mainViewModel,
         )
     }
@@ -308,7 +303,8 @@ private fun BottomSheetDialogParent(
                 )
             }
 
-        } else if (!sheetGesturesEnabled) {
+        } else if (!sheetGesturesEnabled && !PlatformStuff.isTv) {
+            // there isn't much vertical space on a tv
             IconButton(
                 onClick = {
                     scope.launch {

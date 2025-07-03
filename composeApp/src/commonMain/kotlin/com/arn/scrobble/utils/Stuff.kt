@@ -269,8 +269,8 @@ object Stuff {
             serverUrl = Tokens.LICENSE_CHECKING_SERVER,
             lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
             deviceIdentifier = PlatformStuff.getDeviceIdentifier(),
-            setLastcheckTime = {
-                PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = it.lastLicenseCheckTime) }
+            setLastcheckTime = { time ->
+                PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
             },
             receipt = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }
                 .stateIn(

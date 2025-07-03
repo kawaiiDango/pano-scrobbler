@@ -118,11 +118,14 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Partager</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Légende</string>
+    <string name="grid" comment="Grid view">Grille</string>
+    <string name="list" comment="Single column list view">Liste</string>
     <string name="pinch_to_zoom">Pincer pour zoomer</string>
     <string name="more_info">Plus d\'informations</string>
     <string name="more" comment="More options menu in short">Plus</string>
     <string name="learn" comment="(Learn java regex syntax)">Apprendre</string>
     <string name="hide">Masquer</string>
+    <string name="rank_change" comment="%1= delta change">Changement de rang : %1$s</string>
     <string name="rank_change_no_change">Aucune modification</string>
     <string name="rank_change_new">Non scrobblé dans la période précédente</string>
     <string name="search">Rechercher</string>
@@ -142,6 +145,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Options pour cet élément</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s détecté</string>
     <string name="new_player_prompt">Continuer de scrobbler cette app ?</string>
+    <string name="new_player_prompt_desktop">Allez dans les paramètres pour commencer à scrobbler cette application</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Impossible d\'accéder à %1$s</string>
+    <string name="file_exists_confirm_overwrite">Le fichier existe déjà. Cliquez à nouveau pour l\'écraser.</string>
     <string name="no_scrobbles">Aucunes chansons ici pour le moment…</string>
     <string name="no_friends">Vous ne suivez personne pour le moment…</string>
     <string name="channel_err" comment="Its a noun">Erreurs de scrobble</string>
@@ -212,6 +218,7 @@
     <string name="weeks">Semaines</string>
     <string name="monthly">Mensuel</string>
     <string name="months">Mois</string>
+    <string name="days">Jours</string>
     <string name="years" comment="For the charts menu which displays year by year">Années</string>
     <string name="charts_overall">Global</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Activité d\'écoute</string>
@@ -239,6 +246,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbles</string>
     <string name="my_tags" comment="Tags, the user has added">Mes tags</string>
     <string name="close" comment="To close a dialog or something">Fermer</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Quitter</string>
     <string name="user_tags_hint" comment="To add a new tag">Nouveau tag</string>
     <string name="user_tags_empty">Vous n\'avez pas encore ajouté de tags</string>
     <string name="appwidget_loading">Chargement…</string>
@@ -285,7 +293,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
     <string name="skip" comment="skip to next track">Passer</string>
     <string name="mute" comment="mute the sound">Mettre en sourdine</string>
+    <string name="do_nothing" comment="do nothing on the media player">Ne rien faire</string>
     <string name="block" comment="block the track from scrobbling">Bloquer</string>
+    <string name="copy" comment="copy to clipboard">Copier</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tags cachés</string>
     <string name="pin" comment="pin a friend to the top">Épingler</string>
     <string name="unpin" comment="unpin a friend to the top">Désépingler</string>
@@ -295,6 +305,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Voulez-vous rendre cette régle d\'édition répétitive pour ce schéma %1$s?</string>
     <string name="show_persistent_noti">Afficher une notification permanente</string>
     <string name="fix_it_desc">Cela peut aider à continuer de faire fonctionner le scrobbler en arrière-plan sur certains appareils</string>
+    <string name="persistent_noti_text">Appuyez pour masquer ceci</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
     <string name="scrobbler_on">Scrobbler activé</string>
     <string name="duration">Durée</string>
@@ -326,6 +337,7 @@
     <string name="pref_enabled_apps_title">Choisir les applications</string>
     <string name="pref_auto_detect">Scrobbler automatiquement à partir de nouvelles applications</string>
     <string name="pref_spotify_remote">Scrobbler depuis Spotify utilisé sur d\'autres appareils</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Utiliser la recherche approximative d\'images d\'artistes</string>
     <string name="pref_link_heart_button_rating">Utilisez le bouton en forme de cœur sur la notification pour également le mettre en favori sur le lecteur</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Désactiver le scrobbling continu depuis le microphone lorsque l\'appareil joue de la musique</string>
     <string name="pref_delay">Délai de prise en compte du scrobble (le plus rapide sera choisi)</string>
@@ -373,6 +385,9 @@
     <string name="pref_translate_credits">Crédits de traduction</string>
     <string name="pref_oss_credits">Crédits Open Source</string>
     <string name="pref_check_updates">Rechercher des mises à jour</string>
+    <string name="pref_search_url_template">Modèle d\'URL de recherche</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Utiliser $query comme caractère générique pour le terme de recherche</string>
+    <string name="pref_native_file_picker">Utiliser le sélecteur de fichiers natif</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Mise à jour disponible: %1$s</string>
     <string name="download" comment="Its a verb">Télécharger</string>
     <string name="changelog">Journal des modifications</string>
@@ -390,12 +405,14 @@
     <string name="pref_intents">Intents pour Tasker etc</string>
     <string name="copied">Copié !</string>
     <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Instance de type %1$s</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Vérifier %1$s</string>
     <string name="artist_extra">Morceaux, albums &amp; similaires</string>
     <string name="no_browser">Aucun navigateur n’est installé</string>
     <string name="no_player">Aucun lecteur de musique n\'est installé</string>
     <string name="not_running">⚠ Le scrobbler a été tué par votre système</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motif : %1$s</string>
     <string name="not_running_fix_action">Réparer</string>
     <string name="login_submit" comment="Verifies the login details">Vérifier</string>
     <string name="acr_host" comment="Web hostname">Hôte</string>
@@ -430,9 +447,16 @@
     <string name="create" comment="Create a new file">Créer</string>
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
+    <string name="back">Retour</string>
+    <string name="done">Terminé</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Réessayer</string>
     <string name="run_on_start">Exécuter au démarrage de l\'ordinateur</string>
+    <string name="use_browser">Veuillez utiliser un navigateur sur un appareil compatible pour cela.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Sauvegarder les journaux</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Contraste</string>
+    <string name="high" comment="As in high/medium/low">Élevé</string>
+    <string name="medium" comment="As in high/medium/low">Moyen</string>
+    <string name="low" comment="As in high/medium/low">Bas</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="help">Aide</string>
@@ -454,4 +478,5 @@ Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qu
     <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>
     <string name="billing_scrobble_source">Enregistrer et montrer les applications depuis lesquelles vous avez scrobblé et recherchez directement depuis celles-ci</string>
     <string name="billing_regex_extract">Écrire des règles d\'extraction de métadonnées personnalisées à l\'aide d\'expression régulières</string>
+    <string name="billing_max_devices_reached" formatted="true">Ce code a déjà été utilisé sur un maximum de (%1$d) appareils.</string>
 </resources>

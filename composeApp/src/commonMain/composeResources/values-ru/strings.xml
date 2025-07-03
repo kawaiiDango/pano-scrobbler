@@ -250,6 +250,7 @@
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
     <string name="months">Месяцы</string>
+    <string name="days">Дни</string>
     <string name="years" comment="For the charts menu which displays year by year">Годы</string>
     <string name="charts_overall">За все время</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Активность прослушивания</string>
@@ -416,6 +417,8 @@
     <string name="pref_translate_credits">Авторы переводов</string>
     <string name="pref_oss_credits">Лицензия открытого ПО</string>
     <string name="pref_check_updates">Проверить обновления</string>
+    <string name="pref_search_url_template">Шаблон URL для поиска</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Используйте $query в качестве шаблона для поискового запроса</string>
     <string name="pref_native_file_picker">Использовать встроенный выбор файлов</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Доступно обновление: %1$s</string>
     <string name="download" comment="Its a verb">Скачать</string>
@@ -434,6 +437,7 @@
     <string name="pref_intents">Интенты для Tasker и других приложений</string>
     <string name="copied">Скопировано!</string>
     <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Сервис схожий с %1$s</string>
     <string name="failed_encode_url">Не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Проверьте %1$s</string>
     <string name="artist_extra">Треки, альбомы и похожие исполнители</string>

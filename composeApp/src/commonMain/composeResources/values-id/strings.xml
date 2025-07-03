@@ -102,8 +102,6 @@
     <string name="share_sig">(melalui Pano Scrobbler)</string>
     <string name="share">Bagikan</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legendaris</string>
-    <string name="grid" comment="Grid view"></string>
-    <string name="list" comment="Single column list view"></string>
     <string name="pinch_to_zoom">Cubit untuk memperbesar</string>
     <string name="more_info">Info lainnya</string>
     <string name="more" comment="More options menu in short">Selengkapnya</string>
@@ -128,7 +126,6 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opsi untuk item ini</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s terdeteksi</string>
     <string name="new_player_prompt">Terus scrobbling aplikasi ini?</string>
-    <string name="new_player_prompt_desktop"></string>
     <string name="no_scrobbles">Belum ada lagu di sini…</string>
     <string name="no_friends">Belum mengikuti siapa pun…</string>
     <string name="channel_err" comment="Its a noun">Kesalahan scrobble</string>

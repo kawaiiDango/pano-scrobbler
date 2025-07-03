@@ -125,7 +125,7 @@ fun NavPopupDialog(
                     text = stringResource(Res.string.help),
                     icon = Icons.AutoMirrored.Outlined.HelpOutline,
                     onClick = {
-                        onNavigate(PanoRoute.Prefs)
+                        onNavigate(PanoRoute.Help)
                     },
                 )
             }

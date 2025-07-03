@@ -5,10 +5,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.bug_report
 import pano_scrobbler.composeapp.generated.resources.email
 import pano_scrobbler.composeapp.generated.resources.no_mail_apps
 import java.io.File
@@ -56,23 +58,18 @@ actual object BugReportUtils {
         //keep the email in english
 
         val emailAddress = getString(Res.string.email)
-        val emailIntent =
-            Intent(Intent.ACTION_SENDTO).apply {
-                // https://stackoverflow.com/questions/33098280/how-to-choose-email-app-with-action-sendto-also-support-attachment
-                setDataAndType(Uri.fromParts("mailto", emailAddress, null), "message/rfc822")
-                putExtra(Intent.EXTRA_EMAIL, emailAddress)
-                putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    BuildKonfig.APP_NAME + " - Bug report"
-                )
-                putExtra(Intent.EXTRA_TEXT, text)
-//                putExtra(Intent.EXTRA_STREAM, logUri)
-//                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+        val sendTo = Intent(Intent.ACTION_SENDTO)
+        val uriText = "mailto:" + Uri.encode(emailAddress) +
+                "?subject=" + Uri.encode(BuildKonfig.APP_NAME + " - Bug report") +
+                "&body=" + Uri.encode(text)
+        val uri = uriText.toUri()
+        sendTo.setData(uri)
+
+        val chooser = Intent.createChooser(sendTo, getString(Res.string.bug_report))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         try {
-            AndroidStuff.application.startActivity(emailIntent)
+            AndroidStuff.application.startActivity(chooser)
         } catch (e: Exception) {
             e.printStackTrace()
             Stuff.globalSnackbarFlow.tryEmit(

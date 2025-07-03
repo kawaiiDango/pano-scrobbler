@@ -20,6 +20,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import java.io.InputStream
@@ -232,29 +233,44 @@ object MainPrefsSerializer : Serializer<MainPrefs> {
     ) = Stuff.myJson.encodeToStream(t, output)
 }
 
-
 @Serializable
 data class MainPrefsPublic(
+    @JsonNames("master")
     val scrobblerEnabled: Boolean,
+    @JsonNames("delay_secs")
     val delaySecs: Int,
+    @JsonNames("delay_per")
     val delayPercent: Int,
     val minDurationSecs: Int = MainPrefs.PREF_MIN_DURATON_SECS_DEFAULT,
+    @JsonNames("now_playing")
     val submitNowPlaying: Boolean,
+    @JsonNames("fetch_album")
     val fetchAlbum: Boolean,
+    @JsonNames("auto_detect")
     val autoDetectApps: Boolean,
+    @JsonNames("show_album")
     val showAlbumsInRecents: Boolean,
+    @JsonNames("show_scrobble_sources")
     val showScrobbleSources: Boolean,
+    @JsonNames("link_heart_button_to_rating")
     val linkHeartButtonToRating: Boolean,
+    @JsonNames("lockscreen_noti")
     val notificationsOnLockscreen: Boolean,
-    val themeName: String,
-    val themeContrast: ContrastMode,
-    val themeDayNight: DayNightMode,
+    val themeName: String = ThemeUtils.defaultTheme.name,
+    val themeContrast: ContrastMode = ContrastMode.LOW,
+    val themeDayNight: DayNightMode = DayNightMode.DARK,
+    @JsonNames("search_in_source")
     val searchInSource: Boolean,
+    @JsonNames("scrobble_spotify_remote")
     val scrobbleSpotifyRemote: Boolean,
+    @JsonNames("spotify_artist_search_approximate")
     val spotifyArtistSearchApproximate: Boolean,
+    @JsonNames("prevent_duplicate_ambient_scrobbles")
     val preventDuplicateAmbientScrobbles: Boolean,
+    @JsonNames("first_day_of_week")
     val firstDayOfWeek: Int,
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
+    @JsonNames("app_whitelist")
     val allowedPackages: Set<String>,
 )

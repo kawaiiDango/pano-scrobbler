@@ -19,6 +19,15 @@
 
 [![play-store][play-store]][play-store-link] [![github][github]][github-link] [![fdroid][fdroid]][fdroid-link]
 
+**Windows:**
+
+[![github][github]][github-link]
+
+**Linux:**
+
+[![github][github]][github-link]
+
+
 ### Translate
 
 [![translate][crowdin]][crowdin-link]
@@ -27,9 +36,9 @@
 
 ### Features:
 
-- Supports phones, TVs, tablets, Chromebooks
+- Supports Android, Android TV, Windows and Linux
 - No ads ever
-- Scrobbles to Lastfm, Librefm, ListenBrainz, Maloja, Pleroma and other compatible services
+- Scrobbles to Lastfm, Librefm, ListenBrainz, Pleroma and other compatible services
 - \* Scrobble to a CSV or JSONL file locally
 - \* Interactive notification- view song info, edit, love, cancel, or block songs directly from the
   notification

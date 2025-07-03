@@ -76,6 +76,8 @@ and tapping on the "Copy last.fm session key" in the settings screen.
 
 ### For desktop:
 
+- Compile the native lib https://github.com/kawaiiDango/pano-native-components
+
 - If you intend to package a build for desktop,
   use [Bellsoft's GraalVM based on OpenJDK 21](https://bell-sw.com/pages/downloads/native-image-kit/)
   as your gradle JDK and run gradle packageUberJarForCurrentOS. Also

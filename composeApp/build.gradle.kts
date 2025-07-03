@@ -1069,5 +1069,5 @@ githubRelease {
     // by default false; if set to true, will delete an existing release with the same tag and name
     overwrite = false
     // by default false; you can use this to see what actions would be taken without making a release
-    dryRun = true
+//    dryRun = true
 }

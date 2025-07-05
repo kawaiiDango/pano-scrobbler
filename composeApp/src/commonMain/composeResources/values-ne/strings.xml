@@ -143,6 +143,8 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">यस वस्तुको लागि विकल्पहरू</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s भेटियो</string>
     <string name="new_player_prompt">यो एप स्क्रबल गरिरहने हो?</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">%1$s निषेधित</string>
+    <string name="file_exists_confirm_overwrite">फाइल पहिल्यै छ, ओभरराइट गर्न क्लिक गर्नुहोस.</string>
     <string name="no_scrobbles">अहिलेसम्म कुनै पनि गीत छैन…</string>
     <string name="no_friends">अहिलेसम्म कसैलाई पनि फलो गरिरहेको छैन…</string>
     <string name="channel_err" comment="Its a noun">स्क्रबल त्रुटिहरू</string>
@@ -213,6 +215,7 @@
     <string name="weeks">हप्ता</string>
     <string name="monthly">मासिक</string>
     <string name="months">महिना</string>
+    <string name="days">दिन</string>
     <string name="years" comment="For the charts menu which displays year by year">वर्ष</string>
     <string name="charts_overall">समग्र</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">सुन्ने गतिविधि</string>
@@ -240,6 +243,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s शीर्ष स्क्रबल</string>
     <string name="my_tags" comment="Tags, the user has added">मेरो ट्याग</string>
     <string name="close" comment="To close a dialog or something">बन्द</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">निस्किनुहोस्</string>
     <string name="user_tags_hint" comment="To add a new tag">नयाँ ट्याग</string>
     <string name="user_tags_empty">तपाईंले कुनै पनि ट्याग थप्नुभएको छैन।</string>
     <string name="appwidget_loading">लोड हुँदैछ…</string>
@@ -259,6 +263,10 @@
     <string name="edit_name" comment="name for regex pattern">मैत्रीपूर्ण नाम</string>
     <string name="edit_regex">Regex pattern</string>
     <string name="edit_regex_replacement">Regex replacement</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">क्षेत्रहरू</string>
+    <string name="edit_replace">बढ्लिनुहोस्</string>
+    <string name="edit_first" comment="First occurrence of a pattern">पहिलो</string>
+    <string name="edit_all" comment="All occurrences of a pattern">सबै</string>
     <string name="block" comment="block the track from scrobbling">ब्लक</string>
     <string name="create_collage">कोलाज बनाउनुहोस्</string>
     <string name="pref_master">संगीत स्क्रबल गर्नुहोस्</string>

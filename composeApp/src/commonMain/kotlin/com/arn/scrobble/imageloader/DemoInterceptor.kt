@@ -39,7 +39,7 @@ class DemoInterceptor : Interceptor {
 
     // todo don't hardcode the display scaling
     private val Int.dp
-        get() = (this * 1.5).toInt()
+        get() = (this * 2.5).toInt()
 
 
     @OptIn(ExperimentalResourceApi::class)

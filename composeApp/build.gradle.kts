@@ -1,8 +1,3 @@
-import com.android.build.api.instrumentation.AsmClassVisitorFactory
-import com.android.build.api.instrumentation.ClassContext
-import com.android.build.api.instrumentation.ClassData
-import com.android.build.api.instrumentation.InstrumentationParameters
-import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
@@ -14,8 +9,6 @@ import com.mikepenz.aboutlibraries.plugin.StrictMode
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.FieldVisitor
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -443,58 +436,6 @@ compose.desktop {
                 version = "7.7.0"
                 configurationFiles.from(project.file("proguard-rules-desktop.pro"))
             }
-        }
-    }
-}
-
-// 1. Add this class visitor in `buildSrc` or directly into your build script
-
-class FieldSkippingClassVisitor(
-    apiVersion: Int,
-    nextClassVisitor: ClassVisitor,
-) : ClassVisitor(apiVersion, nextClassVisitor) {
-
-    // Returning null from this method will cause the ClassVisitor to strip all fields from the class.
-    override fun visitField(
-        access: Int,
-        name: String?,
-        descriptor: String?,
-        signature: String?,
-        value: Any?
-    ): FieldVisitor? = null
-
-    abstract class Factory : AsmClassVisitorFactory<Parameters> {
-
-        private val excludedClasses
-            get() = parameters.get().classes.get()
-
-        override fun isInstrumentable(classData: ClassData): Boolean =
-            classData.className in excludedClasses
-
-        override fun createClassVisitor(
-            classContext: ClassContext,
-            nextClassVisitor: ClassVisitor
-        ): ClassVisitor {
-            return FieldSkippingClassVisitor(
-                apiVersion = instrumentationContext.apiVersion.get(),
-                nextClassVisitor = nextClassVisitor,
-            )
-        }
-    }
-
-    abstract class Parameters : InstrumentationParameters {
-        @get:Input
-        abstract val classes: SetProperty<String>
-    }
-}
-
-androidComponents {
-    onVariants { variant ->
-        variant.instrumentation.transformClassesWith(
-            FieldSkippingClassVisitor.Factory::class.java,
-            scope = InstrumentationScope.ALL,
-        ) { params ->
-            params.classes.add("io.ktor.client.plugins.Messages")
         }
     }
 }

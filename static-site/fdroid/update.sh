@@ -28,11 +28,13 @@ for ((i=0; i<${#ASSET_URLS[@]} && i<3; i++)); do
     echo -e "## ${TAGS[$i]}\n${CHANGELOG}" > "metadata/${PACKAGE}/en-US/changelogs/${TAGS[$i]}.txt"
 done
 
-# download screenshots
-curl -L --create-dirs -o "metadata/${PACKAGE}/en-US/phoneScreenshots/1scrobbles.png" "https://i.imgur.com/pgETfhc.png"
-curl -L -o "metadata/${PACKAGE}/en-US/phoneScreenshots/2friends.png" "https://i.imgur.com/Q7yPi2z.png"
-curl -L -o "metadata/${PACKAGE}/en-US/phoneScreenshots/3charts.png" "https://i.imgur.com/MUhcyBw.png"
-curl -L -o "metadata/${PACKAGE}/en-US/phoneScreenshots/4random.png" "https://i.imgur.com/aikbtGR.png"
+# copy screenshots
+mkdir -p "metadata/${PACKAGE}/en-US/phoneScreenshots"
+cp ../../screenshots/scrobbles-mobile.jpg "metadata/${PACKAGE}/en-US/phoneScreenshots/1scrobbles.jpg"
+cp ../../screenshots/friends-mobile.jpg "metadata/${PACKAGE}/en-US/phoneScreenshots/2friends.jpg"
+cp ../../screenshots/charts-mobile.jpg "metadata/${PACKAGE}/en-US/phoneScreenshots/3charts.jpg"
+cp ../../screenshots/random-mobile.jpg "metadata/${PACKAGE}/en-US/phoneScreenshots/4random.jpg"
+cp ../../screenshots/details-mobile.jpg "metadata/${PACKAGE}/en-US/phoneScreenshots/5details.jpg"
 
 # copy icon
 cp ../../composeApp/app-icons/pano-scrobbler.png "metadata/${PACKAGE}/en-US/icon.png"

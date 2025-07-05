@@ -108,3 +108,7 @@ actual suspend fun AppListVM.load(
         onSetHasLoaded()
     }
 }
+
+actual fun AppListVM.pluginUrl(appItem: AppItem): String? {
+    return null
+}

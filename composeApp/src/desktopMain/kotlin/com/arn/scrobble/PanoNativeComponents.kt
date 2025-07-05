@@ -42,7 +42,10 @@ object PanoNativeComponents {
         Thread {
             startListeningMedia()
             Logger.i("startListeningMediaInThread finished")
-        }.start()
+        }.apply {
+            name = "MediaListenerThread"
+        }
+            .start()
     }
 
 

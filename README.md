@@ -11,13 +11,18 @@
 [crowdin]: img/crowdin.svg
 [crowdin-link]: https://crowdin.com/project/pscrobbler
 
-<img src="https://i.imgur.com/pgETfhc.png" alt="scrobbles" width="150"/> <img src="https://i.imgur.com/Q7yPi2z.png" alt="friends" width="150"/> <img src="https://i.imgur.com/MUhcyBw.png" alt="charts" width="150"/> <img src="https://i.imgur.com/aikbtGR.png" alt="random" width="150"/>
+<img src="screenshots/scrobbles-desktop.jpg" alt="scrobbles screen" width="250"/> <img src="screenshots/charts-desktop.jpg" alt="charts screen" width="250"/>
+
+<img src="screenshots/friends-mobile.jpg" alt="friends screen" width="150"/> <img src="screenshots/details-mobile.jpg" alt="details screen" width="150"/> <img src="screenshots/random-mobile.jpg" alt="random screen" width="150"/>
 
 ### Downloads
 
 **Android (phones, tablets, TVs and Chromebooks):**
 
-[![play-store][play-store]][play-store-link] [![github][github]][github-link] [![fdroid][fdroid]][fdroid-link]
+[![github][github]][github-link] [![fdroid][fdroid]][fdroid-link] [![play-store][play-store]][play-store-link]
+
+The non-Play variant has the permission to optionally display a persistent notification on Android 14+.
+This may help prevent the system from killing the app in the background on devices from certain manufacturers.
 
 **Windows:**
 
@@ -27,6 +32,8 @@
 
 [![github][github]][github-link]
 
+
+The builds on Github Releases or the F-Droid repo do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
 
 ### Translate
 

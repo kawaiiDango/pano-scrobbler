@@ -1,5 +1,6 @@
 package com.arn.scrobble.main
 
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -65,7 +66,7 @@ private fun PanoDialogs(
         padding = dialogArgs !is PanoDialog.MusicEntryInfo,
         onBack = onBack,
         isNestedScrollable = dialogArgs is PanoDialog.NestedScrollable,
-        forceSkipPartiallyExpanded = dialogArgs !is PanoDialog.NestedScrollable,
+        forceSkipPartiallyExpanded = true,
         onDismissRequest = onDismissRequest
     ) { modifier ->
         when (dialogArgs) {
@@ -281,21 +282,33 @@ private fun BottomSheetDialogParent(
         skipPartiallyExpanded = forceSkipPartiallyExpanded || PlatformStuff.isTv || PlatformStuff.isDesktop
     )
 
-    val sheetGesturesEnabled by remember { mutableStateOf(!PlatformStuff.isTv && !PlatformStuff.isDesktop) }
+    val isMobile = !PlatformStuff.isTv && !PlatformStuff.isDesktop
+
+    val sheetGesturesEnabled by remember(
+        isNestedScrollable,
+        scrollState.canScrollForward,
+        scrollState.canScrollBackward
+    ) {
+        mutableStateOf(
+            isMobile && isNestedScrollable &&
+                    !scrollState.canScrollForward && !scrollState.canScrollBackward
+        )
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        dragHandle = if (PlatformStuff.isTv || PlatformStuff.isDesktop) null
-        else {
+        dragHandle = if (sheetGesturesEnabled) {
             { BottomSheetDefaults.DragHandle() }
-        },
+        } else
+            null,
         sheetGesturesEnabled = sheetGesturesEnabled,
         sheetState = sheetState,
     ) {
         if (onBack != null) {
             IconButton(
                 onClick = onBack,
-                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
+                modifier = Modifier.padding(4.dp)
+                    .align(Alignment.CenterHorizontally),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
@@ -312,7 +325,8 @@ private fun BottomSheetDialogParent(
                         onDismissRequest()
                     }
                 },
-                modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally),
+                modifier = Modifier.padding(4.dp)
+                    .align(Alignment.CenterHorizontally),
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
@@ -325,6 +339,12 @@ private fun BottomSheetDialogParent(
             Modifier
                 .fillMaxWidth()
                 .then(
+                    if (isNestedScrollable && !sheetGesturesEnabled && isMobile)
+                        Modifier.fillMaxHeight(0.75f)
+                    else
+                        Modifier
+                )
+                .then(
                     if (padding)
                         if (PlatformStuff.isTv || PlatformStuff.isDesktop)
                             Modifier.padding(24.dp)
@@ -333,7 +353,10 @@ private fun BottomSheetDialogParent(
                     else
                         Modifier
                 )
-                .verticalScroll(scrollState, enabled = isNestedScrollable)
+                .verticalScroll(
+                    scrollState,
+                    enabled = isNestedScrollable && !sheetGesturesEnabled
+                )
         )
     }
 }

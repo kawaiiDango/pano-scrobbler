@@ -2,16 +2,8 @@
 
 **You will need to uninstall the version earlier than 4.0 before installing this one. Remember to export your settings before you do so**
 
-- The app has been rewritten from ground up using Compose Multiplatform
-- Now available for **Android, Windows and Linux**
-- Uses Material 3 Expressive
-- The option to display a persistent notification on Android 14+ is back for non Play Store builds. This may help prevent the system from killing the app in the background on some devices
-- The builds provided on Github no longer contain non-free dependencies
-- Play Store purchases will no longer be available in the Github builds, which is in line with the Play Store policies
-- Tasker intents have been replaced with ContentProvider query URIs and an allowlist, which are more secure
-- In-app scrobble from mic has been removed, in favour of using Shazam/AutoShazam
-- Native Maloja support has been removed, in favour of using their ListenBrainz API
-- Regex edits logic has changed. Now supports blocking scrobbles
-- Pending scrobbles now show their last attempt timestamp and why they failed
-- Targets Android 16, dropped support for Android 6
+Changes since 4.1
+
+- Fixed some UI bugs
+- Possibly fixed a segfault on Linux
 - Translation updates by the translators on Crowdin

@@ -18,7 +18,10 @@ object DesktopWebView {
         // Start the event loop in a separate thread
         Thread {
             startEventLoop()
-        }.start()
+        }.apply {
+            name = "WebviewEventLoopThread"
+        }
+            .start()
     }
 
     // jni callbacks

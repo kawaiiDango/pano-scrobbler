@@ -209,10 +209,11 @@ fun MusicEntryListItem(
                 else
                     Modifier
             )
-                .padding(8.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
         ) { weightModifier ->
 
             BoxWithConstraints(
+                contentAlignment = Alignment.Center,
                 modifier = weightModifier
             ) {
                 val boxSize = min(maxWidth, maxHeight)
@@ -414,13 +415,15 @@ fun MusicEntryListItem(
 
                 if (onMenuClick != null) {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     ) {
                         if (entry is Track && entry.isNowPlaying) {
                             Icon(
                                 imageVector = Icons.Rounded.PlayArrow,
                                 contentDescription = stringResource(Res.string.time_just_now),
-                                modifier = Modifier.size(22.dp)
+                                modifier = Modifier
+                                    .size(22.dp)
                             )
                         } else if (appItem != null) {
                             TooltipBox(

@@ -50,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -84,7 +85,6 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.cancel
 import pano_scrobbler.composeapp.generated.resources.charts_continuous
 import pano_scrobbler.composeapp.generated.resources.charts_custom
-import pano_scrobbler.composeapp.generated.resources.date_range
 import pano_scrobbler.composeapp.generated.resources.item_options
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.months
@@ -233,6 +233,8 @@ fun TimePeriodSelector(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.background(
             MaterialTheme.colorScheme.surfaceContainerHigh,
+            shape = MaterialTheme.shapes.large
+        ).clip(
             shape = MaterialTheme.shapes.large
         )
     ) {
@@ -481,7 +483,7 @@ private fun DateRangePickerModal(
             state = dateRangePickerState,
             title = {
                 Text(
-                    text = stringResource(Res.string.date_range),
+                    text = stringResource(Res.string.charts_custom),
                 )
             },
             modifier = Modifier
@@ -559,8 +561,17 @@ private fun MonthPickerPopup(
                         OutlinedToggleButton(
                             checked = year == selectedYear,
                             onCheckedChange = {
-                                if (it)
+                                if (it) {
                                     selectedYear = year
+
+                                    cal.apply {
+                                        set(Calendar.YEAR, selectedYear)
+                                        set(Calendar.MONTH, selectedMonth)
+                                        set(Calendar.DAY_OF_MONTH, 1)
+                                    }
+
+                                    onMonthMillisSelected(cal.timeInMillis)
+                                }
                             },
 //                        modifier = Modifier.fillMaxWidth(),
                         ) {

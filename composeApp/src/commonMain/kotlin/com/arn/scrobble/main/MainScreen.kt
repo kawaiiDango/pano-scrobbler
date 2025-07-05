@@ -560,7 +560,10 @@ private fun PanoNavigationRail(
                         },
                         label = {
                             Text(
-                                text = user.name,
+                                text = if (Stuff.isInDemoMode)
+                                    "me"
+                                else
+                                    user.name,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
@@ -657,7 +660,10 @@ private fun PanoBottomNavigationBar(
                 label = {
                     Text(
                         if (tabMetadata is PanoTab.Profile)
-                            tabMetadata.user.name
+                            if (Stuff.isInDemoMode)
+                                "me"
+                            else
+                                tabMetadata.user.name
                         else
                             stringResource(tabMetadata.titleRes),
                         maxLines = 1,

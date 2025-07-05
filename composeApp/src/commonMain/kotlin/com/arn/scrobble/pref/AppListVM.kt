@@ -17,7 +17,6 @@ class AppListVM : ViewModel() {
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
 
-
     init {
         viewModelScope.launch {
             val appListWasRun = PlatformStuff.mainPrefs.data.map { it.appListWasRun }.first()
@@ -54,3 +53,5 @@ expect suspend fun AppListVM.load(
     onSetHasLoaded: () -> Unit,
     checkDefaultApps: Boolean,
 )
+
+expect fun AppListVM.pluginUrl(appItem: AppItem): String?

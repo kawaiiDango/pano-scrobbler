@@ -10,7 +10,6 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.bug_report
 import pano_scrobbler.composeapp.generated.resources.email
 import pano_scrobbler.composeapp.generated.resources.no_mail_apps
 import java.io.File
@@ -64,12 +63,10 @@ actual object BugReportUtils {
                 "&body=" + Uri.encode(text)
         val uri = uriText.toUri()
         sendTo.setData(uri)
-
-        val chooser = Intent.createChooser(sendTo, getString(Res.string.bug_report))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        sendTo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         try {
-            AndroidStuff.application.startActivity(chooser)
+            AndroidStuff.application.startActivity(sendTo)
         } catch (e: Exception) {
             e.printStackTrace()
             Stuff.globalSnackbarFlow.tryEmit(

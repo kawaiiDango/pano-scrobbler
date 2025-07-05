@@ -166,7 +166,7 @@ actual object PanoNotifications {
             val unscrobbleAction = AndroidStuff.getNotificationAction(
                 R.drawable.vd_remove,
                 "⛔️",
-                context.getString(R.string.unscrobble),
+                context.getString(android.R.string.cancel),
                 cancelToastIntent
             )
 

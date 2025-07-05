@@ -24,6 +24,7 @@ title: Pano Scrobbler
 
 include:
   - "*.md"
+  - "screenshots/*.jpg"
 
 exclude:
   - "**/*"

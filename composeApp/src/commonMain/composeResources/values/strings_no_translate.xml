@@ -32,17 +32,12 @@
     <string name="csv" translatable="false">CSV</string>
     <string name="jsonl" translatable="false">JSONL</string>
     <string name="special_app_access" translatable="false">Special app access</string>
-    <string name="automation_intents" translatable="false">Broadcast intents</string>
     <string name="automation_cp" translatable="false">ContentProvider URIs</string>
 
     <!--  strings for unfinalized stuff  -->
-    <string name="reload"
-        comment="Reload or refresh"
-        >Reload</string>
+
     <string name="download_it">Get it for other platforms: Windows, Linux and Android</string>
-    <string name="regex_rules">Regex rules</string>
-    <string name="automation">Control Pano Scrobbler from automation apps</string>
-    <string name="automation_cli">Command line arguments</string>
+    <string name="automation_cli">Command-line arguments</string>
     <string name="automation_cli_info">Run the pano-scrobbler executable with one of these command line arguments, while an instance is already running.</string>
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true"
@@ -51,7 +46,7 @@
 
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
-If you had donated $%1$d or more before %2$s, or did not get the automated email for some reason, send me a message on Ko-Fi or BuyMeACoffee with your email address and I will manually email the code to you.
+If you had donated $%1$d or more before %2$s, or did not get the automated email for some reason (check your spam folder too), send me a message on Ko-Fi or BuyMeACoffee with your email address and I will manually email the code to you.
 
 Already purchased through Google Play?
 
@@ -61,9 +56,6 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="move_right" translatable="false">Move right</string>
     <string name="move_up" translatable="false">Move up</string>
     <string name="move_down" translatable="false">Move down</string>
-    <string name="date_range" translatable="false">Select date range</string>
-    <string name="pref_tray_icon_theme" translatable="false">Tray icon color</string>
-    <string name="min_track_duration" translatable="false">Scrobble tracks longer than</string>
     <string name="desktop_webview_message" translatable="false">Complete the action in the WebView window</string>
     <string name="desktop_webview_not_loaded" translatable="false">Failed to load webview. Do you have the required dependencies installed?
 

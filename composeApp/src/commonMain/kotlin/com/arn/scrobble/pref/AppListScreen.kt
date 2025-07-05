@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +41,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.music_players
+import pano_scrobbler.composeapp.generated.resources.needs_plugin
 import pano_scrobbler.composeapp.generated.resources.other_apps
 
 
@@ -115,6 +117,12 @@ fun AppListScreen(
                 AppListItem(
                     appItem = appItem,
                     isSelected = selectedPackages.contains(appItem.appId),
+                    isSingleSelect = isSingleSelect,
+                    showAppId = showAppId,
+                    pluginUrl = if (saveType == AppListSaveType.Scrobbling)
+                        viewModel.pluginUrl(appItem)
+                    else
+                        null,
                     onToggle = { selected ->
                         if (isSingleSelect) {
                             viewModel.setSelectedPackages(setOf(appItem.appId))
@@ -122,9 +130,7 @@ fun AppListScreen(
                             viewModel.setMultiSelection(appItem.appId, selected)
                         }
                     },
-                    showAppId = showAppId,
-                    isSingleSelect = isSingleSelect,
-                    modifier = Modifier.animateItem()
+                    modifier = Modifier.animateItem(),
                 )
             }
         }
@@ -138,11 +144,12 @@ fun AppListScreen(
                 AppListItem(
                     appItem = null,
                     isSelected = false,
-                    showAppId = false,
-                    onToggle = {},
-                    forShimmer = true,
                     isSingleSelect = isSingleSelect,
-                    modifier = Modifier.shimmerWindowBounds().animateItem()
+                    showAppId = false,
+                    pluginUrl = null,
+                    onToggle = {},
+                    modifier = Modifier.shimmerWindowBounds().animateItem(),
+                    forShimmer = true,
                 )
             }
         }
@@ -179,6 +186,7 @@ private fun AppListItem(
     isSelected: Boolean,
     isSingleSelect: Boolean,
     showAppId: Boolean,
+    pluginUrl: String?,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
@@ -224,6 +232,18 @@ private fun AppListItem(
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                 )
+            }
+
+            if (pluginUrl != null) {
+                OutlinedButton(
+                    onClick = {
+                        PlatformStuff.openInBrowser(pluginUrl)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(Res.string.needs_plugin),
+                    )
+                }
             }
         }
         if (isSingleSelect) {

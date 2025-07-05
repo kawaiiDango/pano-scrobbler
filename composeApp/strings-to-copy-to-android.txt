@@ -21,7 +21,6 @@ skip
 state_unscrobbled
 tap_to_edit
 unlove
-unscrobble
 show_persistent_noti
 persistent_noti_text
 channel_err

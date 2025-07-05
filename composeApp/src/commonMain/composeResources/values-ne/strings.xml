@@ -74,7 +74,6 @@
     <string name="artist_image">एल्बम छवि</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक पार्स गर्न सकेन</string>
     <string name="network_error">नेटवर्क त्रुटि</string>
-    <string name="disable_tls_verify">TLS त्रुटिहरू बेवास्ता गर्नुहोस्</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रबल बेवास्ता गरियो</string>
     <string name="scrobble_ignored_save_edit">Lastfm ले सम्पादनलाई बेवास्ता गरेको छ किनभने स्क्रबल धेरै पुरानो छ। के तपाईं यस सम्पादनलाई भविष्यमा स्क्रबहरूका लागि सेभ गर्न चाहनुहुन्छ?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्रहरू खाली छन्</string>
@@ -92,18 +91,14 @@
     <string name="tracks">ट्र्याकहरू</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">शीर्ष ट्र्याकहरू</string>
     <string name="similar_tracks">समान ट्र्याकहरू</string>
-    <string name="similar" comment="Similar tracks but in short">उस्तै</string>
     <string name="state_scrobbling">स्क्रबल गर्दै…</string>
     <string name="state_scrobbled">स्क्रबल गरियो</string>
-    <string name="unscrobble">स्क्रबल गर्न सकिएन</string>
     <string name="state_unscrobbled">स्क्रबल हटाइयो</string>
-    <string name="state_unrecognised_artist">अपरिचित कलाकार</string>
     <string name="tap_to_edit">(सम्पादन गर्नको लागि थिच्नुहोस्)</string>
     <string name="recently_scrobbled">हालै स्क्रबल गरिएको</string>
     <string name="recents" comment="Short for recently scrobbled">हालैका</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">पहिलो पटक %1$s मा स्क्रबल गरिएको</string>
     <string name="auto" comment="automatic or default setting">स्वतः</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">लगभग त्यहाँ…</string>
     <string name="music_players">संगीत प्लेयरहरू</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">अन्य एपहरू</string>
     <string name="choose_apps">एपहरू चयन गर्नुहोस्</string>
@@ -118,7 +113,6 @@
     <string name="share_sig">(Pano Scrobbler मार्फत)</string>
     <string name="share">शेयर</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">लेजेण्ड</string>
-    <string name="pinch_to_zoom">जुम गर्न पिन्च गर्नुहोस्</string>
     <string name="more_info">थप जानकारी</string>
     <string name="more" comment="More options menu in short">अरू</string>
     <string name="learn" comment="(Learn java regex syntax)">सिक्नुहोस्</string>
@@ -160,8 +154,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Unhate</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Unlove</string>
     <string name="pending_scrobbles">विचाराधीन स्क्रबल</string>
-    <string name="pending_scrobble">विचाराधीन स्क्रबल</string>
-    <string name="pending_scrobbles_noti">विचाराधीन स्क्रबल प्रशोधन गर्दै</string>
     <string name="following" comment="accounts you are following on lastfm">फलोइङ</string>
     <string name="followers" comment="your lastfm followers">फलोवर्स</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रबल, %2$s देखि</string>
@@ -184,23 +176,15 @@
     <string name="loved" comment="Its a noun">मन पराएको</string>
     <string name="unloved" comment="Its a noun">मन नपरेको</string>
     <string name="simple_edits">सम्पादनहरू</string>
-    <string name="grant_rec_perm">कृपया माइक्रोफोन प्रयोग गर्न अनुमति दिनुहोस्</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्ट्स</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">ट्याग क्लाउड</string>
-    <string name="scrobble_from_mic" comment="Its a verb">माइकबाट स्क्रबल गर्नुहोस्</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">माइकबाट</string>
     <string name="add_to_hs">होमस्क्रिनमा थप्नुहोस्</string>
-    <string name="listening">आफ्नो वरिपरि बजिरहेको संगीत सुन्दै…</string>
-    <string name="uploading">अपलोड गर्दै…</string>
-    <string name="recording_failed">रेकर्डिङ सुरु गर्न असफल भयो। यस यन्त्रमा माइक व्यस्त वा अनुपलब्ध हुन सक्छ</string>
     <string name="press_back">सकिएपछि ब्याक थिच्नुहोस्</string>
-    <string name="powered_acr"><i><b>ACR</b>Cloud</i> द्वारा संचालित</string>
     <string name="details">विवरणहरू</string>
     <string name="saved_as_pending">विचाराधीन स्क्रबलको रूपमा सेभ गरियो</string>
     <string name="sort">क्रमबद्ध</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">समय जम्प</string>
     <string name="my_scrobbles">मेरो स्क्रबल</string>
-    <string name="their_scrobbles">उहाँको स्क्रबल</string>
     <string name="listeners">श्रोता</string>
     <string name="scrobbles">स्क्रबल</string>
     <string name="collapse" comment="(view only a few items)">संक्षिप्त पार्नुहोस्</string>
@@ -227,7 +211,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">म भाग्यशाली महसुस गर्दैछु</string>
     <string name="random_not_found">कुनै ट्र्याक फेला परेन</string>
     <string name="loved_track">Loved track</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">ऱ्याण्डम</string>
     <string name="random_text">जुनसुकै</string>
     <string name="graph_daily">दैनिक स्क्रबल गणना</string>
     <string name="graph_weekly">साप्ताहिक स्क्रबल गणना</string>
@@ -256,9 +239,6 @@
     <string name="system_colors">प्रणाली रङहरू</string>
     <string name="appwidget_alpha">ब्याकग्राउण्ड अपारदर्शकता</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">विजेट प्रत्येक %1$s मा रिफ्रेस हुनेछ</string>
-    <string name="primary_color">प्राथमिक रङ</string>
-    <string name="secondary_color">सहायक रङ</string>
-    <string name="tint_background" comment="Tint the background with the primary color">टिन्ट ब्याकग्राउण्ड</string>
     <string name="random_theme">प्रत्येक सुरुवातमा ऱ्याण्डमाइज गर्नुहोस्</string>
     <string name="edit_name" comment="name for regex pattern">मैत्रीपूर्ण नाम</string>
     <string name="edit_regex">Regex pattern</string>
@@ -314,7 +294,7 @@
     <string name="pref_export">निर्यात</string>
     <string name="pref_export_desc">सेटिङ, एडिट, ब्लकलिस्त ब्याक अप गर्नुहोस्। लॉगिन सँग सम्बन्धित जानकारी ब्याकअप सुरक्षा को कारण ले ब्याकअप हुँदैन। साथीभाइ संग शेयर गर्दा र मोबाइल परिवर्तन गर्दा उपयोगी हुन्छ।.</string>
     <string name="pref_import">आयात</string>
-    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">नेटवर्क</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">नेटवर्क</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">कोड</string>
     <string name="pref_imexport_network_notice">नेटवर्क मोड को लागि दुवै डिभाइस एउटै नेटवर्क मा कनेक्ट हुनुपर्छ।</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">पर्सनलआईजेसन</string>

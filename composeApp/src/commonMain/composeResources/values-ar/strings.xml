@@ -26,7 +26,6 @@
     <string name="artist_image">صورة ألفنان</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">خطأ في تحليل العنوان</string>
     <string name="network_error">خطأ بالشبكة</string>
-    <string name="disable_tls_verify">أهمال أخطاء TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">تم تجاهل الأسكروبل</string>
     <string name="scrobble_ignored_save_edit">لاست أف أم تجاهل التعديل علي الأرجح بسبب الأسكروبل قديم جدا. هل ترغب بحفظ هذا التعديل للاسكروبلس المستقبليه عوضا عن ؟</string>
     <string name="required_fields_empty" comment="Shown on filling a form">بعض الخانات لم يتم إملائها </string>
@@ -44,18 +43,14 @@
     <string name="tracks">الأغاني</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">أعلي الأغاني</string>
     <string name="similar_tracks">أغاني متشابهة</string>
-    <string name="similar" comment="Similar tracks but in short">متشابهة</string>
     <string name="state_scrobbling">أسكروبلنج ألان...</string>
     <string name="state_scrobbled">سكروبلد</string>
-    <string name="unscrobble">لم يتم أسكروبلنج</string>
     <string name="state_unscrobbled">لم يتم أسكروبلنج</string>
-    <string name="state_unrecognised_artist">فنان غير معروف</string>
     <string name="tap_to_edit">(اضغط للتعديل)</string>
     <string name="recently_scrobbled">تم الاسكروبلنج موخرا</string>
     <string name="recents" comment="Short for recently scrobbled">الحديثة</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">تم مسحه أولاً في %1$s</string>
     <string name="auto" comment="automatic or default setting">تلقائي</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">تقريبا هناك…</string>
     <string name="music_players">مشغلي الموسيقى</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">تطبيقات أخرى</string>
     <string name="choose_apps">اختر التطبيقات</string>
@@ -70,7 +65,6 @@
     <string name="share_sig">(عبر بانو سكرببلر)</string>
     <string name="share">مشاركة</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">عنوان توضيحي</string>
-    <string name="pinch_to_zoom">اقرص للتكبير</string>
     <string name="more_info">معلومات إضافية</string>
     <string name="more" comment="More options menu in short">المزيد</string>
     <string name="learn" comment="(Learn java regex syntax)">تعلّم</string>
@@ -109,8 +103,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">إلغاء الكراهية</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">ازالة الحب</string>
     <string name="pending_scrobbles">أسكروبلس معلق</string>
-    <string name="pending_scrobble">أسكروبل معلق</string>
-    <string name="pending_scrobbles_noti">يتم تحويل الأسكروبلس المعلق </string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">أغنية ممسوحة %1$s منذ %2$s</string>
     <string name="allow_background">السماح بمسح الأغاني في الخلفية</string>
     <string name="grant_notification_access">منح صلاحية الإشعارات</string>
@@ -131,23 +123,15 @@
     <string name="loved" comment="Its a noun">أحببت</string>
     <string name="unloved" comment="Its a noun">ازالة الحب</string>
     <string name="simple_edits">التعديلات</string>
-    <string name="grant_rec_perm">الرجاء منح الإذن لاستخدام الميكروفون</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">الأشكال البيانية</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">سحابة العلامات</string>
-    <string name="scrobble_from_mic" comment="Its a verb">مسح الأغاني من الميكروفون</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">من الميكروفون</string>
     <string name="add_to_hs">إضافة إلى الشاشة الرئيسية</string>
-    <string name="listening">الاستماع إلى الموسيقى من حولك…</string>
-    <string name="uploading">يتم الرفع…</string>
-    <string name="recording_failed">أخفق بدء التسجيل. قد يكون الميكروفون مشغولاً أو غير متوفر على هذا الجهاز</string>
     <string name="press_back">اضغط على زر الرجوع عند الانتهاء</string>
-    <string name="powered_acr">مدعوم من <i><b>ACR</b>Cloud</i></string>
     <string name="details">التفاصيل</string>
     <string name="saved_as_pending">تم حفظه كمسح أغنية معلق</string>
     <string name="sort">فرز</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">القفز الزمني</string>
     <string name="my_scrobbles">المسوحات الموسيقية الخاصة بي</string>
-    <string name="their_scrobbles">مسوحاتهم الموسيقية</string>
     <string name="listeners">المستمعون</string>
     <string name="scrobbles">مسوحات</string>
     <string name="collapse" comment="(view only a few items)">إغلاق</string>
@@ -173,7 +157,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">أشعر أنني محظوظ</string>
     <string name="random_not_found">لم يتم العثور على مسار</string>
     <string name="loved_track">المسار المحبوب</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">عشوائي</string>
     <string name="random_text">عشوائي</string>
     <string name="graph_daily">العدادات اليومية للمسح الموسيقي</string>
     <string name="graph_weekly">العداد الأسبوعي للمسح الموسيقي</string>

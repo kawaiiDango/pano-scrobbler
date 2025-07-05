@@ -58,7 +58,6 @@
     <string name="artist_image">艺术家图像</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>
     <string name="network_error">网络异常</string>
-    <string name="disable_tls_verify">忽略 TLS 错误</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">已忽略记录</string>
     <string name="scrobble_ignored_save_edit">或许是由于本记录时间过于久远，Last.fm 忽略了本次编辑。您是否愿意保存本次编辑用于后续的记录？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
@@ -76,18 +75,14 @@
     <string name="tracks">曲目</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">热门曲目</string>
     <string name="similar_tracks">相似的曲目</string>
-    <string name="similar" comment="Similar tracks but in short">找相似</string>
     <string name="state_scrobbling">正在记录…</string>
     <string name="state_scrobbled">已记录</string>
-    <string name="unscrobble">撤销记录</string>
     <string name="state_unscrobbled">已撤销记录</string>
-    <string name="state_unrecognised_artist">无法识别的艺术家</string>
     <string name="tap_to_edit">（点击以编辑）</string>
     <string name="recently_scrobbled">最近的记录</string>
     <string name="recents" comment="Short for recently scrobbled">最近的</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">首次记录于 %1$s</string>
     <string name="auto" comment="automatic or default setting">自动</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">即将完成……</string>
     <string name="music_players">音乐播放器</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">其他应用</string>
     <string name="choose_apps">选择应用</string>
@@ -104,7 +99,6 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">图注</string>
     <string name="grid" comment="Grid view">网格</string>
     <string name="list" comment="Single column list view">列表</string>
-    <string name="pinch_to_zoom">双指缩放</string>
     <string name="more_info">更多信息</string>
     <string name="more" comment="More options menu in short">更多</string>
     <string name="learn" comment="(Learn java regex syntax)">了解</string>
@@ -144,8 +138,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">取消点踩</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">不再喜爱</string>
     <string name="pending_scrobbles">待记录的音乐</string>
-    <string name="pending_scrobble">待记录的音乐</string>
-    <string name="pending_scrobbles_noti">正在处理待记录的音乐条目</string>
     <string name="following" comment="accounts you are following on lastfm">关注</string>
     <string name="followers" comment="your lastfm followers">关注者</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s 项记录，始于 %2$s</string>
@@ -168,23 +160,15 @@
     <string name="loved" comment="Its a noun">已点赞</string>
     <string name="unloved" comment="Its a noun">不再喜爱的</string>
     <string name="simple_edits">编辑</string>
-    <string name="grant_rec_perm">请授予使用麦克风的权限</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">图表</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">标签云</string>
-    <string name="scrobble_from_mic" comment="Its a verb">从麦克风记录</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">来自麦克风</string>
     <string name="add_to_hs">添加到主屏幕</string>
-    <string name="listening">正在聆听您周围播放的音乐…</string>
-    <string name="uploading">正在上传...</string>
-    <string name="recording_failed">无法开始录制。麦克风可能正被占用或在此设备上不可用</string>
     <string name="press_back">完成后点击返回</string>
-    <string name="powered_acr">由 <i><b>ACR</b>Cloud</i>驱动</string>
     <string name="details">详细资料</string>
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">时间点跳转</string>
     <string name="my_scrobbles">我的收听记录</string>
-    <string name="their_scrobbles">他们的记录</string>
     <string name="listeners">听众</string>
     <string name="scrobbles">收听记录</string>
     <string name="collapse" comment="(view only a few items)">折叠</string>
@@ -210,7 +194,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">手气不错</string>
     <string name="random_not_found">未找到曲目</string>
     <string name="loved_track">喜爱的曲目</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">随机</string>
     <string name="random_text">随机</string>
     <string name="graph_daily">每日记录计数</string>
     <string name="graph_weekly">每周记录计数</string>
@@ -238,9 +221,6 @@
     <string name="system_colors">系统颜色</string>
     <string name="appwidget_alpha">背景不透明度</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">小组件将每 %1$s 刷新一次</string>
-    <string name="primary_color">主要颜色</string>
-    <string name="secondary_color">次要颜色</string>
-    <string name="tint_background" comment="Tint the background with the primary color">背景色调</string>
     <string name="random_theme">每次启动时随机显示</string>
     <string name="edit_name" comment="name for regex pattern">友好的姓名</string>
     <string name="edit_regex">正则表达式模板</string>
@@ -260,12 +240,9 @@
     <string name="edit_case_sensitive">区分大小写</string>
     <string name="edit_regex_test" comment="(Test regex rules)">测试</string>
     <string name="edit_presets" comment="Regex presets">预设</string>
-    <string name="edit_presets_available">可用预设</string>
-    <string name="edit_no_presets_available">所有预设均已生效</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">预设：%1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">已达模板限制 (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">拖拽滑柄</string>
-    <string name="text" comment="text to test regex rules with">文本</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ 请确保您在使用前了解 <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> 或直接从提供的 <b>预设</b> 中选择一个。正则表达式将从上往下逐一尝试匹配</string>
     <string name="blocked_metadata_info">ℹ️ 填写多个字段时将自动插入 AND 运算符</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">点击以屏蔽并跳过</string>
@@ -302,12 +279,9 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">图片标注</string>
     <string name="username" comment="last.fm Username">用户名</string>
     <string name="pref_master">记录音乐</string>
-    <string name="pref_master_qs_hint">也可通过快速设置开关触发</string>
     <string name="pref_master_qs_add">添加快速设置开关</string>
     <string name="pref_master_qs_already_addded">已经添加过快速设置开关</string>
     <string name="pref_noti">通知</string>
-    <string name="pref_noti_categories">通知类别</string>
-    <string name="pref_scrobble_noti">记录通知</string>
     <string name="pref_lockscreen_noti">锁屏界面通知</string>
     <string name="pref_offline_info">ℹ️ 离线歌曲记录 &amp; 喜爱曲目将会被保存，用以稍后发送。</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">记录来源</string>
@@ -343,21 +317,17 @@
     <string name="pref_export">导出</string>
     <string name="pref_export_desc">备份设置、编辑列表和黑名单。出于安全原因不保存登录信息。可用于设备间同步或与朋友共享。</string>
     <string name="pref_import">导入</string>
-    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">网络</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">网络</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">验证码</string>
     <string name="pref_imexport_network_notice">要使用联网模式，两台设备必须连接到同一网络。</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">个性化</string>
     <string name="pref_themes" comment="Color themes">主题</string>
-    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">自由混搭\n同时更改通知配色</string>
     <string name="pref_widget_charts">主屏幕微件 - 图表</string>
-    <string name="pref_show_albums">显示专辑名称</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…在抓取记录上展示</string>
     <string name="pref_show_scrobble_sources">显示抓取记录来源应用的图标</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…除了抓取记录外，此数据仅在您的设备上保留</string>
     <string name="pref_search_in_source">在抓取记录的来源应用中搜索 &amp; 播放</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">如果应用支持</string>
     <string name="pref_lists" comment="Such as edits list and block lists">列表</string>
-    <string name="pref_regex_edits">模板编辑</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">已屏蔽的元数据条目</string>
     <string name="pref_translate">翻译本应用</string>
     <string name="pref_translate_credits">翻译人员</string>
@@ -375,33 +345,17 @@
     <string name="import_lists_replace_existing">合并且替换现有的编辑模板和屏蔽列表</string>
     <string name="import_lists_keep">合并但保留现有的编辑模板与屏蔽列表</string>
     <string name="import_settings">导入设置</string>
-    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">广播 intents</string>
-    <string name="current_track">当前曲目：</string>
-    <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
     <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">%1$s类实例</string>
     <string name="failed_encode_url">无法对 URL 进行编码</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">勾选 %1$s</string>
-    <string name="artist_extra">曲目、专辑 &amp; 相似艺术家</string>
     <string name="no_browser">未安装浏览器</string>
     <string name="no_player">未安装音乐播放器</string>
     <string name="not_running">⚠ 您的系统终止了记录器运行</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">原因: %1$s</string>
     <string name="not_running_fix_action">修复</string>
     <string name="login_submit" comment="Verifies the login details">验证</string>
-    <string name="acr_host" comment="Web hostname">主机</string>
-    <string name="acr_key" comment="API key">通行密钥</string>
-    <string name="acr_secret" comment="API secret">安全码</string>
-    <string name="add_acr_key">添加 ACRCloud 密钥</string>
-    <string name="remove_acr_key">删除 ACRCloud 密钥</string>
-    <string name="add_acr_consider">尽量使用您自己的 ACRCloud 密钥来避免触发访问限制</string>
-    <string name="add" comment="Add a new item such as an edit, a tag, etc">添加</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• 前往 https://console.acrcloud.com 进行注册
-• 导航至项目 &gt; 音频 &amp; 视频识别
-• 创建一个新项目，选择已录制音频和 ACRCloud Music bucket</string>
-    <string name="shazam_scrobbling">要继续进行记录，请打开 <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> 并启用 Auto Shazam。同时确保 Shazam 已启用音乐记录。</string>
-    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">剩余 %1$d 条</string>
     <string name="submitting_loves" formatted="true">正在提交喜爱曲目，还剩 %1$d 条</string>
     <string name="pending_batch" comment="For pending scrobbles">正在提交批量记录</string>
     <string name="bar_chart">柱状图表</string>
@@ -439,7 +393,6 @@
     <string name="pro_also_get">您同时也将解锁以下功能：</string>
     <string name="thank_you">感谢！</string>
     <string name="purchase_pending">您的购买尚未被付款提供商确认，请稍后再试</string>
-    <string name="billing_troubleshoot_title">恢复购买</string>
     <string name="billing_troubleshoot">已经购买？
 
 您的购买记录由 Google Play 管理，并与进行购买的 Google Play 账户关联。当您在一台同时登录了多个账户的新设备上安装应用时，Google Play 可能会将其关联至错误的账户。最佳解决方案是在电脑上访问网页端 Google Play 页面，然后选择关联了购买记录的账户进行安装：

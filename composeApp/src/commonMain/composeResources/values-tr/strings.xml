@@ -74,7 +74,6 @@
     <string name="artist_image">Sanatçı resmi</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
     <string name="network_error">Bağlantı hatası</string>
-    <string name="disable_tls_verify">TLS hatalarını yoksay</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Skrop yoksayıldı</string>
     <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için dikkate almadı. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Gerekli alanlar boş</string>
@@ -92,18 +91,14 @@
     <string name="tracks">Parçalar</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">En çok dinlenen parçalar</string>
     <string name="similar_tracks">Benzer parçalar</string>
-    <string name="similar" comment="Similar tracks but in short">Benzer</string>
     <string name="state_scrobbling">Skroplanıyor…</string>
     <string name="state_scrobbled">Skroplandı</string>
-    <string name="unscrobble">Skroplamayı geri al</string>
     <string name="state_unscrobbled">Skroplama geri alındı</string>
-    <string name="state_unrecognised_artist">Bilinmeyen sanatçı</string>
     <string name="tap_to_edit">(Düzenlemek için dokunun)</string>
     <string name="recently_scrobbled">En Son Skroplananlar</string>
     <string name="recents" comment="Short for recently scrobbled">Son dinlemeler</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">İlk %1$s tarihinde skroplandı</string>
     <string name="auto" comment="automatic or default setting">Otomatik</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Neredeyse tamam…</string>
     <string name="music_players">Müzik Oynatıcılar</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Diğer Uygulamalar</string>
     <string name="choose_apps">Uygulama seçin</string>
@@ -120,7 +115,6 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Göstergeler</string>
     <string name="grid" comment="Grid view">Izgara</string>
     <string name="list" comment="Single column list view">Liste</string>
-    <string name="pinch_to_zoom">İki parmakla yakınlaştırın</string>
     <string name="more_info">Daha fazla bilgi</string>
     <string name="more" comment="More options menu in short">Dahası</string>
     <string name="learn" comment="(Learn java regex syntax)">Öğren</string>
@@ -163,8 +157,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Nefreti kaldır</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Beğeniyi kaldır</string>
     <string name="pending_scrobbles">Bekleyen Skroplar</string>
-    <string name="pending_scrobble">Skroplama bekleniyor</string>
-    <string name="pending_scrobbles_noti">Bekleyen skroplar işleniyor</string>
     <string name="following" comment="accounts you are following on lastfm">Takip Edilen</string>
     <string name="followers" comment="your lastfm followers">Takipçiler</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s itibariyle %1$s skrop</string>
@@ -187,23 +179,15 @@
     <string name="loved" comment="Its a noun">Beğenilenler</string>
     <string name="unloved" comment="Its a noun">Beğeni kaldırıldı</string>
     <string name="simple_edits">Düzenlemeler</string>
-    <string name="grant_rec_perm">Lütfen mikrofonu kullanmak için izin verin</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listeler</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Etiket bulutu</string>
-    <string name="scrobble_from_mic" comment="Its a verb">Mikrofonla skropla</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Mikle</string>
     <string name="add_to_hs">Ana ekrana ekle</string>
-    <string name="listening">Yakınınızda oynatılan müzik dinleniyor…</string>
-    <string name="uploading">Karşıya yükleniyor…</string>
-    <string name="recording_failed">Kayıt başlatılamadı. Mikrofon mevcut değil veya meşgul</string>
     <string name="press_back">Bittiğinde geri tuşuna basın</string>
-    <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Ayrıntılar</string>
     <string name="saved_as_pending">Bekleyen skrop olarak kaydedildi</string>
     <string name="sort">Tür</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Geçmiş skroplar</string>
     <string name="my_scrobbles">Skroplarım</string>
-    <string name="their_scrobbles">Skropları</string>
     <string name="listeners">Dinleyiciler</string>
     <string name="scrobbles">Skroplar</string>
     <string name="collapse" comment="(view only a few items)">Daralt</string>
@@ -229,7 +213,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Haydi rastgele</string>
     <string name="random_not_found">Parça bulunamadı</string>
     <string name="loved_track">Beğenilenler</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">Rastgele Seç</string>
     <string name="random_text">Rastgele</string>
     <string name="graph_daily">Günlük skrop sayısı</string>
     <string name="graph_weekly">Haftalık skrop sayısı</string>
@@ -258,9 +241,6 @@
     <string name="system_colors">Sistem renkleri</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget her %1$s bir yenilenir</string>
-    <string name="primary_color">Ana renk</string>
-    <string name="secondary_color">İkincil renk</string>
-    <string name="tint_background" comment="Tint the background with the primary color">Renkli arkaplan</string>
     <string name="random_theme">Her açılışta rastgele seç</string>
     <string name="edit_name" comment="name for regex pattern">Kolay ad</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>
@@ -280,12 +260,9 @@
     <string name="edit_case_sensitive">Büyük küçük harfe duyarlı</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Dene</string>
     <string name="edit_presets" comment="Regex presets">Ön Ayarlar</string>
-    <string name="edit_presets_available">Ön ayarlar mevcut</string>
-    <string name="edit_no_presets_available">Tüm ön ayarlar kullanımda</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Ön ayar: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Kalıp sınırına ulaşıldı (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Sürükleme yöneticisi</string>
-    <string name="text" comment="text to test regex rules with">Metin</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
     <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Engelleyip atlamak için dokunun</string>
@@ -323,12 +300,9 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Görsele gömülü yazılar</string>
     <string name="username" comment="last.fm Username">Kullanıcı adı</string>
     <string name="pref_master">Müzik skropla</string>
-    <string name="pref_master_qs_hint">Ayrıca hızlı ayarlar kutucuğundan da değiştirilebilir</string>
     <string name="pref_master_qs_add">Hızlı ayar karosunu ekle</string>
     <string name="pref_master_qs_already_addded">Hızlı ayar karosu çoktan eklendi</string>
     <string name="pref_noti">Bildirimler</string>
-    <string name="pref_noti_categories">Bildirim kategorileri</string>
-    <string name="pref_scrobble_noti">Skrop bildirimleri</string>
     <string name="pref_lockscreen_noti">Kilit ekranı bildirimleri</string>
     <string name="pref_offline_info">ℹ️ Çevrmdışı skroplar &amp; beğeniler daha sonra gönderilmek üzere kaydedilecektir.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Müzik uygulamaları</string>
@@ -364,21 +338,17 @@
     <string name="pref_export">Dışa Aktar</string>
     <string name="pref_export_desc">Ayarları, düzenlemeleri ve engel listesini yedekler. Oturum açma bilgilerini güvenlik sebepleriyle kaydetmez. Cihazın sık sık değiştirildiği veya arkadaşlarla paylaşıldığı durumlar için uygundur.</string>
     <string name="pref_import">İçe aktar</string>
-    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Ağ</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Ağ</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Kod</string>
     <string name="pref_imexport_network_notice">Ağ modu için iki cihazın aynı ağda bulunması gerekir.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Kişiselleştirme</string>
     <string name="pref_themes" comment="Color themes">Temalar</string>
-    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Karıştır ve eşle\nAyrıca bildirim rengini de değiştirir</string>
     <string name="pref_widget_charts">Ana ekran widget\'ı - Listeler</string>
-    <string name="pref_show_albums">Albüm adlarını göster</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">(skroplar için)</string>
     <string name="pref_show_scrobble_sources">Skroplanan uygulamanın simgesini göster</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">Bu veri kimseyle paylaşılmaz</string>
     <string name="pref_search_in_source">Skropladığın uygulamada ara &amp; oynat</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Desteklenen uygulamalar içindir</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listeler</string>
-    <string name="pref_regex_edits">Kalıp düzenlemeleri</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Engellenmiş meta veri</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
     <string name="pref_translate_credits">Çeviri ekibi</string>
@@ -399,33 +369,17 @@
     <string name="import_lists_replace_existing">Birleştir, mevcut düzenlemeleri ve engel listesini değiştir</string>
     <string name="import_lists_keep">Birleştir, mevcut düzenlemeleri ve engel listesini koru</string>
     <string name="import_settings">Ayarları içe aktar</string>
-    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Yayın intentleri</string>
-    <string name="current_track">Çalan parça:</string>
-    <string name="pref_intents">Tasker vb. için intentler</string>
     <string name="copied">Kopyalandı!</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>
     <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">%1$s-benzeri servis</string>
     <string name="failed_encode_url">URL şifreleme başarısız</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s uygulamasını kontrol et</string>
-    <string name="artist_extra">Parçalar, albümler &amp; benzer öneriler</string>
     <string name="no_browser">Yüklü tarayıcı yok</string>
     <string name="no_player">Yüklü müzik oynatıcı yok</string>
     <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından sonlandırıldı</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sebep: %1$s</string>
     <string name="not_running_fix_action">Düzelt</string>
     <string name="login_submit" comment="Verifies the login details">Doğrula</string>
-    <string name="acr_host" comment="Web hostname">Sunucu</string>
-    <string name="acr_key" comment="API key">Erişim anahtarı</string>
-    <string name="acr_secret" comment="API secret">Gizli</string>
-    <string name="add_acr_key">ACRCloud Anahtarı Ekle</string>
-    <string name="remove_acr_key">ACRCloud Anahtarını Kaldır</string>
-    <string name="add_acr_consider">Hız kısıtlamalarını önlemek için kendi ACRCloud Anahtarınızı ekleyebilirsiniz</string>
-    <string name="add" comment="Add a new item such as an edit, a tag, etc">Ekle</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Kaydolun: https://console.acrcloud.com
-• Projelerde &gt; Ses &amp; video tanımaya gidin
-• Yeni proje oluşturun, Kayıtlı Sesi ve ACRCloud Müzik kutusunu seçin</string>
-    <string name="shazam_scrobbling">Sürekli skroplamak için <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam\'ı</a> açın ve Otomatik Shazam\'ı etkinleştirin. Ayrıca Shazam\'ın skroplama özelliğinin etkin olduğundan emin olun.</string>
-    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d kaldı</string>
     <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
     <string name="pending_batch" comment="For pending scrobbles">Skroplar gönderiliyor</string>
     <string name="bar_chart">Çubuk grafiği</string>
@@ -463,7 +417,6 @@
     <string name="pro_also_get">Ayrıca aşağıdaki özelliklere sahip olacaksın:</string>
     <string name="thank_you">Teşekkürler!</string>
     <string name="purchase_pending">Satın alma işleminiz henüz ödeme sağlayıcınız tarafından onaylanmadı. Lütfen birkaç dakika sonra tekrar kontrol edin.</string>
-    <string name="billing_troubleshoot_title">Satın almayı geri yükle</string>
     <string name="billing_troubleshoot">Çoktan satın aldınız mı?
 
 Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı gerçekleştiren Google Play hesabıyla bağlantılıdır. Uygulamayı birden fazla hesaba sahip yeni bir cihaza yüklediğinizde, Google Play bunu yanlış hesapla ilişkilendirebilir. Satın alma gerçekleştirilen hesabı açıkça seçmenin en iyi yolu, uygulamayı Google Play web sayfası aracılığıyla bir bilgisayardan yüklemektir:

@@ -74,7 +74,6 @@
     <string name="artist_image">Foto artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
     <string name="network_error">Errore di rete</string>
-    <string name="disable_tls_verify">Ignora gli errori di TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorato</string>
     <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobble è troppo vecchio. Vorresti invece salvare questa modifica per gli scrobble futuri?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Alcuni campi obbligatori sono vuoti</string>
@@ -92,18 +91,14 @@
     <string name="tracks">Brani</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Brani più ascoltati</string>
     <string name="similar_tracks">Brani simili</string>
-    <string name="similar" comment="Similar tracks but in short">Simili</string>
     <string name="state_scrobbling">Scrobbling in corso…</string>
     <string name="state_scrobbled">Scrobbling effettuato</string>
-    <string name="unscrobble">Annulla scrobbling</string>
     <string name="state_unscrobbled">Scrobbling annullato</string>
-    <string name="state_unrecognised_artist">Artista non riconosciuto</string>
     <string name="tap_to_edit">(Tocca per modificare)</string>
     <string name="recently_scrobbled">Scrobbling recenti</string>
     <string name="recents" comment="Short for recently scrobbled">Recenti</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobbling effettuato per la prima volta il %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatico</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ci siamo quasi…</string>
     <string name="music_players">Lettori musicali</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altre app</string>
     <string name="choose_apps">Scegli le app</string>
@@ -118,7 +113,6 @@
     <string name="share_sig">(tramite Pano Scrobbler)</string>
     <string name="share">Condividi</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
-    <string name="pinch_to_zoom">Pizzica per ingrandire</string>
     <string name="more_info">Altre info</string>
     <string name="more" comment="More options menu in short">Altro</string>
     <string name="learn" comment="(Learn java regex syntax)">Impara</string>
@@ -158,8 +152,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Rimuovi detestato</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Rimuovi preferito</string>
     <string name="pending_scrobbles">Scrobbling in attesa</string>
-    <string name="pending_scrobble">Scrobbling in attesa</string>
-    <string name="pending_scrobbles_noti">Elaborando gli scrobbling in attesa</string>
     <string name="following" comment="accounts you are following on lastfm">Seguiti</string>
     <string name="followers" comment="your lastfm followers">Seguaci</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbling eseguiti, dal %2$s</string>
@@ -182,23 +174,15 @@
     <string name="loved" comment="Its a noun">Preferiti</string>
     <string name="unloved" comment="Its a noun">Rimosso dai preferiti</string>
     <string name="simple_edits">Modifiche</string>
-    <string name="grant_rec_perm">Ti chiediamo di dare l\'autorizzazione per usare il microfono</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Classifiche</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuvola di tag</string>
-    <string name="scrobble_from_mic" comment="Its a verb">Scrobbling dal microfono</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Microfono</string>
     <string name="add_to_hs">Aggiungi alla schermata home</string>
-    <string name="listening">Sto ascoltando musica nei dintorni…</string>
-    <string name="uploading">Sto inviando…</string>
-    <string name="recording_failed">Impossibile registrare. Il microfono potrebbe essere occupato o non disponibile in questo dispositivo</string>
     <string name="press_back">Al termine, premere indietro</string>
-    <string name="powered_acr">Fornito da <i><b>ACR</b>Cloud</i></string>
     <string name="details">Dettagli</string>
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
     <string name="sort">Ordina</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporale</string>
     <string name="my_scrobbles">I miei scrobbling</string>
-    <string name="their_scrobbles">I loro scrobble</string>
     <string name="listeners">Ascoltatori</string>
     <string name="scrobbles">Scrobbling</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
@@ -224,7 +208,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Mi sento fortunato</string>
     <string name="random_not_found">Nessun brano trovato</string>
     <string name="loved_track">Brano preferito</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">Casuale</string>
     <string name="random_text">Casuale</string>
     <string name="graph_daily">Numero di scrobbling giornalieri</string>
     <string name="graph_weekly">Numero di scrobbling settimanali</string>
@@ -252,9 +235,6 @@
     <string name="system_colors">Colori del sistema</string>
     <string name="appwidget_alpha">Opacità sfondo</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Il widget si aggiornerà ogni %1$s minuti</string>
-    <string name="primary_color">Colore principale</string>
-    <string name="secondary_color">Colore secondario</string>
-    <string name="tint_background" comment="Tint the background with the primary color">Colore sfondo</string>
     <string name="random_theme">Casuale a ogni avvio</string>
     <string name="edit_name" comment="name for regex pattern">Nome descrittivo</string>
     <string name="edit_regex">Modello dell\'Espressione Regolare (regex)</string>
@@ -274,12 +254,9 @@
     <string name="edit_case_sensitive">Differenzia maiuscole/minuscole</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Prova</string>
     <string name="edit_presets" comment="Regex presets">Preset</string>
-    <string name="edit_presets_available">Preset disponibili</string>
-    <string name="edit_no_presets_available">Tutti i preset sono in uso</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Preset: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite pattern raggiunto (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Maniglia di trascinamento</string>
-    <string name="text" comment="text to test regex rules with">Testo</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall\'alto al basso</string>
     <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Tocca per bloccare e saltare</string>
@@ -314,12 +291,9 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Didascalie immagini</string>
     <string name="username" comment="last.fm Username">Nome utente</string>
     <string name="pref_master">Scrobbling di musica</string>
-    <string name="pref_master_qs_hint">Può essere attivato anche dalla barra di stato</string>
     <string name="pref_master_qs_add">Aggiungi il tile impostazioni rapide</string>
     <string name="pref_master_qs_already_addded">Tile impostazioni rapide già aggiunto</string>
     <string name="pref_noti">Notifiche</string>
-    <string name="pref_noti_categories">Categorie di notifiche</string>
-    <string name="pref_scrobble_noti">Notifiche di scrobbling</string>
     <string name="pref_lockscreen_noti">Notifiche nella schermata di blocco</string>
     <string name="pref_offline_info">ℹ️ I preferiti &amp; gli scrobbling effettuati offline saranno salvati e inviati in seguito.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">App per lo scrobbling</string>
@@ -355,21 +329,17 @@
     <string name="pref_export">Esporta</string>
     <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
     <string name="pref_import">Importa</string>
-    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Network</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Network</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Codice</string>
     <string name="pref_imexport_network_notice">Per la modalità network, entrambi i dispositivi devono essere connessi alla stessa rete.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizzazione</string>
     <string name="pref_themes" comment="Color themes">Temi</string>
-    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Personalizza gli abbinamenti\nCambia anche il colore delle notifiche</string>
     <string name="pref_widget_charts">Widget nella schermata home - Classifiche</string>
-    <string name="pref_show_albums">Mostra nomi degli album</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…per gli scrobbling</string>
     <string name="pref_show_scrobble_sources">Mostra icone delle app di provenienza degli scrobbling</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…vicino a ogni scrobbling. Questi dati rimarranno sul tuo dispositivo</string>
     <string name="pref_search_in_source">Cerca &amp; riproduci sull’app di provenienza dei tuoi scrobbling</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Per app supportate</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
-    <string name="pref_regex_edits">Modifiche del pattern</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadati bloccati</string>
     <string name="pref_translate">Traduci questa app</string>
     <string name="pref_translate_credits">Riconoscimenti traduzione</string>
@@ -387,32 +357,16 @@
     <string name="import_lists_replace_existing">Unisci sostituendo modifiche e lista bloccati esistenti</string>
     <string name="import_lists_keep">Unisci tenendo modifiche e lista bloccati esistenti</string>
     <string name="import_settings">Importa le configurazioni</string>
-    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Intenti di broadcast</string>
-    <string name="current_track">Per il brano in riproduzione:</string>
-    <string name="pref_intents">Intenti per Tasker ecc.</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
     <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
-    <string name="artist_extra">Brani, album &amp; simili</string>
     <string name="no_browser">Nessun browser installato</string>
     <string name="no_player">Nessun lettore musicale installato</string>
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo: %1$s</string>
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit" comment="Verifies the login details">Verifica</string>
-    <string name="acr_host" comment="Web hostname">Host</string>
-    <string name="acr_key" comment="API key">Chiave d\'accesso</string>
-    <string name="acr_secret" comment="API secret">Chiave segreta</string>
-    <string name="add_acr_key">Aggiungi Chiave ACRCloud</string>
-    <string name="remove_acr_key">Rimuovi Chiave ACRCloud</string>
-    <string name="add_acr_consider">Per evitare di raggiungere i rate limit, considera di aggiungere la tua chiave ACRCloud</string>
-    <string name="add" comment="Add a new item such as an edit, a tag, etc">Aggiungi</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Registrati su https://console.acrcloud.com
-• Vai su Projects &gt; Audio &amp; video recognition
-• Crea un nuovo progetto, seleziona Recorded Audio e ACRCloud Music bucket</string>
-    <string name="shazam_scrobbling">Per effettuare scrobbling di continuo, apri invece <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> e attiva l\'opzione Auto Shazam. Assicurati anche che Shazam sia abilitata per lo scrobbling.</string>
-    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d rimasti</string>
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="bar_chart">Grafico a barre</string>
@@ -450,7 +404,6 @@
     <string name="pro_also_get">Avrai anche accesso alle seguenti funzioni:</string>
     <string name="thank_you">Grazie mille!</string>
     <string name="purchase_pending">Il tuo acquisto non è stato ancora confermato dal tuo servizio di pagamento. Ti chiediamo gentilmente di ricontrollare tra qualche minuto.</string>
-    <string name="billing_troubleshoot_title">Ripristina acquisto</string>
     <string name="billing_troubleshoot">Hai già effettuato l’acquisto?
 
 I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google Play che ha effettuato l’acquisto. Quando installi l’app in un nuovo dispositivo con molti account, Google Play potrebbe associarlo con quello errato. La soluzione migliore per selezionare esplicitamente l’account che ha effettuato l’acquisto è installare l’app da un computer attraverso il sito di Google Play:

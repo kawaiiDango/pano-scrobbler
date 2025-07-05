@@ -58,7 +58,6 @@
     <string name="artist_image">Gambar artis</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Tidak dapat mengurai judul</string>
     <string name="network_error">Kesalahan jaringan</string>
-    <string name="disable_tls_verify">Abaikan galat TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Abaikan scrobble</string>
     <string name="scrobble_ignored_save_edit">Lastfm mengabaikan suntingan karena scrobble ini terlalu lama. Apakah Anda ingin menyimpan suntingan ini untuk scrobble berikutnya?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Kolom yang harus diisi kosong</string>
@@ -76,18 +75,14 @@
     <string name="tracks">Trek</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Trek teratas</string>
     <string name="similar_tracks">Trek serupa</string>
-    <string name="similar" comment="Similar tracks but in short">Serupa</string>
     <string name="state_scrobbling">Sedang meng-scrobble…</string>
     <string name="state_scrobbled">Ter-scrobble</string>
-    <string name="unscrobble">Batal scrobble</string>
     <string name="state_unscrobbled">Scrobble dibatalkan</string>
-    <string name="state_unrecognised_artist">Artis tidak dikenal</string>
     <string name="tap_to_edit">(Ketuk untuk menyunting)</string>
     <string name="recently_scrobbled">Baru-baru ini Di-scrobble</string>
     <string name="recents" comment="Short for recently scrobbled">Baru-baru ini</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pertama kali di scrobble %1$s</string>
     <string name="auto" comment="automatic or default setting">Otomatis</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Hampir Selesai…</string>
     <string name="music_players">Pemutar Musik</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Aplikasi Lainnya</string>
     <string name="choose_apps">Pilih Aplikasi</string>
@@ -102,7 +97,6 @@
     <string name="share_sig">(melalui Pano Scrobbler)</string>
     <string name="share">Bagikan</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legendaris</string>
-    <string name="pinch_to_zoom">Cubit untuk memperbesar</string>
     <string name="more_info">Info lainnya</string>
     <string name="more" comment="More options menu in short">Selengkapnya</string>
     <string name="learn" comment="(Learn java regex syntax)">Pelajari</string>
@@ -141,8 +135,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Tidak benci</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Batalkan suka</string>
     <string name="pending_scrobbles">Scrobble yang Tertunda</string>
-    <string name="pending_scrobble">Scrobble yang tertunda</string>
-    <string name="pending_scrobbles_noti">Memproses scrobble yang tertunda</string>
     <string name="following" comment="accounts you are following on lastfm">Mengikuti</string>
     <string name="followers" comment="your lastfm followers">Pengikut</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobble, sejak %2$s</string>
@@ -165,23 +157,15 @@
     <string name="loved" comment="Its a noun">Disukai</string>
     <string name="unloved" comment="Its a noun">Tak di sukai</string>
     <string name="simple_edits">Penyuntingan</string>
-    <string name="grant_rec_perm">Harap berikan izin untuk menggunakan mikrofon</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Tangga lagu</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tandai awan</string>
-    <string name="scrobble_from_mic" comment="Its a verb">Scrobble dari mikrofon</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Dari mikrofon</string>
     <string name="add_to_hs">Tambahkan ke layar beranda</string>
-    <string name="listening">Mendengarkan musik yang diputar di sekitar Anda…</string>
-    <string name="uploading">Mengunggah…</string>
-    <string name="recording_failed">Gagal memulai perekaman. Mikrofon mungkin sibuk atau tidak tersedia di perangkat ini</string>
     <string name="press_back">Tekan kembali setelah selesai</string>
-    <string name="powered_acr">Didukung oleh <i><b>ACR</b>Cloud</i></string>
     <string name="details">Rincian</string>
     <string name="saved_as_pending">Disimpan sebagai scrobble yang tertunda</string>
     <string name="sort">Urutkan</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Lompatan waktu</string>
     <string name="my_scrobbles">Scrobble saya</string>
-    <string name="their_scrobbles">Scrobble mereka</string>
     <string name="listeners">Pendengar</string>
     <string name="scrobbles">Scrobble</string>
     <string name="collapse" comment="(view only a few items)">Ciutkan</string>
@@ -207,7 +191,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Saya merasa beruntung</string>
     <string name="random_not_found">Tidak ada trek yang ditemukan</string>
     <string name="loved_track">Lagu yang disukai</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">Acak</string>
     <string name="random_text">Acak</string>
     <string name="graph_daily">Jumlah scrobble harian</string>
     <string name="graph_weekly">Jumlah scrobble mingguan</string>
@@ -235,9 +218,6 @@
     <string name="system_colors">Warna sistem</string>
     <string name="appwidget_alpha">Opasitas Latar Belakang</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget akan menyegarkan setiap %1$s</string>
-    <string name="primary_color">Warna utama</string>
-    <string name="secondary_color">Warna sekunder</string>
-    <string name="tint_background" comment="Tint the background with the primary color">Efek warna latar belakang</string>
     <string name="random_theme">Acak pada setiap peluncuran</string>
     <string name="edit_name" comment="name for regex pattern">Nama yang ramah</string>
     <string name="edit_regex">Pola Khusus</string>
@@ -257,12 +237,9 @@
     <string name="edit_case_sensitive">Memperhatikan besar/kecil huruf</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Tes</string>
     <string name="edit_presets" comment="Regex presets">Prasetel</string>
-    <string name="edit_presets_available">Preset tersedia</string>
-    <string name="edit_no_presets_available">Semua preset sedang digunakan</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Prasetel: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Batas pola tercapai (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Tarik pegangan</string>
-    <string name="text" comment="text to test regex rules with">Teks / tulisan</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Pastikan Anda mengerti <a href="https://www.google.com/search?q=regex+tutorial">java ekspresi reguler</a> sebelum menggunakan ini, atau gunakan salah satu <b>preset</b> yang disediakan. Pencocokan regex dicoba dari atas ke bawah</string>
     <string name="blocked_metadata_info">ℹ️ Mengisi lebih dari satu kolom ini akan menerapkan operator DAN di antara kolom tersebut</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Ketuk untuk memblokir dan melewati</string>
@@ -297,12 +274,9 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Keterangan gambar</string>
     <string name="username" comment="last.fm Username">Nama Pengguna</string>
     <string name="pref_master">Musik scrobble</string>
-    <string name="pref_master_qs_hint">Dapat juga diubah dari ubin pengaturan cepat</string>
     <string name="pref_master_qs_add">Tambahkan ubin pengaturan cepat</string>
     <string name="pref_master_qs_already_addded">Ubin pengaturan cepat sudah ditambahkan</string>
     <string name="pref_noti">Notifikasi</string>
-    <string name="pref_noti_categories">Kategori notifikasi</string>
-    <string name="pref_scrobble_noti">Notifikasi scrobble</string>
     <string name="pref_lockscreen_noti">Notifikasi layar kunci</string>
     <string name="pref_offline_info">ℹ️ Scrobblenya luring &amp; suka akan disimpan, untuk dikirim nanti jika sudah daring kembali.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble dari</string>
@@ -338,21 +312,17 @@
     <string name="pref_export">Ekspor</string>
     <string name="pref_export_desc">Mencadangkan pengaturan, pengeditan, dan daftar blokir. Tidak menyimpan login untuk alasan keamanan. Berguna untuk berpindah antar perangkat atau berbagi dengan teman.</string>
     <string name="pref_import">Impor</string>
-    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Jaringan</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Jaringan</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Kode</string>
     <string name="pref_imexport_network_notice">Untuk mode jaringan, kedua perangkat harus terhubung ke jaringan yang sama.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalisasi</string>
     <string name="pref_themes" comment="Color themes">Tema</string>
-    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Padu padan\nJuga mengubah warna notifikasi</string>
     <string name="pref_widget_charts">Widget layar beranda - Grafik</string>
-    <string name="pref_show_albums">Tampilkan nama album</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…untuk scrobble</string>
     <string name="pref_show_scrobble_sources">Tampilkan ikon aplikasi yang Anda gunakan untuk scrobble</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…di samping setiap scrobble. Data ini tetap ada di perangkat Anda</string>
     <string name="pref_search_in_source">Cari &amp; mainkan di aplikasi yang Anda gunakan untuk scrobble</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Untuk aplikasi yang didukung</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Daftar</string>
-    <string name="pref_regex_edits">Pengeditan pola</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadata yang blokir</string>
     <string name="pref_translate">Terjemahkan aplikasi ini</string>
     <string name="pref_translate_credits">Kredit penerjemah</string>
@@ -370,31 +340,15 @@
     <string name="import_lists_replace_existing">Gabungkan, ganti hasil edit dan daftar blokir yang ada</string>
     <string name="import_lists_keep">Gabungkan, pertahankan hasil edit dan daftar blokir yang ada</string>
     <string name="import_settings">Impor Pengaturan</string>
-    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Maksud siaran</string>
-    <string name="current_track">Lagu saat ini:</string>
-    <string name="pref_intents">Maksud untuk tugas dll</string>
     <string name="copied">Tersalin!</string>
     <string name="lastfm_reauth">Anda perlu mengautentikasi ulang untuk mengedit atau menghapus scrobble</string>
     <string name="failed_encode_url">Gagal menyandikan URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Cek %1$s</string>
-    <string name="artist_extra">Lagu, album &amp; serupa</string>
     <string name="no_browser">Tidak ada browser yang diinstal</string>
     <string name="no_player">Tidak ada pemutar musik yang dipasang</string>
     <string name="not_running">⚠ Scrobbler dimatikan oleh sistem Anda</string>
     <string name="not_running_fix_action">Perbaiki</string>
     <string name="login_submit" comment="Verifies the login details">Verifikasi</string>
-    <string name="acr_host" comment="Web hostname">Penyedia</string>
-    <string name="acr_key" comment="API key">Kunci Akses</string>
-    <string name="acr_secret" comment="API secret">Kunci Rahasia</string>
-    <string name="add_acr_key">Tambahkan Kunci ACRCloud</string>
-    <string name="remove_acr_key">Hapus Kunci ACRCloud</string>
-    <string name="add_acr_consider">Untuk mencegah mencapai batas kecepatan, pertimbangkan untuk menambahkan Kunci ACRCloud Anda sendiri</string>
-    <string name="add" comment="Add a new item such as an edit, a tag, etc">Tambah</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Daftar di https://console.acrcloud.com
-• Navigasikan ke Proyek &gt; Audio &amp; pengenalan video
-• Buat proyek baru, pilih Audio yang Direkam dan keranjang ACRCloud Music</string>
-    <string name="shazam_scrobbling">Untuk terus scrobble, buka <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> sebagai gantinya dan mulai Otomatis Shazam. Pastikan juga Shazam diaktifkan untuk scrobbling.</string>
-    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d tersisa</string>
     <string name="submitting_loves" formatted="true">Mengirimkan suka, %1$d tersisa</string>
     <string name="pending_batch" comment="For pending scrobbles">Mengirimkan kelompok</string>
     <string name="bar_chart">Grafik batang</string>
@@ -420,7 +374,6 @@
     <string name="pro_also_get">Anda juga akan mendapatkan fitur-fitur berikut:</string>
     <string name="thank_you">Terima kasih!</string>
     <string name="purchase_pending">Pembelian Anda belum dikonfirmasi oleh penyedia pembayaran Anda. Silakan periksa kembali setelah beberapa menit.</string>
-    <string name="billing_troubleshoot_title">Pulihkan Pembelian</string>
     <string name="billing_troubleshoot">Telah dibeli?
 
 Pembelian Anda dikelola oleh Google play. Mereka ditautkan dengan akun Google Play yang melakukan pembelian. Saat Anda memasang aplikasi di perangkat baru dengan banyak akun, Google Play dapat mengaitkannya dengan akun yang salah. solusi terbaik untuk secara eksplisit memilih akun yang memiliki pembelian adalah dengan menginstal aplikasi dari komputer melalui halaman web Google Play:

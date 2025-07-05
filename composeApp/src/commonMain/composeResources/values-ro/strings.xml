@@ -18,15 +18,12 @@
     <string name="artist_channel" comment="Artist or youtube channel">Artist/ canal</string>
     <string name="similar_artists">Artiști similari</string>
     <string name="state_scrobbled">Ascultat</string>
-    <string name="unscrobble">Neascultat</string>
     <string name="state_unscrobbled">Neascultat</string>
-    <string name="state_unrecognised_artist">Artist nerecunoscut</string>
     <string name="tap_to_edit">(Apasă pentru editare)</string>
     <string name="recently_scrobbled">Ascultat recent</string>
     <string name="recents" comment="Short for recently scrobbled">Recente</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Prima oară ascultat în %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Aproape terminat…</string>
     <string name="music_players">Player muzical</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Alte aplicații</string>
     <string name="choose_apps">Alege aplicațiile</string>

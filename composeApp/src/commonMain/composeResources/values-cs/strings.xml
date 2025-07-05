@@ -106,7 +106,6 @@
     <string name="artist_image">Obrázek umělce</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nepodařilo se zpracovat název</string>
     <string name="network_error">Chyba sítě</string>
-    <string name="disable_tls_verify">Ignorovat chyby TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorován</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignoroval úpravu, protože scrobble je nejspíš moc starý. Chcete místo toho tuto úpravu uložit pro budoucí scrobbly?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Požadovaná pole jsou prázdná</string>
@@ -124,18 +123,14 @@
     <string name="tracks">Skladby</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Nejposlouchanější skladby</string>
     <string name="similar_tracks">Podobné skladby</string>
-    <string name="similar" comment="Similar tracks but in short">Podobné</string>
     <string name="state_scrobbling">Nyní scrobbluji…</string>
     <string name="state_scrobbled">Scroblováno</string>
-    <string name="unscrobble">Zrušit scrobble</string>
     <string name="state_unscrobbled">Zrušeno</string>
-    <string name="state_unrecognised_artist">Neznámý interpret</string>
     <string name="tap_to_edit">(Klepněte pro upravení)</string>
     <string name="recently_scrobbled">Nedávno Scrobblováno</string>
     <string name="recents" comment="Short for recently scrobbled">Nedávné</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Poprvé scrobblováno dne %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Skoro hotovo…</string>
     <string name="music_players">Hudební Přehrávače</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostatní Aplikace</string>
     <string name="choose_apps">Vybrat aplikace</string>
@@ -152,7 +147,6 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Vysvětlivky</string>
     <string name="grid" comment="Grid view">Mřížká</string>
     <string name="list" comment="Single column list view">Seznam</string>
-    <string name="pinch_to_zoom">Přetažením přiblížit</string>
     <string name="more_info">Více informací</string>
     <string name="more" comment="More options menu in short">Další</string>
     <string name="learn" comment="(Learn java regex syntax)">Více informací</string>
@@ -195,8 +189,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Zrušit znelíbení</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Zrušit oblíbení</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
-    <string name="pending_scrobble">Čekající scrobble</string>
-    <string name="pending_scrobbles_noti">Zpracovávám čekající scrobbly</string>
     <string name="following" comment="accounts you are following on lastfm">Sledovaní</string>
     <string name="followers" comment="your lastfm followers">Sledující</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblů od %2$s</string>
@@ -219,23 +211,15 @@
     <string name="loved" comment="Its a noun">Oblíbené</string>
     <string name="unloved" comment="Its a noun">Odebráno z oblíbených</string>
     <string name="simple_edits">Úpravy</string>
-    <string name="grant_rec_perm">Prosím povolte oprávnění pro přístup k mikrofonu</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitparády</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Shluk tagů</string>
-    <string name="scrobble_from_mic" comment="Its a verb">Scrobblovat z mikrofonu</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Z mikrofonu</string>
     <string name="add_to_hs">Přidat na domovskou obrazovku</string>
-    <string name="listening">Poslouchám hudbu, která hraje kolem tebe…</string>
-    <string name="uploading">Nahrávám…</string>
-    <string name="recording_failed">Nepodařilo se spustit nahrávání. Mikrofon může být zaneprázdněn nebo nedostupný</string>
     <string name="press_back">Po dokončení stiskněte tlačítko zpět</string>
-    <string name="powered_acr">Poháněno pomocí <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detaily</string>
     <string name="saved_as_pending">Uloženo jako čekající scrobble</string>
     <string name="sort">Seřadit</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Časový skok</string>
     <string name="my_scrobbles">Moje scrobbly</string>
-    <string name="their_scrobbles">Jejich scrobbly</string>
     <string name="listeners">Posluchači</string>
     <string name="scrobbles">Scrobbly</string>
     <string name="collapse" comment="(view only a few items)">Sbalit</string>
@@ -261,7 +245,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Zkusím štěstí</string>
     <string name="random_not_found">Žádná skladba nenalezena</string>
     <string name="loved_track">Oblíbená skladba</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">Náhodně</string>
     <string name="random_text">Náhodně</string>
     <string name="graph_daily">Počet scrobblů za den</string>
     <string name="graph_weekly">Počet scrobblů za týden</string>
@@ -290,9 +273,6 @@
     <string name="system_colors">Systémové barvy</string>
     <string name="appwidget_alpha">Průhlednost pozadí</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget bude obnoven každých %1$s</string>
-    <string name="primary_color">Primární barva</string>
-    <string name="secondary_color">Sekundární barva</string>
-    <string name="tint_background" comment="Tint the background with the primary color">Zvýraznit pozadí</string>
     <string name="random_theme">Náhodný při každém spuštění</string>
     <string name="edit_name" comment="name for regex pattern">Popisný název</string>
     <string name="edit_regex">Regex vzor</string>
@@ -312,12 +292,9 @@
     <string name="edit_case_sensitive">Rozlišovat velká a malá písmena</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
     <string name="edit_presets" comment="Regex presets">Předvolby</string>
-    <string name="edit_presets_available">Dostupné předvolby</string>
-    <string name="edit_no_presets_available">Všechny předvolby se používají</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Předvolba: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Dosažen limit vzorů (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Úchyt pro přetažení</string>
-    <string name="text" comment="text to test regex rules with">Text</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Ujistěte se, že rozumíte <a href="https://www.google.com/search?q=regex+tutorial">regexu javy</a> před používáním tohoto nástroje, nebo použijte jednu z <b>předvoleb</b>. Regex shody se porovnávají shora dolů</string>
     <string name="blocked_metadata_info">ℹ️ Vyplnění více než jednoho pole použije mezi nimi AND operátor</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Klepnutím zablokujete a přeskočíte</string>
@@ -355,12 +332,9 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Popisky obrázků</string>
     <string name="username" comment="last.fm Username">Uživatelské jméno</string>
     <string name="pref_master">Scrobblovat hudbu</string>
-    <string name="pref_master_qs_hint">Lze také přepnout z dlaždice rychlého nastavení</string>
     <string name="pref_master_qs_add">Přidat dlaždici rychlého nastavení</string>
     <string name="pref_master_qs_already_addded">Dlaždice rychlého nastavení je již přidána</string>
     <string name="pref_noti">Oznámení</string>
-    <string name="pref_noti_categories">Kategorie oznámení</string>
-    <string name="pref_scrobble_noti">Oznámení o scrobblování</string>
     <string name="pref_lockscreen_noti">Oznámení na zamykací obrazovce</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbly a oblíbené budou uloženy pro pozdější odeslání.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblovat z</string>
@@ -396,21 +370,17 @@
     <string name="pref_export">Exportovat</string>
     <string name="pref_export_desc">Zálohuje nastavení, úpravy a seznam blokovaných. Z bezpečnostních důvodů neukládá přihlášení. Užitečné při přesouvání mezi zařízeními nebo sdílení s kamarády.</string>
     <string name="pref_import">Importovat</string>
-    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">Síť</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Síť</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Kód</string>
     <string name="pref_imexport_network_notice">V síťovém režimu musí být obě zařízení připojena ke stejné síti.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Přizpůsobení</string>
     <string name="pref_themes" comment="Color themes">Motivy</string>
-    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Zamíchat\nTaké mění barvu oznámení</string>
     <string name="pref_widget_charts">Widgety domovské obrazovky - Grafy</string>
-    <string name="pref_show_albums">Zobrazovat názvy alb</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…u scrobblů</string>
     <string name="pref_show_scrobble_sources">Zobrazovat ikony aplikací, ze kterých se scrobblovalo</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…vedle každého scrobblu. Tento údaj není nikam odesílán</string>
     <string name="pref_search_in_source">Hledat a přehrávat v aplikaci, ze které se skladba scrobblovala</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">U podporovaných aplikací</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Seznamy</string>
-    <string name="pref_regex_edits">Vzory pro úpravy</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Zablokovaná metadata</string>
     <string name="pref_translate">Přeložit tuto aplikaci</string>
     <string name="pref_translate_credits">Poděkování Překladatelům</string>
@@ -431,33 +401,17 @@
     <string name="import_lists_replace_existing">Sloučit a nahradit existující úpravy a seznamy blokovaných</string>
     <string name="import_lists_keep">Sloučit, což zanechá existující úptavy a seznamy blokovaných</string>
     <string name="import_settings">Importovat nastavení</string>
-    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Vysílací intenty</string>
-    <string name="current_track">Aktuální skladba:</string>
-    <string name="pref_intents">Pro Tasker apod.</string>
     <string name="copied">Zkopírováno!</string>
     <string name="lastfm_reauth">Pro úpravu nebo smazání scrobblů je třeba se znovu ověřit</string>
     <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Instance podobná %1$s</string>
     <string name="failed_encode_url">Kódování URL selhalo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Zkontrolovat %1$s</string>
-    <string name="artist_extra">Skladby, alba a podobné</string>
     <string name="no_browser">Není nainstalován žádný prohlížeč</string>
     <string name="no_player">Není nainstalován žádný hudební přehrávač</string>
     <string name="not_running">⚠ Skrobbler byl vypnut vaším systémem</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Důvod: %1$s</string>
     <string name="not_running_fix_action">Opravit</string>
     <string name="login_submit" comment="Verifies the login details">Ověřit</string>
-    <string name="acr_host" comment="Web hostname">Host</string>
-    <string name="acr_key" comment="API key">Přístupový Klíč</string>
-    <string name="acr_secret" comment="API secret">Tajný klíč</string>
-    <string name="add_acr_key">Přidat klíč ACRCloud</string>
-    <string name="remove_acr_key">Odebrat klíč ACRCloud</string>
-    <string name="add_acr_consider">Pro zabránění překročení limitů, zvažte přidání vlastního ACRCloud klíče</string>
-    <string name="add" comment="Add a new item such as an edit, a tag, etc">Přidat</string>
-    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">• Zaregistrujte se na https://console.acrcloud.com
-• Přejděte do \"Projects\" &gt; \"Audio &amp; video recognition\"
-• Vytvořte nový projekt, vyberte \"Recorded Audio\" a \"ACRCloud Music bucket\"</string>
-    <string name="shazam_scrobbling">Pro neustálé scrobblování si otevřte <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> a zapněte Auto Shazam. Také se ujistěte, že je povoleno scrobblování ze Shazamu.</string>
-    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d zbývajících</string>
     <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
     <string name="pending_batch" comment="For pending scrobbles">Odesílám várku</string>
     <string name="bar_chart">Sloupcový graf</string>
@@ -495,7 +449,6 @@
     <string name="pro_also_get">Také získáte následující funkce:</string>
     <string name="thank_you">Díky!</string>
     <string name="purchase_pending">Váš nákup zatím nebyl potvrzen vašim poskytovatelem platebních služeb. Zkontrolujte nákup za pár minut.</string>
-    <string name="billing_troubleshoot_title">Obnovit nákup</string>
     <string name="billing_troubleshoot">Již jste někdy aplikaci podpořili?
 
 Vaše nákupy spravuje Google Play, jsou vázané na účet Google Play, který nákup provedl. Když aplikaci nainstalujete na nové zařízení s více účty, Google Play může zařízení spojit se špatným účtem. Nejlepší řešení je přímo vybrat účet, který provedl nákup, aby aplikaci nainstaloval na zařízení skrz webovou verzi Google Play na počítači:

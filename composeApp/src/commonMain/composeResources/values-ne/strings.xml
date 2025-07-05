@@ -267,9 +267,58 @@
     <string name="edit_replace">बढ्लिनुहोस्</string>
     <string name="edit_first" comment="First occurrence of a pattern">पहिलो</string>
     <string name="edit_all" comment="All occurrences of a pattern">सबै</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">उदाहरणको लागी तपाईं लाई आर्टिस्ट र टाइटल को ठाँउ परिवर्तन गर्न, तपाईंले आर्टिस्ट रिजेक्स (?&lt;track&gt;.*) र ट्रयाक रीजेक्स लाई (?&lt;artist&gt;.*) गरेर राख्नुपर्छ</string>
+    <string name="mute" comment="mute the sound">आवाज निष्क्रिय गर्नुहोस्</string>
+    <string name="do_nothing" comment="do nothing on the media player">केही नगर्नुहोस्</string>
     <string name="block" comment="block the track from scrobbling">ब्लक</string>
+    <string name="copy" comment="copy to clipboard">प्रतिलिपि</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">लुकेका ट्यागस</string>
+    <string name="pin" comment="pin a friend to the top">पिन</string>
+    <string name="unpin" comment="unpin a friend to the top">अनपिन</string>
+    <string name="pin_limit_reached" formatted="true">पिन सीमा पुग्यो (%1$d)</string>
+    <string name="pin_help">पिन भएका सामग्री लाई तलमाथि गर्न केही समय छुनुहोस्</string>
+    <string name="use_channel" comment="(Use youtube channel name)">च्यानल नाम प्रयोग</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">के तपाईं प्येटर्न बदल्ने नियम प्रयोग गर्न चानुहुन्छ: %1$s?</string>
+    <string name="show_persistent_noti">नोटिफिकेसन देखाइराख्नुहोस्</string>
+    <string name="persistent_noti_text">लुकाउनुको लाई ट्याप गर्नुहोस्</string>
+    <string name="scrobbler_off">स्क्रोब्बलर निष्क्रिय</string>
+    <string name="scrobbler_on">स्क्रोब्ल्लेर सञ्चालन</string>
+    <string name="duration">समयावधि</string>
+    <string name="total_listen_time">जम्मा सुनेको समय</string>
+    <string name="acoustic" comment="(Acoustic music)">एकोस्तिक</string>
+    <string name="instrumental">इन्स्ट्रुमेन्टअल</string>
+    <string name="energetic" comment="(Energetic music)">इनेर्जेतिक</string>
+    <string name="danceable">नाच्नलायक</string>
+    <string name="enable" comment="To enable the scrobbler">सक्रिय</string>
     <string name="create_collage">कोलाज बनाउनुहोस्</string>
     <string name="pref_master">संगीत स्क्रबल गर्नुहोस्</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">प्रतिशत</string>
+    <string name="pref_logout">लगआउट</string>
+    <string name="sure_tap_again">पक्का? फेरि ट्याप गर्नुहोस्</string>
+    <string name="pref_login">लगइन</string>
+    <string name="pref_about" comment="Info about this app">बारेमा</string>
+    <string name="pref_privacy_policy">गोपनीयता शर्त</string>
+    <string name="pref_scrobble_only">(स्क्रोब्बल मात्र)</string>
+    <string name="pref_user_label" comment="(Like username)">प्रयोगकर्ता</string>
+    <string name="pref_token_label" comment="For Listenbrainz">अथेन्टिकेसन टोकन</string>
+    <string name="api_url" comment="For Listenbrainz">एपीआई यूआरएल</string>
+    <string name="server_url" comment="For self hosted scrobbling services">सर्भर यूआरएल</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">तपाईंले अथेन्टिकसन टोकन: %1$s यहाँ भेटाउन सक्नुहुन्छ</string>
+    <string name="pref_now_playing">आहिले बजिरहेको लाई सबमिट गर्नुहोस्</string>
+    <string name="pref_locale">भाषाहरु</string>
+    <string name="pref_change_locale">भाषा बदल्नुहोस</string>
+    <string name="pref_crashlytics_enabled">एरोर स्वचीलत रूपमा रिपोर्ट गर्नुहोस्</string>
+    <string name="pref_misc">मिस्क.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">हप्ता सुरु हुन्छ</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">आयात &amp; निर्यात</string>
+    <string name="pref_export">निर्यात</string>
+    <string name="pref_export_desc">सेटिङ, एडिट, ब्लकलिस्त ब्याक अप गर्नुहोस्। लॉगिन सँग सम्बन्धित जानकारी ब्याकअप सुरक्षा को कारण ले ब्याकअप हुँदैन। साथीभाइ संग शेयर गर्दा र मोबाइल परिवर्तन गर्दा उपयोगी हुन्छ।.</string>
+    <string name="pref_import">आयात</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over local network">नेटवर्क</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">कोड</string>
+    <string name="pref_imexport_network_notice">नेटवर्क मोड को लागि दुवै डिभाइस एउटै नेटवर्क मा कनेक्ट हुनुपर्छ।</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">पर्सनलआईजेसन</string>
+    <string name="pref_themes" comment="Color themes">थीमस</string>
     <!--  pro  -->
     <string name="get_pro">एपलाई समर्थन गर्नुहोस्</string>
     <string name="help">मद्दत</string>

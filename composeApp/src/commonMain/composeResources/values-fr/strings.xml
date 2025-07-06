@@ -350,6 +350,7 @@
     <string name="pref_search_in_source">Rechercher &amp; lancer sur l\'application depuis laquelle le scrobble est en cours</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Pour les applications compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listes</string>
+    <string name="regex_rules">Règles d\'expression régulière</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Métadonnées bloquées</string>
     <string name="pref_translate">Traduire cette application</string>
     <string name="pref_translate_credits">Crédits de traduction</string>
@@ -411,6 +412,9 @@
     <string name="high" comment="As in high/medium/low">Élevé</string>
     <string name="medium" comment="As in high/medium/low">Moyen</string>
     <string name="low" comment="As in high/medium/low">Bas</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Nécessite un plugin</string>
+    <string name="reload" comment="Reload or refresh">Recharger</string>
+    <string name="automation">Contrôler Pano Scrobbler à partir d\'applications d\'automatisation</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="help">Aide</string>

@@ -24,7 +24,6 @@ title: Pano Scrobbler
 
 include:
   - "*.md"
-  - "screenshots/*.jpg"
 
 exclude:
   - "**/*"
@@ -37,6 +36,7 @@ exclude:
 keep_files:
   - fdroid
   - img
+  - screenshots
   - composeApp
 
 plugins:

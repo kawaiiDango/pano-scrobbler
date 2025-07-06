@@ -724,8 +724,8 @@
     <string name="reload"
         comment="Reload or refresh"
         >Reload</string>
-    <string name="pref_tray_icon_theme" translatable="false">Tray icon theme</string>
-    <string name="min_track_duration" translatable="false">Scrobble tracks longer than</string>
+    <string name="pref_tray_icon_theme">Tray icon theme</string>
+    <string name="min_track_duration">Scrobble tracks longer than</string>
     <string name="automation">Control Pano Scrobbler from automation apps</string>
 
 <!--  pro  -->

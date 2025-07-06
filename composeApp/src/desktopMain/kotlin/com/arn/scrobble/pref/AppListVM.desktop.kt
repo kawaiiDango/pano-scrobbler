@@ -38,6 +38,11 @@ actual fun AppListVM.pluginUrl(appItem: AppItem): String? {
             Stuff.MUSICBEE_PLUGIN_URL
         }
 
+        appItem.appId == "foobar2000.exe" ||
+                appItem.label == "foobar2000" -> {
+            Stuff.FOOBAR_PLUGIN_URL
+        }
+
         else -> {
             null
         }

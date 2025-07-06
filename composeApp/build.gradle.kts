@@ -638,6 +638,12 @@ tasks.register<Exec>("buildNativeImage") {
 
     val jarFile =
         file("build/compose/jars/$appNameWithoutSpaces-$resourcesDirName-$verName.jar")
+    val jarTree = zipTree(jarFile)
+    val jarFilesToExtract = if (os.isWindows)
+        arrayOf("skiko-windows-x64.dll", "icudtl.dat", "natives/windows_x64/sqliteJni.dll")
+    else
+        arrayOf("libskiko-linux-x64.so", "natives/linux_x64/libsqliteJni.so")
+
     val outputDir = file("build/compose/native/$resourcesDirName")
     val outputFile = File(outputDir, appNameWithoutSpaces)
 
@@ -693,8 +699,8 @@ tasks.register<Exec>("buildNativeImage") {
 
     commandLine(command)
 
-    // env check
     doFirst {
+        // env check
         if (graalvmHome.isNullOrEmpty() || graalvmHome != javaHome) {
             throw GradleException("GRAALVM_HOME should be set and should be equal to JAVA_HOME")
         }
@@ -708,11 +714,23 @@ tasks.register<Exec>("buildNativeImage") {
         jawtDir.mkdirs()
         jawtFile.copyTo(File(jawtDir, jawtFile.name), overwrite = true)
 
+        val otherJawtFile = File(outputDir, jawtFile.name)
+        if (otherJawtFile.exists())
+            otherJawtFile.delete()
+
         // copy native components
         nativeLibsDir.copyRecursively(
             outputDir,
             overwrite = true
         )
+
+        // extract jni libraries from .jar
+
+        jarTree.matching {
+            include(*jarFilesToExtract)
+        }.forEach { file ->
+            file.copyTo(File(jawtDir, file.name), overwrite = true)
+        }
     }
 }
 

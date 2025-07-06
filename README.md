@@ -33,7 +33,7 @@ This may help prevent the system from killing the app in the background on devic
 [![github][github]][github-link]
 
 
-The builds on Github Releases or the F-Droid repo do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
+Since v4.0, the builds on Github Releases or the F-Droid repo do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
 
 ### Translate
 
@@ -46,31 +46,30 @@ The builds on Github Releases or the F-Droid repo do not use Firebase Crashlytic
 - Supports Android, Android TV, Windows and Linux
 - No ads ever
 - Scrobbles to Lastfm, Librefm, ListenBrainz, Pleroma and other compatible services
-- \* Scrobble to a CSV or JSONL file locally
-- \* Interactive notification- view song info, edit, love, cancel, or block songs directly from the
-  notification
+- Scrobble to a CSV or JSONL file locally (not available on TV)
+- Interactive notification- view song info, edit, love, cancel, or block songs directly from the
+  notification (not available on TV)
 - View song, album, artist, album artist, and tag details
 - View scrobbles from a specific time, such as last year or last month
 - Edit or delete existing scrobbles. Remembers edits
 - Extract or Fix metadata such as "Remastered" with regex pattern edits
 - Block artists, songs, etc., and automatically skip or mute when they play
 - Check what your followed users are listening to and view their stats
-- \* Scrobble from the S app and Pixel Now Playing
+- Scrobble from the S app and Pixel Now Playing (Android only)
 - Import and export settings, edits, and blocklists
 - View charts with change indicators for specific time periods,
-- \* Charts are also available as a customizable home-screen widget
-- \* Collage generator
+- Charts are also available as a customizable home-screen widget (Android only)
+- Collage generator (not available on TV)
 - View scrobble count graphs and tag clouds
 - Get a random song, album, or artist from your listening history
 - Search Lastfm for a songs, artists, or albums
 - Fetch albums and album artists from Lastfm, if missing, before scrobbling
-- \* Get your top scrobbles digests as a notification at the end of every week, month and year
+- Get your top scrobbles digests as a notification at the end of every week, month and year (Android only)
 - Add or remove personal tags from the info screen
-- Mix and match themes
-- \* Control Pano Scrobbler from automation apps like Tasker
+- Themes
+- Control Pano Scrobbler from automation apps like Tasker on Android or command-line on desktop
 - Remember and see apps you scrobbled from and play directly in them
 
-Features marked with \* are not available on TV due to OS limitations.
 
 ### Credits
 

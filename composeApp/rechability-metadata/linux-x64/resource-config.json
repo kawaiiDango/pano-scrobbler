@@ -29,12 +29,6 @@
   }, {
     "pattern":"\\QcomposeResources/\\E.*"
   }, {
-    "pattern":"\\Qlibskiko-linux-x64.so.sha256\\E"
-  }, {
-    "pattern":"\\Qlibskiko-linux-x64.so\\E"
-  }, {
-    "pattern":"\\Qnatives/linux_x64/libsqliteJni.so\\E"
-  }, {
     "pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"
   }, {
     "pattern":"java.base:\\Qjava/lang/Boolean.class\\E"

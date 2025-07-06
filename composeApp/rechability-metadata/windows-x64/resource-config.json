@@ -27,14 +27,6 @@
   }, {
     "pattern":"\\QcomposeResources/\\E.*"
   }, {
-    "pattern":"\\Qicudtl.dat\\E"
-  }, {
-    "pattern":"\\Qskiko-windows-x64.dll\\E"
-  }, {
-    "pattern":"\\Qskiko-windows-x64.dll.sha256\\E"
-  }, {
-    "pattern":"\\Qnatives/windows_x64/sqliteJni.dll\\E"
-  }, {
     "pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"
   }, {
     "pattern":"java.base:\\Qjava/lang/Boolean.class\\E"

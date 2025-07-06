@@ -19,6 +19,7 @@ import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.parse_error
 import pano_scrobbler.composeapp.generated.resources.scrobble_ignored
+import kotlin.math.min
 
 
 class ScrobbleQueue(
@@ -65,12 +66,36 @@ class ScrobbleQueue(
 
         val submitAtTime = PlatformStuff.monotonicTimeMs() + delay
         val hash = trackInfo.hash
+        val prevPlayStartTime = if (trackInfo.preprocessed) trackInfo.playStartTime else null
         trackInfo.prepareForScrobbling()
         val scrobbleData = trackInfo.toScrobbleData(useOriginals = false)
         val origScrobbleData = trackInfo.toScrobbleData(useOriginals = true)
 
-        suspend fun scheduleSubmit(sd: ScrobbleData) {
+        suspend fun nowPlayingAndSubmit(sd: ScrobbleData) {
             Logger.d { "will submit in ${submitAtTime - PlatformStuff.monotonicTimeMs()}ms" }
+
+            // now playing for a new track or after that of the previously paused track has expired
+            if (
+                prevPlayStartTime == null ||
+                (System.currentTimeMillis() - prevPlayStartTime) > min(
+                    trackInfo.durationMillis,
+                    4 * 60 * 1000L // 4 minutes
+                )
+            ) {
+                val npResults =
+                    withTimeout(submitAtTime - PlatformStuff.monotonicTimeMs() - 5000) {
+                        ScrobbleEverywhere.nowPlaying(scrobbleData)
+                    }
+
+                if (npResults.values.any { !it.isSuccess }) {
+                    notifyScrobbleError(
+                        npResults,
+                        scrobbleData,
+                        hash
+                    )
+                }
+            }
+
             // tick every n milliseconds
             while (submitAtTime > PlatformStuff.monotonicTimeMs() || hash == lockedHash) {
                 delay(tickEveryMs)
@@ -119,7 +144,7 @@ class ScrobbleQueue(
             delay(Stuff.META_WAIT)
 
             if (trackInfo.preprocessed) {
-                scheduleSubmit(trackInfo.toScrobbleData(false))
+                nowPlayingAndSubmit(trackInfo.toScrobbleData(false))
                 return@launch
             }
 
@@ -165,21 +190,7 @@ class ScrobbleQueue(
                         )
                     )
 
-                    val npResults = withTimeout(submitAtTime - PlatformStuff.monotonicTimeMs()) {
-                        ScrobbleEverywhere.nowPlaying(preprocessResult.scrobbleData)
-                    }
-
-                    if (npResults.values.any { !it.isSuccess }) {
-                        launch {
-                            notifyScrobbleError(
-                                npResults,
-                                scrobbleData,
-                                hash
-                            )
-                        }
-                    }
-
-                    scheduleSubmit(preprocessResult.scrobbleData)
+                    nowPlayingAndSubmit(preprocessResult.scrobbleData)
                 }
             }
         }

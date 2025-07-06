@@ -6,7 +6,6 @@ import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.parseJsonBody
 import com.arn.scrobble.api.cache.ExpirationPolicy
-import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -18,13 +17,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.parameters
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class SpotifyRequester {
-    private val mainPrefs = PlatformStuff.mainPrefs
     private val client: HttpClient by lazy {
         Requesters.genericKtorClient.config {
             install(CustomCachePlugin) {
@@ -33,18 +29,6 @@ class SpotifyRequester {
 
             install(Auth) {
                 bearer {
-                    loadTokens {
-                        val spotifyAccessToken =
-                            mainPrefs.data.map { it.spotifyAccessToken }.first()
-                        val spotifyAccessTokenExpires =
-                            mainPrefs.data.map { it.spotifyAccessTokenExpires }.first()
-
-                        if (spotifyAccessTokenExpires >= System.currentTimeMillis())
-                            BearerTokens(spotifyAccessToken, Tokens.SPOTIFY_REFRESH_TOKEN)
-                        else
-                            null
-                    }
-
                     refreshTokens {
                         val tokenResponse = withContext(Dispatchers.IO) {
                             client.submitForm(
@@ -60,15 +44,6 @@ class SpotifyRequester {
                                     "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}"
                                 )
                             }.parseJsonBody<SpotifyTokenResponse>()
-                        }
-
-                        if (!PlatformStuff.isDesktop) {
-                            mainPrefs.updateData {
-                                it.copy(
-                                    spotifyAccessToken = tokenResponse.access_token,
-                                    spotifyAccessTokenExpires = System.currentTimeMillis() + (tokenResponse.expires_in - 60) * 1000
-                                )
-                            }
                         }
 
                         BearerTokens(tokenResponse.access_token, Tokens.SPOTIFY_REFRESH_TOKEN)

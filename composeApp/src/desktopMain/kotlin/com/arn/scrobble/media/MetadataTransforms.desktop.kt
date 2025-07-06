@@ -17,20 +17,20 @@ actual fun transformMediaMetadata(
     // a -1 value on my windows implementation means, a timeline info event hasn't been received yet
     var durationMillis = metadata.duration
 
-    when (trackInfo.appId) {
-        Stuff.PACKAGE_APPLE_MUSIC_WIN -> {
+    when (trackInfo.appId.lowercase()) {
+        Stuff.PACKAGE_APPLE_MUSIC_WIN.lowercase() -> {
             val splits = artist.split(" — ")
 
             if (splits.size >= 2) {
-                // sometimes there are 3 splits, like "Artist — Album - EP — Artist"
+                // sometimes there are 3 splits, like "Artist — Album - EP — Station name"
                 artist = splits[0].trim()
                 album = MetadataUtils.removeSingleEp(splits[1].trim())
                 albumArtist = "" // contains the same malformed value as artist
             }
         }
 
-        Stuff.PACKAGE_CIDER_LINUX,
-        Stuff.PACKAGE_CIDER_VARIANT_LINUX
+        Stuff.PACKAGE_CIDER_LINUX.lowercase(),
+        Stuff.PACKAGE_CIDER_VARIANT_LINUX.lowercase()
             -> {
             album = MetadataUtils.removeSingleEp(album)
         }

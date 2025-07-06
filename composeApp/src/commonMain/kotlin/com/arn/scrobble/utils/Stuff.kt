@@ -170,6 +170,7 @@ object Stuff {
     const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
     const val MUSICBEE_PLUGIN_URL = "https://github.com/HenryPDT/mb_MediaControl"
+    const val FOOBAR_PLUGIN_URL = "https://github.com/ungive/foo_mediacontrol"
 
     val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",

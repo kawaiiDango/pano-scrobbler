@@ -66,6 +66,7 @@ class InfoVM : ViewModel() {
 
                     val infos = createInitialData(entry)
 
+                    _userTags.emit(emptyMap())
                     _infoMap.emit(infos)
 
                     val infosFetched = withContext(Dispatchers.IO) {

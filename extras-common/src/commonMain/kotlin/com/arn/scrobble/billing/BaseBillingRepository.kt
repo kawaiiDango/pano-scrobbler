@@ -23,7 +23,7 @@ abstract class BaseBillingRepository(
     )
     val licenseState = _licenseState.asStateFlow()
 
-    val isLicenseValid: Boolean
+    inline val isLicenseValid: Boolean
         get() = licenseState.value == LicenseState.VALID
 
     init {

@@ -357,27 +357,13 @@ fun MusicEntryListItem(
                     }
 
                     if (topText != null) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        Text(
+                            text = if (forShimmer) "" else topText,
+                            style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .backgroundForShimmer(forShimmer)
-                        ) {
-                            if (stonksDelta != null) {
-                                stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
-                                    Icon(
-                                        imageVector = icon,
-                                        tint = color,
-                                        contentDescription = stonksDelta.toString(),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-                            Text(
-                                text = if (forShimmer) "" else topText,
-                                style = MaterialTheme.typography.labelMedium,
-                            )
-                        }
+                        )
                     }
 
                     Text(
@@ -400,13 +386,32 @@ fun MusicEntryListItem(
                             overflow = TextOverflow.Ellipsis,
                         )
 
-                    if (thirdText != null)
-                        Text(
-                            text = if (forShimmer) "" else thirdText,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                    if (thirdText != null) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            if (stonksDelta != null) {
+                                stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
+                                    Icon(
+                                        imageVector = icon,
+                                        tint = color,
+                                        contentDescription = stonksDelta.toString(),
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                            .offset((-2).dp)
+                                    )
+                                }
+                            }
+
+                            Text(
+                                text = if (forShimmer) "" else thirdText,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
 
                     if (progress != null) {
                         ScrobblesCountProgress(progress)

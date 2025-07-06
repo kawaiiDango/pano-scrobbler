@@ -233,19 +233,20 @@ private fun AppListItem(
                     maxLines = 1,
                 )
             }
-
-            if (pluginUrl != null) {
-                OutlinedButton(
-                    onClick = {
-                        PlatformStuff.openInBrowser(pluginUrl)
-                    }
-                ) {
-                    Text(
-                        text = stringResource(Res.string.needs_plugin),
-                    )
+        }
+        
+        if (pluginUrl != null) {
+            OutlinedButton(
+                onClick = {
+                    PlatformStuff.openInBrowser(pluginUrl)
                 }
+            ) {
+                Text(
+                    text = stringResource(Res.string.needs_plugin),
+                )
             }
         }
+
         if (isSingleSelect) {
             RadioButton(
                 selected = isSelected,

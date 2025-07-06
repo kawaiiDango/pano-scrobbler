@@ -197,10 +197,6 @@ object DesktopStuff {
             prop = "sun.java2d.dpiaware"
             if (System.getProperty(prop) == null)
                 System.setProperty(prop, "true")
-
-            prop = "skiko.data.path"
-            if (System.getProperty(prop) == null)
-                System.setProperty(prop, File(PlatformStuff.cacheDir, "skiko").absolutePath)
         }
 
     }

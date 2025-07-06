@@ -52,8 +52,10 @@ Already purchased through Google Play?
 
 According to Google Play's policies, purchases made through Google Play cannot be used for apps downloaded outside of Google Play.
 </string>
+<!--  make them RTL agnostic  -->
     <string name="move_left" translatable="false">Move left</string>
     <string name="move_right" translatable="false">Move right</string>
+
     <string name="move_up" translatable="false">Move up</string>
     <string name="move_down" translatable="false">Move down</string>
     <string name="desktop_webview_message" translatable="false">Complete the action in the WebView window</string>

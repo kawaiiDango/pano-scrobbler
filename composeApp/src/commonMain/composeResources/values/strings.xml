@@ -265,6 +265,7 @@
     <string name="rate_msg">Enjoying this app?</string>
     <string name="time_just_now">just now</string>
     <string name="no_mail_apps">No email client is installed</string>
+    <string name="add">Add new item</string>
     <string name="loved"
         comment="Its a noun"
         >Loved</string>

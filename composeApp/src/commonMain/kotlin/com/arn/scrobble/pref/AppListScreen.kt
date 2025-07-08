@@ -45,7 +45,6 @@ import pano_scrobbler.composeapp.generated.resources.needs_plugin
 import pano_scrobbler.composeapp.generated.resources.other_apps
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppListScreen(
     isSingleSelect: Boolean,
@@ -234,7 +233,7 @@ private fun AppListItem(
                 )
             }
         }
-        
+
         if (pluginUrl != null) {
             OutlinedButton(
                 onClick = {

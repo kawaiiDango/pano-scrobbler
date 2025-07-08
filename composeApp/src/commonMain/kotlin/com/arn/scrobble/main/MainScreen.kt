@@ -67,7 +67,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import coil3.compose.setSingletonImageLoaderFactory
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.DrawerData
@@ -108,15 +109,15 @@ fun PanoAppContent(
     viewModel: MainViewModel = viewModel { MainViewModel() },
 ) {
 
-    val widthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
-    val navigationType = when (widthSizeClass) {
-        WindowWidthSizeClass.COMPACT -> PanoNavigationType.BOTTOM_NAVIGATION
+    val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val navigationType = when {
+        sizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
+            -> PanoNavigationType.PERMANENT_NAVIGATION_DRAWER
 
-        WindowWidthSizeClass.MEDIUM -> PanoNavigationType.NAVIGATION_RAIL
+        sizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
+            -> PanoNavigationType.NAVIGATION_RAIL
 
-        WindowWidthSizeClass.EXPANDED -> PanoNavigationType.PERMANENT_NAVIGATION_DRAWER
-
-        else -> PanoNavigationType.PERMANENT_NAVIGATION_DRAWER
+        else -> PanoNavigationType.BOTTOM_NAVIGATION
     }
 
     val snackbarHostState = remember { SnackbarHostState() }

@@ -1,6 +1,5 @@
 package com.arn.scrobble.charts
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -113,7 +112,6 @@ import pano_scrobbler.composeapp.generated.resources.tracks
 import pano_scrobbler.composeapp.generated.resources.weeks
 import pano_scrobbler.composeapp.generated.resources.years
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChartsOverviewScreen(
     user: UserCached,

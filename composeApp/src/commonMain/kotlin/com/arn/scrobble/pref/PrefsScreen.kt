@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -109,7 +108,6 @@ import java.util.Calendar
 import java.util.Locale
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PrefsScreen(
     onNavigate: (PanoRoute) -> Unit,

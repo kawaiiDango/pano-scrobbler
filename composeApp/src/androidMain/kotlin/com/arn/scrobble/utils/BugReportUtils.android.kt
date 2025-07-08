@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import org.jetbrains.compose.resources.getString
@@ -31,8 +32,7 @@ actual object BugReportUtils {
 
         var lastExitInfo: String? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            lastExitInfo =
-                AndroidStuff.getScrobblerExitReasons(printAll = true).firstOrNull()?.toString()
+            lastExitInfo = AndroidStuff.getScrobblerExitReasons().firstOrNull()?.toString()
         }
 
         var text = ""
@@ -79,6 +79,15 @@ actual object BugReportUtils {
     }
 
     actual fun saveLogsToFile(): String? {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            AndroidStuff.getScrobblerExitReasons().let {
+                it.take(5).forEachIndexed { index, applicationExitInfo ->
+                    Logger.w("${index + 1}. $applicationExitInfo", tag = "exitReasons")
+                }
+            }
+        }
+
         val log = Stuff.exec("logcat -d *:I")
         val logFile = File(AndroidStuff.application.cacheDir, "share/pano-scrobbler.log")
         logFile.parentFile!!.mkdirs()

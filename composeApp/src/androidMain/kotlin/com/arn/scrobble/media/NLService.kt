@@ -135,8 +135,12 @@ class NLService : NotificationListenerService() {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            AndroidStuff.getScrobblerExitReasons(printAll = true)
+        if (PlatformStuff.isDebug && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            AndroidStuff.getScrobblerExitReasons().let {
+                it.take(5).forEachIndexed { index, applicationExitInfo ->
+                    Logger.w("${index + 1}. $applicationExitInfo", tag = "exitReasons")
+                }
+            }
         }
 
         coroutineScope.launch {

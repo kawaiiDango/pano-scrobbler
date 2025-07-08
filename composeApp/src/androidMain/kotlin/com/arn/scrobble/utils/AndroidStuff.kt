@@ -242,10 +242,7 @@ object AndroidStuff {
 
 
     @RequiresApi(Build.VERSION_CODES.R)
-    fun getScrobblerExitReasons(
-        afterTime: Long = -1,
-        printAll: Boolean = false,
-    ): List<ApplicationExitInfo> {
+    fun getScrobblerExitReasons(afterTime: Long = -1): List<ApplicationExitInfo> {
         return try {
             val activityManager =
                 ContextCompat.getSystemService(application, ActivityManager::class.java)!!
@@ -255,12 +252,6 @@ object AndroidStuff {
                 it.processName == "${application.packageName}:$SCROBBLER_PROCESS_NAME"
 //                        && it.reason == ApplicationExitInfo.REASON_OTHER
                         && it.timestamp > afterTime
-            }.also {
-                if (printAll) {
-                    it.take(5).forEachIndexed { index, applicationExitInfo ->
-                        Logger.w("${index + 1}. $applicationExitInfo", tag = "exitReasons")
-                    }
-                }
             }
         } catch (e: Exception) {
             emptyList()

@@ -77,8 +77,8 @@ object Stuff {
     const val TYPE_ALBUM_ARTISTS = 4
     const val TYPE_LOVES = 5
     const val LIBREFM_KEY = "panoScrobbler"
-    val LAST_KEY = Tokens.LAST_KEY
-    val LAST_SECRET = Tokens.LAST_SECRET
+    const val LAST_KEY = Tokens.LAST_KEY
+    const val LAST_SECRET = Tokens.LAST_SECRET
     const val FRIENDS_RECENTS_DELAY = 800L
     const val MAX_PATTERNS = 30
     const val MAX_PINNED_FRIENDS = 10
@@ -99,8 +99,6 @@ object Stuff {
     const val TRACK_INFO_WINDOW = 3 * 60 * 1000L
     const val TRACK_INFO_REQUESTS = 2
     const val META_WAIT = 800L
-    const val SCROBBLE_FROM_MIC_DELAY = 3 * 1000L
-    const val MIN_LISTENER_COUNT = 5
     const val MAX_HISTORY_ITEMS = 20
     const val DEFAULT_PAGE_SIZE = 100
     const val SCROBBLE_SOURCE_THRESHOLD = 1000L
@@ -109,7 +107,7 @@ object Stuff {
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
     const val LISTENBRAINZ_API_ROOT = "https://api.listenbrainz.org/"
 
-    val LASTFM_AUTH_CB_URL =
+    const val LASTFM_AUTH_CB_URL =
         "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm"
     const val LIBREFM_AUTH_CB_URL =
         "https://libre.fm/api/auth/?api_key=$LIBREFM_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/librefm"

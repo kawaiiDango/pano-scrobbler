@@ -19,7 +19,6 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -659,16 +658,15 @@ private fun AppSelector(
                 onClick = { onAppItemRemoved(it) }
             )
         }
-        AssistChip(
+
+        IconButton(
             onClick = { onNavigateToAppList(appItems.map { it.appId }) },
-            label = { Text(stringResource(Res.string.add)) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = null
-                )
-            }
-        )
+        ) {
+            Icon(
+                Icons.Outlined.Add,
+                stringResource(Res.string.add)
+            )
+        }
     }
 }
 

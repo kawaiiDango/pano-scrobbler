@@ -72,7 +72,9 @@ object PanoNativeComponents {
         album: String,
         albumArtist: String,
         trackNumber: Int,
-        duration: Long
+        duration: Long,
+        artUrl: String,
+        artBytes: ByteArray,
     ) {
         val metadataInfo = MetadataInfo(
             appId = appId,
@@ -123,6 +125,9 @@ object PanoNativeComponents {
 
     @JvmStatic
     external fun setAllowedAppIds(appIds: Array<String>)
+
+    @JvmStatic
+    external fun albumArtEnabled(enabled: Boolean)
 
     @JvmStatic
     private external fun startListeningMedia()

@@ -23,7 +23,6 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.Stuff.billingClientData
-import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -35,7 +34,6 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
-import java.io.IOException
 import java.io.OutputStream
 import java.net.CookieHandler
 import java.net.CookieManager
@@ -84,11 +82,16 @@ actual object PlatformStuff {
     }
 
     actual fun openInBrowser(url: String) {
-        try {
-            Desktop.getDesktop().browse(URI(url))
-        } catch (e: IOException) {
-            Logger.e("Error opening an URL in browser")
+        val desktop = Desktop.getDesktop()
+        if (!Desktop.isDesktopSupported() || !desktop.isSupported(Desktop.Action.BROWSE)) {
+            val snackbarData = PanoSnackbarVisuals(
+                message = "Failed to open URL: $url",
+                isError = true,
+            )
+            Stuff.globalSnackbarFlow.tryEmit(snackbarData)
+            return
         }
+        desktop.browse(URI(url))
     }
 
     actual fun String.toHtmlAnnotatedString() =
@@ -179,7 +182,7 @@ actual object PlatformStuff {
         val stringSelection = StringSelection(text)
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         clipboard.setContents(stringSelection, null)
-        globalSnackbarFlow.tryEmit(
+        Stuff.globalSnackbarFlow.tryEmit(
             PanoSnackbarVisuals(
                 message = "Copied",
                 isError = false,

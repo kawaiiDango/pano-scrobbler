@@ -12,11 +12,14 @@ actual fun setAppLocale(lang: String?, force: Boolean) {
             systemDefaultLocale = Locale.getDefault()
         } else {
             // for older graalvm, we need to get the system locale manually
-            val (lang, country) = PanoNativeComponents.getSystemLocale().split("-")
-            try {
-                systemDefaultLocale = Locale.of(lang, country)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            val splits = PanoNativeComponents.getSystemLocale().split("-")
+
+            if (splits.size == 2) {
+                try {
+                    systemDefaultLocale = Locale.of(splits[0], splits[1])
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }

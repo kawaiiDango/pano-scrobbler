@@ -77,7 +77,7 @@ actual fun FixItDialog(
         val lastKillCheckTime = mainPrefs.data.map { it.lastKillCheckTime }.first()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            AndroidStuff.getScrobblerExitReasons(lastKillCheckTime, false)
+            AndroidStuff.getScrobblerExitReasons(lastKillCheckTime)
                 .firstOrNull()
                 ?.let {
                     exitReason = it.description

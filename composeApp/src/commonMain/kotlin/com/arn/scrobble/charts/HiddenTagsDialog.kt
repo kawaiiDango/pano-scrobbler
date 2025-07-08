@@ -8,12 +8,13 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -116,15 +117,17 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
             )
         )
 
-        TextButton(
+        IconButton(
             onClick = {
                 addTag(tagInput)
             },
             modifier = Modifier
-                .padding(8.dp)
                 .align(Alignment.End)
         ) {
-            Text(stringResource(Res.string.add))
+            Icon(
+                Icons.Outlined.Add,
+                stringResource(Res.string.add)
+            )
         }
     }
 }

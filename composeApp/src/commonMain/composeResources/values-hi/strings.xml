@@ -74,7 +74,6 @@
     <string name="artist_image">कलाकार का चित्र</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक नही मिला</string>
     <string name="network_error">नेटवर्क में समस्या</string>
-    <string name="disable_tls_verify">TSL तृतीया अनदेखा करो</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रौब्ल अनदेखा करें</string>
     <string name="scrobble_ignored_save_edit">लास्ट एफएम ने इस सुधार को अनदेखा किया है, क्योंकि संभवताह यह स्क्रौब्ल बोहोत पुराना है। क्या आप इस सुधार को भविष्य के स्क्रौब्ल के लिए रखना चाहेंगे?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्र खाली हैं</string>
@@ -92,18 +91,14 @@
     <string name="tracks">गीत</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">अधिकतर सुनें गए गीत</string>
     <string name="similar_tracks">समान गीत</string>
-    <string name="similar" comment="Similar tracks but in short">समान</string>
     <string name="state_scrobbling">अभी स्क्रॉबल हो रहा है…</string>
     <string name="state_scrobbled">स्क्रौब्ल हो गया</string>
-    <string name="unscrobble">स्क्रौब्ल निकालें</string>
     <string name="state_unscrobbled">स्क्रौब्ल निकाल दिया</string>
-    <string name="state_unrecognised_artist">कलाकार को पहचान नहीं सकें</string>
     <string name="tap_to_edit">(सुधार करने के लिए यहां दबाएं)</string>
     <string name="recently_scrobbled">अभी स्क्रौब्ल किए गए</string>
     <string name="recents" comment="Short for recently scrobbled">इतिहास</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">प्रथम स्क्रौब्ल %1$s को किया था</string>
     <string name="auto" comment="automatic or default setting">स्वतः</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">बस हो ही गया…</string>
     <string name="music_players">गीत प्लेयर</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">अन्य एप्लिकेशन</string>
     <string name="choose_apps">एप्लिकेशन चुने</string>
@@ -118,7 +113,6 @@
     <string name="share_sig">(Pano Scrobbler के मध्यम से)</string>
     <string name="share">भेजें</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">विवयण</string>
-    <string name="pinch_to_zoom">बड़ा/छोटा करने के लिए दो अँगुलियों का उपयोग करें</string>
     <string name="more_info">अधिक जानकारी</string>
     <string name="more" comment="More options menu in short">अधिक</string>
     <string name="learn" comment="(Learn java regex syntax)">सीखें</string>
@@ -158,8 +152,6 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">घृणा नही</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">अप्रिय</string>
     <string name="pending_scrobbles">बाकी स्क्रौब्ल</string>
-    <string name="pending_scrobble">बाकी स्क्रौब्ल</string>
-    <string name="pending_scrobbles_noti">बाकी स्क्रौब्ल को प्रोसेस किया जा रहा है</string>
     <string name="following" comment="accounts you are following on lastfm">फॉलोइंग</string>
     <string name="followers" comment="your lastfm followers">फ़ॉलोअर्स</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रौब्ल, %2$s से</string>
@@ -182,23 +174,15 @@
     <string name="loved" comment="Its a noun">प्रिय</string>
     <string name="unloved" comment="Its a noun">अप्रिय</string>
     <string name="simple_edits">सुधार</string>
-    <string name="grant_rec_perm">कृपया करके माइक्रोफोन उपयोग करने की अनुमति प्रदान करें</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्ट</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">टैग क्लाउड</string>
-    <string name="scrobble_from_mic" comment="Its a verb">माइक से स्क्रौब्ल करें</string>
-    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">माइक से</string>
     <string name="add_to_hs">होम स्क्रीन पर स्थापित करें</string>
-    <string name="listening">आपके आस−पास बज रहे संगीत को सुन रहा हूं…</string>
-    <string name="uploading">अपलोड हो रहा है…</string>
-    <string name="recording_failed">रिकॉर्डिंग प्रारंभ करने में असफल।इस डिवाइस का माइक संभवतः व्यस्त है या उपलब्ध नहीं हैं</string>
     <string name="press_back">हो जाने पर बैक दबाएं</string>
-    <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">विवरण</string>
     <string name="saved_as_pending">लंबित स्क्रौब्ल की तरह रखा है</string>
     <string name="sort">क्रम</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">अन्य समय</string>
     <string name="my_scrobbles">मेरे स्क्रौब्ल</string>
-    <string name="their_scrobbles">उनके स्क्रौब्ल</string>
     <string name="listeners">श्रोता</string>
     <string name="scrobbles">स्क्रौब्ल</string>
     <string name="collapse" comment="(view only a few items)">कम</string>
@@ -224,7 +208,6 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">सौभाग्य का क्षण</string>
     <string name="random_not_found">कोई ट्रैक नहीं मिला</string>
     <string name="loved_track">पसंदीदा ट्रैक</string>
-    <string name="randomize" comment="(To randomize or fetch a new random item)">रैंडम करें</string>
     <string name="random_text">रैंडम</string>
     <string name="graph_daily">दैनिक स्क्रोबल गणना</string>
     <string name="graph_weekly">साप्ताहिक स्क्रोबल गणना</string>
@@ -248,12 +231,9 @@
     <string name="edit_all" comment="All occurrences of a pattern">सभ</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">अपने कैप्चर समूह को नाम दे <i>track, album, artist</i> or <i>albumArtist</i> तो दूसरे क्षेत्र से प्राप्त कर सके</string>
     <string name="edit_presets" comment="Regex presets">प्रीसेट</string>
-    <string name="edit_presets_available">प्रीसेट उपलब्द हैं</string>
-    <string name="edit_no_presets_available">सभी प्रीसेट उपयोग में हैं</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">प्रीसेट: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">पैटर्न सीमा (%1$d) तक पहुंच गई</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">ड्रग हैंडल</string>
-    <string name="text" comment="text to test regex rules with">टैक्स्ट</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ यह उपयोग करने से पहले, <a href="https://www.google.com/search?q=regex+tutorial">जावा रेगुलर एक्सप्रेशन</a> को समझना सुनिश्चित करें या दिए गए <b>प्रीसेट</b> मे से एक का उपयोग करें। रेगुलर एक्सप्रेशन के मेल का प्रयास ऊपर से नीचे के क्रम में किया जाता है।</string>
     <string name="blocked_metadata_info">ℹ️ इन में से एक से अधिक क्षेत्र भरने पर AND संचालक उनके बीच लगेगा</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">टैप करें ब्लॉक या स्किप करने के लिए</string>
@@ -271,8 +251,6 @@
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">विश्लेषण</string>
     <string name="pref_master">संगीत स्क्रौब्ल करें</string>
     <string name="pref_noti">सूचनाएं</string>
-    <string name="pref_noti_categories">सूचना की श्रेणियाँ</string>
-    <string name="pref_scrobble_noti">स्क्रौब्ल की सूचनाएं</string>
     <string name="pref_lockscreen_noti">लॉक स्क्रीन पर की सूचनाएं</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">स्क्रौब्ल लक्ष्य</string>
     <string name="pref_enabled_apps_title">एप को चुनें</string>
@@ -285,8 +263,6 @@
     <string name="pref_change_locale">भाषा बदले</string>
     <string name="pref_misc">इत्यादि</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">सप्ताह काहा से आरंभ करें</string>
-    <string name="pref_show_albums">एल्बम का नाम दिखाओ</string>
-    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…स्क्रौब्ल के लिए</string>
     <string name="pref_lists" comment="Such as edits list and block lists">सूचियाँ</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">अवरोधित मेटाडेटा</string>
     <string name="pref_translate">इस एप का अनुवाद करें</string>
@@ -294,7 +270,5 @@
     <string name="pref_check_updates">नए अपडेट की जाँच करें</string>
     <string name="update_available" formatted="true" comment="%1= the version number">अपडेट उपलब्ध है: %1$s</string>
     <string name="download" comment="Its a verb">डाउनलोड</string>
-    <string name="artist_extra">ट्रॅकक्स, एल्बम &amp; समान</string>
-    <string name="shazam_scrobbling">निरंतर स्क्रौब्ल करना है तो <a href="https://play.google.com/store/apps/details?id=com.shazam.android">शझैम</a> खोले और ऑटो शझैम चालू करें। हां और शझैम के लिए स्क्रौब्ल चालू करना ना भूले।</string>
     <!--  pro  -->
 </resources>

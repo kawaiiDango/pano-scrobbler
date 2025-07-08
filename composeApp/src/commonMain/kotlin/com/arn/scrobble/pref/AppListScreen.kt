@@ -1,28 +1,35 @@
 package com.arn.scrobble.pref
 
 import androidx.annotation.Keep
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.ui.AppIcon
+import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.ui.backgroundForShimmer
@@ -57,6 +65,7 @@ fun AppListScreen(
     val appList by viewModel.appList.collectAsStateWithLifecycle()
     val selectedPackages by viewModel.selectedPackages.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
+    var pluginsNeededExpanded by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(preSelectedPackages) {
         viewModel.setSelectedPackages(preSelectedPackages)
@@ -118,10 +127,6 @@ fun AppListScreen(
                     isSelected = selectedPackages.contains(appItem.appId),
                     isSingleSelect = isSingleSelect,
                     showAppId = showAppId,
-                    pluginUrl = if (saveType == AppListSaveType.Scrobbling)
-                        viewModel.pluginUrl(appItem)
-                    else
-                        null,
                     onToggle = { selected ->
                         if (isSingleSelect) {
                             viewModel.setSelectedPackages(setOf(appItem.appId))
@@ -145,7 +150,6 @@ fun AppListScreen(
                     isSelected = false,
                     isSingleSelect = isSingleSelect,
                     showAppId = false,
-                    pluginUrl = null,
                     onToggle = {},
                     modifier = Modifier.shimmerWindowBounds().animateItem(),
                     forShimmer = true,
@@ -175,6 +179,50 @@ fun AppListScreen(
 
                 addItems(appList.otherApps)
             }
+
+            if (viewModel.pluginsNeeded.isNotEmpty()) {
+                stickyHeader("header_plugins_needed") {
+                    ExpandableHeaderItem(
+                        title = stringResource(Res.string.needs_plugin),
+                        icon = Icons.Outlined.Info,
+                        expanded = pluginsNeededExpanded,
+                        onToggle = { pluginsNeededExpanded = it },
+                    )
+                }
+
+                if (pluginsNeededExpanded) {
+                    items(viewModel.pluginsNeeded) { (appName, pluginUrl) ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable {
+                                    PlatformStuff.openInBrowser(pluginUrl)
+                                }
+                                .padding(
+                                    vertical = 8.dp,
+                                    horizontal = horizontalOverscanPadding()
+                                ),
+                        ) {
+                            Text(
+                                text = appName,
+                                maxLines = 1,
+                            )
+
+                            Spacer(
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Icon(
+                                imageVector = Icons.Outlined.OpenInBrowser,
+                                contentDescription = null,
+                                modifier = Modifier
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -185,7 +233,6 @@ private fun AppListItem(
     isSelected: Boolean,
     isSingleSelect: Boolean,
     showAppId: Boolean,
-    pluginUrl: String?,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
@@ -230,18 +277,6 @@ private fun AppListItem(
                     text = appItem?.appId ?: "",
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
-                )
-            }
-        }
-
-        if (pluginUrl != null) {
-            OutlinedButton(
-                onClick = {
-                    PlatformStuff.openInBrowser(pluginUrl)
-                }
-            ) {
-                Text(
-                    text = stringResource(Res.string.needs_plugin),
                 )
             }
         }

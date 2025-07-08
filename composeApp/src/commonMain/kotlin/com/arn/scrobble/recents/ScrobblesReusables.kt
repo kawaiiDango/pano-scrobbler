@@ -656,8 +656,8 @@ fun LazyListScope.scrobblesListItems(
     canHate: Boolean,
     canEdit: Boolean,
     canDelete: Boolean,
-    expandedIdx: () -> Int,
-    onExpand: (Int) -> Unit,
+    expandedKey: () -> String?,
+    onExpand: (String?) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     viewModel: ScrobblesVM,
 ) {
@@ -681,8 +681,9 @@ fun LazyListScope.scrobblesListItems(
                 }
             }
 
+            val key = trackPeek?.generateKey() ?: "placeholder_$i"
             item(
-                key = trackPeek?.generateKey() ?: "placeholder_$i"
+                key = key
             ) {
                 val track = tracks[i]?.let {
                     editedTracksMap[it] ?: it
@@ -700,13 +701,13 @@ fun LazyListScope.scrobblesListItems(
                     entry = track,
                     appItem = appItem,
                     onEntryClick = { onTrackClick(track, appItem?.appId) },
-                    isColumn = expandedIdx() == i,
-                    fixedImageHeight = expandedIdx() != i,
+                    isColumn = expandedKey() == key,
+                    fixedImageHeight = expandedKey() != key,
                     onImageClick = {
-                        if (expandedIdx() == i)
-                            onExpand(-1)
+                        if (expandedKey() == key)
+                            onExpand(null)
                         else {
-                            onExpand(i)
+                            onExpand(key)
                         }
                     },
                     forShimmer = trackPeek == null,
@@ -767,7 +768,7 @@ fun LazyListScope.scrobblesListItems(
                     onMenuClick = { menuVisible = true },
                     modifier = Modifier
                         .then(
-                            if (expandedIdx() == i)
+                            if (expandedKey() == key)
                                 Modifier.fillParentMaxHeight()
                             else
                                 Modifier

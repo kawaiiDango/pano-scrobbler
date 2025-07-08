@@ -45,10 +45,12 @@ image will be displayed.
 Last.FM has a spam filter, which filters out tracks/albums/artists with titles similar to
 "Unknown", ".mp3", "Track_01" etc
 
-### The scrobbler does not seem to pick up album artists
+### The scrobbler submits incomplete data / does not submit album artists
 
-This can happen if your music player does not provide the album artist metadata in its
-`MediaSession`. Use a different music player, which does that.
+This can happen if your music player does not provide the complete metadata in its
+`MediaSession` on Android, `SystemMediaTransportControls` on Windows or `MPRIS` on Linux.
+
+Use a different music player, which does that.
 
 ### How do I stream music on this app?
 

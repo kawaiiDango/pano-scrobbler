@@ -109,6 +109,5 @@ actual suspend fun AppListVM.load(
     }
 }
 
-actual fun AppListVM.pluginUrl(appItem: AppItem): String? {
-    return null
-}
+actual val AppListVM.pluginsNeeded: List<Pair<String, String>>
+    get() = emptyList()

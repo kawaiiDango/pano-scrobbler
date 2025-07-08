@@ -158,15 +158,9 @@ object ScrobbleEverywhere {
     }
 
     suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleIgnored>> {
-        val submitNowPlaying = PlatformStuff.mainPrefs.data.first().submitNowPlaying
-
-        if (Stuff.isOnline && submitNowPlaying) {
-            return Scrobblables.all.value.mapConcurrently(5) {
-                it to it.updateNowPlaying(scrobbleData)
-            }.toMap()
-        }
-
-        return emptyMap()
+        return Scrobblables.all.value.mapConcurrently(5) {
+            it to it.updateNowPlaying(scrobbleData)
+        }.toMap()
     }
 
     suspend fun scrobble(scrobbleData: ScrobbleData) {

@@ -51,11 +51,11 @@ import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.showCollageShareSheet
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -69,7 +69,6 @@ import pano_scrobbler.composeapp.generated.resources.saved_to_gallery
 import pano_scrobbler.composeapp.generated.resources.share
 import pano_scrobbler.composeapp.generated.resources.size
 import pano_scrobbler.composeapp.generated.resources.skip_missing_images
-import pano_scrobbler.composeapp.generated.resources.text
 import pano_scrobbler.composeapp.generated.resources.tracks
 import pano_scrobbler.composeapp.generated.resources.username
 import pano_scrobbler.composeapp.generated.resources.vd_launcher_fg
@@ -95,11 +94,15 @@ fun CollageGeneratorDialog(
     viewModel: CollageGeneratorVM = viewModel { CollageGeneratorVM() },
 ) {
     var collageType by rememberSaveable { mutableIntStateOf(collageType) }
-    var collageSize by rememberSaveable { mutableIntStateOf(3) }
-    var includeCaptions by rememberSaveable { mutableStateOf(false) }
-    var collageText by rememberSaveable { mutableStateOf(false) }
-    var collageUsername by rememberSaveable { mutableStateOf(false) }
-    var collageSkipMissing by rememberSaveable { mutableStateOf(false) }
+    val collageSize by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.collageSize }
+    val includeCaptions by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.collageCaptions }
+    val collageText by rememberSaveable { mutableStateOf(true) }
+    val collageUsername by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.collageUsername }
+    val collageSkipMissing by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.collageSkipMissing }
     var shareCollageClicked by remember { mutableStateOf(false) }
     var saveCollageClicked by remember { mutableStateOf(false) }
     var showSavedMessage by remember { mutableStateOf(false) }
@@ -162,27 +165,6 @@ fun CollageGeneratorDialog(
     }
 
     LaunchedEffect(Unit) {
-        val prefs = PlatformStuff.mainPrefs.data.first()
-        includeCaptions = prefs.collageCaptions
-        collageSize = prefs.collageSize
-        collageUsername = prefs.collageUsername
-        collageText = prefs.collageText
-        collageSkipMissing = prefs.collageSkipMissing
-    }
-
-    LaunchedEffect(collageSkipMissing, collageSize, includeCaptions, collageUsername, collageText) {
-        PlatformStuff.mainPrefs.updateData {
-            it.copy(
-                collageSize = collageSize,
-                collageCaptions = includeCaptions,
-                collageUsername = collageUsername,
-                collageText = collageText,
-                collageSkipMissing = collageSkipMissing,
-            )
-        }
-    }
-
-    LaunchedEffect(Unit) {
         viewModel.sharableCollage.collectLatest { (image, text) ->
             if (shareCollageClicked) {
                 showCollageShareSheet(image, text.takeIf { collageText && text.isNotBlank() })
@@ -230,7 +212,11 @@ fun CollageGeneratorDialog(
                 prefixText = stringResource(Res.string.size),
                 selected = collageSize,
                 itemToTexts = collageSizes,
-                onItemSelected = { collageSize = it },
+                onItemSelected = { value ->
+                    scope.launch {
+                        PlatformStuff.mainPrefs.updateData { it.copy(collageSize = value) }
+                    }
+                },
                 modifier = Modifier.weight(0.4f),
             )
         }
@@ -238,7 +224,11 @@ fun CollageGeneratorDialog(
         LabeledCheckbox(
             text = stringResource(Res.string.captions),
             checked = includeCaptions,
-            onCheckedChange = { includeCaptions = it },
+            onCheckedChange = { value ->
+                scope.launch {
+                    PlatformStuff.mainPrefs.updateData { it.copy(collageCaptions = value) }
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -246,25 +236,33 @@ fun CollageGeneratorDialog(
             text = stringResource(Res.string.skip_missing_images),
             enabled = includeCaptions,
             checked = collageSkipMissing || !includeCaptions,
-            onCheckedChange = { collageSkipMissing = it },
+            onCheckedChange = { value ->
+                scope.launch {
+                    PlatformStuff.mainPrefs.updateData { it.copy(collageSkipMissing = value) }
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
         )
 
         LabeledCheckbox(
             text = stringResource(Res.string.username),
             checked = collageUsername,
-            onCheckedChange = { collageUsername = it },
+            onCheckedChange = { value ->
+                scope.launch {
+                    PlatformStuff.mainPrefs.updateData { it.copy(collageUsername = value) }
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (shareEnabled) {
-            LabeledCheckbox(
-                text = stringResource(Res.string.text),
-                checked = collageText,
-                onCheckedChange = { collageText = it },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+//        if (shareEnabled) {
+//            LabeledCheckbox(
+//                text = stringResource(Res.string.text),
+//                checked = collageText,
+//                onCheckedChange = { collageText = it },
+//                modifier = Modifier.fillMaxWidth(),
+//            )
+//        }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),

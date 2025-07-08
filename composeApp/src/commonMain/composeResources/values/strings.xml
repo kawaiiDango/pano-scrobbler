@@ -721,7 +721,7 @@
     <string name="low" comment="As in high/medium/low">Low</string>
     <string name="needs_plugin"
         comment="Used for some desktop media players"
-        >Needs plugin</string>
+        >Some apps need plugins</string>
     <string name="reload"
         comment="Reload or refresh"
         >Reload</string>

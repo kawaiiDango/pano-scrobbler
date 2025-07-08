@@ -34,7 +34,6 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -131,7 +131,7 @@ fun ScrobblesScreen(
     val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
     val currentAccoutType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
-    var expandedIdx by rememberSaveable { mutableIntStateOf(-1) }
+    var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
     val pendingScrobblesheader =
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
@@ -167,7 +167,7 @@ fun ScrobblesScreen(
                 )
 
                 onTitleChange(getString(Res.string.loved))
-                expandedIdx = -1
+                expandedKey = null
             }
 
             ScrobblesType.TIME_JUMP -> {
@@ -180,7 +180,7 @@ fun ScrobblesScreen(
                     )
 
                 onTitleChange(getString(Res.string.time_jump))
-                expandedIdx = -1
+                expandedKey = null
             }
 
             ScrobblesType.RECENTS -> {
@@ -197,17 +197,19 @@ fun ScrobblesScreen(
         }
     }
 
-    LaunchedEffect(expandedIdx) {
-        if (expandedIdx != -1) {
-            val key = if (expandedIdx < tracks.itemCount)
-                tracks.peek(expandedIdx)?.generateKey() ?: return@LaunchedEffect
-            else
-                return@LaunchedEffect
+    LaunchedEffect(expandedKey) {
+        if (expandedKey != null) {
+            val expandedItem = listState.layoutInfo.visibleItemsInfo.find {
+                it.key == expandedKey
+            }
 
-            listState.layoutInfo.visibleItemsInfo.find {
-                it.key == key
-            }?.let {
-                listState.animateScrollToItem(it.index)
+            if (expandedItem == null) {
+                Logger.d { "Expanded item not visible" }
+
+                if (listState.firstVisibleItemIndex < 2)
+                    listState.animateScrollToItem(0)
+            } else {
+                listState.animateScrollToItem(expandedItem.index)
             }
         }
     }
@@ -223,8 +225,10 @@ fun ScrobblesScreen(
 
         // expand now playing
         if (tracks.loadState.refresh is LoadState.NotLoading) {
-            if (canExpandNowPlaying && tracks.itemCount > 0 && tracks.peek(0)?.isNowPlaying == true && (expandedIdx == -1 || expandedIdx == 0)) {
-                expandedIdx = 0
+            if (canExpandNowPlaying && tracks.itemCount > 0 && tracks.peek(0)?.isNowPlaying == true &&
+                (expandedKey == null || expandedKey == tracks.peek(1)?.generateKey())
+            ) {
+                expandedKey = tracks.peek(0)?.generateKey()
             }
         }
 
@@ -388,14 +392,11 @@ fun ScrobblesScreen(
                     canEdit = canEditOrDelete,
                     canDelete = canEditOrDelete,
                     canHate = currentAccoutType == AccountType.LISTENBRAINZ,
-                    expandedIdx = { expandedIdx },
+                    expandedKey = { expandedKey },
                     onExpand = {
-                        if (expandedIdx == 0 && it == -1)
-                            canExpandNowPlaying = false
-                        else if (it == 0)
-                            canExpandNowPlaying = true
+                        canExpandNowPlaying = !(expandedKey != null && it == null)
 
-                        expandedIdx = it
+                        expandedKey = it
                     },
                     onOpenDialog = onOpenDialog,
                     viewModel = viewModel,

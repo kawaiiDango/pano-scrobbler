@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -474,7 +473,6 @@ fun SimpleHeaderItem(
 ) {
     Row(
         modifier = modifier
-            .defaultMinSize(minHeight = 48.dp)
             .fillMaxWidth()
             .padding(bottom = 8.dp)
             .clip(MaterialTheme.shapes.medium)
@@ -482,7 +480,7 @@ fun SimpleHeaderItem(
                 MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = MaterialTheme.shapes.medium
             )
-            .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding()),
+            .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding()),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -491,7 +489,6 @@ fun SimpleHeaderItem(
             tint = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .padding(end = 32.dp)
-                .size(24.dp)
         )
 
         Text(

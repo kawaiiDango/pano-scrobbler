@@ -54,4 +54,4 @@ expect suspend fun AppListVM.load(
     checkDefaultApps: Boolean,
 )
 
-expect fun AppListVM.pluginUrl(appItem: AppItem): String?
+expect val AppListVM.pluginsNeeded: List<Pair<String, String>>

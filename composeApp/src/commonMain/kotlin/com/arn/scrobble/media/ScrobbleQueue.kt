@@ -13,6 +13,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import org.jetbrains.compose.resources.getString
@@ -74,13 +76,17 @@ class ScrobbleQueue(
         suspend fun nowPlayingAndSubmit(sd: ScrobbleData) {
             Logger.d { "will submit in ${submitAtTime - PlatformStuff.monotonicTimeMs()}ms" }
 
+            val submitNowPlaying = PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()
+
             // now playing for a new track or after that of the previously paused track has expired
             if (
-                prevPlayStartTime == null ||
-                (System.currentTimeMillis() - prevPlayStartTime) > min(
+                Stuff.isOnline &&
+                submitNowPlaying &&
+                (prevPlayStartTime == null ||
+                        (System.currentTimeMillis() - prevPlayStartTime) > min(
                     trackInfo.durationMillis,
                     4 * 60 * 1000L // 4 minutes
-                )
+                ))
             ) {
                 val npResults =
                     withTimeout(submitAtTime - PlatformStuff.monotonicTimeMs() - 5000) {

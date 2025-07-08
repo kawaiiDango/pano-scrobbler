@@ -55,16 +55,16 @@ Since v4.0, the builds on Github Releases or the F-Droid repo do not use Firebas
 - Extract or Fix metadata such as "Remastered" with regex pattern edits
 - Block artists, songs, etc., and automatically skip or mute when they play
 - Check what your followed users are listening to and view their stats
-- Scrobble from the S app and Pixel Now Playing (Android only)
+- Scrobble from the S app and Pixel Now Playing (Android only, not available on TV)
 - Import and export settings, edits, and blocklists
 - View charts with change indicators for specific time periods,
-- Charts are also available as a customizable home-screen widget (Android only)
+- Charts are also available as a customizable home-screen widget (Android only, not available on TV)
 - Collage generator (not available on TV)
 - View scrobble count graphs and tag clouds
 - Get a random song, album, or artist from your listening history
 - Search Lastfm for a songs, artists, or albums
 - Fetch albums and album artists from Lastfm, if missing, before scrobbling
-- Get your top scrobbles digests as a notification at the end of every week, month and year (Android only)
+- Get your top scrobbles digests as a notification at the end of every week, month and year (Android only, not available on TV)
 - Add or remove personal tags from the info screen
 - Themes
 - Control Pano Scrobbler from automation apps like Tasker on Android or command-line on desktop

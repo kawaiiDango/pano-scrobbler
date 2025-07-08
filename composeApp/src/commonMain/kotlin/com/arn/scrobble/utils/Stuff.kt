@@ -107,11 +107,6 @@ object Stuff {
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
     const val LISTENBRAINZ_API_ROOT = "https://api.listenbrainz.org/"
 
-    const val LASTFM_AUTH_CB_URL =
-        "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm"
-    const val LIBREFM_AUTH_CB_URL =
-        "https://libre.fm/api/auth/?api_key=$LIBREFM_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/librefm"
-
     const val MANUFACTURER_HUAWEI = "huawei"
     const val MANUFACTURER_XIAOMI = "xiaomi"
     const val MANUFACTURER_SAMSUNG = "samsung"
@@ -166,9 +161,6 @@ object Stuff {
     const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
     const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
     const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
-
-    const val MUSICBEE_PLUGIN_URL = "https://github.com/HenryPDT/mb_MediaControl"
-    const val FOOBAR_PLUGIN_URL = "https://github.com/ungive/foo_mediacontrol"
 
     val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",

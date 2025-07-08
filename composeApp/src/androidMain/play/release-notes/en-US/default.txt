@@ -1,9 +1,7 @@
 ## This is a beta release
 
-**You will need to uninstall the version earlier than 4.0 before installing this one. Remember to export your settings before you do so**
-
 Changes since 4.1
 
 - Fixed some UI bugs
-- Possibly fixed a segfault on Linux
+- Fixed a segfault on Linux
 - Translation updates by the translators on Crowdin

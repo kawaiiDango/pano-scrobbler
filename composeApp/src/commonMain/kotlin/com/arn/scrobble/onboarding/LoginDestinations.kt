@@ -5,11 +5,14 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.DEEPLINK_PROTOCOL_NAME
+import com.arn.scrobble.utils.Stuff.LAST_KEY
+import com.arn.scrobble.utils.Stuff.LIBREFM_KEY
 
 object LoginDestinations {
     fun route(accountType: AccountType): PanoRoute = when (accountType) {
         AccountType.LASTFM -> PanoRoute.WebView(
-            url = Stuff.LASTFM_AUTH_CB_URL,
+            url = "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm",
             userAccountTemp = UserAccountTemp(
                 AccountType.LASTFM,
                 "",
@@ -24,7 +27,7 @@ object LoginDestinations {
             )
             if (PlatformStuff.isTv) {
                 PanoRoute.WebView(
-                    url = Stuff.LIBREFM_AUTH_CB_URL,
+                    url = "https://libre.fm/api/auth/?api_key=$LIBREFM_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/librefm",
                     userAccountTemp = userAccountTemp
                 )
             } else {

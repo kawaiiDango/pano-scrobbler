@@ -1,7 +1,7 @@
 package com.arn.scrobble.pref
 
+import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -31,20 +31,12 @@ actual suspend fun AppListVM.load(
     onSetHasLoaded()
 }
 
-actual fun AppListVM.pluginUrl(appItem: AppItem): String? {
-    return when {
-        appItem.appId.startsWith("MusicBee") ||
-                appItem.label == "MusicBee" -> {
-            Stuff.MUSICBEE_PLUGIN_URL
-        }
-
-        appItem.appId == "foobar2000.exe" ||
-                appItem.label == "foobar2000" -> {
-            Stuff.FOOBAR_PLUGIN_URL
-        }
-
-        else -> {
-            null
-        }
-    }
-}
+actual val AppListVM.pluginsNeeded: List<Pair<String, String>>
+    get() = if (DesktopStuff.os == DesktopStuff.Os.Windows)
+        listOf(
+            "MusicBee" to "https://github.com/HenryPDT/mb_MediaControl",
+            "foobar2000" to "https://github.com/ungive/foo_mediacontrol",
+            "VLC" to "https://github.com/spmn/vlc-win10smtc",
+        )
+    else
+        emptyList()

@@ -1,7 +1,6 @@
 package com.arn.scrobble.navigation
 
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -9,6 +8,7 @@ import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.updates.UpdateAction
 import kotlinx.serialization.Serializable
 
 
@@ -30,7 +30,7 @@ sealed interface PanoDialog {
 
     @Serializable
     data class UpdateAvailable(
-        val githubReleases: GithubReleases,
+        val updateAction: UpdateAction,
     ) : PanoDialog, NestedScrollable
 
 

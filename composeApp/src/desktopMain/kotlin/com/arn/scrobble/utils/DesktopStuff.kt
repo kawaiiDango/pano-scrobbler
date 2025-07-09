@@ -1,7 +1,10 @@
 package com.arn.scrobble.utils
 
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.work.DesktopWorkManager
 import java.io.File
 
 object DesktopStuff {
@@ -14,6 +17,7 @@ object DesktopStuff {
     private const val MINIMIZED_ARG = "minimized"
 
     private const val DATA_DIR_ARG = "data-dir"
+    private const val NO_UPDATE_CHECK_ARG = "no-update-check"
 
     private val execDirPath =
         File(ProcessHandle.current().info().command().get()).parentFile.absolutePath
@@ -27,6 +31,9 @@ object DesktopStuff {
     }
 
     val logsDir by lazy { File(appDataRoot, "logs") }
+
+    val noUpdateCheck: Boolean
+        get() = cmdlineArgs.noUpdateCheck
 
     val iconPath by lazy {
         when (os) {
@@ -45,6 +52,7 @@ object DesktopStuff {
     fun parseCmdlineArgs(args: Array<String>): CmdlineArgs {
         var minimized = false
         var dataDir: String? = null
+        var noUpdate = false
         var automationCommand: String? = null
         var automationArg: String? = null
 
@@ -62,6 +70,10 @@ object DesktopStuff {
                     } else {
                         throw IllegalArgumentException("Missing value for argument: ${args[index - 1]}")
                     }
+                }
+
+                "--$NO_UPDATE_CHECK_ARG" -> {
+                    noUpdate = true
                 }
 
                 "--${Automation.ENABLE}",
@@ -88,6 +100,7 @@ object DesktopStuff {
         return CmdlineArgs(
             minimized = minimized,
             dataDir = dataDir,
+            noUpdateCheck = noUpdate,
             automationCommand = automationCommand,
             automationArg = automationArg
         ).also {
@@ -212,5 +225,11 @@ object DesktopStuff {
             Os.Linux -> "$libDir/lib$name.so"
             Os.Macos -> "$libDir/$name.dylib"
         }
+    }
+
+    fun prepareToExit() {
+        PanoNativeComponents.stopListeningMedia()
+        DesktopWorkManager.clearAll()
+        PanoDb.db.close()
     }
 }

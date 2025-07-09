@@ -24,6 +24,7 @@ import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.billing.BillingClientData
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.updates.UpdateAction
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -38,6 +39,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -92,7 +94,6 @@ object Stuff {
 
     const val RECENTS_REFRESH_INTERVAL = 30 * 1000L
     const val FRIENDS_REFRESH_INTERVAL = 60 * 1000L
-    const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
     const val CHARTS_WIDGET_REFRESH_INTERVAL = 60 * 60 * 1000L
@@ -160,6 +161,7 @@ object Stuff {
     const val CHANNEL_NOTI_DIGEST_WEEKLY = "noti_digest_weekly"
     const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
     const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
+    const val CHANNEL_NOTI_UPDATER = "noti_updater"
     const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
     val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
@@ -281,6 +283,8 @@ object Stuff {
     val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>(extraBufferCapacity = 1) }
 
     val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>(extraBufferCapacity = 1) }
+
+    val globalUpdateAction by lazy { MutableStateFlow<UpdateAction?>(null) }
 
     fun Number.format() = numberFormat.format(this)!!
 

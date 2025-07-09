@@ -633,6 +633,9 @@
     <string name="pref_translate_credits">Translation credits</string>
     <string name="pref_oss_credits">Open source credits</string>
     <string name="pref_check_updates">Check for updates</string>
+    <string name="no_updates">No updates available</string>
+    <string name="pref_notify_updates">Automatic updates</string>
+    <string name="update_downloaded">Update downloaded</string>
     <string name="pref_search_url_template">Search URL template</string>
     <string name="pref_search_url_template_desc"
         comment="Do not translate $query as the user has to enter it as it is"
@@ -641,6 +644,7 @@
     <string name="update_available" formatted="true"
         comment="%1= the version number"
         >Update available: %1$s</string>
+    <string name="downloading">Downloading</string>
     <string name="download"
         comment="Its a verb"
         >Download</string>

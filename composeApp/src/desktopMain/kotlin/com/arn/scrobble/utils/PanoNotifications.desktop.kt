@@ -5,6 +5,7 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
+import com.arn.scrobble.updates.UpdateAction
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ import pano_scrobbler.composeapp.generated.resources.new_player_prompt_desktop
 import pano_scrobbler.composeapp.generated.resources.top_albums
 import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
+import pano_scrobbler.composeapp.generated.resources.update_downloaded
 
 actual object PanoNotifications {
     private val _playingTrackTrayInfo =
@@ -91,6 +93,16 @@ actual object PanoNotifications {
 
         Logger.i { "notifyDigest: $timePeriod, $resultsList" }
     }
+
+    actual suspend fun notifyUpdater(
+        updateAction: UpdateAction
+    ) {
+        notify(
+            getString(Res.string.update_downloaded),
+            updateAction.version
+        )
+    }
+
 
     actual fun removeNotificationByTag(tag: String) {
         _playingTrackTrayInfo.value -= tag

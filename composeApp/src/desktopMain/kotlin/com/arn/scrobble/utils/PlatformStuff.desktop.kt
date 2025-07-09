@@ -55,9 +55,9 @@ actual object PlatformStuff {
 
     actual val isNonPlayBuild = true
 
-    actual val platformSubstring = DesktopStuff.os.name.lowercase()
-
-    actual val isTestLab = false
+    actual val noUpdateCheck
+        get() =
+            DesktopStuff.noUpdateCheck
 
     actual val filesDir by lazy {
         File(DesktopStuff.appDataRoot, "data")

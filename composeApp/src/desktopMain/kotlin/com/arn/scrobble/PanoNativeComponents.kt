@@ -174,4 +174,7 @@ object PanoNativeComponents {
     @JvmStatic
     external fun getSystemLocale(): String
 
+    @JvmStatic
+    external fun isFileLocked(path: String): Boolean
+
 }

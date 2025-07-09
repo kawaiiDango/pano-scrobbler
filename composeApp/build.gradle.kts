@@ -548,16 +548,22 @@ tasks.register<Exec>("packageLinuxAppImage") {
     val distDir = file("dist")
     val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
     val desktopFile = file("appimage-files/pano-scrobbler.desktop")
+    val relauncherFile = file("appimage-files/relaunch.sh")
 
     doFirst {
         // Create the AppDir structure. Copy all your distribution files.
         appDir.deleteRecursively()
         appDir.mkdirs()
-        File(appDir, "usr/bin").mkdirs()
+        val usrBin = File(appDir, "usr/bin")
+        usrBin.mkdirs()
 
 
         // Copy the distribution files to the AppDir.
-        executableDir.copyRecursively(File("$appDir/usr/bin/"))
+        executableDir.copyRecursively(usrBin)
+
+        // copy the relauncher script
+        relauncherFile.copyTo(File(usrBin, relauncherFile.name), overwrite = true)
+        relauncherFile.setExecutable(true)
 
         // copy the icon
         val iconDir = File(appDir, "usr/share/icons/hicolor/scalable/apps")

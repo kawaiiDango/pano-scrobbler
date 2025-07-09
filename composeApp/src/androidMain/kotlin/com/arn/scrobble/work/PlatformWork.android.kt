@@ -10,7 +10,7 @@ import androidx.work.workDataOf
 import com.arn.scrobble.utils.AndroidStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 
 fun mapWorkState(state: WorkInfo.State): CommonWorkState {
     return when (state) {
@@ -35,9 +35,9 @@ abstract class CommonWorkImpl(protected val name: String) : CommonWork {
     final override fun getProgress(): Flow<CommonWorkProgress> {
         return WorkManager.getInstance(AndroidStuff.application)
             .getWorkInfosForUniqueWorkFlow(name)
-            .mapLatest { it.firstOrNull() }
+            .map { it.firstOrNull() }
             .filterNotNull()
-            .mapLatest { workInfo ->
+            .map { workInfo ->
                 if (workInfo.state.isFinished) {
                     dataToProgress(workInfo.outputData, workInfo.state)
                 } else {

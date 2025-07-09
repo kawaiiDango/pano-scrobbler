@@ -37,9 +37,7 @@ expect object PlatformStuff {
 
     val isNonPlayBuild: Boolean
 
-    val platformSubstring: String
-
-    val isTestLab: Boolean
+    val noUpdateCheck: Boolean
 
     fun String.toHtmlAnnotatedString(): AnnotatedString
 

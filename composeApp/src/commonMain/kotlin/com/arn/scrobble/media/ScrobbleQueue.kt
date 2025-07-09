@@ -90,13 +90,13 @@ class ScrobbleQueue(
             ) {
                 val npResults =
                     withTimeout(submitAtTime - PlatformStuff.monotonicTimeMs() - 5000) {
-                        ScrobbleEverywhere.nowPlaying(scrobbleData)
+                        ScrobbleEverywhere.nowPlaying(sd)
                     }
 
                 if (npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
                         npResults,
-                        scrobbleData,
+                        sd,
                         hash
                     )
                 }

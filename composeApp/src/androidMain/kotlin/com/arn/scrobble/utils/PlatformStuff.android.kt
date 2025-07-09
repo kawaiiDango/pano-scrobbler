@@ -108,14 +108,7 @@ actual object PlatformStuff {
 
     actual val isNonPlayBuild = ExtrasConsts.isNonPlayBuild
 
-    actual val platformSubstring = "android"
-
-    actual val isTestLab by lazy {
-        Settings.System.getString(
-            application.contentResolver,
-            "firebase.test.lab"
-        ) == "true"
-    }
+    actual val noUpdateCheck = !isNonPlayBuild
 
     actual fun String.toHtmlAnnotatedString() = AnnotatedString.fromHtml(this)
 

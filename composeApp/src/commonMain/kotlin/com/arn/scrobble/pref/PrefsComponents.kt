@@ -143,6 +143,7 @@ fun TextPref(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     summary: String? = null,
+    enabled: Boolean = true,
     locked: Boolean = false,
 ) {
     Column(
@@ -150,9 +151,9 @@ fun TextPref(
             .defaultMinSize(minHeight = 56.dp)
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick, enabled = enabled)
             .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding())
-            .alpha(if (locked) 0.5f else 1f),
+            .alpha(if (locked || !enabled) 0.5f else 1f),
         verticalArrangement = Arrangement.Center
     ) {
         Text(

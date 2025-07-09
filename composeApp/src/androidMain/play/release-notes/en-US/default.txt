@@ -2,6 +2,8 @@
 
 Changes since 4.1
 
+- Implemented auto downloading of updates from Github releases for desktop
+- Fixed scrobble edits not being applied
 - Fixed some UI bugs
 - Fixed a segfault on Linux
 - Translation updates by the translators on Crowdin

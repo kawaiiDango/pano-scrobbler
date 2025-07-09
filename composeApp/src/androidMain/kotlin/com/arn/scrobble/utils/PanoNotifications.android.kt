@@ -1,11 +1,15 @@
 package com.arn.scrobble.utils
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import android.text.Html
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.media.app.NotificationCompat.MediaStyle
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
@@ -17,6 +21,7 @@ import com.arn.scrobble.media.PlayingTrackEventReceiver
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.updates.UpdateAction
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -30,6 +35,7 @@ import pano_scrobbler.composeapp.generated.resources.graph_yearly
 import pano_scrobbler.composeapp.generated.resources.top_albums
 import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
+import pano_scrobbler.composeapp.generated.resources.update_available
 
 actual object PanoNotifications {
     private val context = AndroidStuff.application
@@ -409,6 +415,49 @@ actual object PanoNotifications {
             )
 
         notificationManager.notify(channelId, timePeriod.lastfmPeriod.ordinal, nb.build())
+    }
+
+    actual suspend fun notifyUpdater(updateAction: UpdateAction) {
+        if (!PlatformStuff.isNonPlayBuild) return
+
+        // create channel if not exists
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nm = ContextCompat.getSystemService(
+                AndroidStuff.application,
+                NotificationManager::class.java
+            )!!
+
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    Stuff.CHANNEL_NOTI_UPDATER,
+                    getString(Res.string.update_available, ""),
+                    NotificationManager.IMPORTANCE_LOW
+                )
+            )
+        }
+
+        if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_UPDATER))
+            return
+
+        val contentIntent = Intent(Intent.ACTION_VIEW).apply {
+            data = updateAction.urlOrFilePath.toUri()
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val contentPi = PendingIntent.getActivity(
+            context, 32, contentIntent,
+            AndroidStuff.updateCurrentOrImmutable
+        )
+
+        val nb = buildNotification()
+            .setSmallIcon(R.drawable.vd_noti)
+            .setContentTitle(getString(Res.string.update_available, updateAction.version))
+            .setChannelId(Stuff.CHANNEL_NOTI_UPDATER)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(contentPi)
+            .setAutoCancel(true)
+
+        notificationManager.notify(Stuff.CHANNEL_NOTI_UPDATER, 0, nb.build())
     }
 
     actual fun removeNotificationByTag(tag: String) {

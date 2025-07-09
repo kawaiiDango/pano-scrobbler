@@ -50,6 +50,7 @@ import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.SerializableWindowState
+import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
@@ -57,15 +58,15 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.toImageBitmap
 import com.arn.scrobble.utils.setAppLocale
-import com.arn.scrobble.work.DesktopWorkManager
+import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -79,6 +80,7 @@ import pano_scrobbler.composeapp.generated.resources.ic_launcher_with_bg
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.quit
 import pano_scrobbler.composeapp.generated.resources.unlove
+import pano_scrobbler.composeapp.generated.resources.update_downloaded
 import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
@@ -207,22 +209,23 @@ fun main(args: Array<String>) {
         )
 
         fun onExit() {
-            PanoNativeComponents.stopListeningMedia()
-            DesktopWorkManager.clearAll()
-            PanoDb.db.close()
+            DesktopStuff.prepareToExit()
             exitApplication()
             exitProcess(0)
         }
 
         LaunchedEffect(trayIconTheme) {
-            PanoNotifications.playingTrackTrayInfo.mapLatest {
+            combine(
+                PanoNotifications.playingTrackTrayInfo,
+                Stuff.globalUpdateAction
+            ) { playingTrackInfo, updateAction ->
                 val trayIconPainter = when {
-                    it.isEmpty() -> trayIconNotPlaying
-                    it.values.any { it is PlayingTrackNotifyEvent.Error } -> trayIconError
+                    playingTrackInfo.isEmpty() -> trayIconNotPlaying
+                    playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> trayIconError
                     else -> trayIconPlaying
                 }
 
-                val tooltip = it.entries.firstOrNull()
+                val tooltip = playingTrackInfo.entries.firstOrNull()
                     ?.let { (appId, it) ->
                         it.scrobbleData.track + "\n" +
                                 it.scrobbleData.artist + "\n" +
@@ -235,7 +238,7 @@ fun main(args: Array<String>) {
 
                 // tracks
 
-                it.forEach { (appId, playingTrackState) ->
+                playingTrackInfo.forEach { (appId, playingTrackState) ->
                     when (playingTrackState) {
                         is PlayingTrackNotifyEvent.TrackScrobbling -> {
                             val scrobbleData = playingTrackState.scrobbleData
@@ -293,9 +296,16 @@ fun main(args: Array<String>) {
                     trayItems += PanoTrayUtils.ItemId.Separator.name to ""
                 }
 
+                updateAction?.let {
+                    trayItems += PanoTrayUtils.ItemId.Update.name to "🔄️ " + getString(
+                        Res.string.update_downloaded
+                    ) + ": " + it.version
+                }
+
                 // always show these
 
                 trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
+
                 trayItems += PanoTrayUtils.ItemId.Exit.name to getString(Res.string.quit)
 
                 Triple(tooltip, trayIconPainter, trayItems)
@@ -456,6 +466,14 @@ fun main(args: Array<String>) {
             }
         }
 
+        LaunchedEffect(Unit) {
+            if (Stuff.mainPrefsInitialValue.autoUpdates) {
+                // this app runs at startup, so wait for an internet connection
+                delay(1.minutes)
+                UpdaterWork.checkAndSchedule(true)
+            }
+        }
+
         if (windowCreated) {
             Window(
                 onCloseRequest = { windowShown = false },
@@ -503,6 +521,12 @@ private suspend fun trayMenuClickListener(
 
             PanoTrayUtils.ItemId.Open -> {
                 onOpenIfNeeded()
+            }
+
+            PanoTrayUtils.ItemId.Update -> {
+                Stuff.globalUpdateAction.value?.let {
+                    runUpdateAction(it)
+                }
             }
 
             PanoTrayUtils.ItemId.Error -> {

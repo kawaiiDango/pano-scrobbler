@@ -9,10 +9,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import kotlin.coroutines.cancellation.CancellationException
 
 data class WorkState(
     val id: String,
@@ -66,6 +67,10 @@ object DesktopWorkManager {
                 }
                 return
             } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
+
                 if (attempt >= retryPolicy.maxAttempts - 1) {
                     updateState(id, WorkState(id, CommonWorkerResult.Failure(e.redactedMessage)))
                     return
@@ -81,7 +86,7 @@ object DesktopWorkManager {
     }
 
     fun getProgress(id: String): Flow<CommonWorkProgress?> {
-        return _workStateFlow.mapLatest {
+        return _workStateFlow.map {
             it[id]?.progress
         }
     }

@@ -49,6 +49,7 @@ Var LaunchApp
 Var VersionCodePrev
 Var UninstallRemoveUserData
 Var IsExtractMode
+Var IsMinimalInteractionMode
 
 !macro KILL_IF_RUNNING
   ; Kill running app process before upgrade, up to 3 attempts
@@ -106,6 +107,19 @@ Function .onInit
   
   !insertmacro MULTIUSER_INIT
   !insertmacro GET_PREVIOUS_INSTALL_PROPS
+
+  StrCpy $LaunchApp 1
+  StrCpy $StartWithWindows 1
+
+  ; Check for minimal interaction mode
+
+  ${GetFileName} $EXEPATH $R0
+  ${If} $R0 == "pano-scrobbler-update.exe"
+    StrCpy $IsMinimalInteractionMode 1
+    SetAutoClose true
+  ${Else}
+    StrCpy $IsMinimalInteractionMode 0
+  ${EndIf}
 FunctionEnd
 
 Function un.onInit
@@ -116,7 +130,9 @@ Function un.onInit
 FunctionEnd
 
 Function SkipIfUpgrade
-  ${If} $VersionCodePrev != ""
+  ${If} $IsMinimalInteractionMode == 1
+    Abort ; skip this page in minimal interaction mode
+  ${ElseIf} $VersionCodePrev != ""
   ${AndIf} $IsExtractMode != 1
     Abort ; skip this page if upgrading
   ${EndIf}
@@ -126,6 +142,10 @@ FunctionEnd
 ; Page: Mode Select
 
 Function PageModeSelect
+  ${If} $IsMinimalInteractionMode == 1
+    Abort ; skip this page in minimal interaction mode
+  ${EndIf}
+
   ; Parse command line for /InstallMode=
   ${GetParameters} $R0
   ${GetOptions} $R0 "/InstallMode=" $R1
@@ -235,7 +255,9 @@ FunctionEnd
 ; Page: Install Options (only for Install mode)
 
 Function PageInstallOptions
-  ${If} $IsExtractMode != 1
+  ${If} $IsMinimalInteractionMode == 1
+    Abort ; skip this page in minimal interaction mode
+  ${ElseIf} $IsExtractMode != 1
     nsDialogs::Create 1018
     Pop $0
 
@@ -243,14 +265,12 @@ Function PageInstallOptions
 
     ${NSD_CreateCheckbox} 0 0 100% 12u "Start ${APP_NAME} with Windows"
     Pop $1
-    ${NSD_SetState} $1 1
-    StrCpy $StartWithWindows 1
+    ${NSD_SetState} $1 $StartWithWindows
     ${NSD_OnClick} $1 InstallOpt_ToggleStartWithWindows
 
     ${NSD_CreateCheckbox} 0 32u 100% 12u "Launch ${APP_NAME} after installation"
     Pop $3
-    ${NSD_SetState} $3 1
-    StrCpy $LaunchApp 1
+    ${NSD_SetState} $3 $LaunchApp
     ${NSD_OnClick} $3 InstallOpt_ToggleLaunchApp
 
     nsDialogs::Show

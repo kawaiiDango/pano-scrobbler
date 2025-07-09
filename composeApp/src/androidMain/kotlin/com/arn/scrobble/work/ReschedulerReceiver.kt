@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.arn.scrobble.widget.ChartsWidgetUpdaterWorker
 
@@ -31,6 +33,10 @@ class ReschedulerReceiver : BroadcastReceiver() {
                 ChartsWidgetUpdaterWorker.checkAndSchedule(context, false)
 
             DigestWork.checkAndSchedule()
+
+            if (PlatformStuff.isNonPlayBuild && Stuff.mainPrefsInitialValue.autoUpdates) {
+                UpdaterWork.checkAndSchedule(true)
+            }
         }
     }
 }

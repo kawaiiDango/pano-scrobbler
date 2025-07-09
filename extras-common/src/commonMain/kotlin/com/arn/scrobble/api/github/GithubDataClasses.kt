@@ -23,5 +23,6 @@ data class GithubReleases(
 @Serializable
 data class GithubReleaseAsset(
     val name: String,
+    val digest: String,
     val browser_download_url: String,
 )

@@ -95,7 +95,7 @@ private fun PanoDialogs(
 
             is PanoDialog.UpdateAvailable -> {
                 UpdateAvailableDialog(
-                    githubReleases = dialogArgs.githubReleases,
+                    updateAction = dialogArgs.updateAction,
                     modifier = modifier
                 )
             }

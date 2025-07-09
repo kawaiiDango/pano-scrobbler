@@ -86,23 +86,27 @@ interface RegexEditsDao {
                         scrobbleData.album.orEmpty() to regexEdit.search.searchAlbum,
                         scrobbleData.artist to regexEdit.search.searchArtist,
                         scrobbleData.albumArtist.orEmpty() to regexEdit.search.searchAlbumArtist
-                    ).map { (fieldData, regexStr) ->
-                        val regexOptions = mutableSetOf<RegexOption>()
-                        if (!regexEdit.caseSensitive)
-                            regexOptions += RegexOption.IGNORE_CASE
+                    )
+                        .filterNot { (_, regexStr) ->
+                            regexStr.isEmpty()
+                        }
+                        .map { (fieldData, regexStr) ->
+                            val regexOptions = mutableSetOf<RegexOption>()
+                            if (!regexEdit.caseSensitive)
+                                regexOptions += RegexOption.IGNORE_CASE
 
-                        val regex = runCatching { regexStr.toRegex(regexOptions) }
-                            .onFailure {
-                                Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
-                            }
-                            .getOrNull()
+                            val regex = runCatching { regexStr.toRegex(regexOptions) }
+                                .onFailure {
+                                    Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
+                                }
+                                .getOrNull()
 
-                        fieldData to regex?.find(fieldData)
-                    }
+                            fieldData to regex?.find(fieldData)
+                        }
 
-                    val allFieldDataMatched = scrobbleDataToMatches.count { (_, match) ->
+                    val allFieldDataMatched = scrobbleDataToMatches.all { (_, match) ->
                         match != null
-                    } == scrobbleDataToMatches.size
+                    }
 
                     if (allFieldDataMatched) {
                         when (regexEdit.mode()) {

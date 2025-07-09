@@ -34,6 +34,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -89,6 +90,7 @@ import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.LocalInnerPadding
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -96,11 +98,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.back
+import pano_scrobbler.composeapp.generated.resources.download
+import pano_scrobbler.composeapp.generated.resources.reload
+import pano_scrobbler.composeapp.generated.resources.update_available
+import pano_scrobbler.composeapp.generated.resources.update_downloaded
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -179,9 +187,31 @@ fun PanoAppContent(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.updateAvailability.collectLatest {
-            currentDialogArgs = PanoDialog.UpdateAvailable(it)
-        }
+        Stuff.globalUpdateAction
+            .filterNotNull()
+            .collectLatest {
+                val message = if (PlatformStuff.isDesktop) {
+                    getString(Res.string.update_downloaded) +
+                            ": ${it.version}"
+                } else {
+                    getString(Res.string.update_available, it.version)
+                }
+
+                val actionLabel = if (PlatformStuff.isDesktop) {
+                    getString(Res.string.reload)
+                } else {
+                    getString(Res.string.download)
+                }
+
+                val result = snackbarHostState.showSnackbar(
+                    message = message,
+                    actionLabel = actionLabel,
+                )
+
+                if (result == SnackbarResult.ActionPerformed) {
+                    runUpdateAction(it)
+                }
+            }
     }
 
     // show changelog if needed
@@ -303,11 +333,11 @@ fun PanoAppContent(
                             SnackbarHost(
                                 hostState = snackbarHostState,
                             ) { snackbarData ->
-                                val visuals = snackbarData.visuals as PanoSnackbarVisuals
+                                val visuals = snackbarData.visuals as? PanoSnackbarVisuals
                                 Snackbar(
                                     snackbarData = snackbarData,
-                                    containerColor = if (visuals.isError) MaterialTheme.colorScheme.errorContainer else SnackbarDefaults.color,
-                                    contentColor = if (visuals.isError) MaterialTheme.colorScheme.onErrorContainer else SnackbarDefaults.contentColor,
+                                    containerColor = if (visuals?.isError == true) MaterialTheme.colorScheme.errorContainer else SnackbarDefaults.color,
+                                    contentColor = if (visuals?.isError == true) MaterialTheme.colorScheme.onErrorContainer else SnackbarDefaults.contentColor,
                                 )
                             }
                         },

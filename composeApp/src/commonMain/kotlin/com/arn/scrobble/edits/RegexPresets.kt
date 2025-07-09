@@ -21,9 +21,9 @@ import pano_scrobbler.composeapp.generated.resources.preset_title_parse_with_fal
 enum class RegexPreset {
     parse_title,
     parse_title_with_fallback,
-    remastered_track,
-    explicit_track,
-    album_ver_track,
+    remastered,
+    explicit,
+    album_ver,
     album_artist_as_artist,
 }
 
@@ -39,7 +39,8 @@ object RegexPresets {
     val defaultPresets = listOf(
         RegexPreset.parse_title,
         RegexPreset.parse_title_with_fallback,
-        RegexPreset.remastered_track,
+        RegexPreset.remastered,
+        RegexPreset.explicit,
         RegexPreset.album_artist_as_artist,
     )
     private val androidOnlyPresets = listOf(
@@ -90,7 +91,7 @@ object RegexPresets {
         regexPreset: RegexPreset,
         scrobbleData: ScrobbleData,
     ): ScrobbleData? {
-        var regexEdit: RegexEdit? = null
+        val regexEdits = mutableListOf<RegexEdit>()
         var newScrobbleData: ScrobbleData? = null
 
         when (regexPreset) {
@@ -144,58 +145,12 @@ object RegexPresets {
                 }
             }
 
-            RegexPreset.remastered_track -> {
+            RegexPreset.remastered -> {
                 val pattern =
-                    "^(.*) (- |\\(|\\[|\\/)(.+ )?album (.*?version|edit(ed)?).*?[\\)\\]]?\$"
+                    "^(.+) [(\\[\\/\\-][^()\\[\\]]*?re-?mastere?d?[^)\\[\\]]*?([)\\]\\-\\/]|\$)"
                 val replacement = "$1"
 
-                regexEdit = RegexEdit(
-                    name = regexPreset.name,
-                    search = RegexEdit.SearchPatterns(
-                        searchTrack = pattern,
-                        searchAlbum = pattern,
-                        searchArtist = "",
-                        searchAlbumArtist = "",
-                    ),
-                    replacement = RegexEdit.ReplacementPatterns(
-                        replacementTrack = replacement,
-                        replacementAlbum = replacement,
-                        replacementArtist = "",
-                        replacementAlbumArtist = "",
-                    ),
-                    appIds = emptySet(),
-                )
-            }
-
-            RegexPreset.explicit_track -> {
-                val pattern =
-                    "^(.*) (- |\\(|\\[|\\/)(explicit|clean)( .*?version| edit(ed)?)?[\\)\\]]?\$"
-                val replacement = "$1"
-
-                regexEdit = RegexEdit(
-                    name = regexPreset.name,
-                    search = RegexEdit.SearchPatterns(
-                        searchTrack = pattern,
-                        searchAlbum = pattern,
-                        searchArtist = "",
-                        searchAlbumArtist = "",
-                    ),
-                    replacement = RegexEdit.ReplacementPatterns(
-                        replacementTrack = replacement,
-                        replacementAlbum = replacement,
-                        replacementArtist = "",
-                        replacementAlbumArtist = "",
-                    ),
-                    appIds = emptySet(),
-                )
-            }
-
-            RegexPreset.album_ver_track -> {
-                val pattern =
-                    "^(.*) (- |\\(|\\[|\\/)(.+ )?album (.*?version|edit(ed)?).*?[\\)\\]]?\$"
-                val replacement = "$1"
-
-                regexEdit = RegexEdit(
+                regexEdits += RegexEdit(
                     name = regexPreset.name,
                     search = RegexEdit.SearchPatterns(
                         searchTrack = pattern,
@@ -209,13 +164,90 @@ object RegexPresets {
                         replacementArtist = "",
                         replacementAlbumArtist = "",
                     ),
-                    appIds = emptySet(),
                 )
+
+                regexEdits += RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = "",
+                        searchAlbum = pattern,
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = "",
+                        replacementAlbum = replacement,
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                )
+            }
+
+            RegexPreset.explicit -> {
+                val pattern =
+                    "^(.*) (- |\\(|\\[|\\/)(explicit|clean)( .*?version| edit(ed)?)?[\\)\\]]?\$"
+                val replacement = "$1"
+
+                regexEdits += RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = pattern,
+                        searchAlbum = "",
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = replacement,
+                        replacementAlbum = "",
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                )
+
+                regexEdits += RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = "",
+                        searchAlbum = pattern,
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = "",
+                        replacementAlbum = replacement,
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                )
+
+            }
+
+            RegexPreset.album_ver -> {
+                val pattern =
+                    "^(.*) (- |\\(|\\[|\\/)(.+ )?album (.*?version|edit(ed)?).*?[\\)\\]]?\$"
+                val replacement = "$1"
+
+                regexEdits += RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = pattern,
+                        searchAlbum = "",
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = replacement,
+                        replacementAlbum = "",
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                )
+
             }
         }
 
-        if (regexEdit != null) {
-            newScrobbleData = performRegexReplace(scrobbleData, listOf(regexEdit)).scrobbleData
+        if (regexEdits.isNotEmpty()) {
+            newScrobbleData = performRegexReplace(scrobbleData, regexEdits).scrobbleData
         }
 
         return newScrobbleData
@@ -223,9 +255,9 @@ object RegexPresets {
 
     @Composable
     fun getString(regexPreset: RegexPreset) = when (regexPreset) {
-        RegexPreset.remastered_track -> stringResource(Res.string.preset_remastered)
-        RegexPreset.explicit_track -> stringResource(Res.string.preset_explicit)
-        RegexPreset.album_ver_track -> stringResource(Res.string.preset_album_version)
+        RegexPreset.remastered -> stringResource(Res.string.preset_remastered)
+        RegexPreset.explicit -> stringResource(Res.string.preset_explicit)
+        RegexPreset.album_ver -> stringResource(Res.string.preset_album_version)
         RegexPreset.album_artist_as_artist -> stringResource(Res.string.preset_album_artist_as_artist)
         RegexPreset.parse_title -> stringResource(Res.string.preset_title_parse)
         RegexPreset.parse_title_with_fallback -> stringResource(Res.string.preset_title_parse_with_fallback)

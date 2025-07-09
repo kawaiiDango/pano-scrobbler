@@ -39,6 +39,7 @@ object PanoTrayUtils {
         Copy,
         Error,
         Open,
+        Update,
         Exit;
 
         fun withSuffix(suffix: String): String {

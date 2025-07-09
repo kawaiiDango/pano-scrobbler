@@ -4,22 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.DrawerData
-import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.github.GithubReleases
-import com.arn.scrobble.api.github.Github
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.LastFm
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
-import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.lastfm.ScrobbleData
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,7 +23,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -55,9 +49,6 @@ class MainViewModel : ViewModel() {
 
     private val _editData = MutableSharedFlow<Pair<Track, ScrobbleData>>()
     val editDataFlow = _editData.asSharedFlow()
-
-    private val _updateAvailablity = MutableSharedFlow<GithubReleases>(extraBufferCapacity = 1)
-    val updateAvailability = _updateAvailablity.asSharedFlow()
 
     private val _tabIdx =
         MutableSharedFlow<Pair<String, Int>>(replay = 1, extraBufferCapacity = 1)
@@ -159,8 +150,6 @@ class MainViewModel : ViewModel() {
         repository.startDataSourceConnections()
 
         queryPurchasesAsync()
-
-        checkForUpdatesIfNeeded()
     }
 
     fun setTabIdx(backStackEntryId: String, tabIdx: Int) {
@@ -221,31 +210,4 @@ class MainViewModel : ViewModel() {
         _pullToRefreshTriggered
             .filter { it == id }
             .map { }
-
-    private fun checkForUpdatesIfNeeded() {
-        if (!PlatformStuff.isNonPlayBuild)
-            return
-
-        viewModelScope.launch(Dispatchers.IO) {
-            delay(3000)
-            val checkForUpdates = mainPrefs.data.map { it.checkForUpdates }.first()
-
-            if (!checkForUpdates) {
-                return@launch
-            }
-
-            val lastUpdateCheckTime = mainPrefs.data.map { it.lastUpdateCheckTime }.first()
-            Github.checkForUpdates(
-                client = Requesters.genericKtorClient,
-                json = Stuff.myJson,
-                currentVersionCode = BuildKonfig.VER_CODE,
-                lastUpdateCheckTime = lastUpdateCheckTime ?: 0,
-                setLastUpdateCheckTime = { time ->
-                    mainPrefs.updateData { it.copy(lastUpdateCheckTime = time) }
-                }
-            )?.let {
-                _updateAvailablity.emit(it)
-            }
-        }
-    }
 }

@@ -41,7 +41,10 @@ import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.getCurrentLocale
 import com.arn.scrobble.utils.setAppLocale
+import com.arn.scrobble.work.CommonWorkState
+import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.pluralStringResource
@@ -83,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_lists
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
+import pano_scrobbler.composeapp.generated.resources.pref_notify_updates
 import pano_scrobbler.composeapp.generated.resources.pref_now_playing
 import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
@@ -154,7 +158,7 @@ fun PrefsScreen(
     val notiPersistent by
     remember { derivedStateOf { mainPrefsData.notiPersistent } }
     val checkForUpdates by
-    remember { derivedStateOf { mainPrefsData.checkForUpdates } }
+    remember { derivedStateOf { mainPrefsData.autoUpdates } }
     val crashReporterEnabled by
     remember { derivedStateOf { mainPrefsData.crashReporterEnabled } }
     val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
@@ -164,6 +168,9 @@ fun PrefsScreen(
             mainPrefsData.scrobbleAccounts.associate { it.type to it.user.name }
         }
     }
+    val updateProgress by UpdaterWork.getProgress()
+        .filter { it.state == CommonWorkState.RUNNING }
+        .collectAsStateWithLifecycle(null)
 
     val numSimpleEdits by PanoDb.db.getSimpleEditsDao().count().collectAsStateWithLifecycle(0)
     val numRegexEdits by PanoDb.db.getRegexEditsDao().count().collectAsStateWithLifecycle(0)
@@ -178,7 +185,6 @@ fun PrefsScreen(
             isAddedToStartup = isAddedToStartup()
         }
     }
-
 
     PanoLazyColumn(modifier = modifier) {
         item(MainPrefs::scrobblerEnabled.name) {
@@ -553,12 +559,30 @@ fun PrefsScreen(
             )
         }
 
-        if (PlatformStuff.isNonPlayBuild) {
-            item(MainPrefs::checkForUpdates.name) {
+        if (!PlatformStuff.noUpdateCheck) {
+            item(MainPrefs::autoUpdates.name) {
                 SwitchPref(
-                    text = stringResource(Res.string.pref_check_updates),
+                    text = stringResource(Res.string.pref_notify_updates),
                     value = checkForUpdates,
-                    copyToSave = { copy(checkForUpdates = it) }
+                    copyToSave = {
+                        if (!it)
+                            UpdaterWork.cancel()
+                        else
+                            UpdaterWork.checkAndSchedule(true)
+
+                        copy(autoUpdates = it)
+                    }
+                )
+            }
+
+            item("check_for_updates") {
+                TextPref(
+                    text = updateProgress?.message ?: stringResource(Res.string.pref_check_updates),
+                    enabled = updateProgress == null,
+                    onClick = {
+                        if (updateProgress == null)
+                            UpdaterWork.checkAndSchedule(true)
+                    }
                 )
             }
         }

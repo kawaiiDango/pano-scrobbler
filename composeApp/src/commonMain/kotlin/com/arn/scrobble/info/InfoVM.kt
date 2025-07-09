@@ -290,9 +290,6 @@ class InfoVM : ViewModel() {
 
             _userTags.value += (type to tags)
 
-            if (PlatformStuff.isTestLab)
-                return@launch
-
             PlatformStuff.mainPrefs.updateData {
                 it.copy(
                     tagHistory = (it.tagHistory + newTagsList).distinct()

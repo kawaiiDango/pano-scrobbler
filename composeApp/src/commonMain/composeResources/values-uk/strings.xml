@@ -157,6 +157,8 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Налаштування для цього елемента</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s виявлено</string>
     <string name="new_player_prompt">Чи скроблювати з цього додатку?</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Неможливо доступити %1$s</string>
+    <string name="file_exists_confirm_overwrite">Файл існує. Натисніть знову щоб переписати.</string>
     <string name="no_scrobbles">Тут ще немає пісень…</string>
     <string name="no_friends">Ви ні на кого не підписані…</string>
     <string name="channel_err" comment="Its a noun">Помилки скроблінгу</string>
@@ -173,7 +175,7 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Скасувати вподобання</string>
     <string name="pending_scrobbles">Очікуючі Скробли</string>
     <string name="following" comment="accounts you are following on lastfm">Підписки</string>
-    <string name="followers" comment="your lastfm followers">підписники</string>
+    <string name="followers" comment="your lastfm followers">Підписники</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скроблів, з %2$s</string>
     <string name="allow_background">Дозволити скробблінг у фоновому режимі</string>
     <string name="grant_notification_access">Надайте доступ до сповіщень</string>

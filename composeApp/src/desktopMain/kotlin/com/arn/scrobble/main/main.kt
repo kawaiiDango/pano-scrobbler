@@ -229,7 +229,7 @@ fun main(args: Array<String>) {
                     ?.let { (appId, it) ->
                         it.scrobbleData.track + "\n" +
                                 it.scrobbleData.artist + "\n" +
-                                (appIdToNames[appId] ?: appId)
+                                (appIdToNames[appId]?.ifEmpty { null } ?: appId)
                     }
                     ?: BuildKonfig.APP_NAME
 

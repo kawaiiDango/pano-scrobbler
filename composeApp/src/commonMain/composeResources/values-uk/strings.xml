@@ -95,7 +95,7 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не вдалося проаналізувати дані</string>
     <string name="network_error">Помилка мережі</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Скробблів ігнорується</string>
-    <string name="scrobble_ignored_save_edit">Lastfm проігнорував редагування ймовірно тому, що скробл занадто старий. Ви хочете зберегти цю зміну для подальшого скроблінгу? </string>
+    <string name="scrobble_ignored_save_edit">Lastfm проігнорував редагування ймовірно тому, що скробл занадто старий. Ви хочете зберегти цю зміну для подальшого скроблінгу?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Обов\'язкові поля відсутні</string>
     <string name="artist">Виконавець</string>
     <string name="artists">Виконавці</string>
@@ -133,6 +133,7 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share">Поширити</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Умовні позначення</string>
+    <string name="list" comment="Single column list view">Список</string>
     <string name="more_info">Детальніше</string>
     <string name="more" comment="More options menu in short">Більше</string>
     <string name="learn" comment="(Learn java regex syntax)">Детальніше</string>
@@ -283,6 +284,7 @@
     <string name="skip" comment="skip to next track">Пропустити</string>
     <string name="mute" comment="mute the sound">Вимкнути звук</string>
     <string name="block" comment="block the track from scrobbling">Заблокувати</string>
+    <string name="copy" comment="copy to clipboard">Копіювати</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Приховані теги</string>
     <string name="pin" comment="pin a friend to the top">Закріпити</string>
     <string name="unpin" comment="unpin a friend to the top">Відкріпити</string>
@@ -403,6 +405,9 @@
     <string name="password">Пароль</string>
     <string name="open_existing" comment="Append to an existing file">Додати до існуючого</string>
     <string name="create" comment="Create a new file">Створити</string>
+    <string name="cancel">Скасувати</string>
+    <string name="back">Назад</string>
+    <string name="done">Готово</string>
     <!--  pro  -->
     <string name="get_pro">Підтримати проєкт</string>
     <string name="help">Допомога</string>

@@ -13,16 +13,9 @@
 
 <img src="screenshots/scrobbles-desktop.jpg" alt="scrobbles screen" width="250"/> <img src="screenshots/charts-desktop.jpg" alt="charts screen" width="250"/>
 
-<img src="screenshots/friends-mobile.jpg" alt="friends screen" width="150"/> <img src="screenshots/details-mobile.jpg" alt="details screen" width="150"/> <img src="screenshots/random-mobile.jpg" alt="random screen" width="150"/>
+<img src="screenshots/friends-mobile.jpg" alt="friends screen" width="150"/> <img src="screenshots/details-mobile.jpg" alt="details screen" width="150"/>
 
 ### Downloads
-
-**Android (phones, tablets, TVs and Chromebooks):**
-
-[![github][github]][github-link] [![fdroid][fdroid]][fdroid-link] [![play-store][play-store]][play-store-link]
-
-The non-Play variant has the permission to optionally display a persistent notification on Android 14+.
-This may help prevent the system from killing the app in the background on devices from certain manufacturers.
 
 **Windows:**
 
@@ -31,6 +24,13 @@ This may help prevent the system from killing the app in the background on devic
 **Linux:**
 
 [![github][github]][github-link]
+
+**Android (phones, tablets, TVs and Chromebooks):**
+
+[![github][github]][github-link] [![fdroid][fdroid]][fdroid-link] [![play-store][play-store]][play-store-link]
+
+The non-Play variant has the permission to optionally display a persistent notification on Android 14+.
+This may help prevent the system from killing the app in the background on devices from certain manufacturers.
 
 
 Since v4.0, the builds on Github Releases or the F-Droid repo do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.

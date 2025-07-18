@@ -6,6 +6,12 @@
         <item quantity="many">%1$s scrobbli</item>
         <item quantity="other">%1$s scrobbla</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s jeden</item>
+        <item quantity="few">%1$s kilka</item>
+        <item quantity="many">%1$s wiele</item>
+        <item quantity="other">%1$s inne</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s słuchacz</item>
         <item quantity="few">%1$s słuchaczów</item>
@@ -139,6 +145,8 @@
     <string name="share_sig">(przez Pano Scrobbler)</string>
     <string name="share">Udostępnij</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
+    <string name="grid" comment="Grid view">Siatka</string>
+    <string name="list" comment="Single column list view">Lista</string>
     <string name="more_info">Więcej informacji</string>
     <string name="more" comment="More options menu in short">Więcej</string>
     <string name="learn" comment="(Learn java regex syntax)">Naucz się</string>
@@ -162,6 +170,7 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcje dla tego elementu</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Wykryto %1$s</string>
     <string name="new_player_prompt">Scrobblować z tej aplikacji?</string>
+    <string name="file_exists_confirm_overwrite">Plik istnieje. Naciśnij ponownie, by go nadpisać.</string>
     <string name="no_scrobbles">Jeszcze nie ma tutaj utworów…</string>
     <string name="no_friends">Nikogo jeszcze nie obserwujesz…</string>
     <string name="channel_err" comment="Its a noun">Błąd scrobblowania</string>
@@ -194,6 +203,7 @@
     <string name="rate_msg">Podoba Ci się ta aplikacja?</string>
     <string name="time_just_now">teraz</string>
     <string name="no_mail_apps">Klient e-mail nie jest zainstalowany</string>
+    <string name="add">Dodaj nowy przedmiot</string>
     <string name="loved" comment="Its a noun">Polubione</string>
     <string name="unloved" comment="Its a noun">Nielubione</string>
     <string name="simple_edits">Edycje</string>
@@ -220,6 +230,7 @@
     <string name="weeks">Tygodnie</string>
     <string name="monthly">Co miesiąc</string>
     <string name="months">Miesiące</string>
+    <string name="days">Dni</string>
     <string name="years" comment="For the charts menu which displays year by year">Lata</string>
     <string name="charts_overall">Ogółem</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktywność słuchania</string>
@@ -282,6 +293,7 @@
     <string name="skip" comment="skip to next track">Pomiń</string>
     <string name="mute" comment="mute the sound">Wycisz</string>
     <string name="block" comment="block the track from scrobbling">Blokuj</string>
+    <string name="copy" comment="copy to clipboard">Kopiuj</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Ukryte tagi</string>
     <string name="pin" comment="pin a friend to the top">Przypnij</string>
     <string name="unpin" comment="unpin a friend to the top">Odepnij</string>
@@ -291,6 +303,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Czy chcesz włączyć regułę edycji szablonu: %1$s?</string>
     <string name="show_persistent_noti">Pokaż stałe powiadomienie</string>
     <string name="fix_it_desc">Mogą one pomóc utrzymać scrobbler na niektórych urządzeniach w tle</string>
+    <string name="persistent_noti_text">Naciśnij by ukryć</string>
     <string name="scrobbler_off">Scrobbler wyłączony</string>
     <string name="scrobbler_on">Scrobbler aktywny</string>
     <string name="duration">Czas trwania</string>
@@ -363,7 +376,12 @@
     <string name="pref_translate_credits">Podziękowania dla tłumaczy</string>
     <string name="pref_oss_credits">Źródła otwartego oprogramowania</string>
     <string name="pref_check_updates">Sprawdź aktualizacje</string>
+    <string name="no_updates">Brak dostępnych aktualizacji</string>
+    <string name="pref_notify_updates">Automatyczne aktualizacje</string>
+    <string name="update_downloaded">Aktualizacja pobrana</string>
+    <string name="pref_search_url_template">Wyszukaj URL szablonu</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostępna aktualizacja: %1$s</string>
+    <string name="downloading">Pobieranie</string>
     <string name="download" comment="Its a verb">Pobierz</string>
     <string name="changelog">Lista zmian</string>
     <string name="import_hey_wtf">To prawdopodobnie nie jest plik eksportu Pano Scrobbler</string>
@@ -382,6 +400,7 @@
     <string name="no_browser">Brak zainstalowanej przeglądarki</string>
     <string name="no_player">Brak zainstalowanego odtwarzacza muzyki</string>
     <string name="not_running">⚠ Scrobbler został zabity przez twój system</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Powód: %1$s</string>
     <string name="not_running_fix_action">Napraw to</string>
     <string name="login_submit" comment="Verifies the login details">Weryfikuj</string>
     <string name="submitting_loves" formatted="true">Przesyłanie polubionych, pozostało %1$d</string>
@@ -402,6 +421,16 @@
     <string name="password">Hasło</string>
     <string name="open_existing" comment="Append to an existing file">Dołącz do istniejącego</string>
     <string name="create" comment="Create a new file">Utwórz</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Anuluj</string>
+    <string name="back">Powrót</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Spróbuj ponownie</string>
+    <string name="run_on_start">Uruchom wraz z uruchomieniem urządzenia</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Zapisz logi</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Kontrast</string>
+    <string name="high" comment="As in high/medium/low">Wysoki</string>
+    <string name="medium" comment="As in high/medium/low">Średni</string>
+    <string name="low" comment="As in high/medium/low">Niski</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>
     <string name="help">Pomoc</string>

@@ -1,9 +1,10 @@
 ## This is a beta release
 
-Changes since 4.1
+Changes since 4.2
 
-- Implemented auto downloading of updates from Github releases for desktop
-- Fixed scrobble edits not being applied
-- Fixed some UI bugs
-- Fixed a segfault on Linux
-- Translation updates by the translators on Crowdin
+- Fixed pending scrobbles getting deleted at start
+- Regex tester will now highlight the required text fields
+- Reworked the now playing animation
+- Fixed a segfault
+- Use xdg-open on Linux to open links, when the default method fails
+- Other fixes

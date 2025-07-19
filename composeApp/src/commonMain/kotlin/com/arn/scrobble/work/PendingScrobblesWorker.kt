@@ -19,6 +19,10 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.pending_batch
+import pano_scrobbler.composeapp.generated.resources.submitting_loves
 
 class PendingScrobblesWorker(
     override val setProgress: suspend (CommonWorkProgress) -> Unit,
@@ -77,8 +81,7 @@ class PendingScrobblesWorker(
     private suspend fun submitScrobbleBatch(entries: List<PendingScrobble>): Boolean {
         setProgress(
             CommonWorkProgress(
-                // todo cannot use compose string resource here on android
-                message = "Submitting a batch",
+                message = getString(Res.string.pending_batch),
                 progress = 0.5f,
             )
         )
@@ -87,7 +90,7 @@ class PendingScrobblesWorker(
             val scrobbleResults = mutableMapOf<Scrobblable, Result<ScrobbleIgnored>>()
             // if an error occurs, there will be only one result
 
-            Scrobblables.all.value.forEach {
+            Scrobblables.all.forEach {
                 val filteredData by lazy { filterForService(it, entries) }
                 if (filteredData.isNotEmpty()) {
                     val result = it.scrobble(filteredData.map { it.scrobbleData })
@@ -156,14 +159,14 @@ class PendingScrobblesWorker(
         for ((submitted, entry) in entries.withIndex()) {
             setProgress(
                 CommonWorkProgress(
-                    message = "Submitting loves",
+                    message = getString(Res.string.submitting_loves, total - submitted),
                     progress = submitted.toFloat() / total,
                 )
             )
 
             val loveResults = mutableMapOf<Scrobblable, Result<ScrobbleIgnored>>()
 
-            Scrobblables.all.value.forEach {
+            Scrobblables.all.forEach {
                 val shouldSubmit by lazy { filterOneForService(it, entry) }
                 if (shouldSubmit) {
                     val track = Track(
@@ -235,7 +238,7 @@ class PendingScrobblesWorker(
 
     private suspend fun deleteForLoggedOutServices() {
         val loggedOutAccounts =
-            AccountType.entries.toSet() - Scrobblables.all.value.map { it.userAccount.type }
+            AccountType.entries.toSet() - Scrobblables.all.map { it.userAccount.type }
 
         val loggedOutAccountsBitset =
             AccountBitmaskConverter.accountTypesToBitMask(loggedOutAccounts)

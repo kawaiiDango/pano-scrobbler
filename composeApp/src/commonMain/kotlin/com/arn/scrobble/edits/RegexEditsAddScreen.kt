@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -54,9 +55,11 @@ import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ButtonWithSpinner
+import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -83,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.edit_first
 import pano_scrobbler.composeapp.generated.resources.edit_name
 import pano_scrobbler.composeapp.generated.resources.edit_regex
 import pano_scrobbler.composeapp.generated.resources.edit_regex_invalid
+import pano_scrobbler.composeapp.generated.resources.edit_regex_warning
 import pano_scrobbler.composeapp.generated.resources.edit_replace
 import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
@@ -102,6 +106,7 @@ fun RegexEditsAddScreen(
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
+    val regexLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.regexLearnt }
     var name by rememberSaveable { mutableStateOf(regexEdit?.name ?: "") }
     var appItems by rememberSaveable { mutableStateOf(emptySet<AppItem>()) }
     val dao = remember { PanoDb.db.getRegexEditsDao() }
@@ -234,6 +239,21 @@ fun RegexEditsAddScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
+            if (!regexLearnt) {
+                DismissableNotice(
+                    title = stringResource(Res.string.edit_regex_warning),
+                    icon = Icons.Outlined.Info,
+                    onClick = {
+                        PlatformStuff.openInBrowser("https://www.google.com/search?q=regex+tutorial")
+                    },
+                    onDismiss = {
+                        scope.launch {
+                            PlatformStuff.mainPrefs.updateData { it.copy(regexLearnt = true) }
+                        }
+                    },
+                )
+            }
+
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },

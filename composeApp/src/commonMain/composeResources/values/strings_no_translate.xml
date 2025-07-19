@@ -4,6 +4,7 @@
     <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
     <string name="tv_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/tv</string>
     <string name="github_link" translatable="false">https://github.com/kawaiiDango/pano-scrobbler</string>
+    <string name="app_homepage_link" translatable="false">https://kawaiidango.github.io</string>
     <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
     <string name="privacy_policy_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/privacy-policy</string>
     <string name="faq_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/faq</string>
@@ -36,7 +37,9 @@
 
     <!--  strings for unfinalized stuff  -->
 
-    <string name="download_it">Get it for other platforms: Windows, Linux and Android</string>
+    <string name="also_available_on" formatted="true">Get this app on %1$s</string>
+    <string name="desktop" formatted="true">PC</string>
+    <string name="android" formatted="true">Android</string>
     <string name="automation_cli">Command-line arguments</string>
     <string name="automation_cli_info">Run the pano-scrobbler executable with one of these command line arguments, while an instance is already running.</string>
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted" and URI to one of these.</string>

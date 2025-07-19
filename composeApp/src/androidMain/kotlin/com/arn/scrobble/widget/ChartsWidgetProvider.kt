@@ -7,15 +7,14 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.R
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.runBlocking
 import java.util.Objects
 
@@ -30,11 +29,7 @@ class ChartsWidgetProvider : AppWidgetProvider() {
             AndroidStuff.widgetPrefs.data.first()
         }
 
-        val user = runBlocking {
-            PlatformStuff.mainPrefs.data.mapLatest { mainPrefs ->
-                mainPrefs.scrobbleAccounts.find { it.type == mainPrefs.currentAccountType }?.user
-            }.first()
-        } ?: return
+        val user = Scrobblables.currentAccount.value?.user ?: return
 
         // There may be multiple widgets active, so update all of them
         appWidgetIds.forEach { appWidgetId ->

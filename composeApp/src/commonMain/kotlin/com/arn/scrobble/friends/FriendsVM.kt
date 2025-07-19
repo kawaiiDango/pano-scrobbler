@@ -93,7 +93,7 @@ class FriendsVM : ViewModel() {
         delay(Stuff.FRIENDS_RECENTS_DELAY)
 
         _friendsExtraDataMap.value += username to friendsRecentsMutex.withLock {
-            Scrobblables.current.value!!.getRecents(
+            Scrobblables.current!!.getRecents(
                 1,
                 username,
                 limit = 1,
@@ -207,7 +207,7 @@ class FriendsVM : ViewModel() {
     private suspend fun refreshPins() {
         supervisorScope {
             val lastfmSession =
-                Scrobblables.current.value as? LastFm
+                Scrobblables.current as? LastFm
                     ?: return@supervisorScope
             var modifiedCount = 0
             val now = System.currentTimeMillis()

@@ -78,7 +78,7 @@ data class MainPrefs(
     val lastDeltaIndexedScrobbleTime: Long? = null,
     val gridMode: GridMode = GridMode.GRID,
     val regexLearnt: Boolean = false,
-    val regexEditsLearnt: Boolean = false,
+    val otherPlatformsLearnt: Boolean = false,
     val squarePhotoLearnt: Boolean = false,
     val changelogSeenHashcode: Int? = null,
     val searchHistory: List<String> = emptyList(),

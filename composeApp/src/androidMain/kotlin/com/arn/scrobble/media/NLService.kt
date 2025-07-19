@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.MetadataUtils
@@ -180,7 +179,7 @@ class NLService : NotificationListenerService() {
     private suspend fun shouldScrobbleFromNoti(pkgName: String): Boolean {
         val prefs = mainPrefs.data.first()
 
-        return prefs.scrobblerEnabled && Stuff.isLoggedIn() &&
+        return prefs.scrobblerEnabled && prefs.scrobbleAccounts.isNotEmpty() &&
                 (pkgName in prefs.allowedPackages || (prefs.autoDetectAppsP && pkgName !in prefs.blockedPackages)) &&
                 !(prefs.preventDuplicateAmbientScrobbles && sessListener?.isMediaPlaying() == true)
     }

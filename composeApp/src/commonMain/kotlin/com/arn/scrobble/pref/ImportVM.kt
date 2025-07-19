@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import pano_scrobbler.composeapp.generated.resources.Res
 import java.io.IOException
 import java.security.KeyStore
@@ -92,7 +91,6 @@ class ImportVM : ViewModel() {
         super.onCleared()
     }
 
-    @OptIn(ExperimentalResourceApi::class)
     private class ImportServer(
         port: Int,
         private val path: String,

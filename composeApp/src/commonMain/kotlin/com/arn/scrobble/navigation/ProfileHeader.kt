@@ -50,11 +50,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.TextWithIcon
@@ -63,6 +61,7 @@ import com.arn.scrobble.ui.drawSnowflake
 import com.arn.scrobble.ui.generateRandomSnowflake
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
@@ -85,14 +84,16 @@ fun ProfileHeader(
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val currentScrobblable by Scrobblables.current.collectAsStateWithLifecycle()
+    val currentAccount by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { prefs ->
+        prefs.scrobbleAccounts.firstOrNull { it.type == prefs.currentAccountType }
+    }
 
     val displayText = when {
         otherUser != null -> otherUser.name
         Stuff.isInDemoMode -> "nobody"
-        currentScrobblable == null -> BuildKonfig.APP_NAME
-        currentScrobblable!!.userAccount.type == AccountType.LASTFM -> currentScrobblable!!.userAccount.user.name
-        else -> accountTypeLabel(currentScrobblable!!.userAccount.type) + ": " + currentScrobblable!!.userAccount.user.name
+        currentAccount == null -> BuildKonfig.APP_NAME
+        currentAccount!!.type == AccountType.LASTFM -> currentAccount!!.user.name
+        else -> accountTypeLabel(currentAccount!!.type) + ": " + currentAccount!!.user.name
     }
 
 
@@ -100,16 +101,16 @@ fun ProfileHeader(
         mutableStateOf(
             when {
                 otherUser != null -> otherUser.name
-                else -> currentScrobblable?.userAccount?.user?.name
+                else -> currentAccount?.user?.name
             }
         )
     }
 
-    val profilePicUrl by remember(currentScrobblable, drawerData, otherUser) {
+    val profilePicUrl by remember(currentAccount, drawerData, otherUser) {
         mutableStateOf(
             when {
                 otherUser != null -> otherUser.largeImage
-                currentScrobblable != null && drawerData != null -> drawerData.profilePicUrl
+                currentAccount != null && drawerData != null -> drawerData.profilePicUrl
                 else -> null
             }
         )
@@ -143,8 +144,8 @@ fun ProfileHeader(
                 )
 
                 ProfileHeaderDropdown(
-                    currentUser = otherUser ?: currentScrobblable?.userAccount?.user,
-                    accountType = currentScrobblable?.userAccount?.type,
+                    currentUser = otherUser ?: currentAccount?.user,
+                    accountType = currentAccount?.type,
                     onNavigate = onNavigate,
                 )
             }
@@ -218,8 +219,8 @@ fun ProfileHeader(
                 )
 
                 ProfileHeaderDropdown(
-                    currentUser = otherUser ?: currentScrobblable?.userAccount?.user,
-                    accountType = currentScrobblable?.userAccount?.type,
+                    currentUser = otherUser ?: currentAccount?.user,
+                    accountType = currentAccount?.type,
                     onNavigate = onNavigate,
                 )
 
@@ -291,7 +292,11 @@ fun ProfileHeaderDropdown(
 ) {
     currentUser ?: return
 
-    val accounts by Scrobblables.all.collectAsStateWithLifecycle()
+    val otherAccounts by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { prefs ->
+        prefs.scrobbleAccounts
+            .distinctBy { it.type }
+            .filterNot { it.type == prefs.currentAccountType }
+    }
     var dropDownShown by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -311,12 +316,11 @@ fun ProfileHeaderDropdown(
             onDismissRequest = { dropDownShown = false },
         ) {
             if (currentUser.isSelf) {
-                val accountsFiltered = accounts.filterNot { it == Scrobblables.current.value }
-                accountsFiltered.forEach {
+                otherAccounts.forEach { account ->
                     DropdownMenuItem(
                         text = {
                             Text(
-                                accountTypeLabel(it.userAccount.type) + ": " + it.userAccount.user.name,
+                                accountTypeLabel(account.type) + ": " + account.user.name,
                                 maxLines = 1
                             )
                         },
@@ -328,14 +332,14 @@ fun ProfileHeaderDropdown(
                         },
                         onClick = {
                             scope.launch {
-                                Scrobblables.setCurrent(it.userAccount.type)
+                                PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = account.type) }
                             }
                             dropDownShown = false
                         },
                     )
                 }
 
-                if (accountsFiltered.isNotEmpty())
+                if (otherAccounts.isNotEmpty())
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 4.dp)
                     )

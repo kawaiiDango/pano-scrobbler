@@ -83,6 +83,8 @@ actual fun WebViewScreen(
                 if (callbackHandled) {
                     statusText = "⏳"
                 }
+
+                DesktopWebView.quitWebView()
             }
         }
     }

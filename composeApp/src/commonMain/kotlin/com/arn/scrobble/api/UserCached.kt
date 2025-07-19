@@ -17,7 +17,7 @@ data class UserCached(
 ) {
 
     var lastUpdated = System.currentTimeMillis()
-    val isSelf get() = Scrobblables.currentScrobblableUser?.let { it.name == name && it.url == url } == true
+    val isSelf get() = Scrobblables.currentAccount.value?.user?.let { it.name == name && it.url == url } == true
 
     companion object {
         fun User.toUserCached() = UserCached(

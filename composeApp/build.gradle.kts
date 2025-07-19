@@ -309,8 +309,8 @@ android {
 //        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
 
         releaseImplementation(projects.extrasPlay)
-//    debugImplementation(projects.extrasPlay)
-        debugImplementation(projects.extrasNonplay)
+        debugImplementation(projects.extrasPlay)
+//        debugImplementation(projects.extrasNonplay)
         "releaseGithubImplementation"(projects.extrasNonplay)
 
         androidTestImplementation(libs.androidx.uiautomator)
@@ -687,8 +687,6 @@ tasks.register<Exec>("buildNativeImage") {
 //        "-g",
 //        "--enable-monitoring=nmt",
         "--enable-native-access=ALL-UNNAMED",
-        "-H:MaxSurvivorSpaces=0",
-        "--gc=serial",
         if (Runtime.version().version().first() < 24) null else "-H:+ForeignAPISupport",
         if (Runtime.version().version().first() < 24)
             "-H:+IncludeAllLocales"
@@ -986,7 +984,7 @@ android {
 
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("releaseGithub")
+            signingConfig = signingConfigs.getByName("release")
         }
 
         getByName("release") {

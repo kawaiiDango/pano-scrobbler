@@ -29,11 +29,11 @@
 
 [![github][github]][github-link] [![fdroid][fdroid]][fdroid-link] [![play-store][play-store]][play-store-link]
 
-The non-Play variant has the permission to optionally display a persistent notification on Android 14+.
+Since v4.0, the builds on Github Releases or the F-Droid repo do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
+
+The non-Play variant can optionally display a persistent notification on Android 14+.
 This may help prevent the system from killing the app in the background on devices from certain manufacturers.
 
-
-Since v4.0, the builds on Github Releases or the F-Droid repo do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
 
 ### Translate
 
@@ -87,4 +87,4 @@ This project is not affiliated with Last.fm, or any other scrobbling service.
 
 ### License
 
-Pano Scrobbler is licensed under the GNU General Public License v3 (GPL-3) (http://www.gnu.org/copyleft/gpl.html).
+Pano Scrobbler is licensed under the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).

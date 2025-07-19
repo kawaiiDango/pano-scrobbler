@@ -13,10 +13,9 @@ actual fun transformMediaMetadata(
     metadata: PlatformMediaMetadata,
 ): MetadataInfo {
 
-    var albumArtist =
-        metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
-    var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim()
-        ?: albumArtist // do not scrobble empty artists, ads will get scrobbled
+    var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
+    // do not scrobble empty artists, ads will get scrobbled
+    var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: ""
     var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
     var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
     val trackNumber = metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()

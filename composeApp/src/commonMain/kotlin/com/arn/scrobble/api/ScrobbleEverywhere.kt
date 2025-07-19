@@ -26,6 +26,7 @@ import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.PendingScrobblesWork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 
 data class PreprocessResult(
@@ -158,7 +159,7 @@ object ScrobbleEverywhere {
     }
 
     suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleIgnored>> {
-        return Scrobblables.all.value.mapConcurrently(5) {
+        return Scrobblables.all.mapConcurrently(5) {
             it to it.updateNowPlaying(scrobbleData)
         }.toMap()
     }
@@ -177,7 +178,7 @@ object ScrobbleEverywhere {
                 .insert(scrobbleSource)
         }
 
-        val scrobbleResults = Scrobblables.all.value.mapConcurrently(5) {
+        val scrobbleResults = Scrobblables.all.mapConcurrently(5) {
             it to it.scrobble(scrobbleData)
         }.toMap()
 
@@ -186,7 +187,8 @@ object ScrobbleEverywhere {
         ) {
             // failed
             val services = if (scrobbleResults.isEmpty())
-                Scrobblables.all.value.map { it.userAccount.type }
+                PlatformStuff.mainPrefs.data
+                    .map { it.scrobbleAccounts.map { it.type } }.first()
             else
                 scrobbleResults
                     .mapNotNull { (scrobblable, result) ->
@@ -238,7 +240,7 @@ object ScrobbleEverywhere {
 
         val dao = PanoDb.db.getPendingScrobblesDao()
         val pl = dao.findLoved(track.artist.name, track.name)
-        val allScrobblables = Scrobblables.all.value
+        val allScrobblables = Scrobblables.all
         if (pl != null) {
             if (pl.event == ScrobbleEvent.unlove) {
                 val services = pl.services + allScrobblables.map { it.userAccount.type }

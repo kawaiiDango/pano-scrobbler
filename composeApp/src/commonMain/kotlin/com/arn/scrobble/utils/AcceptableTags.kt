@@ -1,12 +1,10 @@
 package com.arn.scrobble.utils
 
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import pano_scrobbler.composeapp.generated.resources.Res
 
 object AcceptableTags {
 
-    @OptIn(ExperimentalResourceApi::class)
     private val tagFragments by lazy {
         runBlocking {
             Res.readBytes("files/everynoise_genres.txt")

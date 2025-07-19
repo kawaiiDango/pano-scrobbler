@@ -43,7 +43,6 @@ import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import kotlinx.coroutines.flow.mapLatest
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
@@ -78,10 +77,9 @@ fun SearchScreen(
     val tracksText = stringResource(Res.string.tracks)
     val lovedText = stringResource(Res.string.loved)
 
-    val userSelf by Scrobblables.current.mapLatest { it?.userAccount?.user }
-        .collectAsStateWithLifecycle(null)
-
     fun onItemClick(item: MusicEntry) {
+        val userSelf = Scrobblables.currentAccount.value?.user
+
         userSelf?.let { userSelf ->
             onOpenDialog(
                 PanoDialog.MusicEntryInfo(

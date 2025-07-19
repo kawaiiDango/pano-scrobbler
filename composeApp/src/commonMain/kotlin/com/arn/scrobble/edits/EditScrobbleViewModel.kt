@@ -15,7 +15,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
@@ -23,9 +22,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -43,10 +40,6 @@ class EditScrobbleViewModel : ViewModel() {
 
     private val _updatedAlbumArtist = MutableSharedFlow<String>()
     val updatedAlbumArtist = _updatedAlbumArtist.asSharedFlow()
-
-    private val _suggestRegexEdit = MutableStateFlow<RegexEdit?>(null)
-    val regexRecommendation = _suggestRegexEdit.asStateFlow()
-
 
     fun doEdit(
         origScrobbleData: ScrobbleData,
@@ -91,7 +84,6 @@ class EditScrobbleViewModel : ViewModel() {
         val timeMillis = origScrobbleData.timestamp
         val isNowPlaying = timeMillis == 0L
 
-        val regexEditsLearnt = PlatformStuff.mainPrefs.data.map { it.regexEditsLearnt }.first()
         val fetchAlbum = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
         val fetchAlbumAndAlbumArtist =
             album.isNullOrBlank() && origAlbum.isNullOrBlank() && fetchAlbum
@@ -108,7 +100,7 @@ class EditScrobbleViewModel : ViewModel() {
             duration = origScrobbleData.duration,
             appId = origScrobbleData.appId,
         )
-        val scrobblable = Scrobblables.current.value
+        val scrobblable = Scrobblables.current
         val scrobbleResult: Result<ScrobbleIgnored>
 
         val origTrackObj = Track(
@@ -210,36 +202,6 @@ class EditScrobbleViewModel : ViewModel() {
         }
 
         saveEdit()
-
-        // suggest regex edit
-//        if (!regexEditsLearnt) {
-//            val dao = PanoDb.db.getRegexEditsDao()
-//
-//            val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets().first()
-//                .map { it.preset }.toSet())
-//                .mapIndexed { index, key ->
-//                    RegexPresets.getPossiblePreset(
-//                        RegexEdit(order = index, preset = key)
-//                    )
-//                }
-//
-//            if (presetsAvailable.isNotEmpty()) {
-//                val suggestedRegexReplacements = dao.performRegexReplace(
-//                    scrobbleData,
-//                    presetsAvailable,
-//                ).fieldsMatched
-//
-//                val firstSuggestion =
-//                    suggestedRegexReplacements.values.firstOrNull { it.isNotEmpty() }?.firstOrNull()
-//
-//                val replacementsInEdit =
-//                    dao.performRegexReplace(scrobbleData, presetsAvailable)
-//
-//                if (firstSuggestion != null && replacementsInEdit.scrobbleData == null) {
-//                    _suggestRegexEdit.emit(firstSuggestion)
-//                }
-//            }
-//        }
 
         return Result.success(scrobbleData)
     }

@@ -98,6 +98,7 @@ fun RegexEditsTestScreen(
             onValueChange = {
                 track = it
             },
+            isError = track.isEmpty(),
             label = { Text(stringResource(Res.string.track)) },
             leadingIcon = { Icon(Icons.Outlined.MusicNote, contentDescription = null) },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
@@ -108,6 +109,7 @@ fun RegexEditsTestScreen(
             onValueChange = {
                 artist = it
             },
+            isError = artist.isEmpty(),
             label = { Text(stringResource(Res.string.artist)) },
             leadingIcon = { Icon(Icons.Outlined.Mic, contentDescription = null) },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
@@ -183,9 +185,7 @@ fun RegexEditsTestScreen(
         }
 
         AnimatedVisibility(gotMatches) {
-
             Column {
-
                 if (regexMatches?.blockPlayerAction != null) {
                     val blockPlayerAction = regexMatches!!.blockPlayerAction!!
                     InfoText(

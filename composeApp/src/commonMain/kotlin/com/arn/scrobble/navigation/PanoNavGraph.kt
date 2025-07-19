@@ -109,7 +109,7 @@ fun NavGraphBuilder.panoNavGraph(
     onOpenDialog: (PanoDialog) -> Unit,
     onSetTabData: (String, List<PanoTab>?) -> Unit,
     navigate: (PanoRoute) -> Unit,
-    onOnboardingFinished: () -> Unit,
+    onSetOnboardingFinished: (Boolean) -> Unit,
     goBack: () -> Unit,
     goUp: () -> Unit,
     pullToRefreshState: () -> PullToRefreshState,
@@ -178,6 +178,9 @@ fun NavGraphBuilder.panoNavGraph(
                 onSetRefreshing = onSetRefreshing,
                 mainViewModel = mainViewModel,
                 getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
+                onGoToOnboarding = {
+                    onSetOnboardingFinished(false)
+                },
                 modifier = modifier()
             )
         }
@@ -214,6 +217,9 @@ fun NavGraphBuilder.panoNavGraph(
             onSetRefreshing = onSetRefreshing,
             mainViewModel = mainViewModel,
             getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
+            onGoToOnboarding = {
+                onSetOnboardingFinished(false)
+            },
             modifier = modifier()
         )
     }
@@ -603,7 +609,7 @@ fun NavGraphBuilder.panoNavGraph(
         OnboardingScreen(
             onNavigate = navigate,
             onDone = {
-                onOnboardingFinished()
+                onSetOnboardingFinished(true)
             },
             modifier = modifier().addColumnPadding()
         )

@@ -49,7 +49,6 @@ import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -139,14 +138,13 @@ fun PanoAppContent(
     val drawerData by viewModel.drawerDataFlow.collectAsStateWithLifecycle()
     val currentUserSelf by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { pref ->
-            pref.scrobbleAccounts
-                .firstOrNull { it.type == pref.currentAccountType }?.user
+            pref.scrobbleAccounts.firstOrNull { it.type == pref.currentAccountType }?.user
         }
     var onboardingFinished by rememberSaveable { mutableStateOf(currentUserSelf != null) }
     var currentUserOther by rememberSaveable(saver = jsonSerializableSaver()) {
         mutableStateOf<UserCached?>(null)
     }
-    val currentUser by remember { derivedStateOf { currentUserOther ?: currentUserSelf } }
+    val currentUser = currentUserOther ?: currentUserSelf
 
     val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val pullToRefreshState = rememberPullToRefreshState()
@@ -348,11 +346,9 @@ fun PanoAppContent(
 
                             NavHost(
                                 navController = navController,
-                                startDestination = remember(onboardingFinished, currentUser) {
-                                    when {
-                                        !onboardingFinished || currentUser == null -> PanoRoute.Onboarding
-                                        else -> PanoRoute.SelfHomePager
-                                    }
+                                startDestination = when {
+                                    !onboardingFinished || currentUserSelf == null -> PanoRoute.Onboarding
+                                    else -> PanoRoute.SelfHomePager
                                 },
                                 enterTransition = {
                                     fadeIn(animationSpec = tween()) + slideIntoContainer(
@@ -402,11 +398,8 @@ fun PanoAppContent(
                                     navigate = navController::navigate,
                                     goBack = navController::popBackStack,
                                     goUp = navController::navigateUp,
-                                    onOnboardingFinished = {
-                                        if (!onboardingFinished)
-                                            onboardingFinished = true
-                                        else // case when the user is logged in but some onboarding steps are not done
-                                            navController.popBackStack()
+                                    onSetOnboardingFinished = {
+                                        onboardingFinished = it
                                     },
                                     onSetOtherUser = { currentUserOther = it },
                                     onOpenDialog = { currentDialogArgs = it },

@@ -63,6 +63,9 @@ sealed interface PanoDialog {
     data object FixIt : PanoDialog
 
     @Serializable
+    data class ShowLink(val url: String) : PanoDialog
+
+    @Serializable
     data class BlockedMetadataAdd(
         val blockedMetadata: BlockedMetadata = BlockedMetadata(),
         val ignoredArtist: String? = null,

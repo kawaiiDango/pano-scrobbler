@@ -116,7 +116,7 @@ actual object PanoNotifications {
             .setStyle(style)
             .addAction(loveAction)
             .apply {
-                val user = Scrobblables.currentScrobblableUser
+                val user = Scrobblables.currentAccount.value?.user
                 if (user != null) {
                     val dialogArgs = PanoDialog.MusicEntryInfo(
                         track = event.scrobbleData.toTrack(),
@@ -384,7 +384,7 @@ actual object PanoNotifications {
         val dialogArgs = PanoDialog.CollageGenerator(
             collageType = Stuff.TYPE_ALL,
             timePeriod = timePeriod,
-            user = Scrobblables.currentScrobblableUser ?: return
+            user = Scrobblables.currentAccount.value?.user ?: return
         )
 
         val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)

@@ -13,7 +13,7 @@ class FriendsPagingSource(
 ) : PagingSource<Int, UserCached>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UserCached> {
-        val result = Scrobblables.current.value!!.getFriends(
+        val result = Scrobblables.current!!.getFriends(
             params.key ?: 1,
             username,
 //                cached = !loadedInitialCachedVersion

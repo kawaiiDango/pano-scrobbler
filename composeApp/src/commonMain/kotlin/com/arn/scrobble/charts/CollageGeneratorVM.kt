@@ -213,7 +213,7 @@ class CollageGeneratorVM : ViewModel() {
     private suspend fun fetchProfilePic(user: UserCached, sizePx: Int): ImageBitmap? {
         // load profile pic
         val profilePicUrl = if (user.isSelf)
-            PlatformStuff.mainPrefs.data.map { it.drawerData[Scrobblables.current.value!!.userAccount.type]?.profilePicUrl?.ifEmpty { null } }
+            PlatformStuff.mainPrefs.data.map { it.drawerData[Scrobblables.currentAccount.value?.type]?.profilePicUrl?.ifEmpty { null } }
                 .first()
         else
             user.largeImage
@@ -656,7 +656,7 @@ class CollageGeneratorVM : ViewModel() {
         timePeriod: TimePeriod,
         username: String,
     ): Result<PageResult<out MusicEntry>> {
-        return Scrobblables.current.value!!.getCharts(
+        return Scrobblables.current!!.getCharts(
             type,
             timePeriod,
             1,

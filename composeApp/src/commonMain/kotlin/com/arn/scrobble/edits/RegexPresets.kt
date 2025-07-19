@@ -108,38 +108,30 @@ object RegexPresets {
                 }
             }
 
-            RegexPreset.parse_title -> {
-                val parseTitle = shouldParseTitle(scrobbleData) &&
-                        scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
-
-                if (parseTitle) {
-                    val (parsedArtist, parsedTitle) = MetadataUtils.parseYoutubeTitle(scrobbleData.track)
-                    if (!parsedArtist.isNullOrEmpty() && !parsedTitle.isNullOrEmpty()) {
-                        newScrobbleData = scrobbleData.copy(
-                            artist = parsedArtist,
-                            track = parsedTitle,
-                            album = null,
-                            albumArtist = null,
-                        )
-                    } else {
-                        // no fallback
-                        throw TitleParseException()
-                    }
-                }
-            }
-
+            RegexPreset.parse_title,
             RegexPreset.parse_title_with_fallback -> {
-                val parseTitle = shouldParseTitle(scrobbleData) &&
-                        scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
-
-                if (parseTitle) {
-                    val (parsedArtist, parsedTitle) = MetadataUtils.parseYoutubeTitle(scrobbleData.track)
-                    if (!parsedArtist.isNullOrEmpty() && !parsedTitle.isNullOrEmpty()) {
+                if (regexPreset == RegexPreset.parse_title && scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK ||
+                    regexPreset == RegexPreset.parse_title_with_fallback && scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
+                ) {
+                    if (shouldParseTitle(scrobbleData)) {
+                        val (parsedArtist, parsedTitle) =
+                            MetadataUtils.parseYoutubeTitle(scrobbleData.track)
+                        if (!parsedArtist.isNullOrEmpty() && !parsedTitle.isNullOrEmpty()) {
+                            newScrobbleData = scrobbleData.copy(
+                                artist = parsedArtist,
+                                track = parsedTitle,
+                                album = null,
+                                albumArtist = null,
+                            )
+                        } else if (regexPreset == RegexPreset.parse_title) {
+                            // no fallback
+                            throw TitleParseException()
+                        }
+                    } else if (scrobbleData.artist.endsWith("- Topic")) {
+                        // remove "- Topic" suffix from artist
                         newScrobbleData = scrobbleData.copy(
-                            artist = parsedArtist,
-                            track = parsedTitle,
-                            album = null,
-                            albumArtist = null,
+                            artist = scrobbleData.artist.removeSuffix("- Topic"),
+                            albumArtist = scrobbleData.albumArtist?.removeSuffix("- Topic")
                         )
                     }
                 }

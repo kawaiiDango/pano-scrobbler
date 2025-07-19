@@ -12,7 +12,7 @@ class ChartsPagingSource(
 ) : PagingSource<Int, MusicEntry>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MusicEntry> {
-        val result = Scrobblables.current.value!!
+        val result = Scrobblables.current!!
             .getChartsWithStonks(
                 type = type,
                 timePeriod = input.timePeriod,

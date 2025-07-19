@@ -23,7 +23,7 @@ class RegexEditsTestVM : ViewModel() {
             .debounce(500)
             .filterNotNull()
             .combine(dao.allFlow()) { sd, regexEdits ->
-                if (sd.appId == null || sd.track.isEmpty() || sd.artist.isEmpty()) {
+                if (sd.track.isEmpty() || sd.artist.isEmpty()) {
                     null
                 } else {
                     withContext(Dispatchers.IO) {

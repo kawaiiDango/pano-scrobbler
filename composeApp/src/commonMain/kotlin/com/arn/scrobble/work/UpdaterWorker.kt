@@ -27,6 +27,22 @@ class UpdaterWorker(
             return CommonWorkerResult.Failure("Update check disabled")
         }
 
+        if (Stuff.globalUpdateAction.value != null) {
+            setProgress(
+                CommonWorkProgress(
+                    getString(
+                        Res.string.update_available,
+                        Stuff.globalUpdateAction.value!!.version
+                    ),
+                    0.1f
+                )
+            )
+
+            delay(1000)
+
+            return CommonWorkerResult.Failure("Update available, but not installed yet")
+        }
+
         setProgress(
             CommonWorkProgress(
                 getString(Res.string.loading),
@@ -69,10 +85,12 @@ class UpdaterWorker(
         }.onFailure { e ->
             setProgress(CommonWorkProgress(e.redactedMessage, 1f))
         }
-        
+
         delay(1000)
 
-        UpdaterWork.checkAndSchedule(false)
+        // do not schedule another update if already updated, but not restarted yet
+        if (Stuff.globalUpdateAction.value == null)
+            UpdaterWork.checkAndSchedule(false)
 
         return if (latestRelease.isSuccess)
             CommonWorkerResult.Success

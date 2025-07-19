@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.toInverseMap
@@ -118,7 +117,7 @@ open class ChartsPeriodVM : ViewModel() {
 
     init {
         viewModelScope.launch {
-            if (Scrobblables.current.value !is ListenBrainz) {
+            if (Scrobblables.currentAccount.value?.type == AccountType.LISTENBRAINZ) {
                 val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
                     Triple(
                         it.lastChartsPeriodType,

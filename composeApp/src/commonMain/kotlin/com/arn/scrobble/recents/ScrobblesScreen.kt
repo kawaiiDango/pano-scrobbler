@@ -13,6 +13,8 @@ import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Casino
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Refresh
@@ -36,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,8 +50,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
@@ -61,8 +64,8 @@ import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
+import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.combineImageVectors
@@ -73,13 +76,16 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.also_available_on
+import pano_scrobbler.composeapp.generated.resources.android
+import pano_scrobbler.composeapp.generated.resources.app_homepage_link
 import pano_scrobbler.composeapp.generated.resources.charts_custom
-import pano_scrobbler.composeapp.generated.resources.enable
-import pano_scrobbler.composeapp.generated.resources.fix_it_title
+import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.no_scrobbles
 import pano_scrobbler.composeapp.generated.resources.not_running
@@ -105,6 +111,7 @@ fun ScrobblesScreen(
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
     pullToRefreshTriggered: Flow<Unit>,
+    onGoToOnboarding: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
@@ -126,24 +133,28 @@ fun ScrobblesScreen(
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
-    val scrobblerEnabled by viewModel.scrobblerEnabled.collectAsStateWithLifecycle()
+    val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
+    val scrobblerEnabled by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
     val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
-    val currentAccoutType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
+    val account by Scrobblables.currentAccount.collectAsStateWithLifecycle()
+    val otherPlatformsLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.otherPlatformsLearnt }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
     val pendingScrobblesheader =
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
-    val canLove by remember(currentAccoutType) {
+    val canLove by remember(account) {
         mutableStateOf(
-            currentAccoutType != AccountType.PLEROMA,
+            account?.type != AccountType.PLEROMA,
         )
     }
+    val appHomepage = stringResource(Res.string.app_homepage_link)
+    val scope = rememberCoroutineScope()
 
-    val canEditOrDelete by remember(selectedType, currentAccoutType) {
+    val canEditOrDelete by remember(selectedType, account) {
         mutableStateOf(
-            selectedType != ScrobblesType.LOVED && currentAccoutType !in arrayOf(
+            selectedType != ScrobblesType.LOVED && account?.type !in arrayOf(
                 AccountType.FILE,
 //                AccountType.MALOJA,
                 AccountType.PLEROMA,
@@ -203,14 +214,7 @@ fun ScrobblesScreen(
                 it.key == expandedKey
             }
 
-            if (expandedItem == null) {
-                Logger.d { "Expanded item not visible" }
-
-                if (listState.firstVisibleItemIndex < 2)
-                    listState.animateScrollToItem(0)
-            } else {
-                listState.animateScrollToItem(expandedItem.index)
-            }
+            listState.animateScrollToItem(expandedItem?.index ?: 0)
         }
     }
 
@@ -225,10 +229,17 @@ fun ScrobblesScreen(
 
         // expand now playing
         if (tracks.loadState.refresh is LoadState.NotLoading) {
-            if (canExpandNowPlaying && tracks.itemCount > 0 && tracks.peek(0)?.isNowPlaying == true &&
-                (expandedKey == null || expandedKey == tracks.peek(1)?.generateKey())
-            ) {
-                expandedKey = tracks.peek(0)?.generateKey()
+            if (canExpandNowPlaying && tracks.itemCount > 0 && tracks.peek(0)?.isNowPlaying == true) {
+                val newKey = tracks.peek(0)?.generateKey()
+
+                val newExpandedItemIsVisible = listState.layoutInfo.visibleItemsInfo.find {
+                    it.key == newKey
+                } != null
+
+                val isAlmostAtTop = listState.firstVisibleItemIndex < 5
+
+                if (isAlmostAtTop || newExpandedItemIsVisible)
+                    expandedKey = newKey
             }
         }
 
@@ -316,43 +327,64 @@ fun ScrobblesScreen(
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
 
-                if (!scrobblerEnabled || scrobblerRunning == false) {
+                if (user.isSelf && (!nlsEnabled || !scrobblerEnabled || scrobblerRunning == false || !otherPlatformsLearnt)) {
                     item("notice") {
-                        val menuItemText =
-                            stringResource(
-                                if (scrobblerEnabled)
-                                    Res.string.fix_it_title
-                                else
-                                    Res.string.enable
-                            )
+                        val text: String
+                        val icon: ImageVector
+                        val onClick: () -> Unit
+                        var onDismiss: (() -> Unit)? = null
 
-                        val text = stringResource(
-                            if (scrobblerEnabled)
-                                Res.string.not_running
-                            else
-                                Res.string.scrobbler_off
-                        )
+                        when {
+                            !nlsEnabled -> {
+                                text = stringResource(Res.string.scrobbler_off)
+                                icon = Icons.Outlined.Info
 
-                        ExpandableHeaderMenu(
-                            title = text,
-                            icon = Icons.Outlined.Info,
-                            menuItemText = menuItemText,
-                            onMenuItemClick = {
-                                if (scrobblerEnabled) {
-                                    onOpenDialog(PanoDialog.FixIt)
-                                } else {
-                                    val hasNotificationListenerPerms =
-                                        PlatformStuff.isNotificationListenerEnabled()
+                                onClick = {
+                                    viewModel.updateScrobblerServiceStatus()
+                                    onGoToOnboarding()
+                                }
+                            }
 
-                                    if (!hasNotificationListenerPerms) {
-                                        onNavigate(PanoRoute.Onboarding)
-                                    } else {
-                                        onNavigate(PanoRoute.Prefs)
+                            !scrobblerEnabled -> {
+                                text = stringResource(Res.string.scrobbler_off)
+                                icon = Icons.Outlined.Info
+
+                                onClick = { onNavigate(PanoRoute.Prefs) }
+                            }
+
+                            scrobblerRunning == false -> {
+                                text = stringResource(Res.string.not_running)
+                                icon = Icons.Outlined.Warning
+                                onClick = { onOpenDialog(PanoDialog.FixIt) }
+                            }
+
+                            else -> {
+                                text = stringResource(
+                                    Res.string.also_available_on,
+                                    if (PlatformStuff.isDesktop)
+                                        stringResource(Res.string.android)
+                                    else
+                                        stringResource(Res.string.desktop)
+                                )
+                                icon = Icons.Outlined.OpenInBrowser
+                                onClick = {
+                                    onOpenDialog(PanoDialog.ShowLink(appHomepage))
+                                }
+                                onDismiss = {
+                                    scope.launch {
+                                        PlatformStuff.mainPrefs.updateData {
+                                            it.copy(otherPlatformsLearnt = true)
+                                        }
                                     }
                                 }
+                            }
+                        }
 
-                                viewModel.updateScrobblerServiceStatus()
-                            },
+                        DismissableNotice(
+                            title = text,
+                            icon = icon,
+                            onDismiss = onDismiss,
+                            onClick = onClick,
                         )
                     }
                 }
@@ -391,7 +423,7 @@ fun ScrobblesScreen(
                     canLove = canLove,
                     canEdit = canEditOrDelete,
                     canDelete = canEditOrDelete,
-                    canHate = currentAccoutType == AccountType.LISTENBRAINZ,
+                    canHate = account?.type == AccountType.LISTENBRAINZ,
                     expandedKey = { expandedKey },
                     onExpand = {
                         canExpandNowPlaying = !(expandedKey != null && it == null)

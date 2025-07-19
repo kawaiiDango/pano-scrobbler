@@ -41,25 +41,26 @@ class ScrobblesPagingSource(
 
         val includeNowPlaying = timeJumpMillis == null && page == 1
         val shouldMarkFirstScrobbleOfTheDays = page == 1 && track == null && !loadLovedTracks
+        val currentScrobblable = Scrobblables.current
 
         val result = when {
             track != null -> {
-                (Scrobblables.current.value as? LastFm)
+                (currentScrobblable as? LastFm)
                     ?.userGetTrackScrobbles(track, page, username, limit)
             }
 
             loadLovedTracks -> {
-                Scrobblables.current.value?.getLoves(page, username)
+                currentScrobblable?.getLoves(page, username)
             }
 
             else -> {
                 if (page == 1)
                     onSetLastRecentsRefreshTime(System.currentTimeMillis())
 
-                val isListenBrainz = Scrobblables.current.value is ListenBrainz
+                val isListenBrainz = currentScrobblable is ListenBrainz
 
                 Logger.d { "load page $page cached: $cachedOnly" }
-                Scrobblables.current.value?.getRecents(
+                currentScrobblable?.getRecents(
                     page,
                     username,
                     cached = cachedOnly,
@@ -153,7 +154,7 @@ class ScrobblesPagingSource(
         total: Int,
     ): Long? {
         return if (total > pr.entries.size)
-            (Scrobblables.current.value as? LastFm)
+            (Scrobblables.current as? LastFm)
                 ?.userGetTrackScrobbles(
                     track = track,
                     username = username,

@@ -91,7 +91,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
         val lastDeltaIndexedScrobbleTime =
             sharedPreferences.getLong("last_delta_indexed_scrobble_time", -1).takeIf { it != -1L }
         val regexLearnt = sharedPreferences.getBoolean("regex_learnt", false)
-        val regexEditsLearnt = sharedPreferences.getBoolean("regex_edits_learnt", false)
         val squarePhotoLearnt = sharedPreferences.getBoolean("square_photo_learnt", false)
         val notificationsOnLockscreen = sharedPreferences.getBoolean("lockscreen_noti", false)
         val notiScrobbling = sharedPreferences.getBoolean("noti_scrobbling", true)
@@ -167,7 +166,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             lastFullIndexedScrobbleTime = lastFullIndexedScrobbleTime,
             lastDeltaIndexedScrobbleTime = lastDeltaIndexedScrobbleTime,
             regexLearnt = regexLearnt,
-            regexEditsLearnt = regexEditsLearnt,
             squarePhotoLearnt = squarePhotoLearnt,
             notificationsOnLockscreen = notificationsOnLockscreen,
             notiScrobbling = notiScrobbling,

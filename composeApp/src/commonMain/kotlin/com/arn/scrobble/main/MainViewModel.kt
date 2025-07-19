@@ -3,11 +3,11 @@ package com.arn.scrobble.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.ApiException
-import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.pref.AppItem
@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -42,10 +43,15 @@ class MainViewModel : ViewModel() {
     private var lastDrawerDataOthersCached: DrawerData? = null
     private val mainPrefs = PlatformStuff.mainPrefs
 
-    val canIndex = mainPrefs.data.map { it.lastMaxIndexTime }.map {
-        PlatformStuff.isDebug && Scrobblables.current.value is LastFm &&
-                System.currentTimeMillis() - (it ?: 0) > TimeUnit.HOURS.toMillis(12)
-    }
+    val canIndex = mainPrefs.data
+        .map { prefs ->
+            (prefs.lastMaxIndexTime ?: 0).takeIf { prefs.currentAccountType == AccountType.LASTFM }
+        }
+        .filterNotNull()
+        .map {
+            PlatformStuff.isDebug && Scrobblables.currentAccount.value?.type == AccountType.LASTFM &&
+                    System.currentTimeMillis() - it > TimeUnit.HOURS.toMillis(12)
+        }
 
     private val _editData = MutableSharedFlow<Pair<Track, ScrobbleData>>()
     val editDataFlow = _editData.asSharedFlow()
@@ -78,7 +84,9 @@ class MainViewModel : ViewModel() {
     // The main flow that handles caching, network calls, and emits values
     val drawerDataFlow: StateFlow<DrawerData> =
         combine(
-            Scrobblables.current.map { it?.userAccount?.user },
+            PlatformStuff.mainPrefs.data.map { prefs ->
+                prefs.scrobbleAccounts.firstOrNull { it.type == prefs.currentAccountType }?.user
+            },
             otherUserTrigger.distinctUntilChanged()
         )
         { userSelf, userOther -> userSelf to userOther }
@@ -92,7 +100,7 @@ class MainViewModel : ViewModel() {
                     if (now - lastCall >= 5 * 60 * 1000 || user != lastDrawerDataFetchUser) {
                         flow {
                             // Fetch fresh data
-                            val freshData = Scrobblables.current.value
+                            val freshData = Scrobblables.current
                                 ?.loadDrawerData(user.name)
                             lastDrawerDataRefreshTime = System.currentTimeMillis()
                             lastDrawerDataFetchUser = user
@@ -104,7 +112,7 @@ class MainViewModel : ViewModel() {
                     } else if (user.isSelf) {
                         PlatformStuff.mainPrefs.data.map { it.drawerData }
                             .map {
-                                it[Scrobblables.current.value?.userAccount?.type] ?: DrawerData(0)
+                                it[Scrobblables.currentAccount.value?.type] ?: DrawerData(0)
                             }
                     } else {
                         flowOf(lastDrawerDataOthersCached ?: DrawerData(0))
@@ -182,7 +190,6 @@ class MainViewModel : ViewModel() {
 
     override fun onCleared() {
         repository.endDataSourceConnections()
-//        PanoDb.destroyInstance()
         super.onCleared()
     }
 

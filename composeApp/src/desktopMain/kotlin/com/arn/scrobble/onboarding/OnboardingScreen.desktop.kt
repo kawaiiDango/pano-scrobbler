@@ -12,11 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.flow.map
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.pref_login
@@ -30,8 +28,7 @@ actual fun OnboardingScreen(
     onDone: () -> Unit,
     modifier: Modifier,
 ) {
-    val isLoggedIn by Scrobblables.current.map { it != null }
-        .collectAsStateWithLifecycle(Scrobblables.current.value != null)
+    val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {

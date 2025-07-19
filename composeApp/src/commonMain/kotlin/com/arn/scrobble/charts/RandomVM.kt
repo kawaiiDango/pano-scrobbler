@@ -104,13 +104,14 @@ class RandomVM : ViewModel() {
 
     private suspend fun loadRandom(input: RandomLoaderInput): Pair<MusicEntry?, Int> {
         var isCharts = false
+        val currentScrobblable = Scrobblables.current!!
 
         suspend fun getOne(page: Int): Pair<MusicEntry?, Int> {
             val _entry: MusicEntry?
             val _total: Int
             when {
                 input.type == Stuff.TYPE_TRACKS &&
-                        Scrobblables.current.value!!.userAccount.type == AccountType.LASTFM -> {
+                        currentScrobblable.userAccount.type == AccountType.LASTFM -> {
                     isCharts = false
                     var to = -1L
                     var from = -1L
@@ -124,7 +125,7 @@ class RandomVM : ViewModel() {
                         to = approxTimePeriod.end
                     }
 
-                    Scrobblables.current.value!!.getRecents(
+                    currentScrobblable.getRecents(
                         page,
                         input.username,
                         from = from,
@@ -138,7 +139,7 @@ class RandomVM : ViewModel() {
 
                 input.type == Stuff.TYPE_LOVES -> {
                     isCharts = false
-                    Scrobblables.current.value!!.getLoves(
+                    currentScrobblable.getLoves(
                         page,
                         input.username,
                         limit = 1,
@@ -150,17 +151,17 @@ class RandomVM : ViewModel() {
 
                 else -> {
                     isCharts = true
-                    Scrobblables.current.value!!.getCharts(
+                    currentScrobblable.getCharts(
                         input.type,
                         input.timePeriod,
                         page,
                         input.username,
-                        limit = if (input.timePeriod.lastfmPeriod == null && Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM)
+                        limit = if (input.timePeriod.lastfmPeriod == null && currentScrobblable.userAccount.type == AccountType.LASTFM)
                             -1
                         else
                             1
                     ).getOrThrow().let {
-                        if (input.timePeriod.lastfmPeriod == null && Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM) {
+                        if (input.timePeriod.lastfmPeriod == null && currentScrobblable.userAccount.type == AccountType.LASTFM) {
                             _entry = it.entries.randomOrNull()
                             _total = it.entries.size
                         } else {
@@ -187,7 +188,7 @@ class RandomVM : ViewModel() {
             result = getOne(1)
             total = result.second
 
-            if (total > 0 && isCharts && input.timePeriod.lastfmPeriod == null && Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM) {
+            if (total > 0 && isCharts && input.timePeriod.lastfmPeriod == null && currentScrobblable.userAccount.type == AccountType.LASTFM) {
                 // lastfm weekly charts. Already randomised
                 return result
             }
@@ -198,7 +199,7 @@ class RandomVM : ViewModel() {
             result = getOne(page)
 
             if (result.first != null && !isCharts &&
-                Scrobblables.current.value!!.userAccount.type == AccountType.LASTFM
+                currentScrobblable.userAccount.type == AccountType.LASTFM
             ) {
                 val track = result.first as Track
 

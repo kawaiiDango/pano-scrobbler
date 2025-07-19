@@ -57,22 +57,31 @@ class MusicEntryImageInterceptor : Interceptor {
                                     FetchedImageUrls(customMapping.fileUri)
                                 }
                             } else {
-                                Requesters.spotifyRequester.search(
+                                val spotifyArtists = Requesters.spotifyRequester.search(
                                     entry.name,
                                     SpotifySearchType.artist,
                                     3
                                 ).getOrNull()
                                     ?.artists
                                     ?.items
-                                    ?.find {
-                                        if (spotifyArtistSearchApproximate.first())
-                                            it.popularity != null && it.popularity > 0
-                                        else
-                                            it.name.equals(entry.name, ignoreCase = true)
-                                    }
-                                    ?.let {
-                                        FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
-                                    }
+
+                                val caseInsensitiveMatch = spotifyArtists?.find {
+                                    it.name.equals(entry.name, ignoreCase = true) &&
+                                            !it.images.isNullOrEmpty()
+                                }
+
+                                val approximateMatch = spotifyArtists?.find {
+                                    it.popularity != null && it.popularity > 0
+                                }
+
+                                val artistItem = if (spotifyArtistSearchApproximate.first())
+                                    caseInsensitiveMatch ?: approximateMatch
+                                else
+                                    caseInsensitiveMatch
+
+                                artistItem?.let {
+                                    FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
+                                }
                             }
                             imageUrls
                         }

@@ -37,7 +37,7 @@ class IndexerWorker(
 ) : CommonWorker {
 
     private val db = PanoDb.db
-    private val lastfmScrobblable = Scrobblables.current.value as? LastFm
+    private val lastfmScrobblable = Scrobblables.current as? LastFm
     private val mainPrefs = PlatformStuff.mainPrefs
 
     override suspend fun doWork(): CommonWorkerResult {

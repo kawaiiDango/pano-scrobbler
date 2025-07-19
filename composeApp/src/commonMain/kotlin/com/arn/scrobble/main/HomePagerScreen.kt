@@ -12,7 +12,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.charts.ChartsOverviewScreen
 import com.arn.scrobble.friends.FriendsScreen
@@ -22,7 +24,6 @@ import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.recents.ScrobblesScreen
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -41,15 +42,16 @@ fun HomePagerScreen(
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
     getPullToRefreshTrigger: (Int) -> Flow<Unit>,
+    onGoToOnboarding: () -> Unit,
     mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
     var scrobblesTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var followingTitle by rememberSaveable { mutableStateOf<String?>(null) }
     var chartsTitle by rememberSaveable { mutableStateOf<String?>(null) }
-    val currentAccountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
-    val tabsList = remember(user, currentAccountType) {
-        getTabData(user, currentAccountType)
+    val account by Scrobblables.currentAccount.collectAsStateWithLifecycle()
+    val tabsList = remember(user, account) {
+        getTabData(user, account?.type ?: AccountType.LASTFM)
     }
     var lastTabIdx by remember { mutableIntStateOf(tabIdx) }
 
@@ -68,9 +70,9 @@ fun HomePagerScreen(
         }
     }
 
-    DisposableEffect(user, currentAccountType) {
+    DisposableEffect(user, account) {
         val id =
-            PanoRoute.SelfHomePager::class.simpleName + " " + user.name + " " + currentAccountType
+            PanoRoute.SelfHomePager::class.simpleName + " " + user.name + " " + account
 
         onSetTabData(id, tabsList)
 
@@ -115,6 +117,7 @@ fun HomePagerScreen(
                 onTitleChange = {
                     scrobblesTitle = it
                 },
+                onGoToOnboarding = onGoToOnboarding,
                 modifier = Modifier.fillMaxSize()
             )
 

@@ -50,7 +50,7 @@ object Requesters {
         HttpClient(OkHttp) {
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 20 * 1000L
+                requestTimeoutMillis = 40 * 1000L
             }
 
             install(ContentNegotiation) {

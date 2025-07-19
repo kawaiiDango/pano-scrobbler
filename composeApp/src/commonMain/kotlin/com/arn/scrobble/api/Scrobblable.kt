@@ -22,8 +22,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.Serializable
@@ -176,35 +174,70 @@ enum class AccountType(val id: Int) {
 }
 
 object Scrobblables {
-    val all = PlatformStuff.mainPrefs.data
-        .mapLatest { it.scrobbleAccounts }
-        .distinctUntilChanged()
-        .mapLatest { account ->
-            account.distinctBy { it.type }
-                .map {
-                    accountToScrobblable(it)
+    private val scrobblablesCache = mutableMapOf<UserAccountSerializable, Scrobblable>()
+
+    private val accounts = PlatformStuff.mainPrefs.data
+        .mapLatest { it.scrobbleAccounts.distinctBy { it.type }.toSet() }
+        .stateIn(
+            GlobalScope,
+            SharingStarted.Eagerly,
+            Stuff.mainPrefsInitialValue.scrobbleAccounts.distinctBy { it.type }.toSet()
+        )
+
+    val currentAccount = PlatformStuff.mainPrefs.data
+        .mapLatest { prefs ->
+            val type =
+                if (prefs.scrobbleAccounts.find { it.type == prefs.currentAccountType } == null) {
+                    // if current account type is not in the list, set it to the first one
+                    prefs.scrobbleAccounts.firstOrNull()?.type ?: AccountType.LASTFM
+                } else {
+                    prefs.currentAccountType
                 }
-        }.stateIn(GlobalScope, SharingStarted.Eagerly, emptyList())
 
-    val current = combine(
-        all,
-        PlatformStuff.mainPrefs.data.mapLatest { it.currentAccountType }) { all, currentType ->
-        var account = all.firstOrNull { it.userAccount.type == currentType }
+            prefs.scrobbleAccounts.firstOrNull { it.type == type }
+        }
+        .stateIn(
+            GlobalScope,
+            SharingStarted.Eagerly,
+            Stuff.mainPrefsInitialValue.let { prefs ->
+                prefs.scrobbleAccounts.firstOrNull { it.type == prefs.currentAccountType }
+            }
+        )
 
-        if (all.isNotEmpty() && account == null) {
-            account = all.first()
-            PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = account.userAccount.type) }
+    val all: Collection<Scrobblable>
+        get() {
+            if (scrobblablesCache.keys != accounts.value) {
+                // delete all scrobblables that are not in the accounts list
+                scrobblablesCache.keys.removeIf { it !in accounts.value }
+
+                // create new scrobblables for the accounts that are not in the cache
+                accounts.value.forEach { userAccount ->
+                    if (userAccount !in scrobblablesCache) {
+                        scrobblablesCache[userAccount] = accountToScrobblable(userAccount)
+                    }
+                }
+            }
+
+            return scrobblablesCache.values
         }
 
-        account
-    }.stateIn(GlobalScope, SharingStarted.Eagerly, null)
-
-    val currentScrobblableUser
-        get() =
-            current.value?.userAccount?.user
+    val current
+        get() = scrobblablesCache[currentAccount.value]
+            ?: all.firstOrNull { it.userAccount == currentAccount.value }
 
     suspend fun deleteAllByType(type: AccountType) {
-        PlatformStuff.mainPrefs.updateData { it.copy(scrobbleAccounts = it.scrobbleAccounts.filterNot { it.type == type }) }
+        PlatformStuff.mainPrefs.updateData {
+            val remainingAccounts = it.scrobbleAccounts.filterNot { it.type == type }
+            var currentAccountType = it.currentAccountType
+            if (remainingAccounts.find { it.type == currentAccountType } == null) {
+                // if current account type is not in the list, set it to the first one
+                currentAccountType = remainingAccounts.firstOrNull()?.type ?: AccountType.LASTFM
+            }
+            it.copy(
+                scrobbleAccounts = remainingAccounts,
+                currentAccountType = currentAccountType
+            )
+        }
 
         if (type == AccountType.LASTFM) {
             LastfmUnscrobbler.cookieStorage.clear()
@@ -212,17 +245,18 @@ object Scrobblables {
     }
 
     suspend fun add(userAccount: UserAccountSerializable) {
-        // if already exists, remove it first
-        PlatformStuff.mainPrefs.updateData { it.copy(scrobbleAccounts = it.scrobbleAccounts.filterNot { it.type == userAccount.type } + userAccount) }
+        PlatformStuff.mainPrefs.updateData {
+            // if already exists, remove it first
+            val newAccounts =
+                it.scrobbleAccounts.filterNot { it.type == userAccount.type } + userAccount
+            it.copy(
+                scrobbleAccounts = newAccounts,
+                currentAccountType = userAccount.type
+            )
+        }
     }
 
-    suspend fun setCurrent(type: AccountType) {
-        PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = type) }
-    }
-
-    fun accountToScrobblable(
-        userAccount: UserAccountSerializable,
-    ): Scrobblable {
+    private fun accountToScrobblable(userAccount: UserAccountSerializable): Scrobblable {
         return when (userAccount.type) {
             AccountType.LASTFM -> LastFm(userAccount)
             AccountType.LIBREFM,

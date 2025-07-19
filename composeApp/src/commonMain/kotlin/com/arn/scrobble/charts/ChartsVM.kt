@@ -108,7 +108,7 @@ class ChartsVM : ViewModel() {
                 return@launch
             }
 
-            val la = Scrobblables.current.value
+            val la = Scrobblables.current
                 ?.getListeningActivity(timePeriod, user)
 
             la?.let {

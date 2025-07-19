@@ -59,7 +59,7 @@ class InfoVM : ViewModel() {
                 .filterNotNull()
                 .collectLatest { (entry, username) ->
                     val _username =
-                        if (Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM)
+                        if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM)
                             username
                         else
                             null
@@ -225,9 +225,7 @@ class InfoVM : ViewModel() {
         }
 
         // dirty delta updates only for lastfm and self
-        if (Scrobblables.current.value?.userAccount?.type == AccountType.LASTFM &&
-            Scrobblables.current.value?.userAccount?.user?.isSelf == true
-        ) {
+        if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM) {
             doDirtyDeltaUpdates(
                 artistDef.await(),
                 albumDef.await(),
@@ -249,7 +247,7 @@ class InfoVM : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             populateTagHistoryIfNeeded()
 
-            val tags = (Scrobblables.current.value as? LastFm)
+            val tags = (Scrobblables.current as? LastFm)
                 ?.getUserTagsFor(entry)
                 ?.map {
                     it.toptags.tag.map { it.name }
@@ -270,7 +268,7 @@ class InfoVM : ViewModel() {
             val tags = existingTags.filter { it != tag }.toSet()
             _userTags.value += (type to tags)
 
-            (Scrobblables.current.value as? LastFm)
+            (Scrobblables.current as? LastFm)
                 ?.removeUserTagFor(entry, tag)
 
         }
@@ -297,7 +295,7 @@ class InfoVM : ViewModel() {
                 )
             }
 
-            (Scrobblables.current.value as? LastFm)
+            (Scrobblables.current as? LastFm)
                 ?.addUserTagsFor(entry, newTagsList.joinToString(","))
         }
     }
@@ -306,7 +304,7 @@ class InfoVM : ViewModel() {
         val mainPrefs = PlatformStuff.mainPrefs
         if (mainPrefs.data.map { it.userTopTagsFetched }.first()) return
 
-        (Scrobblables.current.value as? LastFm)
+        (Scrobblables.current as? LastFm)
             ?.userGetTopTags(limit = 20)
             ?.map { it.toptags.tag }
             ?.onSuccess {

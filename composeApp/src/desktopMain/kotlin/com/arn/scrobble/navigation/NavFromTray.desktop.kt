@@ -19,7 +19,7 @@ actual fun NavFromTrayEffect(
             val suffix = splits.getOrNull(1)
             val playingTrackTrayInfo = PanoNotifications.playingTrackTrayInfo.value
 
-            val user = Scrobblables.currentScrobblableUser ?: return@collect
+            val user = Scrobblables.currentAccount.value?.user ?: return@collect
             val scrobblingEvent =
                 (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackScrobbling)
                     ?: return@collect

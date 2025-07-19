@@ -8,20 +8,17 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SwapVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,21 +35,16 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.VerifyButton
-import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.album_optional
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.edit
-import pano_scrobbler.composeapp.generated.resources.no
 import pano_scrobbler.composeapp.generated.resources.pref_login
-import pano_scrobbler.composeapp.generated.resources.regex_edits_suggestion
 import pano_scrobbler.composeapp.generated.resources.swap
 import pano_scrobbler.composeapp.generated.resources.track
-import pano_scrobbler.composeapp.generated.resources.yes
 
 
 @Composable
@@ -62,7 +54,6 @@ fun EditScrobbleDialog(
     scrobbleData: ScrobbleData,
     msid: String?,
     hash: Int?,
-    onNavigateToRegexEdits: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EditScrobbleViewModel = viewModel { EditScrobbleViewModel() },
 ) {
@@ -234,56 +225,4 @@ fun EditScrobbleDialog(
             }
         }
     }
-
-//    if (regexRecommendationShown && regexRecommendation != null) {
-//        ShowRegexRecommendation(
-//            regexRecommendation = regexRecommendation!!,
-//            onDismissRequest = { regexRecommendationShown = false },
-//            onNavigateToRegexEdits = onNavigateToRegexEdits
-//        )
-//    }
-}
-
-@Composable
-private fun ShowRegexRecommendation(
-    regexPreset: RegexPreset,
-    onDismissRequest: () -> Unit,
-    onNavigateToRegexEdits: () -> Unit,
-) {
-    val presetName = RegexPresets.getString(regexPreset)
-    val scope = rememberCoroutineScope()
-
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        text = {
-            Text(
-                stringResource(
-                    Res.string.regex_edits_suggestion,
-                    presetName
-                )
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                    onNavigateToRegexEdits()
-                }
-            ) {
-                Text(stringResource(Res.string.yes))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                    scope.launch {
-                        PlatformStuff.mainPrefs.updateData { it.copy(regexEditsLearnt = true) }
-                    }
-                }
-            ) {
-                Text(stringResource(Res.string.no))
-            }
-        }
-    )
 }

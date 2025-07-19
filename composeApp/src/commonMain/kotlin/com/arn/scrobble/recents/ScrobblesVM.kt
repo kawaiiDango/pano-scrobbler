@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -29,13 +30,8 @@ import kotlinx.coroutines.launch
 class ScrobblesVM : ViewModel() {
     val pendingScrobbles = PanoDb.db.getPendingScrobblesDao().allFlow(10000)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-    val scrobblerEnabled =
-        PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled && PlatformStuff.isNotificationListenerEnabled() }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                true
-            )
+    private val _nlsEnabled = MutableStateFlow(PlatformStuff.isNotificationListenerEnabled())
+    val nlsEnabled = _nlsEnabled.asStateFlow()
     private val _scrobblerServiceRunning = MutableStateFlow<Boolean?>(null)
     val scrobblerServiceRunning = _scrobblerServiceRunning.asStateFlow()
 
@@ -130,7 +126,12 @@ class ScrobblesVM : ViewModel() {
     fun updateScrobblerServiceStatus() {
         viewModelScope.launch {
             if (input.value?.user?.isSelf == true) {
-                if (scrobblerEnabled.value && scrobblerServiceRunning.value == null) // do only once
+                _nlsEnabled.value = PlatformStuff.isNotificationListenerEnabled()
+
+                if (_nlsEnabled.value &&
+                    PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }.first() &&
+                    scrobblerServiceRunning.value == null
+                ) // do only once
                     _scrobblerServiceRunning.value = PlatformStuff.isScrobblerRunning()
             }
         }
@@ -147,7 +148,7 @@ class ScrobblesVM : ViewModel() {
         username: String,
         timePeriod: TimePeriod?,
     ) {
-        val isListenbrainz = Scrobblables.current.value is ListenBrainz
+        val isListenbrainz = Scrobblables.current is ListenBrainz
         val _to = if (isListenbrainz && page > 1)
             tracks.value?.lastOrNull()?.date ?: -1L
         else
@@ -157,7 +158,7 @@ class ScrobblesVM : ViewModel() {
 
         val includeNowPlaying = _input.value?.timePeriod == null && page == 1
 
-        val pr = Scrobblables.current.value!!.getRecents(
+        val pr = Scrobblables.current!!.getRecents(
             page,
             username,
             cached = !loadedInitialCachedVersion,

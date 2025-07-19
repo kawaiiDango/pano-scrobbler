@@ -32,9 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.AppListSaveType
@@ -43,7 +41,7 @@ import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.map
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.allow_background
@@ -210,9 +208,8 @@ actual fun OnboardingScreen(
 
     var currentStep by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(steps.first()) }
 
-    val isLoggedIn by Scrobblables.current.map { it != null }.collectAsStateWithLifecycle(false)
-    val appListWasRun by PlatformStuff.mainPrefs.data.map { it.appListWasRun }
-        .collectAsStateWithLifecycle(false)
+    val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }
+    val appListWasRun by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.appListWasRun }
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {

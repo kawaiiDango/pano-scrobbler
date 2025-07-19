@@ -238,7 +238,7 @@ private fun TrackDropdownMenu(
                             onClick = {
                                 GlobalScope.launch {
                                     withContext(Dispatchers.IO) {
-                                        Scrobblables.current.value?.delete(track)
+                                        Scrobblables.current?.delete(track)
                                             ?.onFailure {
                                                 it.printStackTrace()
                                                 if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
@@ -336,7 +336,7 @@ private fun TrackDropdownMenu(
                                 val newHated = track.userHated != true
                                 GlobalScope.launch(Dispatchers.IO) {
                                     if (newHated)
-                                        (Scrobblables.current.value as? ListenBrainz)?.hate(track)
+                                        (Scrobblables.current as? ListenBrainz)?.hate(track)
                                     else
                                         ScrobbleEverywhere.loveOrUnlove(track, false)
                                 }
@@ -582,8 +582,7 @@ fun PendingDropdownMenu(
 private fun PendingScrobbleDesc(
     pendingScrobble: PendingScrobble,
 ) {
-    val currentScrobblableType = remember { Scrobblables.current.value?.userAccount?.type }
-    if (pendingScrobble.services.size == 1 && pendingScrobble.services.first() == currentScrobblableType) {
+    if (pendingScrobble.services.size == 1 && pendingScrobble.services.first() == Scrobblables.currentAccount.value?.type) {
 
     } else {
         DropdownMenuItem(

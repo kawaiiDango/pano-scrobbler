@@ -5,8 +5,8 @@ mkdir -p static-site/fdroid/metadata
 # Define the output file
 output_file="static-site/fdroid/metadata/com.arn.scrobble.yml"
 
-# Extract the features from Readme.md
-features=$(sed -n '/### Features:/,/### Credits/p' Readme.md | sed '1d;$d' | sed 's/\\\*/\*/g' | sed 's/^/  /')
+# Extract the features from README.md
+features=$(sed -n '/### Features:/,/### Credits/p' README.md | sed '1d;$d' | sed 's/\\\*/\*/g' | sed 's/^/  /')
 
 # Create the .yml metadata file
 cat <<EOL > $output_file

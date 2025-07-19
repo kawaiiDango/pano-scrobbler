@@ -72,6 +72,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -173,6 +175,7 @@ fun MusicEntryInfoDialog(
     var expandedWikiType by rememberSaveable(musicEntry) { mutableIntStateOf(-1) }
     val userTags by viewModel.userTags.collectAsStateWithLifecycle()
     val userTagsHistory by viewModel.userTagsHistory.collectAsStateWithLifecycle()
+    val account by Scrobblables.currentAccount.collectAsStateWithLifecycle()
 
     val similarTracks = miscVM.similarTracks.collectAsLazyPagingItems()
 
@@ -281,7 +284,7 @@ fun MusicEntryInfoDialog(
                 originalEntry = viewModel.originalEntriesMap[type],
                 appId = appId,
                 user = user,
-                showUserTagsButton = userTags[type] == null,
+                showUserTagsButton = account?.type == AccountType.LASTFM && userTags[type] == null,
                 onUserTagsClick = { viewModel.loadTagsIfNeeded(type) },
                 isLoved = isLoved,
                 onLoveClick = if ((entry as? Track)?.userloved != null) {

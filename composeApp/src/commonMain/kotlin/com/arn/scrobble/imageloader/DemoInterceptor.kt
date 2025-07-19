@@ -11,7 +11,6 @@ import com.arn.scrobble.graphics.copyToCoilResult
 import com.jabistudio.androidjhlabs.filter.CellularCrystallizeFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 class DemoInterceptor : Interceptor {
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
@@ -37,12 +36,10 @@ class DemoInterceptor : Interceptor {
             return chain.proceed()
     }
 
-    // todo don't hardcode the display scaling
     private val Int.dp
         get() = (this * 2.5).toInt()
 
 
-    @OptIn(ExperimentalResourceApi::class)
     private suspend fun transform(input: Bitmap): PlatformBitmap =
         withContext(Dispatchers.IO) {
             val inputImage = PlatformBitmap(input)

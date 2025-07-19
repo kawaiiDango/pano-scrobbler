@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,7 @@ import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.AllOut
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.FiberManualRecord
@@ -77,13 +79,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.graphics.isSupported
 import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
@@ -123,6 +123,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
+import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.collapse
 import pano_scrobbler.composeapp.generated.resources.create_collage
 import pano_scrobbler.composeapp.generated.resources.expand
@@ -479,46 +480,50 @@ private fun NowPlayingSurface(
     }
 
     Surface(
+        color = if (nowPlaying)
+            MaterialTheme.colorScheme.primaryContainer
+        else
+            Color.Unspecified,
         shape = MaterialTheme.shapes.large,
-        color = if (nowPlaying) MaterialTheme.colorScheme.secondaryContainer else Color.Unspecified,
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
-            .then(
-                if (nowPlaying && BlendMode.Overlay.isSupported()) {
+    ) {
+        if (nowPlaying) {
+            val progress by customFpsInfiniteAnimation(
+                initialValue = 0f,
+                targetValue = 1f,
+                durationMillis = 25_000,
+                enabled = isResumed
+            )
+            val fgColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.4f)
 
-                    val progress by customFpsInfiniteAnimation(
-                        initialValue = 0f,
-                        targetValue = 1f,
-                        durationMillis = 15_000,
-                        enabled = isResumed
-                    )
-                    val spotlightColor = MaterialTheme.colorScheme.inverseSurface
-                    var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
+            var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
 
-                    val brush = remember(spotlightColor, brushRadius) {
-                        Brush.radialGradient(
-                            listOf(spotlightColor, Color.Transparent),
-                            radius = brushRadius
+            val brushRadial = remember(fgColor, brushRadius) {
+                Brush.radialGradient(
+                    0f to fgColor,
+                    0.75f to Color.Transparent,
+                    radius = brushRadius
+                )
+            }
+
+            Box(
+                modifier = Modifier.drawBehind {
+                    brushRadius = if (size.minDimension < 2 * size.maxDimension)
+                        size.minDimension * 1.5f
+                    else
+                        size.minDimension / 2
+
+                    translate((progress - 0.5f) * 2 * (size.width), size.height / 2) {
+                        drawCircle(
+                            brush = brushRadial,
+                            radius = brushRadius,
                         )
                     }
-
-                    Modifier.drawWithContent {
-                        drawContent()
-
-                        brushRadius = size.maxDimension
-
-                        translate(progress * size.width, size.height / 2) {
-                            drawCircle(
-                                brush = brush,
-                                radius = size.maxDimension,
-                                blendMode = BlendMode.Overlay,
-                            )
-                        }
-                    }
-                } else
-                    Modifier
+                }
             )
-    ) {
+        }
+
         content()
     }
 }
@@ -864,6 +869,57 @@ fun ExpandableHeaderMenu(
                     }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun DismissableNotice(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDismiss: (() -> Unit)? = null,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+
+        if (onDismiss != null) {
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = stringResource(Res.string.close),
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .clip(MaterialTheme.shapes.medium)
+                .clickable(onClick = onClick)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }

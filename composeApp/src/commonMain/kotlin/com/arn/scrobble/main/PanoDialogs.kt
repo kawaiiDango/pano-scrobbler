@@ -41,6 +41,7 @@ import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.FixItDialog
 import com.arn.scrobble.onboarding.LoginDestinations
+import com.arn.scrobble.onboarding.ShowLinkDialog
 import com.arn.scrobble.search.IndexerDialog
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.updates.ChangelogDialog
@@ -150,6 +151,13 @@ private fun PanoDialogs(
                 )
             }
 
+            is PanoDialog.ShowLink -> {
+                ShowLinkDialog(
+                    url = dialogArgs.url,
+                    modifier = modifier,
+                )
+            }
+
             is PanoDialog.BlockedMetadataAdd -> {
                 BlockedMetadataAddDialog(
                     blockedMetadata = dialogArgs.blockedMetadata,
@@ -193,10 +201,6 @@ private fun PanoDialogs(
                     onReauthenticate = {
                         onDismissRequest()
                         onNavigate(LoginDestinations.route(AccountType.LASTFM))
-                    },
-                    onNavigateToRegexEdits = {
-                        onDismissRequest()
-                        onNavigate(PanoRoute.RegexEdits)
                     },
                     modifier = modifier
                 )
@@ -290,8 +294,9 @@ private fun BottomSheetDialogParent(
         scrollState.canScrollBackward
     ) {
         mutableStateOf(
-            isMobile && isNestedScrollable &&
-                    !scrollState.canScrollForward && !scrollState.canScrollBackward
+            isNestedScrollable && isMobile &&
+                    !scrollState.canScrollForward && !scrollState.canScrollBackward ||
+                    !isNestedScrollable && isMobile
         )
     }
 

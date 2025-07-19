@@ -57,12 +57,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
     // runs in Dispatchers.DEFAULT
     override suspend fun doWork(): Result {
         // not logged in
-        val currentScrobblable = PlatformStuff.mainPrefs.data
-            .map { prefs -> prefs.scrobbleAccounts.find { it.type == prefs.currentAccountType } }
-            .first()?.let {
-                Scrobblables.accountToScrobblable(it)
-            }
-
+        val scrobblable = Scrobblables.current
             ?: return Result.failure(
                 Data.Builder()
                     .putString("reason", "Not logged in")
@@ -147,7 +142,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                         Stuff.TYPE_ALBUMS,
                         Stuff.TYPE_TRACKS
                     ).mapConcurrently(3) { type ->
-                        currentScrobblable.getChartsWithStonks(
+                        scrobblable.getChartsWithStonks(
                             type,
                             timePeriod,
                             prevTimeLastfmPeriod,

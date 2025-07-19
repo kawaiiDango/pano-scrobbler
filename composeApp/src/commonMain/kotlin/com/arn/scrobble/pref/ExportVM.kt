@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import pano_scrobbler.composeapp.generated.resources.Res
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -76,7 +75,6 @@ class ExportVM : ViewModel() {
         }
     }
 
-    @OptIn(ExperimentalResourceApi::class)
     private fun buildKtorClient(): HttpClient {
         return HttpClient(OkHttp) {
             engine {

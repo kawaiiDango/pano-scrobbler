@@ -70,11 +70,7 @@ class DigestWorker(
     private suspend fun fetchAndNotify(lastfmPeriod: LastfmPeriod) {
         supervisorScope {
             val limit = 3
-            val scrobblable = PlatformStuff.mainPrefs.data
-                .map { prefs -> prefs.scrobbleAccounts.find { it.type == prefs.currentAccountType } }
-                .first()?.let {
-                    Scrobblables.accountToScrobblable(it)
-                }
+            val scrobblable = Scrobblables.current
                 ?: throw IllegalStateException("Not logged in")
 
             val timeLastfmPeriod = TimePeriod(lastfmPeriod).apply {

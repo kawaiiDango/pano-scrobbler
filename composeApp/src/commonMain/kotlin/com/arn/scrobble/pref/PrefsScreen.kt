@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
@@ -45,11 +44,15 @@ import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.also_available_on
+import pano_scrobbler.composeapp.generated.resources.android
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.choose_apps
@@ -60,7 +63,7 @@ import pano_scrobbler.composeapp.generated.resources.debug_menu
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
-import pano_scrobbler.composeapp.generated.resources.download_it
+import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.github_link
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.light
@@ -693,7 +696,13 @@ fun PrefsScreen(
             val githubLink = stringResource(Res.string.github_link)
 
             TextPref(
-                text = stringResource(Res.string.download_it),
+                text = stringResource(
+                    Res.string.also_available_on,
+                    if (PlatformStuff.isDesktop)
+                        stringResource(Res.string.android)
+                    else
+                        stringResource(Res.string.desktop)
+                ),
                 summary = githubLink,
                 onClick = {
                     PlatformStuff.openInBrowser(githubLink)
@@ -731,11 +740,16 @@ fun PrefsScreen(
                 TextPref(
                     text = stringResource(Res.string.copy_sk),
                     onClick = {
-                        Scrobblables.all.value.firstOrNull {
-                            it.userAccount.type ==
-                                    AccountType.LASTFM
-                        }?.userAccount?.authKey?.let {
-                            PlatformStuff.copyToClipboard(it)
+                        scope.launch {
+                            PlatformStuff.mainPrefs.data
+                                .map {
+                                    it.scrobbleAccounts.firstOrNull {
+                                        it.type == AccountType.LASTFM
+                                    }?.authKey
+                                }.first()
+                                ?.let {
+                                    PlatformStuff.copyToClipboard(it)
+                                }
                         }
                     }
                 )

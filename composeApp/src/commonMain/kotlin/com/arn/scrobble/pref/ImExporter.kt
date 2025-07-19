@@ -11,10 +11,12 @@ import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToStream
 import java.io.OutputStream
@@ -104,71 +106,84 @@ class ImExporter {
                 db.getScrobbleSourcesDao().nuke()
         }
 
-        val modifiedRegexEdits = exportData.regex_edits_legacy?.mapNotNull {
-            if (it.preset != null) return@mapNotNull null
+        var migratedRegexEdits: List<RegexEdit>?
 
-            if (it.extractionPatterns == null) {
-                val fields = it.fields?.map { field ->
-                    val f = if (field == "albumartist") "albumArtist" else field
-                    RegexEdit.Field.valueOf(f)
-                }?.toSet() ?: emptySet()
+        if (exportData.regex_edits_legacy != null) {
+            migratedRegexEdits = mutableListOf()
 
-                if (fields.isEmpty()) return@mapNotNull null
+            exportData.regex_edits_legacy.forEach {
+                if (it.preset != null) return@forEach
 
-                RegexEdit(
-                    name = it.name ?: "Untitled",
-                    order = it.order,
-                    search = RegexEdit.SearchPatterns(
-                        searchTrack = it.pattern?.takeIf { fields.contains(RegexEdit.Field.track) }
-                            .orEmpty(),
-                        searchAlbum = it.pattern?.takeIf { fields.contains(RegexEdit.Field.album) }
-                            .orEmpty(),
-                        searchArtist = it.pattern?.takeIf { fields.contains(RegexEdit.Field.artist) }
-                            .orEmpty(),
-                        searchAlbumArtist = it.pattern?.takeIf { fields.contains(RegexEdit.Field.albumArtist) }
-                            .orEmpty(),
-                    ),
+                if (it.extractionPatterns == null) {
+                    val fields = it.fields?.map { field ->
+                        val f = if (field == "albumartist") "albumArtist" else field
+                        RegexEdit.Field.valueOf(f)
+                    }?.toSet() ?: emptySet()
 
-                    replacement = RegexEdit.ReplacementPatterns(
-                        replacementTrack = it.replacement.takeIf { fields.contains(RegexEdit.Field.track) }
-                            .orEmpty(),
-                        replacementAlbum = it.replacement.takeIf { fields.contains(RegexEdit.Field.album) }
-                            .orEmpty(),
-                        replacementArtist = it.replacement.takeIf { fields.contains(RegexEdit.Field.artist) }
-                            .orEmpty(),
-                        replacementAlbumArtist = it.replacement.takeIf { fields.contains(RegexEdit.Field.albumArtist) }
-                            .orEmpty(),
-                        replaceAll = it.replaceAll,
-                    ),
-                    appIds = it.packages ?: emptySet(),
-                    caseSensitive = it.caseSensitive,
-                )
-            } else {
-                RegexEdit(
-                    name = it.name ?: "Untitled",
-                    order = it.order,
-                    search = RegexEdit.SearchPatterns(
-                        searchTrack = it.extractionPatterns.extractionTrack,
-                        searchAlbum = it.extractionPatterns.extractionAlbum,
-                        searchArtist = it.extractionPatterns.extractionArtist,
-                        searchAlbumArtist = it.extractionPatterns.extractionAlbumArtist,
-                    ),
-                    appIds = it.packages ?: emptySet(),
-                    caseSensitive = it.caseSensitive,
-                )
+                    if (fields.isEmpty()) return@forEach
+
+                    for (field in fields) {
+
+                        migratedRegexEdits += RegexEdit(
+                            name = it.name ?: "Untitled",
+                            order = it.order,
+                            search = RegexEdit.SearchPatterns(
+                                searchTrack = it.pattern?.takeIf { field == RegexEdit.Field.track }
+                                    .orEmpty(),
+                                searchAlbum = it.pattern?.takeIf { field == RegexEdit.Field.album }
+                                    .orEmpty(),
+                                searchArtist = it.pattern?.takeIf { field == RegexEdit.Field.artist }
+                                    .orEmpty(),
+                                searchAlbumArtist = it.pattern?.takeIf { field == RegexEdit.Field.albumArtist }
+                                    .orEmpty(),
+                            ),
+
+                            replacement = RegexEdit.ReplacementPatterns(
+                                replacementTrack = it.replacement.takeIf { field == RegexEdit.Field.track }
+                                    .orEmpty(),
+                                replacementAlbum = it.replacement.takeIf { field == RegexEdit.Field.album }
+                                    .orEmpty(),
+                                replacementArtist = it.replacement.takeIf { field == RegexEdit.Field.artist }
+                                    .orEmpty(),
+                                replacementAlbumArtist = it.replacement.takeIf { field == RegexEdit.Field.albumArtist }
+                                    .orEmpty(),
+                                replaceAll = it.replaceAll,
+                            ),
+                            appIds = it.packages ?: emptySet(),
+                            caseSensitive = it.caseSensitive,
+                        )
+                    }
+                } else {
+                    migratedRegexEdits += RegexEdit(
+                        name = it.name ?: "Untitled",
+                        order = it.order,
+                        search = RegexEdit.SearchPatterns(
+                            searchTrack = it.extractionPatterns.extractionTrack,
+                            searchAlbum = it.extractionPatterns.extractionAlbum,
+                            searchArtist = it.extractionPatterns.extractionArtist,
+                            searchAlbumArtist = it.extractionPatterns.extractionAlbumArtist,
+                        ),
+                        appIds = it.packages ?: emptySet(),
+                        caseSensitive = it.caseSensitive,
+                    )
+
+                }
             }
-        } ?: exportData.regex_rules
+        } else
+            migratedRegexEdits = null
+
+        val regexEdits = migratedRegexEdits ?: exportData.regex_rules
 
         when (editsMode) {
             EditsMode.EDITS_REPLACE_ALL, EditsMode.EDITS_REPLACE_EXISTING -> {
                 exportData.simple_edits?.let { db.getSimpleEditsDao().insert(it) }
-                modifiedRegexEdits?.let { db.getRegexEditsDao().import(it) }
+                regexEdits?.let { db.getRegexEditsDao().import(it) }
                 exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insert(it) }
             }
 
             EditsMode.EDITS_KEEP_EXISTING -> {
                 exportData.simple_edits?.let { db.getSimpleEditsDao().insertIgnore(it) }
-                modifiedRegexEdits?.let { db.getRegexEditsDao().import(it) }
+                regexEdits?.let { db.getRegexEditsDao().import(it) }
                 exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insertIgnore(it) }
             }
 
@@ -239,8 +254,8 @@ private object ExportDataSerializer :
             }
         }
 
-        is kotlinx.serialization.json.JsonArray ->
-            kotlinx.serialization.json.buildJsonArray {
+        is JsonArray ->
+            buildJsonArray {
                 element.forEach { add(removeIdRecursively(it)) }
             }
 

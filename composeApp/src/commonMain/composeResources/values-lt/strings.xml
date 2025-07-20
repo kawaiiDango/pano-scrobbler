@@ -442,6 +442,7 @@
     <string name="high" comment="As in high/medium/low">Didelis</string>
     <string name="medium" comment="As in high/medium/low">Vidutinis</string>
     <string name="low" comment="As in high/medium/low">Žemas</string>
+    <string name="automation">Valdyti „Pano Scrobbler“ iš automatinių programėlių</string>
     <!--  pro  -->
     <string name="get_pro">Paremti šią programėlę</string>
     <string name="help">Pagalba</string>

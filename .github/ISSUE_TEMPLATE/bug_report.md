@@ -13,6 +13,9 @@ assignees: ''
 **Steps to replicate this bug**
 
 
+**Media player used (if related to scrobbling)**
+
+
 **App version**
 
 

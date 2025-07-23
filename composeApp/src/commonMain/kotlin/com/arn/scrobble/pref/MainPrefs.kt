@@ -72,6 +72,7 @@ data class MainPrefs(
     val collageText: Boolean = false,
     val collageSize: Int = 3,
     val collageCaptions: Boolean = true,
+    val collageBorders: Boolean = true,
     val lastFullIndexTime: Long? = null,
     val lastDeltaIndexTime: Long? = null,
     val lastFullIndexedScrobbleTime: Long? = null,

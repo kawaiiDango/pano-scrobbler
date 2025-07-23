@@ -66,7 +66,7 @@ expect object PlatformStuff {
 
     suspend fun promptForReview(activity: Any?)
 
-    fun getWifiIpAddress(): String?
+    fun getLocalIpAddress(): String?
 
     fun monotonicTimeMs(): Long
 }

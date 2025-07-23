@@ -62,6 +62,7 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
+import pano_scrobbler.composeapp.generated.resources.borders
 import pano_scrobbler.composeapp.generated.resources.captions
 import pano_scrobbler.composeapp.generated.resources.edit_all
 import pano_scrobbler.composeapp.generated.resources.save
@@ -71,7 +72,7 @@ import pano_scrobbler.composeapp.generated.resources.size
 import pano_scrobbler.composeapp.generated.resources.skip_missing_images
 import pano_scrobbler.composeapp.generated.resources.tracks
 import pano_scrobbler.composeapp.generated.resources.username
-import pano_scrobbler.composeapp.generated.resources.vd_launcher_fg
+import pano_scrobbler.composeapp.generated.resources.vd_launcher_fg_for_collage
 import java.util.Calendar
 
 data class IconPaintersForCollage(
@@ -93,7 +94,7 @@ fun CollageGeneratorDialog(
     modifier: Modifier = Modifier,
     viewModel: CollageGeneratorVM = viewModel { CollageGeneratorVM() },
 ) {
-    var collageType by rememberSaveable { mutableIntStateOf(collageType) }
+    var collageType by rememberSaveable(collageType) { mutableIntStateOf(collageType) }
     val collageSize by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { it.collageSize }
     val includeCaptions by PlatformStuff.mainPrefs.data
@@ -103,11 +104,13 @@ fun CollageGeneratorDialog(
         .collectAsStateWithInitialValue { it.collageUsername }
     val collageSkipMissing by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { it.collageSkipMissing }
+    val collageBorders by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.collageBorders }
     var shareCollageClicked by remember { mutableStateOf(false) }
     var saveCollageClicked by remember { mutableStateOf(false) }
     var showSavedMessage by remember { mutableStateOf(false) }
     val iconPainters = IconPaintersForCollage(
-        app = painterResource(Res.drawable.vd_launcher_fg),
+        app = painterResource(Res.drawable.vd_launcher_fg_for_collage),
         user = placeholderImageVectorPainter(null, Icons.Outlined.Person),
         artist = placeholderImageVectorPainter(null, Icons.Outlined.Mic),
         album = placeholderImageVectorPainter(null, Icons.Outlined.Album),
@@ -147,6 +150,7 @@ fun CollageGeneratorDialog(
             user = user,
             timePeriod = timePeriod,
             skipMissing = collageSkipMissing,
+            borders = collageBorders,
             textMeasurer = textMeasurer,
             iconPainters = iconPainters,
         )
@@ -189,7 +193,7 @@ fun CollageGeneratorDialog(
                 bitmap = it,
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth(0.5f)
+                    .fillMaxWidth(0.25f)
                     .align(Alignment.CenterHorizontally),
             )
         }
@@ -239,6 +243,17 @@ fun CollageGeneratorDialog(
             onCheckedChange = { value ->
                 scope.launch {
                     PlatformStuff.mainPrefs.updateData { it.copy(collageSkipMissing = value) }
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        LabeledCheckbox(
+            text = stringResource(Res.string.borders),
+            checked = collageBorders,
+            onCheckedChange = { value ->
+                scope.launch {
+                    PlatformStuff.mainPrefs.updateData { it.copy(collageBorders = value) }
                 }
             },
             modifier = Modifier.fillMaxWidth(),

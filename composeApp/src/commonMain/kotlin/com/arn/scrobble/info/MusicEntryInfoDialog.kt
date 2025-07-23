@@ -284,7 +284,7 @@ fun MusicEntryInfoDialog(
                 originalEntry = viewModel.originalEntriesMap[type],
                 appId = appId,
                 user = user,
-                showUserTagsButton = account?.type == AccountType.LASTFM && userTags[type] == null,
+                showUserTagsButton = account?.type == AccountType.LASTFM && userTags[type] == null && !PlatformStuff.isTv,
                 onUserTagsClick = { viewModel.loadTagsIfNeeded(type) },
                 isLoved = isLoved,
                 onLoveClick = if ((entry as? Track)?.userloved != null) {

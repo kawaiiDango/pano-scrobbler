@@ -12,6 +12,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
@@ -26,16 +28,11 @@ import kotlin.math.max
 
 open class ChartsPeriodVM : ViewModel() {
 
-    protected val mainPrefs = PlatformStuff.mainPrefs
-
     private val _periodType = MutableStateFlow<TimePeriodType?>(null)
 
-    val periodType = _periodType
-        .combine(PlatformStuff.mainPrefs.data.mapLatest { it.currentAccountType }) { currentType, prefsType ->
-            if (prefsType == AccountType.LISTENBRAINZ) TimePeriodType.LISTENBRAINZ
-            else currentType
-        }
+    private val accountType = Scrobblables.currentAccount.mapLatest { it?.type }
 
+    val periodType = _periodType.asStateFlow()
     private val _customPeriodInput =
         MutableStateFlow(TimePeriod(1577836800000L, 1609459200000L)) // 2020
 
@@ -103,7 +100,7 @@ open class ChartsPeriodVM : ViewModel() {
         .onEach { period ->
             if (_periodType.value != TimePeriodType.LISTENBRAINZ && _periodType.value != null && period != null) {
                 GlobalScope.launch {
-                    mainPrefs.updateData {
+                    PlatformStuff.mainPrefs.updateData {
                         it.copy(
                             lastChartsPeriodType = _periodType.value!!,
                             lastChartsLastfmPeriodSelected = period,
@@ -117,17 +114,24 @@ open class ChartsPeriodVM : ViewModel() {
 
     init {
         viewModelScope.launch {
-            if (Scrobblables.currentAccount.value?.type == AccountType.LISTENBRAINZ) {
-                val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
-                    Triple(
-                        it.lastChartsPeriodType,
-                        it.lastChartsLastfmPeriodSelected,
-                        it.lastChartsCustomPeriod
-                    )
-                }.first()
-                _periodType.emit(type)
-                _selectedPeriod.value = selected
-                _customPeriodInput.value = custom
+            accountType.collectLatest {
+                when (it) {
+                    AccountType.LISTENBRAINZ -> _periodType.emit(TimePeriodType.LISTENBRAINZ)
+                    AccountType.LASTFM -> {
+                        val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
+                            Triple(
+                                it.lastChartsPeriodType,
+                                it.lastChartsLastfmPeriodSelected,
+                                it.lastChartsCustomPeriod
+                            )
+                        }.first()
+                        _periodType.emit(type)
+                        _selectedPeriod.value = selected
+                        _customPeriodInput.value = custom
+                    }
+
+                    else -> _periodType.emit(TimePeriodType.CONTINUOUS)
+                }
             }
         }
     }

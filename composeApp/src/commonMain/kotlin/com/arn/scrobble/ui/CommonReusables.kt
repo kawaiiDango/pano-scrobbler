@@ -104,6 +104,7 @@ import pano_scrobbler.composeapp.generated.resources.login_submit
 import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.pleroma
+import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.profile_pic
 import pano_scrobbler.composeapp.generated.resources.retry
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
@@ -280,7 +281,7 @@ fun TextWithIcon(
 
 
 @Composable
-fun SearchBox(
+fun SearchField(
     searchTerm: String,
     onSearchTermChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -460,6 +461,43 @@ fun EmptyText(
                     .align(Alignment.Center)
                     .padding(16.dp)
             )
+        }
+    }
+}
+
+@Composable
+fun EmptyTextWithButtonOnTv(
+    visible: Boolean,
+    text: String,
+    onButtonClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    buttonText: String = stringResource(Res.string.pref_import),
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = modifier.fillMaxSize()
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+
+            if (PlatformStuff.isTv) {
+                OutlinedButton(
+                    onClick = onButtonClick,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(text = buttonText)
+                }
+            }
         }
     }
 }

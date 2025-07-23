@@ -76,6 +76,8 @@ interface RegexEditsDao {
             regexEdits: List<RegexEdit>
         ): RegexResults {
             val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+            var scrobbleData = scrobbleData
+            val cumulativeMatches = mutableSetOf<RegexEdit>()
 
             regexEdits
                 .filter {
@@ -126,11 +128,8 @@ interface RegexEditsDao {
                                         scrobbleDataToMatches
                                     )
                                     if (newScrobbleData != null) {
-                                        return RegexResults(
-                                            scrobbleData = newScrobbleData,
-                                            blockPlayerAction = null,
-                                            matches = setOf(regexEdit),
-                                        )
+                                        cumulativeMatches += regexEdit
+                                        scrobbleData = newScrobbleData
                                     }
                                 }
                             }
@@ -144,11 +143,8 @@ interface RegexEditsDao {
                                         .getOrNull()
 
                                 if (newScrobbleData != null) {
-                                    return RegexResults(
-                                        scrobbleData = newScrobbleData,
-                                        blockPlayerAction = null,
-                                        matches = setOf(regexEdit),
-                                    )
+                                    cumulativeMatches += regexEdit
+                                    scrobbleData = newScrobbleData
                                 }
                             }
                         }
@@ -156,9 +152,9 @@ interface RegexEditsDao {
                 }
 
             return RegexResults(
-                scrobbleData = null,
+                scrobbleData = scrobbleData.takeIf { cumulativeMatches.isNotEmpty() },
                 blockPlayerAction = null,
-                matches = emptySet(),
+                matches = cumulativeMatches,
             )
         }
 

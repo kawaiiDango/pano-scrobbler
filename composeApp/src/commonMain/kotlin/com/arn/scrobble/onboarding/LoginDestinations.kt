@@ -7,17 +7,28 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.DEEPLINK_PROTOCOL_NAME
 import com.arn.scrobble.utils.Stuff.LAST_KEY
-import com.arn.scrobble.utils.Stuff.LIBREFM_KEY
 
 object LoginDestinations {
     fun route(accountType: AccountType): PanoRoute = when (accountType) {
-        AccountType.LASTFM -> PanoRoute.WebView(
-            url = "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm",
-            userAccountTemp = UserAccountTemp(
+        AccountType.LASTFM -> {
+            val userAccountTemp = UserAccountTemp(
                 AccountType.LASTFM,
                 "",
             )
-        )
+
+            if (!PlatformStuff.isTv) {
+                val url =
+                    "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm"
+                PanoRoute.WebView(
+                    url = url,
+                    userAccountTemp = userAccountTemp
+                )
+            } else {
+                PanoRoute.OobLastfmLibreFmAuth(
+                    userAccountTemp = userAccountTemp,
+                )
+            }
+        }
 
         AccountType.LIBREFM -> {
             val userAccountTemp = UserAccountTemp(
@@ -25,16 +36,10 @@ object LoginDestinations {
                 "",
                 Stuff.LIBREFM_API_ROOT
             )
-            if (PlatformStuff.isTv) {
-                PanoRoute.WebView(
-                    url = "https://libre.fm/api/auth/?api_key=$LIBREFM_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/librefm",
-                    userAccountTemp = userAccountTemp
-                )
-            } else {
-                PanoRoute.OobLibreFmAuth(
-                    userAccountTemp = userAccountTemp,
-                )
-            }
+
+            PanoRoute.OobLastfmLibreFmAuth(
+                userAccountTemp = userAccountTemp,
+            )
         }
 
         AccountType.GNUFM -> PanoRoute.LoginGnufm

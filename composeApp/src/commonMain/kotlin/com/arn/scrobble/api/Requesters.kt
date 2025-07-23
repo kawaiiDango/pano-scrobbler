@@ -30,7 +30,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-import io.ktor.serialization.JsonConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.Dispatchers
@@ -110,7 +109,7 @@ object Requesters {
                 else
                     resp.parseJsonBody<T>()
                 Result.success(body)
-            } catch (e: JsonConvertException) {
+            } catch (e: SerializationException) {
                 val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
@@ -133,7 +132,7 @@ object Requesters {
                 else
                     resp.parseJsonBody<T>()
                 Result.success(body)
-            } catch (e: JsonConvertException) {
+            } catch (e: SerializationException) {
                 val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }
@@ -178,7 +177,7 @@ object Requesters {
                     pageEntries.entries,
                 )
                 Result.success(pr)
-            } catch (e: JsonConvertException) {
+            } catch (e: SerializationException) {
                 val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
                 Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
             }

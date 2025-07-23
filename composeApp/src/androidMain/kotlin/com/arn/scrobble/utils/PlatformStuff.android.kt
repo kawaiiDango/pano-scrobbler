@@ -313,7 +313,7 @@ actual object PlatformStuff {
         }.showIfNeeded()
     }
 
-    actual fun getWifiIpAddress(): String? {
+    actual fun getLocalIpAddress(): String? {
         val connectivityManager =
             ContextCompat.getSystemService(
                 application,

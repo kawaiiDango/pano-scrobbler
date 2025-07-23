@@ -6,8 +6,8 @@
     android:name="drawable">
     <group
         android:name="group"
-        android:scaleX="0.6"
-        android:scaleY="0.6"
+        android:scaleX="0.9"
+        android:scaleY="0.9"
         android:pivotY="54"
         android:pivotX="54">
         <path

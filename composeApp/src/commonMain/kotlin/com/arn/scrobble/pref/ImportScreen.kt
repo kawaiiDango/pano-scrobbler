@@ -30,6 +30,7 @@ import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.RadioButtonGroup
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.collectLatest
@@ -83,7 +84,11 @@ fun ImportScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        ImExportModeSelector(toggleButtonSelectedIndex) { index ->
+        ImExportModeSelector(
+            toggleButtonSelectedIndex,
+            supportsFile = !PlatformStuff.isTv,
+            supportsNetwork = true,
+        ) { index ->
             when (index) {
                 0 -> {
                     filePickerShown = true

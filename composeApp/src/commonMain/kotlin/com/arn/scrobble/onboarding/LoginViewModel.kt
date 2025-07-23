@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -17,6 +19,7 @@ import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.failed_encode_url
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
+import java.io.IOException
 
 class LoginViewModel : ViewModel() {
     private val _result = MutableSharedFlow<Result<Unit>>()
@@ -153,15 +156,32 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun lastfmLogin(
+    fun lastfmOobLogin(
         userAccountTemp: UserAccountTemp,
         token: String,
     ) {
         viewModelScope.launch {
-            LastFm.authAndGetSession(
-                userAccountTemp.copy(authKey = token)
-            ).map { }
-                .let { _result.emit(it) }
+            // try every 3 seconds for 2 minutes
+            var tryAgainTimeout = System.currentTimeMillis() + 120_000L
+
+            while (tryAgainTimeout > System.currentTimeMillis()) {
+                val result = LastFm.authAndGetSession(
+                    userAccountTemp.copy(authKey = token)
+                )
+
+                // 14 - This token has not been authorized
+                if (result.isFailure && (result.exceptionOrNull() as? ApiException)?.code == 14) {
+                    delay(3000)
+                    val hasTimeLeft = tryAgainTimeout - System.currentTimeMillis() > 0
+
+                    if (!hasTimeLeft) {
+                        _result.emit(Result.failure(IOException("Timeout waiting for authorization")))
+                    }
+                } else {
+                    _result.emit(result.map { })
+                    tryAgainTimeout = 0 // stop trying
+                }
+            }
         }
     }
 }

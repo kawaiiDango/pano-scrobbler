@@ -37,7 +37,7 @@ import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.SearchBox
+import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
@@ -122,7 +122,7 @@ fun ImageSearchScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        SearchBox(
+        SearchField(
             searchTerm = searchTerm,
             label = printableEntryName,
             onSearchTermChange = { searchTerm = it },

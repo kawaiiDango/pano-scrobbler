@@ -51,8 +51,9 @@ object AndroidStuff {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         else PendingIntent.FLAG_UPDATE_CURRENT
 
-    val canShowPersistentNotiIfEnabled =
-        Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU || isNonPlayBuild
+    val canShowPersistentNotiIfEnabled
+        get() = !PlatformStuff.isTv &&
+                (Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU || isNonPlayBuild)
 
 //    @RequiresApi(Build.VERSION_CODES.Q)
 //    @Throws(IOException::class)

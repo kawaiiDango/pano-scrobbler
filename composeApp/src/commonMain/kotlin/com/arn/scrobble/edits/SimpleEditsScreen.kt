@@ -31,9 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.SimpleEdit
-import com.arn.scrobble.ui.EmptyText
+import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.EmptyTextWithButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.SearchBox
+import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
@@ -44,7 +45,7 @@ import pano_scrobbler.composeapp.generated.resources.num_simple_edits
 
 @Composable
 fun SimpleEditsScreen(
-    onEdit: (SimpleEdit?) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SimpleEditsVM = viewModel { SimpleEditsVM() },
 ) {
@@ -58,7 +59,7 @@ fun SimpleEditsScreen(
 
     Column(modifier = modifier) {
         if (count > Stuff.MIN_ITEMS_TO_SHOW_SEARCH) {
-            SearchBox(
+            SearchField(
                 searchTerm = searchTerm,
                 onSearchTermChange = {
                     searchTerm = it
@@ -68,9 +69,12 @@ fun SimpleEditsScreen(
             )
         }
 
-        EmptyText(
+        EmptyTextWithButtonOnTv(
             visible = simpleEdits?.isEmpty() == true,
-            text = pluralStringResource(Res.plurals.num_simple_edits, 0, 0)
+            text = pluralStringResource(Res.plurals.num_simple_edits, 0, 0),
+            onButtonClick = {
+                onNavigate(PanoRoute.Import)
+            }
         )
 
         PanoLazyColumn(
@@ -97,7 +101,9 @@ fun SimpleEditsScreen(
                 ) { edit ->
                     SimpleEditItem(
                         edit,
-                        onEdit = onEdit,
+                        onEdit = {
+                            onNavigate(PanoRoute.SimpleEditsAdd(it))
+                        },
                         onDelete = { viewModel.delete(it) },
                         modifier = Modifier.animateItem()
                     )

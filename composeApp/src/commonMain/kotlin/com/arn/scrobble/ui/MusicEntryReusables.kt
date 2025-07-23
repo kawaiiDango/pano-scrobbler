@@ -479,6 +479,15 @@ private fun NowPlayingSurface(
         }
     }
 
+    val progress by customFpsInfiniteAnimation(
+        initialValue = 0f,
+        targetValue = 1f,
+        durationMillis = 25_000,
+        enabled = isResumed && nowPlaying,
+    )
+    val fgColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.3f)
+    var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
+
     Surface(
         color = if (nowPlaying)
             MaterialTheme.colorScheme.primaryContainer
@@ -488,43 +497,34 @@ private fun NowPlayingSurface(
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
     ) {
-        if (nowPlaying) {
-            val progress by customFpsInfiniteAnimation(
-                initialValue = 0f,
-                targetValue = 1f,
-                durationMillis = 25_000,
-                enabled = isResumed
-            )
-            val fgColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.4f)
+        Box(
+            modifier = if (nowPlaying) {
+                val brushRadial = remember(fgColor, brushRadius) {
+                    Brush.radialGradient(
+                        0f to fgColor,
+                        0.75f to Color.Transparent,
+                        radius = brushRadius
+                    )
+                }
 
-            var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
-
-            val brushRadial = remember(fgColor, brushRadius) {
-                Brush.radialGradient(
-                    0f to fgColor,
-                    0.75f to Color.Transparent,
-                    radius = brushRadius
-                )
-            }
-
-            Box(
-                modifier = Modifier.drawBehind {
+                Modifier.drawBehind {
                     brushRadius = if (size.minDimension < 2 * size.maxDimension)
                         size.minDimension * 1.5f
                     else
                         size.minDimension / 2
 
-                    translate((progress - 0.5f) * 2 * (size.width), size.height / 2) {
+                    translate((progress - 0.5f) * 2 * (size.width), size.height * 3 / 4) {
                         drawCircle(
                             brush = brushRadial,
                             radius = brushRadius,
                         )
                     }
                 }
-            )
+            } else
+                Modifier
+        ) {
+            content()
         }
-
-        content()
     }
 }
 

@@ -37,9 +37,11 @@
 
     <!--  strings for unfinalized stuff  -->
 
+    <string name="login_in_browser">Complete the login in the browser window</string>
+    <string name="edit_no_save">This will not be saved for future scrobbles</string>
     <string name="also_available_on" formatted="true">Get this app on %1$s</string>
-    <string name="desktop" formatted="true">PC</string>
-    <string name="android" formatted="true">Android</string>
+    <string name="desktop">PC</string>
+    <string name="android">Android</string>
     <string name="automation_cli">Command-line arguments</string>
     <string name="automation_cli_info">Run the pano-scrobbler executable with one of these command line arguments, while an instance is already running.</string>
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted" and URI to one of these.</string>
@@ -61,7 +63,6 @@ According to Google Play's policies, purchases made through Google Play cannot b
 
     <string name="move_up" translatable="false">Move up</string>
     <string name="move_down" translatable="false">Move down</string>
-    <string name="desktop_webview_message" translatable="false">Complete the action in the WebView window</string>
     <string name="desktop_webview_not_loaded" translatable="false">Failed to load webview. Do you have the required dependencies installed?
 
 Arch:

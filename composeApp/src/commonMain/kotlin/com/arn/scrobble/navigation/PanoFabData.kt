@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
+import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add
@@ -23,19 +24,19 @@ fun getFabData(dest: NavDestination?): PanoFabData? {
     if (dest == null) return null
 
     return when {
-        dest.hasRoute<PanoRoute.RegexEdits>() -> PanoFabData(
+        dest.hasRoute<PanoRoute.RegexEdits>() && !PlatformStuff.isTv -> PanoFabData(
             Res.string.add,
             Icons.Outlined.Add,
             PanoRoute.RegexEditsAdd(null)
         )
 
-        dest.hasRoute<PanoRoute.SimpleEdits>() -> PanoFabData(
+        dest.hasRoute<PanoRoute.SimpleEdits>() && !PlatformStuff.isTv -> PanoFabData(
             Res.string.add,
             Icons.Outlined.Add,
             PanoRoute.SimpleEditsAdd(null)
         )
 
-        dest.hasRoute<PanoRoute.BlockedMetadatas>() -> PanoFabData(
+        dest.hasRoute<PanoRoute.BlockedMetadatas>() && !PlatformStuff.isTv -> PanoFabData(
             Res.string.add,
             Icons.Outlined.Add,
             route = null,

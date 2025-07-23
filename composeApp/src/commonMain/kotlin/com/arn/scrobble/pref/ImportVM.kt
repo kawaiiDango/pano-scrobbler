@@ -2,6 +2,7 @@ package com.arn.scrobble.pref
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
@@ -61,16 +62,18 @@ class ImportVM : ViewModel() {
                 return@launch
             }
 
-            val wifiIpAddress = PlatformStuff.getWifiIpAddress()
-            if (wifiIpAddress == null) {
-                _serverAddress.value = Result.failure(IOException("No wifi connection"))
+            val localIp = PlatformStuff.getLocalIpAddress()
+            if (localIp == null) {
+                _serverAddress.value = Result.failure(IOException("No connection"))
                 return@launch
             }
 
             val randomPort = (Base26Utils.PORT_START..Base26Utils.PORT_END).random()
 
+            Logger.d { "Server running on: https://$localIp:$randomPort" }
+
             try {
-                val base26Address = Base26Utils.encodeIpPort(wifiIpAddress, randomPort)
+                val base26Address = Base26Utils.encodeIpPort(localIp, randomPort)
                 val server = ImportServer(randomPort, base26Address) { postData ->
                     _jsonText.tryEmit(postData)
                 }
@@ -78,8 +81,8 @@ class ImportVM : ViewModel() {
 
                 _serverAddress.value = Result.success(base26Address)
             } catch (e: Exception) {
+                Logger.e(e) { "Failed to start import server" }
                 _serverAddress.value = Result.failure(e)
-                e.printStackTrace()
             }
 
         }
@@ -96,11 +99,16 @@ class ImportVM : ViewModel() {
         private val path: String,
         private val onImport: (String) -> Unit,
     ) : NanoHTTPD(port) {
+        private val keyFileExtension = if (PlatformStuff.isDesktop) "jks" else "bks"
+
         init {
-            val ks = KeyStore.getInstance(KeyStore.getDefaultType())
-            runBlocking { Res.readBytes("files/embedded_server.bks") }.inputStream().use {
-                ks.load(it, Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray())
-            }
+            val ksType = KeyStore.getDefaultType()
+            val ks = KeyStore.getInstance(ksType)
+            runBlocking { Res.readBytes("files/pano-embedded-server-ks.$keyFileExtension") }
+                .inputStream()
+                .use {
+                    ks.load(it, Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray())
+                }
             val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
             kmf.init(ks, Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray())
             makeSecure(makeSSLSocketFactory(ks, kmf), null)

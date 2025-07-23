@@ -38,7 +38,10 @@ import java.io.File
 import java.io.OutputStream
 import java.net.CookieHandler
 import java.net.CookieManager
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import java.net.URI
+
 
 actual object PlatformStuff {
 
@@ -224,7 +227,19 @@ actual object PlatformStuff {
     actual suspend fun promptForReview(activity: Any?) {
     }
 
-    actual fun getWifiIpAddress(): String? = null
+    actual fun getLocalIpAddress(): String? {
+        return try {
+            NetworkInterface.getNetworkInterfaces().asSequence()
+                .filter { it.isUp && !it.isLoopback && !it.isVirtual }
+                .flatMap { it.inetAddresses.asSequence() }
+                .firstOrNull {
+                    !it.isLoopbackAddress && it is Inet4Address
+                }?.hostAddress
+        } catch (e: Exception) {
+            Logger.e(e) { "Failed to get local IP address" }
+            null
+        }
+    }
 
     actual fun monotonicTimeMs(): Long = System.nanoTime() / 1_000_000L
 }

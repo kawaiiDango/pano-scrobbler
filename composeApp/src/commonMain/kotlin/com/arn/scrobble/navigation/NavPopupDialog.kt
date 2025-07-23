@@ -102,30 +102,38 @@ fun NavPopupDialog(
                 },
             )
 
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                tooltip = { PlainTooltip { Text(stringResource(Res.string.search)) } },
-                state = rememberTooltipState(),
-            ) {
-                OutlinedIconButton(
-                    onClick = {
-                        onNavigate(PanoRoute.Search)
-                    },
-                    border = ButtonDefaults.outlinedButtonBorder(true),
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = stringResource(Res.string.search),
-                    )
-                }
-            }
-
             if (!PlatformStuff.isTv) {
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+                    tooltip = { PlainTooltip { Text(stringResource(Res.string.search)) } },
+                    state = rememberTooltipState(),
+                ) {
+                    OutlinedIconButton(
+                        onClick = {
+                            onNavigate(PanoRoute.Search)
+                        },
+                        border = ButtonDefaults.outlinedButtonBorder(true),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = stringResource(Res.string.search),
+                        )
+                    }
+                }
+
                 ButtonWithIcon(
                     text = stringResource(Res.string.help),
                     icon = Icons.AutoMirrored.Outlined.HelpOutline,
                     onClick = {
                         onNavigate(PanoRoute.Help)
+                    },
+                )
+            } else {
+                ButtonWithIcon(
+                    text = stringResource(Res.string.search),
+                    icon = Icons.Outlined.Search,
+                    onClick = {
+                        onNavigate(PanoRoute.Search)
                     },
                 )
             }

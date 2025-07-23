@@ -239,11 +239,11 @@
   "methods":[{"name":"serializer","parameterTypes":[] }]
 },
 {
-  "name":"com.arn.scrobble.navigation.PanoRoute$OobLibreFmAuth",
+  "name":"com.arn.scrobble.navigation.PanoRoute$OobLastfmLibreFmAuth",
   "fields":[{"name":"Companion"}]
 },
 {
-  "name":"com.arn.scrobble.navigation.PanoRoute$OobLibreFmAuth$Companion",
+  "name":"com.arn.scrobble.navigation.PanoRoute$OobLastfmLibreFmAuth$Companion",
   "methods":[{"name":"serializer","parameterTypes":[] }]
 },
 {

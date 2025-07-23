@@ -20,9 +20,8 @@ import com.arn.scrobble.utils.Stuff
 import io.ktor.http.Url
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.desktop_webview_message
 import pano_scrobbler.composeapp.generated.resources.desktop_webview_not_loaded
-import pano_scrobbler.composeapp.generated.resources.pref_login
+import pano_scrobbler.composeapp.generated.resources.login_in_browser
 
 @Composable
 actual fun WebViewScreen(
@@ -35,8 +34,7 @@ actual fun WebViewScreen(
     viewModel: WebViewVM,
     modifier: Modifier,
 ) {
-    val title = stringResource(Res.string.pref_login)
-    val completeLoginMessage = stringResource(Res.string.desktop_webview_message)
+    val title = stringResource(Res.string.login_in_browser)
     val webViewNotLoadedMessage = stringResource(Res.string.desktop_webview_not_loaded)
     var statusText by remember { mutableStateOf("") }
 
@@ -55,7 +53,7 @@ actual fun WebViewScreen(
                 DesktopStuff.webViewDir.absolutePath
             )
 
-            statusText = completeLoginMessage
+            statusText = ""
         } catch (e: UnsatisfiedLinkError) {
             // Handle the case where the native library is not found
             statusText = webViewNotLoadedMessage

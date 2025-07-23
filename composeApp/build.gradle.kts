@@ -118,8 +118,8 @@ kotlin {
             implementation(libs.kotlin.coroutines.core)
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
-//            implementation(libs.material3)
+//            implementation(compose.material3)
+            implementation(libs.material3)
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.uiUtil)
@@ -152,6 +152,7 @@ kotlin {
             implementation(libs.nanohttpd)
             implementation(libs.androidx.room.runtime)
             implementation(libs.kotlinx.immutable)
+            implementation(libs.qrcode)
             implementation(projects.extrasCommon)
         }
 

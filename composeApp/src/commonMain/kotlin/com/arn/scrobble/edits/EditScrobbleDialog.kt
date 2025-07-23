@@ -7,12 +7,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -42,11 +51,14 @@ import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.album_optional
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.edit
+import pano_scrobbler.composeapp.generated.resources.edit_no_save
 import pano_scrobbler.composeapp.generated.resources.pref_login
+import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.swap
 import pano_scrobbler.composeapp.generated.resources.track
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScrobbleDialog(
     onDone: (ScrobbleData) -> Unit,
@@ -64,6 +76,7 @@ fun EditScrobbleDialog(
     var albumArtistVisible by rememberSaveable { mutableStateOf(!scrobbleData.albumArtist.isNullOrEmpty()) }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     var reauthenticateButtonShown by remember { mutableStateOf(false) }
+    var save by rememberSaveable { mutableStateOf(true) }
 
     val doEdit = {
         val newScrobbleData = scrobbleData.copy(
@@ -76,6 +89,7 @@ fun EditScrobbleDialog(
             origScrobbleData = scrobbleData,
             newScrobbleData = newScrobbleData,
             msid = msid,
+            save = save,
         )
     }
 
@@ -182,6 +196,14 @@ fun EditScrobbleDialog(
             )
         }
 
+        AnimatedVisibility(visible = !save) {
+            Text(
+                stringResource(Res.string.edit_no_save),
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
         VerifyButton(
             doStuff = doEdit,
             result = result,
@@ -199,6 +221,24 @@ fun EditScrobbleDialog(
                     Text(stringResource(Res.string.pref_login))
                 }
             } else {
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+                    tooltip = { PlainTooltip { Text(stringResource(Res.string.save)) } },
+                    state = rememberTooltipState(),
+                ) {
+                    IconToggleButton(
+                        checked = save,
+                        onCheckedChange = { save = it },
+                    ) {
+                        Icon(
+                            imageVector = if (save)
+                                Icons.Filled.Save
+                            else
+                                Icons.Outlined.Save,
+                            contentDescription = stringResource(Res.string.save),
+                        )
+                    }
+                }
 
                 IconButtonWithTooltip(
                     onClick = {

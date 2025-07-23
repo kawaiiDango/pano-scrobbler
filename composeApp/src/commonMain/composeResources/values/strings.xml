@@ -710,7 +710,14 @@
     <string name="create"
         comment="Create a new file"
         >Create</string>
-
+    <string name="scan_qr">Scan this to login</string>
+    <string name="copy_from">Copy from</string>
+    <string name="nothing"
+        comment="nothing/none"
+        >Nothing</string>
+    <string name="borders"
+        comment="Borders between images in the generated collage"
+        >Borders</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>

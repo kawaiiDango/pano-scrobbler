@@ -46,7 +46,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.icons.MatchCase
 import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.DraggableItem
+import com.arn.scrobble.ui.EmptyTextWithButtonOnTv
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.backgroundForShimmer
@@ -56,6 +58,7 @@ import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.charts_custom
@@ -65,11 +68,11 @@ import pano_scrobbler.composeapp.generated.resources.edit_presets
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
 import pano_scrobbler.composeapp.generated.resources.move_down
 import pano_scrobbler.composeapp.generated.resources.move_up
+import pano_scrobbler.composeapp.generated.resources.num_regex_edits
 
 @Composable
 fun RegexEditsScreen(
-    onNavigateToTest: () -> Unit,
-    onNavigateToEdit: (RegexEdit) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RegexEditsVM = viewModel { RegexEditsVM() },
 ) {
@@ -92,7 +95,7 @@ fun RegexEditsScreen(
         regexEdits = regexEditsReordered,
         presetsWithState = presetsWithState,
         onItemClick = {
-            onNavigateToEdit(it)
+            onNavigate(PanoRoute.RegexEditsAdd(it))
         },
         onMoveItem = { fromIndex, toIndex ->
             if (fromIndex == toIndex) return@RegexEditsList
@@ -108,7 +111,12 @@ fun RegexEditsScreen(
             }.let { viewModel.upsertAll(it) }
         },
         onPresetToggled = viewModel::updatePreset,
-        onNavigateToTest = onNavigateToTest,
+        onNavigateToTest = {
+            onNavigate(PanoRoute.RegexEditsTest)
+        },
+        onImport = {
+            onNavigate(PanoRoute.Import)
+        },
         modifier = modifier
     )
 }
@@ -123,6 +131,7 @@ private fun RegexEditsList(
     onDragEnd: () -> Unit,
     onPresetToggled: (RegexPreset, Boolean) -> Unit,
     onNavigateToTest: () -> Unit,
+    onImport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val nonRegexItemsCount = 3 + RegexPresets.filteredPresets.size
@@ -199,6 +208,16 @@ private fun RegexEditsList(
                         .fillMaxWidth()
                         .padding(horizontal = horizontalOverscanPadding(), vertical = 4.dp)
                         .animateItem()
+                )
+            }
+        }
+
+        if (regexEdits.isEmpty()) {
+            item(key = "no_custom_regexes") {
+                EmptyTextWithButtonOnTv(
+                    visible = true,
+                    text = pluralStringResource(Res.plurals.num_regex_edits, 0, 0),
+                    onButtonClick = onImport
                 )
             }
         }

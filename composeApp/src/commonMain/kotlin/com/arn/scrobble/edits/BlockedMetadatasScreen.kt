@@ -29,9 +29,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.ui.EmptyText
+import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.EmptyTextWithButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.SearchBox
+import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
@@ -45,7 +47,8 @@ import pano_scrobbler.composeapp.generated.resources.skip
 
 @Composable
 fun BlockedMetadatasScreen(
-    onEdit: (BlockedMetadata) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BlockedMetadataVM = viewModel { BlockedMetadataVM() },
 ) {
@@ -63,7 +66,7 @@ fun BlockedMetadatasScreen(
 
     Column(modifier = modifier) {
         if (count > Stuff.MIN_ITEMS_TO_SHOW_SEARCH) {
-            SearchBox(
+            SearchField(
                 searchTerm = searchTerm,
                 onSearchTermChange = {
                     searchTerm = it
@@ -73,9 +76,12 @@ fun BlockedMetadatasScreen(
             )
         }
 
-        EmptyText(
+        EmptyTextWithButtonOnTv(
             visible = blockedMetadatas?.isEmpty() == true,
-            text = pluralStringResource(Res.plurals.num_blocked_metadata, 0, 0)
+            text = pluralStringResource(Res.plurals.num_blocked_metadata, 0, 0),
+            onButtonClick = {
+                onNavigate(PanoRoute.Import)
+            }
         )
 
         PanoLazyColumn(
@@ -100,7 +106,9 @@ fun BlockedMetadatasScreen(
                 ) { edit ->
                     BlockedMetadataItem(
                         edit,
-                        onEdit = onEdit,
+                        onEdit = {
+                            onOpenDialog(PanoDialog.BlockedMetadataAdd(it))
+                        },
                         onDelete = ::doDelete,
                         modifier = Modifier.animateItem()
                     )

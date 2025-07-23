@@ -44,7 +44,7 @@ import com.arn.scrobble.onboarding.FileLoginScreen
 import com.arn.scrobble.onboarding.GnufmLoginScreen
 import com.arn.scrobble.onboarding.ListenBrainzLoginScreen
 import com.arn.scrobble.onboarding.OnboardingScreen
-import com.arn.scrobble.onboarding.OobLibrefmLoginScreen
+import com.arn.scrobble.onboarding.OobLastfmLibrefmLoginScreen
 import com.arn.scrobble.onboarding.OobPleromaLoginScreen
 import com.arn.scrobble.onboarding.PleromaLoginScreen
 import com.arn.scrobble.onboarding.WebViewScreen
@@ -84,17 +84,18 @@ import pano_scrobbler.composeapp.generated.resources.edit_regex_test
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
+import pano_scrobbler.composeapp.generated.resources.login_in_browser
 import pano_scrobbler.composeapp.generated.resources.my_scrobbles
 import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_import
-import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
 import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.regex_rules
+import pano_scrobbler.composeapp.generated.resources.scan_qr
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.settings
@@ -330,7 +331,7 @@ fun NavGraphBuilder.panoNavGraph(
     composable<PanoRoute.SimpleEdits> {
         onSetTitleRes(it.id, Res.string.simple_edits)
         SimpleEditsScreen(
-            onEdit = { navigate(PanoRoute.SimpleEditsAdd(it)) },
+            onNavigate = navigate,
             modifier = modifier()
         )
     }
@@ -352,8 +353,7 @@ fun NavGraphBuilder.panoNavGraph(
     composable<PanoRoute.RegexEdits> {
         onSetTitleRes(it.id, Res.string.regex_rules)
         RegexEditsScreen(
-            onNavigateToTest = { navigate(PanoRoute.RegexEditsTest) },
-            onNavigateToEdit = { navigate(PanoRoute.RegexEditsAdd(it)) },
+            onNavigate = navigate,
             modifier = modifier().padding(panoContentPadding())
         )
     }
@@ -397,15 +397,8 @@ fun NavGraphBuilder.panoNavGraph(
         onSetTitleRes(it.id, Res.string.pref_blocked_metadata)
 
         BlockedMetadatasScreen(
-            onEdit = {
-                onOpenDialog(
-                    PanoDialog.BlockedMetadataAdd(
-                        it,
-                        ignoredArtist = null,
-                        hash = null
-                    )
-                )
-            },
+            onNavigate = navigate,
+            onOpenDialog = onOpenDialog,
             modifier = modifier()
         )
     }
@@ -565,16 +558,22 @@ fun NavGraphBuilder.panoNavGraph(
         )
     }
 
-    composable<PanoRoute.OobLibreFmAuth>(
+    composable<PanoRoute.OobLastfmLibreFmAuth>(
         typeMap = mapOf(
             typeOf<UserAccountTemp>() to serializableType<UserAccountTemp>(),
         )
     ) {
-        onSetTitleRes(it.id, Res.string.pref_login)
+        onSetTitleRes(
+            it.id,
+            if (PlatformStuff.isTv)
+                Res.string.scan_qr
+            else
+                Res.string.login_in_browser
+        )
 
-        val arguments = it.toRoute<PanoRoute.OobLibreFmAuth>()
+        val arguments = it.toRoute<PanoRoute.OobLastfmLibreFmAuth>()
 
-        OobLibrefmLoginScreen(
+        OobLastfmLibrefmLoginScreen(
             userAccountTemp = arguments.userAccountTemp,
             onBack = goBack,
             modifier = modifier().addColumnPadding()

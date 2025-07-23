@@ -22,6 +22,9 @@ fun PanoPager(
     content: @Composable (page: Int) -> Unit,
 ) {
     val initialPage by rememberSaveable { mutableIntStateOf(selectedPage) }
+    val validSelectedPage by rememberSaveable(selectedPage, totalPages) {
+        mutableIntStateOf(selectedPage.coerceIn(0, totalPages - 1))
+    }
 
     if (!PlatformStuff.isTv) {
         var firstPageChange by rememberSaveable { mutableStateOf(false) }
@@ -31,16 +34,15 @@ fun PanoPager(
             pageCount = { totalPages }
         )
 
-        LaunchedEffect(selectedPage) {
+        LaunchedEffect(validSelectedPage) {
             if (!firstPageChange) {
                 firstPageChange = true
             } else
-                pagerState.animateScrollToPage(selectedPage)
+                pagerState.animateScrollToPage(validSelectedPage)
         }
 
         LaunchedEffect(pagerState.settledPage) {
-            val page = pagerState.settledPage
-            onSelectPage(page)
+            onSelectPage(pagerState.settledPage)
         }
 
         HorizontalPager(
@@ -52,12 +54,12 @@ fun PanoPager(
             content(page)
         }
     } else {
-        LaunchedEffect(Unit) {
-            onSelectPage(initialPage)
+        LaunchedEffect(validSelectedPage) {
+            onSelectPage(validSelectedPage)
         }
 
         Box(modifier = modifier) {
-            content(selectedPage)
+            content(validSelectedPage)
         }
     }
 }

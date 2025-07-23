@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 
 class EditScrobbleViewModel : ViewModel() {
@@ -45,31 +44,59 @@ class EditScrobbleViewModel : ViewModel() {
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
+        save: Boolean,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val r = validateAsync(
+            val r = scrobbleAndDelete(
                 origScrobbleData,
                 newScrobbleData,
                 msid,
-            ).recoverCatching {
-                if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
-                    throw LastfmUnscrobbler.CookiesInvalidatedException(getString(Res.string.lastfm_reauth))
-                } else if (it is ScrobbleIgnoredException) {
-                    if (System.currentTimeMillis() - it.scrobbleTime >= Stuff.LASTFM_MAX_PAST_SCROBBLE) {
-                        it.altAction()
-                        throw ApiException(
-                            -1,
-                            "Scrobble too old, edit saved only for future scrobbles"
-                        )
-                    }
+            )
+                .onSuccess {
+                    if (save)
+                        saveEdit(origScrobbleData, newScrobbleData)
                 }
-                throw it
-            }
+                .recoverCatching {
+                    if (it is ScrobbleIgnoredException) {
+                        if (System.currentTimeMillis() - it.scrobbleTime >= Stuff.LASTFM_MAX_PAST_SCROBBLE && save) {
+                            saveEdit(origScrobbleData, newScrobbleData)
+                            throw ApiException(
+                                -1,
+                                "Scrobble too old, edit saved only for future scrobbles"
+                            )
+                        }
+                    }
+                    throw it
+                }
             _result.emit(r)
         }
     }
 
-    private suspend fun validateAsync(
+
+    private suspend fun saveEdit(
+        origScrobbleData: ScrobbleData,
+        newScrobbleData: ScrobbleData,
+    ) {
+        if (!(origScrobbleData.track == newScrobbleData.track &&
+                    origScrobbleData.artist == newScrobbleData.artist &&
+                    origScrobbleData.album == newScrobbleData.album &&
+                    newScrobbleData.albumArtist == "")
+        ) {
+            val dao = PanoDb.db.getSimpleEditsDao()
+            val e = SimpleEdit(
+                artist = newScrobbleData.artist,
+                album = newScrobbleData.album ?: "",
+                albumArtist = newScrobbleData.albumArtist ?: "",
+                track = newScrobbleData.track,
+                origArtist = origScrobbleData.artist,
+                origAlbum = origScrobbleData.album ?: "",
+                origTrack = origScrobbleData.track,
+            )
+            dao.insertReplaceLowerCase(e)
+        }
+    }
+
+    private suspend fun scrobbleAndDelete(
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
@@ -111,26 +138,6 @@ class EditScrobbleViewModel : ViewModel() {
             msid = msid
         )
 
-        suspend fun saveEdit() {
-            if (!(track == origTrack && artist == origArtist && album == origAlbum && albumArtist == "")) {
-                val dao = PanoDb.db.getSimpleEditsDao()
-                val e = SimpleEdit(
-                    artist = artist,
-                    album = album ?: "",
-                    albumArtist = albumArtist ?: "",
-                    track = track,
-                    origArtist = origArtist,
-                    origAlbum = origAlbum ?: "",
-                    origTrack = origTrack,
-                )
-                dao.insertReplaceLowerCase(e)
-                dao.deleteLegacy(
-                    origArtist.hashCode().toString() + origAlbum.hashCode()
-                        .toString() + origTrack.hashCode().toString()
-                )
-            }
-        }
-
         if (track.isBlank() || artist.isBlank()) {
             return Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
         }
@@ -164,7 +171,7 @@ class EditScrobbleViewModel : ViewModel() {
         if (scrobblable != null) {
             scrobbleResult = scrobblable.scrobble(scrobbleData)
             if (scrobbleResult.map { it.ignored }.getOrNull() == true) {
-                return Result.failure(ScrobbleIgnoredException(timeMillis, ::saveEdit))
+                return Result.failure(ScrobbleIgnoredException(timeMillis))
             } else {
                 if (!isNowPlaying) {
                     // The user might submit the edit after it has been scrobbled, so delete anyways
@@ -200,8 +207,6 @@ class EditScrobbleViewModel : ViewModel() {
                 ScrobbleSource(timeMillis = scrobbleData.timestamp, pkg = it)
             PanoDb.db.getScrobbleSourcesDao().insert(scrobbleSource)
         }
-
-        saveEdit()
 
         return Result.success(scrobbleData)
     }

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -20,58 +23,93 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.VerifyButton
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun OobLibrefmLoginScreen(
+fun OobLastfmLibrefmLoginScreen(
     userAccountTemp: UserAccountTemp,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
-    var token by rememberSaveable { mutableStateOf<String?>(null) }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
+    var url by rememberSaveable { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
+        val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
+            Stuff.LAST_KEY
+        else
+            Stuff.LIBREFM_KEY
+
+        val apiSecret = if (userAccountTemp.type == AccountType.LASTFM)
+            Stuff.LAST_SECRET
+        else
+            Stuff.LIBREFM_KEY
+
         withContext(Dispatchers.IO) {
             Requesters.lastfmUnauthedRequester.getToken(
-                userAccountTemp.apiRoot ?: Stuff.LIBREFM_API_ROOT,
-                Stuff.LIBREFM_KEY,
-                Stuff.LIBREFM_KEY,
+                userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT,
+                apiKey,
+                apiSecret,
             )
         }.onSuccess {
-            val url = "https://libre.fm/api/auth/?api_key=${Stuff.LIBREFM_KEY}&token=${it.token}"
-            token = it.token
-            PlatformStuff.openInBrowser(url)
+            url = if (userAccountTemp.type == AccountType.LASTFM)
+                "https://www.last.fm/api/auth?api_key=$apiKey&token=${it.token}"
+            else
+                "https://libre.fm/api/auth/?api_key=$apiKey&token=${it.token}"
+
+            if (!PlatformStuff.isTv) {
+                PlatformStuff.openInBrowser(url!!)
+            }
+
+            viewModel.lastfmOobLogin(
+                userAccountTemp,
+                it.token,
+            )
+        }
+    }
+
+    LaunchedEffect(result) {
+        if (result?.isSuccess == true) {
+            onBack()
         }
     }
 
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
-        VerifyButton(
-            buttonText = stringResource(Res.string.done),
-            onDone = onBack,
-            doStuff = {
-                token?.let { token ->
-                    viewModel.lastfmLogin(userAccountTemp, token)
-                }
-            },
-            result = result,
-        )
+        if (PlatformStuff.isTv && url != null) {
+            QrCodeCanvas(
+                url = url!!,
+                modifier = Modifier.weight(0.8f),
+            )
+        }
+
+        val exception = result?.exceptionOrNull()
+
+
+        if (exception != null) {
+            exception.printStackTrace()
+            ErrorText(exception.redactedMessage)
+        } else
+            CircularWavyProgressIndicator()
     }
 }
 

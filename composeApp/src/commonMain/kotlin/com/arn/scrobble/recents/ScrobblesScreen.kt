@@ -154,11 +154,9 @@ fun ScrobblesScreen(
 
     val canEditOrDelete by remember(selectedType, account) {
         mutableStateOf(
-            selectedType != ScrobblesType.LOVED && account?.type !in arrayOf(
-                AccountType.FILE,
-//                AccountType.MALOJA,
-                AccountType.PLEROMA,
-            )
+            !PlatformStuff.isTv &&
+                    selectedType != ScrobblesType.LOVED &&
+                    account?.type !in arrayOf(AccountType.FILE, AccountType.PLEROMA)
         )
     }
 
@@ -327,7 +325,10 @@ fun ScrobblesScreen(
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
 
-                if (user.isSelf && (!nlsEnabled || !scrobblerEnabled || scrobblerRunning == false || !otherPlatformsLearnt)) {
+                // todo remove !canEditOrDelete
+                if (user.isSelf && (!nlsEnabled || !scrobblerEnabled || scrobblerRunning == false ||
+                            (!otherPlatformsLearnt && !canEditOrDelete && !PlatformStuff.isTv))
+                ) {
                     item("notice") {
                         val text: String
                         val icon: ImageVector

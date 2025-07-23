@@ -1,16 +1,22 @@
 package com.arn.scrobble.charts
 
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextLayoutResult
@@ -64,6 +70,7 @@ import pano_scrobbler.composeapp.generated.resources.top_albums
 import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
 import kotlin.math.abs
+import kotlin.math.max
 
 class CollageGeneratorVM : ViewModel() {
 
@@ -88,21 +95,23 @@ class CollageGeneratorVM : ViewModel() {
         captions: Boolean,
         skipMissing: Boolean,
         username: Boolean,
+        borders: Boolean,
         textMeasurer: TextMeasurer,
         iconPainters: IconPaintersForCollage,
     ) {
         this.context = context
         viewModelScope.launch {
             _generateCollage(
-                type,
-                size,
-                timePeriod,
-                user,
-                captions,
-                username,
-                skipMissing,
-                textMeasurer,
-                iconPainters,
+                type = type,
+                size = size,
+                timePeriod = timePeriod,
+                user = user,
+                captions = captions,
+                username = username,
+                skipMissing = skipMissing,
+                borders = borders,
+                textMeasurer = textMeasurer,
+                iconPainters = iconPainters,
             )
         }
     }
@@ -119,6 +128,7 @@ class CollageGeneratorVM : ViewModel() {
         captions: Boolean,
         username: Boolean,
         skipMissing: Boolean,
+        borders: Boolean,
         textMeasurer: TextMeasurer,
         iconPainters: IconPaintersForCollage,
     ) {
@@ -160,12 +170,13 @@ class CollageGeneratorVM : ViewModel() {
 
         val collages = results.map { entries ->
             fetchAndDrawImages(
-                entries.getOrThrow(),
-                cols,
-                rows,
-                skipMissing,
-                captions,
-                textMeasurer,
+                musicEntries = entries.getOrThrow(),
+                cols = cols,
+                rows = rows,
+                skipMissing = skipMissing,
+                captions = captions,
+                borders = borders,
+                textMeasurer = textMeasurer,
                 artistPlaceholder = iconPainters.artist,
                 albumPlaceholder = iconPainters.album,
                 trackPlaceholder = iconPainters.track,
@@ -251,6 +262,12 @@ class CollageGeneratorVM : ViewModel() {
             textLayoutResult = textLayoutResult,
             topLeft = topLeft,
             color = Color.White,
+            drawStyle = Fill,
+            shadow = Shadow(
+                color = Color.Black,
+                offset = Offset(0f, 0f),
+                blurRadius = 5f
+            )
         )
     }
 
@@ -261,6 +278,7 @@ class CollageGeneratorVM : ViewModel() {
         rows: Int,
         skipMissing: Boolean,
         captions: Boolean,
+        borders: Boolean,
         textMeasurer: TextMeasurer,
         artistPlaceholder: Painter,
         albumPlaceholder: Painter,
@@ -269,9 +287,13 @@ class CollageGeneratorVM : ViewModel() {
     ): ImageBitmap {
         val limit = cols * rows
         val cellSize = 300
-        val textSize =
-            Size(cellSize.toFloat() - 2 * paddingPx, 100f) // height is no-op in this case
-        val bitmap = ImageBitmap(cols * cellSize, rows * cellSize, hasAlpha = false)
+        val cellPadding = if (borders) paddingPx else 0
+        val cornerRadius = if (borders) paddingPx.toFloat() else 0f
+        val bitmap = ImageBitmap(
+            cols * cellSize + cellPadding * (cols + 1),
+            rows * cellSize + cellPadding * (rows + 1),
+            hasAlpha = false
+        )
         val canvas = Canvas(bitmap)
         val drawScope = CanvasDrawScope()
         val entriesPlaced = mutableListOf<MusicEntry>()
@@ -332,8 +354,10 @@ class CollageGeneratorVM : ViewModel() {
                     img.toBitmap().asImageBitmap()
                 }
 
-                val x = (entriesPlaced.size % cols) * cellSize.toFloat()
-                val y = (entriesPlaced.size / cols) * cellSize.toFloat()
+                val x =
+                    (entriesPlaced.size % cols) * cellSize.toFloat() + cellPadding * (entriesPlaced.size % cols + 1)
+                val y =
+                    (entriesPlaced.size / cols) * cellSize.toFloat() + cellPadding * (entriesPlaced.size / cols + 1)
 
                 incrementProgress()
 
@@ -350,31 +374,43 @@ class CollageGeneratorVM : ViewModel() {
 //                )!!.toBitmap(width = cellSize, height = cellSize)
 //                    .asImageBitmap()
 
-                if (artwork != null) {
-                    drawImage(
-                        image = artwork,
-                        dstOffset = IntOffset(x.toInt() + imgOffsetX, y.toInt() + imgOffsetY),
-                        dstSize = IntSize(scaledWidth, scaledHeight)
+                clipPath(Path().apply {
+                    addRoundRect(
+                        RoundRect(
+                            Rect(
+                                offset = Offset(x + imgOffsetX, y + imgOffsetY),
+                                size = Size(cellSize.toFloat(), cellSize.toFloat())
+                            ),
+                            CornerRadius(cornerRadius, cornerRadius)
+                        )
                     )
-                } else {
-                    val placeholderIcon = when (entry) {
-                        is Track -> trackPlaceholder
-                        is Album -> albumPlaceholder
-                        is Artist -> artistPlaceholder
-                    }
+                }) {
+                    if (artwork != null) {
+                        drawImage(
+                            image = artwork,
+                            dstOffset = IntOffset(x.toInt() + imgOffsetX, y.toInt() + imgOffsetY),
+                            dstSize = IntSize(scaledWidth, scaledHeight)
+                        )
+                    } else {
+                        val placeholderIcon = when (entry) {
+                            is Track -> trackPlaceholder
+                            is Album -> albumPlaceholder
+                            is Artist -> artistPlaceholder
+                        }
 
-                    val color =
-                        placeholderColors[abs(entry.colorSeed()) % placeholderColors.size]
+                        val color =
+                            placeholderColors[abs(entry.colorSeed()) % placeholderColors.size]
 
-                    with(placeholderIcon) {
-                        translate(
-                            left = x + imgOffsetX,
-                            top = y + imgOffsetY,
-                        ) {
-                            draw(
-                                size = Size(cellSize.toFloat(), cellSize.toFloat()),
-                                colorFilter = ColorFilter.tint(color)
-                            )
+                        with(placeholderIcon) {
+                            translate(
+                                left = x + imgOffsetX,
+                                top = y + imgOffsetY,
+                            ) {
+                                draw(
+                                    size = Size(cellSize.toFloat(), cellSize.toFloat()),
+                                    colorFilter = ColorFilter.tint(color)
+                                )
+                            }
                         }
                     }
                 }
@@ -402,7 +438,8 @@ class CollageGeneratorVM : ViewModel() {
                     tlr = measureText(
                         textMeasurer,
                         artist,
-                        style
+                        style,
+                        constraints = Constraints(maxWidth = cellSize - 2 * paddingPx)
                     )
                     textY -= tlr.size.height
                     drawTextFillAndStroke(
@@ -415,7 +452,8 @@ class CollageGeneratorVM : ViewModel() {
                 tlr = measureText(
                     textMeasurer,
                     name,
-                    style
+                    style,
+                    constraints = Constraints(maxWidth = cellSize - 2 * paddingPx)
                 )
                 textY -= tlr.size.height
                 drawTextFillAndStroke(
@@ -427,7 +465,8 @@ class CollageGeneratorVM : ViewModel() {
                 tlr = measureText(
                     textMeasurer,
                     scrobbleCount,
-                    style
+                    style,
+                    constraints = Constraints(maxWidth = cellSize - 2 * paddingPx)
                 )
                 textY -= tlr.size.height
                 drawTextFillAndStroke(
@@ -519,6 +558,7 @@ class CollageGeneratorVM : ViewModel() {
 
         val brandTextPadding = 32
 
+
         var brandTextWidth = if (isPro) 0 else measureText(
             textMeasurer,
             brandText,
@@ -540,28 +580,22 @@ class CollageGeneratorVM : ViewModel() {
             fontWeight = FontWeight.Medium
         )
 
-        brandTextWidth = if (isPro) 0 else measureText(
+        val brandTlr = measureText(
             textMeasurer,
             brandText,
-            titleStyle.copy(
-                color = Color.White,
-                fontSize = (footerTextSize / 2).sp,
-            ),
-            2
-        ).size.width
+            style = titleStyle.copy(fontSize = titleStyle.fontSize / 2.25),
+            maxLines = 2
+        )
+
+        brandTextWidth = if (isPro) 0 else brandTlr.size.width
 
         val extraHeights =
             headerTexts.map {
-                measureText(
-                    textMeasurer,
-                    it,
-                    titleStyle
-                ).size.height
-            } + measureText(
-                textMeasurer,
-                footerText,
-                titleStyle,
-            ).size.height
+                measureText(textMeasurer, it, titleStyle).size.height
+            } + max(
+                measureText(textMeasurer, footerText, titleStyle).size.height,
+                brandTlr.size.height
+            )
 
         val totalHeight = mosaics.size * mosaics.first().height +
                 extraHeights.sum() + extraHeights.size * 2 * paddingPx
@@ -623,27 +657,33 @@ class CollageGeneratorVM : ViewModel() {
                 size = Size(totalWidth.toFloat() - 2 * paddingPx - brandTextWidth, 100f)
             )
 
-            if (!isPro) {
-                val appIconScaledSize = (footerTextSize * 1.5).toInt()
+            if (!isPro || PlatformStuff.isDebug) {
+
+                val appIconScaledSize = brandTlr.size.height
 
                 with(appIcon) {
                     translate(
-                        left = (totalWidth - brandTextWidth - appIconScaledSize - brandTextPadding / 2 - paddingPx).toFloat(),
+                        left = (totalWidth - brandTlr.size.width - appIconScaledSize - brandTextPadding / 2 - paddingPx).toFloat(),
                         top = offsetY
                     ) {
                         draw(
-                            size = Size(appIconScaledSize.toFloat(), appIconScaledSize.toFloat())
+                            size = Size(
+                                appIconScaledSize.toFloat(),
+                                appIconScaledSize.toFloat()
+                            ),
+                            colorFilter = ColorFilter.tint(
+                                color = Color(0xFFFFB1C7) // pinkPrimary
+                            )
                         )
                     }
                 }
 
                 drawText(
-                    textMeasurer = textMeasurer,
-                    text = brandText,
-                    topLeft = Offset(totalWidth - brandTextWidth - paddingPx.toFloat(), offsetY),
-                    style = titleStyle.copy(fontSize = (footerTextSize / 2.25).sp),
-                    maxLines = 2,
-                    size = Size(brandTextWidth.toFloat(), extraHeights.last().toFloat())
+                    brandTlr,
+                    topLeft = Offset(
+                        totalWidth - brandTlr.size.width - paddingPx.toFloat(),
+                        offsetY
+                    ),
                 )
             }
         }

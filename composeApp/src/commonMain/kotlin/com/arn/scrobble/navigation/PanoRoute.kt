@@ -121,7 +121,7 @@ sealed interface PanoRoute {
     ) : PanoRoute
 
     @Serializable
-    data class OobLibreFmAuth(
+    data class OobLastfmLibreFmAuth(
         val userAccountTemp: UserAccountTemp,
     ) : PanoRoute
 

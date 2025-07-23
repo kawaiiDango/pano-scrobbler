@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +50,7 @@ import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.choose_an_app
+import pano_scrobbler.composeapp.generated.resources.edit_regex_rules_matched
 import pano_scrobbler.composeapp.generated.resources.num_matches
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import pano_scrobbler.composeapp.generated.resources.track
@@ -220,26 +222,30 @@ fun RegexEditsTestScreen(
 
                 val matchedRegexEdits = regexMatches?.matches
 
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    matchedRegexEdits?.forEach { regexEdit ->
-                        AssistChip(
-                            onClick = {
-                                onNavigateToRegexEditsAdd(regexEdit)
-                            },
-                            label = {
-                                Text(
-                                    text = regexEdit.name,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        )
+                if (!matchedRegexEdits.isNullOrEmpty()) {
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+                    ) {
+                        Text(stringResource(Res.string.edit_regex_rules_matched))
+
+                        matchedRegexEdits.forEach { regexEdit ->
+                            AssistChip(
+                                onClick = {
+                                    onNavigateToRegexEditsAdd(regexEdit)
+                                },
+                                label = {
+                                    Text(
+                                        text = regexEdit.name,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }

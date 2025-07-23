@@ -18,10 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,7 +39,7 @@ import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.SearchBox
+import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.expandableSublist
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.panoContentPadding
@@ -77,6 +80,8 @@ fun SearchScreen(
     val tracksText = stringResource(Res.string.tracks)
     val lovedText = stringResource(Res.string.loved)
 
+    val focusRequester = remember { FocusRequester() }
+
     fun onItemClick(item: MusicEntry) {
         val userSelf = Scrobblables.currentAccount.value?.user
 
@@ -96,14 +101,21 @@ fun SearchScreen(
         viewModel.search(searchTerm, searchType)
     }
 
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        SearchBox(
+        SearchField(
             searchTerm = searchTerm,
             onSearchTermChange = { searchTerm = it },
-            modifier = Modifier.padding(panoContentPadding(bottom = false))
+            modifier = Modifier
+                .padding(panoContentPadding(bottom = false))
+                .focusRequester(focusRequester)
+
         )
 
         if (PlatformStuff.isDebug) {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,16 +16,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -74,6 +80,7 @@ import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.apps
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.block
+import pano_scrobbler.composeapp.generated.resources.copy_from
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit_all
 import pano_scrobbler.composeapp.generated.resources.edit_case_sensitive
@@ -89,6 +96,7 @@ import pano_scrobbler.composeapp.generated.resources.edit_regex_invalid
 import pano_scrobbler.composeapp.generated.resources.edit_regex_warning
 import pano_scrobbler.composeapp.generated.resources.edit_replace
 import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
+import pano_scrobbler.composeapp.generated.resources.nothing
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.search
@@ -96,7 +104,6 @@ import pano_scrobbler.composeapp.generated.resources.track
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun RegexEditsAddScreen(
     mainViewModel: MainViewModel,
@@ -157,6 +164,11 @@ fun RegexEditsAddScreen(
 
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
     val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+
+    var trackCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }
+    var artistCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }
+    var albumCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }
+    var albumArtistCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }
 
     fun buildRegexEdit(): RegexEdit {
         val search = RegexEdit.SearchPatterns(
@@ -230,6 +242,104 @@ fun RegexEditsAddScreen(
             }
         }
     }
+
+    // copy from
+    LaunchedEffect(trackCopyFrom, searchTrack, replacementTrack) {
+        if (regexMode != RegexMode.Replace)
+            return@LaunchedEffect
+
+        when (trackCopyFrom) {
+            RegexEdit.Field.album -> {
+                searchTrack = searchAlbum
+                replacementTrack = replacementAlbum
+            }
+
+            RegexEdit.Field.artist -> {
+                searchTrack = searchArtist
+                replacementTrack = replacementArtist
+            }
+
+            RegexEdit.Field.albumArtist -> {
+                searchTrack = searchAlbumArtist
+                replacementTrack = replacementAlbumArtist
+            }
+
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(artistCopyFrom, searchArtist, replacementArtist) {
+        if (regexMode != RegexMode.Replace)
+            return@LaunchedEffect
+
+        when (artistCopyFrom) {
+            RegexEdit.Field.track -> {
+                searchArtist = searchTrack
+                replacementArtist = replacementTrack
+            }
+
+            RegexEdit.Field.album -> {
+                searchArtist = searchAlbum
+                replacementArtist = replacementAlbum
+            }
+
+            RegexEdit.Field.albumArtist -> {
+                searchArtist = searchAlbumArtist
+                replacementArtist = replacementAlbumArtist
+            }
+
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(albumCopyFrom, searchAlbum, replacementAlbum) {
+        if (regexMode != RegexMode.Replace)
+            return@LaunchedEffect
+
+        when (albumCopyFrom) {
+            RegexEdit.Field.track -> {
+                searchAlbum = searchTrack
+                replacementAlbum = replacementTrack
+            }
+
+            RegexEdit.Field.artist -> {
+                searchAlbum = searchArtist
+                replacementAlbum = replacementArtist
+            }
+
+            RegexEdit.Field.albumArtist -> {
+                searchAlbum = searchAlbumArtist
+                replacementAlbum = replacementAlbumArtist
+            }
+
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(albumArtistCopyFrom, searchAlbumArtist, replacementAlbumArtist) {
+        if (regexMode != RegexMode.Replace)
+            return@LaunchedEffect
+
+        when (albumArtistCopyFrom) {
+            RegexEdit.Field.track -> {
+                searchAlbumArtist = searchTrack
+                replacementAlbumArtist = replacementTrack
+            }
+
+            RegexEdit.Field.artist -> {
+                searchAlbumArtist = searchArtist
+                replacementAlbumArtist = replacementArtist
+            }
+
+            RegexEdit.Field.album -> {
+                searchAlbumArtist = searchAlbum
+                replacementAlbumArtist = replacementAlbum
+            }
+
+            else -> {}
+        }
+    }
+
     Column(
         modifier = modifier,
     ) {
@@ -274,7 +384,9 @@ fun RegexEditsAddScreen(
                         searchRegex = searchTrack,
                         replacementRegex = replacementTrack,
                         onSearchChange = { searchTrack = it },
-                        onReplacementChange = { replacementTrack = it }
+                        onReplacementChange = { replacementTrack = it },
+                        copyFromField = trackCopyFrom,
+                        onCopyFromSelected = { trackCopyFrom = it }
                     )
 
                     SearchAndReplacePair(
@@ -282,7 +394,9 @@ fun RegexEditsAddScreen(
                         searchRegex = searchArtist,
                         replacementRegex = replacementArtist,
                         onSearchChange = { searchArtist = it },
-                        onReplacementChange = { replacementArtist = it }
+                        onReplacementChange = { replacementArtist = it },
+                        copyFromField = artistCopyFrom,
+                        onCopyFromSelected = { artistCopyFrom = it }
                     )
 
                     SearchAndReplacePair(
@@ -290,7 +404,9 @@ fun RegexEditsAddScreen(
                         searchRegex = searchAlbum,
                         replacementRegex = replacementAlbum,
                         onSearchChange = { searchAlbum = it },
-                        onReplacementChange = { replacementAlbum = it }
+                        onReplacementChange = { replacementAlbum = it },
+                        copyFromField = albumCopyFrom,
+                        onCopyFromSelected = { albumCopyFrom = it }
                     )
 
                     SearchAndReplacePair(
@@ -298,7 +414,9 @@ fun RegexEditsAddScreen(
                         searchRegex = searchAlbumArtist,
                         replacementRegex = replacementAlbumArtist,
                         onSearchChange = { searchAlbumArtist = it },
-                        onReplacementChange = { replacementAlbumArtist = it }
+                        onReplacementChange = { replacementAlbumArtist = it },
+                        copyFromField = albumArtistCopyFrom,
+                        onCopyFromSelected = { albumArtistCopyFrom = it }
                     )
 
                     Row(
@@ -497,22 +615,45 @@ private fun SearchAndReplacePair(
     replacementRegex: String,
     onSearchChange: (String) -> Unit,
     onReplacementChange: (String) -> Unit,
+    copyFromField: RegexEdit.Field?,
+    onCopyFromSelected: (RegexEdit.Field?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.secondary,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(top = 16.dp)
-        )
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+
+            Spacer(
+                modifier = Modifier.weight(1f)
+            )
+
+            CopyFromSelector(
+                nullSelectionText = stringResource(Res.string.copy_from),
+                itemToTexts = mapOf(
+                    RegexEdit.Field.track to stringResource(Res.string.track),
+                    RegexEdit.Field.album to stringResource(Res.string.album),
+                    RegexEdit.Field.artist to stringResource(Res.string.artist),
+                    RegexEdit.Field.albumArtist to stringResource(Res.string.album_artist)
+                ).filterNot { (_, thisLabel) -> thisLabel == label },
+                selected = copyFromField,
+                onItemSelected = onCopyFromSelected,
+            )
+        }
 
         OutlinedTextField(
             value = searchRegex,
             onValueChange = onSearchChange,
+            enabled = copyFromField == null,
             label = { Text(stringResource(Res.string.search)) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
@@ -524,6 +665,7 @@ private fun SearchAndReplacePair(
         OutlinedTextField(
             value = replacementRegex,
             onValueChange = onReplacementChange,
+            enabled = copyFromField == null,
             label = { Text(stringResource(Res.string.edit_replace)) },
             modifier = Modifier
                 .fillMaxWidth(),
@@ -630,6 +772,65 @@ private fun ExtractOptions(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable
+private fun CopyFromSelector(
+    nullSelectionText: String,
+    itemToTexts: Map<RegexEdit.Field, String>,
+    selected: RegexEdit.Field?,
+    onItemSelected: (RegexEdit.Field?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var dropDownShown by remember { mutableStateOf(false) }
+
+    OutlinedButton(
+        onClick = { dropDownShown = true },
+        modifier = modifier.padding(end = 8.dp)
+    ) {
+        if (selected == null) {
+            Text(nullSelectionText)
+        } else {
+            Icon(
+                imageVector = Icons.Outlined.ContentCopy,
+                contentDescription = nullSelectionText,
+                modifier = Modifier.padding(end = 4.dp)
+            )
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text(itemToTexts[selected]!!)
+        }
+
+        Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+
+        DropdownMenu(
+            expanded = dropDownShown,
+            onDismissRequest = { dropDownShown = false }
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    onItemSelected(null)
+                    dropDownShown = false
+                },
+                enabled = selected != null,
+                text = {
+                    Text(stringResource(Res.string.nothing))
+                }
+            )
+
+            itemToTexts.forEach { (item, text) ->
+                DropdownMenuItem(
+                    onClick = {
+                        onItemSelected(item)
+                        dropDownShown = false
+                    },
+                    enabled = item != selected,
+                    text = {
+                        Text(text)
+                    }
+                )
+            }
+        }
     }
 }
 

@@ -24,6 +24,5 @@ open class ApiException(
 
 class ScrobbleIgnoredException(
     val scrobbleTime: Long,
-    val altAction: suspend () -> Unit,
 ) : ApiException(-1, "Scrobble ignored")
 

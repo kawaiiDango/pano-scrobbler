@@ -72,7 +72,11 @@ fun ExportScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        ImExportModeSelector(toggleButtonSelectedIndex) { index ->
+        ImExportModeSelector(
+            toggleButtonSelectedIndex,
+            supportsFile = !PlatformStuff.isTv,
+            supportsNetwork = true,
+        ) { index ->
             if (index == 0) {
                 filePickerShown = true
             }
@@ -154,9 +158,11 @@ fun ExportScreen(
 @Composable
 fun ImExportModeSelector(
     selectedIndex: Int,
+    supportsFile: Boolean,
+    supportsNetwork: Boolean,
     onSelected: (Int) -> Unit,
 ) {
-    if (PlatformStuff.isTv) {
+    if (!supportsFile && supportsNetwork) {
         LaunchedEffect(Unit) {
             onSelected(1)
         }
@@ -164,7 +170,7 @@ fun ImExportModeSelector(
             text = stringResource(Res.string.pref_imexport_network),
             style = MaterialTheme.typography.titleLarge,
         )
-    } else if (PlatformStuff.isDesktop) {
+    } else if (supportsFile && !supportsNetwork) {
         LaunchedEffect(Unit) {
             onSelected(0)
         }

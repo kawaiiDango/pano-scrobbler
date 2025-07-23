@@ -3,6 +3,7 @@ package com.arn.scrobble.pref
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.Tokens
 import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.HttpClient
@@ -33,6 +34,8 @@ class ExportVM : ViewModel() {
     val result = _result.asStateFlow()
     private val imExporter by lazy { ImExporter() }
     private val ktorClient by lazy { buildKtorClient() }
+
+    private val keyFileExtension = if (PlatformStuff.isDesktop) "jks" else "bks"
 
     fun exportToFile(platformFile: PlatformFile, privateData: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -68,8 +71,7 @@ class ExportVM : ViewModel() {
                     else
                         throw IOException(req.bodyAsText())
                 }.onFailure {
-                    if (PlatformStuff.isDebug)
-                        it.printStackTrace()
+                    Logger.d(it) { "Export failed" }
                 }
             }
         }
@@ -79,10 +81,16 @@ class ExportVM : ViewModel() {
         return HttpClient(OkHttp) {
             engine {
                 config {
-                    val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+                    val ksType = KeyStore.getDefaultType()
+
+                    val keyStore = KeyStore.getInstance(ksType)
                     val keyStoreStream =
-                        runBlocking { Res.readBytes("files/embedded_server.bks") }.inputStream()
-                    keyStore.load(keyStoreStream, null)
+                        runBlocking { Res.readBytes("files/pano-embedded-server-ks.$keyFileExtension") }
+                            .inputStream()
+                    keyStore.load(
+                        keyStoreStream,
+                        Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray()
+                    )
 
                     val trustManagerFactory =
                         TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
@@ -100,7 +108,7 @@ class ExportVM : ViewModel() {
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 5 * 1000L
+                requestTimeoutMillis = 30 * 1000L
             }
 
             //            install(ContentNegotiation) {

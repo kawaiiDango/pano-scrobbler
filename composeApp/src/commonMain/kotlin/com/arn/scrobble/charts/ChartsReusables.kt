@@ -177,7 +177,7 @@ private fun monthPickerMonths(
     return months
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TimePeriodSelector(
     user: UserCached,

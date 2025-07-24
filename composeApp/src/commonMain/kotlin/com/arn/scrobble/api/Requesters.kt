@@ -3,6 +3,7 @@ package com.arn.scrobble.api
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.cache.HttpMemoryCache
 import com.arn.scrobble.api.cache.HybridCacheStorage
+import com.arn.scrobble.api.itunes.ItunesRequester
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.LastFmUnauthedRequester
 import com.arn.scrobble.api.lastfm.LastfmExpirationPolicy
@@ -42,6 +43,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 object Requesters {
     val spotifyRequester by lazy { SpotifyRequester() }
+    val itunesRequester by lazy { ItunesRequester() }
 
     val lastfmUnauthedRequester by lazy { LastFmUnauthedRequester() }
 

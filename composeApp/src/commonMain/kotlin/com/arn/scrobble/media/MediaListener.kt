@@ -144,7 +144,7 @@ abstract class MediaListener(
         }
 
 
-        fun metadataChanged(metadata: MetadataInfo) {
+        fun metadataChanged(metadata: MetadataInfo, extras: Map<String, String>) {
             val sameAsOld =
                 metadata.artist == trackInfo.origArtist &&
                         metadata.title == trackInfo.origTitle &&
@@ -159,6 +159,7 @@ abstract class MediaListener(
                     metadata.album,
                     metadata.albumArtist,
                     metadata.duration,
+                    extras,
                 )
 
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlaybackState == CommonPlaybackState.Playing)

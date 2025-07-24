@@ -69,6 +69,9 @@ class SpotifyRequester {
 
     suspend fun album(albumId: String) =
         client.getResult<AlbumItem>("https://api.spotify.com/v1/albums/$albumId")
+
+    suspend fun track(trackId: String) =
+        client.getResult<TrackItem>("https://api.spotify.com/v1/tracks/$trackId")
 }
 
 class SpotifyCacheExpirationPolicy : ExpirationPolicy {

@@ -30,6 +30,7 @@ object PlayerActions {
         ),
         Stuff.PACKAGE_ECHO to CustomRatingAction("liked", "unliked"),
         Stuff.PACKAGE_METROLIST to CustomRatingAction("TOGGLE_LIKE"),
+        Stuff.PACKAGE_APPLE_MUSIC to CustomRatingAction("com.apple.android.music.playback.action.FAVORITE"),
     )
 
     fun List<MediaController>.skip() {
@@ -76,6 +77,8 @@ object PlayerActions {
                     null
 
                 it.transportControls.sendCustomAction(customActionFromPlayer, args)
+
+                return@forEach
             }
 
             val rating = when (it.ratingType) {
@@ -131,6 +134,8 @@ object PlayerActions {
                     null
 
                 it.transportControls.sendCustomAction(customActionFromPlayer, args)
+
+                return@forEach
             }
 
             val ratingSupported = it.ratingType != Rating.RATING_NONE
@@ -165,6 +170,7 @@ object PlayerActions {
 
         Logger.d { "Non-transparent ratio for $packageName: $nonTransparentRatio" }
 
+        // A filled heart has about 40% non-transparent pixels
         return nonTransparentRatio >= 0.3f
     }
 }

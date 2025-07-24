@@ -8,7 +8,7 @@ actual typealias PlatformMediaMetadata = MetadataInfo
 actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
-): MetadataInfo {
+): Pair<MetadataInfo, Map<String, String>> {
     var artist = metadata.artist.trim()
     var album = metadata.album.trim()
     var title = metadata.title.trim()
@@ -46,5 +46,5 @@ actual fun transformMediaMetadata(
         duration = durationMillis,
     )
 
-    return metadataInfo
+    return metadataInfo to emptyMap()
 }

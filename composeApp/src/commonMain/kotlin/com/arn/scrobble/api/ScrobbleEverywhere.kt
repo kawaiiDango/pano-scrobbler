@@ -1,6 +1,7 @@
 package com.arn.scrobble.api
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.itunes.ItunesWrapperType
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -40,7 +41,10 @@ data class PreprocessResult(
 
 object ScrobbleEverywhere {
 
-    suspend fun preprocessMetadata(origScrobbleData: ScrobbleData): PreprocessResult {
+    suspend fun preprocessMetadata(
+        origScrobbleData: ScrobbleData,
+        extras: Map<String, String>
+    ): PreprocessResult {
         var scrobbleData = origScrobbleData
 
         Logger.i { "preprocessMetadata " + scrobbleData.artist + " - " + scrobbleData.track }
@@ -134,6 +138,22 @@ object ScrobbleEverywhere {
             }
         }
 
+        // get first artist and album artist
+        if (Stuff.isOnline) {
+            when (scrobbleData.appId?.lowercase()) {
+                Stuff.PACKAGE_APPLE_MUSIC,
+                Stuff.PACKAGE_APPLE_MUSIC_WIN.lowercase() ->
+                    fetchFirstArtistFromItunes(scrobbleData, extras)?.let {
+                        scrobbleData = it
+                    }
+
+                Stuff.PACKAGE_SPOTIFY ->
+                    fetchFirstArtistFromSpotify(scrobbleData, extras)?.let {
+                        scrobbleData = it
+                    }
+            }
+        }
+
         val preprocessResult2 = if (preprocessResult.presetsApplied.isNotEmpty()) {
             // run the edits again, as users could have edited existing scrobbles
             // don't try to parse title again here
@@ -156,6 +176,119 @@ object ScrobbleEverywhere {
             )
         else
             preprocessResult2
+    }
+
+    private suspend fun fetchFirstArtistFromItunes(
+        scrobbleData: ScrobbleData,
+        extras: Map<String, String>
+    ): ScrobbleData? {
+        val trackId = extras[Stuff.METADATA_KEY_MEDIA_ID]?.toLongOrNull()
+
+        val track = if (trackId == null) {
+            Requesters.itunesRequester.searchTrack(
+                scrobbleData.artist + " " + scrobbleData.track,
+                limit = 3
+            ).onFailure {
+                Logger.w(it) { "Failed to search iTunes for track" }
+            }
+                .getOrNull()
+                ?.results
+                ?.firstOrNull {
+                    it.wrapperType == ItunesWrapperType.track &&
+                            it.artistName.equals(scrobbleData.artist, ignoreCase = true) &&
+                            it.trackName.equals(scrobbleData.track, ignoreCase = true) &&
+                            it.collectionName.equals(scrobbleData.album, ignoreCase = true)
+                }
+        } else {
+            Requesters.itunesRequester.lookupTrack(trackId)
+                .onFailure {
+                    Logger.w(it) { "Failed to look up iTunes track" }
+                }
+                .getOrNull()
+                ?.results
+                ?.firstOrNull { it.wrapperType == ItunesWrapperType.track }
+        }
+
+        if (track == null) {
+            return null
+        }
+
+        val artistName = if (
+            track.artistName.contains(" & ") ||
+            track.artistName.contains(", ")
+        ) {
+            Requesters.itunesRequester.lookupArtist(track.artistId)
+                .onFailure {
+                    Logger.w(it) { "Failed to look up iTunes artist" }
+                }
+                .getOrNull()
+                ?.results
+                ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
+                ?.artistName
+        } else {
+            track.artistName
+        }
+
+        val albumArtistName =
+            if (track.collectionArtistName == null ||
+                track.collectionArtistId == null ||
+                track.collectionArtistId == track.artistId
+            ) {
+                artistName
+            } else if (
+                track.collectionArtistName.contains(" & ") ||
+                track.collectionArtistName.contains(", ")
+            ) {
+                Requesters.itunesRequester.lookupArtist(track.collectionArtistId)
+                    .onFailure {
+                        Logger.w(it) { "Failed to look up iTunes album artist" }
+                    }
+                    .getOrNull()
+                    ?.results
+                    ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
+                    ?.artistName
+            } else {
+                track.collectionArtistName
+            }
+
+        if (artistName != null) {
+            return scrobbleData.copy(
+                artist = artistName,
+                albumArtist = albumArtistName
+            )
+        }
+        return null
+    }
+
+    private suspend fun fetchFirstArtistFromSpotify(
+        scrobbleData: ScrobbleData,
+        extras: Map<String, String>
+    ): ScrobbleData? {
+        if (!scrobbleData.artist.contains(", ")) {
+            return null
+        }
+
+        // todo remove later
+        if (!PlatformStuff.isDebug) return null
+
+        val trackId = extras[Stuff.METADATA_KEY_MEDIA_ID]?.removePrefix("spotify:track:")
+            ?: return null
+
+        val firstArtistName = Requesters.spotifyRequester.track(trackId)
+            .onFailure {
+                Logger.w(it) { "Failed to search Spotify for track" }
+            }
+            .getOrNull()
+            ?.artists
+            ?.firstOrNull()
+            ?.name
+
+        if (firstArtistName != null) {
+            return scrobbleData.copy(
+                artist = firstArtistName,
+            )
+        }
+        return null
     }
 
     suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleIgnored>> {

@@ -11,7 +11,7 @@ actual typealias PlatformMediaMetadata = MediaMetadata
 actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
-): MetadataInfo {
+): Pair<MetadataInfo, Map<String, String>> {
 
     var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
     // do not scrobble empty artists, ads will get scrobbled
@@ -24,10 +24,20 @@ actual fun transformMediaMetadata(
     var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
     if (durationMillis < -1)
         durationMillis = -1
-    val youtubeHeight =
-        metadata.getLong("com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX")
-    val youtubeWidth =
-        metadata.getLong("com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX")
+
+    val extrasMap = mutableMapOf<String, String>()
+
+    metadata.getLong(Stuff.METADATA_KEY_YOUTUBE_WIDTH).takeIf { it != 0L }
+        ?.let { extrasMap[Stuff.METADATA_KEY_YOUTUBE_WIDTH] = it.toString() }
+
+    metadata.getLong(Stuff.METADATA_KEY_YOUTUBE_HEIGHT).takeIf { it != 0L }
+        ?.let { extrasMap[Stuff.METADATA_KEY_YOUTUBE_HEIGHT] = it.toString() }
+
+    metadata.getString(Stuff.METADATA_KEY_AM_ARTIST_ID)
+        ?.let { extrasMap[Stuff.METADATA_KEY_AM_ARTIST_ID] = it }
+
+    metadata.getString(Stuff.METADATA_KEY_MEDIA_ID)
+        ?.let { extrasMap[Stuff.METADATA_KEY_MEDIA_ID] = it }
 
     when (trackInfo.appId) {
         Stuff.PACKAGE_PANDORA -> {
@@ -122,5 +132,5 @@ actual fun transformMediaMetadata(
         duration = durationMillis,
     )
 
-    return metadataInfo
+    return metadataInfo to extrasMap
 }

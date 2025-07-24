@@ -246,7 +246,7 @@ class SessListener(
 //            if (PlatformStuff.isDebug)
 //                metadata.dump()
 
-            val metadataInfo = transformMediaMetadata(trackInfo, metadata)
+            val (metadataInfo, extras) = transformMediaMetadata(trackInfo, metadata)
 
             Logger.i {
                 "onMetadataChanged ${metadataInfo.artist} (${metadataInfo.albumArtist}) [${metadataInfo.album}] ~ ${metadataInfo.title} " +
@@ -255,7 +255,7 @@ class SessListener(
 
 
 
-            sessionTracker.metadataChanged(metadataInfo)
+            sessionTracker.metadataChanged(metadataInfo, extras)
         }
 
         @Synchronized

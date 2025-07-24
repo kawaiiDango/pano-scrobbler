@@ -153,6 +153,13 @@ object Stuff {
     const val PACKAGE_CIDER_VARIANT_LINUX = "org.mpris.MediaPlayer2.cider.instancen"
     const val PACKAGE_FIREFOX_WIN = "308046B0AF4A39CB"
 
+    const val METADATA_KEY_AM_ARTIST_ID = "com.apple.android.music.playback.metadata.ARTIST_ID"
+    const val METADATA_KEY_YOUTUBE_WIDTH =
+        "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX"
+    const val METADATA_KEY_YOUTUBE_HEIGHT =
+        "com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX"
+    const val METADATA_KEY_MEDIA_ID = "android.media.metadata.MEDIA_ID"
+
     const val ARTIST_NINTENDO_MUSIC = "Nintendo Co., Ltd."
 
     const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"

@@ -197,12 +197,12 @@ class DesktopMediaListener(
             return
         }
 
-        val metadata = transformMediaMetadata(
+        val (metadata, extras) = transformMediaMetadata(
             sessionTracker.trackInfo,
             metadata
         )
 
-        sessionTracker.metadataChanged(metadata)
+        sessionTracker.metadataChanged(metadata, extras)
     }
 
     fun platformPlaybackStateChanged(playbackInfo: PlaybackInfo) {

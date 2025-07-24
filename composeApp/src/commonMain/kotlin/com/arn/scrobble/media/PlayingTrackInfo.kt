@@ -60,19 +60,23 @@ class PlayingTrackInfo(
     var preprocessed: Boolean = false
         private set
 
+    val extras = mutableMapOf<String, String>()
+
     val hasBlockedTag: Boolean =
         (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(sessionId) == true ||
                 Stuff.BLOCKED_MEDIA_SESSION_TAGS[appId]
                     ?.contains(sessionId) == true)
 
-    fun putOriginals(artist: String, title: String) = putOriginals(artist, title, "", "", 0)
+    fun putOriginals(artist: String, title: String) =
+        putOriginals(artist, title, "", "", 0, emptyMap())
 
     fun putOriginals(
         artist: String,
         title: String,
         album: String,
         albumArtist: String,
-        durationMillis: Long
+        durationMillis: Long,
+        extraData: Map<String, String>
     ) {
         origArtist = artist
         this.artist = artist
@@ -86,6 +90,9 @@ class PlayingTrackInfo(
         this.durationMillis = durationMillis
         hash = Objects.hash(albumArtist, artist, album, title, appId, sessionId)
         preprocessed = false
+
+        extras.clear()
+        extras.putAll(extraData)
     }
 
     fun prepareForScrobbling() {

@@ -154,7 +154,10 @@ class ScrobbleQueue(
                 return@launch
             }
 
-            val preprocessResult = ScrobbleEverywhere.preprocessMetadata(scrobbleData)
+            val preprocessResult = ScrobbleEverywhere.preprocessMetadata(
+                scrobbleData,
+                trackInfo.extras
+            )
 
             when {
                 preprocessResult.blockPlayerAction != null -> {

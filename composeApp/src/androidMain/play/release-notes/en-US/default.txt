@@ -5,6 +5,7 @@ Changes since 4.2
 - Implemented QR code login for last.fm and libre.fm on TV.
 - Editing and deleting scrobbles is no longer available on TV
 - Removed some features from TV that required typing on TV
+- Now scrobbles Apple Music with the first artist and the correct album artist, by fetching them from the iTunes API, on Windows and Android
 - Import/export over the network is now available on desktop
 - Added rounded borders to generated collages
 - Now continues processing all regex rules even if a match was found
@@ -13,5 +14,5 @@ Changes since 4.2
 - Reworked the now playing animation
 - Fixed a segfault on desktop
 - Use xdg-open on Linux to open links, when the default method fails
-- Using heart button to like on the media player now also supports Oto music, Pi Music, Symfonium, Echo and Metrolist
+- Using heart button to like on the media player now also supports Apple Music, Oto music, Pi Music, Symfonium, Echo and Metrolist
 - Other fixes

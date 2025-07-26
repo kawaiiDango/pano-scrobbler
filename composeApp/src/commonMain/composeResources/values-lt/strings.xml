@@ -126,7 +126,7 @@
     <string name="state_scrobbling">Dabar skrobuolinama…</string>
     <string name="state_scrobbled">Nuskrobuolinta</string>
     <string name="state_unscrobbled">Nenuskrobuolinta</string>
-    <string name="tap_to_edit">(Palieskite, kad redaguoti)</string>
+    <string name="tap_to_edit">(Palieskite, kad redaguotumėte)</string>
     <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
@@ -138,7 +138,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programėlės</string>
     <string name="offline">Neprisijungus. Rodomi duomenys nėra nauji.</string>
     <string name="unavailable_offline">Nepasiekiama neprisijungus.</string>
-    <string name="tv_url_notice">Atidarykite šį URL adresą kito įrenginio naršyklėje</string>
+    <string name="tv_url_notice">Atverkite šį URL adresą kito įrenginio naršyklėje</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Klausiausi\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s klausėsi\n%1$s %2$s</string>
@@ -299,7 +299,7 @@
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Nutempimo rankenėlė</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikinkite, kad suprantate <a href="https://www.google.com/search?q=regex+tutorial">Javos reguliariąją reiškinį</a>, arba naudokite vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliariaus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
     <string name="blocked_metadata_info">ℹ️ Užpildžius daugiau nei vieną iš šių laukų, tarp jų bus taikomas IR operatorius.</string>
-    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Palieskite, kad blokuoti ir praleisti</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Palieskite, kad blokuotumėte ir praleistumėte</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
     <string name="skip" comment="skip to next track">Praleisti</string>
     <string name="mute" comment="mute the sound">Nutildyti</string>
@@ -315,7 +315,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar norite įjungti šablono redagavimo taisyklę: „%1$s“?</string>
     <string name="show_persistent_noti">Rodyti nuolatinį pranešimą</string>
     <string name="fix_it_desc">Tai gali padėti išlaikyti skrobuoklio veikimą fone kai kuriuose įrenginiuose.</string>
-    <string name="persistent_noti_text">Palieskite, kad paslėpti šį</string>
+    <string name="persistent_noti_text">Palieskite, kad paslėptumėte šį</string>
     <string name="scrobbler_off">Skrobuoklis išjungtas</string>
     <string name="scrobbler_on">Skrobuoklis aktyvus</string>
     <string name="duration">Trukmė</string>
@@ -427,7 +427,7 @@
     <string name="fix_it_startup_title">Maitinimo taupyklės / paleidimo tvarkytuvai</string>
     <string name="fix_it_battery_title">Išjungti akumuliatoriaus optimizavimą</string>
     <string name="fix_it_energy_title">Išjunkite energijos optimizavimus</string>
-    <string name="fix_it_action" comment="(To open an app)">Atidaryti</string>
+    <string name="fix_it_action" comment="(To open an app)">Atverti</string>
     <string name="delete_account">Ištrinti paskyrą</string>
     <string name="delete_account_custom_servers">Apie pasirinktinius serverius patikrinkite atitinkamus jų dokumentus.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Pridėti arba keisti vaizdą</string>
@@ -468,7 +468,7 @@
 Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programėlę naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programėlę iš kompiuterio per „Google Play“ tinklalapį:
 
 • Išdiegkite šią programėlę.
-• Atidarykite „Google Play“ tinklalapį iš kompiuterio.
+• Atverkite „Google Play“ tinklalapį iš kompiuterio.
 • Prisijunkite su paskyra, kuriai priklauso pirkimas.
 • Įdiekite šią programėlę tiesiogiai iš „Google Play“ tinklalapio.</string>
     <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti</string>

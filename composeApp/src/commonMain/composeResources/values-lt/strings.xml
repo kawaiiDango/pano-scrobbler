@@ -186,8 +186,8 @@
     <string name="delete_all">Ištrinti viską</string>
     <string name="love" comment="Love/like a song">Pamėgti</string>
     <string name="hate" comment="Hate or dislike a song">Nemėgti</string>
-    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Naikinti nemėgstą</string>
-    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Naikinti pamėgtą</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Naikinti nemėgstamą</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Naikinti mėgstamą</string>
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string name="following" comment="accounts you are following on lastfm">Sekama</string>
     <string name="followers" comment="your lastfm followers">Sekėjai</string>
@@ -197,10 +197,10 @@
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
     <string name="send_notifications">Leisti pranešimus</string>
     <string name="notification_channel_blocked">Tam reikia, kad pranešimai būtų įjungti</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">- Patikrinkite skroblų būseną ir skaičių.
-- Pamėgkite arba blokuokite tiesiai iš pranešimo.
-- Gaukite pranešimus apie skroblo klaidas ir veiksmus, kurių galima imtis.
-- Kiekvieną savaitę gaukite geriausius skroblus.
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">- Patikrinti skroblo būseną ir skaičių.
+- Pamėgti arba blokuoti tiesiai iš pranešimo.
+- Gauti pranešimus apie skroblo klaidas ir veiksmus, kurių galima imtis.
+- Kiekvieną savaitę gauti geriausius skroblus.
 - Ir daugiau.
 - Pranešimai nedaro garso.</string>
     <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobuolinimas</string>
@@ -437,6 +437,10 @@
     <string name="password">Slaptažodis</string>
     <string name="open_existing" comment="Append to an existing file">Pridėti prie esamo</string>
     <string name="create" comment="Create a new file">Kurti</string>
+    <string name="scan_qr">Nuskenuokite šį kodą, kad prisijungtumėte</string>
+    <string name="copy_from">Kopijuoti iš</string>
+    <string name="nothing" comment="nothing/none">Nieko</string>
+    <string name="borders" comment="Borders between images in the generated collage">Kraštinės</string>
     <string name="ok">Gerai</string>
     <string name="cancel">Atšaukti</string>
     <string name="back">Atgal</string>

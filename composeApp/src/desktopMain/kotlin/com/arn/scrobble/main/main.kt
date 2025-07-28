@@ -227,7 +227,13 @@ fun main(args: Array<String>) {
 
                 val tooltip = playingTrackInfo.entries.firstOrNull()
                     ?.let { (appId, it) ->
-                        it.scrobbleData.track + "\n" +
+                        val playingState =
+                            if ((it as? PlayingTrackNotifyEvent.TrackScrobbling)?.nowPlaying == false)
+                                "✔️ "
+                            else
+                                ""
+                        
+                        playingState + it.scrobbleData.track + "\n" +
                                 it.scrobbleData.artist + "\n" +
                                 (appIdToNames[appId]?.ifEmpty { null } ?: appId)
                     }

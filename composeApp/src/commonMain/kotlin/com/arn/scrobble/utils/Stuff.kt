@@ -97,9 +97,7 @@ object Stuff {
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
     const val CHARTS_WIDGET_REFRESH_INTERVAL = 60 * 60 * 1000L
-    const val TRACK_INFO_WINDOW = 3 * 60 * 1000L
-    const val TRACK_INFO_REQUESTS = 2
-    const val META_WAIT = 800L
+    const val META_WAIT = 1000L
     const val MAX_HISTORY_ITEMS = 20
     const val DEFAULT_PAGE_SIZE = 100
     const val SCROBBLE_SOURCE_THRESHOLD = 1000L
@@ -120,11 +118,12 @@ object Stuff {
     const val PACKAGE_PIXEL_NP_R = "com.google.android.as"
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
     const val PACKAGE_SHAZAM = "com.shazam.android"
+    const val PACKAGE_AUDILE = "com.mrsep.musicrecognizer"
     const val CHANNEL_SHAZAM = "notification_shazam_match_v1" //"auto_shazam_v2"
     const val CHANNEL_SHAZAM2 = "notification_shazam_foreground_match_v2"
+    const val CHANNEL_AUDILE = "com.mrsep.musicrecognizer.result"
 
     //    const val NOTIFICATION_TAG_SHAZAM = "NOTIFICATION_SHAZAM_RESULTS" //"auto_shazam_v2"
-    const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
     const val PACKAGE_SONOS = "com.sonos.acr"
     const val PACKAGE_SONOS2 = "com.sonos.acr2"
@@ -148,6 +147,8 @@ object Stuff {
     const val PACKAGE_NEWPIPE = "org.schabi.newpipe"
     const val PACKAGE_NINTENDO_MUSIC = "com.nintendo.znba"
     const val PACKAGE_APPLE_MUSIC = "com.apple.android.music"
+    const val PACKAGE_TIDAL = "com.aspiro.tidal"
+    const val PACKAGE_OMNIA = "com.rhmsoft.omnia"
     const val PACKAGE_APPLE_MUSIC_WIN = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"
     const val PACKAGE_CIDER_LINUX = "org.mpris.MediaPlayer2.cider"
     const val PACKAGE_CIDER_VARIANT_LINUX = "org.mpris.MediaPlayer2.cider.instancen"
@@ -158,8 +159,6 @@ object Stuff {
         "com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX"
     const val METADATA_KEY_YOUTUBE_HEIGHT =
         "com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX"
-    const val METADATA_KEY_MEDIA_ID = "android.media.metadata.MEDIA_ID"
-
     const val ARTIST_NINTENDO_MUSIC = "Nintendo Co., Ltd."
 
     const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"

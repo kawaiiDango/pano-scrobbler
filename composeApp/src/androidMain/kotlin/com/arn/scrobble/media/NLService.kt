@@ -191,8 +191,9 @@ class NLService : NotificationListenerService() {
                 (sbn.packageName == Stuff.PACKAGE_SHAZAM &&
                         (sbn.notification.channelId == Stuff.CHANNEL_SHAZAM || sbn.notification.channelId == Stuff.CHANNEL_SHAZAM2) &&
                         sbn.notification.actions != null ||
-                        sbn.packageName in Stuff.PACKAGES_PIXEL_NP &&
-                        sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP)
+                        sbn.packageName in Stuff.PACKAGES_PIXEL_NP && sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP ||
+                        sbn.packageName == Stuff.PACKAGE_AUDILE && sbn.notification.channelId == Stuff.CHANNEL_AUDILE
+                        )
 
     }
 
@@ -204,7 +205,7 @@ class NLService : NotificationListenerService() {
             if (!shouldScrobbleFromNoti(sbn!!.packageName))
                 return@launch
 
-            if (sbn.packageName == Stuff.PACKAGE_SHAZAM)
+            if (sbn.packageName == Stuff.PACKAGE_SHAZAM || sbn.packageName == Stuff.PACKAGE_AUDILE)
                 scrobbleFromNoti(sbn.packageName) {
                     val n = sbn.notification
                     val title = n.extras.getString(Notification.EXTRA_TITLE)

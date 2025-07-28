@@ -154,12 +154,13 @@ abstract class MediaListener(
 
             if (!sameAsOld || onlyDurationUpdated) {
                 trackInfo.putOriginals(
-                    metadata.artist,
-                    metadata.title,
-                    metadata.album,
-                    metadata.albumArtist,
-                    metadata.duration,
-                    extras,
+                    artist = metadata.artist,
+                    title = metadata.title,
+                    album = metadata.album,
+                    albumArtist = metadata.albumArtist,
+                    durationMillis = metadata.duration,
+                    trackId = metadata.trackId.ifEmpty { null },
+                    extraData = extras,
                 )
 
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlaybackState == CommonPlaybackState.Playing)

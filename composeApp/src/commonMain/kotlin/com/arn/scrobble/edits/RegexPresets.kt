@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.preset_album_artist_as_artist
 import pano_scrobbler.composeapp.generated.resources.preset_album_version
 import pano_scrobbler.composeapp.generated.resources.preset_explicit
 import pano_scrobbler.composeapp.generated.resources.preset_remastered
@@ -24,7 +23,7 @@ enum class RegexPreset {
     remastered,
     explicit,
     album_ver,
-    album_artist_as_artist,
+//    album_artist_as_artist,
 }
 
 data class RegexPresetsResult(
@@ -41,12 +40,12 @@ object RegexPresets {
         RegexPreset.parse_title_with_fallback,
         RegexPreset.remastered,
         RegexPreset.explicit,
-        RegexPreset.album_artist_as_artist,
+//        RegexPreset.album_artist_as_artist,
     )
     private val androidOnlyPresets = listOf(
         RegexPreset.parse_title,
         RegexPreset.parse_title_with_fallback,
-        RegexPreset.album_artist_as_artist,
+//        RegexPreset.album_artist_as_artist,
     )
 
     private val desktopOnlyPresets = emptyList<RegexPreset>()
@@ -95,18 +94,18 @@ object RegexPresets {
         var newScrobbleData: ScrobbleData? = null
 
         when (regexPreset) {
-            RegexPreset.album_artist_as_artist -> {
-                if (scrobbleData.appId == Stuff.PACKAGE_SPOTIFY &&
-                    !scrobbleData.albumArtist.isNullOrEmpty() &&
-                    scrobbleData.albumArtist != scrobbleData.artist &&
-                    !MetadataUtils.isVariousArtists(scrobbleData.albumArtist)
-                ) {
-                    newScrobbleData = scrobbleData.copy(
-                        artist = scrobbleData.albumArtist,
-                        albumArtist = null,
-                    )
-                }
-            }
+//            RegexPreset.album_artist_as_artist -> {
+//                if (scrobbleData.appId == Stuff.PACKAGE_SPOTIFY &&
+//                    !scrobbleData.albumArtist.isNullOrEmpty() &&
+//                    scrobbleData.albumArtist != scrobbleData.artist &&
+//                    !MetadataUtils.isVariousArtists(scrobbleData.albumArtist)
+//                ) {
+//                    newScrobbleData = scrobbleData.copy(
+//                        artist = scrobbleData.albumArtist,
+//                        albumArtist = null,
+//                    )
+//                }
+//            }
 
             RegexPreset.parse_title,
             RegexPreset.parse_title_with_fallback -> {
@@ -250,7 +249,7 @@ object RegexPresets {
         RegexPreset.remastered -> stringResource(Res.string.preset_remastered)
         RegexPreset.explicit -> stringResource(Res.string.preset_explicit)
         RegexPreset.album_ver -> stringResource(Res.string.preset_album_version)
-        RegexPreset.album_artist_as_artist -> stringResource(Res.string.preset_album_artist_as_artist)
+//        RegexPreset.album_artist_as_artist -> stringResource(Res.string.preset_album_artist_as_artist)
         RegexPreset.parse_title -> stringResource(Res.string.preset_title_parse)
         RegexPreset.parse_title_with_fallback -> stringResource(Res.string.preset_title_parse_with_fallback)
     }

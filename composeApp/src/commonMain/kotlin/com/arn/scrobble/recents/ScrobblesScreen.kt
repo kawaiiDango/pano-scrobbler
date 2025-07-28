@@ -408,7 +408,9 @@ fun ScrobblesScreen(
 
                     if (pendingScrobbles.isNotEmpty()) {
                         item("pending_divider") {
-                            HorizontalDivider()
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
                         }
                     }
                 }

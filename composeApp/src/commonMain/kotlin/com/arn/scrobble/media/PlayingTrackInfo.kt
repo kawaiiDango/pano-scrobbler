@@ -30,6 +30,9 @@ class PlayingTrackInfo(
     var origAlbumArtist: String = ""
         private set
 
+    var trackId: String? = null
+        private set
+
     var playStartTime: Long = 0
         private set
 
@@ -60,6 +63,9 @@ class PlayingTrackInfo(
     var preprocessed: Boolean = false
         private set
 
+    var additionalMetadataFetched: Boolean = false
+        private set
+
     val extras = mutableMapOf<String, String>()
 
     val hasBlockedTag: Boolean =
@@ -68,7 +74,7 @@ class PlayingTrackInfo(
                     ?.contains(sessionId) == true)
 
     fun putOriginals(artist: String, title: String) =
-        putOriginals(artist, title, "", "", 0, emptyMap())
+        putOriginals(artist, title, "", "", 0, null, emptyMap())
 
     fun putOriginals(
         artist: String,
@@ -76,6 +82,7 @@ class PlayingTrackInfo(
         album: String,
         albumArtist: String,
         durationMillis: Long,
+        trackId: String?,
         extraData: Map<String, String>
     ) {
         origArtist = artist
@@ -90,6 +97,8 @@ class PlayingTrackInfo(
         this.durationMillis = durationMillis
         hash = Objects.hash(albumArtist, artist, album, title, appId, sessionId)
         preprocessed = false
+        additionalMetadataFetched = false
+        this.trackId = trackId
 
         extras.clear()
         extras.putAll(extraData)
@@ -136,12 +145,13 @@ class PlayingTrackInfo(
         appId = appId,
     )
 
-    fun putPreprocessedData(sd: ScrobbleData) {
+    fun putPreprocessedData(sd: ScrobbleData, additionalMetadataFetched: Boolean) {
         title = sd.track
         album = sd.album.orEmpty()
         artist = sd.artist
         albumArtist = sd.albumArtist.orEmpty()
         preprocessed = true
+        this.additionalMetadataFetched = additionalMetadataFetched
     }
 
     fun markAsScrobbled() {

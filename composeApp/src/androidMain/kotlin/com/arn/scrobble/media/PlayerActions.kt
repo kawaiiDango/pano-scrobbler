@@ -13,7 +13,7 @@ object PlayerActions {
     class CustomRatingAction(
         val love: String,
         val unlove: String = love,
-        val extrasIsArgs: Boolean = false,
+        val threshold: Float = 0.3f,
     )
 
     private val customRatingActions = mapOf(
@@ -31,6 +31,8 @@ object PlayerActions {
         Stuff.PACKAGE_ECHO to CustomRatingAction("liked", "unliked"),
         Stuff.PACKAGE_METROLIST to CustomRatingAction("TOGGLE_LIKE"),
         Stuff.PACKAGE_APPLE_MUSIC to CustomRatingAction("com.apple.android.music.playback.action.FAVORITE"),
+        Stuff.PACKAGE_TIDAL to CustomRatingAction("com.aspiro.tidal.player.action.TOGGLE_FAVORITE"),
+        Stuff.PACKAGE_OMNIA to CustomRatingAction("action_favorite", threshold = 0.15f),
     )
 
     fun List<MediaController>.skip() {
@@ -41,14 +43,14 @@ object PlayerActions {
 
     // default rating tested working on:
     // youtube, yt music, poweramp, aimp, musicolet, neutron, doubletwist, playerpro, pandora,
-    // amazon music, iHeartRadio, apple music, nyx,
+    // amazon music, iHeartRadio, apple music, nyx, aimp, neutron, media monkey,
 
     // rating does not heart individual tracks on:
     // bandcamp (wishists the entire album), tunein radio (favorites the station),
 
     // tested not working on:
     // vlc, bandcamp, retro, vocacolle, shuttle 2, blackplayer, phonograph, pulsar, foobar,
-    // jet audio, n7, plex, subtracks, listenbrainz, radio japan, media monkey, omnia,
+    // jet audio, n7, plex, subtracks, listenbrainz, radio japan, omnia, namida,
     // gonemad, deezer, tidal, podcast addict, gensokyo radio, gaana, wynk, jiosaavn, DIFM,
     // antenna pod, hiby, fiio,
 
@@ -64,19 +66,15 @@ object PlayerActions {
 
                 if (customAction.love == customAction.unlove && isProbablyFilledHeart(
                         it.packageName,
-                        customActionFromPlayer.icon
+                        customActionFromPlayer.icon,
+                        customAction.threshold
                     ) == true
                 ) {
                     // already loved
                     return@forEach
                 }
 
-                val args = if (customRatingActions[it.packageName]!!.extrasIsArgs)
-                    customActionFromPlayer.extras
-                else
-                    null
-
-                it.transportControls.sendCustomAction(customActionFromPlayer, args)
+                it.transportControls.sendCustomAction(customActionFromPlayer, null)
 
                 return@forEach
             }
@@ -121,19 +119,15 @@ object PlayerActions {
 
                 if (customAction.love == customAction.unlove && isProbablyFilledHeart(
                         it.packageName,
-                        customActionFromPlayer.icon
+                        customActionFromPlayer.icon,
+                        customAction.threshold
                     ) == false
                 ) {
                     // already unloved
                     return@forEach
                 }
 
-                val args = if (customRatingActions[it.packageName]!!.extrasIsArgs)
-                    customActionFromPlayer.extras
-                else
-                    null
-
-                it.transportControls.sendCustomAction(customActionFromPlayer, args)
+                it.transportControls.sendCustomAction(customActionFromPlayer, null)
 
                 return@forEach
             }
@@ -144,7 +138,11 @@ object PlayerActions {
         }
     }
 
-    private fun isProbablyFilledHeart(packageName: String, iconResId: Int): Boolean? {
+    private fun isProbablyFilledHeart(
+        packageName: String,
+        iconResId: Int,
+        threshold: Float
+    ): Boolean? {
         // Check if the icon bitmap is at least 30% not transparent
         val resources =
             AndroidStuff.application.packageManager.getResourcesForApplication(packageName)
@@ -171,6 +169,6 @@ object PlayerActions {
         Logger.d { "Non-transparent ratio for $packageName: $nonTransparentRatio" }
 
         // A filled heart has about 40% non-transparent pixels
-        return nonTransparentRatio >= 0.3f
+        return nonTransparentRatio >= threshold
     }
 }

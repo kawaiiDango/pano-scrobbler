@@ -36,3 +36,10 @@ actual fun setAppLocale(lang: String?, force: Boolean) {
 actual fun getCurrentLocale(localePref: String?): String? {
     return localePref
 }
+
+actual fun getSystemCountryCode(): String {
+    return systemDefaultLocale?.country?.ifEmpty {
+        // Fallback to the system default locale
+        Locale.getDefault().country.ifEmpty { null }
+    } ?: "US"
+}

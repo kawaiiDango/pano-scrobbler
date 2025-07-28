@@ -67,6 +67,7 @@ object PanoNativeComponents {
     @JvmStatic
     fun onMetadataChanged(
         appId: String,
+        trackId: String,
         title: String,
         artist: String,
         album: String,
@@ -78,6 +79,7 @@ object PanoNativeComponents {
     ) {
         val metadataInfo = MetadataInfo(
             appId = appId,
+            trackId = trackId, // always empty for windows
             title = title,
             artist = artist,
             album = album,

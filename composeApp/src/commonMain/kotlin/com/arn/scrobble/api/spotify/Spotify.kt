@@ -53,25 +53,45 @@ class SpotifyRequester {
         }
     }
 
-    suspend fun search(query: String, type: SpotifySearchType, limit: Int) =
+    suspend fun search(
+        query: String,
+        type: SpotifySearchType,
+        market: String = "US",
+        limit: Int
+    ) =
         client.getResult<SpotifySearchResponse>("https://api.spotify.com/v1/search") {
             parameter("q", query)
             parameter("type", type.name)
             parameter("limit", limit)
-//                    parameter("market", "US")
+            parameter("market", market)
         }
 
     suspend fun trackFeatures(trackId: String) =
         client.getResult<TrackFeatures>("https://api.spotify.com/v1/audio-features/$trackId")
 
-    suspend fun artist(artistId: String) =
-        client.getResult<ArtistItem>("https://api.spotify.com/v1/artists/$artistId")
+    suspend fun artist(
+        artistId: String,
+        market: String = "US"
+    ) =
+        client.getResult<ArtistItem>("https://api.spotify.com/v1/artists/$artistId") {
+            parameter("market", market)
+        }
 
-    suspend fun album(albumId: String) =
-        client.getResult<AlbumItem>("https://api.spotify.com/v1/albums/$albumId")
+    suspend fun album(
+        albumId: String,
+        market: String = "US"
+    ) =
+        client.getResult<AlbumItem>("https://api.spotify.com/v1/albums/$albumId") {
+            parameter("market", market)
+        }
 
-    suspend fun track(trackId: String) =
-        client.getResult<TrackItem>("https://api.spotify.com/v1/tracks/$trackId")
+    suspend fun track(
+        trackId: String,
+        market: String = "US"
+    ) =
+        client.getResult<TrackItem>("https://api.spotify.com/v1/tracks/$trackId") {
+            parameter("market", market)
+        }
 }
 
 class SpotifyCacheExpirationPolicy : ExpirationPolicy {

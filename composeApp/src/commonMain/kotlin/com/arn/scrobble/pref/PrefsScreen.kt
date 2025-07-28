@@ -53,10 +53,12 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.also_available_on
 import pano_scrobbler.composeapp.generated.resources.android
+import pano_scrobbler.composeapp.generated.resources.apple_music
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.copy_sk
+import pano_scrobbler.composeapp.generated.resources.country_for_api
 import pano_scrobbler.composeapp.generated.resources.crowdin_link
 import pano_scrobbler.composeapp.generated.resources.dark
 import pano_scrobbler.composeapp.generated.resources.debug_menu
@@ -64,6 +66,7 @@ import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
 import pano_scrobbler.composeapp.generated.resources.desktop
+import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
 import pano_scrobbler.composeapp.generated.resources.github_link
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.light
@@ -111,6 +114,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
+import pano_scrobbler.composeapp.generated.resources.spotify
 import java.util.Calendar
 import java.util.Locale
 
@@ -164,6 +168,12 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.autoUpdates } }
     val crashReporterEnabled by
     remember { derivedStateOf { mainPrefsData.crashReporterEnabled } }
+    val spotifyCountryP by
+    remember { derivedStateOf { mainPrefsData.spotifyCountryP } }
+    val itunesCountryP by
+    remember { derivedStateOf { mainPrefsData.itunesCountryP } }
+    val fetchMissingMetadata by
+    remember { derivedStateOf { mainPrefsData.fetchMissingMetadata } }
     val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
     var isAddedToStartup by remember { mutableStateOf(false) }
     val scrobblableLabels by remember {
@@ -513,6 +523,49 @@ fun PrefsScreen(
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_misc),
                 icon = Icons.Outlined.MoreHoriz
+            )
+        }
+
+        item(MainPrefs::fetchMissingMetadata.name) {
+            val metadataServices = listOfNotNull(
+                stringResource(Res.string.apple_music),
+                if (PlatformStuff.isDesktop) null else stringResource(Res.string.spotify)
+            ).joinToString()
+
+            SwitchPref(
+                text = stringResource(Res.string.fetch_missing_metadata, metadataServices),
+                value = fetchMissingMetadata,
+                copyToSave = { copy(fetchMissingMetadata = it) }
+            )
+        }
+
+        item(MainPrefs::itunesCountry.name) {
+            val countryCodes = remember { Locale.getISOCountries().toList() }
+
+            DropdownPref(
+                text = stringResource(
+                    Res.string.country_for_api,
+                    stringResource(Res.string.apple_music)
+                ),
+                selectedValue = itunesCountryP,
+                values = countryCodes,
+                toLabel = { it },
+                copyToSave = { copy(itunesCountry = it) }
+            )
+        }
+
+        item(MainPrefs::spotifyCountry.name) {
+            val countryCodes = remember { Locale.getISOCountries().toList() }
+
+            DropdownPref(
+                text = stringResource(
+                    Res.string.country_for_api,
+                    stringResource(Res.string.spotify)
+                ),
+                selectedValue = spotifyCountryP,
+                values = countryCodes,
+                toLabel = { it },
+                copyToSave = { copy(spotifyCountry = it) }
             )
         }
 

@@ -1,6 +1,8 @@
 package com.arn.scrobble.api
 
+import androidx.collection.LruCache
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.itunes.ItunesTrackResponse
 import com.arn.scrobble.api.itunes.ItunesWrapperType
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -20,18 +22,19 @@ import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
 import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.edits.TitleParseException
+import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.PendingScrobblesWork
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 
 data class PreprocessResult(
     val scrobbleData: ScrobbleData,
+    val edited: Boolean = false,
     val presetsApplied: Set<RegexPreset> = emptySet(),
     val titleParseFailed: Boolean = false,
     val blockPlayerAction: BlockPlayerAction? = null,
@@ -39,133 +42,112 @@ data class PreprocessResult(
     val userPlayCount: Int = 0,
 )
 
+private class NetworkRequestNeededException(
+    message: String = "Network request needed",
+    cause: Throwable? = null
+) : Exception(message, cause)
+
 object ScrobbleEverywhere {
 
-    suspend fun preprocessMetadata(
-        origScrobbleData: ScrobbleData,
-        extras: Map<String, String>
+    val itunesArtistsCache = LruCache<String, String>(100)
+    val itunesTracksCache = LruCache<String, ItunesTrackResponse>(50)
+    val spotifyTrackIdToArtistCache = LruCache<String, String>(100)
+    val lastfmTracksCache = LruCache<String, Track>(50)
+
+    private suspend fun performEditsAndBlocks(
+        scrobbleData: ScrobbleData,
+        runPresets: Boolean
     ): PreprocessResult {
-        var scrobbleData = origScrobbleData
+        var scrobbleData = scrobbleData
+        if (PlatformStuff.billingRepository.isLicenseValid) {
+            val blockedMetadata = PanoDb.db
+                .getBlockedMetadataDao()
+                .getBlockedEntry(scrobbleData)
 
-        Logger.i { "preprocessMetadata " + scrobbleData.artist + " - " + scrobbleData.track }
-
-        val prefs = PlatformStuff.mainPrefs.data.first()
-
-        suspend fun performEditsAndBlocks(runPresets: Boolean): PreprocessResult {
-            if (PlatformStuff.billingRepository.isLicenseValid) {
-                val blockedMetadata = PanoDb.db
-                    .getBlockedMetadataDao()
-                    .getBlockedEntry(scrobbleData)
-
-                if (blockedMetadata != null)
-                    return PreprocessResult(
-                        scrobbleData,
-                        blockPlayerAction = blockedMetadata.blockPlayerAction
-                    )
-            }
-
-            var edited = false
-            var presetsApplied = emptySet<RegexPreset>()
-            var titleParseFailed = false
-
-            val regexes = PanoDb.db
-                .getRegexEditsDao()
-                .allFlow().first()
-
-            val regexResults = RegexEditsDao.performRegexReplace(scrobbleData, regexes)
-
-            if (regexResults.blockPlayerAction != null) {
+            if (blockedMetadata != null)
                 return PreprocessResult(
                     scrobbleData,
-                    blockPlayerAction = regexResults.blockPlayerAction
+                    blockPlayerAction = blockedMetadata.blockPlayerAction
                 )
-            } else if (regexResults.scrobbleData != null) {
-                scrobbleData = regexResults.scrobbleData
+        }
+
+        var edited = false
+        var presetsApplied = emptySet<RegexPreset>()
+        var titleParseFailed = false
+
+        val regexes = PanoDb.db
+            .getRegexEditsDao()
+            .allFlow().first()
+
+        val regexResults = RegexEditsDao.performRegexReplace(scrobbleData, regexes)
+
+        if (regexResults.blockPlayerAction != null) {
+            return PreprocessResult(
+                scrobbleData,
+                blockPlayerAction = regexResults.blockPlayerAction
+            )
+        } else if (regexResults.scrobbleData != null) {
+            scrobbleData = regexResults.scrobbleData
+            edited = true
+        }
+
+        PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
+            ?.also {
+                scrobbleData = scrobbleData.copy(
+                    artist = it.artist,
+                    album = it.album,
+                    track = it.track,
+                    albumArtist = it.albumArtist.takeIf { it.isNotBlank() }
+                )
                 edited = true
             }
 
-            PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
-                ?.also {
-                    scrobbleData = scrobbleData.copy(
-                        artist = it.artist,
-                        album = it.album,
-                        track = it.track,
-                        albumArtist = it.albumArtist.takeIf { it.isNotBlank() }
-                    )
+        if (!edited && runPresets) {
+            try {
+                val presetsResult = RegexPresets.applyAllPresets(scrobbleData)
+
+                if (presetsResult != null) {
+                    scrobbleData = presetsResult.scrobbleData
+                    presetsApplied = presetsResult.appliedPresets.toSet()
                     edited = true
                 }
-
-            if (!edited && runPresets) {
-                try {
-                    val presetsResult = RegexPresets.applyAllPresets(scrobbleData)
-
-                    if (presetsResult != null) {
-                        scrobbleData = presetsResult.scrobbleData
-                        presetsApplied = presetsResult.appliedPresets.toSet()
-                    }
-                } catch (e: TitleParseException) {
-                    titleParseFailed = true
-                }
+            } catch (e: TitleParseException) {
+                titleParseFailed = true
             }
-
-            return PreprocessResult(
-                presetsApplied = presetsApplied,
-                titleParseFailed = titleParseFailed,
-                scrobbleData = scrobbleData
-            )
         }
 
-        val preprocessResult = performEditsAndBlocks(true)
+        return PreprocessResult(
+            presetsApplied = presetsApplied,
+            edited = edited,
+            titleParseFailed = titleParseFailed,
+            scrobbleData = scrobbleData
+        )
+    }
+
+    suspend fun preprocessMetadata(origScrobbleData: ScrobbleData): PreprocessResult {
+
+        Logger.i { "preprocessMetadata " + origScrobbleData.artist + " - " + origScrobbleData.track }
+
+        val preprocessResult = performEditsAndBlocks(origScrobbleData, true)
 
         if (preprocessResult.blockPlayerAction != null) return preprocessResult
 
-        if (scrobbleData.album.isNullOrEmpty()) {
-
-            val track = if (prefs.fetchAlbum)
-                getValidTrack(scrobbleData.artist, scrobbleData.track)
-            else
-                null
-
-            // cancellable
-            delay(10)
-            if (track != null) {
-                scrobbleData = scrobbleData.copy(
-                    artist = track.artist.name,
-                    track = track.name,
-                    album = track.album?.name,
-                    albumArtist = track.album?.artist?.name,
-                )
+        val preprocessResult2 =
+            if (preprocessResult.presetsApplied.isNotEmpty()) {
+                // run the edits again, as users could have edited existing scrobbles
+                // don't try to parse title again here
+                performEditsAndBlocks(preprocessResult.scrobbleData, false)
+            } else {
+                preprocessResult
             }
-        }
-
-        // get first artist and album artist
-        if (Stuff.isOnline) {
-            when (scrobbleData.appId?.lowercase()) {
-                Stuff.PACKAGE_APPLE_MUSIC,
-                Stuff.PACKAGE_APPLE_MUSIC_WIN.lowercase() ->
-                    fetchFirstArtistFromItunes(scrobbleData, extras)?.let {
-                        scrobbleData = it
-                    }
-
-                Stuff.PACKAGE_SPOTIFY ->
-                    fetchFirstArtistFromSpotify(scrobbleData, extras)?.let {
-                        scrobbleData = it
-                    }
-            }
-        }
-
-        val preprocessResult2 = if (preprocessResult.presetsApplied.isNotEmpty()) {
-            // run the edits again, as users could have edited existing scrobbles
-            // don't try to parse title again here
-            performEditsAndBlocks(false)
-        } else {
-            preprocessResult.copy(scrobbleData = scrobbleData)
-        }
 
         val cachedTrack: CachedTrack? =
-            if (prefs.lastMaxIndexTime != null)
+            if (PlatformStuff.mainPrefs.data.map { it.lastMaxIndexTime }.first() != null)
                 PanoDb.db.getCachedTracksDao()
-                    .findExact(scrobbleData.artist, scrobbleData.track)
+                    .findExact(
+                        preprocessResult2.scrobbleData.artist,
+                        preprocessResult2.scrobbleData.track
+                    )
             else
                 null
 
@@ -178,33 +160,123 @@ object ScrobbleEverywhere {
             preprocessResult2
     }
 
+    suspend fun fetchAdditionalMetadata(
+        scrobbleData: ScrobbleData,
+        trackId: String?,
+        cacheOnly: Boolean,
+    ): Pair<ScrobbleData?, Boolean> {
+        var newScrobbleData: ScrobbleData? = null
+        var shouldFetchAgain = false
+
+        val fetchMissingMetadata =
+            PlatformStuff.mainPrefs.data.map { it.fetchMissingMetadata }.first()
+        val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
+
+        try {
+            when {
+                fetchMissingMetadata && (
+                        scrobbleData.appId == Stuff.PACKAGE_APPLE_MUSIC ||
+                                scrobbleData.appId?.lowercase() == Stuff.PACKAGE_APPLE_MUSIC_WIN.lowercase() ||
+                                scrobbleData.appId == Stuff.PACKAGE_CIDER_LINUX ||
+                                scrobbleData.appId == Stuff.PACKAGE_CIDER_VARIANT_LINUX)
+                    -> {
+                    fetchFirstArtistFromItunes(
+                        scrobbleData,
+                        trackId
+                            ?.removePrefix("/org/node/mediaplayer/cider/track/")
+                            ?.toLongOrNull(),
+                        cacheOnly,
+                    )?.let {
+                        newScrobbleData = it
+                    }
+                }
+
+                fetchMissingMetadata && scrobbleData.appId == Stuff.PACKAGE_SPOTIFY -> {
+                    fetchFirstArtistFromSpotify(
+                        scrobbleData,
+                        trackId?.removePrefix("spotify:track:"),
+                        cacheOnly
+                    )?.let {
+                        newScrobbleData = it
+                    }
+                }
+
+                fetchMissingMetadataLastfm && scrobbleData.album.isNullOrEmpty() -> {
+                    val track = getLastfmTrack(
+                        scrobbleData.artist,
+                        scrobbleData.track,
+                        cacheOnly
+                    )
+
+                    if (track != null) {
+                        newScrobbleData = scrobbleData.copy(
+                            artist = track.artist.name,
+                            track = track.name,
+                            album = track.album?.name,
+                            albumArtist = track.album?.artist?.name,
+                        )
+                    }
+                }
+            }
+        } catch (e: NetworkRequestNeededException) {
+            shouldFetchAgain = true
+        }
+
+        return newScrobbleData to shouldFetchAgain
+    }
+
+    private fun createCacheKey(id: String, country: String) = "$id||$country"
+
     private suspend fun fetchFirstArtistFromItunes(
         scrobbleData: ScrobbleData,
-        extras: Map<String, String>
+        trackId: Long?,
+        cacheOnly: Boolean
     ): ScrobbleData? {
-        val trackId = extras[Stuff.METADATA_KEY_MEDIA_ID]?.toLongOrNull()
+        val country = PlatformStuff.mainPrefs.data.map { it.itunesCountryP }.first()
 
         val track = if (trackId == null) {
-            Requesters.itunesRequester.searchTrack(
-                scrobbleData.artist + " " + scrobbleData.track,
-                limit = 3
-            ).onFailure {
-                Logger.w(it) { "Failed to search iTunes for track" }
-            }
-                .getOrNull()
+            val query = scrobbleData.artist + " " + scrobbleData.track
+            val cacheKey = createCacheKey(query, country)
+
+            val response = itunesTracksCache[cacheKey]
+                ?: if (!cacheOnly && Stuff.isOnline)
+                    Requesters.itunesRequester.searchTrack(
+                        query,
+                        country = country,
+                        limit = 3
+                    ).onFailure {
+                        Logger.w(it) { "Failed to search iTunes for track" }
+                    }
+                        .getOrNull()
+                        ?.also { itunesTracksCache.put(cacheKey, it) }
+                else
+                    throw NetworkRequestNeededException()
+
+            response
                 ?.results
                 ?.firstOrNull {
                     it.wrapperType == ItunesWrapperType.track &&
                             it.artistName.equals(scrobbleData.artist, ignoreCase = true) &&
                             it.trackName.equals(scrobbleData.track, ignoreCase = true) &&
-                            it.collectionName.equals(scrobbleData.album, ignoreCase = true)
+                            it.collectionName != null &&
+                            MetadataUtils.removeSingleEp(it.collectionName)
+                                .equals(scrobbleData.album, ignoreCase = true)
                 }
         } else {
-            Requesters.itunesRequester.lookupTrack(trackId)
-                .onFailure {
-                    Logger.w(it) { "Failed to look up iTunes track" }
-                }
-                .getOrNull()
+            val cacheKey = createCacheKey(trackId.toString(), country)
+
+            val response = itunesTracksCache[cacheKey]
+                ?: if (!cacheOnly && Stuff.isOnline)
+                    Requesters.itunesRequester.lookupTrack(trackId)
+                        .onFailure {
+                            Logger.w(it) { "Failed to look up iTunes track" }
+                        }
+                        .getOrNull()
+                        ?.also { itunesTracksCache.put(cacheKey, it) }
+                else
+                    throw NetworkRequestNeededException()
+
+            response
                 ?.results
                 ?.firstOrNull { it.wrapperType == ItunesWrapperType.track }
         }
@@ -213,21 +285,20 @@ object ScrobbleEverywhere {
             return null
         }
 
-        val artistName = if (
-            track.artistName.contains(" & ") ||
-            track.artistName.contains(", ")
-        ) {
-            Requesters.itunesRequester.lookupArtist(track.artistId)
-                .onFailure {
-                    Logger.w(it) { "Failed to look up iTunes artist" }
-                }
-                .getOrNull()
-                ?.results
-                ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
-                ?.artistName
-        } else {
-            track.artistName
-        }
+        val artistCacheKey = createCacheKey(track.artistId.toString(), country)
+        val artistName = itunesArtistsCache[artistCacheKey]
+            ?: if (!cacheOnly && Stuff.isOnline)
+                Requesters.itunesRequester.lookupArtist(track.artistId)
+                    .onFailure {
+                        Logger.w(it) { "Failed to look up iTunes artist" }
+                    }
+                    .getOrNull()
+                    ?.results
+                    ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
+                    ?.artistName
+                    ?.also { itunesArtistsCache.put(artistCacheKey, it) }
+            else
+                throw NetworkRequestNeededException()
 
         val albumArtistName =
             if (track.collectionArtistName == null ||
@@ -235,20 +306,23 @@ object ScrobbleEverywhere {
                 track.collectionArtistId == track.artistId
             ) {
                 artistName
-            } else if (
-                track.collectionArtistName.contains(" & ") ||
-                track.collectionArtistName.contains(", ")
-            ) {
-                Requesters.itunesRequester.lookupArtist(track.collectionArtistId)
-                    .onFailure {
-                        Logger.w(it) { "Failed to look up iTunes album artist" }
-                    }
-                    .getOrNull()
-                    ?.results
-                    ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
-                    ?.artistName
             } else {
-                track.collectionArtistName
+                val albumArtistCacheKey =
+                    createCacheKey(track.collectionArtistId.toString(), country)
+
+                itunesArtistsCache[albumArtistCacheKey]
+                    ?: if (!cacheOnly && Stuff.isOnline)
+                        Requesters.itunesRequester.lookupArtist(track.collectionArtistId)
+                            .onFailure {
+                                Logger.w(it) { "Failed to look up iTunes album artist" }
+                            }
+                            .getOrNull()
+                            ?.results
+                            ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
+                            ?.artistName
+                            ?.also { itunesArtistsCache.put(albumArtistCacheKey, it) }
+                    else
+                        throw NetworkRequestNeededException()
             }
 
         if (artistName != null) {
@@ -262,26 +336,42 @@ object ScrobbleEverywhere {
 
     private suspend fun fetchFirstArtistFromSpotify(
         scrobbleData: ScrobbleData,
-        extras: Map<String, String>
+        trackId: String?,
+        cacheOnly: Boolean,
     ): ScrobbleData? {
         if (!scrobbleData.artist.contains(", ")) {
             return null
         }
 
-        // todo remove later
-        if (!PlatformStuff.isDebug) return null
+        if (trackId == null) return null
 
-        val trackId = extras[Stuff.METADATA_KEY_MEDIA_ID]?.removePrefix("spotify:track:")
-            ?: return null
+        val firstArtistName =
+            if (scrobbleData.albumArtist != null &&
+                (scrobbleData.artist == scrobbleData.albumArtist || // the artist itself may have a ", " in it
+                        scrobbleData.artist.startsWith(scrobbleData.albumArtist + ", "))
+            ) {
+                // sometimes, the first artist is the album artist
+                scrobbleData.albumArtist
+            } else {
+                val country = PlatformStuff.mainPrefs.data.map { it.spotifyCountryP }.first()
 
-        val firstArtistName = Requesters.spotifyRequester.track(trackId)
-            .onFailure {
-                Logger.w(it) { "Failed to search Spotify for track" }
+                val cacheKey = createCacheKey(trackId, country)
+
+                spotifyTrackIdToArtistCache[cacheKey]
+                    ?: if (!cacheOnly && Stuff.isOnline) {
+                        Requesters.spotifyRequester.track(trackId, country)
+                            .onFailure {
+                                Logger.w(it) { "Failed to search Spotify for track" }
+                            }
+                            .getOrNull()
+                            ?.artists
+                            ?.firstOrNull()
+                            ?.name
+                            ?.also { spotifyTrackIdToArtistCache.put(cacheKey, it) }
+                    } else
+                        throw NetworkRequestNeededException()
+
             }
-            .getOrNull()
-            ?.artists
-            ?.firstOrNull()
-            ?.name
 
         if (firstArtistName != null) {
             return scrobbleData.copy(
@@ -420,25 +510,19 @@ object ScrobbleEverywhere {
         }
     }
 
-    private var lastNpInfoTime = 0L
-    private var lastNpInfoCount = 0
-
-    private suspend fun getValidTrack(artist: String, track: String): Track? {
-        val now = System.currentTimeMillis()
-        if (now - lastNpInfoTime < Stuff.TRACK_INFO_WINDOW) {
-            lastNpInfoCount++
-            if (lastNpInfoCount >= Stuff.TRACK_INFO_REQUESTS)
-                return null
-        } else {
-            lastNpInfoTime = now
-            lastNpInfoCount = 0
+    private suspend fun getLastfmTrack(artist: String, track: String, cacheOnly: Boolean): Track? {
+        val cacheKey = "$artist||$track"
+        val cachedTrack = lastfmTracksCache[cacheKey]
+        if (cachedTrack != null) {
+            return cachedTrack
         }
 
-        if (Stuff.isOnline) {
-            val trackObj = Track(track, null, Artist(artist))
+        val trackObj = Track(track, null, Artist(artist))
 
+        if (!cacheOnly && Stuff.isOnline) {
             Requesters.lastfmUnauthedRequester.getInfo(trackObj)
                 .onSuccess {
+                    lastfmTracksCache.put(cacheKey, it)
                     return it
                 }
         }

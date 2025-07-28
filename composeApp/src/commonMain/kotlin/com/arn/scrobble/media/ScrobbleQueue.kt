@@ -34,6 +34,8 @@ class ScrobbleQueue(
 
     private val scrobbleTasks = mutableMapOf<Int, Job>()
 
+    private val fetchAdditionalMetadataTimestamps = ArrayDeque<Long>()
+
     // ticker, only handles empty messages and messagePQ
     // required because uptimeMillis pauses / slows down in deep sleep
 
@@ -58,6 +60,18 @@ class ScrobbleQueue(
         lockedHash = hash
     }
 
+    private fun canFetchAdditionalMetadata(): Boolean {
+        val now = System.currentTimeMillis()
+        // Remove timestamps older than n seconds
+        while (fetchAdditionalMetadataTimestamps.isNotEmpty() && now - fetchAdditionalMetadataTimestamps.first() > 1 * 60_000) {
+            fetchAdditionalMetadataTimestamps.removeFirst()
+        }
+        val can = fetchAdditionalMetadataTimestamps.size < 2
+        fetchAdditionalMetadataTimestamps.addLast(System.currentTimeMillis())
+
+        return can
+    }
+
     fun scrobble(
         trackInfo: PlayingTrackInfo,
         appIsAllowListed: Boolean,
@@ -73,7 +87,7 @@ class ScrobbleQueue(
         val scrobbleData = trackInfo.toScrobbleData(useOriginals = false)
         val origScrobbleData = trackInfo.toScrobbleData(useOriginals = true)
 
-        suspend fun nowPlayingAndSubmit(sd: ScrobbleData) {
+        suspend fun nowPlayingAndSubmit(sd: ScrobbleData, fetchAdditionalMetadata: Boolean) {
             Logger.d { "will submit in ${submitAtTime - PlatformStuff.monotonicTimeMs()}ms" }
 
             val submitNowPlaying = PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()
@@ -109,7 +123,21 @@ class ScrobbleQueue(
 
             // launch it in a separate scope, so that it does not get cancelled
             scope.launch(Dispatchers.IO) {
-                ScrobbleEverywhere.scrobble(sd)
+                val scrobbleSd = if (fetchAdditionalMetadata) {
+                    val (additionalMetadataScrobbleData, _) = ScrobbleEverywhere.fetchAdditionalMetadata(
+                        scrobbleData,
+                        trackInfo.trackId,
+                        false
+                    )
+
+                    ScrobbleEverywhere.preprocessMetadata(
+                        additionalMetadataScrobbleData ?: scrobbleData
+                    ).scrobbleData
+                } else {
+                    sd
+                }
+
+                ScrobbleEverywhere.scrobble(scrobbleSd)
             }
 
             notifyPlayingTrackEvent(
@@ -150,13 +178,21 @@ class ScrobbleQueue(
             delay(Stuff.META_WAIT)
 
             if (trackInfo.preprocessed) {
-                nowPlayingAndSubmit(trackInfo.toScrobbleData(false))
+                nowPlayingAndSubmit(
+                    trackInfo.toScrobbleData(false),
+                    !trackInfo.additionalMetadataFetched
+                )
                 return@launch
             }
 
-            val preprocessResult = ScrobbleEverywhere.preprocessMetadata(
+            val (additionalMetadataScrobbleData, shouldFetchAgain) = ScrobbleEverywhere.fetchAdditionalMetadata(
                 scrobbleData,
-                trackInfo.extras
+                trackInfo.trackId,
+                !canFetchAdditionalMetadata()
+            )
+
+            val preprocessResult = ScrobbleEverywhere.preprocessMetadata(
+                additionalMetadataScrobbleData ?: scrobbleData
             )
 
             when {
@@ -186,20 +222,20 @@ class ScrobbleQueue(
                 }
 
                 else -> {
-                    trackInfo.putPreprocessedData(preprocessResult.scrobbleData)
+                    trackInfo.putPreprocessedData(preprocessResult.scrobbleData, !shouldFetchAgain)
 
                     notifyPlayingTrackEvent(
                         PlayingTrackNotifyEvent.TrackScrobbling(
                             hash = hash,
                             scrobbleData = preprocessResult.scrobbleData,
-                            origScrobbleData = origScrobbleData,
+                            origScrobbleData = additionalMetadataScrobbleData ?: origScrobbleData,
                             nowPlaying = true,
                             userLoved = trackInfo.userLoved,
                             userPlayCount = trackInfo.userPlayCount
                         )
                     )
 
-                    nowPlayingAndSubmit(preprocessResult.scrobbleData)
+                    nowPlayingAndSubmit(preprocessResult.scrobbleData, shouldFetchAgain)
                 }
             }
         }

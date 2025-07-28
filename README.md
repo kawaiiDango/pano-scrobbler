@@ -21,11 +21,11 @@
 
 **Windows:**
 
-[![github][github]][github-link]
+[![github][github]][https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe]
 
 **Linux:**
 
-[![github][github]][github-link]
+[![github][github]][https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage]
 
 **Android (phones, tablets, TVs and Chromebooks):**
 

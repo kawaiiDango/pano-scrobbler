@@ -12,15 +12,13 @@ actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
 ): Pair<MetadataInfo, Map<String, String>> {
-
+    val trackId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID) ?: ""
     var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
     // do not scrobble empty artists, ads will get scrobbled
     var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: ""
     var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
     var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
     val trackNumber = metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
-//            val genre = metadata?.getString(MediaMetadata.METADATA_KEY_GENRE)?.trim() ?: ""
-    // The genre field is not used by google podcasts and podcast addict
     var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
     if (durationMillis < -1)
         durationMillis = -1
@@ -36,8 +34,6 @@ actual fun transformMediaMetadata(
     metadata.getString(Stuff.METADATA_KEY_AM_ARTIST_ID)
         ?.let { extrasMap[Stuff.METADATA_KEY_AM_ARTIST_ID] = it }
 
-    metadata.getString(Stuff.METADATA_KEY_MEDIA_ID)
-        ?.let { extrasMap[Stuff.METADATA_KEY_MEDIA_ID] = it }
 
     when (trackInfo.appId) {
         Stuff.PACKAGE_PANDORA -> {
@@ -124,6 +120,7 @@ actual fun transformMediaMetadata(
 
     val metadataInfo = MetadataInfo(
         appId = trackInfo.appId,
+        trackId = trackId,
         title = title,
         artist = artist,
         album = album,

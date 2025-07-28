@@ -509,11 +509,11 @@ private fun NowPlayingSurface(
 
                 Modifier.drawBehind {
                     brushRadius = if (size.minDimension < 2 * size.maxDimension)
-                        size.minDimension * 1.5f
+                        size.maxDimension / 2
                     else
-                        size.minDimension / 2
+                        size.minDimension
 
-                    translate((progress - 0.5f) * 2 * (size.width), size.height * 3 / 4) {
+                    translate((progress - 0.5f) * 2 * (size.width), size.height * 0.55f) {
                         drawCircle(
                             brush = brushRadial,
                             radius = brushRadius,

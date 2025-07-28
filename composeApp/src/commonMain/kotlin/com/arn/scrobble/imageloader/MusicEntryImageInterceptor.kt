@@ -60,7 +60,9 @@ class MusicEntryImageInterceptor : Interceptor {
                                 val spotifyArtists = Requesters.spotifyRequester.search(
                                     entry.name,
                                     SpotifySearchType.artist,
-                                    3
+                                    market = PlatformStuff.mainPrefs.data.map { it.spotifyCountryP }
+                                        .first(),
+                                    limit = 3
                                 ).getOrNull()
                                     ?.artists
                                     ?.items

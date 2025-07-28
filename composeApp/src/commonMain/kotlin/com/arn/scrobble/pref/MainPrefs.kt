@@ -18,6 +18,7 @@ import com.arn.scrobble.ui.GridMode
 import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.getSystemCountryCode
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonNames
@@ -111,6 +112,9 @@ data class MainPrefs(
     // keep this as a string and not as an enum, in case i delete presets later
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
     val windowState: SerializableWindowState? = null,
+    val itunesCountry: String? = null,
+    val spotifyCountry: String? = null,
+    val fetchMissingMetadata: Boolean = true
 ) {
 
     val autoDetectAppsP
@@ -136,6 +140,12 @@ data class MainPrefs(
 
     val lastMaxIndexTime
         get() = lastDeltaIndexTime ?: lastFullIndexTime
+
+    val spotifyCountryP
+        get() = spotifyCountry ?: getSystemCountryCode()
+
+    val itunesCountryP
+        get() = itunesCountry ?: getSystemCountryCode()
 
     fun allowOrBlockAppCopied(appId: String, allow: Boolean): MainPrefs {
         //create copies

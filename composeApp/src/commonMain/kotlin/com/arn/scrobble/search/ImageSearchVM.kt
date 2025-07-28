@@ -12,6 +12,7 @@ import com.arn.scrobble.api.spotify.SpotifySearchType
 import com.arn.scrobble.db.CustomSpotifyMapping
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.utils.PlatformFile
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +22,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -39,18 +42,26 @@ class ImageSearchVM : ViewModel() {
 
     init {
         viewModelScope.launch {
+            val country = PlatformStuff.mainPrefs.data.map { it.spotifyCountryP }.first()
+
             _searchTerm
                 .distinctUntilChanged()
                 .debounce(500)
                 .collectLatest { (term, searchType) ->
                     val results = when (searchType) {
                         Stuff.TYPE_ALBUMS ->
-                            Requesters.spotifyRequester.search(term, SpotifySearchType.album, LIMIT)
+                            Requesters.spotifyRequester.search(
+                                term,
+                                SpotifySearchType.album,
+                                market = country,
+                                limit = LIMIT
+                            )
 
                         Stuff.TYPE_ARTISTS -> Requesters.spotifyRequester.search(
                             term,
                             SpotifySearchType.artist,
-                            LIMIT
+                            market = country,
+                            limit = LIMIT
                         )
 
                         else -> throw IllegalArgumentException("Invalid search type: $searchType")

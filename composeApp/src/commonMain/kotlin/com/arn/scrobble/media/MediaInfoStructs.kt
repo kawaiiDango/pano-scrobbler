@@ -8,6 +8,7 @@ data class SessionInfo(
 
 data class MetadataInfo(
     val appId: String,
+    val trackId: String,
     val title: String,
     val artist: String,
     val album: String,

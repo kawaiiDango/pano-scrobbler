@@ -23,6 +23,7 @@ object LocaleUtils {
         "ja",
         "ko",
         "lt",
+        "ms",
         "ne",
         "nl",
         "pl",
@@ -68,3 +69,5 @@ object LocaleUtils {
 expect fun setAppLocale(lang: String?, force: Boolean)
 
 expect fun getCurrentLocale(localePref: String?): String?
+
+expect fun getSystemCountryCode(): String

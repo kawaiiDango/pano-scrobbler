@@ -171,7 +171,7 @@ class LoginViewModel : ViewModel() {
 
                 // 14 - This token has not been authorized
                 if (result.isFailure && (result.exceptionOrNull() as? ApiException)?.code == 14) {
-                    delay(3000)
+                    delay(5000)
                     val hasTimeLeft = tryAgainTimeout - System.currentTimeMillis() > 0
 
                     if (!hasTimeLeft) {

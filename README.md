@@ -79,6 +79,7 @@ This may help prevent the system from killing the app in the background on devic
 - YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler) and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
 - Icons from [pictogrammers.com](https://pictogrammers.com) and [material.io](https://material.io)
 - Genres filter from [everynoise.com](https://everynoise.com)
+- Tidal SteelSeries Integration from [TidalRPC](https://github.com/BitesizedLion/TidalRPC)
 
 Thanks to the amazing [translators](composeApp/src/commonMain/composeResources/files/crowdin_members.txt) and everyone who
 reported bugs and helped me with this project.

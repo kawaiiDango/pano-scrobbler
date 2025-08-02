@@ -130,8 +130,10 @@ abstract class MediaListener(
             else
                 Long.MAX_VALUE
 
+            // don't scrobble < n seconds
+            // -subtract some to round off. Sometimes 30 second tracks are reported as 29988ms
             var finalDelay = min(delayMillisFraction, delayMillis)
-                .coerceAtLeast(scrobbleTimingPrefs.value.minDurationSecs * 1000L) // don't scrobble < n seconds
+                .coerceAtLeast(scrobbleTimingPrefs.value.minDurationSecs * 1000L - 600L)
 
             finalDelay = (finalDelay - trackInfo.timePlayed)
                 .coerceAtLeast(2000)// deal with negative or 0 delay

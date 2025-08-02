@@ -18,7 +18,8 @@ actual fun transformMediaMetadata(
     var durationMillis = metadata.duration
 
     when (trackInfo.appId.lowercase()) {
-        Stuff.PACKAGE_APPLE_MUSIC_WIN.lowercase() -> {
+        Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE.lowercase(),
+        Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.lowercase() -> {
             val splits = artist.split(" — ")
 
             if (splits.size >= 2) {

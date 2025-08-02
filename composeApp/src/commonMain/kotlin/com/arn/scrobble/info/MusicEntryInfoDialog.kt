@@ -564,12 +564,12 @@ private fun InfoActionsRow(
                 enabled = user.isSelf,
                 onClick = onLoveClick,
                 icon = if (isLoved) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (isLoved)
+                contentDescription = if (isLoved && user.isSelf)
                     stringResource(Res.string.unlove)
-                else if (user.isSelf)
-                    stringResource(Res.string.love)
+                else if (isLoved)
+                    stringResource(Res.string.user_loved, user.name)
                 else
-                    stringResource(Res.string.user_loved, user.name),
+                    stringResource(Res.string.love),
                 modifier = if (user.isSelf) Modifier else Modifier.alpha(0.5f)
             )
         }
@@ -601,18 +601,20 @@ private fun InfoActionsRow(
             contentDescription = stringResource(Res.string.search),
         )
 
-        IconButtonWithTooltip(
-            onClick = {
-                val text = when (entry) {
-                    is Track -> entry.artist.name + " " + entry.name
-                    is Album -> entry.artist?.name.orEmpty() + " " + entry.name
-                    is Artist -> entry.name
-                }
-                PlatformStuff.copyToClipboard(text)
-            },
-            icon = Icons.Outlined.ContentCopy,
-            contentDescription = stringResource(Res.string.copy),
-        )
+        if (!PlatformStuff.isTv) {
+            IconButtonWithTooltip(
+                onClick = {
+                    val text = when (entry) {
+                        is Track -> entry.artist.name + " " + entry.name
+                        is Album -> entry.artist?.name.orEmpty() + " " + entry.name
+                        is Artist -> entry.name
+                    }
+                    PlatformStuff.copyToClipboard(text)
+                },
+                icon = Icons.Outlined.ContentCopy,
+                contentDescription = stringResource(Res.string.copy),
+            )
+        }
 
         if (entry.url != null && !PlatformStuff.isTv) {
             IconButtonWithTooltip(

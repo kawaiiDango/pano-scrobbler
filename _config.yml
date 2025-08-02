@@ -55,7 +55,10 @@ remote_theme: jekyll/minima
 minima:
   skin: auto
   social_links:
-    - { platform: github,  user_url: "https://github.com/kawaiiDango/pano-scrobbler" }
+    - title: GitHub Repository
+      icon: github
+      url: "https://github.com/kawaiiDango/pano-scrobbler"
+  hide_site_feed_link: true
   nav_pages:
     - faq.md
 

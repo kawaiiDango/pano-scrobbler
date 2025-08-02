@@ -36,6 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -125,7 +127,26 @@ private fun TrackDropdownMenu(
                 TrackMenuLevel.Root
         )
     }
+
+    val moreFocusRequester = remember { FocusRequester() }
+    val blockFocusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(menuLevel) {
+        when (menuLevel) {
+            TrackMenuLevel.More -> {
+                moreFocusRequester.requestFocus()
+            }
+
+            TrackMenuLevel.Block -> {
+                blockFocusRequester.requestFocus()
+            }
+
+            TrackMenuLevel.Root -> {
+                // nothing
+            }
+        }
+    }
 
     DropdownMenu(
         expanded = expanded,
@@ -296,23 +317,25 @@ private fun TrackDropdownMenu(
                 }
 
                 TrackMenuLevel.More -> {
-                    DropdownMenuItem(
-                        onClick = {
-                            menuLevel = TrackMenuLevel.Root
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                contentDescription = null
-                            )
-                        },
-                        text = {
-                            Text(
-                                stringResource(Res.string.more),
-                                style = MaterialTheme.typography.titleMediumEmphasized
-                            )
-                        },
-                    )
+                    if (!PlatformStuff.isTv) {
+                        DropdownMenuItem(
+                            onClick = {
+                                menuLevel = TrackMenuLevel.Root
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                    contentDescription = null
+                                )
+                            },
+                            text = {
+                                Text(
+                                    stringResource(Res.string.more),
+                                    style = MaterialTheme.typography.titleMediumEmphasized
+                                )
+                            },
+                        )
+                    }
 
                     DropdownMenuItem(
                         onClick = {
@@ -326,7 +349,8 @@ private fun TrackDropdownMenu(
                                 imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                 contentDescription = null
                             )
-                        }
+                        },
+                        modifier = Modifier.focusRequester(moreFocusRequester)
                     )
 
                     if (onHate != null) {
@@ -381,25 +405,27 @@ private fun TrackDropdownMenu(
                 }
 
                 TrackMenuLevel.Block -> {
-                    DropdownMenuItem(
-                        onClick = {
-                            menuLevel = TrackMenuLevel.More
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                contentDescription = null
-                            )
-                        },
-                        text = {
-                            Text(
-                                stringResource(
-                                    Res.string.block
-                                ),
-                                style = MaterialTheme.typography.titleMediumEmphasized
-                            )
-                        },
-                    )
+                    if (!PlatformStuff.isTv) {
+                        DropdownMenuItem(
+                            onClick = {
+                                menuLevel = TrackMenuLevel.More
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                    contentDescription = null
+                                )
+                            },
+                            text = {
+                                Text(
+                                    stringResource(
+                                        Res.string.block
+                                    ),
+                                    style = MaterialTheme.typography.titleMediumEmphasized
+                                )
+                            },
+                        )
+                    }
 
                     DropdownMenuItem(
                         onClick = {
@@ -419,8 +445,10 @@ private fun TrackDropdownMenu(
                                 imageVector = Icons.Outlined.MusicNote,
                                 contentDescription = null
                             )
-                        }
+                        },
+                        modifier = Modifier.focusRequester(blockFocusRequester)
                     )
+
                     DropdownMenuItem(
                         onClick = {
                             val b = BlockedMetadata(
@@ -440,6 +468,7 @@ private fun TrackDropdownMenu(
                             )
                         }
                     )
+
                     DropdownMenuItem(
                         onClick = {
                             val b = BlockedMetadata(

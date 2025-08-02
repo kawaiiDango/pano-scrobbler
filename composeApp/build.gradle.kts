@@ -233,24 +233,23 @@ buildkonfig {
 
 android {
     compileSdk = libs.versions.targetSdk.get().toInt()
-//    compileSdkPreview = "Baklava"
 
     defaultConfig {
         applicationId = appId
         namespace = appId
         minSdk = libs.versions.minSdk.get().toInt()
-//        targetSdkPreview = "Baklava"
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = verCode
         versionName = verName
         base.archivesName = appNameWithoutSpaces
-
     }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
         compose = true
     }
+
     buildTypes {
         getByName("release") {
             isShrinkResources = true

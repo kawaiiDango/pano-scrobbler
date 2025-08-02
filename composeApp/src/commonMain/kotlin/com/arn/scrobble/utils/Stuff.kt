@@ -31,7 +31,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLParserException
 import io.ktor.http.maxAge
-import io.ktor.http.takeFrom
 import io.ktor.util.encodeBase64
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -48,7 +47,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.IOException
 import java.security.MessageDigest
 import java.text.DecimalFormat
@@ -131,6 +129,8 @@ object Stuff {
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_SPOTIFY = "com.spotify.music"
+    const val PACKAGE_DEEZER = "deezer.android.app"
+    const val PACKAGE_DEEZER_TV = "deezer.android.tv"
     const val PACKAGE_YOUTUBE_TV = "com.google.android.youtube.tv"
     const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
     const val PACKAGE_YMUSIC = "com.kapp.youtube.final"
@@ -149,10 +149,17 @@ object Stuff {
     const val PACKAGE_APPLE_MUSIC = "com.apple.android.music"
     const val PACKAGE_TIDAL = "com.aspiro.tidal"
     const val PACKAGE_OMNIA = "com.rhmsoft.omnia"
-    const val PACKAGE_APPLE_MUSIC_WIN = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"
+    const val PACKAGE_APPLE_MUSIC_WIN_EXE = "AppleMusic.exe"
+    const val PACKAGE_APPLE_MUSIC_WIN_STORE = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"
     const val PACKAGE_CIDER_LINUX = "org.mpris.MediaPlayer2.cider"
     const val PACKAGE_CIDER_VARIANT_LINUX = "org.mpris.MediaPlayer2.cider.instancen"
     const val PACKAGE_FIREFOX_WIN = "308046B0AF4A39CB"
+    const val PACKAGE_DEEZER_WIN = "com.deezer.deezer-desktop"
+    const val PACKAGE_DEEZER_WIN_EXE = "Deezer.exe"
+    const val PACKAGE_DEEZER_WIN_STORE = "Deezer.62021768415AF_q7m17pa7q8kj0!Deezer.Music"
+    const val PACKAGE_TIDAL_WIN_EXE = "TIDAL.exe"
+    const val PACKAGE_TIDAL_WIN = "com.squirrel.TIDAL.TIDAL"
+    const val PACKAGE_TIDAL_WIN_STORE = "WiMPMusic.27241E05630EA_kn85bz84x7te4!TIDAL"
 
     const val METADATA_KEY_AM_ARTIST_ID = "com.apple.android.music.playback.metadata.ARTIST_ID"
     const val METADATA_KEY_YOUTUBE_WIDTH =
@@ -374,24 +381,9 @@ object Stuff {
         return this
     }
 
-    fun String.isUrlOrDomain(): Boolean {
-        // got some internal IOBE, catch everything
-        // .topPrivateDomain() reads the big public suffix file every time and causes ANRs
-        return try {
-            toHttpUrl().host.contains('.')
-        } catch (e: Exception) {
-            try {
-                "https://$this".toHttpUrl().host.contains('.')
-            } catch (e: Exception) {
-                false
-            }
-        }
-    }
-
-
     fun isValidUrl(url: String): Boolean {
         return try {
-            URLBuilder().takeFrom(url)
+            URLBuilder(url)
             true
         } catch (e: URLParserException) {
             false

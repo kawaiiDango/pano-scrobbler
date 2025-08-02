@@ -325,9 +325,9 @@ fun ScrobblesScreen(
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
 
-                // todo remove !canEditOrDelete
+                // todo remove canEditOrDelete
                 if (user.isSelf && (!nlsEnabled || !scrobblerEnabled || scrobblerRunning == false ||
-                            (!otherPlatformsLearnt && !canEditOrDelete && !PlatformStuff.isTv))
+                            (!otherPlatformsLearnt && canEditOrDelete && !PlatformStuff.isTv))
                 ) {
                     item("notice") {
                         val text: String

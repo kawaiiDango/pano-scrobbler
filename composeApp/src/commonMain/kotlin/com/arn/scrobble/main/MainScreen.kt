@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.border
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -59,6 +61,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -69,6 +73,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import co.touchlab.kermit.Logger
 import coil3.compose.setSingletonImageLoaderFactory
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.DrawerData
@@ -89,6 +94,7 @@ import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.LocalInnerPadding
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -165,6 +171,7 @@ fun PanoAppContent(
             )
         )
     }
+    val contentFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
         combine(
@@ -174,6 +181,12 @@ fun PanoAppContent(
         { (backStackEntryId, tab), backStackEntry ->
             if (backStackEntryId == backStackEntry.id)
                 selectedTabIdx = tab
+
+            if (PlatformStuff.isTv) {
+                delay(1000)
+                val requestFocusRes = contentFocusRequester.requestFocus()
+                Logger.d { "Request focus result: $requestFocusRes" }
+            }
         }
             .collect()
     }
@@ -268,6 +281,8 @@ fun PanoAppContent(
                     contentAlignment = Alignment.TopCenter,
                     modifier = Modifier
                         .fillMaxSize()
+                        .focusGroup()
+                        .focusRequester(contentFocusRequester)
                 ) {
                     Scaffold(
                         modifier = Modifier
@@ -421,6 +436,15 @@ fun PanoAppContent(
                     )
                 }
             }
+
+            if (PlatformStuff.isDebug && PlatformStuff.isTv) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 27.dp, horizontal = 48.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.error)
+                )
+            }
         }
     }
 }
@@ -529,6 +553,7 @@ private fun PanoNavigationRail(
     onProfileClicked: (UserCached) -> Unit,
     userp: UserCached?,
     drawerData: DrawerData?,
+    modifier: Modifier = Modifier,
 ) {
     val expandedByDefault = when (LocalNavigationType.current) {
         PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> true
@@ -560,6 +585,8 @@ private fun PanoNavigationRail(
                     onBack = onBack,
                     onNavigate = onNavigate,
                     onOpenDialog = onOpenDialog,
+                    modifier = Modifier
+                        .padding(start = horizontalOverscanPadding() / 2, top = 16.dp)
                 )
             } else {
                 val user = tabs.filterIsInstance<PanoTab.Profile>().firstOrNull()?.user ?: userp
@@ -595,13 +622,13 @@ private fun PanoNavigationRail(
                             )
                         },
                         modifier = Modifier
-                            .padding(vertical = 16.dp)
+                            .padding(start = horizontalOverscanPadding() / 2, top = 16.dp)
                     )
                 }
             }
         },
         arrangement = Arrangement.aligned(Alignment.CenterVertically),
-        modifier = Modifier
+        modifier = modifier
             .widthIn(max = 200.dp)
             .fillMaxHeight()
     ) {

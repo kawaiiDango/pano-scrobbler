@@ -3,6 +3,7 @@ package com.arn.scrobble.baselineprofile
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.arn.scrobble.baselineprofile.Journeys.dismissChangelogDialog
 import com.arn.scrobble.baselineprofile.Journeys.loginIfNeeded
 import com.arn.scrobble.baselineprofile.Journeys.switchTabs
 import org.junit.Rule
@@ -46,7 +47,12 @@ class BaselineProfileGenerator {
             pressHome()
             startActivityAndWait()
             device.setOrientationPortrait()
-            loginIfNeeded()
+
+            if (iteration == 1) {
+                loginIfNeeded()
+                dismissChangelogDialog()
+            }
+
             Thread.sleep(2000)
             switchTabs()
             Thread.sleep(1000)

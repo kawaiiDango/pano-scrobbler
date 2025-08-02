@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated on 2025, July 28 UTC_
+_Last updated on 2025, Aug 2 UTC_
 
 Applicable to the Pano Scrobbler app version 4.0 and later.
 
@@ -24,7 +24,8 @@ tracking services of your choice such as Last.fm, Libre.fm, ListenBrainz and sel
 The app sends non-personal information such as titles of music playing on the device and other music
 metadata, to the previously mentioned music tracking services of your choice. To fetch additional
 metadata while scrobbling Spotify and to fetch images of artists, the app uses the Spotify API. To
-fetch additional metadata while scrobbling Apple Music, the app uses the iTunes API. If you are
+fetch additional metadata while scrobbling Apple Music, the app uses the iTunes API. To
+fetch additional metadata while scrobbling Deezer, the app uses the Deezer API. If you are
 using the version downloaded from Google Play and automatic error reporting is enabled, an
 anonymous, resettable device identifier is sent to Firebase Crashlytics. If you are using the
 non-Google Play version and have entered the unlock key, a truncated hash of a device identifier as
@@ -66,9 +67,11 @@ and to improve their services.
 ### Notification Access Permission
 
 The permission is used to read music metadata and playing state from other apps. The app does not
-access or read actual notifications except: a) Pixel's Now Playing, if you have a Pixel device and
-Pixel Now Playing scrobbling is enabled. b) Songs recognized in AutoShazam mode by the Shazam app,
-if it is enabled for scrobbling.
+access or read actual notifications except from these apps, if they are enabled for scrobbling:
+- Pixel's Now Playing
+- Ambient Music Mod
+- Shazam
+- Audile
 
 ### Links to Other Sites
 

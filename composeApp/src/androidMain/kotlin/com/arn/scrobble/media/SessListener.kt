@@ -253,8 +253,6 @@ class SessListener(
                         "duration=${metadataInfo.duration} lastState=${sessionTracker.lastPlaybackState}, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()}}"
             }
 
-
-
             sessionTracker.metadataChanged(metadataInfo, extras)
         }
 

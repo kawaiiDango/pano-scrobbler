@@ -114,6 +114,7 @@ data class MainPrefs(
     val windowState: SerializableWindowState? = null,
     val itunesCountry: String? = null,
     val spotifyCountry: String? = null,
+    val tidalSteelSeries: Boolean = true,
     val fetchMissingMetadata: Boolean = true
 ) {
 

@@ -266,7 +266,12 @@ fun MusicEntryListItem(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(MaterialTheme.shapes.medium)
-                            .then(if (onImageClick != null) Modifier.clickable(enabled = !forShimmer) { onImageClick() } else Modifier)
+                            .then(
+                                if (onImageClick != null && !PlatformStuff.isTv)
+                                    Modifier.clickable(enabled = !forShimmer) { onImageClick() }
+                                else
+                                    Modifier
+                            )
                     )
 
                     if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
@@ -1094,18 +1099,21 @@ fun GridOrListSelector(
             Modifier.padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
         ) {
-            OutlinedToggleButton(
-                checked = gridMode == GridMode.HERO,
-                onCheckedChange = {
-                    if (it)
-                        onGridModeChange(GridMode.HERO)
-                },
-                shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
-            ) {
-                Icon(
-                    Icons.Outlined.AllOut,
-                    contentDescription = stringResource(Res.string.expand)
-                )
+
+            if (!PlatformStuff.isTv) {
+                OutlinedToggleButton(
+                    checked = gridMode == GridMode.HERO,
+                    onCheckedChange = {
+                        if (it)
+                            onGridModeChange(GridMode.HERO)
+                    },
+                    shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
+                ) {
+                    Icon(
+                        Icons.Outlined.AllOut,
+                        contentDescription = stringResource(Res.string.expand)
+                    )
+                }
             }
 
             OutlinedToggleButton(
@@ -1232,7 +1240,7 @@ fun EntriesGridOrList(
 
                 ButtonsBarForCharts(
                     gridMode = gridMode,
-                    onCollageClick = onCollageClick,
+                    onCollageClick = onCollageClick?.takeIf { !PlatformStuff.isTv },
                     onLegendClick = onLegendClick,
                     modifier = Modifier
                         .fillMaxWidth()

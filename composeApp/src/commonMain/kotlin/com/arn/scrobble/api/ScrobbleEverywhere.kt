@@ -2,12 +2,14 @@ package com.arn.scrobble.api
 
 import androidx.collection.LruCache
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.deezer.DeezerTrack
 import com.arn.scrobble.api.itunes.ItunesTrackResponse
 import com.arn.scrobble.api.itunes.ItunesWrapperType
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.steelseries.SteelSeriesReceiverServer
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.getBlockedEntry
 import com.arn.scrobble.db.CachedTrack
@@ -28,6 +30,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.PendingScrobblesWork
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -52,6 +55,7 @@ object ScrobbleEverywhere {
     val itunesArtistsCache = LruCache<String, String>(100)
     val itunesTracksCache = LruCache<String, ItunesTrackResponse>(50)
     val spotifyTrackIdToArtistCache = LruCache<String, String>(100)
+    val deezerTracksCache = LruCache<String, DeezerTrack>(50)
     val lastfmTracksCache = LruCache<String, Track>(50)
 
     private suspend fun performEditsAndBlocks(
@@ -171,16 +175,18 @@ object ScrobbleEverywhere {
         val fetchMissingMetadata =
             PlatformStuff.mainPrefs.data.map { it.fetchMissingMetadata }.first()
         val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
+        val tidalSteelSeries = PlatformStuff.mainPrefs.data.map { it.tidalSteelSeries }.first()
 
         try {
             when {
                 fetchMissingMetadata && (
                         scrobbleData.appId == Stuff.PACKAGE_APPLE_MUSIC ||
-                                scrobbleData.appId?.lowercase() == Stuff.PACKAGE_APPLE_MUSIC_WIN.lowercase() ||
+                                scrobbleData.appId?.lowercase() == Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.lowercase() ||
+                                scrobbleData.appId == Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE ||
                                 scrobbleData.appId == Stuff.PACKAGE_CIDER_LINUX ||
                                 scrobbleData.appId == Stuff.PACKAGE_CIDER_VARIANT_LINUX)
                     -> {
-                    fetchFirstArtistFromItunes(
+                    fetchFromItunes(
                         scrobbleData,
                         trackId
                             ?.removePrefix("/org/node/mediaplayer/cider/track/")
@@ -192,13 +198,44 @@ object ScrobbleEverywhere {
                 }
 
                 fetchMissingMetadata && scrobbleData.appId == Stuff.PACKAGE_SPOTIFY -> {
-                    fetchFirstArtistFromSpotify(
+                    fetchFromSpotify(
                         scrobbleData,
-                        trackId?.removePrefix("spotify:track:"),
+                        trackId
+                            ?.takeIf { it.startsWith("spotify:track:") }
+                            ?.removePrefix("spotify:track:"),
                         cacheOnly
                     )?.let {
                         newScrobbleData = it
                     }
+                }
+
+                fetchMissingMetadata && (
+                        scrobbleData.appId == Stuff.PACKAGE_DEEZER ||
+                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_TV ||
+                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||
+                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN_EXE ||
+                                scrobbleData.appId?.lowercase() == Stuff.PACKAGE_DEEZER_WIN_STORE.lowercase()
+                        ) -> {
+                    fetchFromDeezer(
+                        scrobbleData,
+                        trackId
+                            ?.takeIf { it.startsWith("0.") }
+                            ?.removePrefix("0."),
+                        cacheOnly
+                    )?.let {
+                        newScrobbleData = it
+                    }
+                }
+
+                tidalSteelSeries && (
+                        scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN ||
+                                scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN_EXE ||
+                                scrobbleData.appId?.lowercase() == Stuff.PACKAGE_TIDAL_WIN_STORE.lowercase()
+                        ) -> {
+                    getFromSteelSeriesTidal(scrobbleData)
+                        ?.let {
+                            newScrobbleData = it
+                        }
                 }
 
                 fetchMissingMetadataLastfm && scrobbleData.album.isNullOrEmpty() -> {
@@ -227,7 +264,7 @@ object ScrobbleEverywhere {
 
     private fun createCacheKey(id: String, country: String) = "$id||$country"
 
-    private suspend fun fetchFirstArtistFromItunes(
+    private suspend fun fetchFromItunes(
         scrobbleData: ScrobbleData,
         trackId: Long?,
         cacheOnly: Boolean
@@ -243,7 +280,7 @@ object ScrobbleEverywhere {
                     Requesters.itunesRequester.searchTrack(
                         query,
                         country = country,
-                        limit = 3
+                        limit = 5
                     ).onFailure {
                         Logger.w(it) { "Failed to search iTunes for track" }
                     }
@@ -258,9 +295,9 @@ object ScrobbleEverywhere {
                     it.wrapperType == ItunesWrapperType.track &&
                             it.artistName.equals(scrobbleData.artist, ignoreCase = true) &&
                             it.trackName.equals(scrobbleData.track, ignoreCase = true) &&
-                            it.collectionName != null &&
-                            MetadataUtils.removeSingleEp(it.collectionName)
-                                .equals(scrobbleData.album, ignoreCase = true)
+                            (scrobbleData.album == null || it.collectionName != null &&
+                                    MetadataUtils.removeSingleEp(it.collectionName)
+                                        .equals(scrobbleData.album, ignoreCase = true))
                 }
         } else {
             val cacheKey = createCacheKey(trackId.toString(), country)
@@ -328,13 +365,14 @@ object ScrobbleEverywhere {
         if (artistName != null) {
             return scrobbleData.copy(
                 artist = artistName,
+                album = scrobbleData.album ?: track.collectionName,
                 albumArtist = albumArtistName
             )
         }
         return null
     }
 
-    private suspend fun fetchFirstArtistFromSpotify(
+    private suspend fun fetchFromSpotify(
         scrobbleData: ScrobbleData,
         trackId: String?,
         cacheOnly: Boolean,
@@ -379,6 +417,72 @@ object ScrobbleEverywhere {
             )
         }
         return null
+    }
+
+    private suspend fun fetchFromDeezer(
+        scrobbleData: ScrobbleData,
+        trackId: String?,
+        cacheOnly: Boolean,
+    ): ScrobbleData? {
+        // on android, the trackId is non-null and scrobbleData has the album
+        if (trackId != null && !scrobbleData.artist.contains(", ")) {
+            return null
+        }
+
+        val cacheKey = trackId ?: (scrobbleData.artist + " - " + scrobbleData.track)
+
+        var track = deezerTracksCache[cacheKey]
+
+        if (track == null && !cacheOnly && Stuff.isOnline) {
+            track = if (trackId != null) {
+                Requesters.deezerRequester.lookupTrack(trackId.toLong())
+                    .onFailure {
+                        Logger.w(it) { "Failed to look up Deezer track" }
+                    }
+                    .getOrNull()
+            } else {
+                Requesters.deezerRequester.searchTrack(
+                    scrobbleData.artist,
+                    scrobbleData.track,
+                    limit = 5
+                ).onFailure {
+                    Logger.w(it) { "Failed to search Deezer for track" }
+                }.getOrNull()?.data?.firstOrNull {
+                    it.title.equals(scrobbleData.track, ignoreCase = true)
+                    // the album may be absent in scrobbleData, and the artist may contain multiple artists,
+                    // so we don't check them here
+                }
+            }
+        } else
+            throw NetworkRequestNeededException()
+
+        if (track != null) {
+            deezerTracksCache.put(cacheKey, track)
+
+            return scrobbleData.copy(
+                artist = track.artist.name,
+                albumArtist = null,
+                album = scrobbleData.album ?: track.album.title
+            )
+        }
+
+        return null
+    }
+
+    private suspend fun getFromSteelSeriesTidal(
+        scrobbleData: ScrobbleData,
+    ): ScrobbleData? {
+        if (!SteelSeriesReceiverServer.serverStartAttempted) {
+            SteelSeriesReceiverServer.startServer()
+
+            // wait for data to be available
+            delay(2000)
+        }
+
+        // wait for data to be available
+        delay(2000)
+
+        return SteelSeriesReceiverServer.putAlbum(scrobbleData)
     }
 
     suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleIgnored>> {

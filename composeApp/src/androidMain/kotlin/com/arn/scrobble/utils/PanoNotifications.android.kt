@@ -125,8 +125,7 @@ actual object PanoNotifications {
                     )
 
                     val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
-                    val launchPi =
-                        DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
+                    val launchPi = DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
 
                     setContentIntent(launchPi)
                 }

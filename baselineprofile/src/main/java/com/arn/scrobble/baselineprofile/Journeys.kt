@@ -34,6 +34,15 @@ object Journeys {
         }
     }
 
+    fun MacrobenchmarkScope.dismissChangelogDialog() {
+        val changelogSheet = device.wait(Until.hasObject(By.text("Changelog")), TIMEOUT)
+
+        if (changelogSheet) {
+            device.pressBack()
+            device.waitForIdle()
+        }
+    }
+
     fun MacrobenchmarkScope.switchTabs() {
         device.wait(Until.hasObject(By.text("Scrobbles")), TIMEOUT)
 

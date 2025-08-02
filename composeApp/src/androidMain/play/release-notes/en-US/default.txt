@@ -1,20 +1,6 @@
-## This is a beta release
+Changes since 4.3
 
-Changes since 4.2
-
-- Implemented QR code login for last.fm and libre.fm on TV.
-- Editing and deleting scrobbles is no longer available on TV
-- Removed some features from TV that required typing on TV
-- Now scrobbles Apple Music (Windows, Android), Cider (Linux) and Spotify (Android) with the first artist and the correct album artist, by fetching them from the iTunes and Spotify API
-- Import/export over the network is now available on desktop
-- Added rounded borders to generated collages
-- Now continues processing all regex rules even if a match was found
-- Fixed pending scrobbles getting deleted at start
-- Regex tester will now highlight the required text fields
-- Reworked the now playing animation
-- Added a button to not save an edited scrobble
-- Fixed a segfault on desktop
-- Use xdg-open on Linux to open links, when the default method fails
-- Using heart button to like on the media player now also supports Apple Music, Tidal, Oto music, Pi Music, Symfonium, Echo and Metrolist
-- Added support for the music recognition app, Audile
+- Removed the beta label
+- Now scrobbles Apple Music (Windows, Android), Cider (Linux), Spotify (Android), Deezer (Windows, Android, TV) and Tidal (Windows) with the first artist and the correct album artist, by fetching them from the iTunes, Spotify API, Deezer and SteelSeries API
 - Other fixes
+- Translation updates by the translators on Crowdin

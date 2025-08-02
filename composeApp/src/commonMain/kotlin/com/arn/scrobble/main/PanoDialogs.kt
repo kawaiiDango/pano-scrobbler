@@ -1,5 +1,6 @@
 package com.arn.scrobble.main
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +46,7 @@ import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.onboarding.ShowLinkDialog
 import com.arn.scrobble.search.IndexerDialog
 import com.arn.scrobble.ui.getActivityOrNull
+import com.arn.scrobble.ui.verticalOverscanPadding
 import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
 import com.arn.scrobble.utils.PlatformStuff
@@ -338,6 +341,13 @@ private fun BottomSheetDialogParent(
                     contentDescription = stringResource(Res.string.close),
                 )
             }
+        } else {
+            // reserve space at the top
+            Box(
+                modifier = Modifier
+                    .minimumInteractiveComponentSize()
+                    .padding(vertical = 4.dp)
+            )
         }
 
         content(
@@ -351,13 +361,11 @@ private fun BottomSheetDialogParent(
                 )
                 .then(
                     if (padding)
-                        if (PlatformStuff.isTv || PlatformStuff.isDesktop)
-                            Modifier.padding(24.dp)
-                        else
-                            Modifier.padding(horizontal = 24.dp)
+                        Modifier.padding(horizontal = 24.dp)
                     else
                         Modifier
                 )
+                .padding(bottom = verticalOverscanPadding())
                 .verticalScroll(
                     scrollState,
                     enabled = isNestedScrollable && !sheetGesturesEnabled

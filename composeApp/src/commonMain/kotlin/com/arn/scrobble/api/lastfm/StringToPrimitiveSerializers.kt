@@ -48,7 +48,7 @@ class StringSecsToMsSerializer : KSerializer<Long> {
     override val descriptor = Int.serializer().descriptor
 
     override fun serialize(encoder: Encoder, value: Long) {
-        encoder.encodeLong(value)
+        encoder.encodeLong(value.div(1000))
     }
 
     override fun deserialize(decoder: Decoder): Long {

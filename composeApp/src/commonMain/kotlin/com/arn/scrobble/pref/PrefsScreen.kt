@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.Api
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dns
@@ -51,6 +52,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.additional_metadata
 import pano_scrobbler.composeapp.generated.resources.also_available_on
 import pano_scrobbler.composeapp.generated.resources.android
 import pano_scrobbler.composeapp.generated.resources.apple_music
@@ -62,6 +64,7 @@ import pano_scrobbler.composeapp.generated.resources.country_for_api
 import pano_scrobbler.composeapp.generated.resources.crowdin_link
 import pano_scrobbler.composeapp.generated.resources.dark
 import pano_scrobbler.composeapp.generated.resources.debug_menu
+import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
@@ -115,6 +118,8 @@ import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.spotify
+import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
+import pano_scrobbler.composeapp.generated.resources.use_something
 import java.util.Calendar
 import java.util.Locale
 
@@ -154,6 +159,7 @@ fun PrefsScreen(
     val firstDayOfWeek by remember { derivedStateOf { mainPrefsData.firstDayOfWeek } }
     val locale by remember { derivedStateOf { mainPrefsData.locale } }
     val fetchAlbum by remember { derivedStateOf { mainPrefsData.fetchAlbum } }
+    val tidalSteelSeries by remember { derivedStateOf { mainPrefsData.tidalSteelSeries } }
     val spotifyArtistSearchApproximate by
     remember { derivedStateOf { mainPrefsData.spotifyArtistSearchApproximate } }
     val preventDuplicateAmbientScrobbles by
@@ -519,17 +525,18 @@ fun PrefsScreen(
             )
         }
 
-        stickyHeader("misc_header") {
+        stickyHeader("additional_metatadata_header") {
             SimpleHeaderItem(
-                text = stringResource(Res.string.pref_misc),
-                icon = Icons.Outlined.MoreHoriz
+                text = stringResource(Res.string.additional_metadata),
+                icon = Icons.Outlined.Api
             )
         }
 
         item(MainPrefs::fetchMissingMetadata.name) {
             val metadataServices = listOfNotNull(
                 stringResource(Res.string.apple_music),
-                if (PlatformStuff.isDesktop) null else stringResource(Res.string.spotify)
+                if (PlatformStuff.isDesktop) null else stringResource(Res.string.spotify),
+                stringResource(Res.string.deezer),
             ).joinToString()
 
             SwitchPref(
@@ -569,6 +576,13 @@ fun PrefsScreen(
             )
         }
 
+        item(MainPrefs::spotifyArtistSearchApproximate.name) {
+            SwitchPref(
+                text = stringResource(Res.string.pref_spotify_artist_search_approximate),
+                value = spotifyArtistSearchApproximate,
+                copyToSave = { copy(spotifyArtistSearchApproximate = it) }
+            )
+        }
         item(MainPrefs::fetchAlbum.name) {
             SwitchPref(
                 text = stringResource(Res.string.pref_fetch_album),
@@ -577,11 +591,23 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::spotifyArtistSearchApproximate.name) {
-            SwitchPref(
-                text = stringResource(Res.string.pref_spotify_artist_search_approximate),
-                value = spotifyArtistSearchApproximate,
-                copyToSave = { copy(spotifyArtistSearchApproximate = it) }
+        if (PlatformStuff.isDesktop) {
+            item(MainPrefs::tidalSteelSeries.name) {
+                SwitchPref(
+                    text = stringResource(
+                        Res.string.use_something,
+                        stringResource(Res.string.tidal_steelseries)
+                    ),
+                    value = tidalSteelSeries,
+                    copyToSave = { copy(tidalSteelSeries = it) }
+                )
+            }
+        }
+
+        stickyHeader("misc_header") {
+            SimpleHeaderItem(
+                text = stringResource(Res.string.pref_misc),
+                icon = Icons.Outlined.MoreHoriz
             )
         }
 

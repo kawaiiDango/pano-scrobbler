@@ -28,7 +28,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ImageSearchVM : ViewModel() {
-    private val _searchTerm = MutableSharedFlow<Pair<String, Int>>()
+    private val _searchTerm =
+        MutableSharedFlow<Pair<String, Int>>(replay = 1, extraBufferCapacity = 1)
     private val _searchResults = MutableStateFlow<SpotifySearchResponse?>(null)
     val searchResults = _searchResults.asSharedFlow()
     private val _searchError = MutableStateFlow<Throwable?>(null)
@@ -57,12 +58,13 @@ class ImageSearchVM : ViewModel() {
                                 limit = LIMIT
                             )
 
-                        Stuff.TYPE_ARTISTS -> Requesters.spotifyRequester.search(
-                            term,
-                            SpotifySearchType.artist,
-                            market = country,
-                            limit = LIMIT
-                        )
+                        Stuff.TYPE_ARTISTS ->
+                            Requesters.spotifyRequester.search(
+                                term,
+                                SpotifySearchType.artist,
+                                market = country,
+                                limit = LIMIT
+                            )
 
                         else -> throw IllegalArgumentException("Invalid search type: $searchType")
                     }
@@ -78,9 +80,7 @@ class ImageSearchVM : ViewModel() {
     }
 
     fun search(term: String) {
-        viewModelScope.launch {
-            _searchTerm.emit(term to searchType)
-        }
+        _searchTerm.tryEmit(term to searchType)
     }
 
     fun setMusicEntries(

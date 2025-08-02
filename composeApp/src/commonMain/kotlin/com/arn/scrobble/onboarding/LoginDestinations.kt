@@ -5,8 +5,8 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.DEEPLINK_PROTOCOL_NAME
-import com.arn.scrobble.utils.Stuff.LAST_KEY
+import io.ktor.http.URLBuilder
+import io.ktor.http.set
 
 object LoginDestinations {
     fun route(accountType: AccountType): PanoRoute = when (accountType) {
@@ -17,10 +17,15 @@ object LoginDestinations {
             )
 
             if (!PlatformStuff.isTv) {
-                val url =
-                    "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm"
+
+                val urlBuilder = URLBuilder("https://www.last.fm/api/auth")
+                urlBuilder.set {
+                    parameters.append("api_key", Stuff.LAST_KEY)
+                    parameters.append("cb", "${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/lastfm")
+                }
+
                 PanoRoute.WebView(
-                    url = url,
+                    url = urlBuilder.buildString(),
                     userAccountTemp = userAccountTemp
                 )
             } else {

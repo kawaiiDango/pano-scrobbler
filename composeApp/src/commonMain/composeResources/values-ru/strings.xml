@@ -208,6 +208,7 @@
     <string name="rate_msg">Нравится это приложение?</string>
     <string name="time_just_now">сейчас</string>
     <string name="no_mail_apps">Почтовый клиент не установлен</string>
+    <string name="add">Добавить новый элемент</string>
     <string name="loved" comment="Its a noun">Любимые</string>
     <string name="unloved" comment="Its a noun">Не любимые</string>
     <string name="simple_edits">Редактирования</string>
@@ -454,6 +455,7 @@
     <string name="low" comment="As in high/medium/low">Низкий</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Для некоторых приложений требуются плагины</string>
     <string name="reload" comment="Reload or refresh">Обновить</string>
+    <string name="automation">Управление Pano Scrobbler через приложения для автоматизации</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="help">Помощь</string>

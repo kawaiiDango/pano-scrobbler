@@ -37,9 +37,10 @@ class FakeChartsAdapter(
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: inflater.inflate(R.layout.appwidget_charts_item, parent, false)
         val item = getItem(position)!!
-        view.findViewById<TextView>(R.id.appwidget_charts_serial).text =
-            (position + 1).format() + "."
-        view.findViewById<TextView>(R.id.appwidget_charts_title).text = item.title
+//        view.findViewById<TextView>(R.id.appwidget_charts_serial).text =
+
+        view.findViewById<TextView>(R.id.appwidget_charts_title).text =
+            (position + 1).format() + ". " + item.title
         view.findViewById<TextView>(R.id.appwidget_charts_subtitle).text = item.subtitle
         view.findViewById<TextView>(R.id.appwidget_charts_plays).text = item.number.format()
         view.findViewById<ImageView>(R.id.appwidget_charts_stonks_icon)

@@ -57,13 +57,9 @@ import pano_scrobbler.composeapp.generated.resources.billing_pin_friends
 import pano_scrobbler.composeapp.generated.resources.billing_regex_extract
 import pano_scrobbler.composeapp.generated.resources.billing_scrobble_source
 import pano_scrobbler.composeapp.generated.resources.billing_sharing
-import pano_scrobbler.composeapp.generated.resources.bmc
-import pano_scrobbler.composeapp.generated.resources.bmc_link
 import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.get_pro
 import pano_scrobbler.composeapp.generated.resources.help
-import pano_scrobbler.composeapp.generated.resources.ko_fi
-import pano_scrobbler.composeapp.generated.resources.ko_fi_link
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
@@ -91,8 +87,6 @@ fun BillingScreen(
     val purchasePendingText = stringResource(Res.string.purchase_pending)
     val maxDevicesReachedText = stringResource(Res.string.billing_max_devices_reached, 8)
     val notFoundText = stringResource(Res.string.not_found)
-    val koFiLink = stringResource(Res.string.ko_fi_link)
-    val bmcLink = stringResource(Res.string.bmc_link)
 
     val bulletStrings = listOfNotNull(
         Icons.Outlined.Palette to stringResource(Res.string.pref_themes),
@@ -205,29 +199,31 @@ fun BillingScreen(
                 },
             )
 
-            DropdownMenu(
-                expanded = purchaseOptionsExpanded,
-                onDismissRequest = { purchaseOptionsExpanded = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        PlatformStuff.openInBrowser(koFiLink)
-                        purchaseOptionsExpanded = false
-                    },
-                    text = {
-                        Text(stringResource(Res.string.ko_fi))
-                    }
-                )
+            if (PlatformStuff.isNonPlayBuild) {
+                DropdownMenu(
+                    expanded = purchaseOptionsExpanded,
+                    onDismissRequest = { purchaseOptionsExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            PlatformStuff.openInBrowser(Stuff.LINK_KOFI)
+                            purchaseOptionsExpanded = false
+                        },
+                        text = {
+                            Text(Stuff.NAME_KOFI)
+                        }
+                    )
 
-                DropdownMenuItem(
-                    onClick = {
-                        PlatformStuff.openInBrowser(bmcLink)
-                        purchaseOptionsExpanded = false
-                    },
-                    text = {
-                        Text(stringResource(Res.string.bmc))
-                    }
-                )
+                    DropdownMenuItem(
+                        onClick = {
+                            PlatformStuff.openInBrowser(Stuff.LINK_BMC)
+                            purchaseOptionsExpanded = false
+                        },
+                        text = {
+                            Text(Stuff.NAME_BMC)
+                        }
+                    )
+                }
             }
         }
 

@@ -94,7 +94,7 @@ object Stuff {
     const val FRIENDS_REFRESH_INTERVAL = 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
-    const val CHARTS_WIDGET_REFRESH_INTERVAL = 60 * 60 * 1000L
+    const val CHARTS_WIDGET_REFRESH_INTERVAL = 2 * 60 * 60 * 1000L
     const val META_WAIT = 1000L
     const val MAX_HISTORY_ITEMS = 20
     const val DEFAULT_PAGE_SIZE = 100
@@ -177,6 +177,17 @@ object Stuff {
     const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
     const val CHANNEL_NOTI_UPDATER = "noti_updater"
     const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
+
+    const val LINK_TV = "https://kawaiidango.github.io/pano-scrobbler/tv"
+    const val LINK_GITHUB = "https://github.com/kawaiiDango/pano-scrobbler"
+    const val LINK_HOMEPAGE = "https://kawaiidango.github.io"
+    const val LINK_CROWDIN = "https://crowdin.com/project/pscrobbler"
+    const val LINK_PRIVACY_POLICY = "https://kawaiidango.github.io/pano-scrobbler/privacy-policy"
+    const val LINK_FAQ = "https://kawaiidango.github.io/pano-scrobbler/faq"
+    const val LINK_KOFI = "https://ko-fi.com/kawaiiDango"
+    const val LINK_BMC = "https://buymeacoffee.com/kawaiidango"
+    const val NAME_KOFI = "Ko-fi (Uses Paypal)"
+    const val NAME_BMC = "BuyMeACoffee (Uses Stripe)"
 
     val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",

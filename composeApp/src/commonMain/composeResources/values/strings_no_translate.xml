@@ -2,16 +2,6 @@
 <resources>
     <!-- DO NOT TRANSLATE -->
     <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
-    <string name="tv_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/tv</string>
-    <string name="github_link" translatable="false">https://github.com/kawaiiDango/pano-scrobbler</string>
-    <string name="app_homepage_link" translatable="false">https://kawaiidango.github.io</string>
-    <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
-    <string name="privacy_policy_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/privacy-policy</string>
-    <string name="faq_link" translatable="false">https://kawaiidango.github.io/pano-scrobbler/faq</string>
-    <string name="ko_fi_link" translatable="false">https://ko-fi.com/kawaiiDango</string>
-    <string name="bmc_link" translatable="false">https://buymeacoffee.com/kawaiidango</string>
-    <string name="ko_fi" translatable="false">Ko-fi (Uses Paypal)</string>
-    <string name="bmc" translatable="false">BuyMeACoffee (Uses Stripe)</string>
     <string name="spotify" translatable="false">Spotify</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>

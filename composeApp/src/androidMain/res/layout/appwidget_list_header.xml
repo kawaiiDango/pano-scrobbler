@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:alpha="0.7"
+    android:textColor="@color/widgetPrimary"
     android:paddingTop="8dp"
     android:paddingBottom="2dp"
     android:textAlignment="center"
-    android:textStyle="italic"
+    android:textStyle="bold"
     tools:text="7 days" />

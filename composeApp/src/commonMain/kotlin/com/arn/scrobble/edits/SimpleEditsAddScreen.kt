@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
+import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -115,7 +115,7 @@ fun SimpleEditsAddScreen(
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 8.dp)
             )
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = origTrack,
                 onValueChange = { origTrack = it },
                 label = { Text(stringResource(Res.string.track)) },
@@ -124,7 +124,7 @@ fun SimpleEditsAddScreen(
 
             )
 
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = origArtist,
                 onValueChange = { origArtist = it },
                 label = { Text(stringResource(Res.string.artist)) },
@@ -132,7 +132,7 @@ fun SimpleEditsAddScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = origAlbum,
                 onValueChange = { origAlbum = it },
                 label = { Text(stringResource(Res.string.album)) },
@@ -149,7 +149,7 @@ fun SimpleEditsAddScreen(
                     .padding(top = 8.dp)
             )
 
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = track,
                 onValueChange = { track = it },
                 label = { Text(stringResource(Res.string.track)) },
@@ -157,7 +157,7 @@ fun SimpleEditsAddScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = artist,
                 onValueChange = { artist = it },
                 label = { Text(stringResource(Res.string.artist)) },
@@ -165,7 +165,7 @@ fun SimpleEditsAddScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = album,
                 onValueChange = { album = it },
                 label = { Text(stringResource(Res.string.album)) },
@@ -173,7 +173,7 @@ fun SimpleEditsAddScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = albumArtist,
                 onValueChange = { albumArtist = it },
                 label = { Text(stringResource(Res.string.album_artist)) },

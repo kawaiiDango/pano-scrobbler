@@ -5,44 +5,23 @@
     android:layout_height="wrap_content"
     android:background="?android:selectableItemBackground"
     android:orientation="horizontal"
-    android:paddingHorizontal="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="14dp"
     android:paddingVertical="6dp">
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/appwidget_charts_stonks_icon_shadow"
-            android:layout_width="@dimen/stonks_icon_size"
-            android:layout_height="@dimen/stonks_icon_size"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="1dp"
-            android:alpha="?fakeShadowAlpha"
-            android:importantForAccessibility="no"
-            android:tint="?android:colorBackground"
-            tools:src="@drawable/vd_stonks_up_double" />
+<!--    <FrameLayout-->
+<!--        android:layout_width="32dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center_vertical">-->
 
-        <ImageView
-            android:id="@+id/appwidget_charts_stonks_icon"
-            android:layout_width="@dimen/stonks_icon_size"
-            android:layout_height="@dimen/stonks_icon_size"
-            tools:src="@drawable/vd_stonks_up_double" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="32dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical">
-
-        <TextView
-            android:id="@+id/appwidget_charts_serial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            tools:text="11." />
-    </FrameLayout>
+<!--        <TextView-->
+<!--            android:id="@+id/appwidget_charts_serial"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="16sp"-->
+<!--            tools:text="11." />-->
+<!--    </FrameLayout>-->
 
     <LinearLayout
         android:layout_width="0dp"
@@ -80,4 +59,26 @@
         android:textSize="16sp"
         tools:text="99999" />
 
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/appwidget_charts_stonks_icon_shadow"
+            android:layout_width="@dimen/stonks_icon_size"
+            android:layout_height="@dimen/stonks_icon_size"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:alpha="?fakeShadowAlpha"
+            android:importantForAccessibility="no"
+            android:tint="?android:colorBackground"
+            tools:src="@drawable/vd_stonks_up_double" />
+
+        <ImageView
+            android:id="@+id/appwidget_charts_stonks_icon"
+            android:layout_width="@dimen/stonks_icon_size"
+            android:layout_height="@dimen/stonks_icon_size"
+            tools:src="@drawable/vd_stonks_up_double" />
+    </FrameLayout>
 </LinearLayout>

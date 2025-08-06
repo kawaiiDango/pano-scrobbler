@@ -9,6 +9,15 @@
   "name":"[Lsun.java2d.loops.GraphicsPrimitive;"
 },
 {
+  "name":"androidx.sqlite.driver.bundled.BundledSQLiteConnectionKt"
+},
+{
+  "name":"androidx.sqlite.driver.bundled.BundledSQLiteDriverKt"
+},
+{
+  "name":"androidx.sqlite.driver.bundled.BundledSQLiteStatementKt"
+},
+{
   "name":"androidx.sqlite.SQLiteException",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
 },

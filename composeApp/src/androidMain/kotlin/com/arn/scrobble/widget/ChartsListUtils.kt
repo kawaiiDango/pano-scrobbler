@@ -36,10 +36,10 @@ object ChartsListUtils {
         user: UserCached,
     ): RemoteViews {
         val rv = RemoteViews(AndroidStuff.application.packageName, R.layout.appwidget_charts_item)
-        rv.setTextViewText(
-            R.id.appwidget_charts_serial, (idx + 1).format() + "."
-        )
-        rv.setTextViewText(R.id.appwidget_charts_title, item.title)
+//        rv.setTextViewText(
+//            R.id.appwidget_charts_serial, (idx + 1).format() + "."
+//        )
+        rv.setTextViewText(R.id.appwidget_charts_title, (idx + 1).format() + ". " + item.title)
         rv.setImageViewResource(
             R.id.appwidget_charts_stonks_icon, stonksIconForDelta(item.stonksDelta)
         )

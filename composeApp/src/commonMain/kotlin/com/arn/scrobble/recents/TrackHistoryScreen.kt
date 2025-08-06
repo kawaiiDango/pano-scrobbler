@@ -29,15 +29,19 @@ import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.first_scrobbled_on
+import pano_scrobbler.composeapp.generated.resources.my_scrobbles
 
 @Composable
 fun TrackHistoryScreen(
     user: UserCached,
     track: Track,
+    onSetTitle: (String) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     editDataFlow: Flow<Pair<Track, ScrobbleData>>,
     modifier: Modifier = Modifier,
@@ -50,6 +54,19 @@ fun TrackHistoryScreen(
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
+    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
+
+    LaunchedEffect(deletedTracksSet) {
+        val formattedCount = ((track.userplaycount ?: 0) - deletedTracksSet.size)
+            .coerceAtLeast(0)
+            .format()
+        val title = if (user.isSelf) {
+            getString(Res.string.my_scrobbles) + ": " + formattedCount
+        } else {
+            "${user.name}: $formattedCount"
+        }
+        onSetTitle(title)
+    }
 
     LaunchedEffect(user, track) {
         viewModel.setScrobblesInput(
@@ -101,6 +118,7 @@ fun TrackHistoryScreen(
             pkgMap = pkgMap,
             seenApps = seenApps,
             fetchAlbumImageIfMissing = false,
+            showScrobbleSources = showScrobbleSources,
             canEdit = true,
             canDelete = true,
             canLove = false,

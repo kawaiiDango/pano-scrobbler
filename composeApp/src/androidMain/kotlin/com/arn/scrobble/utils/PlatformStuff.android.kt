@@ -17,7 +17,6 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
-import android.provider.Settings
 import android.webkit.CookieManager
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.ImageBitmap
@@ -104,11 +103,11 @@ actual object PlatformStuff {
 
     actual val supportsDynamicColors = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-    actual val isDesktop = false
+    actual const val isDesktop = false
 
-    actual val isNonPlayBuild = ExtrasConsts.isNonPlayBuild
+    actual const val isNonPlayBuild = ExtrasConsts.isNonPlayBuild
 
-    actual val noUpdateCheck = !isNonPlayBuild
+    actual const val noUpdateCheck = !isNonPlayBuild
 
     actual fun String.toHtmlAnnotatedString() = AnnotatedString.fromHtml(this)
 

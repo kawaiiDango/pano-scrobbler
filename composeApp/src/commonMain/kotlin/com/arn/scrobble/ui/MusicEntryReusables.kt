@@ -7,13 +7,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -89,6 +88,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -166,42 +166,15 @@ fun MusicEntryListItem(
     val hasOnlyOneClickable = onImageClick == null && onMenuClick == null
     var imageMemoryCacheKey by remember(entry) { mutableStateOf<MemoryCache.Key?>(null) }
     val context = LocalPlatformContext.current
-
-    @Composable
-    fun RowOrColumn(
-        modifier: Modifier = Modifier,
-        content: @Composable (Modifier) -> Unit,
-    ) {
-        if (isColumn) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = modifier
-            ) {
-                content(
-                    Modifier.weight(1f)
-                )
-
-                Spacer(
-                    modifier = Modifier
-                        .safeContentPadding()
-                )
-            }
-        } else {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = modifier
-            ) {
-                content(Modifier)
-            }
-        }
-    }
+    val artInteractionSource = remember { MutableInteractionSource() }
+    val isArtFocused by artInteractionSource.collectIsFocusedAsState()
+    val density = LocalDensity.current
 
     NowPlayingSurface(
         nowPlaying = (entry as? Track)?.isNowPlaying == true,
     ) {
-        RowOrColumn(
+        RowOrColumnLayout(
+            isColumnMode = isColumn,
             modifier = modifier.then(
                 if (hasOnlyOneClickable)
                     Modifier
@@ -211,11 +184,10 @@ fun MusicEntryListItem(
                     Modifier
             )
                 .padding(horizontal = 8.dp, vertical = 4.dp)
-        ) { weightModifier ->
+        ) {
 
             BoxWithConstraints(
                 contentAlignment = Alignment.Center,
-                modifier = weightModifier
             ) {
                 val boxSize = min(maxWidth, maxHeight)
 
@@ -231,7 +203,12 @@ fun MusicEntryListItem(
                         .backgroundForShimmer(forShimmer)
                 ) {
                     AsyncImage(
-                        model = remember(forShimmer, entry, isColumn, fetchAlbumImageIfMissing) {
+                        model = remember(
+                            forShimmer,
+                            entry,
+                            isColumn,
+                            fetchAlbumImageIfMissing
+                        ) {
                             if (forShimmer)
                                 null
                             else
@@ -248,6 +225,14 @@ fun MusicEntryListItem(
                                     .listener(
                                         onSuccess = { req, res ->
                                             imageMemoryCacheKey = res.memoryCacheKey
+                                        }
+                                    )
+                                    .size(
+                                        with(density) {
+                                            if (fixedImageHeight)
+                                                72.dp.roundToPx()
+                                            else
+                                                boxSize.roundToPx()
                                         }
                                     )
                                     .build()
@@ -267,8 +252,28 @@ fun MusicEntryListItem(
                             .fillMaxSize()
                             .clip(MaterialTheme.shapes.medium)
                             .then(
-                                if (onImageClick != null && !PlatformStuff.isTv)
-                                    Modifier.clickable(enabled = !forShimmer) { onImageClick() }
+                                if (onImageClick != null)
+                                    Modifier.clickable(
+                                        enabled = !forShimmer,
+                                        interactionSource = artInteractionSource
+                                    ) { onImageClick() }
+                                        .then(
+                                            if (isArtFocused)
+                                                Modifier
+                                                    .border(
+                                                        width = 2.dp,
+                                                        color = MaterialTheme.colorScheme.inverseSurface,
+                                                        shape = MaterialTheme.shapes.medium
+                                                    )
+                                                    .border(
+                                                        width = 4.dp,
+                                                        color = MaterialTheme.colorScheme.surface,
+                                                        shape = MaterialTheme.shapes.medium
+                                                    )
+                                            else
+                                                Modifier
+
+                                        )
                                 else
                                     Modifier
                             )
@@ -304,6 +309,12 @@ fun MusicEntryListItem(
                     .widthIn(200.dp)
                     .then(
                         if (isColumn)
+                            Modifier.padding(vertical = 8.dp)
+                        else
+                            Modifier.padding(start = 8.dp)
+                    )
+                    .then(
+                        if (isColumn)
                             Modifier.border(
                                 1.dp,
                                 MaterialTheme.colorScheme.outline,
@@ -312,7 +323,6 @@ fun MusicEntryListItem(
                         else
                             Modifier
                     )
-
             ) {
                 Column(
                     modifier = Modifier
@@ -764,6 +774,7 @@ fun GoToDetailsHeaderItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(16.dp)
+                .padding(end = horizontalOverscanPadding())
         ) {
             Icon(
                 imageVector = icon,

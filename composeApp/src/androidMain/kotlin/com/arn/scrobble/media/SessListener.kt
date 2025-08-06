@@ -41,10 +41,10 @@ class SessListener(
         mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
     private var platformControllers: List<MediaController>? = null
 
-    private val scrobbleSpotifyRemote = mainPrefs.data.map { it.scrobbleSpotifyRemote }
+    private val scrobbleSpotifyRemote = mainPrefs.data.map { it.scrobbleSpotifyRemoteP }
         .stateIn(
             scope, SharingStarted.Eagerly,
-            Stuff.mainPrefsInitialValue.scrobbleSpotifyRemote
+            Stuff.mainPrefsInitialValue.scrobbleSpotifyRemoteP
         )
 
     private val autoDetectApps =

@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -14,7 +13,6 @@ import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material.icons.outlined.Translate
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -24,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
@@ -33,7 +30,6 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SimpleHeaderItem
-import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -53,24 +49,19 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.additional_metadata
-import pano_scrobbler.composeapp.generated.resources.also_available_on
-import pano_scrobbler.composeapp.generated.resources.android
 import pano_scrobbler.composeapp.generated.resources.apple_music
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.copy_sk
 import pano_scrobbler.composeapp.generated.resources.country_for_api
-import pano_scrobbler.composeapp.generated.resources.crowdin_link
 import pano_scrobbler.composeapp.generated.resources.dark
 import pano_scrobbler.composeapp.generated.resources.debug_menu
 import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
-import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
-import pano_scrobbler.composeapp.generated.resources.github_link
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
@@ -114,7 +105,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.pref_translate
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
-import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.spotify
@@ -143,8 +133,8 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.allowedPackages } }
     val seenApps by
     remember { derivedStateOf { mainPrefsData.seenApps } }
-    val scrobbleSpotifyRemote by
-    remember { derivedStateOf { mainPrefsData.scrobbleSpotifyRemote } }
+    val scrobbleSpotifyRemoteP by
+    remember { derivedStateOf { mainPrefsData.scrobbleSpotifyRemoteP } }
     val autoDetectApps by
     remember { derivedStateOf { mainPrefsData.autoDetectAppsP } }
     val delayPercent by remember { derivedStateOf { mainPrefsData.delayPercentP } }
@@ -246,11 +236,11 @@ fun PrefsScreen(
             )
         }
 
-        if (!PlatformStuff.isDesktop) {
-            item(MainPrefs::scrobbleSpotifyRemote.name) {
+        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+            item(MainPrefs::scrobbleSpotifyRemoteP.name) {
                 SwitchPref(
                     text = stringResource(Res.string.pref_spotify_remote),
-                    value = scrobbleSpotifyRemote,
+                    value = scrobbleSpotifyRemoteP,
                     copyToSave = { copy(scrobbleSpotifyRemote = it) }
                 )
             }
@@ -506,12 +496,11 @@ fun PrefsScreen(
         }
 
         item("translate") {
-            val crowdinLink = stringResource(Res.string.crowdin_link)
 
             TextPref(
                 text = stringResource(Res.string.pref_translate),
                 onClick = {
-                    PlatformStuff.openInBrowser(crowdinLink)
+                    PlatformStuff.openInBrowser(Stuff.LINK_CROWDIN)
                 }
             )
         }
@@ -546,7 +535,7 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::itunesCountry.name) {
+        item(MainPrefs::itunesCountryP.name) {
             val countryCodes = remember { Locale.getISOCountries().toList() }
 
             DropdownPref(
@@ -561,7 +550,7 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::spotifyCountry.name) {
+        item(MainPrefs::spotifyCountryP.name) {
             val countryCodes = remember { Locale.getISOCountries().toList() }
 
             DropdownPref(
@@ -611,7 +600,7 @@ fun PrefsScreen(
             )
         }
 
-        if (!PlatformStuff.isDesktop) {
+        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
             item(MainPrefs::preventDuplicateAmbientScrobbles.name) {
                 SwitchPref(
                     text = stringResource(Res.string.pref_prevent_duplicate_ambient_scrobbles),
@@ -758,46 +747,45 @@ fun PrefsScreen(
         }
 
         item(key = "privacy_policy") {
-            val privacyPolicyLink = stringResource(Res.string.privacy_policy_link)
 
             TextPref(
                 text = stringResource(Res.string.pref_privacy_policy),
                 onClick = {
                     if (PlatformStuff.isDesktop)
-                        PlatformStuff.openInBrowser(privacyPolicyLink)
+                        PlatformStuff.openInBrowser(Stuff.LINK_PRIVACY_POLICY)
                     else
-                        onNavigate(PanoRoute.WebView(privacyPolicyLink))
+                        onNavigate(PanoRoute.WebView(Stuff.LINK_PRIVACY_POLICY))
                 }
             )
         }
 
         item(key = "github_link") {
-            val githubLink = stringResource(Res.string.github_link)
 
             TextPref(
-                text = stringResource(
-                    Res.string.also_available_on,
-                    if (PlatformStuff.isDesktop)
-                        stringResource(Res.string.android)
-                    else
-                        stringResource(Res.string.desktop)
-                ),
-                summary = githubLink,
+//                text = stringResource(
+//                    Res.string.also_available_on,
+//                    if (PlatformStuff.isDesktop)
+//                        stringResource(Res.string.android)
+//                    else
+//                        stringResource(Res.string.desktop)
+//                ),
+                text = "v" + BuildKonfig.VER_NAME + " " + BuildKonfig.BUILD_DATE,
+                summary = Stuff.LINK_GITHUB,
                 onClick = {
-                    PlatformStuff.openInBrowser(githubLink)
+                    PlatformStuff.openInBrowser(Stuff.LINK_GITHUB)
                 }
             )
         }
 
-        item(key = "version") {
-            Text(
-                text = "v" + BuildKonfig.VER_NAME + " " + BuildKonfig.BUILD_DATE,
-                modifier = Modifier.padding(
-                    vertical = 16.dp,
-                    horizontal = horizontalOverscanPadding()
-                )
-            )
-        }
+//        item(key = "version") {
+//            Text(
+//                text = "v" + BuildKonfig.VER_NAME + " " + BuildKonfig.BUILD_DATE,
+//                modifier = Modifier.padding(
+//                    vertical = 16.dp,
+//                    horizontal = horizontalOverscanPadding()
+//                )
+//            )
+//        }
 
         if (PlatformStuff.isDebug) {
             stickyHeader("debug_header") {

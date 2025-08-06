@@ -1,8 +1,12 @@
 package com.arn.scrobble.charts
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -38,6 +42,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
@@ -364,6 +369,7 @@ private fun TagCloudContent(
     val isLoading by remember(tagCloud, kumoBitmap) {
         mutableStateOf(tagCloud == null || kumoBitmap == null && tagCloud.isNotEmpty())
     }
+    val interactionSource = remember { MutableInteractionSource() }
 
     val density = LocalDensity.current
 
@@ -402,6 +408,9 @@ private fun TagCloudContent(
                 .align(Alignment.CenterHorizontally)
                 .widthIn(max = 370.dp)
                 .aspectRatio(1f)
+                .clip(CircleShape)
+                .indication(interactionSource, LocalIndication.current)
+                .focusable(interactionSource = interactionSource)
                 .onGloballyPositioned { coordinates ->
                     tagCloudSizePx = coordinates.size.width
                 }
@@ -465,6 +474,7 @@ private fun ListeningActivityContent(
     val scrollstate = rememberScrollState()
     var boxWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier
@@ -491,6 +501,12 @@ private fun ListeningActivityContent(
                     }
                 }
                 .horizontalScroll(scrollstate)
+                .clip(MaterialTheme.shapes.medium)
+                .indication(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current
+                )
+                .focusable(interactionSource = interactionSource)
         ) {
             EmptyText(
                 visible = listeningActivity?.timePeriodsToCounts?.isEmpty() == true,

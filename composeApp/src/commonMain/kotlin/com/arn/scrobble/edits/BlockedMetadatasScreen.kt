@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeOff
+import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.SkipNext
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,11 +32,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.icons.AlbumArtist
+import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyTextWithButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
+import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
@@ -119,6 +125,7 @@ fun BlockedMetadatasScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun BlockedMetadataItem(
     blockedMetadata: BlockedMetadata,
@@ -142,39 +149,40 @@ private fun BlockedMetadataItem(
                 .padding(8.dp)
         ) {
             if (blockedMetadata.track.isNotEmpty()) {
-                Text(
+                TextWithIcon(
                     text = blockedMetadata.track,
-                    style = MaterialTheme.typography.titleMedium,
+                    icon = Icons.Outlined.MusicNote,
+                    style = MaterialTheme.typography.titleMediumEmphasized,
                     modifier = Modifier
                         .fillMaxWidth()
                         .backgroundForShimmer(forShimmer)
                 )
             }
             if (blockedMetadata.artist.isNotEmpty()) {
-                Text(
+                TextWithIcon(
                     text = blockedMetadata.artist,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp)
-                )
-            }
-            if (blockedMetadata.album.isNotEmpty()) {
-                Text(
-                    text = blockedMetadata.album,
+                    icon = Icons.Outlined.Mic,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp)
                 )
             }
-            if (blockedMetadata.albumArtist.isNotEmpty()) {
-                Text(
-                    text = blockedMetadata.albumArtist,
+            if (blockedMetadata.album.isNotEmpty()) {
+                TextWithIcon(
+                    text = blockedMetadata.album,
+                    icon = Icons.Outlined.Album,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp)
+                )
+            }
+            if (blockedMetadata.albumArtist.isNotEmpty()) {
+                TextWithIcon(
+                    text = blockedMetadata.albumArtist,
+                    icon = PanoIcons.AlbumArtist,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
             }
         }

@@ -83,7 +83,6 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.also_available_on
 import pano_scrobbler.composeapp.generated.resources.android
-import pano_scrobbler.composeapp.generated.resources.app_homepage_link
 import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.loved
@@ -149,7 +148,6 @@ fun ScrobblesScreen(
             account?.type != AccountType.PLEROMA,
         )
     }
-    val appHomepage = stringResource(Res.string.app_homepage_link)
     val scope = rememberCoroutineScope()
 
     val canEditOrDelete by remember(selectedType, account) {
@@ -369,7 +367,7 @@ fun ScrobblesScreen(
                                 )
                                 icon = Icons.Outlined.OpenInBrowser
                                 onClick = {
-                                    onOpenDialog(PanoDialog.ShowLink(appHomepage))
+                                    onOpenDialog(PanoDialog.ShowLink(Stuff.LINK_HOMEPAGE))
                                 }
                                 onDismiss = {
                                     scope.launch {
@@ -423,6 +421,7 @@ fun ScrobblesScreen(
                     pkgMap = pkgMap,
                     seenApps = seenApps,
                     fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,
+                    showScrobbleSources = showScrobbleSources,
                     canLove = canLove,
                     canEdit = canEditOrDelete,
                     canDelete = canEditOrDelete,

@@ -1,6 +1,6 @@
 package com.arn.scrobble.info
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,12 +30,12 @@ import java.net.URLEncoder
 @Composable
 fun TagInfoDialog(
     tag: Tag,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier,
     viewModel: TagInfoVM = viewModel { TagInfoVM() },
 ) {
     val info by viewModel.info.collectAsStateWithLifecycle()
     var wikiExpanded by rememberSaveable { mutableStateOf(false) }
-
 
     LaunchedEffect(tag) {
         viewModel.loadInfoIfNeeded(tag)
@@ -75,14 +75,13 @@ fun TagInfoDialog(
             forShimmer = info == null
         )
 
-        AnimatedVisibility(
-            info?.wiki?.content != null,
-        ) {
+        info?.wiki?.content?.let {
             InfoWikiText(
-                text = info?.wiki?.content ?: "",
+                text = it,
                 maxLinesWhenCollapsed = 4,
                 expanded = wikiExpanded,
                 onExpandToggle = { wikiExpanded = !wikiExpanded },
+                scrollState = scrollState,
                 modifier = Modifier.fillMaxWidth()
             )
         }

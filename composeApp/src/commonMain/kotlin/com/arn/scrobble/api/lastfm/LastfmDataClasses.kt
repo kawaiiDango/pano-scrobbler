@@ -168,6 +168,8 @@ data class Track(
     override val mbid: String? = null, // lastfm sometimes provides invalid mbids, so we ignore them
     @Transient
     override val msid: String? = null,
+    @Transient
+    val appId: String? = null, // used for FileScrobblable only
     @Serializable(with = StringOrLongSerializer::class)
     override val listeners: Long? = null,
     @Serializable(with = StringOrLongSerializer::class)

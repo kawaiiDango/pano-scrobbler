@@ -5,16 +5,17 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.border
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -39,6 +40,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.WideNavigationRail
@@ -61,8 +63,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -73,7 +73,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
-import co.touchlab.kermit.Logger
 import coil3.compose.setSingletonImageLoaderFactory
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.DrawerData
@@ -152,7 +151,10 @@ fun PanoAppContent(
     }
     val currentUser = currentUserOther ?: currentUserSelf
 
-    val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val topBarScrollBehavior = if (PlatformStuff.isTv)
+        TopAppBarDefaults.pinnedScrollBehavior()
+    else
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val pullToRefreshState = rememberPullToRefreshState()
     val pullToRefreshStateForTabs =
         remember { mutableStateMapOf<Int, PanoPullToRefreshStateForTab>() }
@@ -171,7 +173,6 @@ fun PanoAppContent(
             )
         )
     }
-    val contentFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
         combine(
@@ -181,12 +182,6 @@ fun PanoAppContent(
         { (backStackEntryId, tab), backStackEntry ->
             if (backStackEntryId == backStackEntry.id)
                 selectedTabIdx = tab
-
-            if (PlatformStuff.isTv) {
-                delay(1000)
-                val requestFocusRes = contentFocusRequester.requestFocus()
-                Logger.d { "Request focus result: $requestFocusRes" }
-            }
         }
             .collect()
     }
@@ -282,7 +277,6 @@ fun PanoAppContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .focusGroup()
-                        .focusRequester(contentFocusRequester)
                 ) {
                     Scaffold(
                         modifier = Modifier
@@ -305,7 +299,7 @@ fun PanoAppContent(
                         topBar = {
                             PanoTopAppBar(
                                 titlesMap.values.firstOrNull() ?: "",
-                                scrollBehavior = { topBarScrollBehavior },
+                                scrollBehavior = topBarScrollBehavior,
                                 showBack = !PlatformStuff.isTv && canPop,
                                 onBack = { navController.navigateUp() },
                             )
@@ -437,14 +431,14 @@ fun PanoAppContent(
                 }
             }
 
-            if (PlatformStuff.isDebug && PlatformStuff.isTv) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 27.dp, horizontal = 48.dp)
-                        .border(1.dp, MaterialTheme.colorScheme.error)
-                )
-            }
+//            if (PlatformStuff.isDebug && PlatformStuff.isTv) {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(vertical = 27.dp, horizontal = 48.dp)
+//                        .border(1.dp, MaterialTheme.colorScheme.error)
+//                )
+//            }
         }
     }
 }
@@ -509,35 +503,51 @@ private fun PanoTopAppBar(
     title: String,
     showBack: Boolean,
     onBack: () -> Unit,
-    scrollBehavior: () -> TopAppBarScrollBehavior,
+    scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
-    MediumFlexibleTopAppBar(
-        modifier = modifier,
-        title = {
-            Text(
-                text = title,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.primary
-            )
-        },
-        navigationIcon = {
-            AnimatedVisibility(
-                visible = showBack,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = stringResource(Res.string.back)
-                    )
+    if (PlatformStuff.isTv) {
+        TopAppBar(
+            modifier = modifier,
+            title = {
+                Text(
+                    text = title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 8.dp) // for tv overscan
+                )
+            },
+            scrollBehavior = scrollBehavior
+        )
+    } else {
+        MediumFlexibleTopAppBar(
+            modifier = modifier,
+            title = {
+                Text(
+                    text = title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            },
+            navigationIcon = {
+                AnimatedVisibility(
+                    visible = showBack,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = stringResource(Res.string.back)
+                        )
+                    }
                 }
-            }
-        },
-        scrollBehavior = scrollBehavior()
-    )
+            },
+            scrollBehavior = scrollBehavior
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -578,79 +588,85 @@ private fun PanoNavigationRail(
 
     WideNavigationRail(
         state = state,
-        header = {
+        header =
             if (fabData != null) {
-                PanoFab(
-                    fabData,
-                    onBack = onBack,
-                    onNavigate = onNavigate,
-                    onOpenDialog = onOpenDialog,
-                    modifier = Modifier
-                        .padding(start = horizontalOverscanPadding() / 2, top = 16.dp)
-                )
-            } else {
-                val user = tabs.filterIsInstance<PanoTab.Profile>().firstOrNull()?.user ?: userp
-
-                if (user != null) {
-                    WideNavigationRailItem(
-                        selected = false,
-                        onClick = { onProfileClicked(user) },
-                        railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
-                        icon = {
-                            AvatarOrInitials(
-                                avatarUrl = when {
-                                    !user.isSelf -> user.largeImage
-                                    user.isSelf && drawerData != null -> drawerData.profilePicUrl
-                                    else -> null
-                                },
-                                avatarName = user.name,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clip(CircleShape)
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = if (Stuff.isInDemoMode)
-                                    "me"
-                                else
-                                    user.name,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .widthIn(max = 100.dp)
-                            )
-                        },
+                {
+                    PanoFab(
+                        fabData,
+                        onBack = onBack,
+                        onNavigate = onNavigate,
+                        onOpenDialog = onOpenDialog,
                         modifier = Modifier
                             .padding(start = horizontalOverscanPadding() / 2, top = 16.dp)
                     )
                 }
-            }
-        },
+            } else
+                null,
         arrangement = Arrangement.aligned(Alignment.CenterVertically),
         modifier = modifier
             .widthIn(max = 200.dp)
             .fillMaxHeight()
     ) {
-        tabs.filter { it !is PanoTab.Profile }
+        (
+                tabs +
+                        if (tabs.find { it is PanoTab.Profile } == null && userp != null) {
+                            listOf(PanoTab.Profile(userp))
+                        } else {
+                            emptyList()
+                        }
+                )
             .forEachIndexed { index, tabMetadata ->
+
+                if (tabMetadata is PanoTab.Profile) {
+                    Spacer(
+                        modifier = Modifier
+                            .height(4.dp)
+                    )
+                }
+
                 WideNavigationRailItem(
                     selected = index == selectedTabIdx,
                     onClick = {
+                        if (tabMetadata is PanoTab.Profile) {
+                            onProfileClicked(tabMetadata.user)
+                            return@WideNavigationRailItem
+                        }
+
                         if (index != selectedTabIdx) {
                             onTabClicked(index, tabMetadata)
                         }
                     },
                     railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
                     icon = {
-                        Icon(
-                            imageVector = tabMetadata.icon,
-                            contentDescription = stringResource(tabMetadata.titleRes)
-                        )
+                        if (tabMetadata is PanoTab.Profile) {
+
+                            AvatarOrInitials(
+                                avatarUrl =
+                                    when {
+                                        !tabMetadata.user.isSelf -> tabMetadata.user.largeImage
+                                        tabMetadata.user.isSelf && drawerData != null -> drawerData.profilePicUrl
+                                        else -> null
+                                    },
+                                avatarName = tabMetadata.user.name,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                            )
+                        } else
+                            Icon(
+                                imageVector = tabMetadata.icon,
+                                contentDescription = stringResource(tabMetadata.titleRes)
+                            )
                     },
                     label = {
                         Text(
-                            text = stringResource(tabMetadata.titleRes),
+                            text = if (tabMetadata is PanoTab.Profile)
+                                if (Stuff.isInDemoMode)
+                                    "me"
+                                else
+                                    tabMetadata.user.name
+                            else
+                                stringResource(tabMetadata.titleRes),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

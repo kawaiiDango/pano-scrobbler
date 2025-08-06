@@ -26,12 +26,12 @@ import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.utils.BugReportUtils
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.bug_report
 import pano_scrobbler.composeapp.generated.resources.faq
-import pano_scrobbler.composeapp.generated.resources.faq_link
 import pano_scrobbler.composeapp.generated.resources.save_logs
 import java.io.File
 
@@ -41,7 +41,6 @@ fun HelpScreen(
 ) {
     val scope = rememberCoroutineScope()
     var filePickerShown by remember { mutableStateOf(false) }
-    val faqLink = stringResource(Res.string.faq_link)
 
     if (PlatformStuff.isDesktop) {
         Column(
@@ -51,7 +50,7 @@ fun HelpScreen(
         ) {
             OutlinedButton(
                 onClick = {
-                    PlatformStuff.openInBrowser(faqLink)
+                    PlatformStuff.openInBrowser(Stuff.LINK_FAQ)
                 }
             ) {
                 Text(stringResource(Res.string.faq))
@@ -72,7 +71,7 @@ fun HelpScreen(
         }
     } else {
         WebViewScreen(
-            initialUrl = faqLink,
+            initialUrl = Stuff.LINK_FAQ,
             onSetTitle = {},
             onBack = { },
             bottomContent = {

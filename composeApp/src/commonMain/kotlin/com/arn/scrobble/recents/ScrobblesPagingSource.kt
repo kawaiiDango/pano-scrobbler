@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
@@ -64,7 +65,7 @@ class ScrobblesPagingSource(
                     page,
                     username,
                     cached = cachedOnly,
-                    to = if (isListenBrainz)
+                    to = if (isListenBrainz && timeJumpMillis == null)
                         (lastScrobbleTimestamp ?: -1)
                     else
                         (timeJumpMillis ?: -1),
@@ -94,6 +95,7 @@ class ScrobblesPagingSource(
                 markFirstScrobbleOfTheDays(entries)
 
             if (
+                currentScrobblable !is FileScrobblable &&
                 PlatformStuff.billingRepository.isLicenseValid &&
                 PlatformStuff.mainPrefs.data.map { it.showScrobbleSources }.first()
             ) {

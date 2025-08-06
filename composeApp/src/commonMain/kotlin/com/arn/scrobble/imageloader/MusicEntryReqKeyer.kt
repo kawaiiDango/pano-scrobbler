@@ -11,11 +11,12 @@ class MusicEntryReqKeyer : Keyer<MusicEntryImageReq> {
 
     companion object {
         fun genKey(data: MusicEntryImageReq): String {
-            val prefix = "MusicEntryReqKeyer|${data.accountType}|"
+            val prefix =
+                "MusicEntryReqKeyer|accountType=${data.accountType}"
             return when (data.musicEntry) {
-                is Artist -> prefix + Artist::class.qualifiedName + "|" + data.musicEntry.name
-                is Album -> prefix + Album::class.qualifiedName + "|" + data.musicEntry.artist!!.name + "|" + data.musicEntry.name
-                is Track -> prefix + Track::class.qualifiedName + data.musicEntry.artist.name + "|" + data.musicEntry.album?.name + "|" + data.musicEntry.name
+                is Artist -> prefix + "|artist=" + data.musicEntry.name
+                is Album -> prefix + "|artist=" + data.musicEntry.artist!!.name + "|album=" + data.musicEntry.name
+                is Track -> prefix + "|artist=" + data.musicEntry.artist.name + "|album=" + data.musicEntry.album?.name + "|track=" + data.musicEntry.name
             }
         }
     }

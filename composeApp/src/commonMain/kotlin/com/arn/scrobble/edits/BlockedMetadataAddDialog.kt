@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +30,7 @@ import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.LabeledCheckbox
+import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,7 +87,7 @@ private fun BlockedMetadataAddContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = track,
             onValueChange = { track = it },
             label = { Text(stringResource(Res.string.track)) },
@@ -99,7 +99,7 @@ private fun BlockedMetadataAddContent(
                 .fillMaxWidth()
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = artist,
             onValueChange = { artist = it },
             label = {
@@ -120,7 +120,7 @@ private fun BlockedMetadataAddContent(
                 .fillMaxWidth()
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = album,
             onValueChange = { album = it },
             label = { Text(stringResource(Res.string.album)) },
@@ -132,7 +132,7 @@ private fun BlockedMetadataAddContent(
                 .fillMaxWidth()
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = albumArtist,
             onValueChange = { albumArtist = it },
             label = { Text(stringResource(Res.string.album_artist)) },

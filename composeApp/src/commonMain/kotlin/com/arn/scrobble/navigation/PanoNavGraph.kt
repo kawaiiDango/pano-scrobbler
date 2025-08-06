@@ -68,7 +68,6 @@ import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -85,7 +84,6 @@ import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.login_in_browser
-import pano_scrobbler.composeapp.generated.resources.my_scrobbles
 import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.pref_export
@@ -314,7 +312,7 @@ fun NavGraphBuilder.panoNavGraph(
     composable<PanoRoute.Prefs>(
         deepLinks = listOf(
             navDeepLink {
-                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Prefs::class.simpleName
+                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/Prefs"
             },
             navDeepLink {
                 action = "android.service.quicksettings.action.QS_TILE_PREFERENCES"
@@ -583,11 +581,11 @@ fun NavGraphBuilder.panoNavGraph(
     composable<PanoRoute.Search>(
         deepLinks = listOf(
             navDeepLink {
-                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Search::class.simpleName
+                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/Search"
             },
-            navDeepLink {
-                action = "android.intent.action.SEARCH"
-            }
+//            navDeepLink {
+//                action = "android.intent.action.SEARCH"
+//            }
         )
     ) {
         onSetTitleString(
@@ -774,17 +772,10 @@ fun NavGraphBuilder.panoNavGraph(
         val track = arguments.track
         val user = arguments.user
 
-        val formattedCount = track.userplaycount?.format() ?: "0"
-        val title = if (user.isSelf) {
-            stringResource(Res.string.my_scrobbles) + ": " + formattedCount
-        } else {
-            "${user.name}: $formattedCount"
-        }
-        onSetTitleString(it.id, title)
-
         TrackHistoryScreen(
             track = track,
             user = user,
+            onSetTitle = { title -> onSetTitle(it.id, title) },
             onOpenDialog = onOpenDialog,
             editDataFlow = mainViewModel.editDataFlow,
             modifier = modifier()

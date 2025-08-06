@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -232,7 +233,7 @@ fun main(args: Array<String>) {
                                 "✔️ "
                             else
                                 ""
-                        
+
                         playingState + it.scrobbleData.track + "\n" +
                                 it.scrobbleData.artist + "\n" +
                                 (appIdToNames[appId]?.ifEmpty { null } ?: appId)
@@ -688,7 +689,7 @@ private fun TrayWindow(
                         if (id == PanoTrayUtils.ItemId.Separator.name) {
                             Spacer(
                                 modifier = Modifier
-                                    .padding(vertical = 8.dp)
+                                    .height(8.dp)
                             )
                         } else {
                             Text(

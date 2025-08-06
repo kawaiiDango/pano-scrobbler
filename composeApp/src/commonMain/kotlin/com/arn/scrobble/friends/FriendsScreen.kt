@@ -489,7 +489,7 @@ private fun FriendItem(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .width(72.dp)
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
                 .clip(MaterialTheme.shapes.medium)
                 .clickable(
                     enabled = !forShimmer,
@@ -694,7 +694,7 @@ private fun FriendItem(
                     )
                 }
 
-                if (friend.url.isNotEmpty() || !PlatformStuff.isTv) {
+                if (friend.url.isNotEmpty() && !PlatformStuff.isTv) {
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(

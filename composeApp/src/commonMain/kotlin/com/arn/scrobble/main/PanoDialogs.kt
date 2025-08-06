@@ -1,5 +1,6 @@
 package com.arn.scrobble.main
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -72,7 +73,7 @@ private fun PanoDialogs(
         isNestedScrollable = dialogArgs is PanoDialog.NestedScrollable,
         forceSkipPartiallyExpanded = true,
         onDismissRequest = onDismissRequest
-    ) { modifier ->
+    ) { modifier, scrollState ->
         when (dialogArgs) {
             is PanoDialog.NavPopup -> {
                 NavPopupDialog(
@@ -131,6 +132,7 @@ private fun PanoDialogs(
                     user = dialogArgs.user,
                     onNavigate = onNavigate,
                     onOpenDialog = onOpenDialog,
+                    scrollState = scrollState,
                     modifier = modifier
                 )
             }
@@ -138,6 +140,7 @@ private fun PanoDialogs(
             is PanoDialog.TagInfo -> {
                 TagInfoDialog(
                     tag = dialogArgs.tag,
+                    scrollState = scrollState,
                     modifier = modifier
                 )
             }
@@ -274,7 +277,7 @@ private fun BottomSheetDialogParent(
     padding: Boolean,
     isNestedScrollable: Boolean, // disabling nested scrolling is a workaround until google fixes it
     forceSkipPartiallyExpanded: Boolean,
-    content: @Composable (modifier: Modifier) -> Unit,
+    content: @Composable (modifier: Modifier, ScrollState) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -341,7 +344,7 @@ private fun BottomSheetDialogParent(
                     contentDescription = stringResource(Res.string.close),
                 )
             }
-        } else {
+        } else if (!sheetGesturesEnabled) {
             // reserve space at the top
             Box(
                 modifier = Modifier
@@ -369,7 +372,8 @@ private fun BottomSheetDialogParent(
                 .verticalScroll(
                     scrollState,
                     enabled = isNestedScrollable && !sheetGesturesEnabled
-                )
+                ),
+            scrollState
         )
     }
 }

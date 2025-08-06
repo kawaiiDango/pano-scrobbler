@@ -45,19 +45,19 @@ import java.net.URI
 
 actual object PlatformStuff {
 
-    actual val isDebug = BuildKonfig.DEBUG
+    actual const val isDebug = BuildKonfig.DEBUG
 
-    actual val isJava8OrGreater = true
+    actual const val isJava8OrGreater = true
 
     actual fun isNotificationListenerEnabled() = true
 
-    actual val isTv = false
+    actual const val isTv = false
 
-    actual val supportsDynamicColors = false
+    actual const val supportsDynamicColors = false
 
-    actual val isDesktop = true
+    actual const val isDesktop = true
 
-    actual val isNonPlayBuild = true
+    actual const val isNonPlayBuild = true
 
     actual val noUpdateCheck
         get() =

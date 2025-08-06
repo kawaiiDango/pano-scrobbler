@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
@@ -297,22 +298,55 @@ fun SearchField(
             .fillMaxWidth()
             .padding(8.dp),
         leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
-        trailingIcon = {
-            if (searchTerm.isNotEmpty()) {
-                IconButton(onClick = {
-                    onSearchTermChange("")
-                }) {
-                    Icon(
-                        Icons.Outlined.Close,
-                        contentDescription = stringResource(Res.string.delete)
-                    )
+        trailingIcon = if (!PlatformStuff.isTv) {
+            {
+                if (searchTerm.isNotEmpty()) {
+                    IconButton(onClick = {
+                        onSearchTermChange("")
+                    }) {
+                        Icon(
+                            Icons.Outlined.Close,
+                            contentDescription = stringResource(Res.string.delete)
+                        )
+                    }
                 }
             }
-        },
+        } else
+            null,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done
         ),
         singleLine = true,
+    )
+}
+
+@Composable
+fun OutlinedTextFieldTvSafe(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    placeholder: @Composable (() -> Unit)? = null,
+    label: @Composable (() -> Unit)? = null,
+    maxLines: Int = Int.MAX_VALUE,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = label,
+        modifier = modifier,
+        enabled = enabled && !PlatformStuff.isTv, // Disable on TV
+//        readOnly = PlatformStuff.isTv,
+        placeholder = placeholder,
+        maxLines = maxLines,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
     )
 }
 
@@ -509,31 +543,32 @@ fun SimpleHeaderItem(
     icon: ImageVector,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    Surface(
+        tonalElevation = 2.dp,
+        shadowElevation = 2.dp,
+        shape = MaterialTheme.shapes.large,
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .background(
-                MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = MaterialTheme.shapes.medium
-            )
-            .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding()),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(end = 32.dp)
-        )
+                .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding()),
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .padding(end = 32.dp)
+            )
 
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 

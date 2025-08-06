@@ -49,8 +49,8 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
         if (tagInput.isNotBlank()) {
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(hiddenTags = it.hiddenTags + tag) }
+                tagInput = ""
             }
-            tagInput = ""
         }
     }
 

@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +63,7 @@ import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.LabeledCheckbox
+import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
@@ -364,11 +364,11 @@ fun RegexEditsAddScreen(
                 )
             }
 
-            OutlinedTextField(
+            OutlinedTextFieldTvSafe(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text(stringResource(Res.string.edit_name)) },
-                singleLine = true,
+                maxLines = 1,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 ),
@@ -650,7 +650,7 @@ private fun SearchAndReplacePair(
             )
         }
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = searchRegex,
             onValueChange = onSearchChange,
             enabled = copyFromField == null,
@@ -662,7 +662,7 @@ private fun SearchAndReplacePair(
                 .fillMaxWidth(),
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = replacementRegex,
             onValueChange = onReplacementChange,
             enabled = copyFromField == null,
@@ -707,7 +707,7 @@ private fun SearchFields(
                 .padding(top = 8.dp)
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = track,
             onValueChange = { onValueChange(it, album, artist, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.track)) },
@@ -718,7 +718,7 @@ private fun SearchFields(
             enabled = enabled
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = artist,
             onValueChange = { onValueChange(track, album, it, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.artist)) },
@@ -729,7 +729,7 @@ private fun SearchFields(
             enabled = enabled
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = album,
             onValueChange = { onValueChange(track, it, artist, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.album)) },
@@ -740,7 +740,7 @@ private fun SearchFields(
             enabled = enabled
         )
 
-        OutlinedTextField(
+        OutlinedTextFieldTvSafe(
             value = albumArtist,
             onValueChange = { onValueChange(track, album, artist, it) },
             label = { Text(labelPrefix + stringResource(Res.string.album_artist)) },

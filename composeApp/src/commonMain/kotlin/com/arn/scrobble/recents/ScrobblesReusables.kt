@@ -1,5 +1,6 @@
 package com.arn.scrobble.recents
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
@@ -611,28 +612,24 @@ fun PendingDropdownMenu(
 private fun PendingScrobbleDesc(
     pendingScrobble: PendingScrobble,
 ) {
-    if (pendingScrobble.services.size == 1 && pendingScrobble.services.first() == Scrobblables.currentAccount.value?.type) {
-
-    } else {
-        DropdownMenuItem(
-            onClick = {},
-            enabled = false,
-            text = {
-                Text(
-                    stringResource(Res.string.scrobble_services) + ":\n" +
-                            pendingScrobble.services.map {
-                                accountTypeLabel(it)
-                            }.joinToString(", ")
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Dns,
-                    contentDescription = null
-                )
-            }
-        )
-    }
+    DropdownMenuItem(
+        onClick = {},
+        enabled = false,
+        text = {
+            Text(
+                stringResource(Res.string.scrobble_services) + ":\n" +
+                        pendingScrobble.services.map {
+                            accountTypeLabel(it)
+                        }.joinToString(", ")
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Outlined.Dns,
+                contentDescription = null
+            )
+        }
+    )
 
     if (pendingScrobble.lastFailedTimestamp != null) {
         DropdownMenuItem(
@@ -680,6 +677,7 @@ fun LazyListScope.scrobblesListItems(
     pkgMap: Map<Long, String>,
     seenApps: Map<String, String>,
     fetchAlbumImageIfMissing: Boolean,
+    showScrobbleSources: Boolean,
     canLove: Boolean,
     canHate: Boolean,
     canEdit: Boolean,
@@ -720,9 +718,12 @@ fun LazyListScope.scrobblesListItems(
                 var menuVisible by remember { mutableStateOf(false) }
 
                 val appItem = remember(track) {
-                    track.date
-                        ?.let { pkgMap[it] }
-                        ?.let { AppItem(it, seenApps[it] ?: "") }
+                    if (showScrobbleSources) {
+                        track.date
+                            ?.let { track.appId ?: pkgMap[it] }
+                            ?.let { AppItem(it, seenApps[it] ?: "") }
+                    } else
+                        null
                 }
 
                 MusicEntryListItem(
@@ -795,6 +796,7 @@ fun LazyListScope.scrobblesListItems(
                     },
                     onMenuClick = { menuVisible = true },
                     modifier = Modifier
+                        .animateContentSize()
                         .then(
                             if (expandedKey() == key)
                                 Modifier.fillParentMaxHeight()
@@ -899,7 +901,9 @@ fun LazyListScope.pendingScrobblesListItems(
                 )
             },
             fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
-            modifier = modifier.animateItem()
+            modifier = modifier
+                .animateContentSize()
+                .animateItem()
         )
     }
 }

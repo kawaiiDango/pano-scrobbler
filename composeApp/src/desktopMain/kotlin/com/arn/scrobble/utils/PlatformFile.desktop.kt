@@ -48,6 +48,19 @@ actual class PlatformFile actual constructor(private val fileUri: String) {
         }
     }
 
+    actual suspend fun readLastNBytes(n: Long, block: suspend (InputStream, Boolean) -> Unit) {
+        withContext(Dispatchers.IO) {
+            FileInputStream(file).use { fis ->
+                val length = file.length()
+                val nExceedsLength = length > n
+
+                if (nExceedsLength)
+                    fis.channel.position(length - n)
+                block(fis, nExceedsLength)
+            }
+        }
+    }
+
     actual fun takePersistableUriPermission(readWrite: Boolean) {
     }
 

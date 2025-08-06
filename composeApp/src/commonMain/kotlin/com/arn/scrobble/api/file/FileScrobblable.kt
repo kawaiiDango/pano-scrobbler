@@ -1,6 +1,5 @@
 package com.arn.scrobble.api.file
 
-import androidx.collection.CircularArray
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Scrobblable
@@ -32,6 +31,7 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.io.OutputStream
@@ -50,7 +50,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
         return kotlin.runCatching {
             if (!platformFile.isFileOk())
-                throw FException(platformFile, "File not writable")
+                throw FException("File not writable")
 
             platformFile.writeAppend { outputStream ->
                 writeEntry(scrobbleData, ScrobbleEvent.scrobble, outputStream)
@@ -63,7 +63,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
     override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleIgnored> {
         return kotlin.runCatching {
             if (!platformFile.isFileOk())
-                throw FException(platformFile, "File not writable")
+                throw FException("File not writable")
 
             platformFile.writeAppend { outputStream ->
                 scrobbleDatas.forEach { scrobbleData ->
@@ -99,7 +99,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
     override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleIgnored> {
         return kotlin.runCatching {
             if (!platformFile.isFileOk())
-                throw FException(platformFile, "File not writable")
+                throw FException("File not writable")
 
             val scrobbleData = ScrobbleData(
                 artist = track.artist.name,
@@ -133,7 +133,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         from: Long,
         to: Long,
         includeNowPlaying: Boolean,
-        limit: Int,
+        limit: Int, // ignore the limit for files, we go by max bytes instead
     ): Result<PageResult<Track>> {
 
         return kotlin.runCatching {
@@ -141,56 +141,53 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 throw IllegalStateException("Cache not supported")
 
             if (!platformFile.isFileOk())
-                throw FException(platformFile, "File not writable")
+                throw FException("File not writable")
 
-            if (platformFile.length() > MAX_SIZE)
-                throw FException(platformFile, "File too large to read")
+            val csvReader by lazy { csvReader() }
+            val entries = mutableListOf<Track>()
 
-            val lines = CircularArray<String>(limit)
             var readFirstLine = false
 
-            platformFile.read { inputStream ->
+            platformFile.readLastNBytes(MAX_SIZE) { inputStream, nExceedsLength ->
                 inputStream.bufferedReader().useLines { sequence ->
                     sequence.forEach { line ->
                         if (!readFirstLine) {
                             readFirstLine = true
-                            if (fileType == FileFormat.csv && line.startsWith(Entry::timeHuman.name))
+
+                            // if lengthExceeds, the first line is probably incomplete, so discard it
+                            if (nExceedsLength ||
+                                fileType == FileFormat.csv && line.startsWith(Entry::timeHuman.name)
+                            )
                                 return@forEach
                         }
 
-                        if (lines.size() >= limit)
-                            lines.popFirst()
+                        val entry: Entry
+                        if (fileType == FileFormat.csv) {
+                            val row = csvReader.readAll(line).firstOrNull() ?: return@forEach
+                            entry = Entry.fromCsvRow(row)
+                        } else {
+                            entry = try {
+                                Entry.fromJson(line)
+                            } catch (e: SerializationException) {
+                                return@forEach
+                            }
+                        }
 
-                        lines.addLast(line)
+                        entries += Track(
+                            name = entry.track,
+                            artist = Artist(entry.artist),
+                            album = entry.album?.let { albumName ->
+                                Album(albumName, entry.albumArtist?.let { Artist(it) })
+                            },
+                            userloved = entry.event == ScrobbleEvent.love,
+                            userHated = entry.event == ScrobbleEvent.unlove,
+                            duration = entry.durationMs,
+                            date = entry.timeMs,
+                            appId = entry.mediaPlayerPackage,
+                        )
                     }
                 }
             }
-
-            val csvReader = csvReader()
-
-            val entries = (0 until lines.size())
-                .map { lines[it] }
-                .mapNotNull {
-                    val entry: Entry
-                    if (fileType == FileFormat.csv) {
-                        val row = csvReader.readAll(it).firstOrNull() ?: return@mapNotNull null
-                        entry = Entry.fromCsvRow(row)
-                    } else {
-                        entry = Entry.fromJson(it)
-                    }
-
-                    Track(
-                        name = entry.track,
-                        artist = Artist(entry.artist),
-                        album = entry.album?.let { albumName ->
-                            Album(albumName, entry.albumArtist?.let { Artist(it) })
-                        },
-                        userloved = entry.event == ScrobbleEvent.love,
-                        userHated = entry.event == ScrobbleEvent.unlove,
-                        duration = entry.durationMs,
-                        date = entry.timeMs
-                    )
-                }.asReversed()
 
             PageResult(
                 PageAttr(
@@ -198,7 +195,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                     totalPages = 1,
                     total = entries.size
                 ),
-                entries = entries,
+                entries = entries.asReversed(),
             )
         }
     }
@@ -324,11 +321,11 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         csv, jsonl
     }
 
-    class FException(val platformFile: PlatformFile, message: String, cause: Throwable? = null) :
+    class FException(message: String, cause: Throwable? = null) :
         IOException(message, cause)
 
     companion object {
-        private const val MAX_SIZE = 10 * 1024 * 1024L // 10MB
+        private const val MAX_SIZE = 1 * 1024 * 1024L // 1MB
 
         private val CSV_HEADER =
             "${Entry::timeHuman.name},${Entry::timeMs.name},${Entry::artist.name},${Entry::track.name},${Entry::album.name},${Entry::albumArtist.name},${Entry::durationMs.name},${Entry::mediaPlayerPackage.name},${Entry::mediaPlayerName.name},${Entry::mediaPlayerVersion.name},${Entry::event.name}"

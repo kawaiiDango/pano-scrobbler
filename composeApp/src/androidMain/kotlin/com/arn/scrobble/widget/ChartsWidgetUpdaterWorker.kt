@@ -240,6 +240,8 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                     ExistingWorkPolicy.REPLACE,
                     oneTimeWork
                 )
+
+                Logger.i { "scheduling ${ChartsWidgetUpdaterWorker::class.java.simpleName} runImmediately" }
             }
 
             val inputData = Data.Builder()

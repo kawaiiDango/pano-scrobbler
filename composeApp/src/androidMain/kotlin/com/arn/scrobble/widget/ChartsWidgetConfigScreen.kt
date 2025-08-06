@@ -1,8 +1,10 @@
 package com.arn.scrobble.widget
 
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ListView
+import android.widget.TextView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -39,14 +42,17 @@ import com.arn.scrobble.charts.AllPeriods
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.ui.LabeledSwitch
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
 import pano_scrobbler.composeapp.generated.resources.appwidget_period
+import pano_scrobbler.composeapp.generated.resources.appwidget_refresh_every
 import pano_scrobbler.composeapp.generated.resources.appwidget_shadow
 import pano_scrobbler.composeapp.generated.resources.cancel
 import pano_scrobbler.composeapp.generated.resources.ok
+import kotlin.time.Duration.Companion.hours
 
 @Composable
 fun ChartsWidgetConfigScreen(
@@ -70,9 +76,10 @@ fun ChartsWidgetConfigScreen(
         }
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .fillMaxSize()
+                .safeContentPadding()
         ) {
 
             if (shadow) {
@@ -92,14 +99,16 @@ fun ChartsWidgetConfigScreen(
             }
 
             Surface(
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                modifier = Modifier
+                    .weight(1f)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(scrollState)
-                        .padding(16.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 ) {
                     Text(
                         text = stringResource(Res.string.appwidget_period),
@@ -122,6 +131,7 @@ fun ChartsWidgetConfigScreen(
                         text = stringResource(Res.string.appwidget_alpha),
                         style = MaterialTheme.typography.titleMedium
                     )
+
                     Slider(
                         value = bgAlpha,
                         onValueChange = { bgAlpha = it },
@@ -137,30 +147,42 @@ fun ChartsWidgetConfigScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        if (!isPinned) {
-                            TextButton(onClick = onCancel) {
-                                Text(text = stringResource(Res.string.cancel))
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        TextButton(onClick = {
-                            onSave(
-                                prefs.copy(
-                                    period = period,
-                                    bgAlpha = bgAlpha,
-                                    shadow = shadow
-                                ),
-                                prefs.period != period
-                            )
-                        }) {
-                            Text(text = stringResource(Res.string.ok))
+                    Text(
+                        text = stringResource(
+                            Res.string.appwidget_refresh_every,
+                            Stuff.humanReadableDuration(2.hours.inWholeMilliseconds)
+                        ),
+                    )
+                }
+            }
+
+            Surface(
+                tonalElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    if (!isPinned) {
+                        TextButton(onClick = onCancel) {
+                            Text(text = stringResource(Res.string.cancel))
                         }
                     }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    TextButton(onClick = {
+                        onSave(
+                            prefs.copy(
+                                period = period,
+                                bgAlpha = bgAlpha,
+                                shadow = shadow
+                            ),
+                            prefs.period != period
+                        )
+                    }) {
+                        Text(text = stringResource(Res.string.ok))
+                    }
                 }
+
             }
         }
     }
@@ -185,6 +207,17 @@ private fun WidgetPreview(
             listView.emptyView = layout.findViewById(R.id.appwidget_status)
             listView.adapter = FakeChartsAdapter(layout.context)
 
+            val headerLayout = LayoutInflater.from(context)
+                .inflate(R.layout.appwidget_list_header, layout as ViewGroup, false)
+            headerLayout.findViewById<TextView>(R.id.appwidget_period).text =
+                context.resources.getQuantityString(
+                    R.plurals.num_months,
+                    1,
+                    1
+                )
+
+            listView.addHeaderView(headerLayout)
+
             layout
         },
 
@@ -194,7 +227,8 @@ private fun WidgetPreview(
             bg.alpha = bgAlpha
         },
         modifier = modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp)
     )
 }
 

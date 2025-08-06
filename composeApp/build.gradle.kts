@@ -105,7 +105,6 @@ kotlin {
             implementation(libs.androidx.core.remoteviews)
             implementation(libs.media)
             implementation(libs.compose.webview)
-            implementation(libs.documentfile)
             implementation(libs.harmony)
             implementation(libs.coil.gif)
 //            implementation(libs.androidx.sqlite.framework)

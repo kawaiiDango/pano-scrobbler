@@ -134,7 +134,13 @@ private fun RegexEditsList(
     onImport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val nonRegexItemsCount = 3 + RegexPresets.filteredPresets.size
+    val nonRegexItemsCount = remember {
+        RegexPresets.filteredPresets.size + listOfNotNull(
+            if (!PlatformStuff.isTv) 1 else null, // Test button
+            1, // presets_header
+            1, // custom_header
+        ).sum()
+    }
 
     val listState = rememberLazyListState()
     val dragDropState =
@@ -150,17 +156,19 @@ private fun RegexEditsList(
         state = listState,
         modifier = modifier.dragContainer(dragDropState),
     ) {
-        item(key = "test_button") {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItem(),
-            ) {
-                OutlinedButton(
-                    onClick = onNavigateToTest,
+        if (!PlatformStuff.isTv) {
+            item(key = "test_button") {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem(),
                 ) {
-                    Text(text = stringResource(Res.string.edit_regex_test))
+                    OutlinedButton(
+                        onClick = onNavigateToTest,
+                    ) {
+                        Text(text = stringResource(Res.string.edit_regex_test))
+                    }
                 }
             }
         }

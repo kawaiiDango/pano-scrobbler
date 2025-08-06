@@ -16,6 +16,8 @@ expect class PlatformFile(fileUri: String) {
 
     suspend fun read(block: suspend (InputStream) -> Unit)
 
+    suspend fun readLastNBytes(n: Long, block: suspend (InputStream, Boolean) -> Unit)
+
     fun length(): Long
 
     fun lastModified(): Long

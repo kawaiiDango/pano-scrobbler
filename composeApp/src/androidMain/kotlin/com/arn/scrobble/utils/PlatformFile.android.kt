@@ -1,46 +1,130 @@
 package com.arn.scrobble.utils
 
 import android.content.Intent
+import android.provider.DocumentsContract
 import androidx.core.net.toUri
-import androidx.documentfile.provider.DocumentFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.FileInputStream
 import java.io.InputStream
 import java.io.OutputStream
 
-actual class PlatformFile actual constructor(private val fileUri: String) {
+
+actual class PlatformFile actual constructor(fileUri: String) {
 
     actual val uri = fileUri
 
-    private val documentFile by lazy {
-        DocumentFile.fromSingleUri(AndroidStuff.application, fileUri.toUri())!!
-    }
+    private val parsedUri = fileUri.toUri()
 
     private val contentResolver by lazy { AndroidStuff.application.contentResolver }
 
+    actual fun isFileOk(): Boolean {
+        val cursor = contentResolver.query(
+            parsedUri,
+            arrayOf(
+                DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                DocumentsContract.Document.COLUMN_FLAGS
+            ),
+            null,
+            null,
+            null
+        )
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val flags =
+                    it.getInt(it.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_FLAGS))
+                val canWrite = (flags and DocumentsContract.Document.FLAG_SUPPORTS_WRITE) != 0
+                return canWrite
+            }
+        }
+        return false
+    }
 
-    actual fun isFileOk() =
-        documentFile.exists() && documentFile.canWrite() && documentFile.canRead()
+    actual fun getFileName(): String {
+        val cursor = contentResolver.query(
+            parsedUri,
+            arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+            null,
+            null,
+            null
+        )
+        cursor?.use {
+            if (it.moveToFirst()) {
+                return it.getString(0)
+            }
+        }
+        throw IllegalStateException("File name not found")
+    }
 
-    actual fun getFileName() = documentFile.name!!
+    actual fun length(): Long {
+        val cursor = contentResolver.query(
+            parsedUri,
+            arrayOf(DocumentsContract.Document.COLUMN_SIZE),
+            null,
+            null,
+            null
+        )
+        cursor?.use {
+            if (it.moveToFirst()) {
+                return it.getLong(0)
+            }
+        }
+        return 0L
+    }
 
-    actual fun length() = documentFile.length()
-
-    actual fun lastModified() = documentFile.lastModified()
+    actual fun lastModified(): Long {
+        val cursor = contentResolver.query(
+            parsedUri,
+            arrayOf(DocumentsContract.Document.COLUMN_LAST_MODIFIED),
+            null,
+            null,
+            null
+        )
+        cursor?.use {
+            if (it.moveToFirst()) {
+                return it.getLong(0)
+            }
+        }
+        return 0L
+    }
 
     actual suspend fun writeAppend(block: suspend (OutputStream) -> Unit) {
-        contentResolver.openOutputStream(documentFile.uri, "wa")?.use {
-            block(it)
+        withContext(Dispatchers.IO) {
+            contentResolver.openOutputStream(parsedUri, "wa")?.use {
+                block(it)
+            }
         }
     }
 
     actual suspend fun overwrite(block: suspend (OutputStream) -> Unit) {
-        contentResolver.openOutputStream(documentFile.uri, "w")?.use {
-            block(it)
+        withContext(Dispatchers.IO) {
+            contentResolver.openOutputStream(parsedUri, "w")?.use {
+                block(it)
+            }
         }
     }
 
     actual suspend fun read(block: suspend (InputStream) -> Unit) {
-        contentResolver.openInputStream(documentFile.uri)?.use {
-            block(it)
+        withContext(Dispatchers.IO) {
+            contentResolver.openInputStream(parsedUri)?.use {
+                block(it)
+            }
+        }
+    }
+
+    actual suspend fun readLastNBytes(n: Long, block: suspend (InputStream, Boolean) -> Unit) {
+        withContext(Dispatchers.IO) {
+            contentResolver.openFileDescriptor(parsedUri, "r")?.use { pfd ->
+                FileInputStream(pfd.fileDescriptor).use { fis ->
+                    val length = pfd.statSize
+                    val nExceedsLength = length > n
+
+                    if (nExceedsLength)
+                    // even gdrive seems to support this
+                        fis.channel.position(length - n)
+                    block(fis, nExceedsLength)
+                }
+            }
         }
     }
 
@@ -52,14 +136,14 @@ actual class PlatformFile actual constructor(private val fileUri: String) {
         }
 
         AndroidStuff.application.contentResolver.takePersistableUriPermission(
-            documentFile.uri,
+            parsedUri,
             flags
         )
     }
 
     actual fun releasePersistableUriPermission() {
         AndroidStuff.application.contentResolver.releasePersistableUriPermission(
-            documentFile.uri,
+            parsedUri,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
     }

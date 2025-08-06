@@ -247,7 +247,7 @@ abstract class MediaListener(
             }
 
             lastPosition = playbackInfo.position // can be -1
-            lastPlaybackState = playbackInfo.state
+            
             if (playbackInfo.state != CommonPlaybackState.Waiting)
                 lastPlaybackState = playbackInfo.state
 

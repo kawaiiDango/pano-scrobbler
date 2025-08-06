@@ -31,6 +31,7 @@ fun newImageLoader(
         }
         .components {
             add(MusicEntryMapper())
+            add(MusicEntryReqKeyer())
             add(musicEntryImageInterceptor)
             add(StarMapper())
             if (Stuff.isInDemoMode)

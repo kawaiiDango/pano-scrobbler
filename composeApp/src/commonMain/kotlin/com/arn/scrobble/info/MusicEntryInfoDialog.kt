@@ -1,6 +1,7 @@
 package com.arn.scrobble.info
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -154,6 +155,7 @@ fun MusicEntryInfoDialog(
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier,
     viewModel: InfoVM = viewModel { InfoVM() },
     miscVM: InfoMiscVM = viewModel { InfoMiscVM() },
@@ -456,6 +458,7 @@ fun MusicEntryInfoDialog(
                     onExpandToggle = {
                         expandedWikiType = if (expandedWikiType == type) -1 else type
                     },
+                    scrollState = scrollState,
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
             }

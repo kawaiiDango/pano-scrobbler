@@ -14,12 +14,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
-import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 
 
 @Composable
@@ -40,11 +40,10 @@ actual fun OnboardingScreen(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val privacyPolicyLink = stringResource(Res.string.privacy_policy_link)
 
         TextButton(
             onClick = {
-                PlatformStuff.openInBrowser(privacyPolicyLink)
+                PlatformStuff.openInBrowser(Stuff.LINK_FAQ)
             },
             modifier = Modifier
                 .align(Alignment.End)

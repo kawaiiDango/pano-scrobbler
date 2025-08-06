@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package com.arn.scrobble.pref
 
 import androidx.datastore.core.Serializer
@@ -19,6 +21,7 @@ import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.getSystemCountryCode
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonNames
@@ -39,7 +42,7 @@ data class MainPrefs(
     private val delaySecs: Int = PREF_DELAY_SECS_DEFAULT,
     private val delayPercent: Int = PREF_DELAY_PER_DEFAULT,
     private val minDurationSecs: Int = PREF_MIN_DURATON_SECS_DEFAULT,
-    val scrobbleSpotifyRemote: Boolean = false,
+    private val scrobbleSpotifyRemote: Boolean = false,
     val linkHeartButtonToRating: Boolean = false,
     val preventDuplicateAmbientScrobbles: Boolean = false,
     val submitNowPlaying: Boolean = true,
@@ -112,8 +115,8 @@ data class MainPrefs(
     // keep this as a string and not as an enum, in case i delete presets later
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
     val windowState: SerializableWindowState? = null,
-    val itunesCountry: String? = null,
-    val spotifyCountry: String? = null,
+    private val itunesCountry: String? = null,
+    private val spotifyCountry: String? = null,
     val tidalSteelSeries: Boolean = true,
     val fetchMissingMetadata: Boolean = true
 ) {
@@ -147,6 +150,9 @@ data class MainPrefs(
 
     val itunesCountryP
         get() = itunesCountry ?: getSystemCountryCode()
+
+    val scrobbleSpotifyRemoteP
+        get() = !PlatformStuff.isTv && scrobbleSpotifyRemote
 
     fun allowOrBlockAppCopied(appId: String, allow: Boolean): MainPrefs {
         //create copies

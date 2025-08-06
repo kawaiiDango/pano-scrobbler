@@ -52,11 +52,9 @@ import pano_scrobbler.composeapp.generated.resources.grant_notification_access_d
 import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
 import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
-import pano_scrobbler.composeapp.generated.resources.privacy_policy_link
 import pano_scrobbler.composeapp.generated.resources.send_notifications
 import pano_scrobbler.composeapp.generated.resources.send_notifications_desc
 import pano_scrobbler.composeapp.generated.resources.special_app_access
-import pano_scrobbler.composeapp.generated.resources.tv_link
 import pano_scrobbler.composeapp.generated.resources.will_not_scrobble
 
 
@@ -109,7 +107,6 @@ private fun NotificationListenerStep(
 ) {
     var warningShown by rememberSaveable { mutableStateOf(false) }
 
-    val tvLink = stringResource(Res.string.tv_link)
     val toastText = stringResource(
         Res.string.check_nls,
         if (PlatformStuff.isTv)
@@ -151,7 +148,7 @@ private fun NotificationListenerStep(
                 AndroidStuff.application.startActivity(intent)
                 Toast.makeText(AndroidStuff.application, toastText, Toast.LENGTH_SHORT).show()
             } else {
-                navigate(PanoRoute.WebView(tvLink))
+                navigate(PanoRoute.WebView(Stuff.LINK_TV))
             }
         },
         isDone = isDone,
@@ -236,11 +233,10 @@ actual fun OnboardingScreen(
         modifier = modifier.testTagsAsResId(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val privacyPolicyLink = stringResource(Res.string.privacy_policy_link)
 
         TextButton(
             onClick = {
-                onNavigate(PanoRoute.WebView(privacyPolicyLink))
+                onNavigate(PanoRoute.WebView(Stuff.LINK_PRIVACY_POLICY))
             },
             modifier = Modifier
                 .align(Alignment.End)

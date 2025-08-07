@@ -192,7 +192,9 @@ class NLService : NotificationListenerService() {
                         (sbn.notification.channelId == Stuff.CHANNEL_SHAZAM || sbn.notification.channelId == Stuff.CHANNEL_SHAZAM2) &&
                         sbn.notification.actions != null ||
                         sbn.packageName in Stuff.PACKAGES_PIXEL_NP && sbn.notification.channelId == Stuff.CHANNEL_PIXEL_NP ||
-                        sbn.packageName == Stuff.PACKAGE_AUDILE && sbn.notification.channelId == Stuff.CHANNEL_AUDILE
+                        sbn.packageName == Stuff.PACKAGE_AUDILE && sbn.notification.channelId in Stuff.CHANNELS_AUDILE &&
+                        sbn.notification.extras.containsKey(Stuff.AUDILE_METADATA_KEY_TRACK_TITLE) &&
+                        sbn.notification.extras.containsKey(Stuff.AUDILE_METADATA_KEY_TRACK_ARTIST)
                         )
 
     }
@@ -205,12 +207,11 @@ class NLService : NotificationListenerService() {
             if (!shouldScrobbleFromNoti(sbn!!.packageName))
                 return@launch
 
-            if (sbn.packageName == Stuff.PACKAGE_SHAZAM || sbn.packageName == Stuff.PACKAGE_AUDILE)
+            val n = sbn.notification
+            if (sbn.packageName == Stuff.PACKAGE_SHAZAM)
                 scrobbleFromNoti(sbn.packageName) {
-                    val n = sbn.notification
                     val title = n.extras.getString(Notification.EXTRA_TITLE)
                     val artist = n.extras.getString(Notification.EXTRA_TEXT)
-
                     if (title != null && artist != null)
                         Pair(artist, title)
                     else
@@ -219,9 +220,18 @@ class NLService : NotificationListenerService() {
             else if (sbn.packageName in Stuff.PACKAGES_PIXEL_NP)
                 scrobbleFromNoti(sbn.packageName) {
                     MetadataUtils.scrobbleFromNotiExtractMeta(
-                        sbn.notification.extras.getString(Notification.EXTRA_TITLE) ?: "",
+                        n.extras.getString(Notification.EXTRA_TITLE) ?: "",
                         getStringInDeviceLocale(R.string.song_format_string)
                     )
+                }
+            else if (sbn.packageName == Stuff.PACKAGE_AUDILE)
+                scrobbleFromNoti(sbn.packageName) {
+                    val title = n.extras.getString(Stuff.AUDILE_METADATA_KEY_TRACK_TITLE)
+                    val artist = n.extras.getString(Stuff.AUDILE_METADATA_KEY_TRACK_ARTIST)
+                    if (title != null && artist != null)
+                        Pair(artist, title)
+                    else
+                        null
                 }
         }
     }

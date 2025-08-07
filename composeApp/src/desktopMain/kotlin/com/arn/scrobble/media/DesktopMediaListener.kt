@@ -193,7 +193,7 @@ class DesktopMediaListener(
 
 //        Info: (scrobbler) metadata: MetadataInfo(app_id=Spotify.exe, title=Advertisement, artist=Spotify, album=, album_artist=Spotify, track_number=0, duration=25417)
         if (metadata.artist == "Spotify" && metadata.albumArtist == "Spotify" && metadata.title == "Advertisement" && metadata.album.isEmpty()) {
-            sessionTracker.resetMeta()
+            sessionTracker.trackInfo.resetMeta()
             return
         }
 

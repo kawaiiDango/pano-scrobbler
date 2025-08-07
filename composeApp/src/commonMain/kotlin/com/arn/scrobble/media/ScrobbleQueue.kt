@@ -76,6 +76,7 @@ class ScrobbleQueue(
         trackInfo: PlayingTrackInfo,
         appIsAllowListed: Boolean,
         delay: Long,
+        timestampOverride: Long? = null,
     ) {
         if (trackInfo.title.isEmpty() || has(trackInfo.hash))
             return
@@ -85,6 +86,13 @@ class ScrobbleQueue(
         val prevPlayStartTime = if (trackInfo.preprocessed) trackInfo.playStartTime else null
         trackInfo.prepareForScrobbling()
         val scrobbleData = trackInfo.toScrobbleData(useOriginals = false)
+            .let {
+                if (timestampOverride != null) {
+                    it.copy(timestamp = timestampOverride)
+                } else {
+                    it
+                }
+            }
         val origScrobbleData = trackInfo.toScrobbleData(useOriginals = true)
 
         suspend fun nowPlayingAndSubmit(sd: ScrobbleData, fetchAdditionalMetadata: Boolean) {
@@ -94,6 +102,7 @@ class ScrobbleQueue(
 
             // now playing for a new track or after that of the previously paused track has expired
             if (
+                timestampOverride == null &&
                 Stuff.isOnline &&
                 submitNowPlaying &&
                 (prevPlayStartTime == null ||

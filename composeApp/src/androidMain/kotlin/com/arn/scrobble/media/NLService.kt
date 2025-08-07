@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
+import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.MetadataUtils
@@ -31,6 +32,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class NLService : NotificationListenerService() {
     private val mainPrefs = PlatformStuff.mainPrefs
@@ -199,6 +202,7 @@ class NLService : NotificationListenerService() {
 
     }
 
+    @OptIn(ExperimentalTime::class)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (!shouldCheckNoti(sbn))
             return
@@ -209,29 +213,71 @@ class NLService : NotificationListenerService() {
 
             val n = sbn.notification
             if (sbn.packageName == Stuff.PACKAGE_SHAZAM)
-                scrobbleFromNoti(sbn.packageName) {
+                scrobbleFromNoti {
                     val title = n.extras.getString(Notification.EXTRA_TITLE)
                     val artist = n.extras.getString(Notification.EXTRA_TEXT)
-                    if (title != null && artist != null)
-                        Pair(artist, title)
-                    else
+                    if (title != null && artist != null) {
+                        ScrobbleData(
+                            artist = artist,
+                            track = title,
+                            album = null,
+                            timestamp = System.currentTimeMillis(),
+                            albumArtist = null,
+                            duration = null,
+                            appId = sbn.packageName
+                        )
+                    } else {
                         null
+                    }
                 }
             else if (sbn.packageName in Stuff.PACKAGES_PIXEL_NP)
-                scrobbleFromNoti(sbn.packageName) {
-                    MetadataUtils.scrobbleFromNotiExtractMeta(
+                scrobbleFromNoti {
+                    val artistTitlePair = MetadataUtils.scrobbleFromNotiExtractMeta(
                         n.extras.getString(Notification.EXTRA_TITLE) ?: "",
                         getStringInDeviceLocale(R.string.song_format_string)
                     )
+
+                    if (artistTitlePair != null) {
+                        val (artist, title) = artistTitlePair
+                        ScrobbleData(
+                            artist = artist,
+                            track = title,
+                            album = null,
+                            timestamp = System.currentTimeMillis(),
+                            albumArtist = null,
+                            duration = null,
+                            appId = sbn.packageName
+                        )
+                    } else {
+                        null
+                    }
                 }
             else if (sbn.packageName == Stuff.PACKAGE_AUDILE)
-                scrobbleFromNoti(sbn.packageName) {
+                scrobbleFromNoti {
                     val title = n.extras.getString(Stuff.AUDILE_METADATA_KEY_TRACK_TITLE)
                     val artist = n.extras.getString(Stuff.AUDILE_METADATA_KEY_TRACK_ARTIST)
-                    if (title != null && artist != null)
-                        Pair(artist, title)
-                    else
+                    val album = n.extras.getString(Stuff.AUDILE_METADATA_KEY_TRACK_ALBUM)
+                    val duration = n.extras.getLong(Stuff.AUDILE_METADATA_KEY_TRACK_DURATION, -1)
+                        .takeIf { it > 0 }
+                    val timestamp =
+                        n.extras.getString(Stuff.AUDILE_METADATA_KEY_TRACK_SAMPLE_TIMESTAMP)
+                            ?.let {
+                                Instant.parseOrNull(it)?.toEpochMilliseconds()
+                            } ?: System.currentTimeMillis()
+
+                    if (!title.isNullOrEmpty() && !artist.isNullOrEmpty()) {
+                        ScrobbleData(
+                            artist = artist,
+                            track = title,
+                            album = album,
+                            timestamp = timestamp,
+                            albumArtist = null,
+                            duration = duration,
+                            appId = sbn.packageName
+                        )
+                    } else {
                         null
+                    }
                 }
         }
     }
@@ -253,38 +299,59 @@ class NLService : NotificationListenerService() {
 
     private fun stopScrobbleFromNoti(pkgName: String) {
         val trackInfo = sessListener?.findTrackInfoByKey("$pkgName|$TAG_NOTI") ?: return
-        scrobbleQueue.remove(trackInfo.hash)
+
+        if (scrobbleQueue.has(trackInfo.lastScrobbleHash))
+            trackInfo.addTimePlayed()
+        else
+            trackInfo.resetTimePlayed()
+
+        scrobbleQueue.remove(trackInfo.lastScrobbleHash)
+
         PanoNotifications.removeNotificationByTag(trackInfo.appId)
+
     }
 
-    private fun scrobbleFromNoti(
-        pkgName: String,
-        transformIntoArtistTitle: () -> Pair<String, String>?,
-    ) {
+    private fun scrobbleFromNoti(transformIntoScrobbleData: () -> ScrobbleData?) {
+        val delay = 30 * 1000L
+        val cooldown = 2 * 60 * 1000L
+        val scrobbleData = transformIntoScrobbleData() ?: return
+        val pkgName = scrobbleData.appId ?: return
         val trackInfo = sessListener?.findTrackInfoByKey("$pkgName|$TAG_NOTI")
-        val meta = transformIntoArtistTitle()
+        val needsDelayAndCooldown = packageName in Stuff.PACKAGES_PIXEL_NP
+        val metadataChanged = !needsDelayAndCooldown || trackInfo == null ||
+                (System.currentTimeMillis() - trackInfo.playStartTime > cooldown) ||
+                trackInfo.origTitle != scrobbleData.track ||
+                trackInfo.origArtist != scrobbleData.artist
 
-        if (meta != null) {
-            val (artist, title) = meta
-            // different song, scrobble it
-            trackInfo?.let { scrobbleQueue.remove(it.hash) }
-            val newTrackInfo = PlayingTrackInfo(
-                appId = pkgName,
-                sessionId = TAG_NOTI
+
+        val updatedTrackInfo = trackInfo ?: PlayingTrackInfo(
+            appId = pkgName,
+            sessionId = TAG_NOTI
+        )
+
+        if (metadataChanged) {
+            scrobbleQueue.remove(updatedTrackInfo.hash)
+
+            updatedTrackInfo.putOriginals(
+                artist = scrobbleData.artist,
+                title = scrobbleData.track,
+                album = scrobbleData.album.orEmpty(),
+                albumArtist = scrobbleData.albumArtist.orEmpty(),
+                durationMillis = scrobbleData.duration ?: 0L,
+                trackId = null,
+                extraData = emptyMap()
             )
-            newTrackInfo.putOriginals(artist, title)
+        }
 
-            sessListener?.putTrackInfo("$pkgName|$TAG_NOTI", newTrackInfo)
-            coroutineScope.launch {
-                scrobbleQueue.scrobble(
-                    trackInfo = newTrackInfo,
-                    appIsAllowListed =
-                        mainPrefs.data.map { it.allowedPackages }.first().contains(pkgName),
-                    delay = 30 * 1000L
-                )
-            }
-        } else {
-            Logger.w("${this::scrobbleFromNoti.name} parse failed")
+        sessListener?.putTrackInfo("$pkgName|$TAG_NOTI", updatedTrackInfo)
+        coroutineScope.launch {
+            scrobbleQueue.scrobble(
+                trackInfo = updatedTrackInfo,
+                appIsAllowListed =
+                    mainPrefs.data.map { it.allowedPackages }.first().contains(pkgName),
+                delay = if (needsDelayAndCooldown) delay else 0L,
+                timestampOverride = if (!needsDelayAndCooldown) scrobbleData.timestamp else null
+            )
         }
     }
 

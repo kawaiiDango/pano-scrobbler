@@ -3,5 +3,6 @@ Changes since 4.3
 - Removed the beta label
 - Now scrobbles Apple Music (Windows, Android), Cider (Linux), Spotify (Android), Deezer (Windows, Android, TV) and Tidal (Windows) with the first artist and the correct album artist (Apple Music and Spotify), by fetching them from the iTunes, Spotify API, Deezer and SteelSeries API
 - UI tweaks for the Android widget
+- Reworked scrobbling from music recognition apps for Android
 - Other bug fixes
 - Translation updates by the translators on Crowdin

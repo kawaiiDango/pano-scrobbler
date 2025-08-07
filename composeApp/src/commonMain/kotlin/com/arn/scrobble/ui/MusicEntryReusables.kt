@@ -1,5 +1,6 @@
 package com.arn.scrobble.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -249,6 +250,7 @@ fun MusicEntryListItem(
                             placeholderPainter(),
                         contentDescription = stringResource(Res.string.album_art),
                         modifier = Modifier
+                            .animateContentSize()
                             .fillMaxSize()
                             .clip(MaterialTheme.shapes.medium)
                             .then(

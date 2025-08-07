@@ -239,7 +239,7 @@ class SessListener(
             metadata ?: return
 
             if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_ADVERTISEMENT) != 0L) {
-                sessionTracker.resetMeta()
+                trackInfo.resetMeta()
                 return
             }
 

@@ -73,8 +73,8 @@ class PlayingTrackInfo(
                 Stuff.BLOCKED_MEDIA_SESSION_TAGS[appId]
                     ?.contains(sessionId) == true)
 
-    fun putOriginals(artist: String, title: String) =
-        putOriginals(artist, title, "", "", 0, null, emptyMap())
+    fun resetMeta() =
+        putOriginals("", "", "", "", 0, null, emptyMap())
 
     fun putOriginals(
         artist: String,

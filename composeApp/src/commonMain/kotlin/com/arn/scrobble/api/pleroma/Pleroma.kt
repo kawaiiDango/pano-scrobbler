@@ -39,11 +39,9 @@ import io.ktor.http.Url
 import io.ktor.http.parameters
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.util.Locale
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     private val client: HttpClient by lazy {
@@ -100,6 +98,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         return Result.success(Unit)
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun getRecents(
         page: Int,
         username: String,
@@ -124,7 +123,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
                         name = track.title.toHtmlAnnotatedString().text,
                         album = track.album?.let { Album(it.toHtmlAnnotatedString().text) },
                         duration = track.length,
-                        date = parseIso8601ToMillis(track.created_at!!),
+                        date = Instant.parseOrNull(track.created_at!!)?.toEpochMilliseconds() ?: 0L,
                     )
                 }
                 PageResult(
@@ -190,16 +189,6 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     ): ListeningActivity {
         // no op
         return ListeningActivity()
-    }
-
-    private fun parseIso8601ToMillis(dateString: String): Long {
-        if (PlatformStuff.isJava8OrGreater) {
-            return Instant.parse(dateString).toEpochMilli()
-        }
-
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
-        return sdf.parse(dateString)?.time ?: 0L
     }
 
     companion object {

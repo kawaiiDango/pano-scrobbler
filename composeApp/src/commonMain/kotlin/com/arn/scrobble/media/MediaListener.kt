@@ -247,7 +247,7 @@ abstract class MediaListener(
             }
 
             lastPosition = playbackInfo.position // can be -1
-            
+
             if (playbackInfo.state != CommonPlaybackState.Waiting)
                 lastPlaybackState = playbackInfo.state
 
@@ -268,10 +268,6 @@ abstract class MediaListener(
                 PanoNotifications.removeNotificationByTag(trackInfo.appId)
             if (isMuted)
                 unmute(clearMutedHash = false)
-        }
-
-        fun resetMeta() {
-            trackInfo.putOriginals("", "")
         }
     }
 

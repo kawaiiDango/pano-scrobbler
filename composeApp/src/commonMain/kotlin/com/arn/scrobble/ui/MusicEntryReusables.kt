@@ -250,8 +250,6 @@ fun MusicEntryListItem(
                             placeholderPainter(),
                         contentDescription = stringResource(Res.string.album_art),
                         modifier = Modifier
-                            .animateContentSize()
-                            .fillMaxSize()
                             .clip(MaterialTheme.shapes.medium)
                             .then(
                                 if (onImageClick != null)
@@ -279,6 +277,8 @@ fun MusicEntryListItem(
                                 else
                                     Modifier
                             )
+                            .animateContentSize()
+                            .fillMaxSize()
                     )
 
                     if (entry is Track && (entry.userloved == true || entry.userHated == true)) {

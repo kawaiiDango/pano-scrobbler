@@ -208,6 +208,7 @@
     <string name="rate_msg">Нравится это приложение?</string>
     <string name="time_just_now">сейчас</string>
     <string name="no_mail_apps">Почтовый клиент не установлен</string>
+    <string name="add">Добавить новый элемент</string>
     <string name="loved" comment="Its a noun">Любимые</string>
     <string name="unloved" comment="Its a noun">Не любимые</string>
     <string name="simple_edits">Редактирования</string>
@@ -382,15 +383,20 @@
     <string name="pref_search_in_source">Поиск и воспроизведение в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
+    <string name="regex_rules">Правила Regex</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Заблокированные метаданные</string>
     <string name="pref_translate">Перевести это приложение</string>
     <string name="pref_translate_credits">Авторы переводов</string>
     <string name="pref_oss_credits">Лицензия открытого ПО</string>
     <string name="pref_check_updates">Проверить обновления</string>
+    <string name="no_updates">Нет доступных обновлений</string>
+    <string name="pref_notify_updates">Автоматические обновления</string>
+    <string name="update_downloaded">Обновление загружено</string>
     <string name="pref_search_url_template">Шаблон URL для поиска</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Используйте $query в качестве шаблона для поискового запроса</string>
     <string name="pref_native_file_picker">Использовать встроенный выбор файлов</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Доступно обновление: %1$s</string>
+    <string name="downloading">Загрузка</string>
     <string name="download" comment="Its a verb">Скачать</string>
     <string name="changelog">Список изменений</string>
     <string name="import_hey_wtf">Вероятно, это не файл экспорта Pano Scrobbler</string>
@@ -431,6 +437,10 @@
     <string name="password">Пароль</string>
     <string name="open_existing" comment="Append to an existing file">Добавить к существующему</string>
     <string name="create" comment="Create a new file">Создать</string>
+    <string name="scan_qr">Сканируйте это для входа</string>
+    <string name="copy_from">Скопировать из</string>
+    <string name="nothing" comment="nothing/none">Ничего</string>
+    <string name="borders" comment="Borders between images in the generated collage">Рамки</string>
     <string name="ok">ОК</string>
     <string name="cancel">Отмена</string>
     <string name="back">Назад</string>
@@ -443,6 +453,9 @@
     <string name="high" comment="As in high/medium/low">Высокий</string>
     <string name="medium" comment="As in high/medium/low">Средний</string>
     <string name="low" comment="As in high/medium/low">Низкий</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Для некоторых приложений требуются плагины</string>
+    <string name="reload" comment="Reload or refresh">Обновить</string>
+    <string name="automation">Управление Pano Scrobbler через приложения для автоматизации</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="help">Помощь</string>

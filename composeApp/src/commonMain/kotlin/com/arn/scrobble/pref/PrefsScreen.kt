@@ -1,18 +1,21 @@
 package com.arn.scrobble.pref
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Api
-import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -22,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
@@ -30,6 +34,7 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -51,7 +56,6 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.additional_metadata
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
-import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.copy_sk
 import pano_scrobbler.composeapp.generated.resources.country_for_api
 import pano_scrobbler.composeapp.generated.resources.dark
@@ -60,7 +64,6 @@ import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
-import pano_scrobbler.composeapp.generated.resources.edits_blocks
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
@@ -83,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_first_day_of_week
 import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
+import pano_scrobbler.composeapp.generated.resources.pref_lists
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
@@ -93,6 +97,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
 import pano_scrobbler.composeapp.generated.resources.pref_personalization
 import pano_scrobbler.composeapp.generated.resources.pref_prevent_duplicate_ambient_scrobbles
 import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
+import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
 import pano_scrobbler.composeapp.generated.resources.pref_search_in_source
 import pano_scrobbler.composeapp.generated.resources.pref_search_in_source_desc
 import pano_scrobbler.composeapp.generated.resources.pref_search_url_template
@@ -107,6 +112,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
+import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.spotify
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
 import pano_scrobbler.composeapp.generated.resources.use_something
@@ -214,10 +220,10 @@ fun PrefsScreen(
             isAddedToStartup = it
         }
 
-        stickyHeader("apps_header") {
+        stickyHeader("scrobbling_header") {
             SimpleHeaderItem(
-                text = stringResource(Res.string.choose_apps),
-                icon = Icons.Outlined.Apps
+                text = stringResource(Res.string.scrobbles),
+                icon = Icons.Outlined.MusicNote
             )
         }
 
@@ -225,7 +231,7 @@ fun PrefsScreen(
             AppIconsPref(
                 packageNames = allowedPackages,
                 seenAppsMap = seenApps,
-                summary = stringResource(Res.string.pref_enabled_apps_summary),
+                title = stringResource(Res.string.pref_scrobble_from),
                 onClick = {
                     onNavigate(
                         PanoRoute.AppList(
@@ -238,14 +244,15 @@ fun PrefsScreen(
             )
         }
 
-        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
-            item(MainPrefs::scrobbleSpotifyRemoteP.name) {
-                SwitchPref(
-                    text = stringResource(Res.string.pref_spotify_remote),
-                    value = scrobbleSpotifyRemoteP,
-                    copyToSave = { copy(scrobbleSpotifyRemote = it) }
+        item(key = "choose_apps_notice") {
+            Text(
+                text = stringResource(Res.string.pref_enabled_apps_summary),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(
+                    vertical = 16.dp,
+                    horizontal = horizontalOverscanPadding()
                 )
-            }
+            )
         }
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
@@ -261,6 +268,63 @@ fun PrefsScreen(
                     copyToSave = { copy(autoDetectApps = it) },
                 )
             }
+        }
+
+        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+            item(MainPrefs::scrobbleSpotifyRemoteP.name) {
+                SwitchPref(
+                    text = stringResource(Res.string.pref_spotify_remote),
+                    value = scrobbleSpotifyRemoteP,
+                    copyToSave = { copy(scrobbleSpotifyRemote = it) }
+                )
+            }
+        }
+
+        item(MainPrefs::extractFirstArtistPackages.name) {
+            val packagesOverride by remember(allowedPackages) {
+                mutableStateOf(
+                    allowedPackages
+                            - Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
+                            - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
+                )
+            }
+
+            AppIconsPref(
+                packageNames = extractFirstArtistPackages,
+                seenAppsMap = seenApps,
+                title = stringResource(Res.string.first_artist),
+                enabled = packagesOverride.isNotEmpty(),
+                onClick = {
+                    onNavigate(
+                        PanoRoute.AppList(
+                            saveType = AppListSaveType.ExtractFirstArtist,
+                            packagesOverride = packagesOverride.toList(),
+                            preSelectedPackages = extractFirstArtistPackages.toList(),
+                            isSingleSelect = false,
+                        )
+                    )
+                }
+            )
+        }
+
+        item(MainPrefs::submitNowPlaying.name) {
+            SwitchPref(
+                text = stringResource(Res.string.pref_now_playing),
+                value = submitNowPlaying,
+                copyToSave = { copy(submitNowPlaying = it) }
+            )
+        }
+
+        item(MainPrefs::minDurationSecsP.name) {
+            SliderPref(
+                text = stringResource(Res.string.min_track_duration),
+                value = minDurationSecs.toFloat(),
+                copyToSave = { copy(minDurationSecs = it) },
+                min = MainPrefs.PREF_MIN_DURATON_SECS_MIN,
+                max = MainPrefs.PREF_MIN_DURATON_SECS_MAX,
+                increments = 5,
+                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
+            )
         }
 
         stickyHeader("pref_delay_header") {
@@ -423,9 +487,9 @@ fun PrefsScreen(
 
         prefNotifications(this)
 
-        stickyHeader("edits_blocks_header") {
+        stickyHeader("lists_header") {
             SimpleHeaderItem(
-                text = stringResource(Res.string.edits_blocks),
+                text = stringResource(Res.string.pref_lists),
                 icon = Icons.Outlined.EditNote
             )
         }
@@ -463,34 +527,6 @@ fun PrefsScreen(
                     onNavigate(PanoRoute.BlockedMetadatas)
                 },
                 locked = !isLicenseValid,
-            )
-        }
-
-
-        item(MainPrefs::extractFirstArtistPackages.name) {
-            val packagesOverride by remember(allowedPackages) {
-                mutableStateOf(
-                    allowedPackages
-                            - Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
-                            - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
-                )
-            }
-
-            AppIconsPref(
-                packageNames = extractFirstArtistPackages,
-                seenAppsMap = seenApps,
-                summary = stringResource(Res.string.first_artist),
-                enabled = packagesOverride.isNotEmpty(),
-                onClick = {
-                    onNavigate(
-                        PanoRoute.AppList(
-                            saveType = AppListSaveType.ExtractFirstArtist,
-                            packagesOverride = packagesOverride.toList(),
-                            preSelectedPackages = extractFirstArtistPackages.toList(),
-                            isSingleSelect = false,
-                        )
-                    )
-                }
             )
         }
 
@@ -640,26 +676,6 @@ fun PrefsScreen(
                     copyToSave = { copy(preventDuplicateAmbientScrobbles = it) }
                 )
             }
-        }
-
-        item(MainPrefs::submitNowPlaying.name) {
-            SwitchPref(
-                text = stringResource(Res.string.pref_now_playing),
-                value = submitNowPlaying,
-                copyToSave = { copy(submitNowPlaying = it) }
-            )
-        }
-
-        item(MainPrefs::minDurationSecsP.name) {
-            SliderPref(
-                text = stringResource(Res.string.min_track_duration),
-                value = minDurationSecs.toFloat(),
-                copyToSave = { copy(minDurationSecs = it) },
-                min = MainPrefs.PREF_MIN_DURATON_SECS_MIN,
-                max = MainPrefs.PREF_MIN_DURATON_SECS_MAX,
-                increments = 5,
-                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
-            )
         }
 
         if (!PlatformStuff.noUpdateCheck) {

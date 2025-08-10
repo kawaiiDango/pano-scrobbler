@@ -39,7 +39,6 @@
     <string name="use_something" formatted="true">Use %1$s</string>
     <string name="additional_metadata">External metadata sources</string>
     <string name="first_artist">Use the first artist only</string>
-    <string name="edits_blocks">Edits and blocks</string>
     <string name="desktop">PC</string>
     <string name="android">Android</string>
     <string name="automation_cli">Command-line arguments</string>

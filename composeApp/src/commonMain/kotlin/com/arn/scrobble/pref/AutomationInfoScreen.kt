@@ -70,7 +70,7 @@ fun AutomationInfoScreen(
             AppIconsPref(
                 packageNames = allowedPackages,
                 seenAppsMap = emptyMap(),
-                summary = stringResource(Res.string.choose_apps),
+                title = stringResource(Res.string.choose_apps),
                 enabled = isLicenseValid,
                 onClick = {
                     if (!isLicenseValid)

@@ -310,7 +310,7 @@ fun AppIconsPref(
     packageNames: Set<String>,
     seenAppsMap: Map<String, String>,
     modifier: Modifier = Modifier,
-    summary: String,
+    title: String,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -335,16 +335,21 @@ fun AppIconsPref(
             .alpha(if (!enabled) 0.5f else 1f)
             .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding())
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.height(24.dp)
-        ) {
-            if (packageNamesFiltered.isEmpty()) {
-                Text(
-                    stringResource(Res.string.no_apps_enabled),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            } else {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+        )
+
+        if (packageNamesFiltered.isEmpty()) {
+            Text(
+                stringResource(Res.string.no_apps_enabled),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        } else {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.height(24.dp)
+            ) {
                 packageNamesFiltered.forEach {
                     AppIcon(
                         appItem = AppItem(it, seenAppsMap[it] ?: ""),
@@ -354,11 +359,6 @@ fun AppIconsPref(
                 }
             }
         }
-
-        Text(
-            text = summary,
-            style = MaterialTheme.typography.bodyLarge,
-        )
     }
 }
 

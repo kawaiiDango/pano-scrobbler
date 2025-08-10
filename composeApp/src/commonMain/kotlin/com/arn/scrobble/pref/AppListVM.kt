@@ -17,19 +17,20 @@ class AppListVM : ViewModel() {
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
 
-    init {
+    fun load(packagesOverride: Set<String>? = null) {
+        if (hasLoaded.value)
+            return
+
         viewModelScope.launch {
             val appListWasRun = PlatformStuff.mainPrefs.data.map { it.appListWasRun }.first()
+
             load(
+                packagesOverride = packagesOverride,
                 onSetSelectedPackages = { setSelectedPackages(it) },
                 onSetAppList = { _appList.value = it },
                 onSetHasLoaded = { _hasLoaded.value = true },
                 !appListWasRun
             )
-
-            PlatformStuff.mainPrefs.updateData {
-                it.copy(appListWasRun = true)
-            }
         }
     }
 
@@ -48,6 +49,7 @@ class AppListVM : ViewModel() {
 }
 
 expect suspend fun AppListVM.load(
+    packagesOverride: Set<String>?,
     onSetSelectedPackages: (Set<String>) -> Unit,
     onSetAppList: (AppList) -> Unit,
     onSetHasLoaded: () -> Unit,

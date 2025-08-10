@@ -118,7 +118,8 @@ data class MainPrefs(
     private val itunesCountry: String? = null,
     private val spotifyCountry: String? = null,
     val tidalSteelSeries: Boolean = true,
-    val fetchMissingMetadata: Boolean = true
+    val fetchMissingMetadata: Boolean = true,
+    val extractFirstArtistPackages: Set<String> = emptySet(),
 ) {
 
     val autoDetectAppsP
@@ -218,6 +219,7 @@ data class MainPrefs(
         searchUrlTemplate = this.searchUrlTemplate,
         allowedPackages = this.allowedPackages,
         regexPresets = this.regexPresets,
+        extractFirstArtistPackages = this.extractFirstArtistPackages,
     )
 
     companion object {
@@ -289,6 +291,7 @@ data class MainPrefsPublic(
     val firstDayOfWeek: Int,
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
+    val extractFirstArtistPackages: Set<String> = emptySet(),
     @JsonNames("app_whitelist")
     val allowedPackages: Set<String>,
 )

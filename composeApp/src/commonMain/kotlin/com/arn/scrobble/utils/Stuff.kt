@@ -121,12 +121,11 @@ object Stuff {
     const val CHANNEL_SHAZAM2 = "notification_shazam_foreground_match_v2"
     const val AUDILE_METADATA_KEY_TRACK_TITLE = "com.mrsep.musicrecognizer.track_metadata.title"
     const val AUDILE_METADATA_KEY_TRACK_ARTIST = "com.mrsep.musicrecognizer.track_metadata.artist"
-    // TODO delete unused
     const val AUDILE_METADATA_KEY_TRACK_ALBUM = "com.mrsep.musicrecognizer.track_metadata.album"
-    const val AUDILE_METADATA_KEY_TRACK_RELEASE_DATE = "com.mrsep.musicrecognizer.track_metadata.release_date"
-    const val AUDILE_METADATA_KEY_TRACK_DURATION = "com.mrsep.musicrecognizer.track_metadata.duration"
-    const val AUDILE_METADATA_KEY_TRACK_SAMPLE_TIMESTAMP = "com.mrsep.musicrecognizer.track_metadata.sample_timestamp"
-    const val AUDILE_METADATA_KEY_TRACK_PLAYBACK_OFFSET = "com.mrsep.musicrecognizer.track_metadata.playback_offset"
+    const val AUDILE_METADATA_KEY_TRACK_DURATION =
+        "com.mrsep.musicrecognizer.track_metadata.duration"
+    const val AUDILE_METADATA_KEY_TRACK_SAMPLE_TIMESTAMP =
+        "com.mrsep.musicrecognizer.track_metadata.sample_timestamp"
 
     //    const val NOTIFICATION_TAG_SHAZAM = "NOTIFICATION_SHAZAM_RESULTS" //"auto_shazam_v2"
     const val PACKAGE_PANDORA = "com.pandora.android"

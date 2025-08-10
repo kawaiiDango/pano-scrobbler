@@ -44,6 +44,7 @@ import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -57,6 +58,7 @@ import pano_scrobbler.composeapp.generated.resources.other_apps
 fun AppListScreen(
     isSingleSelect: Boolean,
     saveType: AppListSaveType,
+    packagesOverride: Set<String>?,
     preSelectedPackages: Set<String>,
     onSetPackagesSelection: (List<AppItem>, List<AppItem>) -> Unit,
     modifier: Modifier = Modifier,
@@ -66,6 +68,12 @@ fun AppListScreen(
     val selectedPackages by viewModel.selectedPackages.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     var pluginsNeededExpanded by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (!hasLoaded) {
+            viewModel.load(packagesOverride)
+        }
+    }
 
     LaunchedEffect(preSelectedPackages) {
         viewModel.setSelectedPackages(preSelectedPackages)
@@ -82,10 +90,28 @@ fun AppListScreen(
                 when (saveType) {
                     AppListSaveType.Scrobbling -> {
                         GlobalScope.launch {
+                            val allowedPackages = checked.map { it.appId }.toSet()
+                            val blockedPackages = unchecked.map { it.appId }.toSet()
+                            val firstArtistPackages =
+                                allowedPackages - Stuff.IGNORE_ARTIST_META_WITH_FALLBACK - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
+
+                            PlatformStuff.mainPrefs.updateData { pref ->
+                                pref.copy(
+                                    allowedPackages = allowedPackages,
+                                    blockedPackages = blockedPackages,
+                                    extractFirstArtistPackages = firstArtistPackages.takeIf { pref.appListWasRun }
+                                        ?: pref.extractFirstArtistPackages,
+                                    appListWasRun = true,
+                                )
+                            }
+                        }
+                    }
+
+                    AppListSaveType.ExtractFirstArtist -> {
+                        GlobalScope.launch {
                             PlatformStuff.mainPrefs.updateData {
                                 it.copy(
-                                    allowedPackages = checked.map { it.appId }.toSet(),
-                                    blockedPackages = unchecked.map { it.appId }.toSet(),
+                                    extractFirstArtistPackages = checked.map { it.appId }.toSet(),
                                 )
                             }
                         }
@@ -297,5 +323,5 @@ private fun AppListItem(
 
 @Keep
 enum class AppListSaveType {
-    Scrobbling, Automation, Callback
+    Scrobbling, ExtractFirstArtist, Automation, Callback
 }

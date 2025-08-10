@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 actual suspend fun AppListVM.load(
+    packagesOverride: Set<String>?,
     onSetSelectedPackages: (Set<String>) -> Unit,
     onSetAppList: (AppList) -> Unit,
     onSetHasLoaded: () -> Unit,
@@ -17,6 +18,9 @@ actual suspend fun AppListVM.load(
         onSetSelectedPackages(seenApps.keys)
 
     val musicPlayers = seenApps.toList()
+        .filter { (appId, friendlyLabel) ->
+            packagesOverride?.contains(appId) ?: true
+        }
         .sortedBy { (appId, friendlyLabel) ->
             friendlyLabel.lowercase()
         }

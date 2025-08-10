@@ -71,6 +71,7 @@ fun AutomationInfoScreen(
                 packageNames = allowedPackages,
                 seenAppsMap = emptyMap(),
                 summary = stringResource(Res.string.choose_apps),
+                enabled = isLicenseValid,
                 onClick = {
                     if (!isLicenseValid)
                         onNavigate(PanoRoute.Billing)
@@ -90,7 +91,6 @@ fun AutomationInfoScreen(
                         MaterialTheme.colorScheme.outlineVariant,
                         shape = MaterialTheme.shapes.medium
                     )
-                    .alpha(if (!isLicenseValid) 0.5f else 1f),
             )
         }
 

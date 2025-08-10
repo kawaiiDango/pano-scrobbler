@@ -262,6 +262,7 @@ fun NavGraphBuilder.panoNavGraph(
         AppListScreen(
             isSingleSelect = arguments.isSingleSelect,
             saveType = arguments.saveType,
+            packagesOverride = arguments.packagesOverride?.toSet(),
             preSelectedPackages = arguments.preSelectedPackages.toSet(),
             onSetPackagesSelection = { checked, unchecked ->
                 mainViewModel.onSetPackagesSelection(checked, unchecked)

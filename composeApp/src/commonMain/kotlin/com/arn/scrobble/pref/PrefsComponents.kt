@@ -311,6 +311,7 @@ fun AppIconsPref(
     seenAppsMap: Map<String, String>,
     modifier: Modifier = Modifier,
     summary: String,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     val maxIcons = 7
@@ -330,7 +331,8 @@ fun AppIconsPref(
             .defaultMinSize(minHeight = 56.dp)
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick, enabled = enabled)
+            .alpha(if (!enabled) 0.5f else 1f)
             .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding())
     ) {
         Row(
@@ -338,7 +340,10 @@ fun AppIconsPref(
             modifier = Modifier.height(24.dp)
         ) {
             if (packageNamesFiltered.isEmpty()) {
-                Text(stringResource(Res.string.no_apps_enabled))
+                Text(
+                    stringResource(Res.string.no_apps_enabled),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             } else {
                 packageNamesFiltered.forEach {
                     AppIcon(
@@ -352,7 +357,7 @@ fun AppIconsPref(
 
         Text(
             text = summary,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
         )
     }
 }

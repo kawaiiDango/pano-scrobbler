@@ -67,6 +67,7 @@ sealed interface PanoRoute {
     @Serializable
     data class AppList(
         val saveType: AppListSaveType,
+        val packagesOverride: List<String>? = null,
         val preSelectedPackages: List<String>,
         val isSingleSelect: Boolean,
     ) : PanoRoute

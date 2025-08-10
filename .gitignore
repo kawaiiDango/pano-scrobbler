@@ -37,6 +37,7 @@ composeApp/src/androidReleaseGithub/generated
 /composeApp/src/**/composeResources/files/pano-embedded-server-ks.bks
 /composeApp/src/**/composeResources/files/pano-embedded-server-ks.jks
 /composeApp/src/**/composeResources/files/aboutlibraries.json
+/composeApp/src/**/composeResources/files/musicbrainz_artists_with_delimiters.txt
 crowdin.properties
 Gemfile.lock
 .jekyll-cache

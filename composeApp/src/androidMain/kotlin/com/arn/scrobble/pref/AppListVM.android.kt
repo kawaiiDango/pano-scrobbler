@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 
 
 actual suspend fun AppListVM.load(
+    packagesOverride: Set<String>?,
     onSetSelectedPackages: (Set<String>) -> Unit,
     onSetAppList: (AppList) -> Unit,
     onSetHasLoaded: () -> Unit,
@@ -36,6 +37,31 @@ actual suspend fun AppListVM.load(
             }
             .partition { it.appId in selectedPackages.value }
         return selectedList + unselectedList
+    }
+
+    if (packagesOverride != null) {
+        val musicPlayers = mutableMapOf<String, ApplicationInfo>()
+
+        packagesOverride.forEach {
+            val appInfo = try {
+                packageManager.getApplicationInfo(it, 0)
+            } catch (e: PackageManager.NameNotFoundException) {
+                null
+            }
+
+            if (appInfo != null)
+                musicPlayers[it] = appInfo
+        }
+
+        onSetAppList(
+            AppList(
+                musicPlayers = musicPlayers.values.sortAndTransform(),
+            )
+        )
+
+        onSetHasLoaded()
+
+        return
     }
 
 

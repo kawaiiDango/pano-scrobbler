@@ -24,6 +24,7 @@ import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
 import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.edits.TitleParseException
+import com.arn.scrobble.utils.FirstArtistExtractor
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -107,6 +108,22 @@ object ScrobbleEverywhere {
             }
 
         if (!edited && runPresets) {
+            // extract first artist if enabled
+            if (
+                scrobbleData.appId in
+                PlatformStuff.mainPrefs.data.map { it.extractFirstArtistPackages }.first()
+            ) {
+                val firstArtist = FirstArtistExtractor.extract(scrobbleData.artist)
+                scrobbleData = scrobbleData.copy(
+                    artist = firstArtist,
+                    albumArtist = if (scrobbleData.albumArtist == scrobbleData.artist && firstArtist != scrobbleData.artist)
+                        firstArtist
+                    else
+                        scrobbleData.albumArtist
+                )
+            }
+
+            // then try the presets
             try {
                 val presetsResult = RegexPresets.applyAllPresets(scrobbleData)
 
@@ -179,6 +196,7 @@ object ScrobbleEverywhere {
 
         try {
             when {
+                /*
                 fetchMissingMetadata && (
                         scrobbleData.appId == Stuff.PACKAGE_APPLE_MUSIC ||
                                 scrobbleData.appId?.lowercase() == Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.lowercase() ||
@@ -208,11 +226,12 @@ object ScrobbleEverywhere {
                         newScrobbleData = it
                     }
                 }
+                 */
 
                 fetchMissingMetadata && (
-                        scrobbleData.appId == Stuff.PACKAGE_DEEZER ||
-                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_TV ||
-                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||
+//                        scrobbleData.appId == Stuff.PACKAGE_DEEZER ||
+//                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_TV ||
+                        scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||
                                 scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN_EXE ||
                                 scrobbleData.appId?.lowercase() == Stuff.PACKAGE_DEEZER_WIN_STORE.lowercase()
                         ) -> {

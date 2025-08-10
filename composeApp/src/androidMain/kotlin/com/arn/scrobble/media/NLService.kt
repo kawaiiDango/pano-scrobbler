@@ -317,7 +317,7 @@ class NLService : NotificationListenerService() {
         val scrobbleData = transformIntoScrobbleData() ?: return
         val pkgName = scrobbleData.appId ?: return
         val trackInfo = sessListener?.findTrackInfoByKey("$pkgName|$TAG_NOTI")
-        val needsDelayAndCooldown = packageName in Stuff.PACKAGES_PIXEL_NP
+        val needsDelayAndCooldown = pkgName in Stuff.PACKAGES_PIXEL_NP
         val metadataChanged = !needsDelayAndCooldown || trackInfo == null ||
                 (System.currentTimeMillis() - trackInfo.playStartTime > cooldown) ||
                 trackInfo.origTitle != scrobbleData.track ||
@@ -341,17 +341,17 @@ class NLService : NotificationListenerService() {
                 trackId = null,
                 extraData = emptyMap()
             )
-        }
 
-        sessListener?.putTrackInfo("$pkgName|$TAG_NOTI", updatedTrackInfo)
-        coroutineScope.launch {
-            scrobbleQueue.scrobble(
-                trackInfo = updatedTrackInfo,
-                appIsAllowListed =
-                    mainPrefs.data.map { it.allowedPackages }.first().contains(pkgName),
-                delay = if (needsDelayAndCooldown) delay else 0L,
-                timestampOverride = if (!needsDelayAndCooldown) scrobbleData.timestamp else null
-            )
+            sessListener?.putTrackInfo("$pkgName|$TAG_NOTI", updatedTrackInfo)
+            coroutineScope.launch {
+                scrobbleQueue.scrobble(
+                    trackInfo = updatedTrackInfo,
+                    appIsAllowListed =
+                        mainPrefs.data.map { it.allowedPackages.contains(pkgName) }.first(),
+                    delay = if (needsDelayAndCooldown) delay else 0L,
+                    timestampOverride = if (!needsDelayAndCooldown) scrobbleData.timestamp else null
+                )
+            }
         }
     }
 

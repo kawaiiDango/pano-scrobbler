@@ -25,6 +25,7 @@ import androidx.compose.ui.awt.SwingWindow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -85,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.update_downloaded
 import pano_scrobbler.composeapp.generated.resources.vd_noti
 import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
+import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.awt.SystemTray
 import java.awt.Toolkit
@@ -353,7 +355,7 @@ fun main(args: Array<String>) {
 
         LaunchedEffect(Unit) {
             snapshotFlow { windowState }
-                .debounce(10.seconds)
+                .debounce(5.seconds)
                 .collectLatest {
                     val ws = SerializableWindowState(
                         width = it.size.width.value,
@@ -489,9 +491,20 @@ fun main(args: Array<String>) {
                 visible = windowShown,
                 icon = painterResource(Res.drawable.ic_launcher_with_bg)
             ) {
+                val density = LocalDensity.current
+
                 LaunchedEffect(Unit) {
                     if (isSystemInDarkTheme && DesktopStuff.os == DesktopStuff.Os.Windows)
                         PanoNativeComponents.applyDarkModeToWindow(window.windowHandle)
+
+                    if (!BuildKonfig.DEBUG) {
+                        val minDim = if (DesktopStuff.os == DesktopStuff.Os.Windows)
+                            with(density) { 480.dp.roundToPx() }
+                        else
+                            480
+
+                        window.minimumSize = Dimension(minDim, minDim)
+                    }
 
                     windowOpenTrigger.collect {
                         window.isMinimized = false

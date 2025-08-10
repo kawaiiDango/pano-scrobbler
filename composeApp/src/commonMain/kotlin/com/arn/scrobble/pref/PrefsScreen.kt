@@ -2,11 +2,11 @@ package com.arn.scrobble.pref
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.Api
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Dns
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreHoriz
@@ -49,7 +49,6 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.additional_metadata
-import pano_scrobbler.composeapp.generated.resources.apple_music
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.choose_apps
@@ -61,7 +60,9 @@ import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
+import pano_scrobbler.composeapp.generated.resources.edits_blocks
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
+import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
@@ -82,7 +83,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_first_day_of_week
 import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
-import pano_scrobbler.composeapp.generated.resources.pref_lists
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
@@ -170,6 +170,8 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.itunesCountryP } }
     val fetchMissingMetadata by
     remember { derivedStateOf { mainPrefsData.fetchMissingMetadata } }
+    val extractFirstArtistPackages by
+    remember { derivedStateOf { mainPrefsData.extractFirstArtistPackages } }
     val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
     var isAddedToStartup by remember { mutableStateOf(false) }
     val scrobblableLabels by remember {
@@ -421,10 +423,10 @@ fun PrefsScreen(
 
         prefNotifications(this)
 
-        stickyHeader("lists_header") {
+        stickyHeader("edits_blocks_header") {
             SimpleHeaderItem(
-                text = stringResource(Res.string.pref_lists),
-                icon = Icons.AutoMirrored.Outlined.List
+                text = stringResource(Res.string.edits_blocks),
+                icon = Icons.Outlined.EditNote
             )
         }
 
@@ -461,6 +463,34 @@ fun PrefsScreen(
                     onNavigate(PanoRoute.BlockedMetadatas)
                 },
                 locked = !isLicenseValid,
+            )
+        }
+
+
+        item(MainPrefs::extractFirstArtistPackages.name) {
+            val packagesOverride by remember(allowedPackages) {
+                mutableStateOf(
+                    allowedPackages
+                            - Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
+                            - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
+                )
+            }
+
+            AppIconsPref(
+                packageNames = extractFirstArtistPackages,
+                seenAppsMap = seenApps,
+                summary = stringResource(Res.string.first_artist),
+                enabled = packagesOverride.isNotEmpty(),
+                onClick = {
+                    onNavigate(
+                        PanoRoute.AppList(
+                            saveType = AppListSaveType.ExtractFirstArtist,
+                            packagesOverride = packagesOverride.toList(),
+                            preSelectedPackages = extractFirstArtistPackages.toList(),
+                            isSingleSelect = false,
+                        )
+                    )
+                }
             )
         }
 
@@ -521,20 +551,21 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::fetchMissingMetadata.name) {
-            val metadataServices = listOfNotNull(
-                stringResource(Res.string.apple_music),
-                if (PlatformStuff.isDesktop) null else stringResource(Res.string.spotify),
-                stringResource(Res.string.deezer),
-            ).joinToString()
+        if (PlatformStuff.isDesktop) {
+            item(MainPrefs::fetchMissingMetadata.name) {
+                val metadataServices = listOf(
+                    stringResource(Res.string.deezer),
+                ).joinToString()
 
-            SwitchPref(
-                text = stringResource(Res.string.fetch_missing_metadata, metadataServices),
-                value = fetchMissingMetadata,
-                copyToSave = { copy(fetchMissingMetadata = it) }
-            )
+                SwitchPref(
+                    text = stringResource(Res.string.fetch_missing_metadata, metadataServices),
+                    value = fetchMissingMetadata,
+                    copyToSave = { copy(fetchMissingMetadata = it) }
+                )
+            }
         }
 
+        /*
         item(MainPrefs::itunesCountryP.name) {
             val countryCodes = remember { Locale.getISOCountries().toList() }
 
@@ -549,6 +580,7 @@ fun PrefsScreen(
                 copyToSave = { copy(itunesCountry = it) }
             )
         }
+         */
 
         item(MainPrefs::spotifyCountryP.name) {
             val countryCodes = remember { Locale.getISOCountries().toList() }

@@ -277,7 +277,7 @@ fun MusicEntryListItem(
                                 else
                                     Modifier
                             )
-                            .animateContentSize()
+                            .animateContentSize(alignment = Alignment.Center)
                             .fillMaxSize()
                     )
 

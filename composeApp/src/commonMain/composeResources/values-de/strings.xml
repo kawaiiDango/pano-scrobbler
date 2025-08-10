@@ -50,7 +50,7 @@
     </plurals>
     <plurals name="num_regex_edits">
         <item quantity="one">%1$s Musterbearbeitung</item>
-        <item quantity="other">%1$s Musterbearbeitung</item>
+        <item quantity="other">%1$s Musterbearbeitungen</item>
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s blockierte Metadaten</item>
@@ -176,6 +176,7 @@
     <string name="rate_msg">Gefällt Ihnen diese App?</string>
     <string name="time_just_now">gerade jetzt</string>
     <string name="no_mail_apps">Keine E-Mail-Anwendung installiert</string>
+    <string name="add">Neuen Eintrag hinzufügen</string>
     <string name="loved" comment="Its a noun">Favorisiert</string>
     <string name="unloved" comment="Its a noun">Nicht mehr favorisiert</string>
     <string name="simple_edits">Änderungen</string>
@@ -202,6 +203,7 @@
     <string name="weeks">Wochen</string>
     <string name="monthly">Monatlich</string>
     <string name="months">Monate</string>
+    <string name="days">Tage</string>
     <string name="years" comment="For the charts menu which displays year by year">Jahre</string>
     <string name="charts_overall">Gesamtübersicht</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Höraktivität</string>
@@ -228,6 +230,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbles</string>
     <string name="my_tags" comment="Tags, the user has added">Meine Tags</string>
     <string name="close" comment="To close a dialog or something">Schließen</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Beenden</string>
     <string name="user_tags_hint" comment="To add a new tag">Neuer Tag</string>
     <string name="user_tags_empty">Du hast noch keine Tags hinzugefügt</string>
     <string name="appwidget_loading">Wird geladen…</string>
@@ -268,7 +271,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Player-Aktionen</string>
     <string name="skip" comment="skip to next track">Überspringen</string>
     <string name="mute" comment="mute the sound">Stummschalten</string>
+    <string name="do_nothing" comment="do nothing on the media player">Nichts tun</string>
     <string name="block" comment="block the track from scrobbling">Blockieren</string>
+    <string name="copy" comment="copy to clipboard">Kopieren</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Versteckte Tags</string>
     <string name="pin" comment="pin a friend to the top">Anpinnen</string>
     <string name="unpin" comment="unpin a friend to the top">Loslösen</string>
@@ -332,6 +337,7 @@
     <string name="pref_export">Exportieren</string>
     <string name="pref_export_desc">Sichert Einstellungen, Bearbeitungen und Sperrliste. Speichert keine Logins aus Sicherheitsgründen. Nützlich um zwischen Geräten zu wechseln oder mit Freunden zu teilen.</string>
     <string name="pref_import">Importieren</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Netzwerk</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalisierung</string>
     <string name="pref_themes" comment="Color themes">Stile</string>
     <string name="pref_widget_charts">Startbildschirm Widget - Diagramme</string>
@@ -340,11 +346,18 @@
     <string name="pref_search_in_source">Suche &amp; Wiedergabe auf der App, von der du gescrobbelt hast</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Für unterstützte Apps</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listen</string>
+    <string name="regex_rules">Regeln mit regulären Ausdrücken</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Blockierte Metadaten</string>
     <string name="pref_translate">Diese App übersetzen</string>
     <string name="pref_translate_credits">Danksagung an die Übersetzer</string>
     <string name="pref_oss_credits">Open-Source-Credits</string>
     <string name="pref_check_updates">Nach Updates suchen</string>
+    <string name="no_updates">Keine Updates verfügbar</string>
+    <string name="pref_notify_updates">Automatische Updates</string>
+    <string name="update_downloaded">Update heruntergeladen</string>
+    <string name="pref_search_url_template">Durchsuche URL-Vorlage</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Benutze $query als Platzhalter für den Suchbegriff</string>
+    <string name="pref_native_file_picker">Benutze die native Dateiauswahl</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Aktualisierung verfügbar: %1$s</string>
     <string name="download" comment="Its a verb">Download</string>
     <string name="changelog">Changelog</string>
@@ -383,6 +396,24 @@
     <string name="password">Kennwort</string>
     <string name="open_existing" comment="Append to an existing file">An vorhandene anhängen</string>
     <string name="create" comment="Create a new file">Erstelle</string>
+    <string name="scan_qr">Einscannen um Login durchzuführen</string>
+    <string name="copy_from">Kopieren von</string>
+    <string name="nothing" comment="nothing/none">Nichts</string>
+    <string name="borders" comment="Borders between images in the generated collage">Umrandungen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="back">Zurück</string>
+    <string name="done">Fertig</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Erneut versuchen</string>
+    <string name="run_on_start">Beim Hochfahren starten</string>
+    <string name="use_browser">Bitte benutze einen Browser auf einem unterstützten Gerät.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Logs speichern</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Kontrast</string>
+    <string name="high" comment="As in high/medium/low">Hoch</string>
+    <string name="medium" comment="As in high/medium/low">Mittel</string>
+    <string name="low" comment="As in high/medium/low">Niedrig</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Einige Apps benötigen Plugins</string>
+    <string name="reload" comment="Reload or refresh">Neu laden</string>
+    <string name="automation">Pano Scrobbler durch Automatisierungs-Apps steuern</string>
     <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
     <string name="help">Hilfe</string>
@@ -403,4 +434,5 @@ Ihre Käufe werden von Google Play verwaltet. Sie sind mit einem Google Play-Kon
     <string name="billing_sharing">Entfernen Sie den App-Namen beim Teilen</string>
     <string name="billing_scrobble_source">Merke und sieh Apps, von denen gescrobbelt wurde und suche direkt in ihnen</string>
     <string name="billing_regex_extract">Erstellen benutzerdefinierter Regex-Regeln zum Extrahieren von Metadaten</string>
+    <string name="billing_max_devices_reached" formatted="true">Dieser Code wurde bereits auf der maximalen Geräteanzahl (%1$d) verwendet.</string>
 </resources>

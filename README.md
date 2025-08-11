@@ -60,7 +60,6 @@ This may help prevent the system from killing the app in the background on devic
 - View scrobble count graphs and tag clouds
 - Get a random song, album, or artist from your listening history
 - Search Lastfm for a songs, artists, or albums
-- Fetch additional metadata from external sources, before scrobbling
 - Themes
 - Remember and see apps you scrobbled from and play directly in them
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -189,10 +190,21 @@ fun PrefsScreen(
         .filter { it.state == CommonWorkState.RUNNING }
         .collectAsStateWithLifecycle(null)
 
-    val numSimpleEdits by PanoDb.db.getSimpleEditsDao().count().collectAsStateWithLifecycle(0)
-    val numRegexEdits by PanoDb.db.getRegexEditsDao().count().collectAsStateWithLifecycle(0)
-    val numBlockedMetadata by PanoDb.db.getBlockedMetadataDao().count()
-        .collectAsStateWithLifecycle(0)
+    val numSimpleEdits by if (Stuff.isInDemoMode) {
+        remember { mutableIntStateOf(1000) }
+    } else {
+        PanoDb.db.getSimpleEditsDao().count().collectAsStateWithLifecycle(0)
+    }
+    val numRegexEdits by if (Stuff.isInDemoMode) {
+        remember { mutableIntStateOf(30) }
+    } else {
+        PanoDb.db.getRegexEditsDao().count().collectAsStateWithLifecycle(0)
+    }
+    val numBlockedMetadata by if (Stuff.isInDemoMode) {
+        remember { mutableIntStateOf(1000) }
+    } else {
+        PanoDb.db.getBlockedMetadataDao().count().collectAsStateWithLifecycle(0)
+    }
     val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
 
     val scope = rememberCoroutineScope()

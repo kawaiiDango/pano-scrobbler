@@ -69,7 +69,7 @@ actual fun WebViewScreen(
     }
 
     LaunchedEffect(webViewState.lastLoadedUrl) {
-        val currentUrl = webViewState.content.getCurrentUrl() ?: ""
+        val currentUrl = webViewState.lastLoadedUrl ?: ""
 
         if ((disableNavigation && firstLoadComplete) ||
             Stuff.disallowedWebviewUrls.any {

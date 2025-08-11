@@ -51,7 +51,8 @@ This may help prevent the system from killing the app in the background on devic
 - Scrobbles to Lastfm, Librefm, ListenBrainz, Pleroma and other compatible services
 - View song, album, artist, album artist, and tag details
 - View scrobbles from a specific time, such as last year or last month
-- Extract or Fix metadata such as "Remastered" with regex pattern edits
+- Extract or fix metadata such as "Remastered" with regex pattern edits
+- Extract the first artist from a string of all performers before scrobbling
 - Block artists, songs, etc., and automatically skip or mute when they play
 - Check what your followed users are listening to and view their stats
 - Import and export settings, edits, and blocklists
@@ -65,7 +66,7 @@ This may help prevent the system from killing the app in the background on devic
 
 #### For desktop and Android (except TV):
 - Scrobble to a CSV or JSONL file locally
-- Interactive notification- view song info, edit, love, cancel, or block songs directly from the
+- Interactive notification - view song info, edit, love, cancel, or block songs directly from the
   notification
 - Collage generator
 - Add or remove personal tags from the info screen

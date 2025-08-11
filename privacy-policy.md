@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated on 2025, Aug 2 UTC_
+_Last updated on 2025, Aug 11 UTC_
 
 Applicable to the Pano Scrobbler app version 4.0 and later.
 
@@ -22,10 +22,9 @@ tracking services of your choice such as Last.fm, Libre.fm, ListenBrainz and sel
 - Non-Personal Information
 
 The app sends non-personal information such as titles of music playing on the device and other music
-metadata, to the previously mentioned music tracking services of your choice. To fetch additional
-metadata while scrobbling Spotify and to fetch images of artists, the app uses the Spotify API. To
-fetch additional metadata while scrobbling Apple Music, the app uses the iTunes API. To
-fetch additional metadata while scrobbling Deezer, the app uses the Deezer API. If you are
+metadata, to the previously mentioned music tracking services of your choice. To fetch images of
+artists and albums, the name of the artist and album is sent to Spotify. To fetch the missing
+metadata while scrobbling Deezer on Windows, the app uses the Deezer API. If you are
 using the version downloaded from Google Play and automatic error reporting is enabled, an
 anonymous, resettable device identifier is sent to Firebase Crashlytics. If you are using the
 non-Google Play version and have entered the unlock key, a truncated hash of a device identifier as

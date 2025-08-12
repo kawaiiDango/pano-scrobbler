@@ -436,6 +436,7 @@
     <string name="high" comment="As in high/medium/low">Wysoki</string>
     <string name="medium" comment="As in high/medium/low">Średni</string>
     <string name="low" comment="As in high/medium/low">Niski</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Niektóre aplikacje potrzebują wtyczek</string>
     <string name="reload" comment="Reload or refresh">Przeładuj</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>

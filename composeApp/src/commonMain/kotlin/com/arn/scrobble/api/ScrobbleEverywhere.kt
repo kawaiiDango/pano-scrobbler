@@ -108,22 +108,6 @@ object ScrobbleEverywhere {
             }
 
         if (!edited && runPresets) {
-            // extract first artist if enabled
-            if (
-                scrobbleData.appId in
-                PlatformStuff.mainPrefs.data.map { it.extractFirstArtistPackages }.first()
-            ) {
-                val firstArtist = FirstArtistExtractor.extract(scrobbleData.artist)
-                scrobbleData = scrobbleData.copy(
-                    artist = firstArtist,
-                    albumArtist = if (scrobbleData.albumArtist == scrobbleData.artist && firstArtist != scrobbleData.artist)
-                        firstArtist
-                    else
-                        scrobbleData.albumArtist
-                )
-            }
-
-            // then try the presets
             try {
                 val presetsResult = RegexPresets.applyAllPresets(scrobbleData)
 
@@ -134,6 +118,28 @@ object ScrobbleEverywhere {
                 }
             } catch (e: TitleParseException) {
                 titleParseFailed = true
+            }
+
+            // extract first artist if enabled
+            if (!titleParseFailed &&
+                scrobbleData.appId in
+                PlatformStuff.mainPrefs.data.map { it.extractFirstArtistPackages }.first()
+            ) {
+                val firstArtist = FirstArtistExtractor.extract(
+                    scrobbleData.artist,
+                    useAnd = scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
+                )
+
+                if (firstArtist != scrobbleData.artist)
+                    edited = true
+
+                scrobbleData = scrobbleData.copy(
+                    artist = firstArtist,
+                    albumArtist = if (scrobbleData.albumArtist == scrobbleData.artist && firstArtist != scrobbleData.artist)
+                        firstArtist
+                    else
+                        scrobbleData.albumArtist
+                )
             }
         }
 

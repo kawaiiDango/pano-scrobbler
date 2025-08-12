@@ -54,7 +54,6 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.copy_sk
@@ -65,6 +64,7 @@ import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
+import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
@@ -295,9 +295,7 @@ fun PrefsScreen(
         item(MainPrefs::extractFirstArtistPackages.name) {
             val packagesOverride by remember(allowedPackages) {
                 mutableStateOf(
-                    allowedPackages
-                            - Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
-                            - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
+                    allowedPackages - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
                 )
             }
 

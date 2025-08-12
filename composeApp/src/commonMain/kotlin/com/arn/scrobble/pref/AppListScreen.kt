@@ -93,7 +93,7 @@ fun AppListScreen(
                             val allowedPackages = checked.map { it.appId }.toSet()
                             val blockedPackages = unchecked.map { it.appId }.toSet()
                             val firstArtistPackages =
-                                allowedPackages - Stuff.IGNORE_ARTIST_META_WITH_FALLBACK - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
+                                allowedPackages - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
 
                             PlatformStuff.mainPrefs.updateData { pref ->
                                 pref.copy(

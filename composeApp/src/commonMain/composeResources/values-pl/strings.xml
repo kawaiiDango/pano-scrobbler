@@ -170,6 +170,7 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcje dla tego elementu</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Wykryto %1$s</string>
     <string name="new_player_prompt">Scrobblować z tej aplikacji?</string>
+    <string name="new_player_prompt_desktop">Przejdź do ustawień, by zacząć scrobblować tę aplikację</string>
     <string name="file_exists_confirm_overwrite">Plik istnieje. Naciśnij ponownie, by go nadpisać.</string>
     <string name="no_scrobbles">Jeszcze nie ma tutaj utworów…</string>
     <string name="no_friends">Nikogo jeszcze nie obserwujesz…</string>
@@ -257,6 +258,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s najlepsze scrobble</string>
     <string name="my_tags" comment="Tags, the user has added">Moje tagi</string>
     <string name="close" comment="To close a dialog or something">Zamknij</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Wyjdź</string>
     <string name="user_tags_hint" comment="To add a new tag">Nowy znacznik</string>
     <string name="user_tags_empty">Nie dodano jeszcze żadnych tagów</string>
     <string name="appwidget_loading">Wczytywanie…</string>
@@ -292,6 +294,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Akcje odtwarzacza</string>
     <string name="skip" comment="skip to next track">Pomiń</string>
     <string name="mute" comment="mute the sound">Wycisz</string>
+    <string name="do_nothing" comment="do nothing on the media player">Nic nie rób</string>
     <string name="block" comment="block the track from scrobbling">Blokuj</string>
     <string name="copy" comment="copy to clipboard">Kopiuj</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Ukryte tagi</string>
@@ -421,6 +424,8 @@
     <string name="password">Hasło</string>
     <string name="open_existing" comment="Append to an existing file">Dołącz do istniejącego</string>
     <string name="create" comment="Create a new file">Utwórz</string>
+    <string name="copy_from">Kopiuj z</string>
+    <string name="nothing" comment="nothing/none">Nic</string>
     <string name="ok">OK</string>
     <string name="cancel">Anuluj</string>
     <string name="back">Powrót</string>
@@ -431,6 +436,7 @@
     <string name="high" comment="As in high/medium/low">Wysoki</string>
     <string name="medium" comment="As in high/medium/low">Średni</string>
     <string name="low" comment="As in high/medium/low">Niski</string>
+    <string name="reload" comment="Reload or refresh">Przeładuj</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>
     <string name="help">Pomoc</string>

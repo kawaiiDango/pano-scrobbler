@@ -69,7 +69,7 @@ music player's app info and tap on "Clear defaults".
 
 ### [android] Where is the scrobble from mic feature?
 
-In-app scrobble from mic has been removed, in favour of scrolling from Shazam/AutoShazam, Audile,
+In-app scrobble from mic has been removed, in favour of scrobbling from Shazam/AutoShazam, Audile,
 Pixel's Now Playing or Ambient Music Mod.
 
 ### [android] Where are the Tasker intents?

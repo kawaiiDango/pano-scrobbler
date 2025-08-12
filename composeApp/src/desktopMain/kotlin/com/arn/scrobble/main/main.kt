@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
@@ -65,7 +64,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -353,17 +351,15 @@ fun main(args: Array<String>) {
             )
         }
 
-        LaunchedEffect(Unit) {
-            snapshotFlow { windowState }
-                .debounce(5.seconds)
-                .collectLatest {
-                    val ws = SerializableWindowState(
-                        width = it.size.width.value,
-                        height = it.size.height.value,
-                        isMaximized = it.placement == WindowPlacement.Maximized,
-                    )
-                    PlatformStuff.mainPrefs.updateData { it.copy(windowState = ws) }
-                }
+        LaunchedEffect(windowState.size, windowState.placement) {
+            delay(5.seconds)
+
+            val ws = SerializableWindowState(
+                width = windowState.size.width.value,
+                height = windowState.size.height.value,
+                isMaximized = windowState.placement == WindowPlacement.Maximized,
+            )
+            PlatformStuff.mainPrefs.updateData { it.copy(windowState = ws) }
         }
 
         if (DesktopStuff.os != DesktopStuff.Os.Linux) {

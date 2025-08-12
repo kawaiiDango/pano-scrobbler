@@ -28,17 +28,10 @@
     <string name="jsonl" translatable="false">JSONL</string>
     <string name="special_app_access" translatable="false">Special app access</string>
     <string name="automation_cp" translatable="false">ContentProvider URIs</string>
-    <string name="country_for_api" formatted="true" translatable="false">Region for %1$s metadata</string>
-    <string name="fetch_missing_metadata" formatted="true" translatable="false">Fetch missing metadata for %1$s</string>
 
     <!--  strings for unfinalized stuff  -->
 
-    <string name="login_in_browser">Complete the login in the browser window</string>
-    <string name="edit_no_save">This will not be saved for future scrobbles</string>
-    <string name="also_available_on" formatted="true">Get this app on %1$s</string>
     <string name="use_something" formatted="true">Use %1$s</string>
-    <string name="additional_metadata">External metadata sources</string>
-    <string name="first_artist">Use the first artist only</string>
     <string name="desktop">PC</string>
     <string name="android">Android</string>
     <string name="automation_cli">Command-line arguments</string>
@@ -59,7 +52,6 @@ According to Google Play's policies, purchases made through Google Play cannot b
 <!--  make them RTL agnostic  -->
     <string name="move_left" translatable="false">Move left</string>
     <string name="move_right" translatable="false">Move right</string>
-
     <string name="move_up" translatable="false">Move up</string>
     <string name="move_down" translatable="false">Move down</string>
     <string name="desktop_webview_not_loaded" translatable="false">Failed to load webview. Do you have the required dependencies installed?

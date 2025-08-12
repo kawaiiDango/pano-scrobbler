@@ -62,6 +62,7 @@ import pano_scrobbler.composeapp.generated.resources.get_pro
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.not_found
+import pano_scrobbler.composeapp.generated.resources.one_time_purchase
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
 import pano_scrobbler.composeapp.generated.resources.pref_themes
@@ -186,7 +187,8 @@ fun BillingScreen(
                         )
 
                         Text(
-                            text = proProductDetails?.formattedPrice ?: "",
+                            text = (proProductDetails?.formattedPrice ?: "") +
+                                    ", " + stringResource(Res.string.one_time_purchase),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -258,7 +260,7 @@ fun BillingScreen(
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
-                    .padding(vertical = 16.dp)
+                    .padding(top = 16.dp)
                     .align(Alignment.CenterHorizontally)
             )
 
@@ -272,7 +274,9 @@ fun BillingScreen(
             onClick = onNavigateToTroubleshoot,
             icon = Icons.AutoMirrored.Outlined.HelpOutline,
             text = stringResource(Res.string.help),
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
         )
     }
 

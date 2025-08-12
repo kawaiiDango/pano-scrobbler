@@ -54,7 +54,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.additional_metadata
+import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.copy_sk
@@ -594,7 +594,7 @@ fun PrefsScreen(
 
         stickyHeader("additional_metatadata_header") {
             SimpleHeaderItem(
-                text = stringResource(Res.string.additional_metadata),
+                text = stringResource(Res.string.external_metadata),
                 icon = Icons.Outlined.Api
             )
         }

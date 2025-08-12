@@ -739,9 +739,23 @@
     <string name="pref_tray_icon_theme">Tray icon theme</string>
     <string name="min_track_duration">Scrobble tracks longer than</string>
     <string name="automation">Control Pano Scrobbler from automation apps</string>
+    <string name="country_for_api" formatted="true"
+        comment="%1$s is the name of the streaming service, like Spotify, Apple Music"
+        >Country for %1$s metadata</string>
+    <string name="fetch_missing_metadata" formatted="true"
+        comment="%1$s is the name of the streaming service, like Spotify, Apple Music"
+        >Fetch missing metadata for %1$s</string>
+    <string name="login_in_browser">Complete the login in the browser window</string>
+    <string name="edit_no_save">This will not be saved for future scrobbles</string>
+    <string name="also_available_on" formatted="true"
+        comment="%1$s is the platform name, like Android, PC"
+        >Get this app on %1$s</string>
+    <string name="first_artist">Use the first artist only</string>
+    <string name="external_metadata">External metadata sources</string>
 
 <!--  pro  -->
     <string name="get_pro">Support this app</string>
+    <string name="one_time_purchase">One time</string>
     <string name="help">Help</string>
     <string name="pro_support">This is a simple and quick way for amazing users like you to make a show of support recognizing the value this app provides.</string>
     <string name="pro_also_get">You will also get the following features:</string>

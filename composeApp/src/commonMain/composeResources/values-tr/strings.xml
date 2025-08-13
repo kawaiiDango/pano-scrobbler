@@ -424,8 +424,13 @@
     <string name="needs_plugin" comment="Used for some desktop media players">Bazı uygulamalar eklentilere ihtiyaç duyar</string>
     <string name="reload" comment="Reload or refresh">Yeniden yükle</string>
     <string name="automation">Pano Scrobbler\'ı otomasyon uygulamaları üzerinden kontrol edin</string>
-    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s meta verileri için ülke</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s üst verileri için ülke</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s için eksik üst verileri al</string>
+    <string name="login_in_browser">Oturum açma işlemini tarayıcı penceresinde tamamlayın</string>
+    <string name="edit_no_save">Bu, gelecekteki skroplar için kaydedilmeyecek</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Uygulamayı %1$s üzerinden edin</string>
+    <string name="first_artist">Sadece ilk sanatçıyı kullan</string>
+    <string name="external_metadata">Harici üst veri kaynakları</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="one_time_purchase">Bir kez</string>

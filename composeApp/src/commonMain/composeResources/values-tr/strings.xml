@@ -176,6 +176,7 @@
     <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
     <string name="time_just_now">şimdi</string>
     <string name="no_mail_apps">Yüklü e-posta istemcisi yok</string>
+    <string name="add">Yeni öge ekle</string>
     <string name="loved" comment="Its a noun">Beğenilenler</string>
     <string name="unloved" comment="Its a noun">Beğeni kaldırıldı</string>
     <string name="simple_edits">Düzenlemeler</string>
@@ -202,6 +203,7 @@
     <string name="weeks">Haftalık</string>
     <string name="monthly">Aylık</string>
     <string name="months">Aylık</string>
+    <string name="days">Gün</string>
     <string name="years" comment="For the charts menu which displays year by year">Yıllık</string>
     <string name="charts_overall">Genel</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Dinleme etkinliği</string>
@@ -349,15 +351,20 @@
     <string name="pref_search_in_source">Skropladığın uygulamada ara &amp; oynat</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Desteklenen uygulamalar içindir</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listeler</string>
+    <string name="regex_rules">Düzenli ifade kuralları</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Engellenmiş meta veri</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
     <string name="pref_translate_credits">Çeviri ekibi</string>
     <string name="pref_oss_credits">Açık kaynak lisansları</string>
     <string name="pref_check_updates">Güncellemeleri kontrol et</string>
+    <string name="no_updates">Güncelleştirme yok</string>
+    <string name="pref_notify_updates">Otomatik güncellemeler</string>
+    <string name="update_downloaded">Güncelleme indirildi</string>
     <string name="pref_search_url_template">Arama URL şablonu</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">$query \'yi arama terimi yer tutucusu olarak kullan</string>
     <string name="pref_native_file_picker">Dahili dosya seçicisini kullan</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Yeni güncelleme: %1$s</string>
+    <string name="downloading">İndiriliyor</string>
     <string name="download" comment="Its a verb">İndir</string>
     <string name="changelog">Değişiklikler</string>
     <string name="import_hey_wtf">Bu muhtemelen Pano Scrobbler\'dan dışa aktarılmış bir dosya değil</string>
@@ -398,6 +405,10 @@
     <string name="password">Şifre</string>
     <string name="open_existing" comment="Append to an existing file">Var olana ekle</string>
     <string name="create" comment="Create a new file">Oluştur</string>
+    <string name="scan_qr">Giriş yapmak için bunu tara</string>
+    <string name="copy_from">Şuradan kopyala:</string>
+    <string name="nothing" comment="nothing/none">Hiçbiri</string>
+    <string name="borders" comment="Borders between images in the generated collage">Kenarlar</string>
     <string name="ok">Tamam</string>
     <string name="cancel">İptal Et</string>
     <string name="back">Geri</string>
@@ -410,8 +421,14 @@
     <string name="high" comment="As in high/medium/low">Yüksek</string>
     <string name="medium" comment="As in high/medium/low">Orta</string>
     <string name="low" comment="As in high/medium/low">Düşük</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Bazı uygulamalar eklentilere ihtiyaç duyar</string>
+    <string name="reload" comment="Reload or refresh">Yeniden yükle</string>
+    <string name="automation">Pano Scrobbler\'ı otomasyon uygulamaları üzerinden kontrol edin</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s meta verileri için ülke</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Uygulamayı %1$s üzerinden edin</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
+    <string name="one_time_purchase">Bir kez</string>
     <string name="help">Yardım</string>
     <string name="pro_support">Bu, sizin gibi harika kullanıcılarımızın, bu uygulamanın sağladığı hizmetlerin hatırına desteklerini göstermeleri için hızlı ve basit bir yoldur.</string>
     <string name="pro_also_get">Ayrıca aşağıdaki özelliklere sahip olacaksın:</string>

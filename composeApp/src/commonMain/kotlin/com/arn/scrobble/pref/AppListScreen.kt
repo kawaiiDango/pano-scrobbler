@@ -99,7 +99,7 @@ fun AppListScreen(
                                 pref.copy(
                                     allowedPackages = allowedPackages,
                                     blockedPackages = blockedPackages,
-                                    extractFirstArtistPackages = firstArtistPackages.takeIf { pref.appListWasRun }
+                                    extractFirstArtistPackages = firstArtistPackages.takeIf { !pref.appListWasRun }
                                         ?: pref.extractFirstArtistPackages,
                                     appListWasRun = true,
                                 )

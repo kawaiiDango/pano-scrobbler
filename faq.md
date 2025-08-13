@@ -5,8 +5,9 @@
 Some manufacturers impose drastic background restrictions on 3rd party apps. Try disabling battery
 optimisations for this app. Sometimes, that step may not be enough. Please
 check [dontkillmyapp.com](https://dontkillmyapp.com) to see if there are any solutions for your
-device. It may be impossible to use this app on a stock ROM from certain manufacturers, due to the
-said restrictions.
+device. The non-Play version of this app can optionally display a persistent notification at all
+times, which may help. It may be impossible to use this app on a stock ROM from certain
+manufacturers, due to the said restrictions.
 
 ### All of my scrobbles from Spotify are duplicated
 

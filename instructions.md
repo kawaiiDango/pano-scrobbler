@@ -30,6 +30,10 @@ object Tokens {
 ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
 ```
 
+- Get the MusicBrainz artists JSON dump from [here](https://metabrainz.org/datasets/postgres-dumps#musicbrainz-json)
+- To generate the hashes of the artists that have delimiters as a part of their names, run
+[py-scripts/collect_musicbrainz_artist_names.py](py-scripts/collect_musicbrainz_artist_names.py)
+
 ### For Android:
 
 - Create a Firebase project for Crashlytics and add the google-services.json to composeApp/

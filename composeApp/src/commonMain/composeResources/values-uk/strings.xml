@@ -52,13 +52,13 @@
         <item quantity="one">%1$s альбом</item>
         <item quantity="few">%1$s альбоми</item>
         <item quantity="many">%1$s альбомів</item>
-        <item quantity="other">%1$s альбоми</item>
+        <item quantity="other">%1$s альбомів</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="one">%1$s пісня</item>
-        <item quantity="few">%1$s пісень</item>
-        <item quantity="many">%1$s пісні</item>
-        <item quantity="other">%1$s пісні</item>
+        <item quantity="one">%1$s композиція</item>
+        <item quantity="few">%1$s композиції</item>
+        <item quantity="many">%1$s композицій</item>
+        <item quantity="other">%1$s композицій</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d збіг</item>
@@ -86,7 +86,7 @@
     </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d хвилина</item>
-        <item quantity="few">%1$d хвилин</item>
+        <item quantity="few">%1$d хвилини</item>
         <item quantity="many">%1$d хвилин</item>
         <item quantity="other">%1$d хвилин</item>
     </plurals>

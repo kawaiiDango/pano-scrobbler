@@ -6,6 +6,7 @@ call "%~dp0gradlew.bat" composeApp:exportLibraryDefinitions -PaboutLibraries.exp
 call "%~dp0gradlew.bat" composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
 call "%~dp0gradlew.bat" composeApp:copyStringsToAndroid
 call "%~dp0gradlew.bat" composeApp:fetchCrowdinMembers
+call "%~dp0gradlew.bat" composeApp:bundleRelease
 call "%~dp0gradlew.bat" composeApp:assembleReleaseGithub
 call "%~dp0gradlew.bat" composeApp:packageUberJarForCurrentOS
 timeout /t 5

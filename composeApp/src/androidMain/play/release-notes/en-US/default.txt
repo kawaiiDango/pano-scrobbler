@@ -1,7 +1,4 @@
-Changes since 4.4
+Changes since 4.6
 
-- Added a per-player option to scrobble the first artist only
-- Fixed duplicate scrobbles from Pixel Now Playing
-- The desktop window now has a finite minimum size
-- Other bug fixes
+- Bug fixes
 - Translation updates by the translators on Crowdin

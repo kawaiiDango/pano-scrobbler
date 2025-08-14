@@ -36,7 +36,7 @@
     <string name="android">Android</string>
     <string name="automation_cli">Command-line arguments</string>
     <string name="automation_cli_info">Run the pano-scrobbler executable with one of these command line arguments, while an instance is already running.</string>
-    <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any variable name in "Variable Array" and URI to one of these.</string>
+    <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true"
         comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop"
         >Replace %1$s with that of the app.</string>

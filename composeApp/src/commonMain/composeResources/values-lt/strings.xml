@@ -222,7 +222,7 @@
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Laiko šuolis</string>
     <string name="my_scrobbles">Mano skroblai</string>
     <string name="listeners">Klausytojai (-ų)</string>
-    <string name="scrobbles">Skroblai (-ų)</string>
+    <string name="scrobbles">Skroblai</string>
     <string name="collapse" comment="(view only a few items)">Suskleisti</string>
     <string name="expand" comment="(view all items)">Išskleisti</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s mėgsta</string>
@@ -458,7 +458,11 @@
     <string name="automation">Valdyti „Pano Scrobbler“ iš automatinių programėlių</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Šalis platformai „%1$s“ metaduomenų</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Gauti trūkstamus metaduomenis platformai „%1$s“</string>
-    <string name="login_in_browser">Užbaikite prisijungimą naršyklės lange</string>
+    <string name="login_in_browser">Užbaikite prisijungimą naršyklės lange.</string>
+    <string name="edit_no_save">Tai nebus išsaugota ateities skroblams.</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Gauti šią programėlę platformoje „%1$s“</string>
+    <string name="first_artist">Naudoti tik pirmąjį atlikėją</string>
+    <string name="external_metadata">Išoriniai metaduomenų šaltiniai</string>
     <!--  pro  -->
     <string name="get_pro">Paremti šią programėlę</string>
     <string name="one_time_purchase">Vienkartinis</string>

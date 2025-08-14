@@ -176,8 +176,9 @@
     <string name="rate_msg">Vous aimez cette application ?</string>
     <string name="time_just_now">à l\'instant</string>
     <string name="no_mail_apps">Aucun client mail n\'est installé</string>
+    <string name="add">Ajouter un nouvel élément</string>
     <string name="loved" comment="Its a noun">J\'aime</string>
-    <string name="unloved" comment="Its a noun">Je n\'aime pas</string>
+    <string name="unloved" comment="Its a noun">Je n\'aime plus</string>
     <string name="simple_edits">Modifications</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Graphiques</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuage de tags</string>

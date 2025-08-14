@@ -14,6 +14,10 @@ manufacturers, due to the said restrictions.
 This happens if you have more than one scrobbler running. Disable or uninstall other scrobblers.
 Disconnect your Spotify account from the last.fm website.
 
+### How do I scrobble only the first artist instead of all the performers?
+
+Go to Configure > Use the first artist only
+
 ### [android] The app is scrobbling non music videos from YouTube
 
 Unfortunately there is no way to detect whether a video is a music video, from the metadata provided

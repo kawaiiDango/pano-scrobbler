@@ -52,7 +52,7 @@ class RandomVM : ViewModel() {
                 ) { input, _ -> input }
                 .mapLatest { input ->
                     _hasLoaded.emit(false)
-                    mainPrefs.updateData { it.copy(lastRandomType = input.type) }
+                    mainPrefs.updateData { it.copy(randomType = input.type) }
                     val result = loadRandom(input)
                     setTotal(input.type, result.second)
                     result

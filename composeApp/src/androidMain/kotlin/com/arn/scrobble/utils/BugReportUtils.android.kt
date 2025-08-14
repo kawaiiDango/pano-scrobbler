@@ -2,7 +2,6 @@ package com.arn.scrobble.utils
 
 import android.app.ActivityManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -44,7 +43,9 @@ actual object BugReportUtils {
         manager.getMemoryInfo(mi)
         text += "Background RAM usage: " + bgRam + "M \n"
 
-        if (!PlatformStuff.isScrobblerRunning())
+        if (!PlatformStuff.isNotificationListenerEnabled())
+            text += "Notification Listener is not enabled\n"
+        else if (!PlatformStuff.isScrobblerRunning())
             text += "Background service isn't running\n"
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"
@@ -57,16 +58,18 @@ actual object BugReportUtils {
         //keep the email in english
 
         val emailAddress = getString(Res.string.email)
-        val sendTo = Intent(Intent.ACTION_SENDTO)
-        val uriText = "mailto:" + Uri.encode(emailAddress) +
-                "?subject=" + Uri.encode(BuildKonfig.APP_NAME + " - Bug report") +
-                "&body=" + Uri.encode(text)
-        val uri = uriText.toUri()
-        sendTo.setData(uri)
-        sendTo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val subject = BuildKonfig.APP_NAME + " - Bug report"
+        val uri = "mailto:".toUri() // this filters email-only apps
+        val sendToIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = uri
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(emailAddress))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, text)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
 
         try {
-            AndroidStuff.application.startActivity(sendTo)
+            AndroidStuff.application.startActivity(sendToIntent)
         } catch (e: Exception) {
             e.printStackTrace()
             Stuff.globalSnackbarFlow.tryEmit(

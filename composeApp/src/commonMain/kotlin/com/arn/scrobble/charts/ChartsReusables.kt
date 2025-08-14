@@ -123,7 +123,7 @@ private val periodTypeMenuItems by lazy {
 }
 
 fun getPeriodTypeIcon(periodType: TimePeriodType): ImageVector {
-    return periodTypeMenuItems[periodType]!!
+    return periodTypeMenuItems[periodType] ?: Icons.Outlined.Circle
 }
 
 fun getPeriodTypePluralRes(periodType: TimePeriodType): PluralStringResource {

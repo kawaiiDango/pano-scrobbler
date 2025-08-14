@@ -203,16 +203,18 @@ private fun TrackDropdownMenu(
                     if (onLove != null) {
                         DropdownMenuItem(
                             onClick = {
+                                val loved = track.userloved
+
                                 GlobalScope.launch {
                                     withContext(Dispatchers.IO) {
                                         ScrobbleEverywhere.loveOrUnlove(
                                             track,
-                                            track.userloved != true
+                                            loved != true
                                         )
                                     }
                                 }
 
-                                onLove(track.userloved != true)
+                                onLove(loved != true)
                                 onDismissRequest()
                             },
                             text = {
@@ -673,7 +675,7 @@ fun LazyListScope.scrobblesListItems(
     tracks: LazyPagingItems<Track>,
     user: UserCached,
     deletedTracksSet: Set<Track>,
-    editedTracksMap: Map<Track, Track>,
+    editedTracksMap: Map<String, Track>,
     pkgMap: Map<Long, String>,
     seenApps: Map<String, String>,
     fetchAlbumImageIfMissing: Boolean,
@@ -692,12 +694,15 @@ fun LazyListScope.scrobblesListItems(
     }
 
     for (i in 0 until tracks.itemCount) {
-        val trackPeek = tracks.peek(i)
+        val trackPeek = tracks.peek(i)?.let {
+            editedTracksMap[it.generateKey()] ?: it
+        }
+
         if (trackPeek == null || trackPeek !in deletedTracksSet) {
 
             if (trackPeek?.date in viewModel.lastScrobbleOfTheDaySet) {
                 item(
-                    key = "date_seperator_${trackPeek?.date}"
+                    key = "date_separator\n${trackPeek?.generateKey()}"
                 ) {
                     HorizontalDivider(
                         modifier = Modifier
@@ -712,7 +717,7 @@ fun LazyListScope.scrobblesListItems(
                 key = key
             ) {
                 val track = tracks[i]?.let {
-                    editedTracksMap[it] ?: it
+                    editedTracksMap[it.generateKey()] ?: it
                 } ?: getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS) as Track
 
                 var menuVisible by remember { mutableStateOf(false) }

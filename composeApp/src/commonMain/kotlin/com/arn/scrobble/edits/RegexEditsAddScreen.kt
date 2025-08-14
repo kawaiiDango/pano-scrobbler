@@ -56,6 +56,7 @@ import com.arn.scrobble.icons.AlbumArtist
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.ButtonWithIcon
@@ -115,7 +116,7 @@ fun RegexEditsAddScreen(
     val scope = rememberCoroutineScope()
     val regexLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.regexLearnt }
     var name by rememberSaveable { mutableStateOf(regexEdit?.name ?: "") }
-    var appItems by rememberSaveable { mutableStateOf(emptySet<AppItem>()) }
+    var appItems by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(emptySet<AppItem>()) }
     val dao = remember { PanoDb.db.getRegexEditsDao() }
 
     var appItemsInited by rememberSaveable { mutableStateOf(false) }

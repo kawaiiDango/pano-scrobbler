@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.touchlab.kermit.Logger
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
@@ -320,11 +319,6 @@ class CollageGeneratorVM : ViewModel() {
                     size(cellSize, cellSize)
                     scale(Scale.FIT)
                     placeholder(null)
-                    listener(
-                        onError = { req, err ->
-                            Logger.e("coil", err.throwable)
-                        }
-                    )
                 }.build()
                 var scaledWidth = cellSize
                 var scaledHeight = cellSize

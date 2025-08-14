@@ -64,7 +64,7 @@ actual class PlatformFile actual constructor(private val fileUri: String) {
     actual fun takePersistableUriPermission(readWrite: Boolean) {
     }
 
-    actual fun releasePersistableUriPermission() {
+    actual fun releasePersistableUriPermission(readWrite: Boolean) {
     }
 
 }

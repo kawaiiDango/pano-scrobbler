@@ -91,7 +91,7 @@ fun InfoWikiText(
         if (!PlatformStuff.isTv) {
             displayText = displayText.replace("<br>", "\n")
         }
-        Row(
+        Box(
             modifier = modifier
                 .border(
                     width = 1.dp,
@@ -121,11 +121,12 @@ fun InfoWikiText(
                     }
                 },
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
                     .then(
                         if (overflows)
                             Modifier.clip(MaterialTheme.shapes.medium)
                                 .clickable(onClick = onExpandToggle)
+                                .padding(end = 24.dp)
                                 .onPreviewKeyEvent { keyEvent ->
                                     if (!expanded || keyEvent.type != KeyEventType.KeyDown)
                                         return@onPreviewKeyEvent false
@@ -174,7 +175,7 @@ fun InfoWikiText(
                         else
                             Res.string.show_all
                     ),
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }
         }

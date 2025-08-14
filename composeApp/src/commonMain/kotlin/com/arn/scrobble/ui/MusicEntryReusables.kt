@@ -11,7 +11,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -89,11 +88,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -102,6 +99,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
+import coil3.size.SizeResolver
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -169,37 +167,36 @@ fun MusicEntryListItem(
     val context = LocalPlatformContext.current
     val artInteractionSource = remember { MutableInteractionSource() }
     val isArtFocused by artInteractionSource.collectIsFocusedAsState()
-    val density = LocalDensity.current
 
-    NowPlayingSurface(
-        nowPlaying = (entry as? Track)?.isNowPlaying == true,
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
     ) {
-        RowOrColumnLayout(
-            isColumnMode = isColumn,
-            modifier = modifier.then(
-                if (hasOnlyOneClickable)
-                    Modifier
-                        .clip(MaterialTheme.shapes.medium)
-                        .clickable(enabled = !forShimmer) { onEntryClick() }
-                else
-                    Modifier
-            )
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-
-            BoxWithConstraints(
-                contentAlignment = Alignment.Center,
+        NowPlayingSurface(
+            nowPlaying = (entry as? Track)?.isNowPlaying == true,
+        ) { childModifier ->
+            RowOrColumnLayout(
+                isColumnMode = isColumn,
+                modifier = childModifier.then(
+                    if (hasOnlyOneClickable)
+                        Modifier
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable(enabled = !forShimmer) { onEntryClick() }
+                    else
+                        Modifier
+                )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
-                val boxSize = min(maxWidth, maxHeight)
-
                 Box(
                     modifier = Modifier
                         .then(
                             if (fixedImageHeight)
                                 Modifier
                                     .size(72.dp)
-                            else
-                                Modifier.size(boxSize)
+                            else if (!isColumn) // height is bounded in my use case
+                                Modifier.aspectRatio(1f, true)
+                            else // unbounded height, let the custom layout handle it
+                                Modifier.padding(top = 8.dp)
                         )
                         .backgroundForShimmer(forShimmer)
                 ) {
@@ -228,14 +225,7 @@ fun MusicEntryListItem(
                                             imageMemoryCacheKey = res.memoryCacheKey
                                         }
                                     )
-                                    .size(
-                                        with(density) {
-                                            if (fixedImageHeight)
-                                                72.dp.roundToPx()
-                                            else
-                                                boxSize.roundToPx()
-                                        }
-                                    )
+                                    .size(SizeResolver.ORIGINAL)
                                     .build()
                         },
                         fallback = placeholderImageVectorPainter(null),
@@ -302,177 +292,177 @@ fun MusicEntryListItem(
                         )
                     }
                 }
-            }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .widthIn(200.dp)
-                    .then(
-                        if (isColumn)
-                            Modifier.padding(vertical = 8.dp)
-                        else
-                            Modifier.padding(start = 8.dp)
-                    )
-                    .then(
-                        if (isColumn)
-                            Modifier.border(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                                MaterialTheme.shapes.medium
-                            )
-                        else
-                            Modifier
-                    )
-            ) {
-                Column(
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .weight(1f)
+                        .widthIn(200.dp)
                         .then(
-                            if (!hasOnlyOneClickable)
-                                Modifier
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .clickable(enabled = !forShimmer) { onEntryClick() }
+                            if (isColumn)
+                                Modifier.padding(vertical = 8.dp)
+                            else
+                                Modifier.padding(start = 8.dp)
+                        )
+                        .then(
+                            if (isColumn)
+                                Modifier.border(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.outline,
+                                    MaterialTheme.shapes.medium
+                                )
                             else
                                 Modifier
                         )
-                        .padding(8.dp)
-                        .backgroundForShimmer(forShimmer)
                 ) {
-                    val topText = if (entry is Track && entry.date != null)
-                        PanoTimeFormatter.relative(entry.date)
-                    else
-                        null
-
-                    val firstText = when (entry) {
-                        is Album -> entry.name
-                        is Track -> entry.name
-                        is Artist -> entry.name
-                    }
-
-                    val secondText = when (entry) {
-                        is Album -> entry.artist?.name
-                        is Track -> entry.artist.name
-                        else -> null
-                    }
-
-                    val thirdText = when {
-                        entry.listeners != null -> pluralStringResource(
-                            Res.plurals.num_listeners,
-                            entry.listeners!!.toInt(),
-                            entry.listeners!!.format()
-                        )
-
-                        entry.playcount != null -> pluralStringResource(
-                            Res.plurals.num_scrobbles_noti,
-                            entry.playcount!!.toInt(),
-                            entry.playcount!!.format()
-                        )
-
-                        entry is Track && entry.album?.name?.isEmpty() == false -> entry.album.name
-                        else -> null
-                    }
-
-                    if (topText != null) {
-                        Text(
-                            text = if (forShimmer) "" else topText,
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier
-                                .align(Alignment.End)
-                                .backgroundForShimmer(forShimmer)
-                        )
-                    }
-
-                    Text(
-                        text = if (forShimmer)
-                            ""
-                        else if (index != null)
-                            "${index + 1}. $firstText"
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .then(
+                                if (!hasOnlyOneClickable)
+                                    Modifier
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .clickable(enabled = !forShimmer) { onEntryClick() }
+                                else
+                                    Modifier
+                            )
+                            .padding(8.dp)
+                            .backgroundForShimmer(forShimmer)
+                    ) {
+                        val topText = if (entry is Track && entry.date != null)
+                            PanoTimeFormatter.relative(entry.date)
                         else
-                            firstText,
-                        style = MaterialTheme.typography.titleMediumEmphasized,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                            null
 
-                    if (secondText != null)
+                        val firstText = when (entry) {
+                            is Album -> entry.name
+                            is Track -> entry.name
+                            is Artist -> entry.name
+                        }
+
+                        val secondText = when (entry) {
+                            is Album -> entry.artist?.name
+                            is Track -> entry.artist.name
+                            else -> null
+                        }
+
+                        val thirdText = when {
+                            entry.listeners != null -> pluralStringResource(
+                                Res.plurals.num_listeners,
+                                entry.listeners!!.toInt(),
+                                entry.listeners!!.format()
+                            )
+
+                            entry.playcount != null -> pluralStringResource(
+                                Res.plurals.num_scrobbles_noti,
+                                entry.playcount!!.toInt(),
+                                entry.playcount!!.format()
+                            )
+
+                            entry is Track && entry.album?.name?.isEmpty() == false -> entry.album.name
+                            else -> null
+                        }
+
+                        if (topText != null) {
+                            Text(
+                                text = if (forShimmer) "" else topText,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier
+                                    .align(Alignment.End)
+                                    .backgroundForShimmer(forShimmer)
+                            )
+                        }
+
                         Text(
-                            text = if (forShimmer) "" else secondText,
-                            style = MaterialTheme.typography.bodyLargeEmphasized,
+                            text = if (forShimmer)
+                                ""
+                            else if (index != null)
+                                "${index + 1}. $firstText"
+                            else
+                                firstText,
+                            style = MaterialTheme.typography.titleMediumEmphasized,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
 
-                    if (thirdText != null) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(2.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            if (stonksDelta != null) {
-                                stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
-                                    Icon(
-                                        imageVector = icon,
-                                        tint = color,
-                                        contentDescription = stonksDelta.toString(),
-                                        modifier = Modifier
-                                            .size(16.dp)
-                                            .offset((-2).dp)
-                                    )
-                                }
-                            }
-
+                        if (secondText != null)
                             Text(
-                                text = if (forShimmer) "" else thirdText,
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = if (forShimmer) "" else secondText,
+                                style = MaterialTheme.typography.bodyLargeEmphasized,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                        }
-                    }
 
-                    if (progress != null) {
-                        ScrobblesCountProgress(progress)
-                    }
-                }
-
-                if (onMenuClick != null) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    ) {
-                        if (entry is Track && entry.isNowPlaying) {
-                            Icon(
-                                imageVector = Icons.Rounded.PlayArrow,
-                                contentDescription = stringResource(Res.string.time_just_now),
-                                modifier = Modifier
-                                    .size(22.dp)
-                            )
-                        } else if (appItem != null) {
-                            TooltipBox(
-                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                                tooltip = { PlainTooltip { Text(appItem.friendlyLabel) } },
-                                state = rememberTooltipState(),
+                        if (thirdText != null) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                AppIcon(
-                                    appItem = appItem,
-                                    modifier = Modifier
-                                        .size(22.dp)
+                                if (stonksDelta != null) {
+                                    stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
+                                        Icon(
+                                            imageVector = icon,
+                                            tint = color,
+                                            contentDescription = stonksDelta.toString(),
+                                            modifier = Modifier
+                                                .size(16.dp)
+                                                .offset((-2).dp)
+                                        )
+                                    }
+                                }
+
+                                Text(
+                                    text = if (forShimmer) "" else thirdText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             }
                         }
 
-                        IconButton(
-                            onClick = onMenuClick,
-                            enabled = !forShimmer
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.MoreVert,
-                                contentDescription = stringResource(Res.string.item_options)
-                            )
+                        if (progress != null) {
+                            ScrobblesCountProgress(progress)
                         }
+                    }
 
-                        menuContent()
+                    if (onMenuClick != null) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            if (entry is Track && entry.isNowPlaying) {
+                                Icon(
+                                    imageVector = Icons.Rounded.PlayArrow,
+                                    contentDescription = stringResource(Res.string.time_just_now),
+                                    modifier = Modifier
+                                        .size(22.dp)
+                                )
+                            } else if (appItem != null) {
+                                TooltipBox(
+                                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+                                    tooltip = { PlainTooltip { Text(appItem.friendlyLabel) } },
+                                    state = rememberTooltipState(),
+                                ) {
+                                    AppIcon(
+                                        appItem = appItem,
+                                        modifier = Modifier
+                                            .size(22.dp)
+                                    )
+                                }
+                            }
+
+                            IconButton(
+                                onClick = onMenuClick,
+                                enabled = !forShimmer
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.MoreVert,
+                                    contentDescription = stringResource(Res.string.item_options)
+                                )
+                            }
+
+                            menuContent()
+                        }
                     }
                 }
             }
@@ -484,7 +474,7 @@ fun MusicEntryListItem(
 private fun NowPlayingSurface(
     nowPlaying: Boolean,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
+    content: @Composable (Modifier) -> Unit,
 ) {
     var isResumed by remember { mutableStateOf(false) }
 
@@ -514,34 +504,32 @@ private fun NowPlayingSurface(
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
     ) {
-        Box(
-            modifier = if (nowPlaying) {
-                val brushRadial = remember(fgColor, brushRadius) {
-                    Brush.radialGradient(
-                        0f to fgColor,
-                        0.75f to Color.Transparent,
-                        radius = brushRadius
+        val childModifier = if (nowPlaying) {
+            val brushRadial = remember(fgColor, brushRadius) {
+                Brush.radialGradient(
+                    0f to fgColor,
+                    0.75f to Color.Transparent,
+                    radius = brushRadius
+                )
+            }
+
+            Modifier.drawBehind {
+                brushRadius = if (size.minDimension < 2 * size.maxDimension)
+                    size.maxDimension / 2
+                else
+                    size.minDimension
+
+                translate((progress - 0.5f) * 2 * (size.width), size.height * 0.55f) {
+                    drawCircle(
+                        brush = brushRadial,
+                        radius = brushRadius,
                     )
                 }
+            }
+        } else
+            Modifier
 
-                Modifier.drawBehind {
-                    brushRadius = if (size.minDimension < 2 * size.maxDimension)
-                        size.maxDimension / 2
-                    else
-                        size.minDimension
-
-                    translate((progress - 0.5f) * 2 * (size.width), size.height * 0.55f) {
-                        drawCircle(
-                            brush = brushRadial,
-                            radius = brushRadius,
-                        )
-                    }
-                }
-            } else
-                Modifier
-        ) {
-            content()
-        }
+        content(childModifier)
     }
 }
 
@@ -1399,9 +1387,9 @@ fun stonksIconForDelta(delta: Int?) = when {
 
 fun MusicEntry.generateKey(): String {
     val str = when (this) {
-        is Track -> "" + date + "\n" + artist.name + "\n" + album?.name + "\n" + name
-        is Album -> artist?.name + "\n" + name
-        is Artist -> name
+        is Track -> "Track" + "\n" + date + "\n" + artist.name + "\n" + album?.name + "\n" + name
+        is Album -> "Album" + "\n" + artist?.name + "\n" + name
+        is Artist -> "Artist" + "\n" + name
     }
 
     return str

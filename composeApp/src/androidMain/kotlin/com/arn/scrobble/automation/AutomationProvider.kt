@@ -5,6 +5,9 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import com.arn.scrobble.utils.AndroidStuff.toast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 
 
 class AutomationProvider : ContentProvider() {
@@ -38,6 +41,12 @@ class AutomationProvider : ContentProvider() {
             arg,
             callingPackage
         )
+
+        if (wasSuccessful) {
+            runBlocking(Dispatchers.Main) {
+                context?.toast(command)
+            }
+        }
 
         return createCursor(wasSuccessful)
     }

@@ -8,6 +8,7 @@ import androidx.paging.cachedIn
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.work.CommonWorkState
@@ -35,7 +36,7 @@ class ScrobblesVM : ViewModel() {
     private val _scrobblerServiceRunning = MutableStateFlow<Boolean?>(null)
     val scrobblerServiceRunning = _scrobblerServiceRunning.asStateFlow()
 
-    private val _editedTracksMap = MutableStateFlow<Map<Track, Track>>(emptyMap())
+    private val _editedTracksMap = MutableStateFlow<Map<String, Track>>(emptyMap())
     val editedTracksMap = _editedTracksMap.asStateFlow()
     private val _deletedTracksSet = MutableStateFlow<Set<Track>>(emptySet())
     val deletedTracksSet = _deletedTracksSet.asStateFlow()
@@ -234,7 +235,7 @@ class ScrobblesVM : ViewModel() {
     }
 
     fun editTrack(origTrack: Track, editedTrack: Track) {
-        _editedTracksMap.value += origTrack to editedTrack
+        _editedTracksMap.value += origTrack.generateKey() to editedTrack
     }
 
 }

@@ -208,6 +208,13 @@
                 android:name="autoStoreLocales"
                 android:value="false" />
         </service>
+<!--
+fixes java.lang.IllegalArgumentException: foregroundServiceType 0x00000001 is not a subset of foregroundServiceType attribute 0x00000000 in service element of manifest file
+-->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
 
         <provider
             android:name=".automation.AutomationProvider"

@@ -141,11 +141,21 @@ actual class PlatformFile actual constructor(fileUri: String) {
         )
     }
 
-    actual fun releasePersistableUriPermission() {
-        AndroidStuff.application.contentResolver.releasePersistableUriPermission(
-            parsedUri,
+    actual fun releasePersistableUriPermission(readWrite: Boolean) {
+        val flags = if (readWrite) {
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        )
-    }
+        } else {
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
 
+        try {
+            AndroidStuff.application.contentResolver.releasePersistableUriPermission(
+                parsedUri,
+                flags
+            )
+        } catch (e: SecurityException) {
+            // usually: No permission grants found for UID 10375 and Uri content://media/...
+            // ignore
+        }
+    }
 }

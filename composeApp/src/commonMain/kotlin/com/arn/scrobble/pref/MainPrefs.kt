@@ -68,7 +68,7 @@ data class MainPrefs(
     val currentAccountType: AccountType = AccountType.LASTFM,
     val scrobbleAccounts: List<UserAccountSerializable> = emptyList(),
     val drawerData: Map<AccountType, DrawerData> = emptyMap(),
-    val lastRandomType: Int = Stuff.TYPE_TRACKS,
+    val randomType: Int = Stuff.TYPE_TRACKS,
     val lastKillCheckTime: Long = -1,
     val userTopTagsFetched: Boolean = false,
     val collageSkipMissing: Boolean = false,

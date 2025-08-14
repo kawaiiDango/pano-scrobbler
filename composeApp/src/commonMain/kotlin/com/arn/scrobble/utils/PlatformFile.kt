@@ -24,5 +24,5 @@ expect class PlatformFile(fileUri: String) {
 
     fun takePersistableUriPermission(readWrite: Boolean)
 
-    fun releasePersistableUriPermission()
+    fun releasePersistableUriPermission(readWrite: Boolean)
 }

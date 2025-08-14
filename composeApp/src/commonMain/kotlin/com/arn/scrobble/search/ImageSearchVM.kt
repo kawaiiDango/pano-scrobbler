@@ -137,7 +137,7 @@ class ImageSearchVM : ViewModel() {
     fun deleteExistingMappings() {
         if (existingMappings.value.isNotEmpty()) {
             existingMappings.value.forEach {
-                it.fileUri?.let { it -> PlatformFile(it).releasePersistableUriPermission() }
+                it.fileUri?.let { it -> PlatformFile(it).releasePersistableUriPermission(readWrite = false) }
 
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
@@ -180,7 +180,7 @@ class ImageSearchVM : ViewModel() {
 
         // revoke uri permission for existing mappings
         existingMappings.value.forEach {
-            it.fileUri?.let { it -> PlatformFile(it).releasePersistableUriPermission() }
+            it.fileUri?.let { it -> PlatformFile(it).releasePersistableUriPermission(false) }
         }
 
         // create another mapping for the redirected artist/album

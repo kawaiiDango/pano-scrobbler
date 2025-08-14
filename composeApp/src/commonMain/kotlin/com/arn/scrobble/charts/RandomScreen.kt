@@ -72,7 +72,7 @@ fun RandomScreen(
     val musicEntry by viewModel.musicEntry.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
-    val type by PlatformStuff.mainPrefs.data.map { it.lastRandomType }
+    val type by PlatformStuff.mainPrefs.data.map { it.randomType }
         .collectAsStateWithLifecycle(Stuff.TYPE_TRACKS)
     var timePeriod by rememberSaveable(saver = jsonSerializableSaver<TimePeriod?>()) {
         mutableStateOf(null)
@@ -108,7 +108,7 @@ fun RandomScreen(
 
     // first load
     LaunchedEffect(user) {
-        PlatformStuff.mainPrefs.data.map { it.lastRandomType }
+        PlatformStuff.mainPrefs.data.map { it.randomType }
             .combine(chartsPeriodViewModel.selectedPeriod) { type, selectedPeriod ->
                 type to selectedPeriod
             }

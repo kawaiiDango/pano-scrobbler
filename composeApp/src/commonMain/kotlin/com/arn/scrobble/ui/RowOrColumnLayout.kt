@@ -8,6 +8,7 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
 import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun RowOrColumnLayout(
@@ -75,7 +76,7 @@ private fun MeasureScope.layoutAsColumn(
     child2: Measurable,
     constraints: Constraints
 ): MeasureResult {
-    // Measure child2 with wrap content height
+    // First, measure child2 with wrap content height to know how much space it needs
     val child2Placeable = child2.measure(
         constraints.copy(
             minHeight = 0,
@@ -83,17 +84,20 @@ private fun MeasureScope.layoutAsColumn(
         )
     )
 
-    // Calculate remaining height for child1
+    // Calculate remaining height for child1 (image)
     val remainingHeight = (constraints.maxHeight - child2Placeable.height).coerceAtLeast(0)
 
-    // Measure child1 with remaining height
+    // For 1:1 aspect ratio, the image size should be the minimum of:
+    // - remaining height
+    // - available width (to fit horizontally)
+    val imageSize = min(remainingHeight, constraints.maxWidth)
+
+    // Measure child1 (image) with square constraints for 1:1 aspect ratio
     val child1Placeable = child1.measure(
-        constraints.copy(
-            minHeight = remainingHeight,
-            maxHeight = remainingHeight
-        )
+        Constraints.fixed(imageSize, imageSize)
     )
 
+    // Calculate the actual total dimensions (no empty spaces)
     val totalWidth = max(child1Placeable.width, child2Placeable.width)
     val totalHeight = child1Placeable.height + child2Placeable.height
 

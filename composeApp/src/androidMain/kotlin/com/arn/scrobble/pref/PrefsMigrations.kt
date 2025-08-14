@@ -2,7 +2,6 @@ package com.arn.scrobble.pref
 
 import androidx.datastore.core.DataMigration
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.lastfm.CookieSerializable
 import com.arn.scrobble.charts.AllPeriods
@@ -71,11 +70,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
         } ?: emptyList()
         val currentAccountType =
             scrobbleAccounts.getOrNull(currentAccountIdx)?.type ?: AccountType.LASTFM
-        val drawerDataJson = sharedPreferences.getString("drawer_data", null)
-        val drawerData =
-            drawerDataJson?.let { Stuff.myJson.decodeFromString<Map<AccountType, DrawerData>>(it) }
-                ?: emptyMap()
-        val lastRandomType = sharedPreferences.getInt("random_type", Stuff.TYPE_TRACKS)
         val lastKillCheckTime = sharedPreferences.getLong("last_kill_checked", -1)
         val collageSkipMissing = sharedPreferences.getBoolean("collage_skip_missing", false)
         val collageUsername = sharedPreferences.getBoolean("collage_username", true)
@@ -153,8 +147,6 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             lastHomePagerTab = lastHomePagerTab,
             currentAccountType = currentAccountType,
             scrobbleAccounts = scrobbleAccounts,
-            drawerData = drawerData,
-            lastRandomType = lastRandomType,
             lastKillCheckTime = lastKillCheckTime,
             collageSkipMissing = collageSkipMissing,
             collageUsername = collageUsername,

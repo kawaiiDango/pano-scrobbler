@@ -160,6 +160,7 @@
     <string name="rate_msg">喜欢这个应用吗？</string>
     <string name="time_just_now">刚刚</string>
     <string name="no_mail_apps">未安装电子邮件客户端</string>
+    <string name="add">添加新项目</string>
     <string name="loved" comment="Its a noun">已点赞</string>
     <string name="unloved" comment="Its a noun">不再喜爱的</string>
     <string name="simple_edits">编辑</string>
@@ -212,6 +213,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s 热门音乐记录</string>
     <string name="my_tags" comment="Tags, the user has added">我的标记</string>
     <string name="close" comment="To close a dialog or something">关闭</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">退出</string>
     <string name="user_tags_hint" comment="To add a new tag">新标记</string>
     <string name="user_tags_empty">您还没有添加任何标记</string>
     <string name="appwidget_loading">正在加载…</string>
@@ -341,6 +343,8 @@
     <string name="no_updates">无可用更新</string>
     <string name="pref_notify_updates">自动更新</string>
     <string name="update_downloaded">更新下载完成</string>
+    <string name="pref_search_url_template">搜索 URL 模板</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">使用 $query 作为搜索词占位符</string>
     <string name="pref_native_file_picker">使用原生文件选择器</string>
     <string name="update_available" formatted="true" comment="%1= the version number">更新可用：%1$s</string>
     <string name="downloading">下载中</string>
@@ -386,6 +390,8 @@
     <string name="create" comment="Create a new file">创建</string>
     <string name="scan_qr">扫码以登录</string>
     <string name="copy_from">复制自</string>
+    <string name="nothing" comment="nothing/none">无</string>
+    <string name="borders" comment="Borders between images in the generated collage">边框</string>
     <string name="ok">好的</string>
     <string name="cancel">取消</string>
     <string name="back">返回</string>
@@ -401,6 +407,7 @@
     <string name="needs_plugin" comment="Used for some desktop media players">某些应用需要插件</string>
     <string name="reload" comment="Reload or refresh">重载</string>
     <string name="automation">从自动化应用控制Pano Scrobbler</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s 元数据区域</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">为 %1$s 获取缺失的元数据</string>
     <string name="login_in_browser">在浏览器窗口完成登录</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">在 %1$s 上获取此应用</string>

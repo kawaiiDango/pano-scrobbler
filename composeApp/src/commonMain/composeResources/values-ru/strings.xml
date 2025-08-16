@@ -456,8 +456,16 @@
     <string name="needs_plugin" comment="Used for some desktop media players">Для некоторых приложений требуются плагины</string>
     <string name="reload" comment="Reload or refresh">Обновить</string>
     <string name="automation">Управление Pano Scrobbler через приложения для автоматизации</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Страна для метаданных %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Получить недостающие метаданные для %1$s</string>
+    <string name="login_in_browser">Завершите вход в окне браузера</string>
+    <string name="edit_no_save">Это не будет сохранено для будущих скробблов</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Скачать это приложение в %1$s</string>
+    <string name="first_artist">Использовать только первого исполнителя</string>
+    <string name="external_metadata">Внешние источники метаданных</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
+    <string name="one_time_purchase">Разово</string>
     <string name="help">Помощь</string>
     <string name="pro_support">Это простой и быстрый способ для таких замечательных пользователей, как вы, продемонстрировать поддержку, осознавая ценность этого приложения.</string>
     <string name="pro_also_get">Вы также получите следующие возможности:</string>

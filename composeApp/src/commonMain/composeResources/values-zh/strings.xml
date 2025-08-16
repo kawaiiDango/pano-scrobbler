@@ -123,6 +123,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">该项目的选项</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">检测到 %1$s</string>
     <string name="new_player_prompt">继续为此应用启用音乐记录吗？</string>
+    <string name="new_player_prompt_desktop">前往设置以启用对此应用的扫描</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">无法访问 %1$s</string>
+    <string name="file_exists_confirm_overwrite">文件存在。再次点击以覆盖。</string>
     <string name="no_scrobbles">这里还没有歌曲…</string>
     <string name="no_friends">还没有关注任何人…</string>
     <string name="channel_err" comment="Its a noun">音乐记录错误</string>
@@ -157,6 +160,7 @@
     <string name="rate_msg">喜欢这个应用吗？</string>
     <string name="time_just_now">刚刚</string>
     <string name="no_mail_apps">未安装电子邮件客户端</string>
+    <string name="add">添加新项目</string>
     <string name="loved" comment="Its a noun">已点赞</string>
     <string name="unloved" comment="Its a noun">不再喜爱的</string>
     <string name="simple_edits">编辑</string>
@@ -209,6 +213,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s 热门音乐记录</string>
     <string name="my_tags" comment="Tags, the user has added">我的标记</string>
     <string name="close" comment="To close a dialog or something">关闭</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">退出</string>
     <string name="user_tags_hint" comment="To add a new tag">新标记</string>
     <string name="user_tags_empty">您还没有添加任何标记</string>
     <string name="appwidget_loading">正在加载…</string>
@@ -261,6 +266,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">您想启用 %1$s 这条编辑模板规则吗？</string>
     <string name="show_persistent_noti">显示一条常驻通知</string>
     <string name="fix_it_desc">用于保证记录器在某些设备上维持后台运行</string>
+    <string name="persistent_noti_text">点击以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
     <string name="duration">持续时间</string>
@@ -328,12 +334,20 @@
     <string name="pref_search_in_source">在抓取记录的来源应用中搜索 &amp; 播放</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">如果应用支持</string>
     <string name="pref_lists" comment="Such as edits list and block lists">列表</string>
+    <string name="regex_rules">正则表达式</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">已屏蔽的元数据条目</string>
     <string name="pref_translate">翻译本应用</string>
     <string name="pref_translate_credits">翻译人员</string>
     <string name="pref_oss_credits">开源许可</string>
     <string name="pref_check_updates">检查更新</string>
+    <string name="no_updates">无可用更新</string>
+    <string name="pref_notify_updates">自动更新</string>
+    <string name="update_downloaded">更新下载完成</string>
+    <string name="pref_search_url_template">搜索 URL 模板</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">使用 $query 作为搜索词占位符</string>
+    <string name="pref_native_file_picker">使用原生文件选择器</string>
     <string name="update_available" formatted="true" comment="%1= the version number">更新可用：%1$s</string>
+    <string name="downloading">下载中</string>
     <string name="download" comment="Its a verb">下载</string>
     <string name="changelog">更新日志</string>
     <string name="import_hey_wtf">此文件可能不是由 Pano Scrobbler 所导出</string>
@@ -374,6 +388,10 @@
     <string name="password">密码</string>
     <string name="open_existing" comment="Append to an existing file">追加至现有文件</string>
     <string name="create" comment="Create a new file">创建</string>
+    <string name="scan_qr">扫码以登录</string>
+    <string name="copy_from">复制自</string>
+    <string name="nothing" comment="nothing/none">无</string>
+    <string name="borders" comment="Borders between images in the generated collage">边框</string>
     <string name="ok">好的</string>
     <string name="cancel">取消</string>
     <string name="back">返回</string>
@@ -386,8 +404,18 @@
     <string name="high" comment="As in high/medium/low">高</string>
     <string name="medium" comment="As in high/medium/low">中</string>
     <string name="low" comment="As in high/medium/low">低</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">某些应用需要插件</string>
+    <string name="reload" comment="Reload or refresh">重载</string>
+    <string name="automation">从自动化应用控制Pano Scrobbler</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s 元数据区域</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">为 %1$s 获取缺失的元数据</string>
+    <string name="login_in_browser">在浏览器窗口完成登录</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">在 %1$s 上获取此应用</string>
+    <string name="first_artist">仅使用第一个艺人</string>
+    <string name="external_metadata">外部元数据源</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
+    <string name="one_time_purchase">1次</string>
     <string name="help">帮助</string>
     <string name="pro_support">下面向您这样的宝贵用户提供一种简单、直接的方式，如果您觉得这款应用有价值，不妨以此对其表示支持。</string>
     <string name="pro_also_get">您同时也将解锁以下功能：</string>

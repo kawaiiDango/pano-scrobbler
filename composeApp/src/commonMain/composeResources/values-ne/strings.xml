@@ -113,6 +113,8 @@
     <string name="share_sig">(Pano Scrobbler मार्फत)</string>
     <string name="share">शेयर</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">लेजेण्ड</string>
+    <string name="grid" comment="Grid view">ग्रिड</string>
+    <string name="list" comment="Single column list view">सूची</string>
     <string name="more_info">थप जानकारी</string>
     <string name="more" comment="More options menu in short">अरू</string>
     <string name="learn" comment="(Learn java regex syntax)">सिक्नुहोस्</string>
@@ -292,7 +294,7 @@
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">हप्ता सुरु हुन्छ</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">आयात &amp; निर्यात</string>
     <string name="pref_export">निर्यात</string>
-    <string name="pref_export_desc">सेटिङ, एडिट, ब्लकलिस्त ब्याक अप गर्नुहोस्। लॉगिन सँग सम्बन्धित जानकारी ब्याकअप सुरक्षा को कारण ले ब्याकअप हुँदैन। साथीभाइ संग शेयर गर्दा र मोबाइल परिवर्तन गर्दा उपयोगी हुन्छ।.</string>
+    <string name="pref_export_desc">सेटिङ्स, एडिट, ब्लकलिस्ट बाट ब्याकअप गर्नुहोस्। लग-इन सँग सम्बन्धित जानकारी ब्याकअप सुरक्षा को कारण ले ब्याकअप हुँदैन। साथीभाइ संग शेयर गर्दा र मोबाइल परिवर्तन गर्दा उपयोगी हुन्छ।.</string>
     <string name="pref_import">आयात</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">नेटवर्क</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">कोड</string>

@@ -40,7 +40,7 @@
         <item quantity="other">pencorakan edit</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="other">metadata yang disekat</item>
+        <item quantity="other">%1$s metadata yang disekat</item>
     </plurals>
     <plurals name="num_minutes">
         <item quantity="other">%1$d minit</item>

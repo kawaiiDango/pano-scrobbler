@@ -416,6 +416,7 @@
     <string name="automation">Pano Scrobbler durch Automatisierungs-Apps steuern</string>
     <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
+    <string name="one_time_purchase">Einmalig</string>
     <string name="help">Hilfe</string>
     <string name="pro_support">Dies ist eine einfache und schnelle Möglichkeit ihre Unterstützung zu zeigen.</string>
     <string name="pro_also_get">Sie erhalten auch die folgenden Funktionen:</string>

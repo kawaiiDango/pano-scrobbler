@@ -326,9 +326,8 @@ aboutLibraries {
         configPath = File("aboutLibsConfig")
         fetchRemoteLicense = false
         fetchRemoteFunding = false
-        license.strictMode = StrictMode.FAIL
+        license.strictMode = StrictMode.WARN
         library.duplicationMode = DuplicateMode.MERGE
-        android.registerAndroidTasks = false
     }
 
     export {

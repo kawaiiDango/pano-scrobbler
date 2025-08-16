@@ -367,7 +367,9 @@ fun TimePeriodSelector(
                 onDismissRequest = { dropdownTypeShown = null },
                 allowedRange = user.registeredTime to System.currentTimeMillis(),
                 onMonthMillisSelected = {
-                    viewModel.setSelectedPeriod(validTimes[it]!!)
+                    validTimes[it]?.let {
+                        viewModel.setSelectedPeriod(it)
+                    }
                 }
             )
         }

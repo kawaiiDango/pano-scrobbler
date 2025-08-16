@@ -21,9 +21,11 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
         val sharedPreferences = AndroidStuff.application.getHarmonySharedPreferences("main")
         val scrobblerEnabled = sharedPreferences.getBoolean("master", true)
         val allowedPackages =
-            sharedPreferences.getStringSet("app_whitelist", emptySet()) ?: emptySet()
+            sharedPreferences.getStringSet("app_whitelist", emptySet())?.filterNotNull()?.toSet()
+                ?: emptySet()
         val blockedPackages =
-            sharedPreferences.getStringSet("app_blacklist", emptySet()) ?: emptySet()
+            sharedPreferences.getStringSet("app_blacklist", emptySet())?.filterNotNull()?.toSet()
+                ?: emptySet()
         val autoDetectApps = sharedPreferences.getBoolean("auto_detect", true)
         val delaySecs = sharedPreferences.getInt("delay_secs", 180)
         val delayPercent = sharedPreferences.getInt("delay_per", 50)
@@ -100,7 +102,9 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
             sharedPreferences.getLong("date_firstlaunch", -1).takeIf { it != -1L }
         val lastUpdateCheckTime =
             sharedPreferences.getLong("last_update_check_time", -1).takeIf { it != -1L }
-        val hiddenTags = sharedPreferences.getStringSet("hidden_tags", emptySet()) ?: emptySet()
+        val hiddenTags =
+            sharedPreferences.getStringSet("hidden_tags", emptySet())?.filterNotNull()?.toSet()
+                ?: emptySet()
         val spotifyAccessToken =
             sharedPreferences.getString("spotify_access_token", "bad_token") ?: "bad_token"
         val spotifyAccessTokenExpires =
@@ -116,7 +120,10 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
         val cookies = cookiesPrefs.all.mapNotNull { (key, value) ->
             value?.let {
                 val cookie = Stuff.myJson.decodeFromString<CookieSerializable>(it as String)
-                key to cookie
+                if (key != null)
+                    key to cookie
+                else
+                    null
             }
         }.toMap()
 

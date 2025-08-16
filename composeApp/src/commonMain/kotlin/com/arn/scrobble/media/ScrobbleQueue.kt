@@ -63,8 +63,8 @@ class ScrobbleQueue(
     private fun canFetchAdditionalMetadata(): Boolean {
         val now = System.currentTimeMillis()
         // Remove timestamps older than n seconds
-        while (fetchAdditionalMetadataTimestamps.isNotEmpty() && now - fetchAdditionalMetadataTimestamps.first() > 1 * 60_000) {
-            fetchAdditionalMetadataTimestamps.removeFirst()
+        while (now - (fetchAdditionalMetadataTimestamps.firstOrNull() ?: now) > 1 * 60_000) {
+            fetchAdditionalMetadataTimestamps.removeFirstOrNull()
         }
         val can = fetchAdditionalMetadataTimestamps.size < 2
         fetchAdditionalMetadataTimestamps.addLast(System.currentTimeMillis())

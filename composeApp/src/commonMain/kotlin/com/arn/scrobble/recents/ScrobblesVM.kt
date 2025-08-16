@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -88,7 +89,17 @@ class ScrobblesVM : ViewModel() {
                         onClearOverrides = ::clearOverrides
                     )
                 }
-            ).flow
+            )
+                .flow
+                .map { pagingData ->
+                    val keysTillNow = mutableSetOf<String>()
+                    pagingData.filter {
+                        val key = it.generateKey()
+                        val keep = key !in keysTillNow
+                        keysTillNow += key
+                        keep
+                    }
+                }
         }
         .cachedIn(viewModelScope)
         .onEach {

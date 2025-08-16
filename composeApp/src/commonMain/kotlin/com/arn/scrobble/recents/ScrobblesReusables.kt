@@ -699,10 +699,11 @@ fun LazyListScope.scrobblesListItems(
         }
 
         if (trackPeek == null || trackPeek !in deletedTracksSet) {
+            val key = trackPeek?.generateKey() ?: "placeholder_$i"
 
             if (trackPeek?.date in viewModel.lastScrobbleOfTheDaySet) {
                 item(
-                    key = "date_separator\n${trackPeek?.generateKey()}"
+                    key = "date_separator\n$key"
                 ) {
                     HorizontalDivider(
                         modifier = Modifier
@@ -712,7 +713,6 @@ fun LazyListScope.scrobblesListItems(
                 }
             }
 
-            val key = trackPeek?.generateKey() ?: "placeholder_$i"
             item(
                 key = key
             ) {

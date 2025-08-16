@@ -683,6 +683,7 @@ tasks.register<Exec>("buildNativeImage") {
         "-H:ConfigurationFileDirectories=" + reachabilityFiles.absolutePath,
         "-Djava.awt.headless=false",
         "-R:MaxHeapSize=300M",
+        "--initialize-at-build-time=kotlin.text.Charsets",
         "-H:+AddAllCharsets",
 //        "-g",
 //        "--enable-monitoring=nmt",

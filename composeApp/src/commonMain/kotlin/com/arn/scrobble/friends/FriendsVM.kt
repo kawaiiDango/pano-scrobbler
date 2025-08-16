@@ -44,6 +44,7 @@ class FriendsVM : ViewModel() {
 
     val pinnedFriends = mainPrefs.data.map {
         it.pinnedFriends[it.currentAccountType]
+            ?.distinctBy { it.name } // hotfix for crash
             ?.sortedBy { it.order }
             ?: emptyList()
     }

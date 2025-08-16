@@ -77,11 +77,12 @@ class ScrobblesPagingSource(
 
         return if (result?.isSuccess == true) {
             val pr = result.getOrThrow()
-            // all entries should be older than lastScrobbleTimestamp
-            val entries = if (lastScrobbleTimestamp != null)
-                pr.entries.filter { (it.date ?: 0) < lastScrobbleTimestamp }
-            else
-                pr.entries
+//            // all entries should be older than lastScrobbleTimestamp
+//            val entries = if (lastScrobbleTimestamp != null)
+//                pr.entries.filter { (it.date ?: 0) < lastScrobbleTimestamp }
+//            else
+//                pr.entries
+            val entries = pr.entries
 
 
             val prevPage = if (pr.attr.page <= 1) null else pr.attr.page - 1

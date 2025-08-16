@@ -1,8 +1,9 @@
 package com.arn.scrobble.utils
 
-import io.ktor.utils.io.core.toByteArray
+import net.openhft.hashing.ByteBufferAccess
 import net.openhft.hashing.LongHashFunction
 import pano_scrobbler.composeapp.generated.resources.Res
+import java.nio.ByteBuffer
 
 object FirstArtistExtractor {
     private lateinit var knownArtists: Set<Long>
@@ -97,7 +98,6 @@ object FirstArtistExtractor {
         this.knownArtists = knownArtists
     }
 
-    private fun String.x() = xxhash.hashBytes(this.toByteArray())
 
     suspend fun extract(artistString: String, useAnd: Boolean): String {
         if (!initialized) {
@@ -108,6 +108,31 @@ object FirstArtistExtractor {
 
         val trimmed = artistString.trim()
         if (trimmed.isEmpty()) return trimmed
+
+        if (!PlatformStuff.isJava8OrGreater) return trimmed
+
+        var byteBuffer: ByteBuffer? = null
+
+        fun String.x(): Long {
+            //  the first call to this function is always the with longest string. Will allocate max space.
+            val byteArray = encodeToByteArray(throwOnInvalidSequence = false)
+
+            if (byteBuffer == null) {
+                byteBuffer = ByteBuffer.allocate(byteArray.size)
+            }
+
+            byteBuffer.clear()
+            byteBuffer.put(byteArray)
+            byteBuffer.flip()
+
+            return xxhash.hash(
+                byteBuffer,
+                // force this instance to avoid UnsafeAccess and native crashes on 32-bit Samsungs
+                ByteBufferAccess.INSTANCE,
+                byteBuffer.position().toLong(),
+                byteBuffer.remaining().toLong()
+            )
+        }
 
         // Quick check: if entire string is known
         if (knownArtists.contains(trimmed.x())) {

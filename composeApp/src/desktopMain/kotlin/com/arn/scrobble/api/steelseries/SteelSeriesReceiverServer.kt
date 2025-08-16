@@ -37,8 +37,10 @@ actual object SteelSeriesReceiverServer {
             )
 
             if (!corePropsFile.exists()) {
-                Logger.w { "SteelSeries coreProps.json file not found at ${corePropsFile.absolutePath}" }
-                return
+                Logger.w { "SteelSeries coreProps.json file not found, creating it" }
+
+                corePropsFile.parentFile.mkdirs()
+                corePropsFile.writeText("{\"address\":\"127.0.0.1:3650\"}")
             }
 
             val address = Stuff.myJson.decodeFromString<SteelSeriesSeverAddress>(

@@ -343,6 +343,7 @@
     <string name="no_updates">사용 가능한 업데이트 없음</string>
     <string name="pref_notify_updates">자동 업데이트</string>
     <string name="update_downloaded">업데이트 다운로드 완료됨</string>
+    <string name="pref_search_url_template">URL 템플릿 검색</string>
     <string name="pref_native_file_picker">내장 파일 선택기 사용</string>
     <string name="update_available" formatted="true" comment="%1= the version number">업데이트 가능: %1$s</string>
     <string name="downloading">다운로드 중</string>

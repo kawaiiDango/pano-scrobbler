@@ -34,7 +34,7 @@
         <item quantity="other">%1$d개 일치</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="other">%1$s개 편집</item>
+        <item quantity="other">%1$s개의 편집</item>
     </plurals>
     <plurals name="num_regex_edits">
         <item quantity="other">%1$s개의 패턴 수정</item>
@@ -123,6 +123,7 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">이 항목에 대한 옵션</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s 감지됨</string>
     <string name="new_player_prompt">이 앱을 계속 스크롤빙 할까요?</string>
+    <string name="new_player_prompt_desktop">설정으로 이동해 이 앱의 스크로블을 시작하세요</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">\"%1$s\"에 접근할 수 없음</string>
     <string name="file_exists_confirm_overwrite">파일이 이미 존재합니다. 다시 클릭하여 덮어쓰기하십시오.</string>
     <string name="no_scrobbles">여기엔 아직 노래가 없습니다...</string>
@@ -249,7 +250,7 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">패턴 제한 도달(%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">드래그 핸들</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ 사용하기 전에 <a href="https://www.google.com/search?q=regex+tutorial">자바 정규표현식</a>을 숙지하거나, 제공되는 <b>프리셋</b>을 사용하세요. 정규표현식 확인은 위에서부터 시행됩니다</string>
-    <string name="blocked_metadata_info">ℹ️ 이 필드 중 하나 이상을 채우면 이들 사이에 AND 연산자가 적용됩니다.</string>
+    <string name="blocked_metadata_info">이 필드 중 하나 이상을 채우면 이들 사이에 AND 연산자가 적용됩니다</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">눌러서 차단하고 건너뛰기</string>
     <string name="player_actions" comment="music player actions such as skip/mute">플레이어 동작</string>
     <string name="skip" comment="skip to next track">건너뛰기</string>
@@ -288,12 +289,13 @@
     <string name="pref_master_qs_already_addded">빠른 설정 타일이 이미 추가되었습니다</string>
     <string name="pref_noti">알림</string>
     <string name="pref_lockscreen_noti">잠금화면 알림</string>
-    <string name="pref_offline_info">ℹ️ 오프라인 상태에서의 스크로블과 좋아요는 저장되었다가 나중에 전송됩니다.</string>
+    <string name="pref_offline_info">&amp; 오프라인 상태에서의 스크로블과 좋아요는 저장되었다가 나중에 전송됩니다.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">다음에서 스크로블</string>
-    <string name="pref_enabled_apps_summary">ℹ️ 음악 메타데이터를 공개하는 앱을 지원합니다. Spotify에서는 중복 스크로블을 피하기 위해 한 군데에서만 활성화하세요.</string>
+    <string name="pref_enabled_apps_summary">음악 메타데이터를 공개하는 앱을 지원합니다. Spotify에서는 중복 스크로블을 피하기 위해 한 군데에서만 활성화하세요.</string>
     <string name="pref_enabled_apps_title">앱 선택</string>
     <string name="pref_auto_detect">자동으로 새 앱을 통해 스크로블</string>
     <string name="pref_spotify_remote">Spotify가 다른 기기에서 재생 중일 때 스크로블</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">아티스트의 사진을 검색할 때 근사 검색 사용</string>
     <string name="pref_link_heart_button_rating">알림의 하트 버튼으로 미디어 플레이어의 즐겨찾기에 추가하기</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">기기에서 음악이 재생 중일 때 마이크를 통한 중복 스크로블링 비활성화</string>
     <string name="pref_delay">스크로블 딜레이 (빠른 쪽 우선)</string>
@@ -332,6 +334,7 @@
     <string name="pref_search_in_source">스크로블한 앱에서 검색 및 재생</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">지원되는 앱</string>
     <string name="pref_lists" comment="Such as edits list and block lists">목록</string>
+    <string name="regex_rules">정규식</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">차단된 메타데이터</string>
     <string name="pref_translate">앱 번역하기</string>
     <string name="pref_translate_credits">번역 크레딧</string>
@@ -373,18 +376,20 @@
     <string name="fix_it_action" comment="(To open an app)">열기</string>
     <string name="delete_account">계정 삭제</string>
     <string name="delete_account_custom_servers">사용자 정의 서버의 경우, 해당 서버의 문서를 확인하세요.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">이미지를 추가하거나 바꾸기</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">갤러리에서 가져오기</string>
     <string name="scrobble_to_file">파일</string>
     <string name="password">비밀번호</string>
     <string name="create" comment="Create a new file">만들기</string>
     <string name="scan_qr">스캔해서 로그인하기</string>
+    <string name="copy_from">에서 복사됨</string>
     <string name="nothing" comment="nothing/none">없음</string>
     <string name="ok">예</string>
     <string name="cancel">취소</string>
     <string name="back">돌아가기</string>
     <string name="done">완료</string>
     <string name="retry" comment="Retry loading data from network after it has failed">다시 시도</string>
-    <string name="run_on_start">컴퓨터가 시작될 때 시작됨</string>
+    <string name="run_on_start">컴퓨터가 시작될 때 실행하기</string>
     <string name="use_browser">이걸 하기 위해서 지원되는 디바이스의 브라우저를 사용하세요.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">로그 저장</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">대비</string>
@@ -393,8 +398,13 @@
     <string name="low" comment="As in high/medium/low">낮음</string>
     <string name="needs_plugin" comment="Used for some desktop media players">몇몇 앱에 플러그인이 필요함</string>
     <string name="reload" comment="Reload or refresh">새로고침</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s에서 누락된 메타데이터 가져오기</string>
+    <string name="login_in_browser">브라우저 창에서 로그인을 완료하세요</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">이 앱을 %1$s에서 설치하기</string>
+    <string name="first_artist">첫번째 아티스트에만 사용하기</string>
     <!--  pro  -->
     <string name="get_pro">앱 지원하기</string>
+    <string name="one_time_purchase">한 번</string>
     <string name="help">도움말</string>
     <string name="pro_support">이것은 당신같이 훌륭한 사용자들이 이 앱의 가치를 인정하고 지원하는 간편하고 빠른 방법입니다.</string>
     <string name="pro_also_get">다음과 같은 기능도 이용하실 수 있습니다:</string>

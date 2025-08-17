@@ -357,10 +357,14 @@
     <string name="pref_translate_credits">Crédits de traduction</string>
     <string name="pref_oss_credits">Crédits Open Source</string>
     <string name="pref_check_updates">Rechercher des mises à jour</string>
+    <string name="no_updates">Aucune mise à jour disponible</string>
+    <string name="pref_notify_updates">Mises à jour automatiques</string>
+    <string name="update_downloaded">Mise à jour téléchargée</string>
     <string name="pref_search_url_template">Modèle d\'URL de recherche</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Utiliser $query comme caractère générique pour le terme de recherche</string>
     <string name="pref_native_file_picker">Utiliser le sélecteur de fichiers natif</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Mise à jour disponible: %1$s</string>
+    <string name="downloading">Téléchargement en cours</string>
     <string name="download" comment="Its a verb">Télécharger</string>
     <string name="changelog">Journal des modifications</string>
     <string name="import_hey_wtf">Ce n\'est probablement pas un fichier d\'exportation Pano Scrobbler</string>
@@ -401,6 +405,9 @@
     <string name="password">Mot de passe</string>
     <string name="open_existing" comment="Append to an existing file">Ajouter à un fichier existant</string>
     <string name="create" comment="Create a new file">Créer</string>
+    <string name="scan_qr">Scannez ceci pour vous connecter</string>
+    <string name="copy_from">Copier depuis</string>
+    <string name="borders" comment="Borders between images in the generated collage">Bordures</string>
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
     <string name="back">Retour</string>
@@ -416,8 +423,16 @@
     <string name="needs_plugin" comment="Used for some desktop media players">Nécessite un plugin</string>
     <string name="reload" comment="Reload or refresh">Recharger</string>
     <string name="automation">Contrôler Pano Scrobbler à partir d\'applications d\'automatisation</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Pays des métadonnées %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Récupérer les métadonnées manquantes pour %1$s</string>
+    <string name="login_in_browser">Terminer la connexion dans la fenêtre du navigateur</string>
+    <string name="edit_no_save">Ceci ne sera pas sauvegardé pour les scrobbles futurs</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Téléchargez cette application sur %1$s</string>
+    <string name="first_artist">Utiliser uniquement le premier artiste</string>
+    <string name="external_metadata">Sources de métadonnées externes</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
+    <string name="one_time_purchase">Achat unique</string>
     <string name="help">Aide</string>
     <string name="pro_support">C\'est une façon simple et rapide pour les utilisateurs incroyables comme vous de montrer leur soutien en reconnaissant la valeur de cette application.</string>
     <string name="pro_also_get">Vous obtiendrez également les fonctionnalités suivantes :</string>

@@ -143,6 +143,7 @@
     <string name="swap" comment="(Swap title and artist)">Byt</string>
     <string name="time_just_now">just nu</string>
     <string name="simple_edits">Redigeringar</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Topplistor</string>
     <string name="details">Detaljer</string>
     <string name="sort">Sortera</string>
     <!--  pro  -->

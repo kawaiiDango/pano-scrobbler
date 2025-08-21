@@ -113,6 +113,7 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Partilhar</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
+    <string name="grid" comment="Grid view">Grelha</string>
     <string name="list" comment="Single column list view">Lista</string>
     <string name="more_info">Mais informação</string>
     <string name="more" comment="More options menu in short">Mais</string>
@@ -138,7 +139,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s detetada</string>
     <string name="new_player_prompt">Continuar a fazer scrobble desta app?</string>
+    <string name="new_player_prompt_desktop">Ir para as definições para iniciar scrobbles desta aplicação</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">Não foi possível aceder a %1$s</string>
+    <string name="file_exists_confirm_overwrite">O ficheiro existe. Clique novamente para substituir.</string>
     <string name="no_scrobbles">Sem músicas aqui ainda…</string>
     <string name="no_friends">Ainda não segue ninguém…</string>
     <string name="channel_err" comment="Its a noun">Erro de Scrobble</string>
@@ -227,6 +230,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Top %1$s de scrobbles</string>
     <string name="my_tags" comment="Tags, the user has added">Minhas etiquetas</string>
     <string name="close" comment="To close a dialog or something">Fechar</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Encerrar</string>
     <string name="user_tags_hint" comment="To add a new tag">Nova etiqueta</string>
     <string name="user_tags_empty">Ainda não adicionou nenhuma etiqueta</string>
     <string name="appwidget_loading">A carregar…</string>
@@ -357,6 +361,8 @@
     <string name="pref_notify_updates">Atualizações automáticas</string>
     <string name="update_downloaded">Atualização transferida</string>
     <string name="pref_search_url_template">Pesquisar modelo de URL</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Use $query como espaço reservado para termo de pesquisa</string>
+    <string name="pref_native_file_picker">Usar seletor de ficheiros nativo</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Atualização disponível: %1$s</string>
     <string name="downloading">A transferir</string>
     <string name="download" comment="Its a verb">Transferir</string>
@@ -372,11 +378,13 @@
     <string name="import_settings">Importar definições</string>
     <string name="copied">Copiado!</string>
     <string name="lastfm_reauth">Precisa de reiniciar sessão para editar ou apagar scrobbles</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Instância semelhante a %1$s</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Selecione %1$s</string>
     <string name="no_browser">Nenhum navegador instalado</string>
     <string name="no_player">Nenhum reprodutor de música instalado</string>
     <string name="not_running">⚠ Scrobbler terminado abruptamente pelo seu sistema</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo: %1$s</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit" comment="Verifies the login details">Verificar</string>
     <string name="submitting_loves" formatted="true">A submeter favoritas, %1$d restantes</string>
@@ -397,22 +405,35 @@
     <string name="password">Palavra-passe</string>
     <string name="open_existing" comment="Append to an existing file">Anexar à existente</string>
     <string name="create" comment="Create a new file">Adicionar</string>
+    <string name="scan_qr">Ler código para iniciar sessão</string>
     <string name="copy_from">Copiar de</string>
+    <string name="nothing" comment="nothing/none">Nada</string>
     <string name="borders" comment="Borders between images in the generated collage">Bordas</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
+    <string name="back">Anterior</string>
     <string name="done">Concluído</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Tentar novamente</string>
     <string name="run_on_start">Executar ao iniciar o computador</string>
+    <string name="use_browser">Por favor, use um navegador num dispositivo suportado para isso.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Guardar registos</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Contraste</string>
     <string name="high" comment="As in high/medium/low">Elevado</string>
     <string name="medium" comment="As in high/medium/low">Médio</string>
     <string name="low" comment="As in high/medium/low">Baixo</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Algumas aplicações precisam de plugins</string>
     <string name="reload" comment="Reload or refresh">Atualizar</string>
+    <string name="automation">Controlar Pano Scrobbler em apps de automação</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">País para metadados de %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Obter metadados em falta de %1$s</string>
+    <string name="login_in_browser">Conclua o início de sessão na janela do navegador</string>
+    <string name="edit_no_save">A edição não será guardada para futuros scrobbles</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Transferir esta app para %1$s</string>
+    <string name="first_artist">Usar apenas o primeiro artista</string>
+    <string name="external_metadata">Fontes de metadados externos</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar a aplicação</string>
+    <string name="one_time_purchase">Compra única</string>
     <string name="help">Ajuda</string>
     <string name="pro_support">Esta é uma maneira simples e rápida para que utilizadores incríveis como você demonstrem o seu apoio e reconhecimento pelo valor desta aplicação.</string>
     <string name="pro_also_get">Também terá acesso às seguintes funcionalidades:</string>
@@ -431,4 +452,5 @@ As suas compras são administradas pelo Google Play. Estas estão vinculadas a u
     <string name="billing_sharing">Remover nome da aplicação ao partilhar</string>
     <string name="billing_scrobble_source">Lembrar e ver aplicações com scrobbles seus e pesquisar diretamente nelas</string>
     <string name="billing_regex_extract">Escrever regras personalizadas de extração de metadados usando regex</string>
+    <string name="billing_max_devices_reached" formatted="true">Este código já foi usado no máximo de dispositivos (%1$d).</string>
 </resources>

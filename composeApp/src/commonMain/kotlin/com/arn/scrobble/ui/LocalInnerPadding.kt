@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import com.arn.scrobble.navigation.LocalNavigationType
+import com.arn.scrobble.navigation.PanoNavigationType
 
 val LocalInnerPadding = compositionLocalOf { PaddingValues(0.dp) }
 
@@ -23,7 +25,11 @@ fun Modifier.addColumnPadding() = verticalScroll(rememberScrollState())
     .padding(panoContentPadding())
 
 @Composable
-fun panoContentPadding(sides: Boolean = true, bottom: Boolean = true): PaddingValues {
+fun panoContentPadding(
+    sides: Boolean = true,
+    bottom: Boolean = true,
+    mayHaveBottomFab: Boolean = false,
+): PaddingValues {
     val safeDrawingPaddingValues = WindowInsets.safeDrawing.asPaddingValues()
     val innerPadding = LocalInnerPadding.current
 
@@ -33,7 +39,8 @@ fun panoContentPadding(sides: Boolean = true, bottom: Boolean = true): PaddingVa
                 max(
                     innerPadding.calculateBottomPadding(),
                     // this is needed for some reason when the bottom navigation bar is visible
-                    safeDrawingPaddingValues.calculateBottomPadding()
+                    safeDrawingPaddingValues.calculateBottomPadding() +
+                            if (mayHaveBottomFab && LocalNavigationType.current == PanoNavigationType.BOTTOM_NAVIGATION) 72.dp else 0.dp
                 ),
                 verticalOverscanPadding()
             )

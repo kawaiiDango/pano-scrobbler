@@ -353,7 +353,7 @@ fun NavGraphBuilder.panoNavGraph(
         onSetTitleRes(it.id, Res.string.regex_rules)
         RegexEditsScreen(
             onNavigate = navigate,
-            modifier = modifier().padding(panoContentPadding())
+            modifier = modifier()
         )
     }
 

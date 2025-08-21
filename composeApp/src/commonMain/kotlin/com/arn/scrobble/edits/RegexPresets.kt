@@ -17,6 +17,7 @@ import pano_scrobbler.composeapp.generated.resources.preset_remastered
 import pano_scrobbler.composeapp.generated.resources.preset_single_ep
 import pano_scrobbler.composeapp.generated.resources.preset_title_parse
 import pano_scrobbler.composeapp.generated.resources.preset_title_parse_with_fallback
+import pano_scrobbler.composeapp.generated.resources.remove
 
 enum class RegexPreset {
     parse_title,
@@ -290,10 +291,25 @@ object RegexPresets {
 
     @Composable
     fun getString(regexPreset: RegexPreset) = when (regexPreset) {
-        RegexPreset.remastered -> stringResource(Res.string.preset_remastered)
-        RegexPreset.explicit -> stringResource(Res.string.preset_explicit)
-        RegexPreset.album_ver -> stringResource(Res.string.preset_album_version)
-        RegexPreset.single_ep -> stringResource(Res.string.preset_single_ep)
+        RegexPreset.remastered -> stringResource(
+            Res.string.remove,
+            stringResource(Res.string.preset_remastered)
+        )
+
+        RegexPreset.explicit -> stringResource(
+            Res.string.remove,
+            stringResource(Res.string.preset_explicit)
+        )
+
+        RegexPreset.album_ver -> stringResource(
+            Res.string.remove,
+            stringResource(Res.string.preset_album_version)
+        )
+
+        RegexPreset.single_ep -> stringResource(
+            Res.string.remove,
+            stringResource(Res.string.preset_single_ep)
+        )
 //        RegexPreset.album_artist_as_artist -> stringResource(Res.string.preset_album_artist_as_artist)
         RegexPreset.parse_title -> stringResource(Res.string.preset_title_parse)
         RegexPreset.parse_title_with_fallback -> stringResource(Res.string.preset_title_parse_with_fallback)

@@ -1,6 +1,7 @@
 package com.arn.scrobble.db
 
 import androidx.annotation.Keep
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
@@ -31,6 +32,9 @@ data class RegexEdit(
     val appIds: Set<String> = emptySet(),
     val caseSensitive: Boolean = false,
     val blockPlayerAction: BlockPlayerAction? = null,
+
+    @ColumnInfo(defaultValue = "1")
+    val enabled: Boolean = true,
 ) {
     @Serializable
     data class SearchPatterns(

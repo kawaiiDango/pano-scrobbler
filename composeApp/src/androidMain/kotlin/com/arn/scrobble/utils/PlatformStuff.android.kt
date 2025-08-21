@@ -17,13 +17,13 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
+import android.provider.Settings
 import android.webkit.CookieManager
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.datastore.core.MultiProcessDataStoreFactory
@@ -92,9 +92,22 @@ actual object PlatformStuff {
 
     actual val isJava8OrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
-    actual fun isNotificationListenerEnabled() =
-        NotificationManagerCompat.getEnabledListenerPackages(application)
-            .any { it == application.packageName }
+    actual fun isNotificationListenerEnabled(): Boolean {
+        // adapted from NotificationManagerCompat.java
+
+        val enabledNotificationListeners = try {
+            Settings.Secure.getString(
+                application.contentResolver,
+                "enabled_notification_listeners"
+            )
+        } catch (e: SecurityException) {
+            return false
+        }
+
+        val nlsComponentStr = "${application.packageName}/${NLService::class.qualifiedName}"
+        // check for the exact component name instead of just package name
+        return enabledNotificationListeners?.split(":")?.any { it == nlsComponentStr } == true
+    }
 
     actual val isTv by lazy {
         val uiModeManager = ContextCompat.getSystemService(application, UiModeManager::class.java)!!

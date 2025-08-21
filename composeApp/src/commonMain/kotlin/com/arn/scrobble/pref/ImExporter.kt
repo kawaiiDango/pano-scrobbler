@@ -38,7 +38,7 @@ class ImExporter {
             pano_version = BuildKonfig.VER_CODE,
             simple_edits = db.getSimpleEditsDao().allFlow().first().asReversed(),
             blocked_metadata = db.getBlockedMetadataDao().allFlow().first().asReversed(),
-            regex_rules = db.getRegexEditsDao().allWithoutLimit(),
+            regex_rules = db.getRegexEditsDao().allFlow(limit = Int.MAX_VALUE).first(),
             scrobble_sources = null,
             settings = PlatformStuff.mainPrefs.data.first().toPublicPrefs()
         )

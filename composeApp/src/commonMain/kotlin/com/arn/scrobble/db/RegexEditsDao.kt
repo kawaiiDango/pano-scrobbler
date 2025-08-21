@@ -10,14 +10,24 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 @Dao
 interface RegexEditsDao {
-    @Query("SELECT * FROM $tableName ORDER BY `order` ASC")
-    suspend fun allWithoutLimit(): List<RegexEdit>
-
-    @Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    fun allFlow(): Flow<List<RegexEdit>>
+    @Query(
+        """
+    SELECT * FROM $tableName
+    WHERE enabled = 0
+       OR _id IN (
+           SELECT _id FROM $tableName
+           WHERE enabled = 1
+           ORDER BY `order` ASC
+           LIMIT :limit
+       )
+    ORDER BY `order` ASC
+    """
+    )
+    fun allFlow(limit: Int = Stuff.MAX_PATTERNS): Flow<List<RegexEdit>>
 
     @Query("SELECT count(1) FROM $tableName")
     fun count(): Flow<Int>
@@ -45,7 +55,7 @@ interface RegexEditsDao {
 
         suspend fun RegexEditsDao.import(e: List<RegexEdit>) {
             val existingWithoutOrder =
-                allWithoutLimit().map { it.copy(order = -1, _id = -1) }.toSet()
+                allFlow(limit = Int.MAX_VALUE).first().map { it.copy(order = -1, _id = -1) }.toSet()
             val toInsert = e.filter {
                 it.copy(order = -1, _id = -1) !in existingWithoutOrder
             }
@@ -78,7 +88,8 @@ interface RegexEditsDao {
 
             regexEdits
                 .filter {
-                    it.appIds.isEmpty() || scrobbleData.appId in it.appIds
+                    it.enabled &&
+                            (it.appIds.isEmpty() || scrobbleData.appId in it.appIds)
                 }.forEach { regexEdit ->
                     val scrobbleDataToMatches = listOf(
                         scrobbleData.track to regexEdit.search.searchTrack,

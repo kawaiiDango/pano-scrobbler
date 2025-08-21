@@ -36,7 +36,7 @@ import com.arn.scrobble.icons.AlbumArtist
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.EmptyTextWithButtonOnTv
+import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.TextWithIcon
@@ -82,7 +82,7 @@ fun BlockedMetadatasScreen(
             )
         }
 
-        EmptyTextWithButtonOnTv(
+        EmptyTextWithImportButtonOnTv(
             visible = blockedMetadatas?.isEmpty() == true,
             text = pluralStringResource(Res.plurals.num_blocked_metadata, 0, 0),
             onButtonClick = {
@@ -91,6 +91,7 @@ fun BlockedMetadatasScreen(
         )
 
         PanoLazyColumn(
+            contentPadding = panoContentPadding(mayHaveBottomFab = true),
             modifier = Modifier
                 .fillMaxSize()
         ) {

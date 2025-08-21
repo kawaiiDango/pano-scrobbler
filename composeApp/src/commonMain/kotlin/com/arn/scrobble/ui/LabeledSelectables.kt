@@ -44,7 +44,7 @@ fun LabeledCheckbox(
                 role = Role.Checkbox
             )
             .alpha(if (enabled) 1f else 0.5f)
-            .padding(vertical = 8.dp),
+            .padding(horizontal = 4.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(

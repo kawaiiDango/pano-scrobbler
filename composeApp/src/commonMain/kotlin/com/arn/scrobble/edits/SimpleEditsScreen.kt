@@ -32,7 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.EmptyTextWithButtonOnTv
+import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.backgroundForShimmer
@@ -69,7 +69,7 @@ fun SimpleEditsScreen(
             )
         }
 
-        EmptyTextWithButtonOnTv(
+        EmptyTextWithImportButtonOnTv(
             visible = simpleEdits?.isEmpty() == true,
             text = pluralStringResource(Res.plurals.num_simple_edits, 0, 0),
             onButtonClick = {
@@ -78,6 +78,7 @@ fun SimpleEditsScreen(
         )
 
         PanoLazyColumn(
+            contentPadding = panoContentPadding(mayHaveBottomFab = true),
             modifier = Modifier
                 .fillMaxSize()
         ) {
@@ -127,7 +128,6 @@ private fun SimpleEditItem(
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .padding(horizontal = 8.dp)
     ) {
         if (edit.legacyHash == null) {
             Icon(

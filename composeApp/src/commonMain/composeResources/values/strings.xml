@@ -521,8 +521,14 @@
         comment="musical analysis such as key, bpm, time signature, dancability etc"
         >Analysis</string>
     <string name="enable"
-        comment="To enable the scrobbler"
+        comment="To enable some feature"
         >Enable</string>
+    <string name="disable"
+        comment="To disable some feature"
+        >Disable</string>
+    <string name="remove" formatted="true"
+        comment="%1= the text to remove. For example, Remove: Remastered"
+        >Remove: %1$s</string>
     <string name="size"
         comment="Collage size such as 3x3, 4x4 etc"
         >Size</string>

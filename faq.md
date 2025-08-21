@@ -62,8 +62,8 @@ Use a different music player, which does that.
 
 ### What is the maximum number of edits that can be saved?
 
-There is no limit for regular edits and blocks. However, there is a limit of 30 for regex rules for
-performance reasons, because it has to try out every regex rule for every scrobble.
+There is no limit for regular edits and blocks. However, there can be at most 30 active or enabled
+regex rules for performance reasons, because it has to try out every regex rule for every scrobble.
 
 ### How do I stream music on this app?
 

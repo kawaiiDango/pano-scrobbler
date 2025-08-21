@@ -15,14 +15,21 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material.icons.outlined.FindReplace
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.SwipeLeftAlt
+import androidx.compose.material.icons.outlined.ToggleOff
+import androidx.compose.material.icons.outlined.ToggleOn
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SplitButtonDefaults
@@ -48,12 +55,12 @@ import com.arn.scrobble.icons.MatchCase
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.DraggableItem
-import com.arn.scrobble.ui.EmptyTextWithButtonOnTv
+import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.dragContainer
-import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -62,10 +69,14 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.charts_custom
+import pano_scrobbler.composeapp.generated.resources.delete
+import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.edit_drag_handle
 import pano_scrobbler.composeapp.generated.resources.edit_max_patterns
 import pano_scrobbler.composeapp.generated.resources.edit_presets
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
+import pano_scrobbler.composeapp.generated.resources.enable
+import pano_scrobbler.composeapp.generated.resources.item_options
 import pano_scrobbler.composeapp.generated.resources.move_down
 import pano_scrobbler.composeapp.generated.resources.move_up
 import pano_scrobbler.composeapp.generated.resources.num_regex_edits
@@ -110,6 +121,14 @@ fun RegexEditsScreen(
                 regex.copy(order = index)
             }.let { viewModel.upsertAll(it) }
         },
+        onItemDelete = {
+            viewModel.delete(it)
+        },
+        onItemToggle = { regexEdit, isEnabled ->
+            viewModel.upsertAll(
+                listOf(regexEdit.copy(enabled = isEnabled))
+            )
+        },
         onPresetToggled = viewModel::updatePreset,
         onNavigateToTest = {
             onNavigate(PanoRoute.RegexEditsTest)
@@ -127,6 +146,8 @@ private fun RegexEditsList(
     presetsWithState: List<Pair<RegexPreset, Boolean>>,
     regexEdits: List<RegexEdit>,
     onItemClick: (RegexEdit) -> Unit,
+    onItemDelete: (RegexEdit) -> Unit,
+    onItemToggle: (RegexEdit, Boolean) -> Unit,
     onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
     onDragEnd: () -> Unit,
     onPresetToggled: (RegexPreset, Boolean) -> Unit,
@@ -154,6 +175,7 @@ private fun RegexEditsList(
 
     PanoLazyColumn(
         state = listState,
+        contentPadding = panoContentPadding(mayHaveBottomFab = true),
         modifier = modifier.dragContainer(dragDropState),
     ) {
         if (!PlatformStuff.isTv) {
@@ -179,7 +201,7 @@ private fun RegexEditsList(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = horizontalOverscanPadding(), vertical = 4.dp)
+                    .padding(vertical = 4.dp)
                     .animateItem()
             )
         }
@@ -193,7 +215,6 @@ private fun RegexEditsList(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = horizontalOverscanPadding())
                     .animateItem()
             )
         }
@@ -206,7 +227,7 @@ private fun RegexEditsList(
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = horizontalOverscanPadding(), vertical = 4.dp)
+                        .padding(vertical = 4.dp)
                         .animateItem()
                 )
             } else {
@@ -215,7 +236,7 @@ private fun RegexEditsList(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = horizontalOverscanPadding(), vertical = 4.dp)
+                        .padding(vertical = 4.dp)
                         .animateItem()
                 )
             }
@@ -223,7 +244,7 @@ private fun RegexEditsList(
 
         if (regexEdits.isEmpty()) {
             item(key = "no_custom_regexes") {
-                EmptyTextWithButtonOnTv(
+                EmptyTextWithImportButtonOnTv(
                     visible = true,
                     text = pluralStringResource(Res.plurals.num_regex_edits, 0, 0),
                     onButtonClick = onImport
@@ -242,6 +263,8 @@ private fun RegexEditsList(
                         onMoveItem(f, t)
                         onDragEnd()
                     },
+                    onItemDelete = onItemDelete,
+                    onItemToggle = onItemToggle,
                     modifier = Modifier.alpha(if (isDragging) 0.5f else 1f)
                 )
             }
@@ -272,17 +295,22 @@ private fun RegexEditItem(
     canMoveDown: Boolean,
     onKeypressMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
     onItemClick: (RegexEdit) -> Unit,
+    onItemDelete: (RegexEdit) -> Unit,
+    onItemToggle: (RegexEdit, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
 ) {
     val modifierIcons = getModifierIcons(regexEdit)
-
-    val name = regexEdit.name
+    var dropdownShown by remember { mutableStateOf(false) }
 
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding())
+            .alpha(
+                if (regexEdit.enabled) 1f else 0.75f
+            )
+            .padding(vertical = 8.dp)
     ) {
 
         if (!PlatformStuff.isTv) {
@@ -335,7 +363,7 @@ private fun RegexEditItem(
                 .backgroundForShimmer(forShimmer)
         ) {
             Text(
-                text = name,
+                text = regexEdit.name,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -356,12 +384,75 @@ private fun RegexEditItem(
                 }
             }
         }
+
+        IconButton(
+            onClick = { dropdownShown = true },
+            enabled = !forShimmer,
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = stringResource(Res.string.item_options),
+            )
+
+            DropdownMenu(
+                expanded = dropdownShown,
+                onDismissRequest = { dropdownShown = false },
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(
+                                if (regexEdit.enabled)
+                                    Res.string.disable
+                                else
+                                    Res.string.enable,
+                            ),
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = if (!regexEdit.enabled)
+                                Icons.Outlined.ToggleOff
+                            else
+                                Icons.Outlined.ToggleOn,
+                            contentDescription = null,
+                        )
+                    },
+                    onClick = {
+                        dropdownShown = false
+                        onItemToggle(regexEdit, !regexEdit.enabled)
+                    },
+                )
+
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(Res.string.delete),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    },
+                    onClick = {
+                        dropdownShown = false
+                        onItemDelete(regexEdit)
+                    },
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
     val m = mutableListOf<ImageVector>()
+
+    if (!regexEdit.enabled) m += Icons.Outlined.ToggleOff
 
     if (regexEdit.blockPlayerAction != null) m += Icons.Outlined.Block
     else if (regexEdit.replacement == null) m += Icons.Outlined.SwipeLeftAlt

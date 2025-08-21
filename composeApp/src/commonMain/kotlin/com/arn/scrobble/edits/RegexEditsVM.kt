@@ -21,6 +21,12 @@ class RegexEditsVM : ViewModel() {
         }
     }
 
+    fun delete(el: RegexEdit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.delete(el)
+        }
+    }
+
     fun updatePreset(preset: RegexPreset, isEnabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             PlatformStuff.mainPrefs.updateData {

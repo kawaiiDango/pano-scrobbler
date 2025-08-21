@@ -500,7 +500,7 @@ fun EmptyText(
 }
 
 @Composable
-fun EmptyTextWithButtonOnTv(
+fun EmptyTextWithImportButtonOnTv(
     visible: Boolean,
     text: String,
     onButtonClick: () -> Unit,

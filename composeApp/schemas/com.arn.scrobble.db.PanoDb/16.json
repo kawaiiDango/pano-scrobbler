@@ -1,0 +1,772 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 16,
+    "identityHash": "2bcdb798f35c6ea65baa440d39fdbd6b",
+    "entities": [
+      {
+        "tableName": "PendingScrobbles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `event` TEXT NOT NULL, `services` INTEGER NOT NULL, `lastFailedTimestamp` INTEGER, `lastFailedReason` TEXT, `artist` TEXT NOT NULL, `track` TEXT NOT NULL, `album` TEXT, `timestamp` INTEGER NOT NULL, `trackNumber` INTEGER, `albumArtist` TEXT, `duration` INTEGER, `appId` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "event",
+            "columnName": "event",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "services",
+            "columnName": "services",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastFailedTimestamp",
+            "columnName": "lastFailedTimestamp",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastFailedReason",
+            "columnName": "lastFailedReason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scrobbleData.artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scrobbleData.track",
+            "columnName": "track",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scrobbleData.album",
+            "columnName": "album",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scrobbleData.timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scrobbleData.trackNumber",
+            "columnName": "trackNumber",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scrobbleData.albumArtist",
+            "columnName": "albumArtist",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scrobbleData.duration",
+            "columnName": "duration",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scrobbleData.appId",
+            "columnName": "appId",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        }
+      },
+      {
+        "tableName": "simpleEdits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `legacyHash` TEXT, `origTrack` TEXT NOT NULL, `origAlbum` TEXT NOT NULL, `origArtist` TEXT NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `albumArtist` TEXT NOT NULL, `artist` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "legacyHash",
+            "columnName": "legacyHash",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "origTrack",
+            "columnName": "origTrack",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origAlbum",
+            "columnName": "origAlbum",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origArtist",
+            "columnName": "origArtist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "track",
+            "columnName": "track",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "album",
+            "columnName": "album",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "albumArtist",
+            "columnName": "albumArtist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_simpleEdits_legacyHash",
+            "unique": false,
+            "columnNames": [
+              "legacyHash"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_simpleEdits_legacyHash` ON `${TABLE_NAME}` (`legacyHash`)"
+          },
+          {
+            "name": "index_simpleEdits_origArtist_origAlbum_origTrack",
+            "unique": true,
+            "columnNames": [
+              "origArtist",
+              "origAlbum",
+              "origTrack"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_simpleEdits_origArtist_origAlbum_origTrack` ON `${TABLE_NAME}` (`origArtist`, `origAlbum`, `origTrack`)"
+          }
+        ]
+      },
+      {
+        "tableName": "regexEdits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `order` INTEGER NOT NULL, `name` TEXT NOT NULL, `appIds` TEXT NOT NULL, `caseSensitive` INTEGER NOT NULL, `blockPlayerAction` TEXT, `enabled` INTEGER NOT NULL DEFAULT 1, `searchTrack` TEXT NOT NULL, `searchAlbum` TEXT NOT NULL, `searchArtist` TEXT NOT NULL, `searchAlbumArtist` TEXT NOT NULL, `replacementTrack` TEXT, `replacementAlbum` TEXT, `replacementArtist` TEXT, `replacementAlbumArtist` TEXT, `replaceAll` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appIds",
+            "columnName": "appIds",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caseSensitive",
+            "columnName": "caseSensitive",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blockPlayerAction",
+            "columnName": "blockPlayerAction",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "search.searchTrack",
+            "columnName": "searchTrack",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "search.searchAlbum",
+            "columnName": "searchAlbum",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "search.searchArtist",
+            "columnName": "searchArtist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "search.searchAlbumArtist",
+            "columnName": "searchAlbumArtist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "replacement.replacementTrack",
+            "columnName": "replacementTrack",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacement.replacementAlbum",
+            "columnName": "replacementAlbum",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacement.replacementArtist",
+            "columnName": "replacementArtist",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacement.replacementAlbumArtist",
+            "columnName": "replacementAlbumArtist",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacement.replaceAll",
+            "columnName": "replaceAll",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_regexEdits_order",
+            "unique": false,
+            "columnNames": [
+              "order"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_regexEdits_order` ON `${TABLE_NAME}` (`order`)"
+          }
+        ]
+      },
+      {
+        "tableName": "blockedMetadata",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `artist` TEXT NOT NULL, `albumArtist` TEXT NOT NULL, `blockPlayerAction` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "track",
+            "columnName": "track",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "album",
+            "columnName": "album",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "albumArtist",
+            "columnName": "albumArtist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blockPlayerAction",
+            "columnName": "blockPlayerAction",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_blockedMetadata_track_album_artist_albumArtist",
+            "unique": true,
+            "columnNames": [
+              "track",
+              "album",
+              "artist",
+              "albumArtist"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_blockedMetadata_track_album_artist_albumArtist` ON `${TABLE_NAME}` (`track`, `album`, `artist`, `albumArtist`)"
+          }
+        ]
+      },
+      {
+        "tableName": "scrobbleSources",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timeMillis` INTEGER NOT NULL, `pkg` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timeMillis",
+            "columnName": "timeMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pkg",
+            "columnName": "pkg",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_scrobbleSources_timeMillis",
+            "unique": false,
+            "columnNames": [
+              "timeMillis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scrobbleSources_timeMillis` ON `${TABLE_NAME}` (`timeMillis`)"
+          }
+        ]
+      },
+      {
+        "tableName": "cachedTracks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `trackName` TEXT NOT NULL, `trackMbid` TEXT NOT NULL, `trackUrl` TEXT NOT NULL, `artistName` TEXT NOT NULL, `artistMbid` TEXT NOT NULL, `artistUrl` TEXT NOT NULL, `durationSecs` INTEGER NOT NULL, `userPlayCount` INTEGER NOT NULL, `userPlayCountDirty` INTEGER NOT NULL DEFAULT -1, `isLoved` INTEGER NOT NULL, `lastPlayed` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackName",
+            "columnName": "trackName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackMbid",
+            "columnName": "trackMbid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackUrl",
+            "columnName": "trackUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistName",
+            "columnName": "artistName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistMbid",
+            "columnName": "artistMbid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistUrl",
+            "columnName": "artistUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationSecs",
+            "columnName": "durationSecs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userPlayCount",
+            "columnName": "userPlayCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userPlayCountDirty",
+            "columnName": "userPlayCountDirty",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "-1"
+          },
+          {
+            "fieldPath": "isLoved",
+            "columnName": "isLoved",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastPlayed",
+            "columnName": "lastPlayed",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cachedTracks_artistName_trackName",
+            "unique": true,
+            "columnNames": [
+              "artistName",
+              "trackName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cachedTracks_artistName_trackName` ON `${TABLE_NAME}` (`artistName`, `trackName`)"
+          },
+          {
+            "name": "index_cachedTracks_isLoved",
+            "unique": false,
+            "columnNames": [
+              "isLoved"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cachedTracks_isLoved` ON `${TABLE_NAME}` (`isLoved`)"
+          }
+        ]
+      },
+      {
+        "tableName": "cachedAlbums",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `albumName` TEXT NOT NULL, `albumMbid` TEXT NOT NULL, `albumUrl` TEXT NOT NULL, `artistName` TEXT NOT NULL, `artistMbid` TEXT NOT NULL, `artistUrl` TEXT NOT NULL, `largeImageUrl` TEXT, `userPlayCount` INTEGER NOT NULL, `userPlayCountDirty` INTEGER NOT NULL DEFAULT -1)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "albumName",
+            "columnName": "albumName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "albumMbid",
+            "columnName": "albumMbid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "albumUrl",
+            "columnName": "albumUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistName",
+            "columnName": "artistName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistMbid",
+            "columnName": "artistMbid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistUrl",
+            "columnName": "artistUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "largeImageUrl",
+            "columnName": "largeImageUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "userPlayCount",
+            "columnName": "userPlayCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userPlayCountDirty",
+            "columnName": "userPlayCountDirty",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "-1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cachedAlbums_artistName_albumName",
+            "unique": true,
+            "columnNames": [
+              "artistName",
+              "albumName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cachedAlbums_artistName_albumName` ON `${TABLE_NAME}` (`artistName`, `albumName`)"
+          }
+        ]
+      },
+      {
+        "tableName": "cachedArtists",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `artistName` TEXT NOT NULL, `artistMbid` TEXT NOT NULL, `artistUrl` TEXT NOT NULL, `userPlayCount` INTEGER NOT NULL, `userPlayCountDirty` INTEGER NOT NULL DEFAULT -1)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistName",
+            "columnName": "artistName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistMbid",
+            "columnName": "artistMbid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistUrl",
+            "columnName": "artistUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userPlayCount",
+            "columnName": "userPlayCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userPlayCountDirty",
+            "columnName": "userPlayCountDirty",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "-1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cachedArtists_artistName",
+            "unique": true,
+            "columnNames": [
+              "artistName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cachedArtists_artistName` ON `${TABLE_NAME}` (`artistName`)"
+          }
+        ]
+      },
+      {
+        "tableName": "customSpotifyMappings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `artist` TEXT NOT NULL, `album` TEXT NOT NULL, `spotifyId` TEXT, `fileUri` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "album",
+            "columnName": "album",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spotifyId",
+            "columnName": "spotifyId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "fileUri",
+            "columnName": "fileUri",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_customSpotifyMappings_artist_album",
+            "unique": true,
+            "columnNames": [
+              "artist",
+              "album"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_customSpotifyMappings_artist_album` ON `${TABLE_NAME}` (`artist`, `album`)"
+          }
+        ]
+      },
+      {
+        "tableName": "cachedTracksWithAlbums",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `artist` TEXT NOT NULL COLLATE NOCASE, `artistMbid` TEXT, `track` TEXT NOT NULL COLLATE NOCASE, `trackMbid` TEXT, `album` TEXT NOT NULL COLLATE NOCASE, `albumMbid` TEXT, `insertedAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistMbid",
+            "columnName": "artistMbid",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "track",
+            "columnName": "track",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackMbid",
+            "columnName": "trackMbid",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "album",
+            "columnName": "album",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "albumMbid",
+            "columnName": "albumMbid",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "insertedAt",
+            "columnName": "insertedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cachedTracksWithAlbums_artist_track_album",
+            "unique": true,
+            "columnNames": [
+              "artist",
+              "track",
+              "album"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cachedTracksWithAlbums_artist_track_album` ON `${TABLE_NAME}` (`artist`, `track`, `album`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2bcdb798f35c6ea65baa440d39fdbd6b')"
+    ]
+  }
+}

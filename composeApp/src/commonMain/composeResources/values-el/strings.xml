@@ -241,7 +241,7 @@
     <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
-    <string name="enable" comment="To enable the scrobbler">Ενεργοποιήση</string>
+    <string name="enable" comment="To enable some feature">Ενεργοποιήση</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Μέγεθος</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Παράλειψη εικόνων που λείπουν</string>
     <string name="create_collage">Δημιουργία κολάζ</string>

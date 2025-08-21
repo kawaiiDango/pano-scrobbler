@@ -328,6 +328,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Популярность: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Анализ</string>
     <string name="enable" comment="To enable some feature">Включить</string>
+    <string name="disable" comment="To disable some feature">Отключить</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Удалить: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Размер</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Пропустить отсутствующие изображения</string>
     <string name="create_collage">Создать коллаж</string>

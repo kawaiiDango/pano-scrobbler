@@ -98,7 +98,6 @@ object FirstArtistExtractor {
         this.knownArtists = knownArtists
     }
 
-
     suspend fun extract(artistString: String, useAnd: Boolean): String {
         if (!initialized) {
             val bytes = Res.readBytes("files/musicbrainz_artist_hashes.bin")
@@ -109,13 +108,11 @@ object FirstArtistExtractor {
         val trimmed = artistString.trim()
         if (trimmed.isEmpty()) return trimmed
 
-        if (!PlatformStuff.isJava8OrGreater) return trimmed
-
         var byteBuffer: ByteBuffer? = null
 
         fun String.x(): Long {
             //  the first call to this function is always the with longest string. Will allocate max space.
-            val byteArray = encodeToByteArray(throwOnInvalidSequence = false)
+            val byteArray = lowercase().encodeToByteArray(throwOnInvalidSequence = false)
 
             if (byteBuffer == null) {
                 byteBuffer = ByteBuffer.allocate(byteArray.size)
@@ -161,7 +158,7 @@ object FirstArtistExtractor {
 
         // Check all possible prefixes up to the first delimiter + some buffer
         // (in case the artist name extends beyond the first delimiter)
-        val searchLimit = minOf(trimmed.length, earliestDelimiterPos + 20) // reasonable buffer
+        val searchLimit = trimmed.length.coerceAtMost(1000)
 
         var longestMatch = ""
 

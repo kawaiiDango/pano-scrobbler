@@ -699,7 +699,7 @@ fun LazyListScope.scrobblesListItems(
         }
 
         if (trackPeek == null || trackPeek !in deletedTracksSet) {
-            val key = trackPeek?.generateKey() ?: "placeholder_$i"
+            val key = tracks.peek(i)?.generateKey() ?: "placeholder_$i"
 
             if (trackPeek?.date in viewModel.lastScrobbleOfTheDaySet) {
                 item(
@@ -709,6 +709,8 @@ fun LazyListScope.scrobblesListItems(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp, horizontal = 16.dp)
+                            .animateItem()
+
                     )
                 }
             }
@@ -765,10 +767,9 @@ fun LazyListScope.scrobblesListItems(
                                     )
 
                                     val dialogArgs = PanoDialog.EditScrobble(
-                                        origTrack = trackPeek,
                                         scrobbleData = sd,
                                         msid = track.msid,
-                                        hash = null
+                                        key = key,
                                     )
 
                                     onOpenDialog(dialogArgs)
@@ -777,7 +778,7 @@ fun LazyListScope.scrobblesListItems(
                             onLove = if (canLove) {
                                 {
                                     viewModel.editTrack(
-                                        trackPeek!!,
+                                        key,
                                         track.copy(userloved = it)
                                     )
                                 }
@@ -785,7 +786,7 @@ fun LazyListScope.scrobblesListItems(
                             onHate = if (canHate) {
                                 {
                                     viewModel.editTrack(
-                                        trackPeek!!,
+                                        key,
                                         track.copy(userHated = it)
                                     )
                                 }
@@ -825,10 +826,10 @@ fun LazyListScope.scrobblesListItems(
 @Composable
 fun OnEditEffect(
     viewModel: ScrobblesVM,
-    editDataFlow: Flow<Pair<Track, ScrobbleData>>
+    editDataFlow: Flow<Pair<String, ScrobbleData>>
 ) {
     LaunchedEffect(Unit) {
-        editDataFlow.collect { (origTrack, newScrobbleData) ->
+        editDataFlow.collect { (key, newScrobbleData) ->
             val _artist = Artist(newScrobbleData.artist)
             val _album = newScrobbleData.album?.let { Album(it, _artist) }
 
@@ -839,7 +840,7 @@ fun OnEditEffect(
                 date = newScrobbleData.timestamp.takeIf { it > 0L }
             )
 
-            viewModel.editTrack(origTrack, editedTrack)
+            viewModel.editTrack(key, editedTrack)
         }
     }
 }

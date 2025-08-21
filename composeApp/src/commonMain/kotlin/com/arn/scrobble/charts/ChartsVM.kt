@@ -49,7 +49,8 @@ class ChartsVM : ViewModel() {
             pagingSourceFactory = {
                 ChartsPagingSource(
                     input,
-                    Stuff.TYPE_ARTISTS
+                    Stuff.TYPE_ARTISTS,
+                    networkOnly = input.refreshCount > 0,
                 ) { _artistCount.value = it }
             }
         ).flow
@@ -64,7 +65,8 @@ class ChartsVM : ViewModel() {
             pagingSourceFactory = {
                 ChartsPagingSource(
                     input,
-                    Stuff.TYPE_ALBUMS
+                    Stuff.TYPE_ALBUMS,
+                    networkOnly = input.refreshCount > 0,
                 ) { _albumCount.value = it }
             }
         ).flow
@@ -79,7 +81,8 @@ class ChartsVM : ViewModel() {
             pagingSourceFactory = {
                 ChartsPagingSource(
                     input,
-                    Stuff.TYPE_TRACKS
+                    Stuff.TYPE_TRACKS,
+                    networkOnly = input.refreshCount > 0,
                 ) { _trackCount.value = it }
             }
         ).flow

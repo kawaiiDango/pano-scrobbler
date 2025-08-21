@@ -25,7 +25,6 @@ import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.edits.TitleParseException
 import com.arn.scrobble.utils.FirstArtistExtractor
-import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
@@ -107,9 +106,9 @@ object ScrobbleEverywhere {
                 edited = true
             }
 
-        if (!edited && runPresets) {
+        if (runPresets) {
             try {
-                val presetsResult = RegexPresets.applyAllPresets(scrobbleData)
+                val presetsResult = RegexPresets.applyAllPresets(scrobbleData, edited)
 
                 if (presetsResult != null) {
                     scrobbleData = presetsResult.scrobbleData
@@ -321,7 +320,7 @@ object ScrobbleEverywhere {
                             it.artistName.equals(scrobbleData.artist, ignoreCase = true) &&
                             it.trackName.equals(scrobbleData.track, ignoreCase = true) &&
                             (scrobbleData.album == null || it.collectionName != null &&
-                                    MetadataUtils.removeSingleEp(it.collectionName)
+                                    it.collectionName.replace(" - (Single|EP)$".toRegex(), "")
                                         .equals(scrobbleData.album, ignoreCase = true))
                 }
         } else {

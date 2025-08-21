@@ -342,10 +342,7 @@ object MetadataUtils {
 
         return Pair(artist, track)
     }
-
-    fun removeSingleEp(text: String) =
-        text.replace(" - (Single|EP)$".toRegex(), "")
-
+    
     fun sanitizeAlbum(albumOrig: String): String {
         val albumLower = albumOrig.lowercase(Locale.ENGLISH)
         if (metaUnknown.any { albumLower == it })

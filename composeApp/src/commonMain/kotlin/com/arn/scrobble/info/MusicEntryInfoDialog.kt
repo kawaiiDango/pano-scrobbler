@@ -346,7 +346,7 @@ fun MusicEntryInfoDialog(
                                     },
                                 )
                             }
-                        } else {
+                        } else if (entry is Artist) {
                             EntriesRow(
                                 title = stringResource(Res.string.top_tracks),
                                 entries = artistTopTracks,
@@ -360,7 +360,7 @@ fun MusicEntryInfoDialog(
                                 onHeaderClick = {
                                     onNavigate(
                                         PanoRoute.MusicEntryInfoPager(
-                                            artist = entry as Artist,
+                                            artist = entry.copy(wiki = null),
                                             appId = appId,
                                             user = user,
                                             type = Stuff.TYPE_TRACKS
@@ -383,7 +383,7 @@ fun MusicEntryInfoDialog(
                                 onHeaderClick = {
                                     onNavigate(
                                         PanoRoute.MusicEntryInfoPager(
-                                            artist = entry as Artist,
+                                            artist = entry.copy(wiki = null),
                                             appId = appId,
                                             user = user,
                                             type = Stuff.TYPE_ALBUMS
@@ -406,7 +406,7 @@ fun MusicEntryInfoDialog(
                                 onHeaderClick = {
                                     onNavigate(
                                         PanoRoute.MusicEntryInfoPager(
-                                            artist = entry as Artist,
+                                            artist = entry.copy(wiki = null),
                                             appId = appId,
                                             user = user,
                                             type = Stuff.TYPE_ARTISTS
@@ -431,7 +431,7 @@ fun MusicEntryInfoDialog(
                             onHeaderClick = {
                                 onNavigate(
                                     PanoRoute.SimilarTracks(
-                                        track = entry,
+                                        track = entry.copy(wiki = null),
                                         appId = appId,
                                         user = user
                                     )
@@ -519,7 +519,7 @@ private fun InfoCountsForMusicEntry(
             {
                 onNavigate(
                     PanoRoute.TrackHistory(
-                        track = entry,
+                        track = entry.copy(wiki = null),
                         user = user
                     )
                 )
@@ -582,10 +582,16 @@ private fun InfoActionsRow(
                 onClick = {
                     onNavigate(
                         PanoRoute.ImageSearch(
-                            artist = entry as? Artist,
-                            originalArtist = originalEntry as? Artist,
-                            album = entry as? Album,
-                            originalAlbum = originalEntry as? Album
+                            artist = (entry as? Artist)?.copy(wiki = null), // wiki can be too long to serialize and parcel
+                            originalArtist = (originalEntry as? Artist)?.copy(wiki = null),
+                            album = (entry as? Album)?.copy(
+                                wiki = null,
+                                tracks = null
+                            ),
+                            originalAlbum = (originalEntry as? Album)?.copy(
+                                wiki = null,
+                                tracks = null
+                            )
                         )
                     )
                 },

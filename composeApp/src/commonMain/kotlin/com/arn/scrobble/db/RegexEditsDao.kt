@@ -25,9 +25,6 @@ interface RegexEditsDao {
     @Query("SELECT MAX(`order`) FROM $tableName")
     suspend fun maxOrder(): Int?
 
-    @Query("SELECT count(1) FROM $tableName WHERE appIds IS NOT NULL")
-    fun hasAppIdFlow(): Flow<Boolean>
-
     @Query("UPDATE $tableName SET `order` = `order` + 1")
     suspend fun shiftDown()
 

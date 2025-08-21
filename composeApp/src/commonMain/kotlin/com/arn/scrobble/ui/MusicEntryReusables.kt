@@ -91,6 +91,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -167,13 +168,20 @@ fun MusicEntryListItem(
     val context = LocalPlatformContext.current
     val artInteractionSource = remember { MutableInteractionSource() }
     val isArtFocused by artInteractionSource.collectIsFocusedAsState()
+    val isNowPlaying = (entry as? Track)?.isNowPlaying == true
 
     Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
+        modifier = modifier
+            .then(
+                if (isNowPlaying)
+                    Modifier.zIndex(1f) // to fix the animation
+                else
+                    Modifier
+            ),
+        contentAlignment = Alignment.Center,
     ) {
         NowPlayingSurface(
-            nowPlaying = (entry as? Track)?.isNowPlaying == true,
+            nowPlaying = isNowPlaying,
         ) { childModifier ->
             RowOrColumnLayout(
                 isColumnMode = isColumn,

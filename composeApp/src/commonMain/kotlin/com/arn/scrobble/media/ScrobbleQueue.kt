@@ -16,6 +16,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -35,6 +37,7 @@ class ScrobbleQueue(
     private val scrobbleTasks = mutableMapOf<Int, Job>()
 
     private val fetchAdditionalMetadataTimestamps = ArrayDeque<Long>()
+    private val fetchAdditionalMetadataMutex = Mutex()
 
     // ticker, only handles empty messages and messagePQ
     // required because uptimeMillis pauses / slows down in deep sleep
@@ -60,16 +63,18 @@ class ScrobbleQueue(
         lockedHash = hash
     }
 
-    private fun canFetchAdditionalMetadata(): Boolean {
-        val now = System.currentTimeMillis()
-        // Remove timestamps older than n seconds
-        while (now - (fetchAdditionalMetadataTimestamps.firstOrNull() ?: now) > 1 * 60_000) {
-            fetchAdditionalMetadataTimestamps.removeFirstOrNull()
+    private suspend fun canFetchAdditionalMetadata(): Boolean {
+        // was still getting java.util.NoSuchElementException: ArrayDeque is empty, so use lock
+        return fetchAdditionalMetadataMutex.withLock {
+            val now = System.currentTimeMillis()
+            // Remove timestamps older than n seconds
+            while (now - (fetchAdditionalMetadataTimestamps.firstOrNull() ?: now) > 1 * 60_000) {
+                fetchAdditionalMetadataTimestamps.removeFirstOrNull()
+            }
+            val can = fetchAdditionalMetadataTimestamps.size < 2
+            fetchAdditionalMetadataTimestamps.addLast(System.currentTimeMillis())
+            can
         }
-        val can = fetchAdditionalMetadataTimestamps.size < 2
-        fetchAdditionalMetadataTimestamps.addLast(System.currentTimeMillis())
-
-        return can
     }
 
     fun scrobble(
@@ -107,7 +112,7 @@ class ScrobbleQueue(
                 submitNowPlaying &&
                 (prevPlayStartTime == null ||
                         (System.currentTimeMillis() - prevPlayStartTime) > min(
-                    trackInfo.durationMillis,
+                    trackInfo.durationMillis * 3 / 4, // 3/4 of the track duration to prevent edge cases
                     4 * 60 * 1000L // 4 minutes
                 ))
             ) {

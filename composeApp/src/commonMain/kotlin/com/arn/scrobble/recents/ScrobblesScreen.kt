@@ -114,7 +114,7 @@ fun ScrobblesScreen(
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
-    editDataFlow: Flow<Pair<Track, ScrobbleData>>,
+    editDataFlow: Flow<Pair<String, ScrobbleData>>,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {
@@ -384,6 +384,7 @@ fun ScrobblesScreen(
                             icon = icon,
                             onDismiss = onDismiss,
                             onClick = onClick,
+                            modifier = Modifier.animateItem()
                         )
                     }
                 }
@@ -407,7 +408,7 @@ fun ScrobblesScreen(
                     if (pendingScrobbles.isNotEmpty()) {
                         item("pending_divider") {
                             HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                modifier = Modifier.padding(vertical = 8.dp).animateItem()
                             )
                         }
                     }

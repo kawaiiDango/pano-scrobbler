@@ -205,9 +205,11 @@ object Scrobblables {
         )
 
     val all: Collection<Scrobblable>
+        @Synchronized
         get() {
             if (scrobblablesCache.keys != accounts.value) {
                 // delete all scrobblables that are not in the accounts list
+                // was getting ConcurrentModificationException here, so use @Synchronized
                 scrobblablesCache.keys.removeIf { it !in accounts.value }
 
                 // create new scrobblables for the accounts that are not in the cache
@@ -222,6 +224,7 @@ object Scrobblables {
         }
 
     val current
+        @Synchronized
         get() = scrobblablesCache[currentAccount.value]
             ?: all.firstOrNull { it.userAccount == currentAccount.value }
 

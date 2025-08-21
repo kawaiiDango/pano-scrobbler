@@ -33,6 +33,9 @@ open class ChartsPeriodVM : ViewModel() {
     private val accountType = Scrobblables.currentAccount.mapLatest { it?.type }
 
     val periodType = _periodType.asStateFlow()
+    private val _refreshCount = MutableStateFlow(0)
+    val refreshCount = _refreshCount.asStateFlow()
+
     private val _customPeriodInput =
         MutableStateFlow(TimePeriod(1577836800000L, 1609459200000L)) // 2020
 
@@ -98,6 +101,9 @@ open class ChartsPeriodVM : ViewModel() {
                 selectedPeriod
         }
         .onEach { period ->
+            // mark as non-refresh request
+            _refreshCount.value = 0
+            
             if (_periodType.value != TimePeriodType.LISTENBRAINZ && _periodType.value != null && period != null) {
                 GlobalScope.launch {
                     PlatformStuff.mainPrefs.updateData {
@@ -152,5 +158,9 @@ open class ChartsPeriodVM : ViewModel() {
 
     fun setCustomPeriodInput(period: TimePeriod) {
         _customPeriodInput.value = period
+    }
+
+    fun refresh() {
+        _refreshCount.value += 1
     }
 }

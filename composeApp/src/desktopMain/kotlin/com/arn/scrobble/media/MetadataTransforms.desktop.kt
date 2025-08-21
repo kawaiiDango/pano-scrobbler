@@ -1,6 +1,5 @@
 package com.arn.scrobble.media
 
-import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 
 actual typealias PlatformMediaMetadata = MetadataInfo
@@ -25,15 +24,9 @@ actual fun transformMediaMetadata(
             if (splits.size >= 2) {
                 // sometimes there are 3 splits, like "Artist — Album - EP — Station name"
                 artist = splits[0].trim()
-                album = MetadataUtils.removeSingleEp(splits[1].trim())
+                album = splits[1].trim()
                 albumArtist = "" // contains the same malformed value as artist
             }
-        }
-
-        Stuff.PACKAGE_CIDER_LINUX.lowercase(),
-        Stuff.PACKAGE_CIDER_VARIANT_LINUX.lowercase()
-            -> {
-            album = MetadataUtils.removeSingleEp(album)
         }
     }
 

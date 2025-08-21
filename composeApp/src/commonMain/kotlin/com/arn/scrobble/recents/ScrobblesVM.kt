@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -92,6 +91,13 @@ class ScrobblesVM : ViewModel() {
             )
                 .flow
                 .map { pagingData ->
+                    if (!_loadedCachedVersion.value) {
+                        viewModelScope.launch {
+                            delay(50)
+                            _loadedCachedVersion.value = true
+                        }
+                    }
+
                     val keysTillNow = mutableSetOf<String>()
                     pagingData.filter {
                         val key = it.generateKey()
@@ -102,14 +108,6 @@ class ScrobblesVM : ViewModel() {
                 }
         }
         .cachedIn(viewModelScope)
-        .onEach {
-            if (!_loadedCachedVersion.value) {
-                viewModelScope.launch {
-                    delay(50)
-                    _loadedCachedVersion.value = true
-                }
-            }
-        }
 
     init {
         viewModelScope.launch {
@@ -245,8 +243,8 @@ class ScrobblesVM : ViewModel() {
         _deletedTracksSet.value += track
     }
 
-    fun editTrack(origTrack: Track, editedTrack: Track) {
-        _editedTracksMap.value += origTrack.generateKey() to editedTrack
+    fun editTrack(key: String, editedTrack: Track) {
+        _editedTracksMap.value += key to editedTrack
     }
 
 }

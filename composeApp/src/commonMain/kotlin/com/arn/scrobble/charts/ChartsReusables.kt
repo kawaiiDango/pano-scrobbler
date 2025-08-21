@@ -24,8 +24,11 @@ import androidx.compose.material.icons.outlined.CalendarViewMonth
 import androidx.compose.material.icons.outlined.CalendarViewWeek
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DateRangePickerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -92,6 +95,7 @@ import pano_scrobbler.composeapp.generated.resources.num_months
 import pano_scrobbler.composeapp.generated.resources.num_weeks
 import pano_scrobbler.composeapp.generated.resources.num_years
 import pano_scrobbler.composeapp.generated.resources.ok
+import pano_scrobbler.composeapp.generated.resources.reload
 import pano_scrobbler.composeapp.generated.resources.weeks
 import pano_scrobbler.composeapp.generated.resources.years
 import java.text.DateFormat
@@ -182,12 +186,14 @@ private fun monthPickerMonths(
 fun TimePeriodSelector(
     user: UserCached,
     viewModel: ChartsPeriodVM,
-    onSelected: (timePeriod: TimePeriod, prevTimePeriod: TimePeriod?) -> Unit,
+    onSelected: (timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, Int) -> Unit,
+    showRefreshButton: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val timePeriods by viewModel.timePeriods.collectAsStateWithLifecycle()
     val timePeriodsList by remember(timePeriods) { mutableStateOf(timePeriods.keys.toList()) }
     val selectedPeriod by viewModel.selectedPeriod.collectAsStateWithLifecycle()
+    val refreshCount by viewModel.refreshCount.collectAsStateWithLifecycle()
     val periodType by viewModel.periodType.collectAsStateWithLifecycle(null)
     var dropdownTypeShown by rememberSaveable(saver = jsonSerializableSaver<TimePeriodType?>()) {
         mutableStateOf(null)
@@ -202,7 +208,7 @@ fun TimePeriodSelector(
         viewModel.setUser(user)
     }
 
-    LaunchedEffect(selectedPeriod) {
+    LaunchedEffect(selectedPeriod, refreshCount) {
         viewModel.timePeriods.value[selectedPeriod]?.let { idx ->
             listState.animateScrollToItem(idx, -100.dp.value.toInt())
         }
@@ -225,7 +231,7 @@ fun TimePeriodSelector(
                 }
             }
 
-            onSelected(selectedPeriod, prevPeriod)
+            onSelected(selectedPeriod, prevPeriod, refreshCount)
         }
     }
 
@@ -263,7 +269,12 @@ fun TimePeriodSelector(
                     expanded = typeSelectorShown,
                     onDismissRequest = { typeSelectorShown = false },
                     selectedPeriodType = periodType,
-                    onMenuItemClick = { viewModel.setPeriodType(it) }
+                    onMenuItemClick = { viewModel.setPeriodType(it) },
+                    onRefresh = if (showRefreshButton) {
+                        {
+                            viewModel.refresh()
+                        }
+                    } else null
                 )
             }
         }
@@ -413,6 +424,7 @@ private fun PeriodTypeSelector(
     onDismissRequest: () -> Unit,
     selectedPeriodType: TimePeriodType?,
     onMenuItemClick: (TimePeriodType) -> Unit,
+    onRefresh: (() -> Unit)?
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -431,6 +443,19 @@ private fun PeriodTypeSelector(
                 }
             )
         }
+
+        if (onRefresh != null) {
+            DropdownMenuItem(
+                onClick = {
+                    onRefresh()
+                    onDismissRequest()
+                },
+                text = { Text(text = stringResource(Res.string.reload)) },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
+                }
+            )
+        }
     }
 }
 
@@ -444,6 +469,7 @@ private fun DateRangePickerModal(
     onDismiss: () -> Unit,
 ) {
     val allowedRangeYears = remember { millisRangeToYears(allowedRange) }
+    val dateFormatter = remember { DatePickerDefaults.dateFormatter() }
 
     val dateRangePickerState = rememberDateRangePickerState(
         initialSelectedStartDateMillis = selectedDateRange.first,
@@ -483,9 +509,14 @@ private fun DateRangePickerModal(
     ) {
         DateRangePicker(
             state = dateRangePickerState,
-            title = {
-                Text(
-                    text = stringResource(Res.string.charts_custom),
+            headline = {
+                // workaround for a text overflow bug in compose in pt locale
+                DateRangePickerDefaults.DateRangePickerHeadline(
+                    selectedStartDateMillis = dateRangePickerState.selectedStartDateMillis,
+                    selectedEndDateMillis = dateRangePickerState.selectedEndDateMillis,
+                    displayMode = dateRangePickerState.displayMode,
+                    dateFormatter = dateFormatter,
+                    modifier = Modifier.padding(bottom = 12.dp),
                 )
             },
             modifier = Modifier

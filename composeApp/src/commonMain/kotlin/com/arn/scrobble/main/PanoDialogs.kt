@@ -198,8 +198,8 @@ private fun PanoDialogs(
                                     blockPlayerAction = BlockPlayerAction.ignore,
                                 )
                             )
-                        } else if (dialogArgs.origTrack != null) { // from scrobble history
-                            mainViewModel.notifyEdit(dialogArgs.origTrack, it)
+                        } else if (dialogArgs.key != null) { // from scrobble history
+                            mainViewModel.notifyEdit(dialogArgs.key, it)
                         }
 
                         onDismissRequest()

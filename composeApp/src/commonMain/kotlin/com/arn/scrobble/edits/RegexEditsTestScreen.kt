@@ -228,7 +228,8 @@ fun RegexEditsTestScreen(
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        itemVerticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(stringResource(Res.string.edit_regex_rules_matched))
 

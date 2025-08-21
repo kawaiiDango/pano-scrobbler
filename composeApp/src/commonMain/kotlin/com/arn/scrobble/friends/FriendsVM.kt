@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.UserCached.Companion.toUserCached
@@ -71,6 +72,16 @@ class FriendsVM : ViewModel() {
                 )
             }
         ).flow
+            .map { pagingData ->
+                val keysTillNow = mutableSetOf<String>()
+
+                pagingData.filter {
+                    val key = it.name
+                    val keep = key !in keysTillNow
+                    keysTillNow += key
+                    keep
+                }
+            }
     }
         .cachedIn(viewModelScope)
 

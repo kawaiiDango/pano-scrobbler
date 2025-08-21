@@ -90,12 +90,12 @@ def main():
             except Exception:
                 continue
             # Check artist name
-            name = artist.get("name", "")
+            name = artist.get("name", "").lower()
             if any(sub in name for sub in substrings):
                 names_set.add(name)
             # Check aliases
             for alias in artist.get("aliases", []):
-                alias_name = alias.get("name", "")
+                alias_name = alias.get("name", "").lower()
                 if any(sub in alias_name for sub in substrings):
                     names_set.add(alias_name)
 
@@ -112,8 +112,8 @@ def main():
     # print the length of the collected names
     print(f"Length of hashed names: {len(hashed_names_set)}")
 
-    # test with Tyler, The Creator
-    test_name = "Tyler, The Creator"
+    # test
+    test_name = "Alice Schach and the Magic Orchestra".lower()
     x.reset()
     x.update(test_name.encode())
     test_hash = x.digest()

@@ -19,7 +19,7 @@
     <string name="preset_remastered" translatable="false">Remove: Remastered</string>
     <string name="preset_explicit" translatable="false">Remove: Explicit / Clean</string>
     <string name="preset_album_version" translatable="false">Remove: Album version</string>
-    <string name="preset_single" translatable="false">Single</string>
+    <string name="preset_single_ep" translatable="false">Remove: Single / EP (Apple Music)</string>
     <string name="preset_album_artist_as_artist" translatable="false">Album artist as artist with fallback (Spotify)</string>
     <string name="preset_title_parse" translatable="false">Parse title (YouTube etc)</string>
     <string name="preset_title_parse_with_fallback" translatable="false">Parse title with fallback (YouTube Music etc)</string>

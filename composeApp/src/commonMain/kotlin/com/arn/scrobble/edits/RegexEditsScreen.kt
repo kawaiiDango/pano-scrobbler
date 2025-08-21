@@ -184,15 +184,16 @@ private fun RegexEditsList(
             )
         }
 
-        items(presetsWithState, key = { it.first }) { (preset, enabled) ->
+        items(presetsWithState, key = { it.first }) { (preset, checked) ->
             PresetItem(
                 preset = preset,
-                isEnabled = enabled,
-                onToggle = { isEnabled ->
-                    onPresetToggled(preset, isEnabled)
+                isChecked = checked,
+                onToggle = { isChecked ->
+                    onPresetToggled(preset, isChecked)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = horizontalOverscanPadding())
                     .animateItem()
             )
         }
@@ -248,21 +249,18 @@ private fun RegexEditsList(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PresetItem(
     preset: RegexPreset,
-    isEnabled: Boolean,
+    isChecked: Boolean,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LabeledCheckbox(
-        checked = isEnabled,
+        checked = isChecked,
         onCheckedChange = onToggle,
         text = RegexPresets.getString(preset),
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = horizontalOverscanPadding())
     )
 }
 

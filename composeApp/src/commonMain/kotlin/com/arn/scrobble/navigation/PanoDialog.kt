@@ -75,9 +75,9 @@ sealed interface PanoDialog {
     @Serializable
     data class EditScrobble(
         val scrobbleData: ScrobbleData,
-        val origTrack: Track? = null,
         val msid: String? = null,
-        val hash: Int? = null,
+        val hash: Int? = null, // from notification
+        val key: String? = null, // from main ui
     ) : PanoDialog
 
 }

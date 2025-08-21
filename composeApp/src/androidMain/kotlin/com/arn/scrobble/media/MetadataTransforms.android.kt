@@ -2,7 +2,6 @@ package com.arn.scrobble.media
 
 import android.media.MediaMetadata
 import android.os.Build
-import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 import java.util.Locale
 
@@ -101,11 +100,6 @@ actual fun transformMediaMetadata(
         Stuff.PACKAGE_NINTENDO_MUSIC -> {
             if (artist.isEmpty())
                 artist = Stuff.ARTIST_NINTENDO_MUSIC
-        }
-
-        Stuff.PACKAGE_APPLE_MUSIC -> {
-            // remove  - Single,  - EP at the end
-            album = MetadataUtils.removeSingleEp(album)
         }
     }
 

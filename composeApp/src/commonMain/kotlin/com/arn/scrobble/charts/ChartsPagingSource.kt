@@ -8,6 +8,7 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 class ChartsPagingSource(
     private val input: ChartsLoaderInput,
     private val type: Int,
+    private val networkOnly: Boolean,
     private val setTotal: (Int) -> Unit,
 ) : PagingSource<Int, MusicEntry>() {
 
@@ -18,6 +19,7 @@ class ChartsPagingSource(
                 timePeriod = input.timePeriod,
                 prevTimePeriod = input.prevPeriod,
                 page = params.key ?: 1,
+                networkOnly = networkOnly,
                 username = input.username,
             )
 

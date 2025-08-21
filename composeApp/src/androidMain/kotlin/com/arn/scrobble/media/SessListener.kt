@@ -250,7 +250,7 @@ class SessListener(
 
             Logger.i {
                 "onMetadataChanged ${metadataInfo.artist} (${metadataInfo.albumArtist}) [${metadataInfo.album}] ~ ${metadataInfo.title} " +
-                        "duration=${metadataInfo.duration} lastState=${sessionTracker.lastPlaybackState}, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()}}"
+                        "duration=${metadataInfo.duration} lastState=${sessionTracker.lastPlaybackState}, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()}"
             }
 
             sessionTracker.metadataChanged(metadataInfo, extras)

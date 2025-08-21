@@ -162,13 +162,14 @@ fun ChartsOverviewScreen(
             scrollBottomOffset >= listeningActivityOffsetY + minAdditionalOffset
     }
 
-    fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?) {
+    fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, refreshCount: Int) {
         viewModel.setChartsInput(
             ChartsLoaderInput(
                 username = user.name,
                 timePeriod = timePeriod,
                 prevPeriod = prevTimePeriod,
-                firstPageOnly = true
+                firstPageOnly = true,
+                refreshCount = refreshCount
             )
         )
     }
@@ -195,6 +196,7 @@ fun ChartsOverviewScreen(
             user = user,
             viewModel = chartsPeriodViewModel,
             onSelected = ::setInput,
+            showRefreshButton = true,
             modifier = Modifier.fillMaxWidth()
         )
         Column(

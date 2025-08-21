@@ -114,13 +114,14 @@ fun ChartsPagerScreen(
         }
     }
 
-    fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?) {
+    fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, refreshCount: Int) {
         viewModel.setChartsInput(
             ChartsLoaderInput(
                 username = user.name,
                 timePeriod = timePeriod,
                 prevPeriod = prevTimePeriod,
-                firstPageOnly = false
+                firstPageOnly = false,
+                refreshCount = refreshCount,
             )
         )
     }
@@ -132,6 +133,7 @@ fun ChartsPagerScreen(
             user = user,
             viewModel = chartsPeriodViewModel,
             onSelected = ::setInput,
+            showRefreshButton = true,
             modifier = Modifier.fillMaxWidth()
         )
 

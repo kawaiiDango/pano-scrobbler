@@ -14,6 +14,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.preset_album_version
 import pano_scrobbler.composeapp.generated.resources.preset_explicit
 import pano_scrobbler.composeapp.generated.resources.preset_remastered
+import pano_scrobbler.composeapp.generated.resources.preset_single_ep
 import pano_scrobbler.composeapp.generated.resources.preset_title_parse
 import pano_scrobbler.composeapp.generated.resources.preset_title_parse_with_fallback
 
@@ -21,6 +22,7 @@ enum class RegexPreset {
     parse_title,
     parse_title_with_fallback,
     remastered,
+    single_ep,
     explicit,
     album_ver,
 //    album_artist_as_artist,
@@ -40,8 +42,9 @@ object RegexPresets {
         RegexPreset.parse_title_with_fallback,
         RegexPreset.remastered,
         RegexPreset.explicit,
-//        RegexPreset.album_artist_as_artist,
+        RegexPreset.single_ep,
     )
+
     private val androidOnlyPresets = listOf(
         RegexPreset.parse_title,
         RegexPreset.parse_title_with_fallback,
@@ -49,6 +52,11 @@ object RegexPresets {
     )
 
     private val desktopOnlyPresets = emptyList<RegexPreset>()
+
+    private val applyOncePresets = listOf(
+        RegexPreset.parse_title,
+        RegexPreset.parse_title_with_fallback,
+    )
 
     val filteredPresets by lazy {
         RegexPreset.entries.filterNot {
@@ -60,7 +68,10 @@ object RegexPresets {
     }
 
     @Throws(TitleParseException::class)
-    suspend fun applyAllPresets(scrobbleData: ScrobbleData): RegexPresetsResult? {
+    suspend fun applyAllPresets(
+        scrobbleData: ScrobbleData,
+        dataIsEdited: Boolean
+    ): RegexPresetsResult? {
         var newScrobbleData: ScrobbleData? = null
         val appliedPresets = mutableListOf<RegexPreset>()
 
@@ -68,6 +79,7 @@ object RegexPresets {
 
         filteredPresets
             .filter { it.name in presetNames }
+            .filter { dataIsEdited && it !in applyOncePresets || !dataIsEdited }
             .forEach { preset ->
                 val sd = applyPreset(preset, newScrobbleData ?: scrobbleData)
 
@@ -174,6 +186,38 @@ object RegexPresets {
                 )
             }
 
+            RegexPreset.single_ep -> {
+                val pattern = " - (Single|EP)$"
+                val replacement = ""
+
+                regexEdits += RegexEdit(
+                    name = regexPreset.name,
+                    search = RegexEdit.SearchPatterns(
+                        searchTrack = "",
+                        searchAlbum = pattern,
+                        searchArtist = "",
+                        searchAlbumArtist = "",
+                    ),
+                    replacement = RegexEdit.ReplacementPatterns(
+                        replacementTrack = "",
+                        replacementAlbum = replacement,
+                        replacementArtist = "",
+                        replacementAlbumArtist = "",
+                    ),
+                    appIds = setOf(
+                        Stuff.PACKAGE_APPLE_MUSIC,
+                        Stuff.PACKAGE_CIDER_LINUX,
+                        Stuff.PACKAGE_CIDER_VARIANT_LINUX,
+                        Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE,
+                        Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
+                            .let { (first, second) -> first + "!" + second.uppercase() },
+                        Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
+                            .let { (first, second) -> first + "!" + second.lowercase() },
+                        Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE
+                    )
+                )
+            }
+
             RegexPreset.explicit -> {
                 val pattern =
                     "^(.*) (- |\\(|\\[|\\/)(explicit|clean)( .*?version| edit(ed)?)?[\\)\\]]?\$"
@@ -249,6 +293,7 @@ object RegexPresets {
         RegexPreset.remastered -> stringResource(Res.string.preset_remastered)
         RegexPreset.explicit -> stringResource(Res.string.preset_explicit)
         RegexPreset.album_ver -> stringResource(Res.string.preset_album_version)
+        RegexPreset.single_ep -> stringResource(Res.string.preset_single_ep)
 //        RegexPreset.album_artist_as_artist -> stringResource(Res.string.preset_album_artist_as_artist)
         RegexPreset.parse_title -> stringResource(Res.string.preset_title_parse)
         RegexPreset.parse_title_with_fallback -> stringResource(Res.string.preset_title_parse_with_fallback)
@@ -263,7 +308,9 @@ object RegexPresets {
             scrobbleData.album?.replace("YMusic", "")?.isNotEmpty() == true
         )
             false
-        else (scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK &&
-                !scrobbleData.artist.endsWith("- Topic"))
+        else ((scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
+                scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK) &&
+                !scrobbleData.artist.endsWith("- Topic")
+                )
     }
 }

@@ -303,6 +303,10 @@ android {
         }
     }
 
+    baselineProfile {
+        dexLayoutOptimization = true
+    }
+
     dependencies {
 //        implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 

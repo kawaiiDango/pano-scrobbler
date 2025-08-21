@@ -264,7 +264,7 @@
     <string name="valence" comment="(Musical positivity)">Positiivisuus</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Suosio: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyysi</string>
-    <string name="enable" comment="To enable the scrobbler">Ota käyttöön</string>
+    <string name="enable" comment="To enable some feature">Ota käyttöön</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Koko</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Ohita puuttuvat kuvat</string>
     <string name="create_collage">Luo kollaasi</string>

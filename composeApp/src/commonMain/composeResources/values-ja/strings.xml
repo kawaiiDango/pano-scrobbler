@@ -271,7 +271,7 @@
     <string name="valence" comment="(Musical positivity)">明るさ</string>
     <string name="popularity" formatted="true" comment="popularity of a track">人気度: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
-    <string name="enable" comment="To enable the scrobbler">有効化</string>
+    <string name="enable" comment="To enable some feature">有効化</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">サイズ</string>
     <string name="skip_missing_images" comment="(while generating a collage)">画像があるもののみ</string>
     <string name="create_collage">コラージュを作る</string>

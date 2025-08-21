@@ -327,7 +327,7 @@
     <string name="valence" comment="(Musical positivity)">Позитивність</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Популярність: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Аналіз</string>
-    <string name="enable" comment="To enable the scrobbler">Увімкнути</string>
+    <string name="enable" comment="To enable some feature">Увімкнути</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Розмір</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Пропуск відсутніх зображень</string>
     <string name="create_collage">Створити колаж</string>

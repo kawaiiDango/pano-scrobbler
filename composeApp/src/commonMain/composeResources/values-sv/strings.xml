@@ -106,6 +106,21 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Appar</string>
     <string name="offline">Offline. Data visad är inte ny</string>
     <string name="unavailable_offline">Inte tillgänglig offline</string>
+    <string name="tv_url_notice">Öppna denna URL i en webbläsare på en annan enhet</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Tjänster</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Jag lyssnade på \n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s lyssnade på\n%1$s %2$s</string>
+    <string name="share_sig">(via Pano Scrobbler)</string>
+    <string name="share">Dela</string>
+    <string name="list" comment="Single column list view">Lista</string>
+    <string name="more_info">Mer info</string>
+    <string name="more" comment="More options menu in short">Mer</string>
+    <string name="hide">Göm</string>
+    <string name="search">Sök</string>
+    <string name="library" comment="search within the library">Bibliotek</string>
+    <string name="profile">Profil</string>
+    <string name="profile_pic">Profilbild</string>
+    <string name="new_app">Ny app</string>
     <string name="no_apps_enabled">Inga appar är aktiverade</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d till</string>
     <string name="show_all">Visa alla</string>
@@ -117,11 +132,19 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Avhata</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Oälska</string>
     <string name="pending_scrobbles">Väntande scrobbles</string>
+    <string name="following" comment="accounts you are following on lastfm">Följer</string>
+    <string name="followers" comment="your lastfm followers">Följare</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, sedan %2$s</string>
     <string name="allow_background">Tillåt scrobbling i bakgrunden</string>
     <string name="grant_notification_access">Bevilja åtkomst till aviseringar</string>
     <string name="grant_notification_access_desc">Krävs för att hämta musikrelaterad metadata. Inga icke-musiknotifieringar läses</string>
     <string name="send_notifications">Tillåt aviseringar</string>
     <string name="notification_channel_blocked">Detta kräver att notifikationer aktiveras</string>
+    <string name="swap" comment="(Swap title and artist)">Byt</string>
+    <string name="time_just_now">just nu</string>
+    <string name="simple_edits">Redigeringar</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Topplistor</string>
+    <string name="details">Detaljer</string>
+    <string name="sort">Sortera</string>
     <!--  pro  -->
 </resources>

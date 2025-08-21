@@ -203,7 +203,6 @@
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
     <string name="months">Meses</string>
-    <string name="days"></string>
     <string name="years" comment="For the charts menu which displays year by year">Anos</string>
     <string name="charts_overall">Geral</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Atividade de reprodução</string>
@@ -295,7 +294,7 @@
     <string name="valence" comment="(Musical positivity)">Positividade</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Popularidade: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Análise</string>
-    <string name="enable" comment="To enable the scrobbler">Ativar</string>
+    <string name="enable" comment="To enable some feature">Ativar</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Ignorar imagens ausentes</string>
     <string name="create_collage">Criar colagem</string>

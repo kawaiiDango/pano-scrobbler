@@ -327,7 +327,7 @@
     <string name="valence" comment="(Musical positivity)">Pozityvumas</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analizė</string>
-    <string name="enable" comment="To enable the scrobbler">Įjungti</string>
+    <string name="enable" comment="To enable some feature">Įjungti</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Dydis</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Praleisti trūkstamus vaizdus</string>
     <string name="create_collage">Kurti koliažą</string>

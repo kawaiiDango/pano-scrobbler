@@ -267,7 +267,7 @@
     <string name="valence" comment="(Musical positivity)">Positif</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Kepopuleran: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analisa</string>
-    <string name="enable" comment="To enable the scrobbler">Aktifkan</string>
+    <string name="enable" comment="To enable some feature">Aktifkan</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Ukuran</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Lewati gambar yang hilang</string>
     <string name="create_collage">Buat kolase</string>

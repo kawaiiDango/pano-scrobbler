@@ -325,7 +325,7 @@
     <string name="valence" comment="(Musical positivity)">Pozitivita</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Popularita: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analýza</string>
-    <string name="enable" comment="To enable the scrobbler">Povolit</string>
+    <string name="enable" comment="To enable some feature">Povolit</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Velikost</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Přeskočit chybějící obrázky</string>
     <string name="create_collage">Vytvořit koláž</string>

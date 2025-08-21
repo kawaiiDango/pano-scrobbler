@@ -271,7 +271,7 @@
     <string name="instrumental">इन्स्ट्रुमेन्टअल</string>
     <string name="energetic" comment="(Energetic music)">इनेर्जेतिक</string>
     <string name="danceable">नाच्नलायक</string>
-    <string name="enable" comment="To enable the scrobbler">सक्रिय</string>
+    <string name="enable" comment="To enable some feature">सक्रिय</string>
     <string name="create_collage">कोलाज बनाउनुहोस्</string>
     <string name="pref_master">संगीत स्क्रबल गर्नुहोस्</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">प्रतिशत</string>

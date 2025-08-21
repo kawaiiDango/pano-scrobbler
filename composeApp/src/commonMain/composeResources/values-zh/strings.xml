@@ -59,7 +59,7 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>
     <string name="network_error">网络异常</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">已忽略记录</string>
-    <string name="scrobble_ignored_save_edit">或许是由于本记录时间过于久远，Last.fm 忽略了本次编辑。您是否愿意保存本次编辑用于后续的记录？</string>
+    <string name="scrobble_ignored_save_edit">可能由于此记录时间过久，Last.fm忽略了此次编辑，是否保存此次编辑的以备将来歌曲记录？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
     <string name="artist">艺术家</string>
     <string name="artists">艺术家</string>
@@ -278,7 +278,7 @@
     <string name="valence" comment="(Musical positivity)">情绪性</string>
     <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
-    <string name="enable" comment="To enable the scrobbler">启用</string>
+    <string name="enable" comment="To enable some feature">启用</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">尺寸</string>
     <string name="skip_missing_images" comment="(while generating a collage)">跳过缺失的图像</string>
     <string name="create_collage">创建拼贴</string>

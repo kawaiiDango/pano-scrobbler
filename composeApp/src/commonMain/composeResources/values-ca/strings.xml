@@ -215,7 +215,7 @@
     <string name="show_persistent_noti">Mostra una notificació persistent</string>
     <string name="scrobbler_off">Scrobbler desactivat</string>
     <string name="scrobbler_on">Scrobbler activat</string>
-    <string name="enable" comment="To enable the scrobbler">Activa</string>
+    <string name="enable" comment="To enable some feature">Activa</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Disposició</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Omet les imatges que falten</string>
     <string name="create_collage">Crea un collage</string>

@@ -278,7 +278,7 @@
     <string name="valence" comment="(Musical positivity)">情绪性</string>
     <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
-    <string name="enable" comment="To enable the scrobbler">启用</string>
+    <string name="enable" comment="To enable some feature">启用</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">尺寸</string>
     <string name="skip_missing_images" comment="(while generating a collage)">跳过缺失的图像</string>
     <string name="create_collage">创建拼贴</string>

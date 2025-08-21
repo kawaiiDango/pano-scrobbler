@@ -278,7 +278,7 @@
     <string name="danceable">댄서블</string>
     <string name="popularity" formatted="true" comment="popularity of a track">인기도: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">분석</string>
-    <string name="enable" comment="To enable the scrobbler">활성화</string>
+    <string name="enable" comment="To enable some feature">활성화</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">크기</string>
     <string name="skip_missing_images" comment="(while generating a collage)">누락된 이미지 건너뛰기</string>
     <string name="create_collage">콜라주 만들기</string>

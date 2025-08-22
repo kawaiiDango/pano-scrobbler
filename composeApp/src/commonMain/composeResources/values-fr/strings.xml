@@ -97,7 +97,7 @@
     <string name="tap_to_edit">(Appuyez pour modifier)</string>
     <string name="recently_scrobbled">Récemment Scrobbled</string>
     <string name="recents" comment="Short for recently scrobbled">Récents</string>
-    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Première fois scrobbled le %1$s</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Première fois scrobblé le %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
     <string name="music_players">Lecteurs de musique</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Autres applications</string>
@@ -161,7 +161,7 @@
     <string name="followers" comment="your lastfm followers">Abonnés</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
     <string name="allow_background">Autoriser le scrobbling en arrière-plan</string>
-    <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
+    <string name="grant_notification_access">Autoriser l&apos;accès aux notifications</string>
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
     <string name="send_notifications">Autoriser les notifications</string>
     <string name="notification_channel_blocked">Ceci nécessite l\'activation des notifications</string>
@@ -255,7 +255,7 @@
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l\'album</i> pour les extraire d\'autres champs</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">par exemple pour échanger l\'artiste et le titre, vous définiriez l\'expression régulière de l\'artiste en tant que (?&lt;track&gt;.*) et celle de la piste en tant que (?&lt;artist&gt;.*)</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières devraient au moins contenir ces groupes de capture : \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d\'un groupe de capture \"%1$s\", ce qui n\'est pas autorisé</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d&apos;un groupe de capture \"%1$s\", ce qui n\'est pas autorisé</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Expression régulière invalide : %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Modèles utilisés :</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
@@ -425,7 +425,7 @@
     <string name="low" comment="As in high/medium/low">Bas</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Nécessite un plugin</string>
     <string name="reload" comment="Reload or refresh">Recharger</string>
-    <string name="automation">Contrôler Pano Scrobbler à partir d\'applications d\'automatisation</string>
+    <string name="automation">Contrôler Pano Scrobbler à partir d&apos;applications d\'automatisation</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Pays des métadonnées %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Récupérer les métadonnées manquantes pour %1$s</string>
     <string name="login_in_browser">Terminer la connexion dans la fenêtre du navigateur</string>

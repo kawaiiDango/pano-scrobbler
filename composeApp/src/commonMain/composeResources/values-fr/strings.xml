@@ -152,10 +152,10 @@
     <string name="edit">Éditer</string>
     <string name="delete">Supprimer</string>
     <string name="delete_all">Tout supprimer</string>
-    <string name="love" comment="Love/like a song">J\'aime</string>
+    <string name="love" comment="Love/like a song">J&apos;aime</string>
     <string name="hate" comment="Hate or dislike a song">Je déteste</string>
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Je ne déteste plus</string>
-    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Je n\'aime pas</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Je n&apos;aime pas</string>
     <string name="pending_scrobbles">Scrobbles en attente</string>
     <string name="following" comment="accounts you are following on lastfm">Suivis</string>
     <string name="followers" comment="your lastfm followers">Abonnés</string>
@@ -174,15 +174,15 @@
     <string name="will_not_scrobble">Passer cette étape désactivera le scrobble</string>
     <string name="swap" comment="(Swap title and artist)">Changer</string>
     <string name="rate_msg">Vous aimez cette application ?</string>
-    <string name="time_just_now">à l\'instant</string>
+    <string name="time_just_now">à l&apos;instant</string>
     <string name="no_mail_apps">Aucun client mail n\'est installé</string>
     <string name="add">Ajouter un nouvel élément</string>
-    <string name="loved" comment="Its a noun">J\'aime</string>
-    <string name="unloved" comment="Its a noun">Je n\'aime plus</string>
+    <string name="loved" comment="Its a noun">J&apos;aime</string>
+    <string name="unloved" comment="Its a noun">Je n&apos;aime plus</string>
     <string name="simple_edits">Modifications</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Graphiques</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuage de tags</string>
-    <string name="add_to_hs">Ajouter à l\'écran d\'accueil</string>
+    <string name="add_to_hs">Ajouter à l&apos;écran d\'accueil</string>
     <string name="press_back">Appuyer sur retour une fois terminé</string>
     <string name="details">Détails</string>
     <string name="saved_as_pending">Enregistré en tant que scrobble en attente</string>
@@ -206,7 +206,7 @@
     <string name="days">Jours</string>
     <string name="years" comment="For the charts menu which displays year by year">Années</string>
     <string name="charts_overall">Global</string>
-    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Activité d\'écoute</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Activité d&apos;écoute</string>
     <string name="charts_no_data">Aucune donnée pour cette période</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personnaliser</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Périodes</string>
@@ -241,7 +241,7 @@
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="system_colors">Couleurs du système</string>
-    <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
+    <string name="appwidget_alpha">Opacité de l&apos;arrière-plan</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Le widget sera actualisé toutes les %1$s minutes</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>
     <string name="edit_name" comment="name for regex pattern">Nom</string>
@@ -257,7 +257,7 @@
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières devraient au moins contenir ces groupes de capture : \"track\", \"artist\"</string>
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d\'un groupe de capture \"%1$s\", ce qui n\'est pas autorisé</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Expression régulière invalide : %1$s</string>
-    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Modèles utilisés:</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Modèles utilisés :</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
     <string name="edit_case_sensitive">Sensible à la casse</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
@@ -280,22 +280,24 @@
     <string name="pin_limit_reached" formatted="true">Limite d\'épingles atteinte (%1$d)</string>
     <string name="pin_help">Appuyer longuement sur les éléments épinglés pour les classer</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utiliser le nom de la chaîne</string>
-    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Voulez-vous rendre cette régle d\'édition répétitive pour ce schéma %1$s?</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Voulez-vous rendre cette règle d\'édition répétitive pour ce schéma %1$s?</string>
     <string name="show_persistent_noti">Afficher une notification permanente</string>
     <string name="fix_it_desc">Cela peut aider à continuer de faire fonctionner le scrobbler en arrière-plan sur certains appareils</string>
     <string name="persistent_noti_text">Appuyez pour masquer ceci</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
     <string name="scrobbler_on">Scrobbler activé</string>
     <string name="duration">Durée</string>
-    <string name="total_listen_time">Temps d\'écoute total</string>
+    <string name="total_listen_time">Temps d&apos;écoute total</string>
     <string name="acoustic" comment="(Acoustic music)">Acoustique</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Énergisante</string>
     <string name="danceable">Dansable</string>
     <string name="valence" comment="(Musical positivity)">Joyeuse</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Popularité: %1$d%%</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popularité : %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable some feature">Activer</string>
+    <string name="disable" comment="To disable some feature">Désactiver</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Retirer : %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Taille</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Ignorer les images manquantes</string>
     <string name="create_collage">Créez un collage</string>
@@ -303,7 +305,7 @@
     <string name="username" comment="last.fm Username">Nom d’utilisateur</string>
     <string name="pref_master">Scrobler la musique</string>
     <string name="pref_master_qs_add">Ajouter une option de paramétrage rapide</string>
-    <string name="pref_master_qs_already_addded">L\'option de paramétrage rapide est déjà configurée</string>
+    <string name="pref_master_qs_already_addded">L&apos;option de paramétrage rapide est déjà configurée</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_lockscreen_noti">Notifications de l\'écran de verrouillage</string>
     <string name="pref_offline_info">ℹ️ Les scrobbles hors-ligne &amp; et les j\'aime vont être sauvegardés, pour être envoyés plus tard.</string>
@@ -319,14 +321,14 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutes</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Pourcentage</string>
     <string name="pref_logout">Se déconnecter</string>
-    <string name="sure_tap_again">Êtes-vous sûr? Appuyez à nouveau</string>
+    <string name="sure_tap_again">Êtes-vous sûr ? Appuyez à nouveau</string>
     <string name="pref_login">Se connecter</string>
     <string name="pref_about" comment="Info about this app">À propos</string>
     <string name="pref_privacy_policy">Politique de confidentialité</string>
     <string name="pref_scrobble_only">(Scrobbler seulement)</string>
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
     <string name="pref_token_label" comment="For Listenbrainz">Jeton d\'authentification</string>
-    <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
+    <string name="api_url" comment="For Listenbrainz">URL d&apos;API</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL du serveur</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d\'authentification ici : %1$s</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
@@ -351,7 +353,7 @@
     <string name="pref_search_in_source">Rechercher &amp; lancer sur l\'application depuis laquelle le scrobble est en cours</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Pour les applications compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listes</string>
-    <string name="regex_rules">Règles d\'expression régulière</string>
+    <string name="regex_rules">Règles d&apos;expression régulière</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Métadonnées bloquées</string>
     <string name="pref_translate">Traduire cette application</string>
     <string name="pref_translate_credits">Crédits de traduction</string>
@@ -363,14 +365,14 @@
     <string name="pref_search_url_template">Modèle d\'URL de recherche</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Utiliser $query comme caractère générique pour le terme de recherche</string>
     <string name="pref_native_file_picker">Utiliser le sélecteur de fichiers natif</string>
-    <string name="update_available" formatted="true" comment="%1= the version number">Mise à jour disponible: %1$s</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Mise à jour disponible : %1$s</string>
     <string name="downloading">Téléchargement en cours</string>
     <string name="download" comment="Its a verb">Télécharger</string>
     <string name="changelog">Journal des modifications</string>
-    <string name="import_hey_wtf">Ce n\'est probablement pas un fichier d\'exportation Pano Scrobbler</string>
+    <string name="import_hey_wtf">Ce n&apos;est probablement pas un fichier d\'exportation Pano Scrobbler</string>
     <string name="export_failed">Échec de l\'export</string>
     <string name="imported">Importé</string>
-    <string name="import_options">Options d\'import</string>
+    <string name="import_options">Options d&apos;import</string>
     <string name="import_lists_nope">Ne pas importer les modifications et la liste noire</string>
     <string name="import_lists_replace_all">Remplacer toutes les modifications et la liste noire</string>
     <string name="import_lists_replace_existing">Fusionner, remplacer les modifications existantes et la blocklist</string>
@@ -407,13 +409,14 @@
     <string name="create" comment="Create a new file">Créer</string>
     <string name="scan_qr">Scannez ceci pour vous connecter</string>
     <string name="copy_from">Copier depuis</string>
+    <string name="nothing" comment="nothing/none">Rien</string>
     <string name="borders" comment="Borders between images in the generated collage">Bordures</string>
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
     <string name="back">Retour</string>
     <string name="done">Terminé</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Réessayer</string>
-    <string name="run_on_start">Exécuter au démarrage de l\'ordinateur</string>
+    <string name="run_on_start">Exécuter au démarrage de l&apos;ordinateur</string>
     <string name="use_browser">Veuillez utiliser un navigateur sur un appareil compatible pour cela.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Sauvegarder les journaux</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Contraste</string>
@@ -434,7 +437,7 @@
     <string name="get_pro">Soutenir cette application</string>
     <string name="one_time_purchase">Achat unique</string>
     <string name="help">Aide</string>
-    <string name="pro_support">C\'est une façon simple et rapide pour les utilisateurs incroyables comme vous de montrer leur soutien en reconnaissant la valeur de cette application.</string>
+    <string name="pro_support">C&apos;est une façon simple et rapide pour les utilisateurs incroyables comme vous de montrer leur soutien en reconnaissant la valeur de cette application.</string>
     <string name="pro_also_get">Vous obtiendrez également les fonctionnalités suivantes :</string>
     <string name="thank_you">Merci !</string>
     <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>

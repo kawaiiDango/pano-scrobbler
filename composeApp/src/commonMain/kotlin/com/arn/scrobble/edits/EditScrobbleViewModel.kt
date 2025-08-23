@@ -44,6 +44,7 @@ class EditScrobbleViewModel : ViewModel() {
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
+        isNowPlaying: Boolean,
         save: Boolean,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -51,6 +52,7 @@ class EditScrobbleViewModel : ViewModel() {
                 origScrobbleData,
                 newScrobbleData,
                 msid,
+                isNowPlaying
             )
                 .onSuccess {
                     if (save)
@@ -100,6 +102,7 @@ class EditScrobbleViewModel : ViewModel() {
         origScrobbleData: ScrobbleData,
         newScrobbleData: ScrobbleData,
         msid: String?,
+        isNowPlaying: Boolean
     ): Result<ScrobbleData> {
         val track = newScrobbleData.track.trim()
         val origTrack = origScrobbleData.track
@@ -109,7 +112,6 @@ class EditScrobbleViewModel : ViewModel() {
         val artist = newScrobbleData.artist.trim()
         val origArtist = origScrobbleData.artist
         val timeMillis = origScrobbleData.timestamp
-        val isNowPlaying = timeMillis == 0L
 
         val fetchAlbum = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
         val fetchAlbumAndAlbumArtist =

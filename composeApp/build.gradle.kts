@@ -313,8 +313,8 @@ android {
 //        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
 
         releaseImplementation(projects.extrasPlay)
-        debugImplementation(projects.extrasPlay)
-//        debugImplementation(projects.extrasNonplay)
+//        debugImplementation(projects.extrasPlay)
+        debugImplementation(projects.extrasNonplay)
         "releaseGithubImplementation"(projects.extrasNonplay)
 
         androidTestImplementation(libs.androidx.uiautomator)
@@ -988,7 +988,7 @@ android {
 
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("releaseGithub")
         }
 
         getByName("release") {

@@ -89,6 +89,7 @@ fun EditScrobbleDialog(
             origScrobbleData = scrobbleData,
             newScrobbleData = newScrobbleData,
             msid = msid,
+            isNowPlaying = hash != null,
             save = save,
         )
     }

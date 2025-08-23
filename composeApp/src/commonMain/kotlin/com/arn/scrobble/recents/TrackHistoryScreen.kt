@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +32,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.Flow
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.first_scrobbled_on
@@ -41,7 +41,7 @@ import pano_scrobbler.composeapp.generated.resources.my_scrobbles
 fun TrackHistoryScreen(
     user: UserCached,
     track: Track,
-    onSetTitle: (String) -> Unit,
+    onSetTitle: (String?) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     editDataFlow: Flow<Pair<String, ScrobbleData>>,
     modifier: Modifier = Modifier,
@@ -55,17 +55,22 @@ fun TrackHistoryScreen(
     val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
+    val myScrobblesStr = stringResource(Res.string.my_scrobbles)
 
-    LaunchedEffect(deletedTracksSet) {
+    DisposableEffect(deletedTracksSet) {
         val formattedCount = ((track.userplaycount ?: 0) - deletedTracksSet.size)
             .coerceAtLeast(0)
             .format()
         val title = if (user.isSelf) {
-            getString(Res.string.my_scrobbles) + ": " + formattedCount
+            "$myScrobblesStr: $formattedCount"
         } else {
             "${user.name}: $formattedCount"
         }
         onSetTitle(title)
+
+        onDispose {
+            onSetTitle(null)
+        }
     }
 
     LaunchedEffect(user, track) {

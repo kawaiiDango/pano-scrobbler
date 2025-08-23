@@ -36,6 +36,10 @@ Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Ser
 The non-Play variant can optionally display a persistent notification on Android 14+.
 This may help prevent the system from killing the app in the background on devices from certain manufacturers.
 
+**SHA256 fingerprint for non-Play builds:**
+```
+9E:68:AB:6B:D6:11:CE:79:DD:5D:53:E3:5A:15:CF:93:CF:73:9A:4E:94:C4:9A:B1:BF:10:DD:12:65:F0:2E:6C
+```
 
 ### Translate
 

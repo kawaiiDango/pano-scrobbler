@@ -3,7 +3,8 @@
 ### [android] The app skips scrobbles when it is in the background / The app says that it has been killed
 
 1. Check if notification access is enabled for this app.
-   Go to Settings > Notifications > Notification read, reply and control > Pano Scrobbler.
+   Go to Settings > Apps > Special app access > Notification read, reply and control > Pano Scrobbler.
+   The exact location and name of the setting will depend on your Android version and manufacturer.
 
 2. Some manufacturers such as Xiaomi, Huawei, OnePlus and others do not allow 3rd party apps to run
    in the background by default. Try disabling battery optimisations for this app. Sometimes, that
@@ -95,7 +96,8 @@ Use the `--data-dir` or `-d` command line argument, followed by the path to the 
 
 ### [desktop] How do I correctly scrobble media playing on a web browser?
 
-Web browsers or browser-like apps are not supported. Use WebScrobbler for web browsers.
+Web browsers or browser-like apps (e.g. most Electron and WebView apps on Windows) are not
+supported. Use WebScrobbler for web browsers.
 
 ### [desktop] The app does not show notifications on Windows
 

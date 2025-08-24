@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.parse_error
@@ -117,11 +117,11 @@ class ScrobbleQueue(
                 ))
             ) {
                 val npResults =
-                    withTimeout(submitAtTime - PlatformStuff.monotonicTimeMs() - 5000) {
+                    withTimeoutOrNull(submitAtTime - PlatformStuff.monotonicTimeMs() - 5000) {
                         ScrobbleEverywhere.nowPlaying(sd)
                     }
 
-                if (npResults.values.any { !it.isSuccess }) {
+                if (npResults != null && npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
                         npResults,
                         sd,

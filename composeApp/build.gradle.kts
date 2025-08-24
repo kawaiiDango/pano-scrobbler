@@ -152,7 +152,7 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.kotlinx.immutable)
             implementation(libs.qrcode)
-            implementation(libs.zero.allocation.hashing)
+            implementation(libs.cryptohash)
             implementation(projects.extrasCommon)
         }
 

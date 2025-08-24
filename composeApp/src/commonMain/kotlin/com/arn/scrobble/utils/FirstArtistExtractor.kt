@@ -1,14 +1,12 @@
 package com.arn.scrobble.utils
 
-import net.openhft.hashing.ByteBufferAccess
-import net.openhft.hashing.LongHashFunction
+import com.appmattus.crypto.Algorithm
 import pano_scrobbler.composeapp.generated.resources.Res
-import java.nio.ByteBuffer
 
 object FirstArtistExtractor {
     private lateinit var knownArtists: Set<Long>
     private var initialized = false
-    private val xxhash by lazy { LongHashFunction.xx3() }
+    private val xxh3 by lazy { Algorithm.XXH3_64() }
 
     private val COMMON_DELIMITERS = arrayOf(
         ", ",
@@ -106,29 +104,23 @@ object FirstArtistExtractor {
         }
 
         val trimmed = artistString.trim()
+        val digest = xxh3.createDigest()
+        val digestOutputBytes = ByteArray(digest.digestLength)
+
         if (trimmed.isEmpty()) return trimmed
 
-        var byteBuffer: ByteBuffer? = null
-
         fun String.x(): Long {
-            //  the first call to this function is always the with longest string. Will allocate max space.
             val byteArray = lowercase().encodeToByteArray(throwOnInvalidSequence = false)
 
-            if (byteBuffer == null) {
-                byteBuffer = ByteBuffer.allocate(byteArray.size)
+            digest.reset()
+            digest.update(byteArray)
+
+            digest.digest(digestOutputBytes, 0, digestOutputBytes.size)
+
+            // convert digestOutputBytes to long
+            return digestOutputBytes.fold(0L) { acc, byte ->
+                (acc shl 8) or (byte.toLong() and 0xFF)
             }
-
-            byteBuffer.clear()
-            byteBuffer.put(byteArray)
-            byteBuffer.flip()
-
-            return xxhash.hash(
-                byteBuffer,
-                // force this instance to avoid UnsafeAccess and native crashes on 32-bit Samsungs
-                ByteBufferAccess.INSTANCE,
-                byteBuffer.position().toLong(),
-                byteBuffer.remaining().toLong()
-            )
         }
 
         // Quick check: if entire string is known

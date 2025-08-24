@@ -342,7 +342,7 @@ object MetadataUtils {
 
         return Pair(artist, track)
     }
-    
+
     fun sanitizeAlbum(albumOrig: String): String {
         val albumLower = albumOrig.lowercase(Locale.ENGLISH)
         if (metaUnknown.any { albumLower == it })
@@ -359,8 +359,8 @@ object MetadataUtils {
 
     fun sanitizeAlbumArtist(artistOrig: String): String {
         val artist = sanitizeAlbum(artistOrig)
-        if (artist.lowercase(Locale.ENGLISH) in artistSpam)
-            return ""
+        if (artist.equals("VA", ignoreCase = true))
+            return "Various Artists"
         return artist
     }
 

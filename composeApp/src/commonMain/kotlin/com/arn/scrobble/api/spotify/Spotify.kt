@@ -16,8 +16,6 @@ import io.ktor.client.request.parameter
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.parameters
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class SpotifyRequester {
@@ -29,24 +27,39 @@ class SpotifyRequester {
 
             install(Auth) {
                 bearer {
+                    loadTokens {
+                        BearerTokens(
+                            "null",
+                            Tokens.SPOTIFY_REFRESH_TOKEN
+                        )
+                    }
+
                     refreshTokens {
-                        val tokenResponse = withContext(Dispatchers.IO) {
-                            client.submitForm(
-                                url = "https://accounts.spotify.com/api/token",
-                                formParameters = parameters {
-                                    append("grant_type", "client_credentials")
-                                }
-                            ) {
-                                markAsRefreshTokenRequest()
+                        val tokenResponse = client.submitForm(
+                            url = "https://accounts.spotify.com/api/token",
+                            formParameters = parameters {
+                                append("grant_type", "client_credentials")
+                            }
+                        ) {
+                            markAsRefreshTokenRequest()
+                            
+                            header(
+                                HttpHeaders.Authorization,
+                                "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}"
+                            )
+                        }.parseJsonBody<SpotifyTokenResponse>()
 
-                                header(
-                                    HttpHeaders.Authorization,
-                                    "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}"
-                                )
-                            }.parseJsonBody<SpotifyTokenResponse>()
+                        BearerTokens(
+                            tokenResponse.access_token,
+                            Tokens.SPOTIFY_REFRESH_TOKEN
+                        )
+                    }
+
+                    sendWithoutRequest {
+                        when (it.url.host) {
+                            "accounts.spotify.com" -> false
+                            else -> true
                         }
-
-                        BearerTokens(tokenResponse.access_token, Tokens.SPOTIFY_REFRESH_TOKEN)
                     }
                 }
             }

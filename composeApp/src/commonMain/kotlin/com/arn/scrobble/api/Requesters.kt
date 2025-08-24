@@ -52,6 +52,10 @@ object Requesters {
     val genericKtorClient by lazy {
         HttpClient(OkHttp) {
 
+            engine {
+                dispatcher = Dispatchers.IO
+            }
+
             install(HttpTimeout) {
                 requestTimeoutMillis = 40 * 1000L
             }

@@ -250,7 +250,9 @@ class SessListener(
 
             Logger.i {
                 "onMetadataChanged ${metadataInfo.artist} (${metadataInfo.albumArtist}) [${metadataInfo.album}] ~ ${metadataInfo.title} " +
-                        "duration=${metadataInfo.duration} lastState=${sessionTracker.lastPlaybackState}, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()}"
+                        "duration=${metadataInfo.duration} lastState=${sessionTracker.lastPlaybackState}, isRemotePlayback=$isRemotePlayback cb=${
+                            this.hashCode().toHexString()
+                        }"
             }
 
             sessionTracker.metadataChanged(metadataInfo, extras)
@@ -264,7 +266,11 @@ class SessListener(
             val playingState = state.state
             val pos = state.position // can be -1
 
-            Logger.i { "onPlaybackStateChanged=$playingState laststate=${sessionTracker.lastPlaybackState} pos=$pos cb=${this@ControllerCallback.hashCode()} sl=${this@SessListener.hashCode()}" }
+            Logger.i {
+                "onPlaybackStateChanged=$playingState laststate=${sessionTracker.lastPlaybackState} pos=$pos cb=${
+                    this@ControllerCallback.hashCode().toHexString()
+                } sl=${this@SessListener.hashCode().toHexString()}"
+            }
 
             val options = TransformMetadataOptions(
                 scrobbleSpotifyRemote = scrobbleSpotifyRemote.value

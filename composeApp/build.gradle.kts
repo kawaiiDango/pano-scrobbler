@@ -940,7 +940,8 @@ tasks.register("copyStringsToAndroid") {
                             for (j in 0 until textNodes.length) {
                                 val textNode = textNodes.item(j)
                                 if (textNode.nodeType == org.w3c.dom.Node.TEXT_NODE) {
-                                    textNode.nodeValue = textNode.nodeValue.replace("'", "\\'")
+                                    textNode.nodeValue =
+                                        textNode.nodeValue.replace("(?<!\\\\)'".toRegex(), "\\\\'")
                                 }
                             }
 
@@ -961,7 +962,7 @@ tasks.register("copyStringsToAndroid") {
                             for (j in 0 until textNodes.length) {
                                 val textNode = textNodes.item(j)
                                 if (textNode.nodeType == org.w3c.dom.Node.TEXT_NODE) {
-                                    textNode.nodeValue = textNode.nodeValue.replace("'", "\\'")
+                                    textNode.nodeValue.replace("(?<!\\\\)'".toRegex(), "\\\\'")
                                 }
                             }
 

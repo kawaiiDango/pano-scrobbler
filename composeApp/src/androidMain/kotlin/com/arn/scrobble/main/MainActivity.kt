@@ -57,17 +57,9 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-//        navDeepLink<PanoRoute.MusicEntryInfo>(
-//            basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfo::class.simpleName,
-//            typeMap = mapOf(
-//                typeOf<UserCached>() to serializableType<UserCached>(),
-//                typeOf<Artist?>() to serializableType<Artist?>(),
-//                typeOf<Album?>() to serializableType<Album?>(),
-//                typeOf<Track?>() to serializableType<Track?>(),
-//            )
-//        ).let {
-//            Logger.i { "Deep link: ${it.uriPattern}" }
-//        }
+//        val artists = "Siouxsie & The Banshees & The Creatures & John Cale & Lou Reed"
+//        val first = runBlocking { FirstArtistExtractor.extract(artists, true) }
+//        toast(first)
     }
 
     override fun attachBaseContext(newBase: Context?) {

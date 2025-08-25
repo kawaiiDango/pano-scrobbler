@@ -31,6 +31,12 @@
 
     <!--  strings for unfinalized stuff  -->
 
+    <string name="any_value">Anything</string>
+    <string name="existing_value">Existing data</string>
+    <string name="edit_example">e.g. To replace Artist1 with Artist2 while keeping the rest of the metadata unchanged, enable only the artist field, and fill in the original and corrected artist values, leaving the other fields disabled.</string>
+    <string name="edit_extract_track_example"
+        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
+        >e.g. To extract metadata from the track field, if the track contains "Artist - Track", set the track regex to (?&lt;artist&gt;.*) - (?&lt;track&gt;.*)</string>
     <string name="use_something" formatted="true">Use %1$s</string>
     <string name="desktop">PC</string>
     <string name="android">Android</string>

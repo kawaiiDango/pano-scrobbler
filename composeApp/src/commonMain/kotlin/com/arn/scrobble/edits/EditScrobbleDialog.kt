@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -230,6 +231,9 @@ fun EditScrobbleDialog(
                     IconToggleButton(
                         checked = save,
                         onCheckedChange = { save = it },
+                        modifier = Modifier.alpha(
+                            if (save) 1f else 0.5f
+                        )
                     ) {
                         Icon(
                             imageVector = if (save)

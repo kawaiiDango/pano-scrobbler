@@ -95,10 +95,10 @@ class App : Application(), Configuration.Provider {
 
     private fun initConnectivityCheck() {
         val cm = ContextCompat.getSystemService(this, ConnectivityManager::class.java)!!
-        val nr = NetworkRequest.Builder().apply {
-            addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-        }.build()
+        val nr = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            .build()
 
         cm.registerNetworkCallback(nr, object : ConnectivityManager.NetworkCallback() {
             private val availableNetworks = mutableSetOf<Network>()

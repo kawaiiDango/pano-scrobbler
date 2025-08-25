@@ -4,15 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +23,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -123,49 +120,77 @@ private fun SimpleEditItem(
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
 ) {
+    val wildcardStr = "*"
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
     ) {
-        if (edit.legacyHash == null) {
-            Icon(
-                imageVector = Icons.Outlined.Edit,
-                tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null,
-                modifier = Modifier
-                    .alpha(0.5f)
-                    .size(56.dp)
-                    .padding(12.dp)
-            )
-        } else {
-            Spacer(modifier = Modifier.size(60.dp))
-        }
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
                 .clip(MaterialTheme.shapes.medium)
-                .clickable(enabled = !forShimmer && edit.legacyHash == null) { onEdit(edit) }
+                .clickable(enabled = !forShimmer) { onEdit(edit) }
                 .padding(8.dp)
                 .backgroundForShimmer(forShimmer)
         ) {
-            Text(
-                text = edit.track,
-                style = MaterialTheme.typography.titleMediumEmphasized,
-            )
-
-            Text(
-                text = edit.artist,
-                style = MaterialTheme.typography.bodyLargeEmphasized,
-            )
-
-            if (edit.album.isNotBlank()) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text = edit.album,
+                    text = edit.origTrack.takeIf { edit.hasOrigTrack } ?: wildcardStr,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleMediumEmphasized,
+                )
+                Text(
+                    text = edit.origArtist.takeIf { edit.hasOrigArtist } ?: wildcardStr,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyLargeEmphasized,
+                )
+                Text(
+                    text = edit.origAlbum.takeIf { edit.hasOrigAlbum } ?: wildcardStr,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMediumEmphasized,
+                )
+                Text(
+                    text = edit.origAlbumArtist.takeIf { edit.hasOrigAlbumArtist } ?: wildcardStr,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMediumEmphasized,
+                )
+            }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
+                contentDescription = null,
+            )
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = edit.track ?: wildcardStr,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = edit.artist ?: wildcardStr,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = edit.album ?: wildcardStr,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = edit.albumArtist ?: wildcardStr,
+                    maxLines = 1,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

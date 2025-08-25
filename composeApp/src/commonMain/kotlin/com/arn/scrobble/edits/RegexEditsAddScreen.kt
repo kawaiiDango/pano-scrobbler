@@ -87,9 +87,9 @@ import pano_scrobbler.composeapp.generated.resources.edit_all
 import pano_scrobbler.composeapp.generated.resources.edit_case_sensitive
 import pano_scrobbler.composeapp.generated.resources.edit_extract
 import pano_scrobbler.composeapp.generated.resources.edit_extract_desc
-import pano_scrobbler.composeapp.generated.resources.edit_extract_example
 import pano_scrobbler.composeapp.generated.resources.edit_extract_extra_groups
 import pano_scrobbler.composeapp.generated.resources.edit_extract_no_groups
+import pano_scrobbler.composeapp.generated.resources.edit_extract_track_example
 import pano_scrobbler.composeapp.generated.resources.edit_first
 import pano_scrobbler.composeapp.generated.resources.edit_name
 import pano_scrobbler.composeapp.generated.resources.edit_regex
@@ -769,7 +769,7 @@ private fun ExtractOptions(
         )
 
         Text(
-            text = stringResource(Res.string.edit_extract_example),
+            text = stringResource(Res.string.edit_extract_track_example),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth()
         )

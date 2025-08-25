@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,9 +43,12 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album
 import pano_scrobbler.composeapp.generated.resources.album_artist
+import pano_scrobbler.composeapp.generated.resources.any_value
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.corrected
 import pano_scrobbler.composeapp.generated.resources.delete
+import pano_scrobbler.composeapp.generated.resources.edit_example
+import pano_scrobbler.composeapp.generated.resources.existing_value
 import pano_scrobbler.composeapp.generated.resources.original
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import pano_scrobbler.composeapp.generated.resources.save
@@ -56,30 +60,75 @@ fun SimpleEditsAddScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var hasOrigTrack by rememberSaveable { mutableStateOf(simpleEdit?.hasOrigTrack ?: true) }
     var origTrack by rememberSaveable { mutableStateOf(simpleEdit?.origTrack ?: "") }
+    var hasTrack by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.track != null) }
     var track by rememberSaveable { mutableStateOf(simpleEdit?.track ?: "") }
+
+    var hasOrigAlbum by rememberSaveable { mutableStateOf(simpleEdit?.hasOrigAlbum ?: true) }
     var origAlbum by rememberSaveable { mutableStateOf(simpleEdit?.origAlbum ?: "") }
+    var hasAlbum by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.album != null) }
     var album by rememberSaveable { mutableStateOf(simpleEdit?.album ?: "") }
+
+    var hasOrigArtist by rememberSaveable { mutableStateOf(simpleEdit?.hasOrigArtist ?: true) }
     var origArtist by rememberSaveable { mutableStateOf(simpleEdit?.origArtist ?: "") }
+    var hasArtist by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.artist != null) }
     var artist by rememberSaveable { mutableStateOf(simpleEdit?.artist ?: "") }
+
+    var hasOrigAlbumArtist by rememberSaveable {
+        mutableStateOf(
+            simpleEdit?.hasOrigAlbumArtist ?: false
+        )
+    }
+    var origAlbumArtist by rememberSaveable { mutableStateOf(simpleEdit?.origAlbumArtist ?: "") }
+    var hasAlbumArtist by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.albumArtist != null) }
     var albumArtist by rememberSaveable { mutableStateOf(simpleEdit?.albumArtist ?: "") }
+
+    val anythingText = "< " + stringResource(Res.string.any_value) + " >"
+    val existingText = "< " + stringResource(Res.string.existing_value) + " >"
     var showError by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     fun onDone() {
         scope.launch {
-            if (origTrack.isEmpty() || artist.isEmpty() || track.isEmpty()) {
+            if (
+            // check if everything is disabled
+                !hasOrigTrack && !hasOrigArtist && !hasOrigAlbum && !hasOrigAlbumArtist ||
+                !hasTrack && !hasArtist && !hasAlbum && !hasAlbumArtist ||
+
+                // artist and track cannot be empty if enabled
+                hasOrigTrack && origTrack.isEmpty() ||
+                hasTrack && track.isEmpty() ||
+                hasOrigArtist && origArtist.isEmpty() ||
+                hasArtist && artist.isEmpty() ||
+
+                // check if the edit rule actually changes data
+                origTrack.takeIf { hasOrigTrack } == track.takeIf { hasTrack } &&
+                origArtist.takeIf { hasOrigArtist } == artist.takeIf { hasArtist } &&
+                origAlbum.takeIf { hasOrigAlbum } == album.takeIf { hasAlbum } &&
+                origAlbumArtist.takeIf { hasOrigAlbumArtist } == albumArtist.takeIf { hasAlbumArtist }
+
+            ) {
                 showError = true
             } else {
                 val newEdit = SimpleEdit(
                     _id = simpleEdit?._id ?: 0,
+
+                    hasOrigTrack = hasOrigTrack,
                     origTrack = origTrack,
-                    track = track,
-                    origAlbum = origAlbum,
-                    album = album,
+                    track = track.takeIf { hasTrack },
+
+                    hasOrigArtist = hasOrigArtist,
                     origArtist = origArtist,
-                    artist = artist,
-                    albumArtist = albumArtist
+                    artist = artist.takeIf { hasArtist },
+
+                    hasOrigAlbum = hasOrigAlbum,
+                    origAlbum = origAlbum,
+                    album = album.takeIf { hasAlbum },
+
+                    hasOrigAlbumArtist = hasOrigAlbumArtist,
+                    origAlbumArtist = origAlbumArtist,
+                    albumArtist = albumArtist.takeIf { hasAlbumArtist },
                 )
                 withContext(Dispatchers.IO) {
                     PanoDb.db.getSimpleEditsDao().insertReplaceLowerCase(newEdit)
@@ -115,29 +164,89 @@ fun SimpleEditsAddScreen(
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 8.dp)
             )
-            OutlinedTextFieldTvSafe(
-                value = origTrack,
-                onValueChange = { origTrack = it },
-                label = { Text(stringResource(Res.string.track)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth()
 
-            )
-
-            OutlinedTextFieldTvSafe(
-                value = origArtist,
-                onValueChange = { origArtist = it },
-                label = { Text(stringResource(Res.string.artist)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Checkbox(
+                    checked = hasOrigTrack,
+                    onCheckedChange = { hasOrigTrack = it },
+                )
 
-            OutlinedTextFieldTvSafe(
-                value = origAlbum,
-                onValueChange = { origAlbum = it },
-                label = { Text(stringResource(Res.string.album)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                OutlinedTextFieldTvSafe(
+                    enabled = hasOrigTrack,
+                    value = if (hasOrigTrack) origTrack else anythingText,
+                    onValueChange = { origTrack = it },
+                    label = { Text(stringResource(Res.string.track)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = hasOrigArtist,
+                    onCheckedChange = { hasOrigArtist = it },
+                )
+
+                OutlinedTextFieldTvSafe(
+                    enabled = hasOrigArtist,
+                    value = if (hasOrigArtist) origArtist else anythingText,
+                    onValueChange = { origArtist = it },
+                    label = { Text(stringResource(Res.string.artist)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = hasOrigAlbum,
+                    onCheckedChange = { hasOrigAlbum = it },
+                )
+
+                OutlinedTextFieldTvSafe(
+                    enabled = hasOrigAlbum,
+                    value = if (hasOrigAlbum) origAlbum else anythingText,
+                    onValueChange = { origAlbum = it },
+                    label = { Text(stringResource(Res.string.album)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = hasOrigAlbumArtist,
+                    onCheckedChange = { hasOrigAlbumArtist = it },
+                )
+                OutlinedTextFieldTvSafe(
+                    enabled = hasOrigAlbumArtist,
+                    value = if (hasOrigAlbumArtist) origAlbumArtist else anythingText,
+                    onValueChange = { origAlbumArtist = it },
+                    label = { Text(stringResource(Res.string.album_artist)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Text(
+                stringResource(Res.string.edit_example),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 16.dp)
             )
 
             Text(
@@ -149,40 +258,84 @@ fun SimpleEditsAddScreen(
                     .padding(top = 8.dp)
             )
 
-            OutlinedTextFieldTvSafe(
-                value = track,
-                onValueChange = { track = it },
-                label = { Text(stringResource(Res.string.track)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Checkbox(
+                    checked = hasTrack,
+                    onCheckedChange = { hasTrack = it },
+                )
+                OutlinedTextFieldTvSafe(
+                    enabled = hasTrack,
+                    value = if (hasTrack) track else existingText,
+                    onValueChange = { track = it },
+                    label = { Text(stringResource(Res.string.track)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-            OutlinedTextFieldTvSafe(
-                value = artist,
-                onValueChange = { artist = it },
-                label = { Text(stringResource(Res.string.artist)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Checkbox(
+                    checked = hasArtist,
+                    onCheckedChange = { hasArtist = it },
+                )
+                OutlinedTextFieldTvSafe(
+                    enabled = hasArtist,
+                    value = if (hasArtist) artist else existingText,
+                    onValueChange = { artist = it },
+                    label = { Text(stringResource(Res.string.artist)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = hasAlbum,
+                    onCheckedChange = { hasAlbum = it },
+                )
 
-            OutlinedTextFieldTvSafe(
-                value = album,
-                onValueChange = { album = it },
-                label = { Text(stringResource(Res.string.album)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextFieldTvSafe(
+                    enabled = hasAlbum,
+                    value = if (hasAlbum) album else existingText,
+                    onValueChange = { album = it },
+                    label = { Text(stringResource(Res.string.album)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-            OutlinedTextFieldTvSafe(
-                value = albumArtist,
-                onValueChange = { albumArtist = it },
-                label = { Text(stringResource(Res.string.album_artist)) },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { onDone() }
-                ),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Checkbox(
+                    checked = hasAlbumArtist,
+                    onCheckedChange = { hasAlbumArtist = it },
+                )
+                OutlinedTextFieldTvSafe(
+                    enabled = hasAlbumArtist,
+                    value = if (hasAlbumArtist) albumArtist else existingText,
+                    onValueChange = { albumArtist = it },
+                    label = { Text(stringResource(Res.string.album_artist)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { onDone() }
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             if (showError) {
                 ErrorText(stringResource(Res.string.required_fields_empty))

@@ -97,12 +97,7 @@ object ScrobbleEverywhere {
 
         PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
             ?.also {
-                scrobbleData = scrobbleData.copy(
-                    artist = it.artist,
-                    album = it.album,
-                    track = it.track,
-                    albumArtist = it.albumArtist.takeIf { it.isNotBlank() }
-                )
+                scrobbleData = it
                 edited = true
             }
 

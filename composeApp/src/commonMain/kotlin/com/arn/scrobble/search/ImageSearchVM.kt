@@ -38,7 +38,7 @@ class ImageSearchVM : ViewModel() {
     private val _existingMappings = MutableStateFlow<List<CustomSpotifyMapping>>(emptyList())
     val existingMappings = _existingMappings.asStateFlow()
     private var searchType: Int = -1
-    private lateinit var musicEntry: MusicEntry
+    private var musicEntry: MusicEntry? = null
     private var originalMusicEntry: MusicEntry? = null
 
     init {
@@ -175,6 +175,8 @@ class ImageSearchVM : ViewModel() {
         spotifyItem: SpotifyMusicItem?,
         fileUri: String?,
     ) {
+        val musicEntry = musicEntry ?: return // has to be initialized
+
         val mappings = mutableListOf<CustomSpotifyMapping>()
         mappings += createCustomMapping(musicEntry, spotifyItem, fileUri)
 

@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
         CustomSpotifyMapping::class,
         CachedTrackWithAlbum::class,
     ],
-    version = 16,
+    version = 17,
     autoMigrations = [
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11, spec = Spec_10_11::class),
@@ -33,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 15, to = 16),
+        AutoMigration(from = 16, to = 17, spec = Spec_16_17::class),
     ],
 )
 @ConstructedBy(PanoDbConstructor::class)

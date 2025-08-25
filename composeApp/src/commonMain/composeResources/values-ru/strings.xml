@@ -328,6 +328,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Популярность: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Анализ</string>
     <string name="enable" comment="To enable some feature">Включить</string>
+    <string name="disable" comment="To disable some feature">Отключить</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Удалить: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Размер</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Пропустить отсутствующие изображения</string>
     <string name="create_collage">Создать коллаж</string>
@@ -455,6 +457,8 @@
     <string name="low" comment="As in high/medium/low">Низкий</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Для некоторых приложений требуются плагины</string>
     <string name="reload" comment="Reload or refresh">Обновить</string>
+    <string name="pref_tray_icon_theme">Тема иконки в трее</string>
+    <string name="min_track_duration">Скробблить треки дольше чем</string>
     <string name="automation">Управление Pano Scrobbler через приложения для автоматизации</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Страна для метаданных %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Получить недостающие метаданные для %1$s</string>

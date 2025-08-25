@@ -935,6 +935,15 @@ tasks.register("copyStringsToAndroid") {
                     if (stringElement is org.w3c.dom.Element) {
                         val name = stringElement.getAttribute("name")
                         if (name in stringsToCopyToAndroid) {
+                            // escape apostrophes
+                            val textNodes = stringElement.childNodes
+                            for (j in 0 until textNodes.length) {
+                                val textNode = textNodes.item(j)
+                                if (textNode.nodeType == org.w3c.dom.Node.TEXT_NODE) {
+                                    textNode.nodeValue = textNode.nodeValue.replace("'", "\\'")
+                                }
+                            }
+
                             val importedNode = targetDoc.importNode(stringElement, true)
                             resourcesElement.appendChild(importedNode)
                         }
@@ -947,6 +956,15 @@ tasks.register("copyStringsToAndroid") {
                     if (pluralElement is org.w3c.dom.Element) {
                         val name = pluralElement.getAttribute("name")
                         if (name in stringsToCopyToAndroid) {
+                            // escape apostrophes
+                            val textNodes = pluralElement.childNodes
+                            for (j in 0 until textNodes.length) {
+                                val textNode = textNodes.item(j)
+                                if (textNode.nodeType == org.w3c.dom.Node.TEXT_NODE) {
+                                    textNode.nodeValue = textNode.nodeValue.replace("'", "\\'")
+                                }
+                            }
+
                             val importedNode = targetDoc.importNode(pluralElement, true)
                             resourcesElement.appendChild(importedNode)
                         }

@@ -222,7 +222,7 @@ private fun RegexEditsList(
         item(key = "custom_header") {
             if (regexEdits.size >= Stuff.MAX_PATTERNS) {
                 Text(
-                    text = stringResource(Res.string.edit_max_patterns),
+                    text = stringResource(Res.string.edit_max_patterns, Stuff.MAX_PATTERNS),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier

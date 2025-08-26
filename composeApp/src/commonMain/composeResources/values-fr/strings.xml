@@ -425,6 +425,7 @@
     <string name="low" comment="As in high/medium/low">Bas</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Nécessite un plugin</string>
     <string name="reload" comment="Reload or refresh">Recharger</string>
+    <string name="pref_tray_icon_theme">Thème de l\'icône de la barre d\'état</string>
     <string name="automation">Contrôler Pano Scrobbler à partir d&apos;applications d\'automatisation</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Pays des métadonnées %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Récupérer les métadonnées manquantes pour %1$s</string>

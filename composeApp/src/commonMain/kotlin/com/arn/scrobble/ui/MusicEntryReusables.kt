@@ -1,6 +1,6 @@
 package com.arn.scrobble.ui
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -193,9 +194,12 @@ fun MusicEntryListItem(
                     else
                         Modifier
                 )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(
+                        horizontal = 8.dp,
+                        vertical = if (isColumn) 8.dp else 4.dp
+                    )
             ) {
-                Box(
+                BoxWithConstraints(
                     modifier = Modifier
                         .then(
                             if (fixedImageHeight)
@@ -204,10 +208,12 @@ fun MusicEntryListItem(
                             else if (!isColumn) // height is bounded in my use case
                                 Modifier.aspectRatio(1f, true)
                             else // unbounded height, let the custom layout handle it
-                                Modifier.padding(top = 8.dp)
+                                Modifier
                         )
                         .backgroundForShimmer(forShimmer)
                 ) {
+                    val imageDim by animateDpAsState(targetValue = maxWidth)
+
                     AsyncImage(
                         model = remember(
                             forShimmer,
@@ -249,6 +255,7 @@ fun MusicEntryListItem(
                         contentDescription = stringResource(Res.string.album_art),
                         modifier = Modifier
                             .clip(MaterialTheme.shapes.medium)
+                            .size(imageDim)
                             .then(
                                 if (onImageClick != null)
                                     Modifier.clickable(
@@ -275,8 +282,6 @@ fun MusicEntryListItem(
                                 else
                                     Modifier
                             )
-                            .animateContentSize(alignment = Alignment.Center)
-                            .fillMaxSize()
                     )
 
                     if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
@@ -308,7 +313,7 @@ fun MusicEntryListItem(
                         .widthIn(200.dp)
                         .then(
                             if (isColumn)
-                                Modifier.padding(vertical = 8.dp)
+                                Modifier.padding(top = 8.dp)
                             else
                                 Modifier.padding(start = 8.dp)
                         )
@@ -948,7 +953,6 @@ fun <T> LazyListScope.expandableSublist(
     onItemClick: (MusicEntry) -> Unit,
     fetchAlbumImageIfMissing: Boolean = false,
     minItems: Int = 3,
-    modifier: Modifier = Modifier,
 ) {
     if (items.isEmpty()) return
 
@@ -964,7 +968,7 @@ fun <T> LazyListScope.expandableSublist(
                 expanded = expanded || items.size <= minItems,
                 enabled = items.size > minItems,
                 onToggle = onToggle,
-                modifier = modifier.animateItem(),
+                modifier = Modifier.animateItem(),
             )
         }
     }
@@ -979,7 +983,7 @@ fun <T> LazyListScope.expandableSublist(
             musicEntry,
             onEntryClick = { onItemClick(musicEntry) },
             fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
-            modifier = modifier.animateItem(),
+            modifier = Modifier.animateItem(),
         )
     }
 }
@@ -1043,8 +1047,8 @@ fun EntriesRow(
                         stonksDelta = null,
                         index = null,
                         modifier = Modifier
-                            .width(minGridSize())
                             .animateItem()
+                            .width(minGridSize())
                     )
                 }
             }
@@ -1068,8 +1072,8 @@ fun EntriesRow(
                     showArtist = showArtists,
                     index = idx,
                     modifier = Modifier
-                        .width(minGridSize())
                         .animateItem()
+                        .width(minGridSize())
                 )
             }
 

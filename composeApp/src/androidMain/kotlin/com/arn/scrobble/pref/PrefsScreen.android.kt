@@ -42,7 +42,7 @@ actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean
         listScope.item("master_qs_add") {
             val scrobblerEnabledText =
                 stringResource(if (scrobblerEnabled) Res.string.scrobbler_on else Res.string.scrobbler_off)
-            val context = AndroidStuff.application
+            val context = AndroidStuff.applicationContext
             val scope = rememberCoroutineScope()
             TextPref(
                 text = stringResource(Res.string.pref_master_qs_add),

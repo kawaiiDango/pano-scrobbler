@@ -18,7 +18,7 @@ class WidgetTimePeriods {
                 generateFormattedStrings = true
             )
 
-    val context = AndroidStuff.application
+    val context = AndroidStuff.applicationContext
 
     fun toTimePeriod(period: AllPeriods): TimePeriod {
         return when (period) {

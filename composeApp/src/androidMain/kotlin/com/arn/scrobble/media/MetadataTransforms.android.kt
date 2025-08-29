@@ -83,14 +83,6 @@ actual fun transformMediaMetadata(
         }
 
         Stuff.PACKAGE_SPOTIFY -> {
-            // goddamn spotify
-
-            // this is now done in regex presets
-//            if (albumArtist.isNotEmpty() && albumArtist != artist &&
-//                !MetadataUtils.isVariousArtists(albumArtist)
-//            )
-//                artist = albumArtist
-
             // this is for removing "smart shuffle" etc
             val idx = artist.lastIndexOf(" • ")
             if (idx != -1)
@@ -101,6 +93,34 @@ actual fun transformMediaMetadata(
             if (artist.isEmpty())
                 artist = Stuff.ARTIST_NINTENDO_MUSIC
         }
+
+        Stuff.PACKAGE_APPLE_MUSIC_CLASSICAL -> {
+            // Apple Music Classical puts the full name of the composer in the album artist tag
+            if (albumArtist.isNotEmpty()) {
+                artist = albumArtist
+                albumArtist = ""
+            }
+        }
+
+        /*
+        Stuff.PACKAGE_APPLE_MUSIC -> {
+            // https://developer.apple.com/documentation/applemusicapi/songs/attributes-data.dictionary
+            //
+            // com.apple.android.music.playback.metadata.SHOW_COMPOSER_AS_ARTIST becomes 1 in that case
+
+            val isClassical =
+                metadata.getLong("com.apple.android.music.playback.metadata.SHOW_COMPOSER_AS_ARTIST") == 1L
+
+            if (isClassical) {
+                val composer = metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+                if (!composer.isNullOrEmpty()) {
+                    artist = composer
+                    albumArtist = ""
+                }
+            }
+        }
+
+         */
     }
 
 //    if (trackInfo.appId in Stuff.IGNORE_ARTIST_META)

@@ -48,7 +48,7 @@ import com.arn.scrobble.pref.MainPrefsMigration5
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.ui.PanoSnackbarVisuals
-import com.arn.scrobble.utils.AndroidStuff.application
+import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
 import kotlinx.coroutines.flow.first
@@ -76,12 +76,12 @@ actual object PlatformStuff {
     }
 
     actual val billingRepository: BaseBillingRepository by lazy {
-        BillingRepository(application, Stuff.billingClientData)
+        BillingRepository(applicationContext, Stuff.billingClientData)
     }
 
-    actual val filesDir by lazy { application.filesDir!! }
+    actual val filesDir by lazy { applicationContext.filesDir!! }
 
-    actual val cacheDir by lazy { application.cacheDir!! }
+    actual val cacheDir by lazy { applicationContext.cacheDir!! }
 
     actual fun getDeviceIdentifier(): String {
         val name = Build.BRAND + "|" + Build.MODEL + "|" + Build.DEVICE + "|" + Build.BOARD
@@ -97,20 +97,21 @@ actual object PlatformStuff {
 
         val enabledNotificationListeners = try {
             Settings.Secure.getString(
-                application.contentResolver,
+                applicationContext.contentResolver,
                 "enabled_notification_listeners"
             )
         } catch (e: SecurityException) {
             return false
         }
 
-        val nlsComponentStr = "${application.packageName}/${NLService::class.qualifiedName}"
+        val nlsComponentStr = "${applicationContext.packageName}/${NLService::class.qualifiedName}"
         // check for the exact component name instead of just package name
         return enabledNotificationListeners?.split(":")?.any { it == nlsComponentStr } == true
     }
 
     actual val isTv by lazy {
-        val uiModeManager = ContextCompat.getSystemService(application, UiModeManager::class.java)!!
+        val uiModeManager =
+            ContextCompat.getSystemService(applicationContext, UiModeManager::class.java)!!
         uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 
@@ -126,8 +127,9 @@ actual object PlatformStuff {
 
 
     actual fun isScrobblerRunning(): Boolean {
-        val serviceComponent = ComponentName(application, NLService::class.java)
-        val manager = ContextCompat.getSystemService(application, ActivityManager::class.java)!!
+        val serviceComponent = ComponentName(applicationContext, NLService::class.java)
+        val manager =
+            ContextCompat.getSystemService(applicationContext, ActivityManager::class.java)!!
         val nlsService = try {
             manager.getRunningServices(Integer.MAX_VALUE)?.find { it.service == serviceComponent }
         } catch (e: SecurityException) {
@@ -148,7 +150,7 @@ actual object PlatformStuff {
         if (isTv) {
             globalSnackbarFlow.tryEmit(
                 PanoSnackbarVisuals(
-                    message = application.getString(R.string.tv_url_notice) + "\n" + url,
+                    message = applicationContext.getString(R.string.tv_url_notice) + "\n" + url,
                     isError = false,
                     duration = SnackbarDuration.Long
                 )
@@ -160,11 +162,11 @@ actual object PlatformStuff {
             val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            application.startActivity(browserIntent)
+            applicationContext.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
             globalSnackbarFlow.tryEmit(
                 PanoSnackbarVisuals(
-                    message = application.getString(R.string.no_browser),
+                    message = applicationContext.getString(R.string.no_browser),
                     isError = true,
                 )
             )
@@ -226,17 +228,17 @@ actual object PlatformStuff {
                 `package` = appId
         }
         try {
-            application.startActivity(intent)
+            applicationContext.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             if (appId != null) {
                 try {
                     intent.`package` = null
-                    application.startActivity(intent)
+                    applicationContext.startActivity(intent)
                 } catch (e: ActivityNotFoundException) {
-                    application.toast(Res.string.no_player)
+                    applicationContext.toast(Res.string.no_player)
                 }
             } else
-                application.toast(Res.string.no_player)
+                applicationContext.toast(Res.string.no_player)
         }
     }
 
@@ -255,9 +257,9 @@ actual object PlatformStuff {
 
     @OptIn(ExperimentalRoomApi::class)
     actual fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb> {
-        val dbFile = application.getDatabasePath("pendingScrobbles")
+        val dbFile = applicationContext.getDatabasePath("pendingScrobbles")
         return Room.databaseBuilder<PanoDb>(
-            context = application,
+            context = applicationContext,
             name = dbFile.absolutePath
         )
 //            .setDriver(AndroidSQLiteDriver())
@@ -267,8 +269,8 @@ actual object PlatformStuff {
 
     actual fun loadApplicationLabel(appId: String): String {
         return try {
-            application.packageManager.getApplicationLabel(
-                application.packageManager.getApplicationInfo(appId, 0)
+            applicationContext.packageManager.getApplicationLabel(
+                applicationContext.packageManager.getApplicationInfo(appId, 0)
             ).toString()
         } catch (e: PackageManager.NameNotFoundException) {
             appId
@@ -294,7 +296,8 @@ actual object PlatformStuff {
     }
 
     actual fun copyToClipboard(text: String) {
-        val clipboard = ContextCompat.getSystemService(application, ClipboardManager::class.java)!!
+        val clipboard =
+            ContextCompat.getSystemService(applicationContext, ClipboardManager::class.java)!!
         val clip = ClipData.newPlainText(BuildKonfig.APP_NAME, text)
         clipboard.setPrimaryClip(clip)
 
@@ -303,7 +306,7 @@ actual object PlatformStuff {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             globalSnackbarFlow.tryEmit(
                 PanoSnackbarVisuals(
-                    message = application.getString(R.string.copied),
+                    message = applicationContext.getString(R.string.copied),
                     isError = false,
                 )
             )
@@ -328,7 +331,7 @@ actual object PlatformStuff {
     actual fun getLocalIpAddress(): String? {
         val connectivityManager =
             ContextCompat.getSystemService(
-                application,
+                applicationContext,
                 ConnectivityManager::class.java
             )!!
         val activeNetwork = connectivityManager.activeNetwork

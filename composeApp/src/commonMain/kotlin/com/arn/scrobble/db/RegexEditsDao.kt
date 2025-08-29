@@ -239,7 +239,7 @@ interface RegexEditsDao {
             val artistRegex = regexEdit.search.searchArtist.toRegex(regexOptions)
             val albumArtistRegex = regexEdit.search.searchAlbumArtist.toRegex(regexOptions)
 
-            if (!regexEdit.replacement.replaceAll) {
+            if (regexEdit.replacement.replaceAll) {
                 newTrack = trackRegex.replace(
                     scrobbleData.track,
                     regexEdit.replacement.replacementTrack

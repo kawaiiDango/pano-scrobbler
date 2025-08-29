@@ -84,7 +84,7 @@ class SessListener(
 
         val controllersFiltered = controllers.mapNotNull {
             if (shouldScrobble(it.packageName) && it.sessionToken !in controllersMap)
-                MediaController(AndroidStuff.application, it.sessionToken)
+                MediaController(AndroidStuff.applicationContext, it.sessionToken)
             else null
         }
 
@@ -167,7 +167,7 @@ class SessListener(
                 0
             )
             Logger.i { "mute: done" }
-            AndroidStuff.application.toast(R.string.mute)
+            AndroidStuff.applicationContext.toast(R.string.mute)
 
             mutedHash = hash
             callback.setMuted(true)
@@ -194,7 +194,7 @@ class SessListener(
     override fun skip(hash: Int) {
         val controllers = findControllersByHash(hash)
         controllers.skip()
-        AndroidStuff.application.toast(R.string.skip)
+        AndroidStuff.applicationContext.toast(R.string.skip)
     }
 
 

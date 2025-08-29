@@ -59,7 +59,10 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
             ChartsListUtils.updateWidgets(intArrayOf(appWidgetId))
 
             if (reFetch)
-                ChartsWidgetUpdaterWorker.checkAndSchedule(applicationContext, true)
+                ChartsWidgetUpdaterWorker.checkAndSchedule(
+                    this@ChartsWidgetConfigActivity.applicationContext,
+                    true
+                )
             setResult(RESULT_OK, Intent().apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             })

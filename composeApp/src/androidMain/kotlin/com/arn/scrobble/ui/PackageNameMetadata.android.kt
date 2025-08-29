@@ -29,22 +29,25 @@ actual object PackageNameMetadata {
         val _version: String
 
         try {
-            val pkgInfo = AndroidStuff.application.packageManager.getPackageInfo(packageName, 0)
+            val pkgInfo =
+                AndroidStuff.applicationContext.packageManager.getPackageInfo(packageName, 0)
             val appInfo = pkgInfo.applicationInfo ?: return
-            val configuration = Configuration(AndroidStuff.application.resources.configuration)
+            val configuration =
+                Configuration(AndroidStuff.applicationContext.resources.configuration)
             configuration.setLocales(LocaleList(Locale.US))
             val pkgRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                AndroidStuff.application.packageManager.getResourcesForApplication(
+                AndroidStuff.applicationContext.packageManager.getResourcesForApplication(
                     appInfo,
                     configuration
                 )
             } else {
-                AndroidStuff.application.packageManager.getResourcesForApplication(appInfo).also {
-                    it.updateConfiguration(
-                        configuration,
-                        AndroidStuff.application.resources.displayMetrics
-                    )
-                }
+                AndroidStuff.applicationContext.packageManager.getResourcesForApplication(appInfo)
+                    .also {
+                        it.updateConfiguration(
+                            configuration,
+                            AndroidStuff.applicationContext.resources.displayMetrics
+                        )
+                    }
             }
 
             _label = pkgRes.getString(appInfo.labelRes)

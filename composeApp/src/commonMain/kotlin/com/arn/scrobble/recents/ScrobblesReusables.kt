@@ -2,6 +2,7 @@ package com.arn.scrobble.recents
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -31,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -509,9 +513,9 @@ fun LazyListScope.scrobblesPlaceholdersAndErrors(
                     forShimmer = true,
                     onEntryClick = {},
                     modifier = Modifier
+                        .animateItem()
                         .fillMaxWidth()
                         .shimmerWindowBounds()
-                        .animateItem()
                 )
             }
         }
@@ -687,6 +691,8 @@ fun LazyListScope.scrobblesListItems(
     expandedKey: () -> String?,
     onExpand: (String?) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
+    animateListItemContentSize: State<Boolean>,
+    maxHeight: State<Dp>,
     viewModel: ScrobblesVM,
 ) {
     fun onTrackClick(track: Track, appId: String?) {
@@ -707,9 +713,9 @@ fun LazyListScope.scrobblesListItems(
                 ) {
                     HorizontalDivider(
                         modifier = Modifier
+                            .animateItem()
                             .fillMaxWidth()
                             .padding(vertical = 8.dp, horizontal = 16.dp)
-                            .animateItem()
 
                     )
                 }
@@ -802,10 +808,19 @@ fun LazyListScope.scrobblesListItems(
                     },
                     onMenuClick = { menuVisible = true },
                     modifier = Modifier
-                        .animateContentSize()
+                        .animateItem()
+                        .then(
+                            if (animateListItemContentSize.value)
+                                Modifier.animateContentSize()
+                            else
+                                Modifier
+                        )
                         .then(
                             if (expandedKey() == key)
-                                Modifier.fillParentMaxHeight()
+                                Modifier.heightIn(
+                                    max = maxHeight.value
+                                        .coerceAtLeast(100.dp)
+                                )
                             else
                                 Modifier
                         )
@@ -815,7 +830,6 @@ fun LazyListScope.scrobblesListItems(
                             else
                                 Modifier
                         )
-                        .animateItem()
                 )
 
             }
@@ -854,7 +868,6 @@ fun LazyListScope.pendingScrobblesListItems(
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
     onItemClick: (MusicEntry) -> Unit,
-    modifier: Modifier = Modifier,
     fetchAlbumImageIfMissing: Boolean = false,
     minItems: Int = 3,
 ) {
@@ -867,7 +880,7 @@ fun LazyListScope.pendingScrobblesListItems(
             expanded = expanded || items.size <= minItems,
             enabled = items.size > minItems,
             onToggle = onToggle,
-            modifier = modifier.animateItem(),
+            modifier = Modifier.animateItem(),
         )
     }
 
@@ -907,8 +920,7 @@ fun LazyListScope.pendingScrobblesListItems(
                 )
             },
             fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
-            modifier = modifier
-                .animateContentSize()
+            modifier = Modifier
                 .animateItem()
         )
     }

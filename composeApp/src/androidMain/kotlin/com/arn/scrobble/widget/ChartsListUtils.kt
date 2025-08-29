@@ -24,7 +24,7 @@ object ChartsListUtils {
 
     fun createHeader(periodName: String): RemoteViews {
         val headerView =
-            RemoteViews(AndroidStuff.application.packageName, R.layout.appwidget_list_header)
+            RemoteViews(AndroidStuff.applicationContext.packageName, R.layout.appwidget_list_header)
         headerView.setTextViewText(R.id.appwidget_period, periodName)
         return headerView
     }
@@ -35,7 +35,8 @@ object ChartsListUtils {
         item: ChartsWidgetListItem,
         user: UserCached,
     ): RemoteViews {
-        val rv = RemoteViews(AndroidStuff.application.packageName, R.layout.appwidget_charts_item)
+        val rv =
+            RemoteViews(AndroidStuff.applicationContext.packageName, R.layout.appwidget_charts_item)
 //        rv.setTextViewText(
 //            R.id.appwidget_charts_serial, (idx + 1).format() + "."
 //        )
@@ -122,11 +123,11 @@ object ChartsListUtils {
     }
 
     fun updateWidgets(appWidgetIds: IntArray) {
-        val i = Intent(AndroidStuff.application, ChartsWidgetProvider::class.java).apply {
+        val i = Intent(AndroidStuff.applicationContext, ChartsWidgetProvider::class.java).apply {
             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
         }
-        AndroidStuff.application.sendBroadcast(i)
+        AndroidStuff.applicationContext.sendBroadcast(i)
     }
 
     fun stonksIconForDelta(delta: Int?) = when {

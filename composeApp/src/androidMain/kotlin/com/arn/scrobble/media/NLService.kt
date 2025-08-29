@@ -86,7 +86,7 @@ class NLService : NotificationListenerService() {
     private fun init() {
         val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
         ContextCompat.registerReceiver(
-            applicationContext,
+            this@NLService.applicationContext,
             deviceInteractiveReceiver,
             filter,
             ContextCompat.RECEIVER_EXPORTED
@@ -157,7 +157,7 @@ class NLService : NotificationListenerService() {
 
         Logger.i { "destroy" }
         try {
-            applicationContext.unregisterReceiver(deviceInteractiveReceiver)
+            this@NLService.applicationContext.unregisterReceiver(deviceInteractiveReceiver)
         } catch (e: IllegalArgumentException) {
             Logger.w { "deviceInteractiveReceiver wasn't registered" }
         }

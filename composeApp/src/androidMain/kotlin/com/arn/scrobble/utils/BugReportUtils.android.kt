@@ -19,7 +19,10 @@ actual object BugReportUtils {
     actual suspend fun mail() {
         var bgRam = -1
         val manager =
-            ContextCompat.getSystemService(AndroidStuff.application, ActivityManager::class.java)!!
+            ContextCompat.getSystemService(
+                AndroidStuff.applicationContext,
+                ActivityManager::class.java
+            )!!
         for (proc in manager.runningAppProcesses) {
             if (proc?.processName?.contains(Stuff.SCROBBLER_PROCESS_NAME) == true) {
                 // https://stackoverflow.com/questions/2298208/how-do-i-discover-memory-usage-of-my-application-in-android
@@ -69,7 +72,7 @@ actual object BugReportUtils {
         }
 
         try {
-            AndroidStuff.application.startActivity(sendToIntent)
+            AndroidStuff.applicationContext.startActivity(sendToIntent)
         } catch (e: Exception) {
             e.printStackTrace()
             Stuff.globalSnackbarFlow.tryEmit(
@@ -92,7 +95,7 @@ actual object BugReportUtils {
         }
 
         val log = Stuff.exec("logcat -d *:I")
-        val logFile = File(AndroidStuff.application.cacheDir, "share/pano-scrobbler.log")
+        val logFile = File(AndroidStuff.applicationContext.cacheDir, "share/pano-scrobbler.log")
         logFile.parentFile!!.mkdirs()
         logFile.writeText(log)
 //        val logUri =

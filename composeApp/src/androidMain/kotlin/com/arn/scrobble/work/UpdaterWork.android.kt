@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 actual object UpdaterWork : CommonWorkImpl(UpdaterWorker.NAME) {
     override fun checkAndSchedule(force: Boolean) {
-        val workManager = WorkManager.getInstance(AndroidStuff.application)
+        val workManager = WorkManager.getInstance(AndroidStuff.applicationContext)
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)

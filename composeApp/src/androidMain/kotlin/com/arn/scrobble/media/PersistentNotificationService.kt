@@ -45,7 +45,10 @@ class PersistentNotificationService : Service() {
             )
         }
         val nb =
-            NotificationCompat.Builder(applicationContext, Stuff.CHANNEL_NOTI_PERSISTENT)
+            NotificationCompat.Builder(
+                this@PersistentNotificationService.applicationContext,
+                Stuff.CHANNEL_NOTI_PERSISTENT
+            )
                 .setSmallIcon(R.drawable.vd_noti_persistent)
                 .setPriority(Notification.PRIORITY_MIN)
                 .setVisibility(NotificationCompat.VISIBILITY_SECRET)
@@ -74,15 +77,15 @@ class PersistentNotificationService : Service() {
 
         fun start() {
             ContextCompat.startForegroundService(
-                AndroidStuff.application,
-                Intent(AndroidStuff.application, PersistentNotificationService::class.java)
+                AndroidStuff.applicationContext,
+                Intent(AndroidStuff.applicationContext, PersistentNotificationService::class.java)
             )
         }
 
         fun stop() {
             // ignore the warning, it still works
-            AndroidStuff.application.stopService(
-                Intent(AndroidStuff.application, PersistentNotificationService::class.java)
+            AndroidStuff.applicationContext.stopService(
+                Intent(AndroidStuff.applicationContext, PersistentNotificationService::class.java)
             )
         }
     }

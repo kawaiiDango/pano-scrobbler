@@ -1,7 +1,6 @@
 package com.arn.scrobble.utils
 
 import android.app.ActivityManager
-import android.app.Application
 import android.app.ApplicationExitInfo
 import android.app.Notification
 import android.app.NotificationManager
@@ -39,7 +38,7 @@ import java.util.Locale
 import kotlin.properties.Delegates
 
 object AndroidStuff {
-    lateinit var application: Application
+    lateinit var applicationContext: Context
 
     var isMainProcess by Delegates.notNull<Boolean>()
 
@@ -94,7 +93,7 @@ object AndroidStuff {
         val packages = Stuff.STARTUPMGR_INTENTS.map { it.first }.toSet()
         return packages.any {
             try {
-                application.packageManager.getApplicationInfo(it, 0)
+                applicationContext.packageManager.getApplicationInfo(it, 0)
                 true
             } catch (e: PackageManager.NameNotFoundException) {
                 false
@@ -103,7 +102,7 @@ object AndroidStuff {
     }
 
     fun createForegroundInfoNotification(title: String): ForegroundInfo {
-        val context = application
+        val context = applicationContext
         val intent = Intent(context, MainActivity::class.java)
         val launchIntent = PendingIntent.getActivity(
             context, 8, intent,
@@ -140,7 +139,7 @@ object AndroidStuff {
 
 
     val notificationManager by lazy {
-        ContextCompat.getSystemService(application, NotificationManager::class.java)!!
+        ContextCompat.getSystemService(applicationContext, NotificationManager::class.java)!!
     }
 
 
@@ -246,11 +245,11 @@ object AndroidStuff {
     fun getScrobblerExitReasons(afterTime: Long = -1): List<ApplicationExitInfo> {
         return try {
             val activityManager =
-                ContextCompat.getSystemService(application, ActivityManager::class.java)!!
+                ContextCompat.getSystemService(applicationContext, ActivityManager::class.java)!!
             val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 30)
 
             exitReasons.filter {
-                it.processName == "${application.packageName}:$SCROBBLER_PROCESS_NAME"
+                it.processName == "${applicationContext.packageName}:$SCROBBLER_PROCESS_NAME"
 //                        && it.reason == ApplicationExitInfo.REASON_OTHER
                         && it.timestamp > afterTime
             }
@@ -274,7 +273,7 @@ object AndroidStuff {
 
     fun isPackageInstalled(packageName: String): Boolean {
         return try {
-            application.packageManager.getPackageInfo(packageName, 0) != null
+            applicationContext.packageManager.getPackageInfo(packageName, 0) != null
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }

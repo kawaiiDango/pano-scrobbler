@@ -2,12 +2,14 @@
 
 ### [android] The app skips scrobbles when it is in the background / The app says that it has been killed
 
-1. Check if notification access is enabled for this app.
-   Go to Settings > Apps > Special app access > Notification read, reply and control > Pano Scrobbler.
-   The exact location and name of the setting will depend on your Android version and manufacturer.
+1. Check if Pano Scrobbler has the permission to read notifications from other apps.
+   Go to Settings > Apps > Special app access > Notification read, reply and control > Pano
+   Scrobbler. The exact location and name of the setting will depend on your Android version and
+   manufacturer. Note that this is different from the standard "notifications" permission, which has
+   nothing to do with reading notifications from other apps.
 
 2. Some manufacturers such as Xiaomi, Huawei, OnePlus and others do not allow 3rd party apps to run
-   in the background by default. Try disabling battery optimisations for this app. Sometimes, that
+   in the background by default. Try disabling battery optimizations for this app. Sometimes, that
    step may not be enough. Please check [dontkillmyapp.com](https://dontkillmyapp.com) to see if
    there are any solutions for your device. The non-Play version of this app can optionally display
    a persistent notification at all times, which may help. It may be impossible to use this app on a

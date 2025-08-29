@@ -25,7 +25,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 actual suspend fun showTrackShareSheet(track: Track, user: UserCached) {
-    val context = AndroidStuff.application
+    val context = AndroidStuff.applicationContext
     val heart = when {
         track.userloved == true -> "♥️"
         track.userHated == true -> "💔"
@@ -98,7 +98,7 @@ actual suspend fun showTrackShareSheet(track: Track, user: UserCached) {
 }
 
 actual fun showCollageShareSheet(imageBitmap: ImageBitmap, text: String?) {
-    val context = AndroidStuff.application
+    val context = AndroidStuff.applicationContext
 
     val collageFile = File(PlatformStuff.cacheDir, "share/collage.jpg")
 

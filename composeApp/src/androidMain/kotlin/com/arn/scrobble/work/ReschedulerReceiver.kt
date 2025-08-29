@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.widget.ChartsWidgetProvider
@@ -23,6 +24,9 @@ class ReschedulerReceiver : BroadcastReceiver() {
 
     companion object {
         fun reschedule(context: Context) {
+            // a BroadcastReceiver is initialized before the Application class's onCreate() method is called
+            AndroidStuff.applicationContext = context.applicationContext
+
             // widget updater
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(

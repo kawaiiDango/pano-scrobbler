@@ -18,7 +18,7 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
 
     override suspend fun migrate(currentData: MainPrefs): MainPrefs {
         // Read old preferences
-        val sharedPreferences = AndroidStuff.application.getHarmonySharedPreferences("main")
+        val sharedPreferences = AndroidStuff.applicationContext.getHarmonySharedPreferences("main")
         val scrobblerEnabled = sharedPreferences.getBoolean("master", true)
         val allowedPackages =
             sharedPreferences.getStringSet("app_whitelist", emptySet())?.filterNotNull()?.toSet()
@@ -115,7 +115,8 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
         val receiptSignature = sharedPreferences.getString("receipt_signature", null)
         val lastLicenseCheckTime = sharedPreferences.getLong("last_license_check_time", -1)
 
-        val cookiesPrefs = AndroidStuff.application.getHarmonySharedPreferences("LastFmCookies")
+        val cookiesPrefs =
+            AndroidStuff.applicationContext.getHarmonySharedPreferences("LastFmCookies")
 
         val cookies = cookiesPrefs.all.mapNotNull { (key, value) ->
             value?.let {
@@ -197,7 +198,11 @@ class MainPrefsMigration5 : DataMigration<MainPrefs> {
 }
 
 class WidgetPrefsMigration1 : DataMigration<WidgetPrefs> {
-    private val sharedPreferences by lazy { AndroidStuff.application.getHarmonySharedPreferences("widget") }
+    private val sharedPreferences by lazy {
+        AndroidStuff.applicationContext.getHarmonySharedPreferences(
+            "widget"
+        )
+    }
 
     override suspend fun shouldMigrate(currentData: WidgetPrefs) =
         currentData.version < 1

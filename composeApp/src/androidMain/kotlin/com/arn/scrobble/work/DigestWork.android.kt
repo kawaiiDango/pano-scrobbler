@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 actual object DigestWork : CommonWork {
     override fun checkAndSchedule(force: Boolean) {
-        val workManager = WorkManager.getInstance(AndroidStuff.application)
+        val workManager = WorkManager.getInstance(AndroidStuff.applicationContext)
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -55,7 +55,7 @@ actual object DigestWork : CommonWork {
     }
 
     override fun cancel() {
-        WorkManager.getInstance(AndroidStuff.application).apply {
+        WorkManager.getInstance(AndroidStuff.applicationContext).apply {
             cancelUniqueWork(DigestType.DIGEST_DAILY.name)
             cancelUniqueWork(DigestType.DIGEST_WEEKLY.name)
             cancelUniqueWork(DigestType.DIGEST_MONTHLY.name)

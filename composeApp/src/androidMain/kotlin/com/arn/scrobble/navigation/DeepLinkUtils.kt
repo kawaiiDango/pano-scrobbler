@@ -75,13 +75,13 @@ object DeepLinkUtils {
             else -> return
         }
 
-        val intent = Intent(AndroidStuff.application, MainActivity::class.java).apply {
+        val intent = Intent(AndroidStuff.applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
             action = Intent.ACTION_VIEW
             data = deepLinkUri.toUri()
         }
 
-        AndroidStuff.application.startActivity(intent)
+        AndroidStuff.applicationContext.startActivity(intent)
     }
 
 
@@ -90,9 +90,9 @@ object DeepLinkUtils {
         mutable: Boolean = false,
     ) =
         PendingIntent.getActivity(
-            AndroidStuff.application,
+            AndroidStuff.applicationContext,
             uri.hashCode(),
-            Intent(AndroidStuff.application, MainDialogActivity::class.java).apply {
+            Intent(AndroidStuff.applicationContext, MainDialogActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 action = Intent.ACTION_VIEW
                 data = uri.toUri()

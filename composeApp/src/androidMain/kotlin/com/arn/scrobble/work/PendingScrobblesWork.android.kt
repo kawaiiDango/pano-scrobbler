@@ -41,7 +41,7 @@ actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME)
             }
             .build()
 
-        WorkManager.getInstance(AndroidStuff.application)
+        WorkManager.getInstance(AndroidStuff.applicationContext)
             .enqueueUniqueWork(
                 name,
                 if (force)

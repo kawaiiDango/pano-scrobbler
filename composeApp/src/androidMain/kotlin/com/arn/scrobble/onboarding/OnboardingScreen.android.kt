@@ -67,7 +67,7 @@ private fun NotificationPermissionStep(
 ) {
     fun checkPermission() {
         if (ContextCompat.checkSelfPermission(
-                AndroidStuff.application,
+                AndroidStuff.applicationContext,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         ) {
@@ -139,14 +139,15 @@ private fun NotificationListenerStep(
             else
                 Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
 
-            if (AndroidStuff.application.packageManager.resolveActivity(
+            if (AndroidStuff.applicationContext.packageManager.resolveActivity(
                     intent,
                     PackageManager.MATCH_DEFAULT_ONLY
                 ) != null
             ) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                AndroidStuff.application.startActivity(intent)
-                Toast.makeText(AndroidStuff.application, toastText, Toast.LENGTH_SHORT).show()
+                AndroidStuff.applicationContext.startActivity(intent)
+                Toast.makeText(AndroidStuff.applicationContext, toastText, Toast.LENGTH_SHORT)
+                    .show()
             } else {
                 navigate(PanoRoute.WebView(Stuff.LINK_TV))
             }

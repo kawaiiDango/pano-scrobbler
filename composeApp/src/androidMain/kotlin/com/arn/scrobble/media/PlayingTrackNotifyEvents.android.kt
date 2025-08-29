@@ -12,7 +12,7 @@ actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
         }
         // else scrobbler service is not running, do nothing
     } else {
-        val context = AndroidStuff.application
+        val context = AndroidStuff.applicationContext
         val intent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
             .setPackage(context.packageName)
             .putExtra(

@@ -33,7 +33,7 @@ fun dataToProgress(data: Data, state: WorkInfo.State): CommonWorkProgress {
 
 abstract class CommonWorkImpl(protected val name: String) : CommonWork {
     final override fun getProgress(): Flow<CommonWorkProgress> {
-        return WorkManager.getInstance(AndroidStuff.application)
+        return WorkManager.getInstance(AndroidStuff.applicationContext)
             .getWorkInfosForUniqueWorkFlow(name)
             .map { it.firstOrNull() }
             .filterNotNull()
@@ -47,7 +47,7 @@ abstract class CommonWorkImpl(protected val name: String) : CommonWork {
     }
 
     final override fun cancel() {
-        WorkManager.getInstance(AndroidStuff.application).cancelUniqueWork(name)
+        WorkManager.getInstance(AndroidStuff.applicationContext).cancelUniqueWork(name)
     }
 }
 

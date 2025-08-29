@@ -369,7 +369,6 @@ fun RegexEditsAddScreen(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text(stringResource(Res.string.edit_name)) },
-                maxLines = 1,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 ),

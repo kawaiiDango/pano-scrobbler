@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material3.Icon
@@ -12,12 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,6 +51,7 @@ fun TrackHistoryScreen(
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {
+    val listState = rememberLazyListState()
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstScrobbleTime by viewModel.firstScrobbleTime.collectAsStateWithLifecycle()
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
@@ -56,6 +61,19 @@ fun TrackHistoryScreen(
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
     val myScrobblesStr = stringResource(Res.string.my_scrobbles)
+    val density = LocalDensity.current
+    val listViewportHeight = remember {
+        derivedStateOf {
+            with(density) {
+                (listState.layoutInfo.viewportSize.height - listState.layoutInfo.afterContentPadding - listState.layoutInfo.beforeContentPadding).toDp()
+            }
+        }
+    }
+    val animateListItemContentSize = remember {
+        derivedStateOf {
+            listState.layoutInfo.totalItemsCount > listState.layoutInfo.visibleItemsInfo.size
+        }
+    }
 
     DisposableEffect(deletedTracksSet) {
         val formattedCount = ((track.userplaycount ?: 0) - deletedTracksSet.size)
@@ -88,6 +106,7 @@ fun TrackHistoryScreen(
     )
 
     PanoLazyColumn(
+        state = listState,
         modifier = modifier
     ) {
         if (firstScrobbleTime != null) {
@@ -96,9 +115,9 @@ fun TrackHistoryScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
+                        .animateItem()
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
-                        .animateItem(),
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cake,
@@ -131,6 +150,8 @@ fun TrackHistoryScreen(
             expandedKey = { expandedKey },
             onExpand = { expandedKey = it },
             onOpenDialog = onOpenDialog,
+            animateListItemContentSize = animateListItemContentSize,
+            maxHeight = listViewportHeight,
             viewModel = viewModel,
         )
 

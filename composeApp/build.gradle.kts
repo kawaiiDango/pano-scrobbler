@@ -142,7 +142,7 @@ kotlin {
             implementation(libs.compose.shimmer)
             implementation(libs.datastore.core)
             implementation(libs.paging.common)
-            implementation(projects.androidxMod.androidx.paging.compose)
+            implementation(libs.paging.compose)
             implementation(libs.navigation.compose)
             implementation(libs.adaptive)
             implementation(libs.adaptive.layout)

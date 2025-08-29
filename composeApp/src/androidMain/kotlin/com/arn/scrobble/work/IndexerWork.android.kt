@@ -28,7 +28,7 @@ actual object IndexerWork : CommonWorkImpl(IndexerWorker.NAME) {
             .setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
             .build()
 
-        WorkManager.getInstance(AndroidStuff.application)
+        WorkManager.getInstance(AndroidStuff.applicationContext)
             .enqueueUniqueWork(
                 name,
                 ExistingWorkPolicy.REPLACE,

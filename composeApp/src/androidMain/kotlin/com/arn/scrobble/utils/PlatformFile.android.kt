@@ -16,7 +16,7 @@ actual class PlatformFile actual constructor(fileUri: String) {
 
     private val parsedUri = fileUri.toUri()
 
-    private val contentResolver by lazy { AndroidStuff.application.contentResolver }
+    private val contentResolver by lazy { AndroidStuff.applicationContext.contentResolver }
 
     actual fun isFileOk(): Boolean {
         val cursor = contentResolver.query(
@@ -135,7 +135,7 @@ actual class PlatformFile actual constructor(fileUri: String) {
             Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
 
-        AndroidStuff.application.contentResolver.takePersistableUriPermission(
+        AndroidStuff.applicationContext.contentResolver.takePersistableUriPermission(
             parsedUri,
             flags
         )
@@ -149,7 +149,7 @@ actual class PlatformFile actual constructor(fileUri: String) {
         }
 
         try {
-            AndroidStuff.application.contentResolver.releasePersistableUriPermission(
+            AndroidStuff.applicationContext.contentResolver.releasePersistableUriPermission(
                 parsedUri,
                 flags
             )

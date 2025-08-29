@@ -145,7 +145,7 @@ object PlayerActions {
     ): Boolean? {
         // Check if the icon bitmap is at least 30% not transparent
         val resources =
-            AndroidStuff.application.packageManager.getResourcesForApplication(packageName)
+            AndroidStuff.applicationContext.packageManager.getResourcesForApplication(packageName)
 
         val drawable = ResourcesCompat.getDrawable(resources, iconResId, null)
             ?: return null

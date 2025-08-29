@@ -183,8 +183,8 @@ private fun RegexEditsList(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .animateItem(),
+                        .animateItem()
+                        .fillMaxWidth(),
                 ) {
                     OutlinedButton(
                         onClick = onNavigateToTest,
@@ -200,9 +200,9 @@ private fun RegexEditsList(
                 text = stringResource(Res.string.edit_presets),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
+                    .animateItem()
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
-                    .animateItem()
             )
         }
 
@@ -214,8 +214,8 @@ private fun RegexEditsList(
                     onPresetToggled(preset, isChecked)
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
                     .animateItem()
+                    .fillMaxWidth()
             )
         }
 
@@ -226,18 +226,18 @@ private fun RegexEditsList(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier
+                        .animateItem()
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .animateItem()
                 )
             } else {
                 Text(
                     text = stringResource(Res.string.charts_custom),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
+                        .animateItem()
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .animateItem()
                 )
             }
         }

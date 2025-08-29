@@ -62,7 +62,8 @@ private val deviceLocaleLocaleList
 
 actual fun setAppLocale(lang: String?, force: Boolean) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val localeManager = AndroidStuff.application.getSystemService(LocaleManager::class.java)
+        val localeManager =
+            AndroidStuff.applicationContext.getSystemService(LocaleManager::class.java)
 
         if (localeManager != null) {
             val newLang = if (lang != null && lang !in localesSet) {
@@ -79,14 +80,14 @@ actual fun setAppLocale(lang: String?, force: Boolean) {
             localeManager.applicationLocales = localeList
         }
     } else
-        AndroidStuff.application.applyAndroidLocaleLegacy(lang)
+        AndroidStuff.applicationContext.applyAndroidLocaleLegacy(lang)
 }
 
 actual fun getCurrentLocale(localePref: String?): String? {
     return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
         localePref
     } else {
-        AndroidStuff.application.getSystemService(LocaleManager::class.java)
+        AndroidStuff.applicationContext.getSystemService(LocaleManager::class.java)
             .applicationLocales
             .takeIf { it.size() == 1 }
             ?.get(0)

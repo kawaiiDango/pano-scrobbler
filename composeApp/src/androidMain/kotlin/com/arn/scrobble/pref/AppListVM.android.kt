@@ -17,7 +17,7 @@ actual suspend fun AppListVM.load(
     onSetHasLoaded: () -> Unit,
     checkDefaultApps: Boolean,
 ) {
-    val packageManager = AndroidStuff.application.packageManager
+    val packageManager = AndroidStuff.applicationContext.packageManager
 
     val packagesToNotConsider = setOf(
         BuildConfig.APPLICATION_ID,

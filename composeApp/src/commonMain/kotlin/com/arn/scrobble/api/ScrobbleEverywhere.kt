@@ -141,7 +141,7 @@ object ScrobbleEverywhere {
             presetsApplied = presetsApplied,
             edited = edited,
             titleParseFailed = titleParseFailed,
-            scrobbleData = scrobbleData
+            scrobbleData = scrobbleData.trimmed()
         )
     }
 

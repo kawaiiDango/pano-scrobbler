@@ -36,7 +36,7 @@ class App : Application(), Configuration.Provider {
 
 
     override fun onCreate() {
-        AndroidStuff.application = this
+        AndroidStuff.applicationContext = applicationContext
         AndroidStuff.isMainProcess = isMainProcess()
 
         super.onCreate()

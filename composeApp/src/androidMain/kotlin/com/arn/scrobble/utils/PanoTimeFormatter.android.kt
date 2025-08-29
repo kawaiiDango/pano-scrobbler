@@ -1,7 +1,7 @@
 package com.arn.scrobble.utils
 
 import android.text.format.DateUtils
-import com.arn.scrobble.utils.AndroidStuff.application
+import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -15,7 +15,7 @@ actual object PanoTimeFormatter {
         millis: Long,
         withPreposition: Boolean,
     ): String {
-        val context = application
+        val context = applicationContext
         val millis = millis
         val diff = System.currentTimeMillis() - millis
         return when {
@@ -47,7 +47,7 @@ actual object PanoTimeFormatter {
 
     actual fun full(millis: Long): String {
         return DateUtils.formatDateTime(
-            application,
+            applicationContext,
             millis,
             DateUtils.FORMAT_SHOW_DATE or
                     DateUtils.FORMAT_SHOW_TIME or
@@ -57,7 +57,7 @@ actual object PanoTimeFormatter {
 
     actual fun day(millis: Long): String {
         return DateUtils.formatDateTime(
-            application,
+            applicationContext,
             millis,
             DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_SHOW_DATE
         )
@@ -65,7 +65,7 @@ actual object PanoTimeFormatter {
 
     actual fun month(millis: Long): String {
         return DateUtils.formatDateTime(
-            application,
+            applicationContext,
             millis,
             DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
         )
@@ -73,7 +73,7 @@ actual object PanoTimeFormatter {
 
     actual fun monthRange(startMillis: Long, endMillis: Long): String {
         return DateUtils.formatDateRange(
-            application,
+            applicationContext,
             startMillis,
             endMillis - 1,
             DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
@@ -82,7 +82,7 @@ actual object PanoTimeFormatter {
 
     actual fun dateRange(startMillis: Long, endMillis: Long): String {
         return DateUtils.formatDateRange(
-            application,
+            applicationContext,
             startMillis,
             endMillis - 1,
             DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_SHOW_DATE

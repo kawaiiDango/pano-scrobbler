@@ -24,4 +24,11 @@ data class ScrobbleData(
             ?.let { Album(album, Artist(albumArtist.orEmpty().ifEmpty { artist })) },
         duration = duration,
     )
+
+    fun trimmed() = copy(
+        artist = artist.trim(),
+        track = track.trim(),
+        album = album?.trim()?.ifEmpty { null },
+        albumArtist = albumArtist?.trim()?.ifEmpty { null },
+    )
 }

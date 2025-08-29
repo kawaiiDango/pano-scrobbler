@@ -153,6 +153,7 @@ object Stuff {
     const val PACKAGE_NEWPIPE = "org.schabi.newpipe"
     const val PACKAGE_NINTENDO_MUSIC = "com.nintendo.znba"
     const val PACKAGE_APPLE_MUSIC = "com.apple.android.music"
+    const val PACKAGE_APPLE_MUSIC_CLASSICAL = "com.apple.android.music.classical"
     const val PACKAGE_TIDAL = "com.aspiro.tidal"
     const val PACKAGE_OMNIA = "com.rhmsoft.omnia"
     const val PACKAGE_APPLE_MUSIC_WIN_EXE = "AppleMusic.exe"

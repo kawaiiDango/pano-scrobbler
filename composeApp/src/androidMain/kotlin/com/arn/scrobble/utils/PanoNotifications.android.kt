@@ -38,7 +38,7 @@ import pano_scrobbler.composeapp.generated.resources.top_tracks
 import pano_scrobbler.composeapp.generated.resources.update_available
 
 actual object PanoNotifications {
-    private val context = AndroidStuff.application
+    private val context = AndroidStuff.applicationContext
     private val notificationManager = AndroidStuff.notificationManager
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
 
@@ -422,7 +422,7 @@ actual object PanoNotifications {
         // create channel if not exists
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = ContextCompat.getSystemService(
-                AndroidStuff.application,
+                AndroidStuff.applicationContext,
                 NotificationManager::class.java
             )!!
 

@@ -35,6 +35,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -147,6 +149,19 @@ fun ScrobblesScreen(
         mutableStateOf(
             account?.type != AccountType.PLEROMA,
         )
+    }
+    val density = LocalDensity.current
+    val listViewportHeight = remember {
+        derivedStateOf {
+            with(density) {
+                listState.layoutInfo.viewportSize.height.toDp()
+            }
+        }
+    }
+    val animateListItemContentSize = remember {
+        derivedStateOf {
+            listState.layoutInfo.totalItemsCount > listState.layoutInfo.visibleItemsInfo.size
+        }
     }
     val scope = rememberCoroutineScope()
 
@@ -408,7 +423,7 @@ fun ScrobblesScreen(
                     if (pendingScrobbles.isNotEmpty()) {
                         item("pending_divider") {
                             HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 8.dp).animateItem()
+                                modifier = Modifier.animateItem().padding(vertical = 8.dp)
                             )
                         }
                     }
@@ -434,6 +449,8 @@ fun ScrobblesScreen(
                         expandedKey = it
                     },
                     onOpenDialog = onOpenDialog,
+                    animateListItemContentSize = animateListItemContentSize,
+                    maxHeight = listViewportHeight,
                     viewModel = viewModel,
                 )
 

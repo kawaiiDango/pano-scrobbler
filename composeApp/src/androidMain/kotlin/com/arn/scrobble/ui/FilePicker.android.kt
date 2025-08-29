@@ -14,7 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.arn.scrobble.utils.AndroidStuff.application
+import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import com.arn.scrobble.utils.PlatformFile
 import java.io.IOException
 
@@ -138,7 +138,7 @@ private fun savePictureQ(
     var uri: Uri? = null
 
     runCatching {
-        with(application.contentResolver) {
+        with(applicationContext.contentResolver) {
             insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)?.also {
                 onSave(it.toString())
                 uri = it // Keep uri reference so it can be removed on failure
@@ -151,7 +151,7 @@ private fun savePictureQ(
     }.getOrElse {
         uri?.let { orphanUri ->
             // Don't leave an orphan entry in the MediaStore
-            application.contentResolver.delete(orphanUri, null, null)
+            applicationContext.contentResolver.delete(orphanUri, null, null)
         }
         throw it
     }

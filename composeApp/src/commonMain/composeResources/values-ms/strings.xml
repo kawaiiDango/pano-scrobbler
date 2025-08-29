@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="other">scrobble</item>
+        <item quantity="other">%1$s scrobble</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
-        <item quantity="other">hari ini</item>
+        <item quantity="other">%1$s hari ini</item>
     </plurals>
     <plurals name="num_listeners">
-        <item quantity="other">pendengar</item>
+        <item quantity="other">%1$s pendengar</item>
     </plurals>
     <plurals name="num_days">
-        <item quantity="other">hari</item>
+        <item quantity="other">%1$s hari</item>
     </plurals>
     <plurals name="num_weeks">
-        <item quantity="other">minggu</item>
+        <item quantity="other">%1$s minggu</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="other">bulan</item>
+        <item quantity="other">%1$s bulan</item>
     </plurals>
     <plurals name="num_years">
-        <item quantity="other">tahun</item>
+        <item quantity="other">%1$s tahun</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="other">artis</item>
+        <item quantity="other">%1$s artis</item>
     </plurals>
     <plurals name="num_albums">
-        <item quantity="other">album</item>
+        <item quantity="other">%1$s album</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="other">lagu</item>
+        <item quantity="other">%1$s lagu</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="other">%1$d sesuai</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="other">edit</item>
+        <item quantity="other">%1$s edit</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="other">pencorakan edit</item>
+        <item quantity="other">%1$s pencorakan edit</item>
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="other">%1$s metadata yang disekat</item>
@@ -75,10 +75,10 @@
     <string name="tracks">Lagu</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Lagu top</string>
     <string name="similar_tracks">Lagu yang serupa</string>
-    <string name="state_scrobbling">Sekarang tengah scrobble...</string>
+    <string name="state_scrobbling">Sekarang tengah scrobble…</string>
     <string name="state_scrobbled">Telah scrobble</string>
     <string name="state_unscrobbled">Tidak dapat scrobble</string>
-    <string name="tap_to_edit">Tekan untuk edit</string>
+    <string name="tap_to_edit">(Tekan untuk edit)</string>
     <string name="recently_scrobbled">Scrobble Baru-baru Ini</string>
     <string name="recents" comment="Short for recently scrobbled">Baru-baru ini</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobble pertama di %1$s</string>
@@ -117,16 +117,16 @@
     <string name="take_long_time">Ini mungkin mengambil masa yang lama</string>
     <string name="full_index_desc">Guna ini jika anda sudah edit atau buang scrobble dari laman web.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pencarian %1$s top disetiap kategori.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Indeks terakhir di  %1$s.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Indeks terakhir di %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Gambar profil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Pilihan untuk ini</string>
-    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)"> %1$s dikesan</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s dikesan</string>
     <string name="new_player_prompt">Teruskan scrobble aplikasi ini?</string>
     <string name="new_player_prompt_desktop">Pergi ketetapan untuk mula scrobble aplikasi ini</string>
-    <string name="cannot_access" comment="%1$s= the file or folder name">Tidak dapat akses  %1$s</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Tidak dapat akses %1$s</string>
     <string name="file_exists_confirm_overwrite">Fail telah ada. Klik semula untuk tulis semula.</string>
-    <string name="no_scrobbles">Belum ada lagu...</string>
+    <string name="no_scrobbles">Belum ada lagu…</string>
     <string name="no_friends">Belum mengikuti sesiapa…</string>
     <string name="channel_err" comment="Its a noun">Scrobble ralat</string>
     <string name="new_app">Aplikasi baru</string>
@@ -154,7 +154,7 @@
 - Mempamer scrobble terbanyak setiap minggu
 - Dan banyak lagi
 - Tiada bunyi notifikasi</string>
-    <string name="will_not_scrobble">Langkau pilihan ini akan menyebabkan masalah scrobble</string>
+    <string name="will_not_scrobble">Langkau pilihan ini akan menyebabkan scrobble dinyahaktif</string>
     <string name="swap" comment="(Swap title and artist)">Tukar</string>
     <string name="rate_msg">Suka aplikasi ini?</string>
     <string name="time_just_now">baru sahaja</string>
@@ -189,7 +189,7 @@
     <string name="days">Hari</string>
     <string name="years" comment="For the charts menu which displays year by year">Tahun</string>
     <string name="charts_overall">Kesemua</string>
-    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktiviti </string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktiviti mendengar</string>
     <string name="charts_no_data">Tiada data untuk masa ini</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Kebiasaan</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Berturutan</string>
@@ -215,7 +215,7 @@
     <string name="close" comment="To close a dialog or something">Tutup</string>
     <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Tutup</string>
     <string name="user_tags_hint" comment="To add a new tag">Penanda baru</string>
-    <string name="user_tags_empty">Anda belum menambah penanda </string>
+    <string name="user_tags_empty">Anda belum menambah penanda</string>
     <string name="appwidget_loading">Sedang proses…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Tempoh</string>
     <string name="appwidget_theme">Tema</string>
@@ -236,11 +236,11 @@
     <string name="edit_all" comment="All occurrences of a pattern">Semua</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Ekstrak</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Namakan kumpulan berdasarkan <i>lagu, album, artis</i> atau <i>albumArtis</i> untuk ekstrak dari tempat lain</string>
-    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Untuk tukar artis dan tajuk, masukkan kod artis (?&lt;track&gt;.*) dan kod lagu (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">e.g. untuk tukar artis dan tajuk, masukkan kod artis (?&lt;track&gt;.*) dan kod lagu (?&lt;artist&gt;.*)</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Sekurangnya kod anda patut ada nama berikut: \"lagu\", \"artis\"</string>
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Dalam kod anda, tidak dibenarkan mempunyai lebih dari \"%1$s\" ini</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Kod tidak sah: %1$s</string>
-    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Corak digunakan</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Corak digunakan:</string>
     <string name="edit_continue">Jika ada, teruskan guna paparan kod yang bersesuaian</string>
     <string name="edit_case_sensitive">Huruf besar diperlukan</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Ujian</string>
@@ -248,7 +248,7 @@
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Pra-tetap: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Had pola dicapai (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Objek bergerak</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">Pastikan anda memahami  <a href="https://www.google.com/search?q=regex+tutorial">kod java</a> sebelum menggunakan ini, atau gunakan satu dari<b>pra-tetap</b>yang diberikan. Kod yang bersesuaian disediakan dari atas bawah</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Pastikan anda memahami  <a href="https://www.google.com/search?q=regex+tutorial">kod java</a> sebelum menggunakan ini, atau gunakan satu dari<b>pra-tetap</b>yang diberikan. Kod yang bersesuaian disediakan dari atas bawah</string>
     <string name="blocked_metadata_info">Penuhan lebih dari bidang ini akan ditetapkan DAN pengendali antara mereka</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Tekan untuk blok dan langkau</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Aksi pemain media</string>
@@ -279,6 +279,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popular: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analisis</string>
     <string name="enable" comment="To enable some feature">Membenarkan</string>
+    <string name="disable" comment="To disable some feature">Nyahaktif</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Buang: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Saiz</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Langkau tiada gambar</string>
     <string name="create_collage">Bina kolaj</string>
@@ -297,7 +299,7 @@
     <string name="pref_spotify_remote">Scrobble Spotify dari peranti lain</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Guna gambar yang tepat ketika mencari gambar artis</string>
     <string name="pref_link_heart_button_rating">Tekan butang \'hati\' pada notifikasi untuk menyukainya di pemain media</string>
-    <string name="pref_prevent_duplicate_ambient_scrobbles">Nyahaktif scrobble berterusan dari mikrofon apabila peranti memainkan muzik</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Apabila peranti memainkan muzik, scrobble dari mikrofon akan dinyahaktif</string>
     <string name="pref_delay">Scrobble terlambat (yang mana awal)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minit</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Peratus</string>
@@ -364,7 +366,7 @@
     <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">%1$s-seperti contoh</string>
     <string name="failed_encode_url">Gagal menyalin URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Periksa %1$s</string>
-    <string name="no_browser">Tiada pelayar </string>
+    <string name="no_browser">Tiada pelayar</string>
     <string name="no_player">Tiada pemain muzik</string>
     <string name="not_running">⚠ Scrobble dimatikan oleh sistem</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sebab: %1$s</string>
@@ -406,9 +408,19 @@
     <string name="low" comment="As in high/medium/low">Bawah</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Sesetengah aplikasi memerlukan plugin</string>
     <string name="reload" comment="Reload or refresh">Memuat semula</string>
+    <string name="pref_tray_icon_theme">Tema tray ikon</string>
+    <string name="min_track_duration">Scrobble lagu untuk masa lebih dari</string>
     <string name="automation">Kawal Pano Scrobbler dari aplikasi yang sesuai</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Negara untuk metadata  %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Dapatkan data yang hilang untuk  %1$s</string>
+    <string name="login_in_browser">Lengkapkan log masuk di tingkap pelayar</string>
+    <string name="edit_no_save">Ini tak akan disimpan untuk scrobble akan datang</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Dapatkan app ini dari  %1$s</string>
+    <string name="first_artist">Guna artis utama sahaja</string>
+    <string name="external_metadata">Sumber metadata luaran</string>
     <!--  pro  -->
     <string name="get_pro">Sokong aplikasi ini</string>
+    <string name="one_time_purchase">Sekali sahaja</string>
     <string name="help">Bantuan</string>
     <string name="pro_support">Cara ini adalah untuk pengguna hebat seperti anda untuk terus menyokong jangkahayat aplikasi ini.</string>
     <string name="pro_also_get">Anda juga bakal menikmati ciri-ciri istimewa seperti:</string>
@@ -423,7 +435,7 @@ Pembelian anda diuruskan oleh Google Play. Pembelian ini akan dipautkan dengan a
 - Log masuk akaun pembeli.
 - Muat turun dari pelayar web.</string>
     <string name="billing_block">Blok artis/lagu dan auto langkau ataupun tutup audio</string>
-    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Tandakan  %1$d kawan dan susun balik</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Tandakan %1$d kawan dan susun balik</string>
     <string name="billing_sharing">Buang nama aplikasi bila berkongsi</string>
     <string name="billing_scrobble_source">Ingat aplikasi yang di-scrobble dan terus membuat carian di situ</string>
     <string name="billing_regex_extract">Tulis aturan ekstrak metada menggunakan kod</string>

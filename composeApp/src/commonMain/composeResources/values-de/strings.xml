@@ -296,6 +296,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Beliebtheit: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable some feature">Aktivieren</string>
+    <string name="disable" comment="To disable some feature">Deaktivieren</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Entfernen: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Größe</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Fehlende Bilder überspringen</string>
     <string name="create_collage">Collage erstellen</string>
@@ -423,6 +425,8 @@
     <string name="low" comment="As in high/medium/low">Niedrig</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Einige Apps benötigen Plugins</string>
     <string name="reload" comment="Reload or refresh">Neu laden</string>
+    <string name="pref_tray_icon_theme">Tray-Symbol-Design</string>
+    <string name="min_track_duration">Titel scrobbeln, die länger sind als</string>
     <string name="automation">Pano Scrobbler durch Automatisierungs-Apps steuern</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Land für %1$s Metadaten</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Hole fehlende Metadaten für %1$s</string>

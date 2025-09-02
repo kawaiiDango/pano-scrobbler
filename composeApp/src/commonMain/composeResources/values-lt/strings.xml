@@ -457,6 +457,8 @@
     <string name="low" comment="As in high/medium/low">Žemas</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Kai kurioms programėlėms reikia plėtinių.</string>
     <string name="reload" comment="Reload or refresh">Įkelti iš naujo</string>
+    <string name="pref_tray_icon_theme">Juostelės piktogramos tema</string>
+    <string name="min_track_duration">Skrobuolinti takelius ilgiau nei</string>
     <string name="automation">Valdyti „Pano Scrobbler“ iš automatinių programėlių</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Šalis platformai „%1$s“ metaduomenų</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Gauti trūkstamus metaduomenis platformai „%1$s“</string>

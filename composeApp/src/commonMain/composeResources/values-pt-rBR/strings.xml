@@ -203,6 +203,7 @@
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
     <string name="months">Meses</string>
+    <string name="days">Dias</string>
     <string name="years" comment="For the charts menu which displays year by year">Anos</string>
     <string name="charts_overall">Geral</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Atividade de reprodução</string>
@@ -295,6 +296,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popularidade: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Análise</string>
     <string name="enable" comment="To enable some feature">Ativar</string>
+    <string name="disable" comment="To disable some feature">Desativar</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Remover: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Ignorar imagens ausentes</string>
     <string name="create_collage">Criar colagem</string>
@@ -422,6 +425,8 @@
     <string name="low" comment="As in high/medium/low">Baixo</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Alguns apps necessitam de plugins</string>
     <string name="reload" comment="Reload or refresh">Recarregar</string>
+    <string name="pref_tray_icon_theme">Tema do ícone da bandeja</string>
+    <string name="min_track_duration">Trilhas de Scrobbles mais longas que</string>
     <string name="automation">Controlar Pano Scrobbler a partir de apps de automação</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">País para %1$s metadados</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Buscar dados que faltam para %1$s</string>

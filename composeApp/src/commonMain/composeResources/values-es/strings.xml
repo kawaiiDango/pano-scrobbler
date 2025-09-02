@@ -176,6 +176,7 @@
     <string name="rate_msg">¿Estás disfrutando de esta aplicación?</string>
     <string name="time_just_now">hace un momento</string>
     <string name="no_mail_apps">Ningún cliente de correo electrónico está instalado</string>
+    <string name="add">Añadir nuevo elemento</string>
     <string name="loved" comment="Its a noun">Favoritos</string>
     <string name="unloved" comment="Its a noun">Eliminar de favoritos</string>
     <string name="simple_edits">Ediciones</string>
@@ -202,6 +203,7 @@
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensual</string>
     <string name="months">Meses</string>
+    <string name="days">Días</string>
     <string name="years" comment="For the charts menu which displays year by year">Años</string>
     <string name="charts_overall">Total</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Actividad de reproducciones</string>
@@ -294,6 +296,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popularidad: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Análisis</string>
     <string name="enable" comment="To enable some feature">Habilitar</string>
+    <string name="disable" comment="To disable some feature">Deshabilitar</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Eliminar: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamaño</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Omitir las imagenes que faltan</string>
     <string name="create_collage">Crear un collage</string>
@@ -349,15 +353,20 @@
     <string name="pref_search_in_source">Busca y reproduce la aplicación desde la que hiciste scrobbling</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Para aplicaciones compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
+    <string name="regex_rules">Reglas de expresiones regulares</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadatos bloqueados</string>
     <string name="pref_translate">Traduzca esta aplicación</string>
     <string name="pref_translate_credits">Créditos de traducción</string>
     <string name="pref_oss_credits">Créditos de código abierto</string>
     <string name="pref_check_updates">Buscar actualizaciones</string>
+    <string name="no_updates">No hay actualizaciones disponibles</string>
+    <string name="pref_notify_updates">Actualizaciones automáticas</string>
+    <string name="update_downloaded">Actualización descargada</string>
     <string name="pref_search_url_template">Plantilla de URL de búsqueda</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Utilice $query como marcador de posición del término de búsqueda</string>
     <string name="pref_native_file_picker">Utilice el selector de archivos nativo</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Actualización disponible: %1$s</string>
+    <string name="downloading">Descargando</string>
     <string name="download" comment="Its a verb">Descargar</string>
     <string name="changelog">Historial de cambios</string>
     <string name="import_hey_wtf">Probablemente no sea un archivo de exportación de Pano Scrobbler</string>
@@ -398,6 +407,10 @@
     <string name="password">Contraseña</string>
     <string name="open_existing" comment="Append to an existing file">Anexar a los existentes</string>
     <string name="create" comment="Create a new file">Crear</string>
+    <string name="scan_qr">Escanea para iniciar sesión</string>
+    <string name="copy_from">Copiar desde</string>
+    <string name="nothing" comment="nothing/none">Nada</string>
+    <string name="borders" comment="Borders between images in the generated collage">Bordes</string>
     <string name="ok">Aceptar</string>
     <string name="cancel">Cancelar</string>
     <string name="back">Volver</string>
@@ -410,6 +423,14 @@
     <string name="high" comment="As in high/medium/low">Alto</string>
     <string name="medium" comment="As in high/medium/low">Medio</string>
     <string name="low" comment="As in high/medium/low">Bajo</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Algunas aplicaciones necesitan plugins</string>
+    <string name="reload" comment="Reload or refresh">Recarga</string>
+    <string name="pref_tray_icon_theme">Tema del menú desplegable</string>
+    <string name="min_track_duration">Scrobblea pistas más largas que</string>
+    <string name="automation">Controla Pano Scrobbler desde aplicaciones de automatización</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">País para los metadatos de %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Obtener metadatos restantes para %1$s</string>
+    <string name="login_in_browser">Completa el inicio de sesión en el navegador</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="help">Ayuda</string>

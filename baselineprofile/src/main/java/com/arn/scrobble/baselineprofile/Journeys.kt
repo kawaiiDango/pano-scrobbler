@@ -7,12 +7,13 @@ import androidx.test.uiautomator.Until
 object Journeys {
 
     private const val TIMEOUT = 10000L
+    private const val DELAY = 2000L
 
     fun MacrobenchmarkScope.loginIfNeeded() {
         val lastfmButton = device.wait(Until.hasObject(By.text("Last.fm")), TIMEOUT)
 
         if (lastfmButton) {
-            device.executeShellCommand("cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.main.NLService")
+            device.executeShellCommand("cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.media.NLService")
 
             device.findObject(By.res("login_type_dropdown")).click()
             device.wait(Until.hasObject(By.text("Last.fm-like instance")), TIMEOUT)
@@ -22,12 +23,11 @@ object Journeys {
             device.findObject(By.res("login_username")).text = Secrets.username
             device.findObject(By.res("login_password")).text = Secrets.sessionKey
             device.findObject(By.text("Verify")).click()
-            Thread.sleep(1000)
+            Thread.sleep(DELAY)
             device.findObject(By.res("button_stepper_open")).click()
-            device.waitForIdle()
-            device.wait(Until.hasObject(By.desc("Done")), TIMEOUT)
+            Thread.sleep(DELAY)
             device.findObject(By.desc("Done")).click()
-            Thread.sleep(1000)
+            Thread.sleep(DELAY)
             device.findObject(By.res("button_stepper_open")).click()
             device.executeShellCommand("pm grant com.arn.scrobble android.permission.POST_NOTIFICATIONS")
             device.waitForIdle()

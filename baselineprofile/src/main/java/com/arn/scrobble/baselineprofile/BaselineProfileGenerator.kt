@@ -38,13 +38,24 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() {
+        var firstIteration = true
+
         rule.collect("com.arn.scrobble", includeInStartupProfile = true) {
             // This block defines the app's critical user journey. Here we are interested in
             // optimizing for app startup. But you can also navigate and scroll
             // through your most important UI.
 
-            // Start default activity for your app
+            // Ensure home before starting
             pressHome()
+
+            // Clear app data only once (first iteration)
+            if (firstIteration) {
+                device.executeShellCommand("pm clear com.arn.scrobble")
+                // Optional small delay to let the system finish clearing
+                Thread.sleep(500)
+                firstIteration = false
+            }
+
             startActivityAndWait()
             device.setOrientationPortrait()
 

@@ -1,7 +1,7 @@
 package com.arn.scrobble.billing
 
 import android.app.Activity
-import android.app.Application
+import android.content.Context
 import co.touchlab.kermit.Logger
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
@@ -23,10 +23,10 @@ import kotlinx.coroutines.runBlocking
 
 
 class BillingRepository(
-    androidApplication: Application,
+    context: Context,
     clientData: BillingClientData,
 ) : BaseBillingRepository(
-    androidApplication,
+    context,
     clientData
 ),
     PurchasesUpdatedListener, BillingClientStateListener {
@@ -43,7 +43,7 @@ class BillingRepository(
 
 
     override fun initBillingClient() {
-        playStoreBillingClient = BillingClient.newBuilder(androidApplication as Application)
+        playStoreBillingClient = BillingClient.newBuilder(context as Context)
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
             ) // required or app will crash

@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 
 class BillingRepository(
-    androidApplication: Any?,
+    context: Any?,
     clientData: BillingClientData,
 ) : BaseBillingRepository(
-    androidApplication,
+    context,
     clientData
 ) {
 

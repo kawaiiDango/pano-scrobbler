@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 
 abstract class BaseBillingRepository(
-    protected val androidApplication: Any?,
+    protected val context: Any?,
     protected val clientData: BillingClientData,
 ) {
     protected val scope = GlobalScope

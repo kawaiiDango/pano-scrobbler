@@ -14,20 +14,18 @@ import kotlinx.coroutines.flow.first
 
 @Dao
 interface RegexEditsDao {
+    @Query("SELECT * FROM $tableName ORDER BY `order` ASC")
+    fun allFlow(): Flow<List<RegexEdit>>
+
     @Query(
         """
     SELECT * FROM $tableName
-    WHERE enabled = 0
-       OR _id IN (
-           SELECT _id FROM $tableName
-           WHERE enabled = 1
-           ORDER BY `order` ASC
-           LIMIT :limit
-       )
+    WHERE enabled = 1
     ORDER BY `order` ASC
+    LIMIT ${Stuff.MAX_PATTERNS}
     """
     )
-    fun allFlow(limit: Int = Stuff.MAX_PATTERNS): Flow<List<RegexEdit>>
+    fun enabledFlow(): Flow<List<RegexEdit>>
 
     @Query("SELECT count(1) FROM $tableName")
     fun count(): Flow<Int>
@@ -55,7 +53,7 @@ interface RegexEditsDao {
 
         suspend fun RegexEditsDao.import(e: List<RegexEdit>) {
             val existingWithoutOrder =
-                allFlow(limit = Int.MAX_VALUE).first().map { it.copy(order = -1, _id = -1) }.toSet()
+                enabledFlow().first().map { it.copy(order = -1, _id = -1) }.toSet()
             val toInsert = e.filter {
                 it.copy(order = -1, _id = -1) !in existingWithoutOrder
             }

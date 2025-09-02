@@ -1,8 +1,10 @@
 package com.arn.scrobble.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -21,6 +23,7 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.billing.BillingScreen
@@ -135,13 +138,17 @@ fun NavGraphBuilder.panoNavGraph(
     @Composable
     fun modifier() = Modifier
         .fillMaxSize()
-//        .background(MaterialTheme.colorScheme.background)
+        .background(MaterialTheme.colorScheme.surface)
 
     composable<PanoRoute.SelfHomePager>(
-        typeMap = mapOf(
-            typeOf<UserCached>() to serializableType<UserCached>()
+        deepLinks = listOf(
+            navDeepLink<PanoRoute.SelfHomePager>(
+                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.SelfHomePager::class.simpleName
+            )
         )
     ) {
+        val arguments = it.toRoute<PanoRoute.SelfHomePager>()
+
         val currentUserSelf by PlatformStuff.mainPrefs.data
             .collectAsStateWithInitialValue { prefs ->
                 prefs.scrobbleAccounts
@@ -151,7 +158,14 @@ fun NavGraphBuilder.panoNavGraph(
         val initialTab by PlatformStuff.mainPrefs.data
             .collectAsStateWithInitialValue { it.lastHomePagerTab }
 
-        var tabIdx by rememberSaveable { mutableIntStateOf(initialTab) }
+        var tabIdx by rememberSaveable {
+            mutableIntStateOf(
+                if (arguments.digestTypeStr != null)
+                    2 // charts tab
+                else
+                    initialTab
+            )
+        }
 
         LaunchedEffect(Unit) {
             mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
@@ -166,6 +180,7 @@ fun NavGraphBuilder.panoNavGraph(
                 onSetOtherUser = onSetOtherUser,
                 onSetTitle = { title -> onSetTitle(it.id, title) },
                 tabIdx = tabIdx,
+                digestTimePeriod = arguments.digestTypeStr?.let { LastfmPeriod.valueOf(it) },
                 onSetTabIdx = { tab ->
                     tabIdx = tab
                     mainViewModel.setTabIdx(it.id, tab)
@@ -205,6 +220,7 @@ fun NavGraphBuilder.panoNavGraph(
             onSetOtherUser = onSetOtherUser,
             onSetTitle = { title -> onSetTitle(it.id, title) },
             tabIdx = tabIdx,
+            digestTimePeriod = null,
             onSetTabIdx = { tab ->
                 tabIdx = tab
                 mainViewModel.setTabIdx(it.id, tab)

@@ -3,6 +3,8 @@ package com.arn.scrobble.onboarding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -11,16 +13,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arn.scrobble.DesktopWebView
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.http.Url
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.desktop_webview_not_loaded
+import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.login_in_browser
 
 @Composable
@@ -37,6 +42,7 @@ actual fun WebViewScreen(
     val title = stringResource(Res.string.login_in_browser)
     val webViewNotLoadedMessage = stringResource(Res.string.desktop_webview_not_loaded)
     var statusText by remember { mutableStateOf("") }
+    var helpButtonShown by remember { mutableStateOf(true) }
 
     DisposableEffect(Unit) {
         onSetTitle(title)
@@ -98,6 +104,20 @@ actual fun WebViewScreen(
     Column(
         modifier = modifier
     ) {
+
+        if (helpButtonShown) {
+            ButtonWithIcon(
+                onClick = {
+                    helpButtonShown = false
+                    statusText = webViewNotLoadedMessage
+                },
+                icon = Icons.AutoMirrored.Outlined.HelpOutline,
+                text = stringResource(Res.string.help),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+
         SelectionContainer {
             Text(text = statusText)
         }

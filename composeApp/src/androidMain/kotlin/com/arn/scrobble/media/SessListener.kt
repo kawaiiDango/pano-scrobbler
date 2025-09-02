@@ -94,11 +94,17 @@ class SessListener(
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
 //                if (controller.sessionToken !in controllersMap) {
 
-            val playingTrackInfo =
-                findTrackInfoByKey(controller.packageName + "|" + controller.tagCompat)
-                    ?: PlayingTrackInfo(controller.packageName, controller.tagCompat).also {
-                        putTrackInfo(controller.packageName + "|" + controller.tagCompat, it)
-                    }
+            val sessionId =
+                if (controllersFiltered.count { it.packageName == controller.packageName && it.tagCompat == controller.tagCompat } > 1)
+                // if there are multiple sessions with same appId and tag, append session token hash
+                    controller.tagCompat + "@" + controller.sessionToken.hashCode().toHexString()
+                else
+                    controller.tagCompat
+
+            val playingTrackInfo = findTrackInfoByKey(controller.packageName + "|" + sessionId)
+                ?: PlayingTrackInfo(controller.packageName, sessionId).also {
+                    putTrackInfo(controller.packageName + "|" + sessionId, it)
+                }
 
             val cb = ControllerCallback(playingTrackInfo, controller.sessionToken)
 
@@ -219,12 +225,10 @@ class SessListener(
 
 
     override fun hasOtherPlayingControllers(appId: String, sessionId: String): Boolean {
-        return controllersMap.values.any { (controller, cb) ->
-            controller.packageName == appId
-                    && controller.tagCompat != sessionId &&
-                    controller.isMediaPlaying()
+        return controllersMap.values.count { (controller, cb) ->
+            controller.packageName == appId && controller.isMediaPlaying()
 //                        && !cb.trackInfo.hasBlockedTag
-        }
+        } > 1
     }
 
     inner class ControllerCallback(

@@ -22,7 +22,7 @@ class RegexEditsTestVM : ViewModel() {
         _scrobbleDataInput
             .debounce(500)
             .filterNotNull()
-            .combine(dao.allFlow()) { sd, regexEdits ->
+            .combine(dao.enabledFlow()) { sd, regexEdits ->
                 if (sd.track.isEmpty() || sd.artist.isEmpty()) {
                     null
                 } else {

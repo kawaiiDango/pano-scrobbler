@@ -1,3 +1,4 @@
-- Implemented partial edits, that does not require regex (Go to Configure > Edits > Add new edit)
+- Apple Music Classical will now scrobble the full name of the composer as the artist
+- Regex edits limit has been increased to 50
 - Bug fixes
 - Translation updates by the translators on Crowdin

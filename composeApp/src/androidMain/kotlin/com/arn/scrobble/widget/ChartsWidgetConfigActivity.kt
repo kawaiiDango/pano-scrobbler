@@ -41,9 +41,7 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
                     specificWidgetPrefs = AndroidStuff.widgetPrefs.data.map {
                         it.widgets[appWidgetId] ?: SpecificWidgetPrefs()
                     },
-                    onSave = { prefs, reFetch ->
-                        savePrefs(prefs, reFetch)
-                    },
+                    onSave = ::savePrefs,
                     onCancel = ::cancel
                 )
             }
@@ -52,13 +50,16 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
 
     private fun savePrefs(prefs: SpecificWidgetPrefs, reFetch: Boolean) {
         lifecycleScope.launch {
+            var exists = false
+
             AndroidStuff.widgetPrefs.updateData {
+                exists = it.widgets.containsKey(appWidgetId)
                 it.copy(widgets = it.widgets + (appWidgetId to prefs))
             }
 
             ChartsListUtils.updateWidgets(intArrayOf(appWidgetId))
 
-            if (reFetch)
+            if (!exists || reFetch)
                 ChartsWidgetUpdaterWorker.checkAndSchedule(
                     this@ChartsWidgetConfigActivity.applicationContext,
                     true

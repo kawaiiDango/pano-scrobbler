@@ -31,8 +31,6 @@
 
     <!--  strings for unfinalized stuff  -->
 
-    <string name="any_value">Anything</string>
-    <string name="existing_value">Existing data</string>
     <string name="edit_example">e.g. To replace Artist1 with Artist2 while keeping the rest of the metadata unchanged, enable only the artist field, and fill in the original and corrected artist values, leaving the other fields disabled.</string>
     <string name="edit_extract_track_example"
         comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
@@ -60,7 +58,7 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="move_right" translatable="false">Move right</string>
     <string name="move_up" translatable="false">Move up</string>
     <string name="move_down" translatable="false">Move down</string>
-    <string name="desktop_webview_not_loaded" translatable="false">Failed to load webview. Do you have the required dependencies installed?
+    <string name="desktop_webview_not_loaded" translatable="false">WebView not loading? Do you have the required dependencies installed?
 
 Arch:
 sudo pacman -S webkit2gtk-4.1
@@ -70,6 +68,8 @@ sudo apt install libwebkit2gtk-4.1-0
 
 Fedora:
 sudo dnf install webkit2gtk4.1
+
+You may need to set the environment variable WEBKIT_DISABLE_DMABUF_RENDERER=1 for some Nvidia drivers on Linux.
 
 Windows:
 WebView2 provided by Microsoft Edge Chromium

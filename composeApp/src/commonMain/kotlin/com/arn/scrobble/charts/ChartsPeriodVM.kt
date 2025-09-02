@@ -2,23 +2,19 @@ package com.arn.scrobble.charts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.LastfmPeriod
+import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.toInverseMap
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
@@ -28,9 +24,8 @@ import kotlin.math.max
 
 open class ChartsPeriodVM : ViewModel() {
 
+    private var digestPeriod: LastfmPeriod? = null
     private val _periodType = MutableStateFlow<TimePeriodType?>(null)
-
-    private val accountType = Scrobblables.currentAccount.mapLatest { it?.type }
 
     val periodType = _periodType.asStateFlow()
     private val _refreshCount = MutableStateFlow(0)
@@ -95,7 +90,26 @@ open class ChartsPeriodVM : ViewModel() {
 
     val selectedPeriod = _selectedPeriod
         .combine(timePeriods.filterNot { it.isEmpty() }) { selectedPeriod, timePeriods ->
-            if (selectedPeriod !in timePeriods) {
+            val prevDigestPeriod = digestPeriod
+
+            if (prevDigestPeriod != null && periodType.value == TimePeriodType.CONTINUOUS) {
+                digestPeriod = null
+                timePeriods.firstNotNullOfOrNull { (k, v) ->
+                    if (k.lastfmPeriod == prevDigestPeriod) k else null
+                }
+            } else if (prevDigestPeriod != null && periodType.value == TimePeriodType.LISTENBRAINZ) {
+                digestPeriod = null
+                timePeriods.firstNotNullOfOrNull { (k, v) ->
+                    val tag = when (prevDigestPeriod) {
+                        LastfmPeriod.WEEK -> ListenbrainzRanges.week.name
+                        LastfmPeriod.MONTH -> ListenbrainzRanges.month.name
+                        LastfmPeriod.YEAR -> ListenbrainzRanges.year.name
+                        else -> null
+                    }
+
+                    if (k.tag == tag) k else null
+                }
+            } else if (selectedPeriod !in timePeriods) {
                 timePeriods.firstNotNullOf { (k, v) -> k } // just select the first
             } else
                 selectedPeriod
@@ -103,44 +117,24 @@ open class ChartsPeriodVM : ViewModel() {
         .onEach { period ->
             // mark as non-refresh request
             _refreshCount.value = 0
-            
+
             if (_periodType.value != TimePeriodType.LISTENBRAINZ && _periodType.value != null && period != null) {
-                GlobalScope.launch {
-                    PlatformStuff.mainPrefs.updateData {
-                        it.copy(
-                            lastChartsPeriodType = _periodType.value!!,
-                            lastChartsLastfmPeriodSelected = period,
-                            lastChartsCustomPeriod = _customPeriodInput.value
-                        )
-                    }
+                PlatformStuff.mainPrefs.updateData {
+                    it.copy(
+                        lastChartsPeriodType = _periodType.value!!,
+                        lastChartsLastfmPeriodSelected = period,
+                        lastChartsCustomPeriod = _customPeriodInput.value
+                    )
+                }
+            } else if (_periodType.value == TimePeriodType.LISTENBRAINZ && period != null) {
+                PlatformStuff.mainPrefs.updateData {
+                    it.copy(
+                        lastChartsListenBrainzPeriodSelected = period
+                    )
                 }
             }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
-
-    init {
-        viewModelScope.launch {
-            accountType.collectLatest {
-                when (it) {
-                    AccountType.LISTENBRAINZ -> _periodType.emit(TimePeriodType.LISTENBRAINZ)
-                    AccountType.LASTFM -> {
-                        val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
-                            Triple(
-                                it.lastChartsPeriodType,
-                                it.lastChartsLastfmPeriodSelected,
-                                it.lastChartsCustomPeriod
-                            )
-                        }.first()
-                        _periodType.emit(type)
-                        _selectedPeriod.value = selected
-                        _customPeriodInput.value = custom
-                    }
-
-                    else -> _periodType.emit(TimePeriodType.CONTINUOUS)
-                }
-            }
-        }
-    }
 
     fun setUser(user: UserCached) {
         _user.value = user
@@ -158,6 +152,10 @@ open class ChartsPeriodVM : ViewModel() {
 
     fun setCustomPeriodInput(period: TimePeriod) {
         _customPeriodInput.value = period
+    }
+
+    fun setDigestPeriod(period: LastfmPeriod) {
+        digestPeriod = period
     }
 
     fun refresh() {

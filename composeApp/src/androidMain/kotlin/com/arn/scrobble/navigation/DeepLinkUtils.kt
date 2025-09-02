@@ -25,10 +25,10 @@ object DeepLinkUtils {
         return Stuff.DEEPLINK_BASE_PATH + "/" + klassName + "/" + args.encodeURLPathPart()
     }
 
-    fun handleNavigationFromInfoScreen(
-        route: PanoRoute,
-    ) {
-        val deepLinkUri = when (route) {
+    fun createDeepLinkUri(
+        route: PanoRoute
+    ): Uri? {
+        return when (route) {
             is PanoRoute.MusicEntryInfoPager -> {
                 Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfoPager::class.simpleName + "/" +
                         serializableType<Artist>().serializeAsValue(route.artist) + "/" +
@@ -72,13 +72,27 @@ object DeepLinkUtils {
                 uri.removeSuffix("&")
             }
 
-            else -> return
-        }
+            is PanoRoute.SelfHomePager -> {
+                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.SelfHomePager::class.simpleName +
+                        if (route.digestTypeStr != null)
+                            ("?" + route::digestTypeStr.name + "=" + route.digestTypeStr)
+                        else
+                            ""
+            }
 
+            else -> null
+        }
+            ?.toUri()
+
+    }
+
+    fun handleNavigationFromInfoScreen(
+        route: PanoRoute,
+    ) {
         val intent = Intent(AndroidStuff.applicationContext, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             action = Intent.ACTION_VIEW
-            data = deepLinkUri.toUri()
+            data = createDeepLinkUri(route)
         }
 
         AndroidStuff.applicationContext.startActivity(intent)

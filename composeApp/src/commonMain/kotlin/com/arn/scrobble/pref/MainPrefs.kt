@@ -10,6 +10,7 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.CookieSerializable
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.SearchType
+import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.edits.RegexPresets
@@ -64,6 +65,8 @@ data class MainPrefs(
     val lastHomePagerTab: Int = 0,
     val lastChartsPeriodType: TimePeriodType = TimePeriodType.CONTINUOUS,
     val lastChartsLastfmPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.MONTH),
+    val lastChartsListenBrainzPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.OVERALL)
+        .apply { tag = ListenbrainzRanges.all_time.name },
     val lastChartsCustomPeriod: TimePeriod = TimePeriod(1577836800000L, 1609459200000L), // 2020
     val currentAccountType: AccountType = AccountType.LASTFM,
     val scrobbleAccounts: List<UserAccountSerializable> = emptyList(),

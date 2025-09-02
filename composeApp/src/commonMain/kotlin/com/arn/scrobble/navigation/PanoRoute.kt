@@ -17,7 +17,7 @@ sealed interface PanoRoute {
     data object SpecialGoBack : PanoRoute
 
     @Serializable
-    data object SelfHomePager : PanoRoute
+    data class SelfHomePager(val digestTypeStr: String? = null) : PanoRoute
 
     @Serializable
     data class OthersHomePager(val user: UserCached) : PanoRoute

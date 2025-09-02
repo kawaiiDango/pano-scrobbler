@@ -357,7 +357,7 @@ fun PanoAppContent(
                                 navController = navController,
                                 startDestination = when {
                                     !onboardingFinished || currentUserSelf == null -> PanoRoute.Onboarding
-                                    else -> PanoRoute.SelfHomePager
+                                    else -> PanoRoute.SelfHomePager()
                                 },
                                 enterTransition = {
                                     fadeIn(animationSpec = tween()) + slideIntoContainer(

@@ -17,10 +17,12 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.media.PlayingTrackEventReceiver
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.updates.UpdateAction
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
@@ -28,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.charts
 import pano_scrobbler.composeapp.generated.resources.create_collage
 import pano_scrobbler.composeapp.generated.resources.digest_monthly
 import pano_scrobbler.composeapp.generated.resources.digest_weekly
@@ -38,7 +41,8 @@ import pano_scrobbler.composeapp.generated.resources.top_tracks
 import pano_scrobbler.composeapp.generated.resources.update_available
 
 actual object PanoNotifications {
-    private val context = AndroidStuff.applicationContext
+    private val context
+        get() = AndroidStuff.applicationContext
     private val notificationManager = AndroidStuff.notificationManager
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
 
@@ -386,23 +390,45 @@ actual object PanoNotifications {
             user = Scrobblables.currentAccount.value?.user ?: return
         )
 
-        val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
+        val collageDeepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
 
-        val launchPi =
-            DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
+        val collagePi =
+            DeepLinkUtils.createDestinationPendingIntent(collageDeepLinkUri)
+
+        val chartsDeepLinkUri =
+            DeepLinkUtils.createDeepLinkUri(PanoRoute.SelfHomePager(timePeriod.lastfmPeriod.name))!!
+        val chartsPi =
+            PendingIntent.getActivity(
+                context,
+                chartsDeepLinkUri.hashCode(),
+                Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    action = Intent.ACTION_VIEW
+                    data = chartsDeepLinkUri
+                },
+                AndroidStuff.updateCurrentOrImmutable
+            )!!
 
         val nb = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.vd_charts)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentTitle(notificationTitle)
-            .setContentIntent(launchPi)
+            .setContentIntent(chartsPi)
             .apply { color = context.getColor(R.color.pinkNoti) }
             .addAction(
                 AndroidStuff.getNotificationAction(
                     R.drawable.vd_mosaic,
                     "🖼️",
                     getString(Res.string.create_collage),
-                    launchPi
+                    collagePi
+                )
+            )
+            .addAction(
+                AndroidStuff.getNotificationAction(
+                    R.drawable.vd_charts,
+                    "📊",
+                    getString(Res.string.charts),
+                    chartsPi
                 )
             )
             .setContentText(notificationText)

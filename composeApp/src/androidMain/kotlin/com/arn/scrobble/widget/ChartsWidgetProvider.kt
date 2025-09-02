@@ -150,7 +150,7 @@ internal fun updateAppWidget(
     // setup a pending intent template, and the individual items can set a fillInIntent
     // to create unique before on an item to item basis.
     val infoIntent = Intent(context, MainDialogActivity::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
     }
 
     val infoPendingIntent = PendingIntent.getActivity(

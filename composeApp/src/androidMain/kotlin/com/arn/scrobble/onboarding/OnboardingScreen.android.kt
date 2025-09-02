@@ -130,8 +130,8 @@ private fun NotificationListenerStep(
         descriptionRes = Res.string.grant_notification_access_desc,
         openAction = {
             val intent = if (PlatformStuff.isTv &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+//                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
             )
                 Intent().setComponent(
                     ComponentName(Stuff.PACKAGE_TV_SETTINGS, Stuff.ACTIVITY_TV_SETTINGS)

@@ -80,7 +80,16 @@ fun SimpleEditsScreen(
                 .fillMaxSize()
         ) {
             if (simpleEdits == null) {
-                val shimmerEdits = List(10) { SimpleEdit(_id = it) }
+                val shimmerEdits = List(10) {
+                    SimpleEdit(
+                        _id = it,
+                        hasOrigAlbumArtist = true,
+                        track = "",
+                        artist = "",
+                        album = "",
+                        albumArtist = "",
+                    )
+                }
                 items(
                     shimmerEdits,
                 ) { edit ->

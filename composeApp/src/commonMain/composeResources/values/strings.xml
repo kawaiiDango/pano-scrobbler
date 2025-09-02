@@ -635,6 +635,12 @@
     <string name="pref_blocked_metadata"
         comment="Block things from scrobbling"
         >Blocked metadata</string>
+    <string name="any_value"
+        comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets"
+        >anything</string>
+    <string name="existing_value"
+        comment="starts with lowercase in english because it will be enclosed in angle brackets"
+        >existing data</string>
     <string name="pref_translate">Translate this app</string>
     <string name="pref_translate_credits">Translation credits</string>
     <string name="pref_oss_credits">Open source credits</string>

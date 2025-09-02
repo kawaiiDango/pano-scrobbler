@@ -96,7 +96,15 @@ fun BlockedMetadatasScreen(
                 .fillMaxSize()
         ) {
             if (blockedMetadatas == null) {
-                val shimmerEdits = List(10) { BlockedMetadata(track = " ", _id = it) }
+                val shimmerEdits = List(10) {
+                    BlockedMetadata(
+                        _id = it,
+                        track = " ",
+                        artist = "",
+                        album = "",
+                        albumArtist = "",
+                    )
+                }
                 items(shimmerEdits) {
                     BlockedMetadataItem(
                         it,
@@ -149,43 +157,38 @@ private fun BlockedMetadataItem(
                 .clickable(enabled = !forShimmer) { onEdit(blockedMetadata) }
                 .padding(8.dp)
         ) {
-            if (blockedMetadata.track.isNotEmpty()) {
-                TextWithIcon(
-                    text = blockedMetadata.track,
-                    icon = Icons.Outlined.MusicNote,
-                    style = MaterialTheme.typography.titleMediumEmphasized,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .backgroundForShimmer(forShimmer)
-                )
-            }
-            if (blockedMetadata.artist.isNotEmpty()) {
-                TextWithIcon(
-                    text = blockedMetadata.artist,
-                    icon = Icons.Outlined.Mic,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-            if (blockedMetadata.album.isNotEmpty()) {
-                TextWithIcon(
-                    text = blockedMetadata.album,
-                    icon = Icons.Outlined.Album,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-            if (blockedMetadata.albumArtist.isNotEmpty()) {
-                TextWithIcon(
-                    text = blockedMetadata.albumArtist,
-                    icon = PanoIcons.AlbumArtist,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
+            TextWithIcon(
+                text = blockedMetadata.track.ifEmpty { "*" },
+                icon = Icons.Outlined.MusicNote,
+                style = MaterialTheme.typography.titleMediumEmphasized,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .backgroundForShimmer(forShimmer)
+            )
+
+            TextWithIcon(
+                text = blockedMetadata.artist.ifEmpty { "*" },
+                icon = Icons.Outlined.Mic,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            TextWithIcon(
+                text = blockedMetadata.album.ifEmpty { "*" },
+                icon = Icons.Outlined.Album,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            TextWithIcon(
+                text = blockedMetadata.albumArtist.ifEmpty { "*" },
+                icon = PanoIcons.AlbumArtist,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
 
         if (blockedMetadata.blockPlayerAction == BlockPlayerAction.skip) {

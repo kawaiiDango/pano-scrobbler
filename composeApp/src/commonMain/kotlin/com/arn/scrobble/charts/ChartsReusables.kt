@@ -80,6 +80,8 @@ import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import com.arn.scrobble.utils.Stuff.timeToUTC
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
 import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
@@ -189,6 +191,7 @@ fun TimePeriodSelector(
     onSelected: (timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, Int) -> Unit,
     showRefreshButton: Boolean,
     modifier: Modifier = Modifier,
+    digestTimePeriod: LastfmPeriod? = null,
 ) {
     val timePeriods by viewModel.timePeriods.collectAsStateWithLifecycle()
     val timePeriodsList by remember(timePeriods) { mutableStateOf(timePeriods.keys.toList()) }
@@ -199,13 +202,48 @@ fun TimePeriodSelector(
         mutableStateOf(null)
     }
     var typeSelectorShown by remember { mutableStateOf(false) }
-    val isListenBrainz by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType == AccountType.LISTENBRAINZ }
+    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val listState = rememberLazyListState()
     var selectedPeriodOffsetX by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
 
     LaunchedEffect(user) {
         viewModel.setUser(user)
+    }
+
+    LaunchedEffect(accountType, digestTimePeriod) {
+        when {
+            accountType == AccountType.LISTENBRAINZ -> {
+                viewModel.setPeriodType(TimePeriodType.LISTENBRAINZ)
+                if (digestTimePeriod == null) {
+                    val selected = PlatformStuff.mainPrefs.data.mapLatest {
+                        it.lastChartsListenBrainzPeriodSelected
+                    }.first()
+                    viewModel.setSelectedPeriod(selected)
+                }
+            }
+
+            accountType == AccountType.LASTFM && digestTimePeriod == null -> {
+                val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
+                    Triple(
+                        it.lastChartsPeriodType,
+                        it.lastChartsLastfmPeriodSelected,
+                        it.lastChartsCustomPeriod
+                    )
+                }.first()
+                viewModel.setPeriodType(type)
+                viewModel.setSelectedPeriod(selected)
+                viewModel.setCustomPeriodInput(custom)
+            }
+
+            else -> {
+                viewModel.setPeriodType(TimePeriodType.CONTINUOUS)
+            }
+        }
+
+        if (digestTimePeriod != null) {
+            viewModel.setDigestPeriod(digestTimePeriod)
+        }
     }
 
     LaunchedEffect(selectedPeriod, refreshCount) {
@@ -244,7 +282,7 @@ fun TimePeriodSelector(
             shape = MaterialTheme.shapes.large
         )
     ) {
-        if (!isListenBrainz) {
+        if (accountType != AccountType.LISTENBRAINZ) {
             Box {
                 OutlinedToggleButton(
                     checked = typeSelectorShown,

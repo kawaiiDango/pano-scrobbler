@@ -62,6 +62,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.graphics.KumoRect
 import com.arn.scrobble.graphics.toImageBitmap
@@ -120,6 +121,7 @@ import pano_scrobbler.composeapp.generated.resources.years
 @Composable
 fun ChartsOverviewScreen(
     user: UserCached,
+    digestTimePeriod: LastfmPeriod?,
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
@@ -197,6 +199,7 @@ fun ChartsOverviewScreen(
             viewModel = chartsPeriodViewModel,
             onSelected = ::setInput,
             showRefreshButton = true,
+            digestTimePeriod = digestTimePeriod,
             modifier = Modifier.fillMaxWidth()
         )
         Column(

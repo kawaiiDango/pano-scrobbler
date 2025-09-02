@@ -76,7 +76,6 @@ fun ChartsWidgetConfigScreen(
         }
 
         Column(
-//            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .fillMaxSize()
                 .safeContentPadding()

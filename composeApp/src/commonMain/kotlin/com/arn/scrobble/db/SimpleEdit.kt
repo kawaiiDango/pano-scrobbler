@@ -53,8 +53,8 @@ data class SimpleEdit(
     @ColumnInfo(defaultValue = "")
     val origAlbumArtist: String = "",
 
-    val track: String? = "",
-    val album: String? = "",
-    val albumArtist: String? = "",
-    val artist: String? = "",
+    val track: String? = null,
+    val album: String? = null,
+    val artist: String? = null,
+    val albumArtist: String? = null,
 )

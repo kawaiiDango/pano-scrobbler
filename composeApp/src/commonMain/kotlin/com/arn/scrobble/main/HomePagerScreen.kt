@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.ChartsOverviewScreen
 import com.arn.scrobble.friends.FriendsScreen
 import com.arn.scrobble.navigation.PanoDialog
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 fun HomePagerScreen(
     user: UserCached,
     tabIdx: Int,
+    digestTimePeriod: LastfmPeriod?,
     onSetTabIdx: (Int) -> Unit,
     onSetTitle: (String?) -> Unit,
     onSetTabData: (String, List<PanoTab>?) -> Unit,
@@ -136,13 +138,13 @@ fun HomePagerScreen(
 
             PanoTab.Charts -> ChartsOverviewScreen(
                 user = user,
+                digestTimePeriod = digestTimePeriod,
                 onNavigate = onNavigate,
                 onOpenDialog = onOpenDialog,
                 onTitleChange = {
                     chartsTitle = it
                 },
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             )
 
             else -> {

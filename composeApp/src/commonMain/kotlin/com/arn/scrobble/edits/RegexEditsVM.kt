@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class RegexEditsVM : ViewModel() {
     private val dao = PanoDb.db.getRegexEditsDao()
-    val regexes = dao.allFlow(limit = Int.MAX_VALUE)
+    val regexes = dao.allFlow()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun upsertAll(el: List<RegexEdit>) {

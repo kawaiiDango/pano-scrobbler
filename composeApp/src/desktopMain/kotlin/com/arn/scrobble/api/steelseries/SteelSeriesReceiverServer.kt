@@ -86,6 +86,9 @@ actual object SteelSeriesReceiverServer {
             "event": "MEDIA_PLAYBACK",
             "game": "TIDAL"
         }
+
+        It removes things in brackets from track names.
+        "CORAÇAO (20th Anniversary Mix)" becomes "CORAÇAO"
          */
 
         val lastGameEvent = lastGameEvent
@@ -93,11 +96,13 @@ actual object SteelSeriesReceiverServer {
             lastGameEvent != null &&
             lastGameEvent.game == "TIDAL" &&
             lastGameEvent.event == "MEDIA_PLAYBACK" &&
-            lastGameEvent.data.frame.title == scrobbleData.track
+            lastGameEvent.data.frame.title in scrobbleData.track
         ) {
             return scrobbleData.copy(
                 album = lastGameEvent.data.frame.album,
             )
+        } else {
+            Logger.w { "SteelSeries game event did not match: $lastGameEvent" }
         }
 
         return null
@@ -109,6 +114,12 @@ actual object SteelSeriesReceiverServer {
     ) : NanoHTTPD(hostname, port) {
         override fun serve(session: IHTTPSession): Response {
             return if (session.method == Method.POST && session.uri == "/game_event") {
+                
+                // https://stackoverflow.com/questions/42504056/why-do-i-get-messy-code-of-chinese-filename-when-i-upload-files-to-nanohttpd-ser
+                // add "; charset=UTF-8" to the content type
+                val ct = ContentType(session.headers["content-type"]).tryUTF8()
+                session.headers.put("content-type", ct.contentTypeHeader)
+
                 val files = mutableMapOf<String, String>()
                 session.parseBody(files)
                 val postData = files["postData"]

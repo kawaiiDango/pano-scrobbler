@@ -300,7 +300,7 @@
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">कोड</string>
     <string name="pref_imexport_network_notice">नेटवर्क मोड को लागि दुवै डिभाइस एउटै नेटवर्क मा कनेक्ट हुनुपर्छ।</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">पर्सनलआईजेसन</string>
-    <string name="pref_themes" comment="Color themes">थीमस</string>
+    <string name="pref_themes" comment="Color themes">थीम</string>
     <!--  pro  -->
     <string name="get_pro">एपलाई समर्थन गर्नुहोस्</string>
     <string name="help">मद्दत</string>

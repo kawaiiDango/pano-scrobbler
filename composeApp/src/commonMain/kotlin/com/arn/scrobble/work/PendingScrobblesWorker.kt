@@ -45,7 +45,11 @@ class PendingScrobblesWorker(
         }
 
         withContext(Dispatchers.IO + exHandler) {
-            errored = !run()
+            deleteForLoggedOutServices()
+            submitLoves()
+            submitScrobbles()
+            
+            errored = failsMap.values.any { it > 0 }
         }
 
         return if (errored) {
@@ -55,30 +59,18 @@ class PendingScrobblesWorker(
         }
     }
 
-    private suspend fun run(): Boolean {
-        deleteForLoggedOutServices()
-
-        if (!submitLoves())
-            return false
-
-        if (!submitScrobbles())
-            return false
-
-        return true
-    }
-
-    private suspend fun submitScrobbles(): Boolean {
+    private suspend fun submitScrobbles() {
         val entries = dao.allScrobbles(HARD_LIMIT)
 
         for (chunk in entries.chunked(BATCH_SIZE)) {
-            if (!submitScrobbleBatch(chunk))
-                return false
-        }
+            submitScrobbleBatch(chunk)
 
-        return true
+            if (failsMap.values.any { it > MAX_FAILURES_PER_SERVICE })
+                return
+        }
     }
 
-    private suspend fun submitScrobbleBatch(entries: List<PendingScrobble>): Boolean {
+    private suspend fun submitScrobbleBatch(entries: List<PendingScrobble>) {
         setProgress(
             CommonWorkProgress(
                 message = getString(Res.string.pending_batch),
@@ -150,10 +142,9 @@ class PendingScrobblesWorker(
                     )
                 }
         }
-        return true
     }
 
-    private suspend fun submitLoves(): Boolean {
+    private suspend fun submitLoves() {
         val entries = dao.allLoves(100)
         val total = entries.size
         for ((submitted, entry) in entries.withIndex()) {
@@ -214,7 +205,6 @@ class PendingScrobblesWorker(
 
             delay(DELAY)
         }
-        return true
     }
 
     private fun filterOneForService(scrobblable: Scrobblable, pl: PendingScrobble): Boolean {

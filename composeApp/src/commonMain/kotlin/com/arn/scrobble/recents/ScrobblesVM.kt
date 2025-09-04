@@ -114,7 +114,7 @@ class ScrobblesVM : ViewModel() {
             val hasPending = PanoDb.db.getPendingScrobblesDao().count() > 0
 
             if (hasPending && Stuff.isOnline)
-                PendingScrobblesWork.checkAndSchedule()
+                PendingScrobblesWork.checkAndSchedule(force = true)
         }
 
         viewModelScope.launch {

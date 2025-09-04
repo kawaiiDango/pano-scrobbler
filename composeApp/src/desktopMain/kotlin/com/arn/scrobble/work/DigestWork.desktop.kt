@@ -35,6 +35,10 @@ actual object DigestWork : CommonWork {
         throw NotImplementedError("Not implemented")
     }
 
+    override fun state(): CommonWorkState? {
+        throw NotImplementedError("Not implemented")
+    }
+
     override fun cancel() {
         DesktopWorkManager.cancelWork(DigestType.DIGEST_DAILY.name)
         DesktopWorkManager.cancelWork(DigestType.DIGEST_WEEKLY.name)

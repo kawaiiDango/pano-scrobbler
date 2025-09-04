@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 
 fun mapWorkState(state: WorkInfo.State): CommonWorkState {
     return when (state) {
+        WorkInfo.State.ENQUEUED -> CommonWorkState.ENQUEUED
         WorkInfo.State.RUNNING -> CommonWorkState.RUNNING
         WorkInfo.State.SUCCEEDED -> CommonWorkState.SUCCEEDED
         WorkInfo.State.FAILED -> CommonWorkState.FAILED
@@ -44,6 +45,14 @@ abstract class CommonWorkImpl(protected val name: String) : CommonWork {
                     dataToProgress(workInfo.progress, workInfo.state)
                 }
             }
+    }
+
+    final override fun state(): CommonWorkState? {
+        return WorkManager.getInstance(AndroidStuff.applicationContext)
+            .getWorkInfosForUniqueWork(name)
+            .get()
+            .firstOrNull()
+            ?.let { mapWorkState(it.state) }
     }
 
     final override fun cancel() {

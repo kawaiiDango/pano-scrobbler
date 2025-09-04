@@ -10,6 +10,10 @@ abstract class CommonWorkImpl(protected val uniqueName: String) : CommonWork {
             .filterNotNull()
     }
 
+    final override fun state(): CommonWorkState? {
+        return DesktopWorkManager.state(uniqueName)
+    }
+
     final override fun cancel() {
         DesktopWorkManager.cancelWork(uniqueName)
     }

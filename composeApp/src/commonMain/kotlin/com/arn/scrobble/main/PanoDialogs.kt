@@ -2,8 +2,10 @@ package com.arn.scrobble.main
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,6 +20,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -294,24 +297,17 @@ private fun BottomSheetDialogParent(
 
     val isMobile = !PlatformStuff.isTv && !PlatformStuff.isDesktop
 
-    val sheetGesturesEnabled by remember(
-        isNestedScrollable,
-        scrollState.canScrollForward,
-        scrollState.canScrollBackward
-    ) {
-        mutableStateOf(
+    val sheetGesturesEnabled by remember {
+        derivedStateOf {
             isNestedScrollable && isMobile &&
                     !scrollState.canScrollForward && !scrollState.canScrollBackward ||
                     !isNestedScrollable && isMobile
-        )
+        }
     }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        dragHandle = if (sheetGesturesEnabled) {
-            { BottomSheetDefaults.DragHandle() }
-        } else
-            null,
+        dragHandle = null,
         sheetGesturesEnabled = sheetGesturesEnabled,
         sheetState = sheetState,
     ) {
@@ -344,24 +340,23 @@ private fun BottomSheetDialogParent(
                     contentDescription = stringResource(Res.string.close),
                 )
             }
-        } else if (!sheetGesturesEnabled) {
+        } else {
             // reserve space at the top
             Box(
                 modifier = Modifier
                     .minimumInteractiveComponentSize()
-                    .padding(vertical = 4.dp)
             )
         }
 
         content(
             Modifier
                 .fillMaxWidth()
-                .then(
-                    if (isNestedScrollable && !sheetGesturesEnabled && isMobile)
-                        Modifier.fillMaxHeight(0.75f)
-                    else
-                        Modifier
-                )
+//                .then(
+//                    if (isNestedScrollable && !sheetGesturesEnabled && isMobile)
+//                        Modifier.fillMaxHeight(0.75f)
+//                    else
+//                        Modifier
+//                )
                 .then(
                     if (padding)
                         Modifier.padding(horizontal = 24.dp)

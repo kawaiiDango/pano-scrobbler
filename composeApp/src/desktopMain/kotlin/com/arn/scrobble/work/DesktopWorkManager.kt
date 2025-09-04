@@ -60,6 +60,14 @@ object DesktopWorkManager {
         while (attempt < retryPolicy.maxAttempts) {
             result = try {
                 withTimeout(120_000L) {
+                    updateState(
+                        id, WorkState(
+                            id,
+                            null,
+                            CommonWorkProgress("started", 0f)
+                        )
+                    )
+
                     worker {
                         setProgress(id, it)
                     }
@@ -89,6 +97,18 @@ object DesktopWorkManager {
         return _workStateFlow.map {
             it[id]?.progress
         }
+    }
+
+    fun state(id: String): CommonWorkState? {
+        val workState = _workStateFlow.value[id]
+
+        return if (workState != null &&
+            (workState.status == null || workState.status == CommonWorkerResult.Retry) &&
+            workState.progress == null
+        )
+            CommonWorkState.ENQUEUED
+        else
+            workState?.progress?.state
     }
 
     fun setProgress(id: String, progress: CommonWorkProgress) {

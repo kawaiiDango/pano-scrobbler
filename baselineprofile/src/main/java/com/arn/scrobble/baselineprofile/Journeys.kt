@@ -52,7 +52,7 @@ object Journeys {
         device.waitForIdle()
         device.findObject(By.text("Charts")).click()
         device.waitForIdle()
-        device.findObject(By.text(Secrets.usernamePattern)).click()
+        device.findObject(By.text(Secrets.username)).click()
         device.waitForIdle()
         Thread.sleep(1000)
         device.pressBack()

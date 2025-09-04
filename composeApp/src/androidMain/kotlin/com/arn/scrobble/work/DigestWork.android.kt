@@ -54,6 +54,10 @@ actual object DigestWork : CommonWork {
         throw NotImplementedError("Not implemented")
     }
 
+    override fun state(): CommonWorkState? {
+        throw NotImplementedError("Not implemented")
+    }
+
     override fun cancel() {
         WorkManager.getInstance(AndroidStuff.applicationContext).apply {
             cancelUniqueWork(DigestType.DIGEST_DAILY.name)

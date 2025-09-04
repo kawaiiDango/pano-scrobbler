@@ -90,7 +90,7 @@ object DeepLinkUtils {
         route: PanoRoute,
     ) {
         val intent = Intent(AndroidStuff.applicationContext, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
             action = Intent.ACTION_VIEW
             data = createDeepLinkUri(route)
         }

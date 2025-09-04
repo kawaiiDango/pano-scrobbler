@@ -29,6 +29,7 @@ import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
@@ -472,7 +473,7 @@ private fun ScrobblesTypeSelectorButton(
     isLast: Boolean = false,
 ) {
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = { PlainTooltip { Text(text) } },
         state = rememberTooltipState(),
         focusable = !checked,
@@ -560,7 +561,7 @@ private fun ScrobblesTypeSelector(
             }
         )
         TooltipBox(
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
             tooltip = { PlainTooltip { Text(stringResource(Res.string.time_jump)) } },
             state = rememberTooltipState(),
             focusable = selectedType != ScrobblesType.TIME_JUMP,

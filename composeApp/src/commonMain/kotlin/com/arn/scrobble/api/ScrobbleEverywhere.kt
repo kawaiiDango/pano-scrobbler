@@ -36,7 +36,8 @@ import kotlinx.coroutines.flow.map
 
 data class PreprocessResult(
     val scrobbleData: ScrobbleData,
-    val edited: Boolean = false,
+    val simpleEditsApplied: Boolean = false,
+    val regexEditsApplied: Boolean = false,
     val presetsApplied: Boolean = false,
     val titleParseFailed: Boolean = false,
     val blockPlayerAction: BlockPlayerAction? = null,
@@ -74,15 +75,15 @@ object ScrobbleEverywhere {
                 )
         }
 
-        var edited = false
-        var presetsApplied = false
+        var simpleEditsApplied = false
         var regexEditsApplied = false
+        var presetsApplied = false
         var titleParseFailed = false
 
         PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
             ?.also {
                 scrobbleData = it
-                edited = true
+                simpleEditsApplied = true
             }
 
         val regexes = PanoDb.db
@@ -97,28 +98,20 @@ object ScrobbleEverywhere {
                 scrobbleData,
                 blockPlayerAction = regexResults.blockPlayerAction
             )
-        } else if (regexResults.scrobbleData != null) {
+        } else if (!simpleEditsApplied && regexResults.scrobbleData != null) {
             scrobbleData = regexResults.scrobbleData
-            edited = true
             regexEditsApplied = true
-        }
-
-        // if regex edits were applied, run simple edits again
-        if (regexEditsApplied) {
-            PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
-                ?.also {
-                    scrobbleData = it
-                    edited = true
-                }
         }
 
         if (runPresets) {
             try {
-                val presetsResult = RegexPresets.applyAllPresets(scrobbleData, edited)
+                val presetsResult = RegexPresets.applyAllPresets(
+                    scrobbleData,
+                    simpleEditsApplied || regexEditsApplied
+                )
 
                 if (presetsResult != null) {
                     scrobbleData = presetsResult.scrobbleData
-                    edited = true
                     presetsApplied = true
                 }
             } catch (e: TitleParseException) {
@@ -136,7 +129,7 @@ object ScrobbleEverywhere {
                 )
 
                 if (firstArtist != scrobbleData.artist)
-                    edited = true
+                    presetsApplied = true
 
                 scrobbleData = scrobbleData.copy(
                     artist = firstArtist,
@@ -150,7 +143,8 @@ object ScrobbleEverywhere {
 
         return PreprocessResult(
             presetsApplied = presetsApplied,
-            edited = edited,
+            simpleEditsApplied = simpleEditsApplied,
+            regexEditsApplied = regexEditsApplied,
             titleParseFailed = titleParseFailed,
             scrobbleData = scrobbleData.trimmed()
         )
@@ -165,8 +159,7 @@ object ScrobbleEverywhere {
         if (preprocessResult.blockPlayerAction != null) return preprocessResult
 
         val preprocessResult2 =
-            if (preprocessResult.presetsApplied) {
-                // run the edits again, as users could have edited existing scrobbles
+            if (!preprocessResult.simpleEditsApplied && !preprocessResult.regexEditsApplied && preprocessResult.presetsApplied) {
                 // don't try to parse title again here
                 performEditsAndBlocks(preprocessResult.scrobbleData, false)
             } else {

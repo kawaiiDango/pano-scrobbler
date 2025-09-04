@@ -12,6 +12,7 @@ data class CommonWorkProgress(
 }
 
 enum class CommonWorkState {
+    ENQUEUED,
     RUNNING,
     SUCCEEDED,
     FAILED,
@@ -31,6 +32,7 @@ sealed interface CommonWorkerResult {
 interface CommonWork {
     fun checkAndSchedule(force: Boolean = false)
     fun getProgress(): Flow<CommonWorkProgress>
+    fun state(): CommonWorkState?
     fun cancel()
 }
 

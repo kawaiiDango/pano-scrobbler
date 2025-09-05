@@ -313,7 +313,7 @@ class NLService : NotificationListenerService() {
 
     private fun scrobbleFromNoti(transformIntoScrobbleData: () -> ScrobbleData?) {
         val delay = 30 * 1000L
-        val cooldown = 2 * 60 * 1000L
+        val cooldown = 5 * 60 * 1000L
         val scrobbleData = transformIntoScrobbleData() ?: return
         val pkgName = scrobbleData.appId ?: return
         val trackInfo = sessListener?.findTrackInfoByKey("$pkgName|$TAG_NOTI")

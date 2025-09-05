@@ -486,10 +486,10 @@ private fun FriendItem(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier
                 .width(72.dp)
-                .padding(vertical = 8.dp)
+                .padding(vertical = 4.dp)
                 .clip(MaterialTheme.shapes.medium)
                 .clickable(
                     enabled = !forShimmer,

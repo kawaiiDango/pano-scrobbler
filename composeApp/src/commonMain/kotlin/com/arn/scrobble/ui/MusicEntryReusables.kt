@@ -172,6 +172,40 @@ fun MusicEntryListItem(
     val isArtFocused by artInteractionSource.collectIsFocusedAsState()
     val isNowPlaying = (entry as? Track)?.isNowPlaying == true
 
+    val topText = if (entry is Track && entry.date != null)
+        PanoTimeFormatter.relative(entry.date)
+    else
+        null
+
+    val firstText = when (entry) {
+        is Album -> entry.name
+        is Track -> entry.name
+        is Artist -> entry.name
+    }
+
+    val secondText = when (entry) {
+        is Album -> entry.artist?.name
+        is Track -> entry.artist.name
+        else -> null
+    }
+
+    val thirdText = when {
+        entry.listeners != null -> pluralStringResource(
+            Res.plurals.num_listeners,
+            entry.listeners!!.toInt(),
+            entry.listeners!!.format()
+        )
+
+        entry.playcount != null -> pluralStringResource(
+            Res.plurals.num_scrobbles_noti,
+            entry.playcount!!.toInt(),
+            entry.playcount!!.format()
+        )
+
+        entry is Track && entry.album?.name?.isEmpty() == false -> entry.album.name
+        else -> null
+    }
+
     Box(
         modifier = modifier
             .then(
@@ -197,7 +231,12 @@ fun MusicEntryListItem(
                 )
                     .padding(
                         horizontal = 8.dp,
-                        vertical = if (isColumn) 8.dp else 4.dp
+                        vertical = if (isColumn)
+                            8.dp
+                        else if (listOfNotNull(topText, secondText, thirdText, progress).size < 3)
+                            4.dp // add extra space
+                        else
+                            0.dp // the inner row is high enough
                     )
             ) {
                 BoxWithConstraints(
@@ -343,39 +382,6 @@ fun MusicEntryListItem(
                             .padding(8.dp)
                             .backgroundForShimmer(forShimmer)
                     ) {
-                        val topText = if (entry is Track && entry.date != null)
-                            PanoTimeFormatter.relative(entry.date)
-                        else
-                            null
-
-                        val firstText = when (entry) {
-                            is Album -> entry.name
-                            is Track -> entry.name
-                            is Artist -> entry.name
-                        }
-
-                        val secondText = when (entry) {
-                            is Album -> entry.artist?.name
-                            is Track -> entry.artist.name
-                            else -> null
-                        }
-
-                        val thirdText = when {
-                            entry.listeners != null -> pluralStringResource(
-                                Res.plurals.num_listeners,
-                                entry.listeners!!.toInt(),
-                                entry.listeners!!.format()
-                            )
-
-                            entry.playcount != null -> pluralStringResource(
-                                Res.plurals.num_scrobbles_noti,
-                                entry.playcount!!.toInt(),
-                                entry.playcount!!.format()
-                            )
-
-                            entry is Track && entry.album?.name?.isEmpty() == false -> entry.album.name
-                            else -> null
-                        }
 
                         if (topText != null) {
                             Text(

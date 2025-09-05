@@ -373,7 +373,7 @@ class CollageGeneratorVM : ViewModel() {
                         RoundRect(
                             Rect(
                                 offset = Offset(x + imgOffsetX, y + imgOffsetY),
-                                size = Size(cellSize.toFloat(), cellSize.toFloat())
+                                size = Size(scaledWidth.toFloat(), scaledHeight.toFloat())
                             ),
                             CornerRadius(cornerRadius, cornerRadius)
                         )

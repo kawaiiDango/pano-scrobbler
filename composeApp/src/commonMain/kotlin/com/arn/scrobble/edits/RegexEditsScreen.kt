@@ -310,7 +310,7 @@ private fun RegexEditItem(
             .alpha(
                 if (regexEdit.enabled) 1f else 0.75f
             )
-            .padding(vertical = 8.dp)
+            .padding(vertical = 4.dp)
     ) {
 
         if (!PlatformStuff.isTv) {

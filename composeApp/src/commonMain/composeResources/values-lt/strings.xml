@@ -387,6 +387,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Sąrašai</string>
     <string name="regex_rules">Reguliariaus reiškinio taisyklės</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Užblokuoti metaduomenys</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">bet kokią</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">esami duomenys</string>
     <string name="pref_translate">Versti šią programėlę</string>
     <string name="pref_translate_credits">Vertimo kūrėjai</string>
     <string name="pref_oss_credits">Atvirojo kodo kūrėjai</string>

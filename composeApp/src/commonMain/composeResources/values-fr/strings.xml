@@ -5,7 +5,7 @@
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
-        <item quantity="one">%1$s scrobble aujourd\'hui</item>
+        <item quantity="one">%1$s scrobble aujourd&apos;hui</item>
         <item quantity="other">%1$s scrobbles aujourd\'hui</item>
     </plurals>
     <plurals name="num_listeners">
@@ -308,13 +308,13 @@
     <string name="pref_master_qs_already_addded">L&apos;option de paramétrage rapide est déjà configurée</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_lockscreen_noti">Notifications de l&apos;écran de verrouillage</string>
-    <string name="pref_offline_info">Les scrobbles hors-ligne &amp; et les j&apos;aime vont être sauvegardés, pour être envoyés plus tard.</string>
+    <string name="pref_offline_info">Les scrobbles hors-ligne &amp; les j&apos;aime vont être sauvegardés, pour être envoyés plus tard.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbler depuis</string>
     <string name="pref_enabled_apps_summary">Supporte les applications qui indiquent les métadonnées de la musique. Pour éviter les doubles scrobbles de Spotify, activez-le seulement à un seul endroit.</string>
     <string name="pref_enabled_apps_title">Choisir les applications</string>
     <string name="pref_auto_detect">Scrobbler automatiquement à partir de nouvelles applications</string>
-    <string name="pref_spotify_remote">Scrobbler depuis Spotify utilisé sur d\'autres appareils</string>
-    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Utiliser la recherche approximative d\'images d\'artistes</string>
+    <string name="pref_spotify_remote">Scrobbler depuis Spotify utilisé sur d&apos;autres appareils</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Utiliser la recherche approximative d&apos;images d&apos;artistes</string>
     <string name="pref_link_heart_button_rating">Utilisez le bouton en forme de cœur sur la notification pour également le mettre en favori sur le lecteur</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Désactiver le scrobbling continu depuis le microphone lorsque l\'appareil joue de la musique</string>
     <string name="pref_delay">Délai de prise en compte du scrobble (le plus rapide sera choisi)</string>
@@ -332,7 +332,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL du serveur</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d\'authentification ici : %1$s</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
-    <string name="pref_fetch_album">Récupérer les données d\'album manquantes depuis lastFM</string>
+    <string name="pref_fetch_album">Récupérer les données d&apos;album manquantes depuis lastFM</string>
     <string name="pref_locale">Langues</string>
     <string name="pref_change_locale">Changer de langage</string>
     <string name="pref_crashlytics_enabled">Signaler les erreurs automatiquement</string>
@@ -340,21 +340,23 @@
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La semaine commence le</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importer &amp; Exporter</string>
     <string name="pref_export">Exporter</string>
-    <string name="pref_export_desc">Sauvegarde les paramètres, les modifications et la liste noire. Ne sauvegarde pas les identifiants pour des raisons de sécurité. Utile en cas de changement d\'appareil ou pour partager les paramètres avec des amis.</string>
+    <string name="pref_export_desc">Sauvegarde les paramètres, les modifications et la liste noire. Ne sauvegarde pas les identifiants pour des raisons de sécurité. Utile en cas de changement d&apos;appareil ou pour partager les paramètres avec des amis.</string>
     <string name="pref_import">Importer</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Réseau</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Code</string>
     <string name="pref_imexport_network_notice">Pour le mode réseau, les deux appareils doivent être connectés au même réseau.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personnalisation</string>
     <string name="pref_themes" comment="Color themes">Thèmes</string>
-    <string name="pref_widget_charts">Widget de l\'écran d\'accueil - Graphiques</string>
+    <string name="pref_widget_charts">Widget de l&apos;écran d&apos;accueil - Statistiques</string>
     <string name="pref_show_scrobble_sources">Afficher les icônes des applications depuis lesquelles vous avez scrobblé</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…à côté de chaque scrobble. Ces données restent sur votre appareil</string>
-    <string name="pref_search_in_source">Rechercher &amp; lancer sur l\'application depuis laquelle le scrobble est en cours</string>
+    <string name="pref_search_in_source">Rechercher &amp; lancer sur l&apos;application depuis laquelle le scrobble est en cours</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Pour les applications compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listes</string>
     <string name="regex_rules">Règles d&apos;expression régulière</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Métadonnées bloquées</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">tout</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">données existantes</string>
     <string name="pref_translate">Traduire cette application</string>
     <string name="pref_translate_credits">Crédits de traduction</string>
     <string name="pref_oss_credits">Crédits Open Source</string>
@@ -427,7 +429,7 @@
     <string name="reload" comment="Reload or refresh">Recharger</string>
     <string name="pref_tray_icon_theme">Thème de l&apos;icône de la barre d\'état</string>
     <string name="min_track_duration">Titres scrobblés plus long que</string>
-    <string name="automation">Contrôler Pano Scrobbler à partir d&apos;applications d\'automatisation</string>
+    <string name="automation">Contrôler Pano Scrobbler à partir d&apos;applications d&apos;automatisation</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Pays des métadonnées %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Récupérer les métadonnées manquantes pour %1$s</string>
     <string name="login_in_browser">Terminer la connexion dans la fenêtre du navigateur</string>

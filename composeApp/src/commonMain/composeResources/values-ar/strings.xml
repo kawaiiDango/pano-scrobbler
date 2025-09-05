@@ -65,6 +65,7 @@
     <string name="share_sig">(عبر بانو سكرببلر)</string>
     <string name="share">مشاركة</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">عنوان توضيحي</string>
+    <string name="list" comment="Single column list view">قائمة</string>
     <string name="more_info">معلومات إضافية</string>
     <string name="more" comment="More options menu in short">المزيد</string>
     <string name="learn" comment="(Learn java regex syntax)">تعلّم</string>
@@ -103,6 +104,7 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">إلغاء الكراهية</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">ازالة الحب</string>
     <string name="pending_scrobbles">أسكروبلس معلق</string>
+    <string name="followers" comment="your lastfm followers">المتابعين</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">أغنية ممسوحة %1$s منذ %2$s</string>
     <string name="allow_background">السماح بمسح الأغاني في الخلفية</string>
     <string name="grant_notification_access">منح صلاحية الإشعارات</string>
@@ -146,6 +148,7 @@
     <string name="weeks">أسابيع</string>
     <string name="monthly">شهرياً</string>
     <string name="months">أشهر</string>
+    <string name="days">الأيام</string>
     <string name="years" comment="For the charts menu which displays year by year">سنوات</string>
     <string name="charts_overall">الإجمالي</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">نشاط الإستماع</string>

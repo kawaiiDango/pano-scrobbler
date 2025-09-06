@@ -9,6 +9,7 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
+import androidx.compose.ui.res.stringResource
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.R
 import com.arn.scrobble.media.PlayerActions.love
@@ -20,12 +21,17 @@ import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.mute
+import pano_scrobbler.composeapp.generated.resources.skip
 
 /**
  * Created by arn on 04/07/2017.
@@ -173,10 +179,13 @@ class SessListener(
                 0
             )
             Logger.i { "mute: done" }
-            AndroidStuff.applicationContext.toast(R.string.mute)
 
             mutedHash = hash
             callback.setMuted(true)
+
+            scope.launch(Dispatchers.Main) {
+                AndroidStuff.applicationContext.toast(getString(Res.string.mute))
+            }
         }
     }
 
@@ -200,7 +209,10 @@ class SessListener(
     override fun skip(hash: Int) {
         val controllers = findControllersByHash(hash)
         controllers.skip()
-        AndroidStuff.applicationContext.toast(R.string.skip)
+
+        scope.launch(Dispatchers.Main) {
+            AndroidStuff.applicationContext.toast(getString(Res.string.skip))
+        }
     }
 
 

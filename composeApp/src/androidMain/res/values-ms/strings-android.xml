@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Konfigurasi</string>
+    <string name="artists">Artis</string>
+    <string name="albums">Album</string>
+    <string name="tracks">Lagu</string>
+    <string name="state_scrobbling">Sekarang tengah scrobble…</string>
+    <string name="search">Cari</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s dikesan</string>
+    <string name="new_player_prompt">Teruskan scrobble aplikasi ini?</string>
+    <string comment="Its a noun" name="channel_err">Scrobble ralat</string>
+    <string name="new_app">Aplikasi baru</string>
+    <string name="pending_scrobbles">Scrobble sementara</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Carta</string>
+    <string name="weekly">Mingguan</string>
+    <string name="monthly">Bulanan</string>
+    <string name="charts_overall">Kesemua</string>
+    <string name="charts_no_data">Tiada data untuk masa ini</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s scrobble terbanyak</string>
+    <string name="appwidget_loading">Sedang proses…</string>
+    <string name="show_persistent_noti">Tunjukkan notifikasi berterusan</string>
+    <string name="persistent_noti_text">Tekan untuk sorokkon</string>
+    <string name="scrobbler_off">Scrobbler dinyahaktif</string>
+    <string name="scrobbler_on">Scrobbler aktif</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="other">%1$s minggu</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="other">%1$s bulan</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="other">%1$s tahun</item>
+            
+    </plurals>
+</resources>

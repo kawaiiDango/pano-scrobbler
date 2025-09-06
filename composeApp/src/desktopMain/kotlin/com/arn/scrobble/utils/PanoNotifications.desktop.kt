@@ -36,26 +36,24 @@ actual object PanoNotifications {
         notify = fn
     }
 
-    actual fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
+    actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
         if (event.scrobbleData.appId != null)
             _playingTrackTrayInfo.value += event.scrobbleData.appId to event
     }
 
-    actual fun notifyError(event: PlayingTrackNotifyEvent.Error) {
+    actual suspend fun notifyError(event: PlayingTrackNotifyEvent.Error) {
         if (event.scrobbleData.appId != null)
             _playingTrackTrayInfo.value += event.scrobbleData.appId to event
     }
 
-    actual fun notifyAppDetected(appId: String, appLabel: String) {
-        GlobalScope.launch {
-            notify(
-                getString(Res.string.new_player, appLabel.ifEmpty { appId }),
-                getString(Res.string.new_player_prompt_desktop)
-            )
-        }
+    actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
+        notify(
+            getString(Res.string.new_player, appLabel.ifEmpty { appId }),
+            getString(Res.string.new_player_prompt_desktop)
+        )
     }
 
-    actual fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
+    actual suspend fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
 
     }
 

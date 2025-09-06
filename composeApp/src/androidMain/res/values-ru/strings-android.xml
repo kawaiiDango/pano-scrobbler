@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Настроить</string>
+    <string name="artists">Исполнители</string>
+    <string name="albums">Альбомы</string>
+    <string name="tracks">Треки</string>
+    <string name="state_scrobbling">Сейчас скробблится…</string>
+    <string name="search">Поиск</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s обнаружено</string>
+    <string name="new_player_prompt">Продолжать скробблинг из этого приложения?</string>
+    <string comment="Its a noun" name="channel_err">Ошибки скробблинга</string>
+    <string name="new_app">Новое приложение</string>
+    <string name="pending_scrobbles">Отложенные скробблы</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Чарты</string>
+    <string name="weekly">Еженедельно</string>
+    <string name="monthly">Ежемесячно</string>
+    <string name="charts_overall">За все время</string>
+    <string name="charts_no_data">Нет данных за этот период</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">Лучшие скробблы %1$s</string>
+    <string name="appwidget_loading">Загрузка…</string>
+    <string name="show_persistent_noti">Показывать постоянное уведомление</string>
+    <string name="persistent_noti_text">Нажмите, чтобы скрыть</string>
+    <string name="scrobbler_off">Скробблер отключен</string>
+    <string name="scrobbler_on">Скробблер включен</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s неделя</item>
+                
+        <item quantity="few">%1$s недели</item>
+                
+        <item quantity="many">%1$s недель</item>
+                
+        <item quantity="other">%1$s недели</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s месяц</item>
+                
+        <item quantity="few">%1$s месяца</item>
+                
+        <item quantity="many">%1$s месяцев</item>
+                
+        <item quantity="other">%1$s месяцев</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s год</item>
+                
+        <item quantity="few">%1$s года</item>
+                
+        <item quantity="many">%1$s лет</item>
+                
+        <item quantity="other">%1$s лет</item>
+            
+    </plurals>
+</resources>

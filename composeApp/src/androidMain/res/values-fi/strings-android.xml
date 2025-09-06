@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Asetukset</string>
+    <string name="artists">Esittäjät</string>
+    <string name="albums">Albumit</string>
+    <string name="tracks">Kappaleet</string>
+    <string name="state_scrobbling">Nyt scrobblaa…</string>
+    <string name="search">Hae</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s havaittu</string>
+    <string name="new_player_prompt">Jatketaanko tämän sovelluksen scrobblausta?</string>
+    <string comment="Its a noun" name="channel_err">Scrobblausvirheet</string>
+    <string name="new_app">Uusi sovellus</string>
+    <string name="pending_scrobbles">Odottavat scrobblaukset</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listat</string>
+    <string name="weekly">Viikottainen</string>
+    <string name="monthly">Kuukausittainen</string>
+    <string name="charts_overall">Kaikki</string>
+    <string name="charts_no_data">Ei tietoja tälle jaksolle</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s eniten scrobblatut</string>
+    <string name="appwidget_loading">Ladataan…</string>
+    <string name="show_persistent_noti">Näytä pysyvä ilmoitus</string>
+    <string name="scrobbler_off">Scrobblaaja pois päältä</string>
+    <string name="scrobbler_on">Scrobblaaja päällä</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s viikko</item>
+                
+        <item quantity="other">%1$s viikkoa</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s kuukausi</item>
+                
+        <item quantity="other">%1$s kuukautta</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s vuosi</item>
+                
+        <item quantity="other">%1$s vuotta</item>
+            
+    </plurals>
+</resources>

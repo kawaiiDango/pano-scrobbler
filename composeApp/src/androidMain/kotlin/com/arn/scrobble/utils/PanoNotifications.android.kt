@@ -28,17 +28,29 @@ import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.blocked_metadata_noti
 import pano_scrobbler.composeapp.generated.resources.charts
 import pano_scrobbler.composeapp.generated.resources.create_collage
 import pano_scrobbler.composeapp.generated.resources.digest_monthly
 import pano_scrobbler.composeapp.generated.resources.digest_weekly
+import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.graph_yearly
+import pano_scrobbler.composeapp.generated.resources.love
+import pano_scrobbler.composeapp.generated.resources.new_player
+import pano_scrobbler.composeapp.generated.resources.new_player_prompt
+import pano_scrobbler.composeapp.generated.resources.no
+import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
+import pano_scrobbler.composeapp.generated.resources.state_unscrobbled
+import pano_scrobbler.composeapp.generated.resources.tap_to_edit
 import pano_scrobbler.composeapp.generated.resources.top_albums
 import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
+import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.update_available
+import pano_scrobbler.composeapp.generated.resources.yes
 
 actual object PanoNotifications {
     private val context
@@ -54,7 +66,7 @@ actual object PanoNotifications {
     }
 
 
-    actual fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
+    actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
         if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
             return
 
@@ -84,9 +96,9 @@ actual object PanoNotifications {
         val loveAction = AndroidStuff.getNotificationAction(
             if (event.userLoved) R.drawable.vd_heart_filled else R.drawable.vd_heart,
             if (event.userLoved) "❤️" else "🤍",
-            context.getString(
-                if (event.userLoved) R.string.unlove
-                else R.string.love
+            getString(
+                if (event.userLoved) Res.string.unlove
+                else Res.string.love
             ),
             lovePi
         )
@@ -143,8 +155,8 @@ actual object PanoNotifications {
                 )
             )
                 .setContentText(
-                    context.resources.getQuantityString(
-                        R.plurals.num_scrobbles_noti,
+                    getPluralString(
+                        Res.plurals.num_scrobbles_noti,
                         event.userPlayCount,
                         "~" + event.userPlayCount.format()
                     )
@@ -168,7 +180,7 @@ actual object PanoNotifications {
             val editAction = AndroidStuff.getNotificationAction(
                 R.drawable.vd_edit,
                 "✏️",
-                context.getString(R.string.edit),
+                getString(Res.string.edit),
                 editPi
             )
 
@@ -196,7 +208,7 @@ actual object PanoNotifications {
         }
     }
 
-    actual fun notifyError(event: PlayingTrackNotifyEvent.Error) {
+    actual suspend fun notifyError(event: PlayingTrackNotifyEvent.Error) {
         val subtitle = event.scrobbleError.description
             ?: Stuff.formatBigHyphen(
                 event.scrobbleData.artist,
@@ -204,7 +216,7 @@ actual object PanoNotifications {
             )
 
         val title = if (event.scrobbleError.canFixMetadata)
-            context.getString(R.string.tap_to_edit) +
+            getString(Res.string.tap_to_edit) +
                     " • " + event.scrobbleError.title
         else
             event.scrobbleError.title
@@ -241,7 +253,7 @@ actual object PanoNotifications {
         notificationManager.notify(event.scrobbleData.appId, 0, nb.build())
     }
 
-    actual fun notifyAppDetected(appId: String, appLabel: String) {
+    actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
         val allowEvent = PlayingTrackNotifyEvent.AppAllowedBlocked(
             appId = appId,
             allowed = true
@@ -279,13 +291,13 @@ actual object PanoNotifications {
 
         val n = buildNotification()
             .setContentTitle(
-                context.getString(
-                    R.string.new_player,
+                getString(
+                    Res.string.new_player,
                     appLabel
                 )
             )
             .setContentText(
-                context.getString(R.string.new_player_prompt)
+                getString(Res.string.new_player_prompt)
             )
             .setChannelId(Stuff.CHANNEL_NOTI_NEW_APP)
             .setSmallIcon(R.drawable.vd_appquestion_noti)
@@ -293,7 +305,7 @@ actual object PanoNotifications {
                 AndroidStuff.getNotificationAction(
                     R.drawable.vd_ban,
                     "\uD83D\uDEAB",
-                    context.getString(R.string.no),
+                    getString(Res.string.no),
                     blockPi
                 )
             )
@@ -301,7 +313,7 @@ actual object PanoNotifications {
                 AndroidStuff.getNotificationAction(
                     R.drawable.vd_check,
                     "✔",
-                    context.getString(R.string.yes),
+                    getString(Res.string.yes),
                     allowPi
                 )
             )
@@ -314,7 +326,7 @@ actual object PanoNotifications {
     }
 
 
-    actual fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
+    actual suspend fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
         val delayTime = 4000L
 
         val blockedMetadata = BlockedMetadata(
@@ -340,8 +352,8 @@ actual object PanoNotifications {
             .setSmallIcon(R.drawable.vd_noti_err)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentTitle(
-                context.getString(R.string.state_unscrobbled) + " • " +
-                        context.getString(R.string.blocked_metadata_noti)
+                getString(Res.string.state_unscrobbled) + " • " +
+                        getString(Res.string.blocked_metadata_noti)
             )
             .setContentIntent(blockPi)
             .setTimeoutAfter(delayTime)

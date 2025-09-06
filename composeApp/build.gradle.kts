@@ -83,6 +83,10 @@ val appId = "com.arn.scrobble"
 val appName = "Pano Scrobbler"
 val appNameWithoutSpaces = "pano-scrobbler"
 
+val localProperties = gradleLocalProperties(rootDir, project.providers)
+    .map { it.key to it.value.toString() }
+    .toMap()
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -979,13 +983,8 @@ tasks.register("copyStringsToAndroid") {
     }
 }
 
-
 // play store and github publishing scripts ===================================================
 // remove if not needed
-
-val localProperties = gradleLocalProperties(rootDir, project.providers)
-    .map { it.key to it.value.toString() }
-    .toMap()
 
 android {
     signingConfigs {

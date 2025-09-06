@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Konfigurasi</string>
+    <string name="artists">Artis</string>
+    <string name="albums">Album</string>
+    <string name="tracks">Trek</string>
+    <string name="state_scrobbling">Sedang meng-scrobble…</string>
+    <string name="search">Cari</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s terdeteksi</string>
+    <string name="new_player_prompt">Terus scrobbling aplikasi ini?</string>
+    <string comment="Its a noun" name="channel_err">Kesalahan scrobble</string>
+    <string name="new_app">Aplikasi baru</string>
+    <string name="pending_scrobbles">Scrobble yang Tertunda</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Tangga lagu</string>
+    <string name="weekly">Mingguan</string>
+    <string name="monthly">Bulanan</string>
+    <string name="charts_overall">Keseluruhan</string>
+    <string name="charts_no_data">Tidak ada data untuk periode ini</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s scrobble atas</string>
+    <string name="appwidget_loading">Memuat…</string>
+    <string name="show_persistent_noti">Tampilkan pemberitahuan terus-menerus</string>
+    <string name="scrobbler_off">Scrobbler dinonaktifkan</string>
+    <string name="scrobbler_on">Scrobbler aktif</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="other">%1$s minggu</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="other">%1$s Bulan</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="other">%1$s tahun</item>
+            
+    </plurals>
+</resources>

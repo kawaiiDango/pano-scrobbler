@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Ayarlar</string>
+    <string name="artists">Sanatçılar</string>
+    <string name="albums">Albümler</string>
+    <string name="tracks">Parçalar</string>
+    <string name="state_scrobbling">Skroplanıyor…</string>
+    <string name="search">Ara</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s algılandı</string>
+    <string name="new_player_prompt">Bu uygulama skroplanmaya devam edilsin mi?</string>
+    <string comment="Its a noun" name="channel_err">Skrop hatası</string>
+    <string name="new_app">Yeni uygulama</string>
+    <string name="pending_scrobbles">Bekleyen Skroplar</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listeler</string>
+    <string name="weekly">Haftalık</string>
+    <string name="monthly">Aylık</string>
+    <string name="charts_overall">Genel</string>
+    <string name="charts_no_data">Bu dönem için veri yok</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s en çok skroplananlar</string>
+    <string name="appwidget_loading">Yükleniyor…</string>
+    <string name="show_persistent_noti">Kalıcı bildirim göster</string>
+    <string name="persistent_noti_text">Gizlemek için tıkla</string>
+    <string name="scrobbler_off">Skroplayıcı devre dışı</string>
+    <string name="scrobbler_on">Skroplayıcı aktif</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s hafta</item>
+                
+        <item quantity="other">%1$s hafta</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s ay</item>
+                
+        <item quantity="other">%1$s ay</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s yıl</item>
+                
+        <item quantity="other">%1$s yıl</item>
+            
+    </plurals>
+</resources>

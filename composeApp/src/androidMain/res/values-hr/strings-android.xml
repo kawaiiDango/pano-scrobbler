@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Konfiguracija</string>
+    <string name="artists">Izvođači</string>
+    <string name="albums">Albumi</string>
+    <string name="tracks">Pjesme</string>
+    <string name="state_scrobbling">Sada scrobblea…</string>
+    <string name="search">Traži</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">Aplikacija %1$s detektirana</string>
+    <string name="new_player_prompt">Nastaviti scrobbleati ovu aplikaciju?</string>
+    <string comment="Its a noun" name="channel_err">Greške kod scrobbleanja</string>
+    <string name="new_app">Nova aplikacija</string>
+    <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Ljestvice</string>
+    <string name="weekly">Tjedni</string>
+    <string name="monthly">Mjesečni</string>
+    <string name="charts_overall">Sveukupno</string>
+    <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s top scrobbleovi</string>
+    <string name="appwidget_loading">Učitavanje…</string>
+    <string name="show_persistent_noti">Prikaži trajnu obavijest</string>
+    <string name="persistent_noti_text">Dotaknite za sakrivanje</string>
+    <string name="scrobbler_off">Scrobbler onemogućen</string>
+    <string name="scrobbler_on">Scrobbler aktivan</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s tjedan</item>
+                
+        <item quantity="few">%1$s tjedna</item>
+                
+        <item quantity="other">%1$s tjedana</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s mjesec</item>
+                
+        <item quantity="few">%1$s mjeseca</item>
+                
+        <item quantity="other">%1$s mjeseci</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s godina</item>
+                
+        <item quantity="few">%1$s godine</item>
+                
+        <item quantity="other">%1$s godina</item>
+            
+    </plurals>
+</resources>

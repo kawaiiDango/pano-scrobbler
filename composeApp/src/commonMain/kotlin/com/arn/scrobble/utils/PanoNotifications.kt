@@ -6,13 +6,13 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.updates.UpdateAction
 
 expect object PanoNotifications {
-    fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling)
+    suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling)
 
-    fun notifyError(event: PlayingTrackNotifyEvent.Error)
+    suspend fun notifyError(event: PlayingTrackNotifyEvent.Error)
 
-    fun notifyAppDetected(appId: String, appLabel: String)
+    suspend fun notifyAppDetected(appId: String, appLabel: String)
 
-    fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int)
+    suspend fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int)
 
     suspend fun notifyDigest(timePeriod: TimePeriod, resultsList: List<Pair<Int, String>>)
 

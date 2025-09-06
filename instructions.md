@@ -16,7 +16,7 @@ object Tokens {
     // RS256 public key, used to verify the license
     const val LICENSE_PUBLIC_KEY_BASE64 = ""
     const val PLAY_BILLING_PUBLIC_KEY_BASE64 = ""
-    // password for the embedded https server BKS keystore, used for importing settings over local network
+    // password for the embedded https server BKS/JKS keystore, used for importing settings over local network
     const val EMBEDDED_SERVER_KEYSTORE_PASSWORD = ""
 }
 ```
@@ -24,25 +24,31 @@ object Tokens {
 - Comment out the lines below `// remove if not needed` in composeApp/build.gradle.kts
 
 - To generate the licenses files, run
+
 ```
 ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub
 ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=release
 ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
 ```
 
-- Get the MusicBrainz artists JSON dump from [here](https://metabrainz.org/datasets/postgres-dumps#musicbrainz-json)
+- Get the MusicBrainz artists JSON dump
+  from [here](https://metabrainz.org/datasets/postgres-dumps#musicbrainz-json)
 - To generate the hashes of the artists that have delimiters as a part of their names, run
-[py-scripts/collect_musicbrainz_artist_names.py](py-scripts/collect_musicbrainz_artist_names.py)
+  [py-scripts/collect_musicbrainz_artist_names.py](py-scripts/collect_musicbrainz_artist_names.py)
+
+```
+python ./collect_musicbrainz_artist_names.py <MusicBrainz artist JSONL file path> <MusicBrainz canonical_musicbrainz_data csv path>  ../composeApp/src/commonMain/composeResources/files/musicbrainz_artist_hashes.bin
+```
 
 ### For Android:
 
 - Create a Firebase project for Crashlytics and add the google-services.json to composeApp/
-  See https://firebase.google.com/docs/android/setup
+  See https://firebase.google.com/docs/android/setup. This is not required for building the
+  releaseGithub (FOSS) variant.
 
 - Create a BKS keystore for the embedded https server used for the import/export feature over local
-  network,
-  with the password you used in EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
-  Put it in composeApp/src/commonMain/composeResources/files/embedded_server.bks
+  network, with the password you used in EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
+  Put it in composeApp/src/androidMain/composeResources/files/embedded_server.bks
 
 - Obtain now playing notification strings and their translations by decompiling the resources of
   the Android System Intelligence apk with ApkTool and then
@@ -56,9 +62,6 @@ Alternatively, you can use this as a stub in `strings.xml`:
 ```
 <string name="song_format_string">%1$s by %2$s</string>
 ```
-
-- To copy some android specific strings to android resources, from common resources, run the gradle
-  task `copyStringsToAndroid`
 
 - If you want to generate the optional baseline profile for the app, which can improve its startup
   time, create a file `/baselineprofile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt`:
@@ -79,6 +82,12 @@ and tapping on the "Copy last.fm session key" in the settings screen.
   includes no non-free dependencies.
 
 ### For desktop:
+
+- Convert the previously created BKS keystore to a JKS keystore, or create a new one for the
+  embedded https server used for the import/export feature over local network, with the password you
+  used in EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
+  Put it in composeApp/src/desktopMain/composeResources/files/embedded_server.bks
+
 
 - Compile the native lib https://github.com/kawaiiDango/pano-native-components
 

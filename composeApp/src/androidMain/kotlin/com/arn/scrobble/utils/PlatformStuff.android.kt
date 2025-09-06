@@ -51,10 +51,16 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.copied
+import pano_scrobbler.composeapp.generated.resources.no_browser
 import pano_scrobbler.composeapp.generated.resources.no_player
+import pano_scrobbler.composeapp.generated.resources.tv_url_notice
 import java.io.File
 import java.io.OutputStream
 import java.net.Inet4Address
@@ -148,13 +154,15 @@ actual object PlatformStuff {
 
     actual fun openInBrowser(url: String) {
         if (isTv) {
-            globalSnackbarFlow.tryEmit(
-                PanoSnackbarVisuals(
-                    message = applicationContext.getString(R.string.tv_url_notice) + "\n" + url,
-                    isError = false,
-                    duration = SnackbarDuration.Long
+            GlobalScope.launch {
+                globalSnackbarFlow.emit(
+                    PanoSnackbarVisuals(
+                        message = getString(Res.string.tv_url_notice) + "\n" + url,
+                        isError = false,
+                        duration = SnackbarDuration.Long
+                    )
                 )
-            )
+            }
             return
         }
 
@@ -164,12 +172,14 @@ actual object PlatformStuff {
 
             applicationContext.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
-            globalSnackbarFlow.tryEmit(
-                PanoSnackbarVisuals(
-                    message = applicationContext.getString(R.string.no_browser),
-                    isError = true,
+            GlobalScope.launch {
+                globalSnackbarFlow.emit(
+                    PanoSnackbarVisuals(
+                        message = getString(Res.string.no_browser),
+                        isError = true,
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -304,12 +314,14 @@ actual object PlatformStuff {
         // Starting in Android 13, the system displays a standard visual confirmation when content is added to the clipboard.
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            globalSnackbarFlow.tryEmit(
-                PanoSnackbarVisuals(
-                    message = applicationContext.getString(R.string.copied),
-                    isError = false,
+            GlobalScope.launch {
+                globalSnackbarFlow.tryEmit(
+                    PanoSnackbarVisuals(
+                        message = getString(Res.string.copied),
+                        isError = false,
+                    )
                 )
-            )
+            }
         }
     }
 

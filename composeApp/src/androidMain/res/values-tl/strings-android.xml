@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">I-configure</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s linggo</item>
+                
+        <item quantity="other">%1$s na linggo</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s buwan</item>
+                
+        <item quantity="other">%1$s na buwan</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s taon</item>
+                
+        <item quantity="other">%1$s na taon</item>
+            
+    </plurals>
+</resources>

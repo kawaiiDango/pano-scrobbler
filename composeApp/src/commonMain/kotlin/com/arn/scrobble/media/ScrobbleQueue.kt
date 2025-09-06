@@ -178,10 +178,12 @@ class ScrobbleQueue(
         )
 
         if (!appIsAllowListed) {
-            PanoNotifications.notifyAppDetected(
-                trackInfo.appId,
-                PlatformStuff.loadApplicationLabel(trackInfo.appId)
-            )
+            scope.launch {
+                PanoNotifications.notifyAppDetected(
+                    trackInfo.appId,
+                    PlatformStuff.loadApplicationLabel(trackInfo.appId)
+                )
+            }
         }
 
         prune()

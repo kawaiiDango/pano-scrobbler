@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Konfigūruoti</string>
+    <string name="artists">Atlikėjai</string>
+    <string name="albums">Albumai</string>
+    <string name="tracks">Takeliai</string>
+    <string name="state_scrobbling">Dabar skrobuolinama…</string>
+    <string name="search">Ieškoti</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">Aptikta „%1$s“</string>
+    <string name="new_player_prompt">Toliau skrobuolinti šią programėlę?</string>
+    <string comment="Its a noun" name="channel_err">Skroblo klaidos</string>
+    <string name="new_app">Nauja programėlė</string>
+    <string name="pending_scrobbles">Laukiami skroblai</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Diagramos</string>
+    <string name="weekly">Savaitinis</string>
+    <string name="monthly">Mėnesinis</string>
+    <string name="charts_overall">Iš viso</string>
+    <string name="charts_no_data">Nėra šio laikotarpio duomenų</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s geriausi skroblai</string>
+    <string name="appwidget_loading">Įkeliama…</string>
+    <string name="show_persistent_noti">Rodyti nuolatinį pranešimą</string>
+    <string name="persistent_noti_text">Palieskite, kad paslėptumėte šį</string>
+    <string name="scrobbler_off">Skrobuoklis išjungtas</string>
+    <string name="scrobbler_on">Skrobuoklis aktyvus</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s savaitė</item>
+                
+        <item quantity="few">%1$s savaitės</item>
+                
+        <item quantity="many">%1$s savaites</item>
+                
+        <item quantity="other">%1$s savaičių</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s mėnesis</item>
+                
+        <item quantity="few">%1$s mėnesiai</item>
+                
+        <item quantity="many">%1$s mėnesio</item>
+                
+        <item quantity="other">%1$s mėnesių</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s metus</item>
+                
+        <item quantity="few">%1$s metai</item>
+                
+        <item quantity="many">%1$s metų</item>
+                
+        <item quantity="other">%1$s metų</item>
+            
+    </plurals>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Definições</string>
+    <string name="artists">Artistas</string>
+    <string name="albums">Álbuns</string>
+    <string name="tracks">Faixas</string>
+    <string name="state_scrobbling">A fazer scrobble…</string>
+    <string name="search">Pesquisar</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s detetada</string>
+    <string name="new_player_prompt">Continuar a fazer scrobble desta app?</string>
+    <string comment="Its a noun" name="channel_err">Erro de Scrobble</string>
+    <string name="new_app">Nova aplicação</string>
+    <string name="pending_scrobbles">Scrobbles Pendentes</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Tabelas</string>
+    <string name="weekly">Semanal</string>
+    <string name="monthly">Mensal</string>
+    <string name="charts_overall">Total</string>
+    <string name="charts_no_data">Sem dados para este período</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">Top %1$s de scrobbles</string>
+    <string name="appwidget_loading">A carregar…</string>
+    <string name="show_persistent_noti">Mostrar uma notificação persistente</string>
+    <string name="persistent_noti_text">Toque para ocultar isto</string>
+    <string name="scrobbler_off">Scrobbler desativado</string>
+    <string name="scrobbler_on">Scrobbler ativado</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s semana</item>
+                
+        <item quantity="other">%1$s semanas</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s mês</item>
+                
+        <item quantity="other">%1$s meses</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s ano</item>
+                
+        <item quantity="other">%1$s anos</item>
+            
+    </plurals>
+</resources>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">환경설정</string>
+    <string name="artists">아티스트</string>
+    <string name="albums">앨범</string>
+    <string name="tracks">트랙</string>
+    <string name="state_scrobbling">지금 스크로블 중…</string>
+    <string name="search">검색</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s 감지됨</string>
+    <string name="new_player_prompt">이 앱을 계속 스크롤빙 할까요?</string>
+    <string comment="Its a noun" name="channel_err">스크로블 오류</string>
+    <string name="new_app">새로운 앱</string>
+    <string name="pending_scrobbles">스크로블 보류 중</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">차트</string>
+    <string name="weekly">주간</string>
+    <string name="monthly">월간</string>
+    <string name="charts_overall">전체</string>
+    <string name="charts_no_data">이 기간동안 데이터 없음</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s 상위 스크로블</string>
+    <string name="appwidget_loading">로딩 중...</string>
+    <string name="show_persistent_noti">지속적인 알림 표시</string>
+    <string name="persistent_noti_text">탭하여 숨기기</string>
+    <string name="scrobbler_off">스크로블러 비활성화</string>
+    <string name="scrobbler_on">스크로블러 활성화</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="other">%1$s주</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="other">%1$s개월</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="other">%1$s년 전</item>
+            
+    </plurals>
+</resources>

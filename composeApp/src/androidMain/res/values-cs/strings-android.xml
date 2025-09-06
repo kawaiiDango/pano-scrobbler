@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Nastavení</string>
+    <string name="artists">Interpreti</string>
+    <string name="albums">Alba</string>
+    <string name="tracks">Skladby</string>
+    <string name="state_scrobbling">Nyní scrobbluji…</string>
+    <string name="search">Hledat</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s detekováno</string>
+    <string name="new_player_prompt">Nadále scrobblovat tuto aplikaci?</string>
+    <string comment="Its a noun" name="channel_err">Chyby při scrobblování</string>
+    <string name="new_app">Nová aplikace</string>
+    <string name="pending_scrobbles">Čekající Scrobbly</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Hitparády</string>
+    <string name="weekly">Týdenní</string>
+    <string name="monthly">Měsíční</string>
+    <string name="charts_overall">Celkově</string>
+    <string name="charts_no_data">Žádné údaje v tomto období</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s top scrobbly</string>
+    <string name="appwidget_loading">Načítání…</string>
+    <string name="show_persistent_noti">Zobrazovat trvalé oznámení</string>
+    <string name="persistent_noti_text">Klepnutím skryjete</string>
+    <string name="scrobbler_off">Scrobbler zakázán</string>
+    <string name="scrobbler_on">Scrobbler je aktivní</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s týden</item>
+                
+        <item quantity="few">%1$s týdny</item>
+                
+        <item quantity="many">%1$s týdnů</item>
+                
+        <item quantity="other">%1$s týdnů</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s měsíc</item>
+                
+        <item quantity="few">%1$s měsíce</item>
+                
+        <item quantity="many">%1$s měsíců</item>
+                
+        <item quantity="other">%1$s měsíců</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s rok</item>
+                
+        <item quantity="few">%1$s roky</item>
+                
+        <item quantity="many">%1$s let</item>
+                
+        <item quantity="other">%1$s let</item>
+            
+    </plurals>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">सेटिंग्स</string>
+    <string name="artists">कलाकारहरू</string>
+    <string name="albums">एलबमहरू</string>
+    <string name="tracks">ट्र्याकहरू</string>
+    <string name="state_scrobbling">स्क्रबल गर्दै…</string>
+    <string name="search">खोज्नुहोस्</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s भेटियो</string>
+    <string name="new_player_prompt">यो एप स्क्रबल गरिरहने हो?</string>
+    <string comment="Its a noun" name="channel_err">स्क्रबल त्रुटिहरू</string>
+    <string name="new_app">नयाँ एप</string>
+    <string name="pending_scrobbles">विचाराधीन स्क्रबल</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">चार्ट्स</string>
+    <string name="weekly">साप्ताहिक</string>
+    <string name="monthly">मासिक</string>
+    <string name="charts_overall">समग्र</string>
+    <string name="charts_no_data">यस अवधिको लागि कुनै डेटा छैन</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s शीर्ष स्क्रबल</string>
+    <string name="appwidget_loading">लोड हुँदैछ…</string>
+    <string name="show_persistent_noti">नोटिफिकेसन देखाइराख्नुहोस्</string>
+    <string name="persistent_noti_text">लुकाउनुको लाई ट्याप गर्नुहोस्</string>
+    <string name="scrobbler_off">स्क्रोब्बलर निष्क्रिय</string>
+    <string name="scrobbler_on">स्क्रोब्ल्लेर सञ्चालन</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s हप्ता</item>
+                
+        <item quantity="other">%1$s हप्ता</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s महिना</item>
+                
+        <item quantity="other">%1$s महिना</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s वर्ष</item>
+                
+        <item quantity="other">%1$s वर्ष</item>
+            
+    </plurals>
+</resources>

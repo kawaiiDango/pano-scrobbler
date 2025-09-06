@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Konfigurera</string>
+    <string name="artists">Artister</string>
+    <string name="albums">Album</string>
+    <string name="tracks">Spår</string>
+    <string name="state_scrobbling">Nu scrobblas...</string>
+    <string name="search">Sök</string>
+    <string name="new_app">Ny app</string>
+    <string name="pending_scrobbles">Väntande scrobbles</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Topplistor</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s vecka</item>
+                
+        <item quantity="other">%1$s veckor</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s månad</item>
+                
+        <item quantity="other">%1$s månader</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s år</item>
+                
+        <item quantity="other">%1$s år</item>
+            
+    </plurals>
+</resources>

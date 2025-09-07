@@ -71,10 +71,10 @@ class DesktopMediaListener(
         if (unseenAppItems.isNotEmpty()) {
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(seenApps = it.seenApps + unseenAppItems) }
-            }
 
-            unseenAppItems.forEach { (appId, friendlyLabel) ->
-                PanoNotifications.notifyAppDetected(appId, friendlyLabel)
+                unseenAppItems.forEach { (appId, friendlyLabel) ->
+                    PanoNotifications.notifyAppDetected(appId, friendlyLabel)
+                }
             }
         }
 

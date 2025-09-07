@@ -78,6 +78,6 @@ sealed interface PanoDialog {
         val msid: String? = null,
         val hash: Int? = null, // from notification
         val key: String? = null, // from main ui
-    ) : PanoDialog
+    ) : PanoDialog, NestedScrollable
 
 }

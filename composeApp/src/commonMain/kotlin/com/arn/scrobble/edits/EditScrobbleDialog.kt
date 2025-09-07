@@ -146,7 +146,6 @@ fun EditScrobbleDialog(
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
             value = track,
             onValueChange = { track = it },
             label = { Text(stringResource(Res.string.track)) },
@@ -154,7 +153,6 @@ fun EditScrobbleDialog(
         )
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
             value = artist,
             onValueChange = { artist = it },
             label = { Text(stringResource(Res.string.artist)) },
@@ -162,7 +160,6 @@ fun EditScrobbleDialog(
         )
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
             value = album,
             onValueChange = { album = it },
             label = { Text(stringResource(Res.string.album_optional)) },
@@ -186,7 +183,6 @@ fun EditScrobbleDialog(
         AnimatedVisibility(visible = albumArtistVisible) {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
                 value = albumArtist,
                 onValueChange = { albumArtist = it },
                 label = { Text(stringResource(Res.string.album_artist)) },

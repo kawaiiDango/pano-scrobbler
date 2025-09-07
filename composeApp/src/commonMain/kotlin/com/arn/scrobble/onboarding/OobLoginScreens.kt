@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +50,7 @@ fun OobLastfmLibrefmLoginScreen(
 ) {
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     var url by rememberSaveable { mutableStateOf<String?>(null) }
+    var exception by remember(result) { mutableStateOf(result?.exceptionOrNull()) }
 
     LaunchedEffect(Unit) {
         val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
@@ -81,6 +83,8 @@ fun OobLastfmLibrefmLoginScreen(
                 userAccountTemp,
                 it.token,
             )
+        }.onFailure {
+            exception = it
         }
     }
 
@@ -102,12 +106,9 @@ fun OobLastfmLibrefmLoginScreen(
             )
         }
 
-        val exception = result?.exceptionOrNull()
-
-
         if (exception != null) {
-            exception.printStackTrace()
-            ErrorText(exception.redactedMessage)
+            exception?.printStackTrace()
+            ErrorText(exception?.redactedMessage)
         } else
             CircularWavyProgressIndicator()
     }

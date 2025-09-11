@@ -355,6 +355,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listen</string>
     <string name="regex_rules">Regeln mit regulären Ausdrücken</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Blockierte Metadaten</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">alle</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">Vorhandene Daten</string>
     <string name="pref_translate">Diese App übersetzen</string>
     <string name="pref_translate_credits">Danksagung an die Übersetzer</string>
     <string name="pref_oss_credits">Open-Source-Credits</string>

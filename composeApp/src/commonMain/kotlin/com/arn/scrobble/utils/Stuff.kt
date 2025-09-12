@@ -223,6 +223,7 @@ object Stuff {
         PACKAGE_YOUTUBE_MUSIC,
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
+        "com.dd3boh.outertune",
     )
 
     val BLOCKED_MEDIA_SESSION_TAGS = mapOf(

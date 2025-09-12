@@ -37,7 +37,7 @@
         <item quantity="other">%1$s albums</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="one">%1$s piste</item>
+        <item quantity="one">%1$s titre</item>
         <item quantity="other">%1$s pistes</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">

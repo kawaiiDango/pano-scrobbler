@@ -123,7 +123,15 @@ data class MainPrefs(
     val tidalSteelSeries: Boolean = true,
     val fetchMissingMetadata: Boolean = true,
     val extractFirstArtistPackages: Set<String> = emptySet(),
+    val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
 ) {
+
+    @Serializable
+    data class DiscordRpcSettings(
+        val enabled: Boolean = false,
+        val statusIsState: Boolean = true,
+        val albumArt: Boolean = true,
+    )
 
     val autoDetectAppsP
         get() = if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))

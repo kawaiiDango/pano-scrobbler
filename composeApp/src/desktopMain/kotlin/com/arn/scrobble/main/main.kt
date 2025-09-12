@@ -124,9 +124,9 @@ private fun init() {
 
     // do a dummy query before the application starts to prevent a segfault on Linux
     // no idea why that happens, and why this fixes it
-    runBlocking {
-        PanoDb.db.useReaderConnection { }
-    }
+//    runBlocking {
+//        PanoDb.db.useReaderConnection { }
+//    }
 
 //    test()
 }
@@ -138,10 +138,6 @@ private fun preventMultipleInstances() {
     )
 
     if (!isSingleInstance) {
-        PanoNativeComponents.notify(
-            "Already running",
-            "Please close the existing instance before starting a new one."
-        )
         exitProcess(1)
     }
 }
@@ -473,7 +469,7 @@ fun main(args: Array<String>) {
         }
 
         LaunchedEffect(Unit) {
-            if (Stuff.mainPrefsInitialValue.autoUpdates) {
+            if (!DesktopStuff.noUpdateCheck && Stuff.mainPrefsInitialValue.autoUpdates) {
                 // this app runs at startup, so wait for an internet connection
                 delay(1.minutes)
                 UpdaterWork.checkAndSchedule(true)

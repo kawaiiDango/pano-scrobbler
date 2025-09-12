@@ -10,7 +10,7 @@ data class BillingClientData(
     val publicKeyBase64: String,
     val httpClient: HttpClient,
     val serverUrl: String,
-    val deviceIdentifier: String,
+    val deviceIdentifier: () -> String,
     val lastcheckTime: Flow<Long>,
     val setLastcheckTime: suspend (Long) -> Unit,
     val receipt: StateFlow<Pair<String?, String?>>,

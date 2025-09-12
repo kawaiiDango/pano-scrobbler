@@ -113,6 +113,10 @@ class EditScrobbleViewModel : ViewModel() {
         val origArtist = origScrobbleData.artist
         val timeMillis = origScrobbleData.timestamp
 
+        if (track.isBlank() || artist.isBlank()) {
+            return Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
+        }
+        
         val fetchAlbum = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
         val fetchAlbumAndAlbumArtist =
             album.isNullOrBlank() && origAlbum.isNullOrBlank() && fetchAlbum
@@ -140,9 +144,6 @@ class EditScrobbleViewModel : ViewModel() {
             msid = msid
         )
 
-        if (track.isBlank() || artist.isBlank()) {
-            return Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
-        }
 
         if (!isNowPlaying && track == origTrack &&
             artist == origArtist && album == origAlbum && albumArtist == "" &&

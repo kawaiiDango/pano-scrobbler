@@ -1,6 +1,7 @@
 package com.arn.scrobble.updates
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.github.GithubReleases
@@ -177,7 +178,7 @@ object AutoUpdater {
     suspend fun update(
         releases: GithubReleases,
     ): File? {
-        val downloadUrl = releases.getDownloadUrl(DesktopStuff.os.name.lowercase())
+        val downloadUrl = releases.getDownloadUrl(BuildKonfig.OS_ARCH)
         if (downloadUrl.isEmpty()) {
             return null
         }

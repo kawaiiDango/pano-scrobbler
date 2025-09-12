@@ -15,7 +15,7 @@ data class ScrobbleData(
     val duration: Long?,
     val appId: String?
 ) {
-    fun safeDuration() = duration?.takeIf { it >= 30_000 }
+    fun safeDuration() = duration?.takeIf { it in (30_000..3600_000) }
 
     fun toTrack() = Track(
         name = track,

@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.utils.PlatformStuff
+import io.ktor.http.encodeURLPathPart
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.more_info
@@ -55,7 +56,7 @@ fun TagInfoDialog(
                         contentDescription = stringResource(Res.string.more_info),
                         onClick = {
                             val url =
-                                "https://www.last.fm/tag/" + URLEncoder.encode(tag.name, "UTF-8")
+                                "https://www.last.fm/tag/" + tag.name.encodeURLPathPart()
                             PlatformStuff.openInBrowser(url)
                         }
                     )

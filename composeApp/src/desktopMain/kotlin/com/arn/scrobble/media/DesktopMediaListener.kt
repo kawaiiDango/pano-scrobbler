@@ -31,6 +31,14 @@ class DesktopMediaListener(
                 Stuff.mainPrefsInitialValue.seenApps
             )
 
+    private val discordRpcSettings =
+        PlatformStuff.mainPrefs.data.mapLatest { it.discordRpc }
+            .stateIn(
+                scope,
+                SharingStarted.Eagerly,
+                Stuff.mainPrefsInitialValue.discordRpc
+            )
+
 
     fun start() {
         PanoNativeComponents.startListeningMediaInThread()
@@ -186,7 +194,6 @@ class DesktopMediaListener(
     }
 
     fun platformMetadataChanged(metadata: MetadataInfo) {
-        Logger.i { "metadata: $metadata" }
 
         val sessionTracker =
             sessionTrackersMap[metadata.appId] ?: return
@@ -206,8 +213,6 @@ class DesktopMediaListener(
     }
 
     fun platformPlaybackStateChanged(playbackInfo: PlaybackInfo) {
-        Logger.i { "playbackInfo: $playbackInfo" }
-
         val sessionTracker =
             sessionTrackersMap[playbackInfo.appId] ?: return
 

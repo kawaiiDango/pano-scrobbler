@@ -43,8 +43,8 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val os = org.gradle.internal.os.OperatingSystem.current()
-val arch = System.getProperty("os.arch")
+val os = org.gradle.internal.os.OperatingSystem.current()!!
+val arch = System.getProperty("os.arch")!!
 
 val archAmd64 = arrayOf("amd64", "x86_64")
 val archArm64 = arrayOf("aarch64", "arm64")
@@ -78,7 +78,7 @@ if (versionFile.canRead()) {
     throw GradleException("Could not read version.txt!")
 }
 val verName = "${verCode / 100}.${verCode % 100}"
-val buildDate = SimpleDateFormat("YYYY, MMM dd", Locale.ENGLISH).format(Date())
+val buildDate = SimpleDateFormat("YYYY, MMM dd", Locale.ENGLISH).format(Date())!!
 val appId = "com.arn.scrobble"
 val appName = "Pano Scrobbler"
 val appNameWithoutSpaces = "pano-scrobbler"
@@ -229,6 +229,8 @@ buildkonfig {
                     else -> throw IllegalStateException("Unsupported OS: $os")
                 }, const = true
             )
+
+            buildConfigField(STRING, "OS_ARCH", resourcesDirName, const = true)
         }
     }
 }
@@ -545,83 +547,6 @@ tasks.register<Copy>("copyReleaseDmg") {
     )
 }
 
-tasks.register<Exec>("packageLinuxAppImage") {
-
-    val executableDir = file("build/compose/native/$resourcesDirName")
-    val appDir = file("build/compose/native/PanoScrobbler.AppDir")
-    val appimageFilesDir = file("appimage-files")
-    val distDir = file("dist")
-    val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
-    val desktopFile = file("appimage-files/pano-scrobbler.desktop")
-    val relauncherFile = file("appimage-files/relaunch.sh")
-
-    doFirst {
-        // Create the AppDir structure. Copy all your distribution files.
-        appDir.deleteRecursively()
-        appDir.mkdirs()
-        val usrBin = File(appDir, "usr/bin")
-        usrBin.mkdirs()
-
-
-        // Copy the distribution files to the AppDir.
-        executableDir.copyRecursively(usrBin)
-
-        // copy the relauncher script
-        relauncherFile.copyTo(File(usrBin, relauncherFile.name), overwrite = true)
-        relauncherFile.setExecutable(true)
-
-        // copy the icon
-        val iconDir = File(appDir, "usr/share/icons/hicolor/scalable/apps")
-        iconDir.mkdirs()
-
-        iconFile.copyTo(File(iconDir, "pano-scrobbler.svg"), overwrite = true)
-
-        val rootIconFile = File(appDir, "pano-scrobbler.svg")
-        Files.createSymbolicLink(
-            rootIconFile.toPath(),
-            Path.of(
-                "usr/share/icons/hicolor/scalable/apps/pano-scrobbler.svg"
-            ),
-        )
-
-        // Copy the desktop file
-        desktopFile.copyTo(File(appDir, desktopFile.name), overwrite = true)
-
-        // create the AppRun file as a symlink to the main executable
-        val appRunFile = File(appDir, "AppRun")
-        Files.createSymbolicLink(
-            appRunFile.toPath(),
-            Path.of(
-                "usr/bin/pano-scrobbler"
-            ),
-        )
-    }
-
-    val apppImageToolFile = File(appimageFilesDir, "appimagetool-x86_64.AppImage")
-
-    if (!apppImageToolFile.exists()) {
-        commandLine(
-            "wget",
-            "-O",
-            apppImageToolFile.absolutePath,
-            "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage",
-        )
-    }
-
-    val distFile = File(distDir, "$appNameWithoutSpaces-$resourcesDirName.AppImage")
-
-    environment(
-        "ARCH" to "x86_64",
-        "VERSION" to verName,
-    )
-
-    commandLine(
-        apppImageToolFile.absolutePath,
-        appDir.absolutePath,
-        distFile.absolutePath
-    )
-}
-
 tasks.register<Exec>("packageWindowsNsis") {
     val executableDir = file("build/compose/native/$resourcesDirName")
     val nsisFilesDir = file("nsis-files")
@@ -642,23 +567,35 @@ tasks.register<Exec>("packageWindowsNsis") {
     )
 }
 
+tasks.register<Exec>("packageLinuxAppImageAndTarball") {
+    commandLine(
+        "bash",
+        "package-for-linux.sh",
+    )
+}
+
 // graalvm plugin doesnt seem to support this project structure, so directly use the command
 tasks.register<Exec>("buildNativeImage") {
     val graalvmHome = System.getenv("GRAALVM_HOME")
     val javaHome = System.getenv("JAVA_HOME")
+    val copyDesktopAndIcon = os.isLinux
 
     val jarFile =
         file("build/compose/jars/$appNameWithoutSpaces-$resourcesDirName-$verName.jar")
     val jarTree = zipTree(jarFile)
-    val jarFilesToExtract = if (os.isWindows)
+    val jarFilesToExtract = if (os.isWindows && arch in archAmd64)
         arrayOf("skiko-windows-x64.dll", "icudtl.dat", "natives/windows_x64/sqliteJni.dll")
-    else
+    else if (os.isLinux && arch in archAmd64)
         arrayOf("libskiko-linux-x64.so", "natives/linux_x64/libsqliteJni.so")
+    else if (os.isLinux && arch in archArm64)
+        arrayOf("libskiko-linux-arm64.so", "natives/linux_arm64/libsqliteJni.so")
+    else
+        arrayOf()
 
     val outputDir = file("build/compose/native/$resourcesDirName")
     val outputFile = File(outputDir, appNameWithoutSpaces)
 
-    val reachabilityFiles = file("rechability-metadata/$resourcesDirName")
+    val reachabilityFiles = file("rechability-metadata/" + if (os.isWindows) "windows" else "linux")
     val jawtDirName = if (os.isWindows)
         "bin"
     else
@@ -673,6 +610,9 @@ tasks.register<Exec>("buildNativeImage") {
     val winAppResFile = file("app-icons/exe-res.res")
 
     val nativeLibsDir = file("resources/$resourcesDirName/")
+    val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
+    val desktopFile = file("$appNameWithoutSpaces.desktop")
+    val licenseFile = file("../LICENSE")
 
     val command = listOfNotNull(
         if (os.isWindows)
@@ -681,7 +621,7 @@ tasks.register<Exec>("buildNativeImage") {
             "$graalvmHome/bin/native-image",
         "--strict-image-heap",
         "--no-fallback",
-        "-march=x86-64-v2",
+        "-march=" + if (arch in archArm64) "armv8.1-a" else "x86-64-v2",
         if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
         "-H:+UnlockExperimentalVMOptions",
         "-J-Dcompose.application.configure.swing.globals=true",
@@ -738,11 +678,18 @@ tasks.register<Exec>("buildNativeImage") {
         )
 
         // extract jni libraries from .jar
-
         jarTree.matching {
             include(*jarFilesToExtract)
         }.forEach { file ->
             file.copyTo(File(jawtDir, file.name), overwrite = true)
+        }
+
+        licenseFile.copyTo(File(outputDir, licenseFile.name), overwrite = true)
+
+        // copy icon and desktop file on linux
+        if (copyDesktopAndIcon) {
+            iconFile.copyTo(File(outputDir, "pano-scrobbler.svg"), overwrite = true)
+            desktopFile.copyTo(File(outputDir, desktopFile.name), overwrite = true)
         }
     }
 }
@@ -759,7 +706,7 @@ afterEvaluate {
 
     if (os.isLinux)
         tasks.named("buildNativeImage") {
-            finalizedBy(tasks.named("packageLinuxAppImage"))
+            finalizedBy(tasks.named("packageLinuxAppImageAndTarball"))
         }
 
     if (os.isWindows)

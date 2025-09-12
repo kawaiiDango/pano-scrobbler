@@ -2,6 +2,7 @@ package com.arn.scrobble.media
 
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -154,6 +155,9 @@ abstract class MediaListener(
                         metadata.albumArtist == trackInfo.origAlbumArtist
             val onlyDurationUpdated = sameAsOld && metadata.duration != trackInfo.durationMillis
 
+            if (BuildKonfig.DEBUG || (!sameAsOld || onlyDurationUpdated))
+                Logger.i { "${metadata.copy(appId = "")} $lastPlaybackState ${hashCode().toHexString()}" }
+
             if (!sameAsOld || onlyDurationUpdated) {
                 trackInfo.putOriginals(
                     artist = metadata.artist,
@@ -194,6 +198,9 @@ abstract class MediaListener(
             playbackInfo: PlaybackInfo,
             ignoreScrobble: Boolean,
         ) {
+            if (BuildKonfig.DEBUG || (lastPlaybackState != playbackInfo.state))
+                Logger.i { "${playbackInfo.copy(appId = "")} lastPlaybackState: $lastPlaybackState ${hashCode().toHexString()}" }
+
             if (ignoreScrobble) {
                 ignoreScrobble()
                 return

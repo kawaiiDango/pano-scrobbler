@@ -301,7 +301,7 @@ object Stuff {
             httpClient = Requesters.genericKtorClient,
             serverUrl = Tokens.LICENSE_CHECKING_SERVER,
             lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
-            deviceIdentifier = PlatformStuff.getDeviceIdentifier(),
+            deviceIdentifier = { PlatformStuff.getDeviceIdentifier() },
             setLastcheckTime = { time ->
                 PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
             },

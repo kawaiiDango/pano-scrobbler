@@ -49,7 +49,7 @@ class BillingRepository(
                 LicenseChecker.checkLicenseOnline(
                     client = clientData.httpClient,
                     url = clientData.serverUrl,
-                    did = clientData.deviceIdentifier,
+                    did = clientData.deviceIdentifier(),
                     token = receipt
                 ).onSuccess {
                     when (it.code) {

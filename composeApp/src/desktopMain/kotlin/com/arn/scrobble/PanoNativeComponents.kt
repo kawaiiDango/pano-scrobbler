@@ -7,17 +7,20 @@ import com.arn.scrobble.media.CommonPlaybackState
 import com.arn.scrobble.media.DesktopMediaListener
 import com.arn.scrobble.media.MetadataInfo
 import com.arn.scrobble.media.PlaybackInfo
+import com.arn.scrobble.media.PlayingTrackInfo
 import com.arn.scrobble.media.ScrobbleQueue
 import com.arn.scrobble.media.SessionInfo
 import com.arn.scrobble.media.listenForPlayingTrackEvents
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 @Keep
 object PanoNativeComponents {
     var desktopMediaListener: DesktopMediaListener? = null
+    val onFilePickedFlow = MutableSharedFlow<Pair<Int, String>>(extraBufferCapacity = 1)
 
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
@@ -111,14 +114,22 @@ object PanoNativeComponents {
     fun onReceiveIpcCommand(command: String, arg: String) {
         if (command == Automation.DESKTOP_FOCUS_EXISTING) {
             PanoTrayUtils.onTrayMenuItemClickedFn(PanoTrayUtils.ItemId.Open.name)
+            PanoNativeComponents.notify(
+                "Already running",
+                "Please close the existing instance before starting a new one."
+            )
         } else {
-            val wasSuccessFul = Automation.executeAction(command, arg.ifEmpty { null }, null)
-            if (!wasSuccessFul) {
+            val wasSuccessful = Automation.executeAction(command, arg.ifEmpty { null }, null)
+            if (!wasSuccessful) {
                 Logger.w("command '$command' failed")
             }
         }
     }
 
+    @JvmStatic
+    fun onFilePicked(requestId: Int, uri: String) {
+        onFilePickedFlow.tryEmit(requestId to uri)
+    }
 
     // external
 
@@ -147,11 +158,7 @@ object PanoNativeComponents {
     external fun unmute(appId: String)
 
     @JvmStatic
-    external fun notify(
-        title: String,
-        body: String,
-        iconPath: String = DesktopStuff.iconPath ?: "",
-    )
+    external fun notify(title: String, body: String)
 
     @JvmStatic
     external fun setTray(
@@ -171,6 +178,7 @@ object PanoNativeComponents {
     @JvmStatic
     external fun applyDarkModeToWindow(handle: Long)
 
+    @JvmStatic
     external fun sendIpcCommand(command: String, arg: String): Boolean
 
     @JvmStatic
@@ -179,4 +187,31 @@ object PanoNativeComponents {
     @JvmStatic
     external fun isFileLocked(path: String): Boolean
 
+    @JvmStatic
+    external fun xdgFileChooser(
+        requestId: Int,
+        save: Boolean,
+        title: String,
+        fileName: String,
+        filters: Array<String>
+    )
+
+    @JvmStatic
+    external fun updateDiscordActivity(
+        clientId: String,
+        state: String,
+        details: String,
+        largeText: String,
+        startTime: Long,
+        endTime: Long,
+        artUrl: String,
+        isPlaying: Boolean,
+        statusIsState: Boolean
+    )
+
+    @JvmStatic
+    external fun clearDiscordActivity()
+
+    @JvmStatic
+    external fun stopDiscordActivity()
 }

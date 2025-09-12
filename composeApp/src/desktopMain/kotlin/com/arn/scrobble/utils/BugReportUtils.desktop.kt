@@ -1,6 +1,8 @@
 package com.arn.scrobble.utils
 
 import com.arn.scrobble.BuildKonfig
+import io.ktor.http.encodeURLPathPart
+import io.ktor.http.encodeURLQueryComponent
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.bug_report
@@ -10,8 +12,8 @@ import java.net.URLEncoder
 
 actual object BugReportUtils {
     actual suspend fun mail() {
-        val emailAddress = URLEncoder.encode(getString(Res.string.email), Charsets.UTF_8)
-        val subject = URLEncoder.encode(getString(Res.string.bug_report), Charsets.UTF_8)
+        val emailAddress = getString(Res.string.email).encodeURLPathPart()
+        val subject = (BuildKonfig.APP_NAME + " - Bug report").encodeURLQueryComponent()
 //        val runtime = Runtime.getRuntime()
 //        val totalMemory = runtime.totalMemory() / (1024 * 1024)
 //        val freeMemory = runtime.freeMemory() / (1024 * 1024)
@@ -35,10 +37,8 @@ actual object BugReportUtils {
             "------------------------"
         text += "\n\n[Describe the issue]\n[If it is related to scrobbling, mention the media player name]\n"
 
-        text = URLEncoder.encode(text, Charsets.UTF_8)
-        PlatformStuff.openInBrowser(
-            "mailto:${emailAddress}?subject=$subject&body=$text"
-        )
+        text = text.encodeURLQueryComponent()
+        PlatformStuff.openInBrowser("mailto:$emailAddress?subject=$subject&body=$text")
     }
 
     actual fun saveLogsToFile(): String? {

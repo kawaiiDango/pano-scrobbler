@@ -4,7 +4,14 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.work.DesktopWorkManager
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.done
 import java.io.File
 
 object DesktopStuff {
@@ -33,15 +40,7 @@ object DesktopStuff {
     val logsDir by lazy { File(appDataRoot, "logs") }
 
     val noUpdateCheck: Boolean
-        get() = cmdlineArgs.noUpdateCheck
-
-    val iconPath by lazy {
-        when (os) {
-            Os.Windows -> "$execDirPath\\pano-scrobbler.ico"
-            Os.Linux -> System.getenv("APPDIR")?.let { "$it/pano-scrobbler.svg" }
-            Os.Macos -> null
-        }
-    }
+        get() = System.getenv("APPDIR") != null ?: cmdlineArgs.noUpdateCheck
 
     val os = when (BuildKonfig.OS_ORDINAL) {
         Os.Windows.ordinal -> Os.Windows
@@ -108,6 +107,38 @@ object DesktopStuff {
         }
     }
 
+    fun linuxAutostartFile(): File? {
+        return when (os) {
+            Os.Linux -> {
+                System.getenv("XDG_CONFIG_HOME")?.ifEmpty { null }?.let {
+                    File(it, "autostart/pano-scrobbler.desktop")
+                } ?: File(
+                    System.getProperty("user.home"),
+                    ".config/autostart/pano-scrobbler.desktop"
+                )
+            }
+
+            else -> null
+        }
+    }
+
+    fun linuxAutostartExec(): String? {
+        return when (os) {
+            Os.Linux -> {
+                val execPath = if (System.getenv("APPIMAGE") != null)
+                    System.getenv("APPIMAGE").let { "\"$it\"" }
+                else
+                    File(
+                        ProcessHandle.current().info().command().get()
+                    ).absolutePath.let { "\"$it\"" }
+
+                "$execPath --$MINIMIZED_ARG"
+            }
+
+            else -> null
+        }
+    }
+
     fun addOrRemoveFromStartup(add: Boolean) {
         when (os) {
             Os.Windows -> {
@@ -116,13 +147,9 @@ object DesktopStuff {
 
             Os.Linux -> {
                 // linux. create or delete .desktop file in ~/.config/autostart
+                val execPath = linuxAutostartExec() ?: return
 
-                val appImagePath = System.getenv("APPIMAGE") ?: return
-                val desktopFile =
-                    File(
-                        System.getProperty("user.home"),
-                        ".config/autostart/${BuildKonfig.APP_NAME}.desktop"
-                    )
+                val desktopFile = linuxAutostartFile() ?: return
 
                 desktopFile.parentFile.mkdirs()
 
@@ -134,10 +161,12 @@ object DesktopStuff {
                         Name=${BuildKonfig.APP_NAME}
                         Comment=Feature packed music tracker
                         Terminal=false
-                        Exec="$appImagePath" --$MINIMIZED_ARG
+                        Exec=$execPath
+                        Icon=pano-scrobbler
                         X-GNOME-Autostart-enabled=true
                         StartupWMClass=pano-scrobbler
-                        Categories=Utility;
+                        Categories=AudioVideo;Audio;
+                        NoDisplay=false
                         """.trimIndent()
                     )
                 } else {
@@ -159,13 +188,10 @@ object DesktopStuff {
             }
 
             Os.Linux -> {
-                val appImagePath = System.getenv("APPIMAGE") ?: return false
-                val desktopFile =
-                    File(
-                        System.getProperty("user.home"),
-                        ".config/autostart/${BuildKonfig.APP_NAME}.desktop"
-                    )
-                desktopFile.exists() && desktopFile.readText().contains(appImagePath)
+                val execPath = linuxAutostartExec() ?: return false
+                val desktopFile = linuxAutostartFile() ?: return false
+
+                desktopFile.exists() && desktopFile.readText().contains(execPath)
             }
 
             Os.Macos -> {

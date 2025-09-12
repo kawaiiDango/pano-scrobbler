@@ -103,6 +103,14 @@ object ScrobbleEverywhere {
             regexEditsApplied = true
         }
 
+        if (regexEditsApplied) {
+            PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
+                ?.also {
+                    scrobbleData = it
+                    simpleEditsApplied = true
+                }
+        }
+
         if (runPresets) {
             try {
                 val presetsResult = RegexPresets.applyAllPresets(

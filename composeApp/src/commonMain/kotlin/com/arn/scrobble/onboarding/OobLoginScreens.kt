@@ -34,6 +34,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -48,9 +49,8 @@ fun OobLastfmLibrefmLoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
-    val result by viewModel.result.collectAsStateWithLifecycle(null)
     var url by rememberSaveable { mutableStateOf<String?>(null) }
-    var exception by remember(result) { mutableStateOf(result?.exceptionOrNull()) }
+    var exception by remember { mutableStateOf<Throwable?>(null) }
 
     LaunchedEffect(Unit) {
         val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
@@ -88,9 +88,13 @@ fun OobLastfmLibrefmLoginScreen(
         }
     }
 
-    LaunchedEffect(result) {
-        if (result?.isSuccess == true) {
-            onBack()
+    LaunchedEffect(Unit) {
+        viewModel.result.collectLatest {
+            exception = it.exceptionOrNull()
+
+            if (it.isSuccess) {
+                onBack()
+            }
         }
     }
 

@@ -2,8 +2,6 @@
 
 [play-store]: img/play-store.svg
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
-[github]: img/github.svg
-[github-link]: https://github.com/kawaiiDango/pano-scrobbler/releases
 [obtainium]: img/obtainium.svg
 [obtainium-link]: https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/kawaiiDango/pano-scrobbler
 [fdroid]: img/fdroid.svg
@@ -21,15 +19,15 @@
 
 **Windows:**
 
-[![github][github]](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe)
+[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe)
 
 **Linux:**
 
-[![github][github]](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage)
+[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage) [![github-arm64](img/github-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-liinux-arm64.AppImage) [![aur](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin)
 
 **Android (phones, tablets, TVs and Chromebooks):**
 
-[![github][github]][github-link] [![fdroid][fdroid]][fdroid-link] [![obtainium][obtainium]][obtainium-link] [![play-store][play-store]][play-store-link]
+[![github](img/github.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases) [![fdroid][fdroid]][fdroid-link] [![obtainium][obtainium]][obtainium-link] [![play-store][play-store]][play-store-link]
 
 Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
 

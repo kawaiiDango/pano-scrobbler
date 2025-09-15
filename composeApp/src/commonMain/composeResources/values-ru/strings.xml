@@ -387,6 +387,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="regex_rules">Правила Regex</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Заблокированные метаданные</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">что угодно</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">имеющиеся данные</string>
     <string name="pref_translate">Перевести это приложение</string>
     <string name="pref_translate_credits">Авторы переводов</string>
     <string name="pref_oss_credits">Лицензия открытого ПО</string>

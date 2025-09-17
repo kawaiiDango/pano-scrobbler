@@ -96,4 +96,6 @@ This project is not affiliated with Last.fm, or any other scrobbling service.
 
 ### License
 
-Pano Scrobbler is licensed under the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Pano Scrobbler is licensed under the [GNU General Public License v3 or later](http://www.gnu.org/copyleft/gpl.html).

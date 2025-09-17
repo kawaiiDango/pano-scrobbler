@@ -23,7 +23,7 @@ WebSite: https://kawaiiDango.github.io/pano-scrobbler
 Translation: https://crowdin.com/project/pscrobbler
 Donate: https://ko-fi.com/kawaiiDango
 AuthorEmail: kawaiiDango@pm.me
-License: GPL-3.0
+License: GPL-3.0-or-later
 EOL
 
 echo "Metadata file generated at $output_file"

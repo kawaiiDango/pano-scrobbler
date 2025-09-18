@@ -330,7 +330,7 @@
     <string name="pref_token_label" comment="For Listenbrainz">Jeton d&apos;authentification</string>
     <string name="api_url" comment="For Listenbrainz">URL d&apos;API</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL du serveur</string>
-    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d\'authentification ici : %1$s</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d&apos;authentification ici : %1$s</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
     <string name="pref_fetch_album">Récupérer les données d&apos;album manquantes depuis lastFM</string>
     <string name="pref_locale">Langues</string>

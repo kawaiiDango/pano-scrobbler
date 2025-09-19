@@ -36,6 +36,7 @@ jobs:
           echo "${{ secrets.EMBEDDED_SERVER_JKS }}" | base64 -d - > composeApp/src/desktopMain/composeResources/files/pano-embedded-server-ks.jks
 
       - name: Download native libraries
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -46,6 +47,11 @@ jobs:
             -L 1 \
             --json databaseId \
             -q '.[0].databaseId')
+
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful runs found" >&2
+            exit 1
+          fi
 
           # Download artifacts from that run (filter by name if provided)
           gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}

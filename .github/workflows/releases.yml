@@ -32,6 +32,7 @@ jobs:
         shell: bash
         run: |
           echo "${{ secrets.TOKENS_KT }}" | base64 -d - > composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
+          mkdir -p composeApp/src/desktopMain/composeResources/files
           echo "${{ secrets.EMBEDDED_SERVER_JKS }}" | base64 -d - > composeApp/src/desktopMain/composeResources/files/pano-embedded-server-ks.jks
 
       - name: Download native libraries

@@ -20,7 +20,11 @@ jobs:
       - if: matrix.os == 'windows-latest'
         name: Set up NSIS
         shell: bash
-        run: choco install nsis -y
+        run: |
+          choco install -y --no-progress nsis
+          makensis /?
+          echo "/c/Program Files (x86)/NSIS" >> $GITHUB_PATH
+          makensis /?
 
       - uses: graalvm/setup-graalvm@v1
         with:

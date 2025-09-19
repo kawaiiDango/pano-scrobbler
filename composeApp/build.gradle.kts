@@ -725,10 +725,6 @@ afterEvaluate {
         finalizedBy(tasks.named("copyGithubReleaseApk"))
     }
 
-    tasks.named("githubRelease") {
-        dependsOn(tasks.named("generateSha256"))
-    }
-
 }
 
 data class CrowdinMember(val username: String)

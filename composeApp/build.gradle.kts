@@ -618,6 +618,7 @@ tasks.register<Exec>("buildNativeImage") {
     val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
     val desktopFile = file("$appNameWithoutSpaces.desktop")
     val licenseFile = file("../LICENSE")
+    val distDir = file("dist")
 
     val command = listOfNotNull(
         if (os.isWindows)
@@ -663,7 +664,7 @@ tasks.register<Exec>("buildNativeImage") {
             throw GradleException("GRAALVM_HOME should be set and should be equal to JAVA_HOME")
         }
         outputDir.mkdirs()
-        outputFile.parentFile.mkdirs()
+        distDir.mkdirs()
     }
 
     doLast {

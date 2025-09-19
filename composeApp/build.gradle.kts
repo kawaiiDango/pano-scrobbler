@@ -6,6 +6,7 @@ import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
+import org.gradle.kotlin.dsl.get
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -939,16 +940,30 @@ tasks.register("copyStringsToAndroid") {
 android {
     signingConfigs {
         register("release") {
-            storeFile = file(localProperties["release.keystore"]!!)
-            storePassword = localProperties["release.storePassword"]
-            keyAlias = localProperties["release.alias"]
-            keyPassword = localProperties["release.password"]
+            if (
+                localProperties["release.keystore"] != null &&
+                localProperties["release.storePassword"] != null &&
+                localProperties["release.alias"] != null &&
+                localProperties["release.password"] != null
+            ) {
+                storeFile = file(localProperties["release.keystore"]!!)
+                storePassword = localProperties["release.storePassword"]
+                keyAlias = localProperties["release.alias"]
+                keyPassword = localProperties["release.password"]
+            }
         }
         register("releaseGithub") {
-            storeFile = file(localProperties["releaseGithub.keystore"]!!)
-            storePassword = localProperties["releaseGithub.storePassword"]
-            keyAlias = localProperties["releaseGithub.alias"]
-            keyPassword = localProperties["releaseGithub.password"]
+            if (
+                localProperties["releaseGithub.keystore"] != null &&
+                localProperties["releaseGithub.storePassword"] != null &&
+                localProperties["releaseGithub.alias"] != null &&
+                localProperties["releaseGithub.password"] != null
+            ) {
+                storeFile = file(localProperties["releaseGithub.keystore"]!!)
+                storePassword = localProperties["releaseGithub.storePassword"]
+                keyAlias = localProperties["releaseGithub.alias"]
+                keyPassword = localProperties["releaseGithub.password"]
+            }
         }
     }
 
@@ -978,7 +993,9 @@ play {
 }
 
 githubRelease {
-    token(localProperties["github.token"])
+    localProperties["github.token"]?.let {
+        token(it)
+    }
     owner = "kawaiidango"
     repo = "pano-scrobbler"
     val changelog = file("src/androidMain/play/release-notes/en-US/default.txt").readText() +

@@ -27,6 +27,7 @@ def main():
         "፣ ",  # Amharic comma
         ";",
         " & ",
+        "＆",  # Fullwidth ampersand used in Japanese
         " / ",
         # the rest is for youtube music
         " and ",

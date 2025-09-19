@@ -16,6 +16,7 @@ object FirstArtistExtractor {
         "፣ ",
         ";",
         " & ",
+        "＆",
         " / ",
     )
 

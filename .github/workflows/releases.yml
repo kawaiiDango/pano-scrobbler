@@ -22,7 +22,6 @@ jobs:
         shell: bash
         run: |
           choco install -y --no-progress nsis
-          makensis /?
           echo "/c/Program Files (x86)/NSIS" >> $GITHUB_PATH
           makensis /?
 

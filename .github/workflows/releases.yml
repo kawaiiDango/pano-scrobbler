@@ -2,7 +2,7 @@ name: Build binaries with GraalVM
 on: [workflow_dispatch]
 jobs:
   build:
-    name: HelloWorld on ${{ matrix.os }}
+    name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -54,6 +54,12 @@ jobs:
 
           # Download artifacts from that run (filter by name if provided)
           gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}
+
+      - name: Fix permissions
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          chmod +x ./gradlew
 
       - name: exportLibraryDefinitions
         shell: bash

@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           choco install -y --no-progress nsis
-          echo "/c/Program Files (x86)/NSIS" >> $GITHUB_PATH
+          export PATH="/c/Program Files (x86)/NSIS:$PATH"
           makensis /?
 
       - uses: graalvm/setup-graalvm@v1
@@ -73,6 +73,7 @@ jobs:
       - name: Build jar and native image
         shell: bash
         run: |
+          export PATH="/c/Program Files (x86)/NSIS:$PATH"
           ./gradlew composeApp:packageUberJarForCurrentOS
       
       - name: Upload binary

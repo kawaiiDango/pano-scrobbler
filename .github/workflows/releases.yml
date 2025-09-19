@@ -1,0 +1,69 @@
+name: Build binaries with GraalVM
+on: [workflow_dispatch]
+jobs:
+  build:
+    name: HelloWorld on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, ubuntu-24.04-arm]
+        include:
+        - os: windows-latest
+          resources-dir: windows-x64
+        - os: ubuntu-latest
+          resources-dir: linux-x64
+        - os: ubuntu-24.04-arm
+          resources-dir: linux-arm64
+    steps:
+      - uses: actions/checkout@v5
+
+      - if: matrix.os == 'windows-latest'
+        uses: repolevedavaj/install-nsis@v1.0.1
+        with:
+          nsis-version: '3.11'
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'liberica'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up secrets
+        shell: bash
+        run: |
+          echo "${{ secrets.TOKENS_KT }}" | base64 -d - > composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
+          echo "${{ secrets.EMBEDDED_SERVER_JKS }}" | base64 -d - > composeApp/src/desktopMain/composeResources/files/pano-embedded-server-ks.jks
+
+      - name: Download native libraries
+        run: |
+          RUN_ID=$(gh run list \
+            -R "kawaiiDango/pano-native-components" \
+            --workflow "build.yml" \
+            --status success \
+            -L 1 \
+            --json databaseId \
+            -q '.[0].databaseId')
+
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful runs found" >&2
+            exit 1
+          fi
+
+          # Download artifacts from that run (filter by name if provided)
+          gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}
+
+      - name: exportLibraryDefinitions
+        shell: bash
+        run: |
+          ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
+      
+      - name: Build jar and native image
+        shell: bash
+        run: |
+          ./gradlew composeApp:packageUberJarForCurrentOS
+      
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: pano-scrobbler-${{ matrix.resources-dir }}
+          path: composeApp/dist/pano-scrobbler-*

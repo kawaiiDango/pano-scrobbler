@@ -36,6 +36,8 @@ jobs:
           echo "${{ secrets.EMBEDDED_SERVER_JKS }}" | base64 -d - > composeApp/src/desktopMain/composeResources/files/pano-embedded-server-ks.jks
 
       - name: Download native libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           RUN_ID=$(gh run list \
             -R "kawaiiDango/pano-native-components" \

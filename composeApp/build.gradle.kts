@@ -557,6 +557,10 @@ tasks.register<Exec>("packageWindowsNsis") {
     val nsisScriptFile = File(nsisFilesDir, "install-script.nsi")
     val iconFile = file("app-icons/pano-scrobbler.ico")
 
+    doFirst {
+        distFile.parentFile.mkdirs()
+    }
+
     commandLine(
         "makensis",
         "/DOUTFILE=" + distFile.absolutePath,
@@ -659,6 +663,7 @@ tasks.register<Exec>("buildNativeImage") {
             throw GradleException("GRAALVM_HOME should be set and should be equal to JAVA_HOME")
         }
         outputDir.mkdirs()
+        outputFile.parentFile.mkdirs()
     }
 
     doLast {

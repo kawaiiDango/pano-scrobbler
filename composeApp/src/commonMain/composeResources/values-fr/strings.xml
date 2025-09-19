@@ -6,7 +6,7 @@
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
         <item quantity="one">%1$s scrobble aujourd&apos;hui</item>
-        <item quantity="other">%1$s scrobbles aujourd\'hui</item>
+        <item quantity="other">%1$s scrobbles aujourd&apos;hui</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s auditeur</item>
@@ -38,7 +38,7 @@
     </plurals>
     <plurals name="num_tracks">
         <item quantity="one">%1$s titre</item>
-        <item quantity="other">%1$s pistes</item>
+        <item quantity="other">%1$s titres</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d résultat</item>
@@ -330,7 +330,7 @@
     <string name="pref_token_label" comment="For Listenbrainz">Jeton d&apos;authentification</string>
     <string name="api_url" comment="For Listenbrainz">URL d&apos;API</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL du serveur</string>
-    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d\'authentification ici : %1$s</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d&apos;authentification ici : %1$s</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
     <string name="pref_fetch_album">Récupérer les données d&apos;album manquantes depuis lastFM</string>
     <string name="pref_locale">Langues</string>

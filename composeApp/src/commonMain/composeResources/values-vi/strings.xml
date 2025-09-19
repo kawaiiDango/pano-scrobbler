@@ -41,10 +41,13 @@
     <string name="faq">Câu hỏi thường gặp</string>
     <string name="album_art">Ảnh bìa</string>
     <string name="artist_image">Ảnh bìa nghệ sĩ</string>
+    <string name="network_error">Lỗi kết nối mạng</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Yêu cầu ô này là trống</string>
     <string name="artist">Nghệ sĩ</string>
     <string name="artists">Nghệ sĩ</string>
     <string name="top_artists" comment="Top artists the user has listened to">Nghệ sĩ hàng đầu</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Tác giả</string>
+    <string name="album_optional">Album (tuỳ chọn)</string>
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album hàng đầu</string>
@@ -64,6 +67,7 @@
     <string name="share_sig">(bởi Pano Scrobbler)</string>
     <string name="share">Chia sẻ</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Chú thích</string>
+    <string name="list" comment="Single column list view">Danh sách</string>
     <string name="more_info">Thông tin chi tiết</string>
     <string name="more" comment="More options menu in short">Khác</string>
     <string name="learn" comment="(Learn java regex syntax)">Tìm hiểu</string>

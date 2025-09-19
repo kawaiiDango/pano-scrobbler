@@ -47,11 +47,6 @@ jobs:
             --json databaseId \
             -q '.[0].databaseId')
 
-          if [ -z "$RUN_ID" ]; then
-            echo "No successful runs found" >&2
-            exit 1
-          fi
-
           # Download artifacts from that run (filter by name if provided)
           gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}
 

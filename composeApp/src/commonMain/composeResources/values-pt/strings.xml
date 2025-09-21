@@ -98,7 +98,7 @@
     <string name="recently_scrobbled">Scrobbles recentes</string>
     <string name="recents" comment="Short for recently scrobbled">Recentes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primeiro scrobble a %1$s</string>
-    <string name="auto" comment="automatic or default setting">Auto (Sistema)</string>
+    <string name="auto" comment="automatic or default setting">Auto</string>
     <string name="music_players">Reprodutores de música</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Outras Aplicações</string>
     <string name="choose_apps">Selecionar aplicações</string>
@@ -296,6 +296,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popularidade: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Análise</string>
     <string name="enable" comment="To enable some feature">Ativar</string>
+    <string name="disable" comment="To disable some feature">Desativar</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Excluir: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Ignorar imagens em falta</string>
     <string name="create_collage">Criar colagem</string>
@@ -306,7 +308,7 @@
     <string name="pref_master_qs_already_addded">O botão de definições rápidas já foi adicionado</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_lockscreen_noti">Notificações no ecrã de bloqueio</string>
-    <string name="pref_offline_info">ℹ️ Toda a sua atividade offline (scrobbles &amp; favoritas) será guardada para ser submetida mais tarde.</string>
+    <string name="pref_offline_info">ℹ️ Toda a sua atividade offline scrobbles &amp; favorita será guardada para ser submetida mais tarde.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble a partir de</string>
     <string name="pref_enabled_apps_summary">ℹ️ Suporta aplicações que revelam metadados de música. Para evitar scrobbles duplos do Spotify, ative-os apenas num lugar.</string>
     <string name="pref_enabled_apps_title">Selecionar aplicações</string>
@@ -353,6 +355,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="regex_rules">Regras de Regex</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadados bloqueados</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">qualquer coisa</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">dados existentes</string>
     <string name="pref_translate">Traduzir esta aplicação</string>
     <string name="pref_translate_credits">Créditos de tradução</string>
     <string name="pref_oss_credits">Licenças de código aberto</string>
@@ -423,6 +427,8 @@
     <string name="low" comment="As in high/medium/low">Baixo</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Algumas aplicações precisam de plugins</string>
     <string name="reload" comment="Reload or refresh">Atualizar</string>
+    <string name="pref_tray_icon_theme">Tema de ícone da bandeja</string>
+    <string name="min_track_duration">Trilhas de Scrobble mais longas que</string>
     <string name="automation">Controlar Pano Scrobbler em apps de automação</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">País para metadados de %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Obter metadados em falta de %1$s</string>
@@ -451,6 +457,6 @@ As suas compras são administradas pelo Google Play. Estas estão vinculadas a u
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Afixe até %1$d amigos e reordene-os</string>
     <string name="billing_sharing">Remover nome da aplicação ao partilhar</string>
     <string name="billing_scrobble_source">Lembrar e ver aplicações com scrobbles seus e pesquisar diretamente nelas</string>
-    <string name="billing_regex_extract">Escrever regras personalizadas de extração de metadados usando regex</string>
+    <string name="billing_regex_extract">Escrevea regras personalizadas de extração de metadados usando regex</string>
     <string name="billing_max_devices_reached" formatted="true">Este código já foi usado no máximo de dispositivos (%1$d).</string>
 </resources>

@@ -69,6 +69,8 @@ object Secrets {
 sessionKey can be obtained by logging in to LastFM with a debug build of this app
 and tapping on the "Copy last.fm session key" in the settings screen.
 
+- Run ./gradlew composeApp:assembleRelease or ./gradlew composeApp:assembleReleaseGithub
+
 - Info: the build variant "release" includes Google Play billing, Crashlytics (has opt out) and
   Google Play Review API as its non-free dependencies, while the build variant "releaseGithub"
   includes no non-free dependencies.
@@ -77,13 +79,16 @@ and tapping on the "Copy last.fm session key" in the settings screen.
 
 - Convert the previously created BKS keystore to a JKS keystore, or create a new one for the
   embedded https server used for the import/export feature over local network, with the password you
-  used in EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
+  used in EMBEDDED_SERVER_KEYSTORE_PASSWORD and the alias selfsigned.
   Put it in composeApp/src/desktopMain/composeResources/files/embedded_server.bks
-
 
 - Compile the native lib https://github.com/kawaiiDango/pano-native-components
 
 - If you intend to package a build for desktop,
-  use [Bellsoft's GraalVM based on OpenJDK 21](https://bell-sw.com/pages/downloads/native-image-kit/)
+  use [Bellsoft's GraalVM based on OpenJDK 25](https://bell-sw.com/pages/downloads/native-image-kit/)
   as your gradle JDK and run gradle packageUberJarForCurrentOS. Also
   have [makensis.exe](https://nsis.sourceforge.io/Main_Page) in your PATH for Windows.
+
+- Run ./gradlew composeApp:packageUberJarForCurrentOS
+
+- Info: the desktop build includes no non-free dependencies.

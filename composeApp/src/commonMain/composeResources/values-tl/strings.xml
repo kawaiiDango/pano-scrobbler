@@ -113,6 +113,67 @@
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d pa</string>
     <string name="show_all">Ipakita lahat</string>
     <string name="edit">I-edit</string>
+    <string name="delete">Tanggalin</string>
+    <string name="delete_all">Tanggalin lahat</string>
+    <string name="followers" comment="your lastfm followers">Mga follower</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, mula %2$s</string>
+    <string name="allow_background">I-allow ang pag-iiscrobble sa background</string>
+    <string name="grant_notification_access">Payagan ang pag-access sa mga notification</string>
+    <string name="grant_notification_access_desc">Kailangan para makuha ang mga impormasyon ng kanta. Walang hindi-kantang notification ang babasahin</string>
+    <string name="send_notifications">I-allow ang notifications</string>
+    <string name="notification_channel_blocked">Kinakailangan nito na naka-on ang notifications</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">- Suriin ang mga scrobble status at bilang
+- Direktang i-love at i-block mula sa notification
+- Maabisuhan sa mga scrobble error at aksyong pwede mong gawin
+- I-receive ang mga top scrobble kada linggo
+- At iba pa
+- Hindi tumutunog ang mga notification</string>
+    <string name="rate_msg">Na-eenjoy mo ba ang app?</string>
+    <string name="time_just_now">ngayon lang</string>
+    <string name="add">Magdagdag ng item</string>
+    <string name="add_to_hs">Ilagay sa homescreen</string>
+    <string name="details">Detalye</string>
+    <string name="my_scrobbles">Aking mga scrobble</string>
+    <string name="collapse" comment="(view only a few items)">I-collapse</string>
+    <string name="expand" comment="(view all items)">I-expand</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Mula %1$s</string>
+    <string name="not_found" comment="Shown in search">Hindi mahanap</string>
+    <string name="save" comment="saves a file">I-save</string>
+    <string name="saved_to_gallery">Sinave sa gallery</string>
+    <string name="weekly">Lingguhan</string>
+    <string name="weeks">Linggo</string>
+    <string name="monthly">Buwanan</string>
+    <string name="months">Buwan</string>
+    <string name="days">Mga araw</string>
+    <string name="years" comment="For the charts menu which displays year by year">Taon</string>
+    <string name="charts_overall">Pangkalahatan</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktibidad sa pakikinig</string>
+    <string name="charts_no_data">Walang data para sa period na ito</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Base sa %1$s</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Hindi sapat ang data</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
+    <string name="random_not_found">Walang nahanap na kanta</string>
+    <string name="random_text">Random</string>
+    <string name="original" comment="Original metadata before editing">Orihinal</string>
+    <string name="digest_weekly">Ang aking mga top scrobble noong nakaraang linggo</string>
+    <string name="digest_monthly">Ang aking mga top scrobble noong nakaraang buwan</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Top scrobbles ni %1$s</string>
+    <string name="close" comment="To close a dialog or something">Isara</string>
+    <string name="user_tags_hint" comment="To add a new tag">Bagong tag</string>
+    <string name="user_tags_empty">Wala ka pang naa-add na mga tag</string>
+    <string name="appwidget_loading">Naglo-load…</string>
+    <string name="appwidget_theme">Tema</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Siguraduhin na naiintindihan mo ang <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> bago mo ito gamitin. O kaya gamitin mo ang mga <b>presets</b> na binigay. Ang mga regex matches ay sinusubukan mula taas pababa</string>
+    <string name="skip" comment="skip to next track">I-skip</string>
+    <string name="mute" comment="mute the sound">I-mute ang audio</string>
+    <string name="block" comment="block the track from scrobbling">I-block</string>
+    <string name="copy" comment="copy to clipboard">Kopyahin</string>
+    <string name="pin" comment="pin a friend to the top">I-pin</string>
+    <string name="unpin" comment="unpin a friend to the top">I-unpin</string>
+    <string name="pin_limit_reached" formatted="true">Naabot na ang limit ng pag-pin (%1$d)</string>
+    <string name="pin_help">I </string>
+    <string name="skip_missing_images" comment="(while generating a collage)">I-skip ang walang imahe</string>
+    <string name="create_collage">Gumawa ng collage</string>
+    <string name="pref_master_qs_add">Idagdag ang quick settings tile</string>
     <!--  pro  -->
 </resources>

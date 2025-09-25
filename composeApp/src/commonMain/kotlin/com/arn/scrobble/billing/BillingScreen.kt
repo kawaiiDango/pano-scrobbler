@@ -48,6 +48,8 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.drop
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.automation
@@ -61,6 +63,7 @@ import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.get_pro
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.love
+import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.one_time_purchase
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
@@ -81,13 +84,7 @@ fun BillingScreen(
 ) {
     val activity = getActivityOrNull()
     val proProductDetails by viewModel.proProductDetails.collectAsStateWithLifecycle()
-    val licenseState by PlatformStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
     var noticeText by rememberSaveable { mutableStateOf<String?>(null) }
-
-    val thankYouText = stringResource(Res.string.thank_you)
-    val purchasePendingText = stringResource(Res.string.purchase_pending)
-    val maxDevicesReachedText = stringResource(Res.string.billing_max_devices_reached, 8)
-    val notFoundText = stringResource(Res.string.not_found)
 
     val bulletStrings = listOfNotNull(
         Icons.Outlined.Palette to stringResource(Res.string.pref_themes),
@@ -280,31 +277,38 @@ fun BillingScreen(
         )
     }
 
-    LaunchedEffect(licenseState) {
-        when (licenseState) {
-            LicenseState.VALID -> {
-                val thankYouSnackbarData = PanoSnackbarVisuals(
-                    message = thankYouText,
-                    isError = false,
-                )
-                Stuff.globalSnackbarFlow.emit(thankYouSnackbarData)
-                onBack()
-            }
+    LaunchedEffect(Unit) {
+        PlatformStuff.billingRepository.licenseState.collect { licenseState ->
+            when (licenseState) {
+                LicenseState.VALID -> {
+                    val thankYouSnackbarData = PanoSnackbarVisuals(
+                        message = getString(Res.string.thank_you),
+                        isError = false,
+                    )
+                    Stuff.globalSnackbarFlow.emit(thankYouSnackbarData)
+                    onBack()
+                }
 
-            LicenseState.PENDING -> {
-                noticeText = purchasePendingText
-            }
+                LicenseState.PENDING -> {
+                    noticeText = getString(Res.string.purchase_pending)
+                }
 
-            LicenseState.REJECTED -> {
-                noticeText = notFoundText
-            }
+                LicenseState.REJECTED -> {
+                    noticeText = getString(Res.string.not_found)
+                }
 
-            LicenseState.MAX_DEVICES_REACHED -> {
-                noticeText = maxDevicesReachedText
-            }
+                LicenseState.MAX_DEVICES_REACHED -> {
+                    noticeText = getString(Res.string.billing_max_devices_reached, 8)
+                }
 
-            else -> {}
+                LicenseState.NETWORK_ERROR -> {
+                    noticeText = getString(Res.string.network_error)
+                }
+
+                LicenseState.NO_LICENSE -> {}
+            }
         }
+
     }
 
     if (noticeText != null) {

@@ -628,6 +628,7 @@ tasks.register<Exec>("buildNativeImage") {
         "--strict-image-heap",
         "--no-fallback",
         "-march=" + if (arch in archArm64) "armv8.1-a" else "x86-64-v2",
+        if (os.isLinux && arch in archArm64) "-H:PageSize=16384" else null,
         if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
         "-H:+UnlockExperimentalVMOptions",
         "-J-Dcompose.application.configure.swing.globals=true",
@@ -839,10 +840,8 @@ ${languagesFiltered.joinToString("\n") { "        \"$it\"," }}
             val start =
                 localeUtilsText.indexOf("// localesSet start") + "// localesSet start".length
             val end = localeUtilsText.indexOf("    // localesSet end")
-            val newLocaleUtilsText = localeUtilsText.substring(
-                0,
-                start
-            ) + localeUtilsPartialText + localeUtilsText.substring(end)
+            val newLocaleUtilsText =
+                localeUtilsText.take(start) + localeUtilsPartialText + localeUtilsText.substring(end)
             localeUtilsFile.writeText(newLocaleUtilsText)
 
             println("Crowdin languages fetched successfully.")

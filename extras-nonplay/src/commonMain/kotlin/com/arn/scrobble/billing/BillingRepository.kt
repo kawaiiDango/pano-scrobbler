@@ -1,6 +1,7 @@
 package com.arn.scrobble.billing
 
 import com.arn.scrobble.api.license.LicenseChecker
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -75,10 +76,14 @@ class BillingRepository(
                     }
 
                     clientData.setLastcheckTime(System.currentTimeMillis())
+                }.onFailure { e ->
+                    _licenseState.emit(LicenseState.NETWORK_ERROR)
+                    e.printStackTrace()
                 }
             }
         } else {
-            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+            delay(2000)
+            _licenseState.emit(LicenseState.REJECTED)
             clientData.setReceipt(null, null)
         }
     }

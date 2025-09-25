@@ -6,4 +6,5 @@ enum class LicenseState {
     REJECTED,
     NO_LICENSE,
     MAX_DEVICES_REACHED,
+    NETWORK_ERROR,
 }

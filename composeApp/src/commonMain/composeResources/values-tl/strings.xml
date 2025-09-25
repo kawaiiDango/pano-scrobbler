@@ -144,7 +144,7 @@
     <string name="weeks">Linggo</string>
     <string name="monthly">Buwanan</string>
     <string name="months">Buwan</string>
-    <string name="days">Mga araw</string>
+    <string name="days">Araw</string>
     <string name="years" comment="For the charts menu which displays year by year">Taon</string>
     <string name="charts_overall">Pangkalahatan</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktibidad sa pakikinig</string>

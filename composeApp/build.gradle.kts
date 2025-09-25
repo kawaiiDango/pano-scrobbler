@@ -600,7 +600,11 @@ tasks.register<Exec>("buildNativeImage") {
     val outputDir = file("build/compose/native/$resourcesDirName")
     val outputFile = File(outputDir, appNameWithoutSpaces)
 
-    val reachabilityFiles = file("rechability-metadata/" + if (os.isWindows) "windows" else "linux")
+    val rechabilityFilesSuffix = if (Runtime.version().version().first() < 24) "-21" else ""
+    val reachabilityFiles = file(
+        "rechability-metadata${rechabilityFilesSuffix}/" +
+                if (os.isWindows) "windows" else "linux"
+    )
     val jawtDirName = if (os.isWindows)
         "bin"
     else

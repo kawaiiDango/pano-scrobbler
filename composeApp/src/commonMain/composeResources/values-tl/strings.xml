@@ -175,5 +175,51 @@
     <string name="skip_missing_images" comment="(while generating a collage)">I-skip ang walang imahe</string>
     <string name="create_collage">Gumawa ng collage</string>
     <string name="pref_master_qs_add">Idagdag ang quick settings tile</string>
+    <string name="pref_master_qs_already_addded">Na-add na ang quick settings tile</string>
+    <string name="pref_offline_info">Ang mga offline scrobble at mga love ay isasave, para i-sent mamaya.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">I-scrobble mula sa</string>
+    <string name="pref_enabled_apps_summary">Suportado ang mga app na nagpapakita ng impormasyon ng kanta. Upang maiwasan ang dobleng scrobble mula sa Spotify, i-enable lamang ito sa isang lugar.</string>
+    <string name="pref_auto_detect">Awtomatikong mag-scrobble mula sa mga bagong app</string>
+    <string name="pref_delay">Scrobble delay (alinman ang mauna)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuto</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percent</string>
+    <string name="pref_logout">Mag logout</string>
+    <string name="sure_tap_again">Sigurado? Pindutin ulit</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Pwede mong hanapin ang iyong authentication token sa: %1$s</string>
+    <string name="pref_locale">Mga wika</string>
+    <string name="pref_change_locale">Palitan ang wika</string>
+    <string name="pref_crashlytics_enabled">Awtomatikong i-report Ang mga error</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Ang linggo ay nagsisimula sa</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Import at export</string>
+    <string name="pref_export_desc">Iba-backup ang mga setting, mga edit at mga blocklist. Hindi nito sinasave ang mga login para sa seguridad. Nakakatulong ito pag nagpapalit ng device o i-share sa mga kaibigan.</string>
+    <string name="pref_imexport_network_notice">Para sa network mode, kailangan naka-connect ang mga device sa parehong network.</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalization</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…maliban sa bawat scrobble. Ang mga data na ito ay mananatili sa iyong device</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Para sa mga suportadong mga app</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">kahit ano</string>
+    <string name="pref_translate">Isalin ang app na ito</string>
+    <string name="pref_translate_credits">Mga pagkilala sa pagsasalin</string>
+    <string name="pref_check_updates">Mag-check ng updates</string>
+    <string name="no_updates">Walang available na update</string>
+    <string name="not_running">⚠ Ang scrobbler ay na-close ng iyong system</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Rason: %1$s</string>
+    <string name="not_running_fix_action">Ayusin ito</string>
+    <string name="fix_it_battery_title">I-disable ang battery optimization</string>
+    <string name="fix_it_action" comment="(To open an app)">I-open</string>
+    <string name="delete_account">I-delete ang iyong account</string>
+    <string name="scan_qr">Iscan ito para maka-login</string>
+    <string name="copy_from">Kopyahin mula sa</string>
+    <string name="cancel">Kanselahin</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Subukan muli</string>
+    <string name="use_browser">Mangyaring gumamit ng browser sa isang sinusuportahang device para rito.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">I-save ang mga log</string>
+    <string name="high" comment="As in high/medium/low">Mataas</string>
+    <string name="medium" comment="As in high/medium/low">Katamtaman</string>
+    <string name="low" comment="As in high/medium/low">Mababa</string>
+    <string name="reload" comment="Reload or refresh">I-reload</string>
+    <string name="min_track_duration">I-scrobble ang mga kanta na mas mahaba sa</string>
+    <string name="login_in_browser">Kompletuhin ang login sa browser window</string>
+    <string name="edit_no_save">Ito ay hindi ma-sasave sa mga susunod na mga scrobble</string>
     <!--  pro  -->
+    <string name="get_pro">Suportahan ang app</string>
 </resources>

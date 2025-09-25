@@ -69,6 +69,9 @@
     <string name="reset">I-reset</string>
     <string name="settings">I-configure</string>
     <string name="bug_report">Bug report</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Hindi mai-parse ang title</string>
+    <string name="artist">Artista</string>
+    <string name="artists">Mga artista</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
     <!--  pro  -->
 </resources>

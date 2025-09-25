@@ -70,8 +70,49 @@
     <string name="settings">I-configure</string>
     <string name="bug_report">Bug report</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Hindi mai-parse ang title</string>
+    <string name="network_error">May error sa network</string>
     <string name="artist">Artista</string>
     <string name="artists">Mga artista</string>
+    <string name="similar_artists">Magkatulad na mga artista</string>
+    <string name="album">Album</string>
+    <string name="albums">Mga album</string>
+    <string name="tracks">Mga track</string>
+    <string name="similar_tracks">Magkatulad na mga track</string>
+    <string name="state_scrobbling">Kasalukuyang nag-iiscrobble…</string>
+    <string name="tap_to_edit">(Pindutin para i-edit)</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Unang na-iscrobbled noong %1$s</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Iba pang mga app</string>
+    <string name="choose_apps">Pumili ng mga app</string>
+    <string name="choose_an_app">Pumili ng app</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Mga apps</string>
+    <string name="unavailable_offline">Hindi available kapag offline</string>
+    <string name="tv_url_notice">Buksan ang URL na ito sa browser ng ibang device</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Mga serbisyo</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ako ay nakikinig sa\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Si %3$s ay nakikinig sa\n%1$s %2$s</string>
+    <string name="share">I-share</string>
+    <string name="more" comment="More options menu in short">Higit pa</string>
+    <string name="learn" comment="(Learn java regex syntax)">Matuto</string>
+    <string name="hide">I-hide</string>
+    <string name="rank_change_no_change">Walang pagbabago</string>
+    <string name="search">Maghanap</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">I-clear ang lahat ng history</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Tanggalin ang item na ito mula sa history?</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">I-index ang iyong mga scrobbles</string>
+    <string name="take_long_time">Maaaring magtagal ito</string>
+    <string name="full_index_desc">Gamitin lamang ito kung ikaw ay nag-edit o nag-delete ng mga scrobbles mula sa website.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Hulimg na-index noong %1$s.</string>
+    <string name="new_player_prompt">Ipagpatuloy ang pag-iiscrobble mula sa app na ito?</string>
+    <string name="new_player_prompt_desktop">Pumunta sa settings para simulang mag-scrobble ang app na ito</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Hindi maakses ang %1$s</string>
+    <string name="file_exists_confirm_overwrite">Mayroon nang file. Pindutin ulit para i-overwrite.</string>
+    <string name="no_scrobbles">Wala pang mga kanta rito…</string>
+    <string name="no_friends">Wala pang pina-follow…</string>
+    <string name="new_app">Bagong app</string>
+    <string name="no_apps_enabled">Walang mga apps ang enabled</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d pa</string>
+    <string name="show_all">Ipakita lahat</string>
+    <string name="edit">I-edit</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
     <!--  pro  -->
 </resources>

@@ -1,5 +1,12 @@
 name: Build binaries
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      upload-release:
+        type: boolean
+        description: 'Upload to GitHub Releases?'
+        required: false
+        default: false
 jobs:
   build:
     name: Build on ${{ matrix.os }}
@@ -15,7 +22,8 @@ jobs:
         - os: ubuntu-24.04-arm
           resources-dir: linux-arm64
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
       - name: Fix permissions
         if: matrix.resources-dir != 'windows-x64'
@@ -105,3 +113,33 @@ jobs:
         with:
           name: pano-scrobbler-android-universal
           path: composeApp/dist/pano-scrobbler-android-universal*
+  
+  upload-release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.upload-release == true }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Read version
+        id: get_version
+        run: |
+          verCode=$(cat "composeApp/version.txt")
+          verName="$((verCode / 100)).$((verCode % 100))"
+          echo "verCode=$verCode" >> $GITHUB_OUTPUT
+          echo "verName=$verName" >> $GITHUB_OUTPUT
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          merge-multiple: true
+          path: composeApp/dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.verCode }}
+          name: ${{ steps.get_version.outputs.verName }}
+          body_path: composeApp/src/androidMain/play/release-notes/en-US/default.txt
+          files: composeApp/dist/**

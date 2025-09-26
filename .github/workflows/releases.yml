@@ -17,24 +17,52 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - if: matrix.os == 'windows-latest'
+      - name: Fix permissions
+        if: matrix.resources-dir != 'windows-x64'
+        shell: bash
+        run: |
+          chmod +x ./gradlew
+
+      - name: Set up common secrets
+        shell: bash
+        run: |
+          echo "${{ secrets.TOKENS_KT }}" | base64 -d - > composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
+          mkdir -p composeApp/src/desktopMain/composeResources/files
+          echo "${{ secrets.EMBEDDED_SERVER_JKS }}" | base64 -d - > composeApp/src/desktopMain/composeResources/files/pano-embedded-server-ks.jks
+
+      - if: matrix.resources-dir == 'linux-x64'
+        name: Set up Android secrets
+        shell: bash
+        run: |
+          echo "${{ secrets.STRINGS_NP_TAR_GZ }}" | base64 -d - > ~/strings-np.tar.gz
+          tar -xzf ~/strings-np.tar.gz -C composeApp/src/androidMain/res/
+          curl "${{ secrets.URL_BASELINE_PROF_TXT }}" --create-dirs -o composeApp/src/androidReleaseGithub/generated/baselineProfiles/baseline-prof.txt
+          cp composeApp/src/androidReleaseGithub/generated/baselineProfiles/baseline-prof.txt composeApp/src/androidReleaseGithub/generated/baselineProfiles/startup-prof.txt
+          tar -xzf ~/strings-np.tar.gz -C composeApp/src/androidMain/res/
+          mkdir -p composeApp/src/androidMain/composeResources/files
+          echo "${{ secrets.EMBEDDED_SERVER_BKS }}" | base64 -d - > composeApp/src/androidMain/composeResources/files/pano-embedded-server-ks.bks
+          echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > ~/android-keystore.jks
+          echo "${{ secrets.LOCAL_PROPERTIES }}" | local.properties
+
+      - if: matrix.resources-dir == 'windows-x64'
         name: Set up NSIS
         shell: bash
         run: |
           choco install -y --no-progress nsis
+
+      - if: matrix.resources-dir == 'linux-x64'
+        name: Build APK
+        shell: bash
+        run: |
+          export JAVA_HOME=$JAVA_HOME_21_X64
+          ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub
+          ./gradlew composeApp:assembleReleaseGithub
 
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
           distribution: 'liberica'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up secrets
-        shell: bash
-        run: |
-          echo "${{ secrets.TOKENS_KT }}" | base64 -d - > composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
-          mkdir -p composeApp/src/desktopMain/composeResources/files
-          echo "${{ secrets.EMBEDDED_SERVER_JKS }}" | base64 -d - > composeApp/src/desktopMain/composeResources/files/pano-embedded-server-ks.jks
 
       - name: Download native libraries
         shell: bash
@@ -56,26 +84,23 @@ jobs:
 
           # Download artifacts from that run (filter by name if provided)
           gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}
-
-      - name: Fix permissions
-        if: matrix.os != 'windows-latest'
-        shell: bash
-        run: |
-          chmod +x ./gradlew
-
-      - name: exportLibraryDefinitions
-        shell: bash
-        run: |
-          ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
       
-      - name: Build jar and native image
+      - name: Build desktop jar and native image
         shell: bash
         run: |
           export PATH="/c/Program Files (x86)/NSIS:$PATH"
+          ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
           ./gradlew composeApp:packageUberJarForCurrentOS
       
-      - name: Upload binary
+      - name: Upload desktop binary
         uses: actions/upload-artifact@v4
         with:
           name: pano-scrobbler-${{ matrix.resources-dir }}
-          path: composeApp/dist/pano-scrobbler-*
+          path: composeApp/dist/pano-scrobbler-${{ matrix.resources-dir }}*
+
+      - if: matrix.resources-dir == 'linux-x64'
+        name: Upload Android binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: pano-scrobbler-android-universal
+          path: composeApp/dist/pano-scrobbler-android-universal*

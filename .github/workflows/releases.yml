@@ -57,6 +57,7 @@ jobs:
           export JAVA_HOME=$JAVA_HOME_21_X64
           ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub
           ./gradlew composeApp:assembleReleaseGithub
+          ./gradlew --stop
 
       - uses: graalvm/setup-graalvm@v1
         with:

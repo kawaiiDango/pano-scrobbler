@@ -2,7 +2,6 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
@@ -33,8 +32,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.aboutlibraries)
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.crashlytics)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.github.release)
     alias(libs.plugins.play.publisher)
@@ -42,6 +39,11 @@ plugins {
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.hot.reload)
     id("kotlin-parcelize")
+}
+
+if (gradle.startParameter.taskNames.none { it.contains("releaseGithub", ignoreCase = true) }) {
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+    apply(plugin = libs.plugins.crashlytics.get().pluginId)
 }
 
 val os = org.gradle.internal.os.OperatingSystem.current()!!
@@ -267,17 +269,11 @@ android {
 
         getByName("debug") {
             versionNameSuffix = " DEBUG"
-//            extra["enableCrashlytics"] = false
         }
 
         create("releaseGithub") {
             initWith(getByName("release"))
             versionNameSuffix = " GH"
-
-            configure<CrashlyticsExtension> {
-                mappingFileUploadEnabled = false
-                nativeSymbolUploadEnabled = false
-            }
         }
     }
 

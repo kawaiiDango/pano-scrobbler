@@ -123,6 +123,7 @@
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$sの検出</string>
     <string name="new_player_prompt">このアプリをScrobbleしますか？</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">%1$sにアクセスできません</string>
+    <string name="file_exists_confirm_overwrite">ファイルが存在します。もう一度クリックすると上書きします。</string>
     <string name="no_scrobbles">曲はまだありません…</string>
     <string name="no_friends">まだ誰もフォローしていません…</string>
     <string name="channel_err" comment="Its a noun">Scrobbleの障害</string>
@@ -157,6 +158,7 @@
     <string name="rate_msg">アプリに満足していただいていますか？</string>
     <string name="time_just_now">たった今</string>
     <string name="no_mail_apps">メールアプリがインストールされていません</string>
+    <string name="add">新しい項目を追加</string>
     <string name="loved" comment="Its a noun">Loveトラック</string>
     <string name="unloved" comment="Its a noun">未Loveトラック</string>
     <string name="simple_edits">訂正</string>
@@ -209,6 +211,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">過去%1$sのトップScrobble</string>
     <string name="my_tags" comment="Tags, the user has added">マイタグ</string>
     <string name="close" comment="To close a dialog or something">閉じる</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">終了</string>
     <string name="user_tags_hint" comment="To add a new tag">新規タグ</string>
     <string name="user_tags_empty">まだタグを追加していません</string>
     <string name="appwidget_loading">読み込み中…</string>
@@ -272,6 +275,7 @@
     <string name="popularity" formatted="true" comment="popularity of a track">人気度: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable some feature">有効化</string>
+    <string name="disable" comment="To disable some feature">無効化</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">サイズ</string>
     <string name="skip_missing_images" comment="(while generating a collage)">画像があるもののみ</string>
     <string name="create_collage">コラージュを作る</string>
@@ -327,7 +331,9 @@
     <string name="pref_search_in_source">Scrobbleしたアプリで検索および再生する</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">対応アプリのみ</string>
     <string name="pref_lists" comment="Such as edits list and block lists">リスト</string>
+    <string name="regex_rules">正規表現ルール</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">ブロックしたメタデータ</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">既存のデータ</string>
     <string name="pref_translate">このアプリを翻訳</string>
     <string name="pref_translate_credits">翻訳協力者</string>
     <string name="pref_oss_credits">オープンソースクレジット</string>
@@ -346,6 +352,7 @@
     <string name="import_settings">設定をインポートする</string>
     <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">%1$s系のインスタンス</string>
     <string name="failed_encode_url">URLのエンコードに失敗しました</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$sを確認</string>
     <string name="no_browser">ブラウザがインストールされていません</string>
@@ -371,13 +378,22 @@
     <string name="password">パスワード</string>
     <string name="open_existing" comment="Append to an existing file">既存に追加</string>
     <string name="create" comment="Create a new file">作成</string>
+    <string name="scan_qr">スキャンしてログイン</string>
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
     <string name="back">戻る</string>
     <string name="done">完了</string>
     <string name="retry" comment="Retry loading data from network after it has failed">再試行</string>
+    <string name="run_on_start">コンピュータ起動時に実行</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">ログを保存</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">コントラスト</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">一部のアプリにプラグインが必要です</string>
+    <string name="min_track_duration">この長さより短いトラックはScrobbleしない</string>
+    <string name="automation">自動化アプリからPano Scrobblerを制御する</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s メタデータの国</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">%1$sでこのアプリを入手</string>
+    <string name="first_artist">最初のアーティストのみを使用</string>
+    <string name="external_metadata">外部メタデータソース</string>
     <!--  pro  -->
     <string name="get_pro">このアプリを支援</string>
     <string name="help">ヘルプ</string>

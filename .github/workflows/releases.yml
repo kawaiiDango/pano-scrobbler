@@ -41,7 +41,7 @@ jobs:
           tar -xzf ~/strings-np.tar.gz -C composeApp/src/androidMain/res/
           mkdir -p composeApp/src/androidMain/composeResources/files
           echo "${{ secrets.EMBEDDED_SERVER_BKS }}" | base64 -d - > composeApp/src/androidMain/composeResources/files/pano-embedded-server-ks.bks
-          echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > ~/android-keystore.jks
+          echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > composeApp/android-keystore.jks
           echo "${{ secrets.LOCAL_PROPERTIES }}" > local.properties
 
       - if: matrix.resources-dir == 'windows-x64'

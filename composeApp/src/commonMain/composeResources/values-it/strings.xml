@@ -271,7 +271,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Comandi lettore musicale</string>
     <string name="skip" comment="skip to next track">Salta</string>
     <string name="mute" comment="mute the sound">Silenzia</string>
+    <string name="do_nothing" comment="do nothing on the media player">Non fare niente</string>
     <string name="block" comment="block the track from scrobbling">Blocca</string>
+    <string name="copy" comment="copy to clipboard">Copia</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tag nascoste</string>
     <string name="pin" comment="pin a friend to the top">Fissa in primo piano</string>
     <string name="unpin" comment="unpin a friend to the top">Non fissare più</string>
@@ -281,6 +283,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Vuoi abilitare la regola di modifica del pattern: %1$s?</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
     <string name="fix_it_desc">Queste potrebbero essere utili nel tenere lo scrobbler attivo in background in alcuni dispositivi</string>
+    <string name="persistent_noti_text">Tocca per nascondere</string>
     <string name="scrobbler_off">Scrobbler disattivato</string>
     <string name="scrobbler_on">Scrobbler attivato</string>
     <string name="duration">Durata</string>
@@ -293,6 +296,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popolarità: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analisi</string>
     <string name="enable" comment="To enable some feature">Abilita</string>
+    <string name="disable" comment="To disable some feature">Disattiva</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Rimuovi: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Dimensione</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Salta immagini mancanti</string>
     <string name="create_collage">Crea collage</string>
@@ -348,12 +353,22 @@
     <string name="pref_search_in_source">Cerca &amp; riproduci sull’app di provenienza dei tuoi scrobbling</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Per app supportate</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
+    <string name="regex_rules">Regole Regex</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadati bloccati</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">qualsiasi</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">dati esistenti</string>
     <string name="pref_translate">Traduci questa app</string>
     <string name="pref_translate_credits">Riconoscimenti traduzione</string>
     <string name="pref_oss_credits">Riconoscimenti open source</string>
     <string name="pref_check_updates">Ricerca degli aggiornamenti</string>
+    <string name="no_updates">Nessun aggiornamento disponibile</string>
+    <string name="pref_notify_updates">Aggiornamenti automatici</string>
+    <string name="update_downloaded">Aggiornamento scaricato</string>
+    <string name="pref_search_url_template">Template URL di ricerca</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Usa $query come placeholder per il termine di ricerca</string>
+    <string name="pref_native_file_picker">Usa selettore file nativo</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Aggiornamento disponibile: %1$s</string>
+    <string name="downloading">Scaricamento</string>
     <string name="download" comment="Its a verb">Scarica</string>
     <string name="changelog">Registro modifiche</string>
     <string name="import_hey_wtf">Probabilmente quello non è un file esportato da Pano Scrobbler</string>
@@ -393,6 +408,10 @@
     <string name="password">Password</string>
     <string name="open_existing" comment="Append to an existing file">Concatena a file esistente</string>
     <string name="create" comment="Create a new file">Crea</string>
+    <string name="scan_qr">Scansiona per accedere</string>
+    <string name="copy_from">Copia da</string>
+    <string name="nothing" comment="nothing/none">Niente</string>
+    <string name="borders" comment="Borders between images in the generated collage">Bordi</string>
     <string name="ok">OK</string>
     <string name="cancel">Annulla</string>
     <string name="back">Indietro</string>
@@ -405,8 +424,21 @@
     <string name="high" comment="As in high/medium/low">Alto</string>
     <string name="medium" comment="As in high/medium/low">Medio</string>
     <string name="low" comment="As in high/medium/low">Basso</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Alcune app hanno bisogno di plugin</string>
+    <string name="reload" comment="Reload or refresh">Ricarica</string>
+    <string name="pref_tray_icon_theme">Tema barra icone</string>
+    <string name="min_track_duration">Effettua scrobble di tracce più lunghe di</string>
+    <string name="automation">Controlla Pano Scrobbler dalle app di automazione</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Paese per i metadata di %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Recupera i metadata mancanti per %1$s</string>
+    <string name="login_in_browser">Completa il login nella finestra del browser</string>
+    <string name="edit_no_save">Questo non sarà salvato per gli scrobble futuri</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Scarica quest\'app su %1$s</string>
+    <string name="first_artist">Usa solo il primo artista</string>
+    <string name="external_metadata">Fonti esterni di metadata</string>
     <!--  pro  -->
     <string name="get_pro">Sostieni questa app</string>
+    <string name="one_time_purchase">Solo una volta</string>
     <string name="help">Aiuto</string>
     <string name="pro_support">Questo è un modo semplice e veloce con cui un utente fantastico come te può dimostrare di apprezzare e riconoscere il valore di questa app.</string>
     <string name="pro_also_get">Avrai anche accesso alle seguenti funzioni:</string>

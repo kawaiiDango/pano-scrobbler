@@ -265,6 +265,7 @@
     <string name="use_channel" comment="(Use youtube channel name)">از نام کانال استفاده کن</string>
     <string name="show_persistent_noti">یک اعلان مقاوم نشون بده</string>
     <string name="fix_it_desc">اینا در برخی از دستگاهها کمک می‌کنند تا اسکرابلر در پس‌زمینه فعالیت کند</string>
+    <string name="persistent_noti_text">برای مخفی‌ کردن کلیک کن</string>
     <string name="scrobbler_off">اسکرابل کننده خاموش</string>
     <string name="scrobbler_on">اسکرابل کننده روشن</string>
     <string name="duration">مدت زمان</string>
@@ -272,6 +273,7 @@
     <string name="acoustic" comment="(Acoustic music)">آکوستیک</string>
     <string name="instrumental">بی‌کلام</string>
     <string name="energetic" comment="(Energetic music)">پرانرژی</string>
+    <string name="danceable">قابل رقص</string>
     <string name="valence" comment="(Musical positivity)">شاداب</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">بررسی</string>
     <string name="enable" comment="To enable some feature">فعال</string>
@@ -290,16 +292,44 @@
     <string name="pref_crashlytics_enabled">خطاها رو خودکار گزارش کن</string>
     <string name="pref_misc">متفرقه</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">شروع هفته از روز</string>
-    <string name="pref_imexport" comment="As in backup or restore the settings">وارد و صادرکردن</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">واردکردن &amp; صادرکردن</string>
     <string name="pref_export">صدور</string>
     <string name="pref_export_desc">از تنظیمات، ویرایش‌ها و فهرست بلاک پشتیبان‌گیری می‌کند. به دلایل امنیتی اطلاعات ورود به سیستم را ذخیره نمی‌کند. برای جابجایی بین دستگاه‌ها یا اشتراک‌گذاری با دوستان مفید است.</string>
     <string name="pref_import">واردکردن</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">شبکه</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">کد</string>
     <string name="pref_imexport_network_notice">برای حالت شبکه جفت دستگاه باید به یک شبکه متصل باشند.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">شخصی‌سازی</string>
     <string name="pref_themes" comment="Color themes">تم‌ها</string>
     <string name="pref_widget_charts">ویجت خانگی - نمودارها</string>
     <string name="pref_show_scrobble_sources">نمایش آیکن برنامه‌هایی که ازشون اسکرابل کردی</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…در کنار هر اسکرابل. این داده‌ها روی دستگاه شما باقی می‌مانند</string>
+    <string name="pref_search_in_source">جستجو &amp; پخش در برنامه هایی که ازشون آسکرابل کردی</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">برای برنامه های پشتیبانی شده</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">لیست‌ها</string>
+    <string name="regex_rules">قوانین ریجکس</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">فراداده مسدودشده</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">هرچیزی</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">داده موجود</string>
+    <string name="pref_translate">به ترجمه این برنامه کمک کنید</string>
+    <string name="pref_translate_credits">همکاران مترجم</string>
+    <string name="pref_check_updates">بررسی آپدیت</string>
+    <string name="no_updates">آپدیتی موجود نیست</string>
+    <string name="pref_notify_updates">آپدیت خودکار</string>
+    <string name="update_downloaded">آپدیت دانلود شد</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">آپدیت پیداشد: %1$s</string>
+    <string name="downloading">درحال دانلود</string>
+    <string name="download" comment="Its a verb">دانلود</string>
+    <string name="changelog">لیست تغییرات</string>
+    <string name="import_hey_wtf">این فایل مناسب برنامه نیست</string>
+    <string name="export_failed">صدور شکست خورد</string>
+    <string name="imported">واردشد</string>
+    <string name="import_options">گزینه های واردکردن</string>
+    <string name="import_lists_nope">اصلاحات و لیست بلاک رو وارد نکن</string>
+    <string name="import_lists_replace_all">تمامی اصلاحات و لیست بلاک رو تعویض کن</string>
+    <string name="import_lists_replace_existing">ادغام با تعویض اصلاحات و لیست بلاک موجود</string>
+    <string name="import_lists_keep">ادغام و نگه‌داشتن اصلاحات و لیست بلاک موجود</string>
+    <string name="import_settings">تنظیمات واردکردن</string>
+    <string name="copied">کپی شد!</string>
     <!--  pro  -->
 </resources>

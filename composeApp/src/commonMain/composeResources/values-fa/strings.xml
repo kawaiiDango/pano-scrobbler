@@ -1,4 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s اسکرابل</item>
+        <item quantity="other">%1$s تا اسکرابل</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s امروز</item>
+        <item quantity="other">%1$s امروز</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s شنونده</item>
+        <item quantity="other">%1$s شنونده</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s روز</item>
+        <item quantity="other">%1$s روز</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s هفته</item>
+        <item quantity="other">%1$s هفته</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s ماه</item>
+        <item quantity="other">%1$s ماه</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s سال</item>
+        <item quantity="other">%1$s سال</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s هنرمند</item>
+        <item quantity="other">%1$s تا هنرمند</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s آلبوم</item>
+        <item quantity="other">%1$s تا آلبوم</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s آهنگ</item>
+        <item quantity="other">%1$s تا آهنگ</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d شبیه</item>
+        <item quantity="other">%1$d تا مشابه</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s اصلاح</item>
+        <item quantity="other">%1$s تا اصلاح</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s اصلاح الگو</item>
+        <item quantity="other">%1$s تا اصلاح الگو</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s فراداده مسدود</item>
+        <item quantity="other">%1$s عدد فراداده مسدود</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d دقیقه</item>
+        <item quantity="other">%1$d دقیقه</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s منتظر</item>
+        <item quantity="other">%1$s تا درحال انتظار</item>
+    </plurals>
+    <string name="yes">بله</string>
+    <string name="no">نه</string>
+    <string name="reset">ریست</string>
+    <string name="settings">تنظیمات</string>
+    <string name="bug_report">گزارش باگ</string>
+    <string name="faq">سوالات رایج</string>
+    <string name="album_art">عکس آلبوم</string>
+    <string name="artist_image">عکس آهنگساز</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">نتونستم عنوان رو تجزیه کنم</string>
+    <string name="network_error">خطای شبکه</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">اسکرابل نادیده گرفته شد</string>
+    <string name="scrobble_ignored_save_edit">لست‌اف‌ام این ویرایش را نادیده گرفت احتمالاً به این دلیل که اسکرابل خیلی قدیمی است. آیا مایلید این ویرایش را برای اسکرابل‌های بعدی ذخیره کنید؟</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">اطلاعات الزامی خالیست</string>
+    <string name="artist">هنرمند</string>
+    <string name="artists">هنرمندان</string>
+    <string name="top_artists" comment="Top artists the user has listened to">بهترین هنرمندان</string>
+    <string name="album_artist">صاحب آلبوم</string>
+    <string name="artist_channel" comment="Artist or youtube channel">کانال هنرمند</string>
+    <string name="similar_artists">هنرمندان مشابه</string>
+    <string name="album_optional">آلبوم (اختیاری)</string>
+    <string name="album">آلبوم</string>
+    <string name="albums">آلبوم‌ها</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">بهترین آلبوم‌ها</string>
+    <string name="track">آهنگ</string>
+    <string name="tracks">آهنگ‌ها</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">بهترین آهنگ‌ها</string>
+    <string name="similar_tracks">آهنگهای مشابه</string>
+    <string name="state_scrobbling">درحال اسکرابل…</string>
+    <string name="state_scrobbled">اسکرابل‌شده</string>
+    <string name="state_unscrobbled">اسکرابل‌نشده</string>
+    <string name="tap_to_edit">کلیک برای اصلاح</string>
+    <string name="recently_scrobbled">به تازگی اسکرابل‌شده</string>
+    <string name="recents" comment="Short for recently scrobbled">اخیر</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">اولین اسکرابل در %1$s</string>
+    <string name="auto" comment="automatic or default setting">خودکار</string>
+    <string name="music_players">پخش‌کنندگان آهنگ</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">برنامه های متقرفه</string>
+    <string name="choose_apps">انتخاب برنامه مد نظر</string>
+    <string name="choose_an_app">یک برنامه را انتخاب کن</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">برنامه‌ها</string>
+    <string name="offline">آفلاینید. چیزهایی که میبینید تازه نیست</string>
+    <string name="unavailable_offline">چون آفلاینید در دسترس نیست</string>
+    <string name="tv_url_notice">این لینک رو تو مرورگر دستگاه دیگه بازکن</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">سرویس‌ها</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">داشتم به این گوش میدادم
+%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s داشت به این گوش میداد
+%1$s %2$s</string>
+    <string name="share">اشتراک‌ گذاری</string>
+    <string name="grid" comment="Grid view">جدول</string>
+    <string name="list" comment="Single column list view">لیست</string>
+    <string name="more_info">اطلاعات بیشتر</string>
+    <string name="more" comment="More options menu in short">بیشتر</string>
+    <string name="hide">نهاندن</string>
+    <string name="rank_change" comment="%1= delta change">تغییر جایگاه: %1$s</string>
+    <string name="rank_change_no_change">بی تغییر</string>
+    <string name="search">جستجو</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">پاک‌کردن کل تاریخچه</string>
     <!--  pro  -->
 </resources>

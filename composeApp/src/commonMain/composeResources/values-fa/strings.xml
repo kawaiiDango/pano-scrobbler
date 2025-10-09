@@ -243,17 +243,63 @@
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">گروه‌های ضبط خود را <i>آهنگ، آلبوم، هنرمند</i> یا <i>هنرمندآلبوم‌</i> نامگذاری کنید تا آنها را از فیلدهای دیگر استخراج کنید</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">برای مثال، برای جابجایی هنرمند و عنوان، باید ریجکس هنرمند را به صورت (؟&lt;track&gt;.*) و ریجکس آهنگ را به صورت (؟&lt;artist&gt;.*) قرار دهید.</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما باید حداقل این گروه های ضبط را نام برده باشد: \"آهنگ\", \"هنرمند\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما قابل قبول نیست چون بیشتر از یک گروه ضبط (%1$s) دارد </string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">ریجکس نامعتبر: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">الگوهای استفاده‌شده:</string>
     <string name="edit_case_sensitive">حساسیت کوچک بزرگی حروف</string>
     <string name="edit_regex_test" comment="(Test regex rules)">امتحان‌کن</string>
     <string name="edit_presets" comment="Regex presets">پیش‌تنظیمات</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">پیش‌تنظیم: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">به حداکثر الگو رسید (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">دسته‌های کشیدنی</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ لطفا قبل از اینکه اینو استفاده کنید بفهمید که <a href="https://www.google.com/search?q=regex+guide+farsi"> ریجکس چیه </a> یا یکی از<b>پیش‌تنظیم‌‌</b>های تهیه شده استفاده کن. مطابقات ریجکس ازبالا به پایین انجام میشوند</string>
     <string name="blocked_metadata_info">پر کردن بیش از یکی از این فیلدها، عملگر AND را بین آنها اعمال می‌کند</string>
     <string name="skip" comment="skip to next track">ردکردن</string>
+    <string name="mute" comment="mute the sound">قطع صدا</string>
     <string name="do_nothing" comment="do nothing on the media player">کاری نکن</string>
     <string name="block" comment="block the track from scrobbling">مسدودکردن</string>
     <string name="copy" comment="copy to clipboard">کپی</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">تگ‌های پنهان</string>
+    <string name="pin" comment="pin a friend to the top">سنجاق‌زدن</string>
+    <string name="unpin" comment="unpin a friend to the top">حذف سنجاق</string>
+    <string name="use_channel" comment="(Use youtube channel name)">از نام کانال استفاده کن</string>
+    <string name="show_persistent_noti">یک اعلان مقاوم نشون بده</string>
+    <string name="fix_it_desc">اینا در برخی از دستگاهها کمک می‌کنند تا اسکرابلر در پس‌زمینه فعالیت کند</string>
+    <string name="scrobbler_off">اسکرابل کننده خاموش</string>
+    <string name="scrobbler_on">اسکرابل کننده روشن</string>
+    <string name="duration">مدت زمان</string>
+    <string name="total_listen_time">کل زمان گوش‌دادن</string>
+    <string name="acoustic" comment="(Acoustic music)">آکوستیک</string>
+    <string name="instrumental">بی‌کلام</string>
+    <string name="energetic" comment="(Energetic music)">پرانرژی</string>
+    <string name="valence" comment="(Musical positivity)">شاداب</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">بررسی</string>
+    <string name="enable" comment="To enable some feature">فعال</string>
+    <string name="disable" comment="To disable some feature">غیرفعال</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">حذف: %1$s</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">اندازه</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">ردکردن عکسهای ناموجود</string>
+    <string name="create_collage">ساخت کلاژ</string>
+    <string name="username" comment="last.fm Username">نام‌کاربر</string>
+    <string name="pref_lockscreen_noti">اعلانات صفحه قفل</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">اسکرابل از</string>
+    <string name="pref_now_playing">ثبت آهنگ درحال پخش</string>
+    <string name="pref_fetch_album">جستجوی داده ناموجود آلبوم از lastFM</string>
+    <string name="pref_locale">زبان</string>
+    <string name="pref_change_locale">زبان برنامه رو انتخاب کنید</string>
+    <string name="pref_crashlytics_enabled">خطاها رو خودکار گزارش کن</string>
+    <string name="pref_misc">متفرقه</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">شروع هفته از روز</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">وارد و صادرکردن</string>
+    <string name="pref_export">صدور</string>
+    <string name="pref_export_desc">از تنظیمات، ویرایش‌ها و فهرست بلاک پشتیبان‌گیری می‌کند. به دلایل امنیتی اطلاعات ورود به سیستم را ذخیره نمی‌کند. برای جابجایی بین دستگاه‌ها یا اشتراک‌گذاری با دوستان مفید است.</string>
+    <string name="pref_import">واردکردن</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">شبکه</string>
+    <string name="pref_imexport_network_notice">برای حالت شبکه جفت دستگاه باید به یک شبکه متصل باشند.</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">شخصی‌سازی</string>
+    <string name="pref_themes" comment="Color themes">تم‌ها</string>
+    <string name="pref_widget_charts">ویجت خانگی - نمودارها</string>
+    <string name="pref_show_scrobble_sources">نمایش آیکن برنامه‌هایی که ازشون اسکرابل کردی</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…در کنار هر اسکرابل. این داده‌ها روی دستگاه شما باقی می‌مانند</string>
     <!--  pro  -->
 </resources>

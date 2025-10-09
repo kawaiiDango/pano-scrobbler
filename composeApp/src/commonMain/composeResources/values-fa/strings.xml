@@ -122,5 +122,16 @@
     <string name="rank_change_no_change">بی تغییر</string>
     <string name="search">جستجو</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">پاک‌کردن کل تاریخچه</string>
+    <string name="graph_daily">تعداد اسکرابل روزانه</string>
+    <string name="graph_weekly">تعداد اسکرابل هفتگی</string>
+    <string name="graph_monthly">تعداد اسکرابل ماهانه</string>
+    <string name="graph_yearly">تعداد اسکرابل سالانه</string>
+    <string name="close" comment="To close a dialog or something">بستن</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">خروج</string>
+    <string name="appwidget_theme">تم</string>
+    <string name="appwidget_shadow">سایه</string>
+    <string name="appwidget_show">نمایش</string>
+    <string name="light">روشن</string>
+    <string name="dark">تاریک</string>
     <!--  pro  -->
 </resources>

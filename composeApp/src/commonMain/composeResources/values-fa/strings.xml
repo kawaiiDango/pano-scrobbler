@@ -275,6 +275,7 @@
     <string name="energetic" comment="(Energetic music)">پرانرژی</string>
     <string name="danceable">قابل رقص</string>
     <string name="valence" comment="(Musical positivity)">شاداب</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">معروفیت: %1$d٪٪</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">بررسی</string>
     <string name="enable" comment="To enable some feature">فعال</string>
     <string name="disable" comment="To disable some feature">غیرفعال</string>
@@ -283,6 +284,7 @@
     <string name="skip_missing_images" comment="(while generating a collage)">ردکردن عکسهای ناموجود</string>
     <string name="create_collage">ساخت کلاژ</string>
     <string name="username" comment="last.fm Username">نام‌کاربر</string>
+    <string name="pref_noti">اعلانات</string>
     <string name="pref_lockscreen_noti">اعلانات صفحه قفل</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">اسکرابل از</string>
     <string name="pref_now_playing">ثبت آهنگ درحال پخش</string>

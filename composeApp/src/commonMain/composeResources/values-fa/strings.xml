@@ -108,15 +108,16 @@
     <string name="unavailable_offline">چون آفلاینید در دسترس نیست</string>
     <string name="tv_url_notice">این لینک رو تو مرورگر دستگاه دیگه بازکن</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">سرویس‌ها</string>
-    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">داشتم به این گوش میدادم
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">داشتم به این گوش میدادم\n
 %1$s %2$s</string>
-    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s داشت به این گوش میداد
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s داشت به این گوش میداد\n
 %1$s %2$s</string>
     <string name="share">اشتراک‌ گذاری</string>
     <string name="grid" comment="Grid view">جدول</string>
     <string name="list" comment="Single column list view">لیست</string>
     <string name="more_info">اطلاعات بیشتر</string>
     <string name="more" comment="More options menu in short">بیشتر</string>
+    <string name="learn" comment="(Learn java regex syntax)">یادگیری</string>
     <string name="hide">نهاندن</string>
     <string name="rank_change" comment="%1= delta change">تغییر جایگاه: %1$s</string>
     <string name="rank_change_no_change">بی تغییر</string>
@@ -124,6 +125,7 @@
     <string name="search">جستجو</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">پاک‌کردن کل تاریخچه</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">این آیتم رو از تاریخچه حذف کنم؟</string>
+    <string name="global" comment="search globally across lastfm">جهانی</string>
     <string name="take_long_time">این کار یه کم وقت‌گیره</string>
     <string name="full_index_desc">اینو فقط وقتی اسفاده کن که اسکرابل‌ها رو از سایت حذف یا اصلاح کردی</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">%1$s مورد برتر در هر دسته رو جستجو کردم</string>
@@ -133,7 +135,7 @@
     <string name="new_player_prompt">این برنامه رو اسکرابل کنم؟</string>
     <string name="new_player_prompt_desktop">به تنظیمات برید تا اسکرابل این برنامه رو شروع کنم</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">شکست دسترسی به %1$s</string>
-    <string name="file_exists_confirm_overwrite">فایل موجود. دوباره کلیک کن تا بازنویسی کنم</string>
+    <string name="file_exists_confirm_overwrite">فایل موجود. دوباره کلیک کن تا بازنویسی کنم.</string>
     <string name="no_scrobbles">آهنگی اینجا نیست…</string>
     <string name="no_friends">کسی رو دنبال نکردی…</string>
     <string name="channel_err" comment="Its a noun">خطای اسکرابل</string>
@@ -154,7 +156,7 @@
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s تا اسکرابل، پس از %2$s</string>
     <string name="allow_background">اجازه اسکرابل در پس‌زمینه</string>
     <string name="grant_notification_access">دادن اجازه دسترسی به اعلانات</string>
-    <string name="grant_notification_access_desc">برای بازیابی فراداده آهنگ لازمه، هیچ اعلان بی آهنگی رو نمی‌خونم </string>
+    <string name="grant_notification_access_desc">برای بازیابی فراداده آهنگ لازمه، هیچ اعلان بی آهنگی رو نمی‌خونم</string>
     <string name="send_notifications">مجاز به اعلانات</string>
     <string name="notification_channel_blocked">این کار به اعلانات نیازدارد</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">- وضعیت و تعداد اسکرابل را بررسی کن
@@ -201,6 +203,7 @@
     <string name="charts_no_data">چیزی تو این بازه نیست</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">سفارشی</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">مداوم</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">بر اساس %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">داده ناکافیست</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">شانسی بزن</string>
     <string name="random_not_found">آهنگی پیدانشد</string>
@@ -213,6 +216,7 @@
     <string name="original" comment="Original metadata before editing">اصلی</string>
     <string name="corrected" comment="Corrected metadata after editing">تصحیح‌شده</string>
     <string name="tag" comment="last.fm tag">تگ</string>
+    <string name="taggers" comment="(number of) people who have tagged">تگ نویسان</string>
     <string name="digest_weekly">برترین اسکرابل‌های هفته پیش من</string>
     <string name="digest_monthly">برترین اسکرابل‌های ماه پیش من</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s اسکرابل برتر</string>
@@ -235,15 +239,15 @@
     <string name="edit_name" comment="name for regex pattern">اسم خودمانی</string>
     <string name="edit_regex">الگوی رِگ‌اِکس</string>
     <string name="edit_regex_replacement">جایگزینی رِگ‌اِکس</string>
-    <string name="edit_field" comment="Fields like artist/album/track etc">رشته‌ها</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">فیلدها</string>
     <string name="edit_replace">جایگزینی</string>
     <string name="edit_first" comment="First occurrence of a pattern">اولین</string>
     <string name="edit_all" comment="All occurrences of a pattern">همه</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">استخراج</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">گروه‌های ضبط خود را <i>آهنگ، آلبوم، هنرمند</i> یا <i>هنرمندآلبوم‌</i> نامگذاری کنید تا آنها را از فیلدهای دیگر استخراج کنید</string>
-    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">برای مثال، برای جابجایی هنرمند و عنوان، باید ریجکس هنرمند را به صورت (؟&lt;track&gt;.*) و ریجکس آهنگ را به صورت (؟&lt;artist&gt;.*) قرار دهید.</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">برای مثال، برای جابجایی هنرمند و عنوان، باید ریجکس هنرمند را به صورت (؟&lt;track&gt;.*) و ریجکس آهنگ را به صورت (؟&lt;artist&gt;.*) قرار دهید</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما باید حداقل این گروه های ضبط را نام برده باشد: \"آهنگ\", \"هنرمند\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما قابل قبول نیست چون بیشتر از یک گروه ضبط (%1$s) دارد </string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما قابل قبول نیست چون بیشتر از یک گروه ضبط (%1$s) دارد</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">ریجکس نامعتبر: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">الگوهای استفاده‌شده:</string>
     <string name="edit_case_sensitive">حساسیت کوچک بزرگی حروف</string>
@@ -254,6 +258,7 @@
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">دسته‌های کشیدنی</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ لطفا قبل از اینکه اینو استفاده کنید بفهمید که <a href="https://www.google.com/search?q=regex+guide+farsi"> ریجکس چیه </a> یا یکی از<b>پیش‌تنظیم‌‌</b>های تهیه شده استفاده کن. مطابقات ریجکس ازبالا به پایین انجام میشوند</string>
     <string name="blocked_metadata_info">پر کردن بیش از یکی از این فیلدها، عملگر AND را بین آنها اعمال می‌کند</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">برای مسدود و رد کردن، ضربه بزنید</string>
     <string name="skip" comment="skip to next track">ردکردن</string>
     <string name="mute" comment="mute the sound">قطع صدا</string>
     <string name="do_nothing" comment="do nothing on the media player">کاری نکن</string>
@@ -261,7 +266,8 @@
     <string name="copy" comment="copy to clipboard">کپی</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">تگ‌های پنهان</string>
     <string name="pin" comment="pin a friend to the top">سنجاق‌زدن</string>
-    <string name="unpin" comment="unpin a friend to the top">حذف سنجاق</string>
+    <string name="unpin" comment="unpin a friend to the top">حذف پین</string>
+    <string name="pin_limit_reached" formatted="true">به حداکثر تعداد پین رسیدید (%1$d)</string>
     <string name="pin_help">روی آیتم های پین‌شده فشار دهیدتا مرتب‌سازی کنید</string>
     <string name="use_channel" comment="(Use youtube channel name)">از نام کانال استفاده کن</string>
     <string name="show_persistent_noti">یک اعلان مقاوم نشون بده</string>
@@ -294,9 +300,11 @@
     <string name="pref_enabled_apps_summary">از برنامه هایی که فراداده آهنگ رو نشان میدهند پشتیبانی می‌کند، برای جلوگیری ار اسکرابل تکراری از اسپاتیفای فقط در یک جا فعالش کنید.</string>
     <string name="pref_enabled_apps_title">برنامه مدنظر رو انتخاب کن</string>
     <string name="pref_auto_detect">از یرنامه های تازه به صورت خودکار اسکرابل کن</string>
+    <string name="pref_spotify_remote">اسکرابل کردن اسپاتیفای وقتی که در دستگاه‌های دیگر درحال پخش است</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">از جستجوی تقریبی برای تصاویر هنرمند استفاده کن</string>
     <string name="pref_link_heart_button_rating">استفاده از دکمه قلب در اعلان آن را در پخش کننده رسانه نیز به موارد دلخواه اضافه بکند</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">غیرفعال کردن اسکرابل مداوم از میکروفون هنگام پخش موسیقی توسط دستگاه</string>
+    <string name="pref_delay">تأخیر در اسکرابل (هر کدام که زودتر اتفاق بیفتد)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">دقیقه</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">درصد</string>
     <string name="pref_logout">خروج از سیستم</string>
@@ -304,6 +312,7 @@
     <string name="pref_login">ورود به سیستم</string>
     <string name="pref_about" comment="Info about this app">درمورد برنامه</string>
     <string name="pref_privacy_policy">خط مشی رازداری</string>
+    <string name="pref_scrobble_only">(فقط اسکرابل)</string>
     <string name="pref_user_label" comment="(Like username)">کاربر</string>
     <string name="pref_token_label" comment="For Listenbrainz">توکن دسترسی</string>
     <string name="api_url" comment="For Listenbrainz">لینک واسط برنامه</string>
@@ -343,6 +352,7 @@
     <string name="pref_notify_updates">آپدیت خودکار</string>
     <string name="update_downloaded">آپدیت دانلود شد</string>
     <string name="pref_search_url_template">الگوی آدرس اینترنتی جستجو</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">از $query به عنوان نگهدارنده عبارت جستجو استفاده کنید</string>
     <string name="pref_native_file_picker">از انتخابگر فایل محلی استفاده کن</string>
     <string name="update_available" formatted="true" comment="%1= the version number">آپدیت پیداشد: %1$s</string>
     <string name="downloading">درحال دانلود</string>
@@ -371,12 +381,16 @@
     <string name="submitting_loves" formatted="true">ارسال مواردعلاقه٬ %1$d تا باقیمانده</string>
     <string name="pending_batch" comment="For pending scrobbles">انجام ارسال دسته ای</string>
     <string name="bar_chart">نموداد نواری</string>
+    <string name="cleared_disabled_apps">برنامه‌های غیرفعال پاک شدند</string>
     <string name="fix_it_title">راه حل ممکنه</string>
     <string name="fix_it_startup_title">بهینه‌ساز مصرف برق / مدیران استارت‌آپ</string>
+    <string name="fix_it_battery_title">غیرفعال کردن بهینه‌ساز باتری</string>
     <string name="fix_it_energy_title">غیرفعال کردن بهینه‌ساز انرژی</string>
     <string name="fix_it_action" comment="(To open an app)">بازکن</string>
     <string name="delete_account">حذف حساب</string>
+    <string name="delete_account_custom_servers">برای سرورهای متفرقه، مستندات مربوط به آنها را بررسی کنید.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">اضافه کردن یا تغییر تصویر</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">از گالری</string>
     <string name="square_photo_hint">برای بهترین نتیجه از یه تصویر مربعی استفاده کن</string>
     <string name="scrobble_to_file">فایل</string>
     <string name="password">رمز عبور</string>
@@ -384,6 +398,7 @@
     <string name="scan_qr">این کد رو اسکن کن تاوارد سیستم بشی</string>
     <string name="copy_from">کپی از</string>
     <string name="nothing" comment="nothing/none">هیچی</string>
+    <string name="borders" comment="Borders between images in the generated collage">مرزها</string>
     <string name="ok">تایید</string>
     <string name="cancel">لغو</string>
     <string name="back">برگشت</string>
@@ -398,8 +413,11 @@
     <string name="low" comment="As in high/medium/low">کم</string>
     <string name="needs_plugin" comment="Used for some desktop media players">برخی برنامه ها به افزونه نیاز دارند</string>
     <string name="reload" comment="Reload or refresh">بارگذاری مجدد</string>
+    <string name="min_track_duration">اسکرابل آهنگ‌های طولانی‌تر از</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">کشور برای فراداده %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">فراداده‌های از دست رفته برای %1$s را بگرد</string>
     <string name="login_in_browser">ورود را در پنجره مرورگر تکمیل کنید</string>
+    <string name="edit_no_save">این برای اسکروبل‌های آینده ذخیره نخواهد شد.</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">این برنامه رو از %1$s دریافت کن</string>
     <string name="first_artist">فقط ار هنرمند اول استفاده کن</string>
     <string name="external_metadata">منابع خارجی فراداده</string>
@@ -407,6 +425,7 @@
     <string name="get_pro">به این برنامه کمک کنید</string>
     <string name="one_time_purchase">پرداخت یک باره</string>
     <string name="help">کمک</string>
+    <string name="pro_support">این یک راه ساده و سریع برای کاربران فوق‌العاده‌ای مثل شماست تا حمایت خود را از ارزش این برنامه نشان دهند.</string>
     <string name="pro_also_get">همچنین از ویژگی‌های زیر بهره‌مند می‌شید:</string>
     <string name="thank_you">خ</string>
     <string name="purchase_pending">خرید شما هنوز توسط خدمات دهنده پرداخت شما تأیید نشده است. لطفاً پس از چند دقیقه دوباره مراجعه کنید.</string>
@@ -418,6 +437,7 @@
 • صفحه وب گوگل پلی را از رایانه خود باز کنید.
 • با حسابی که خریدید وارد شوید.
 • این برنامه رو مستقیماً از صفحه وب گوگل پلی نصب کنید.</string>
+    <string name="billing_block">مسدود کردن هنرمندان/آهنگ‌ها و رد یا بی‌صدا کردن خودکار</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">تا %1$d دوست را پین کنید و آنها را دوباره مرتب کنید</string>
     <string name="billing_sharing">حذف نام برنامه هنگام اشتراک‌گذاری</string>
     <string name="billing_scrobble_source">برنامه‌هایی را که از آنها اسکرابل کرده‌اید به خاطر بسپارید و ببینید و مستقیماً در آنها جستجو کنید</string>

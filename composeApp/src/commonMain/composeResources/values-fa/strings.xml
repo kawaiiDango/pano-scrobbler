@@ -94,7 +94,7 @@
     <string name="state_scrobbling">درحال اسکرابل…</string>
     <string name="state_scrobbled">اسکرابل‌شده</string>
     <string name="state_unscrobbled">اسکرابل‌نشده</string>
-    <string name="tap_to_edit">کلیک برای اصلاح</string>
+    <string name="tap_to_edit">(کلیک برای اصلاح)</string>
     <string name="recently_scrobbled">به تازگی اسکرابل‌شده</string>
     <string name="recents" comment="Short for recently scrobbled">اخیر</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">اولین اسکرابل در %1$s</string>
@@ -123,7 +123,7 @@
     <string name="rank_change_new">دربازه قبلی اسکرابل نشده</string>
     <string name="search">جستجو</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">پاک‌کردن کل تاریخچه</string>
-    <string name="clear_history_specific" comment="(talking about search history, tag history)">این آیتم رو از تاریخچه حذف کنم؟ </string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">این آیتم رو از تاریخچه حذف کنم؟</string>
     <string name="take_long_time">این کار یه کم وقت‌گیره</string>
     <string name="full_index_desc">اینو فقط وقتی اسفاده کن که اسکرابل‌ها رو از سایت حذف یا اصلاح کردی</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">%1$s مورد برتر در هر دسته رو جستجو کردم</string>
@@ -262,6 +262,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">تگ‌های پنهان</string>
     <string name="pin" comment="pin a friend to the top">سنجاق‌زدن</string>
     <string name="unpin" comment="unpin a friend to the top">حذف سنجاق</string>
+    <string name="pin_help">روی آیتم های پین‌شده فشار دهیدتا مرتب‌سازی کنید</string>
     <string name="use_channel" comment="(Use youtube channel name)">از نام کانال استفاده کن</string>
     <string name="show_persistent_noti">یک اعلان مقاوم نشون بده</string>
     <string name="fix_it_desc">اینا در برخی از دستگاهها کمک می‌کنند تا اسکرابلر در پس‌زمینه فعالیت کند</string>
@@ -275,7 +276,7 @@
     <string name="energetic" comment="(Energetic music)">پرانرژی</string>
     <string name="danceable">قابل رقص</string>
     <string name="valence" comment="(Musical positivity)">شاداب</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">معروفیت: %1$d٪٪</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">محبویت: %1$d٪٪</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">بررسی</string>
     <string name="enable" comment="To enable some feature">فعال</string>
     <string name="disable" comment="To disable some feature">غیرفعال</string>
@@ -283,10 +284,31 @@
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">اندازه</string>
     <string name="skip_missing_images" comment="(while generating a collage)">ردکردن عکسهای ناموجود</string>
     <string name="create_collage">ساخت کلاژ</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">عنوان عکس</string>
     <string name="username" comment="last.fm Username">نام‌کاربر</string>
+    <string name="pref_master">اسکرابل موسیقی</string>
     <string name="pref_noti">اعلانات</string>
     <string name="pref_lockscreen_noti">اعلانات صفحه قفل</string>
+    <string name="pref_offline_info">اسکرابل‌های آفلاین &amp; مواردعلاقه برای ارسال در آینده ذخیره میشوند.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">اسکرابل از</string>
+    <string name="pref_enabled_apps_summary">از برنامه هایی که فراداده آهنگ رو نشان میدهند پشتیبانی می‌کند، برای جلوگیری ار اسکرابل تکراری از اسپاتیفای فقط در یک جا فعالش کنید.</string>
+    <string name="pref_enabled_apps_title">برنامه مدنظر رو انتخاب کن</string>
+    <string name="pref_auto_detect">از یرنامه های تازه به صورت خودکار اسکرابل کن</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">از جستجوی تقریبی برای تصاویر هنرمند استفاده کن</string>
+    <string name="pref_link_heart_button_rating">استفاده از دکمه قلب در اعلان آن را در پخش کننده رسانه نیز به موارد دلخواه اضافه بکند</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">غیرفعال کردن اسکرابل مداوم از میکروفون هنگام پخش موسیقی توسط دستگاه</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">دقیقه</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">درصد</string>
+    <string name="pref_logout">خروج از سیستم</string>
+    <string name="sure_tap_again">مطمئنی؟ دوباره تایید کنید</string>
+    <string name="pref_login">ورود به سیستم</string>
+    <string name="pref_about" comment="Info about this app">درمورد برنامه</string>
+    <string name="pref_privacy_policy">خط مشی رازداری</string>
+    <string name="pref_user_label" comment="(Like username)">کاربر</string>
+    <string name="pref_token_label" comment="For Listenbrainz">توکن دسترسی</string>
+    <string name="api_url" comment="For Listenbrainz">لینک واسط برنامه</string>
+    <string name="server_url" comment="For self hosted scrobbling services">لینک سرور</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">شما میتونید توکن دسترسی‌تون تواینجا پیداکنید: %1$s</string>
     <string name="pref_now_playing">ثبت آهنگ درحال پخش</string>
     <string name="pref_fetch_album">جستجوی داده ناموجود آلبوم از lastFM</string>
     <string name="pref_locale">زبان</string>
@@ -315,10 +337,13 @@
     <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">داده موجود</string>
     <string name="pref_translate">به ترجمه این برنامه کمک کنید</string>
     <string name="pref_translate_credits">همکاران مترجم</string>
+    <string name="pref_oss_credits">اطلاعات متن‌باز</string>
     <string name="pref_check_updates">بررسی آپدیت</string>
     <string name="no_updates">آپدیتی موجود نیست</string>
     <string name="pref_notify_updates">آپدیت خودکار</string>
     <string name="update_downloaded">آپدیت دانلود شد</string>
+    <string name="pref_search_url_template">الگوی آدرس اینترنتی جستجو</string>
+    <string name="pref_native_file_picker">از انتخابگر فایل محلی استفاده کن</string>
     <string name="update_available" formatted="true" comment="%1= the version number">آپدیت پیداشد: %1$s</string>
     <string name="downloading">درحال دانلود</string>
     <string name="download" comment="Its a verb">دانلود</string>
@@ -333,5 +358,69 @@
     <string name="import_lists_keep">ادغام و نگه‌داشتن اصلاحات و لیست بلاک موجود</string>
     <string name="import_settings">تنظیمات واردکردن</string>
     <string name="copied">کپی شد!</string>
+    <string name="lastfm_reauth">برای ویرایش یا حذف اسکرابل‌ها، باید مجددا احراز هویت بشید</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">نمونه شبه %1$s</string>
+    <string name="failed_encode_url">رمزگذاری URL انجام نشد</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">چک کردن %1$s</string>
+    <string name="no_browser">مرورگری نصب نشده</string>
+    <string name="no_player">پخش‌کننده آهنگی نصب نشده</string>
+    <string name="not_running">⚠ این برنامه توسط سیستم قطع شد</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">دلیلش: %1$s</string>
+    <string name="not_running_fix_action">حلش کن</string>
+    <string name="login_submit" comment="Verifies the login details">تأییدکن</string>
+    <string name="submitting_loves" formatted="true">ارسال مواردعلاقه٬ %1$d تا باقیمانده</string>
+    <string name="pending_batch" comment="For pending scrobbles">انجام ارسال دسته ای</string>
+    <string name="bar_chart">نموداد نواری</string>
+    <string name="fix_it_title">راه حل ممکنه</string>
+    <string name="fix_it_startup_title">بهینه‌ساز مصرف برق / مدیران استارت‌آپ</string>
+    <string name="fix_it_energy_title">غیرفعال کردن بهینه‌ساز انرژی</string>
+    <string name="fix_it_action" comment="(To open an app)">بازکن</string>
+    <string name="delete_account">حذف حساب</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">اضافه کردن یا تغییر تصویر</string>
+    <string name="square_photo_hint">برای بهترین نتیجه از یه تصویر مربعی استفاده کن</string>
+    <string name="scrobble_to_file">فایل</string>
+    <string name="password">رمز عبور</string>
+    <string name="create" comment="Create a new file">ساخت</string>
+    <string name="scan_qr">این کد رو اسکن کن تاوارد سیستم بشی</string>
+    <string name="copy_from">کپی از</string>
+    <string name="nothing" comment="nothing/none">هیچی</string>
+    <string name="ok">تایید</string>
+    <string name="cancel">لغو</string>
+    <string name="back">برگشت</string>
+    <string name="done">انجام‌شد</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">تلاش مجدد</string>
+    <string name="run_on_start">شروع بکار هنگام روشن شدن کامپیوتر</string>
+    <string name="use_browser">لطفاً برای این کار از یک مرورگر در دستگاه پشتیبانی‌شده استفاده کنید.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">ذخیره گزارش‌ها</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">کنتراست</string>
+    <string name="high" comment="As in high/medium/low">زیاد</string>
+    <string name="medium" comment="As in high/medium/low">متعادل</string>
+    <string name="low" comment="As in high/medium/low">کم</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">برخی برنامه ها به افزونه نیاز دارند</string>
+    <string name="reload" comment="Reload or refresh">بارگذاری مجدد</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">فراداده‌های از دست رفته برای %1$s را بگرد</string>
+    <string name="login_in_browser">ورود را در پنجره مرورگر تکمیل کنید</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">این برنامه رو از %1$s دریافت کن</string>
+    <string name="first_artist">فقط ار هنرمند اول استفاده کن</string>
+    <string name="external_metadata">منابع خارجی فراداده</string>
     <!--  pro  -->
+    <string name="get_pro">به این برنامه کمک کنید</string>
+    <string name="one_time_purchase">پرداخت یک باره</string>
+    <string name="help">کمک</string>
+    <string name="pro_also_get">همچنین از ویژگی‌های زیر بهره‌مند می‌شید:</string>
+    <string name="thank_you">خ</string>
+    <string name="purchase_pending">خرید شما هنوز توسط خدمات دهنده پرداخت شما تأیید نشده است. لطفاً پس از چند دقیقه دوباره مراجعه کنید.</string>
+    <string name="billing_troubleshoot">قبلاً خریدید؟
+
+خریدهای شما توسط گوگل پلی مدیریت می‌شوند. آن‌ها به یک حساب گوگل پلی که خرید را انجام داده است، مرتبط هستند. وقتی برنامه را روی دستگاه جدیدی با چندین حساب نصب می‌کنید، گوگل پلی می‌تواند آن را به یک حساب اشتباه مرتبط کند. بهترین راه حل برای انتخاب صریح حساب صاحب خرید، نصب برنامه از طریق رایانه از طریق صفحه وب گوگل پلی است:
+
+• این برنامه رو حذف نصب کنید.
+• صفحه وب گوگل پلی را از رایانه خود باز کنید.
+• با حسابی که خریدید وارد شوید.
+• این برنامه رو مستقیماً از صفحه وب گوگل پلی نصب کنید.</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">تا %1$d دوست را پین کنید و آنها را دوباره مرتب کنید</string>
+    <string name="billing_sharing">حذف نام برنامه هنگام اشتراک‌گذاری</string>
+    <string name="billing_scrobble_source">برنامه‌هایی را که از آنها اسکرابل کرده‌اید به خاطر بسپارید و ببینید و مستقیماً در آنها جستجو کنید</string>
+    <string name="billing_regex_extract">نوشتن قوانین سفارشی استخراج فراداده با استفاده از ریجکس</string>
+    <string name="billing_max_devices_reached" formatted="true">این کد قبلاً روی حداکثر (%1$d) دستگاه استفاده شده است.</string>
 </resources>

@@ -187,6 +187,7 @@
     <string name="weeks">周</string>
     <string name="monthly">每月</string>
     <string name="months">月</string>
+    <string name="days">天</string>
     <string name="years" comment="For the charts menu which displays year by year">年</string>
     <string name="charts_overall">总览</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">听歌活动</string>
@@ -279,6 +280,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable some feature">启用</string>
+    <string name="disable" comment="To disable some feature">停用</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">移除： %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">尺寸</string>
     <string name="skip_missing_images" comment="(while generating a collage)">跳过缺失的图像</string>
     <string name="create_collage">创建拼贴</string>
@@ -336,6 +339,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">列表</string>
     <string name="regex_rules">正则表达式</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">已屏蔽的元数据条目</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">任意内容</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">现有数据</string>
     <string name="pref_translate">翻译本应用</string>
     <string name="pref_translate_credits">翻译人员</string>
     <string name="pref_oss_credits">开源许可</string>
@@ -406,10 +411,13 @@
     <string name="low" comment="As in high/medium/low">低</string>
     <string name="needs_plugin" comment="Used for some desktop media players">某些应用需要插件</string>
     <string name="reload" comment="Reload or refresh">重载</string>
+    <string name="pref_tray_icon_theme">托盘图标主题</string>
+    <string name="min_track_duration">滚动曲目时间超过</string>
     <string name="automation">从自动化应用控制Pano Scrobbler</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s 元数据区域</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">为 %1$s 获取缺失的元数据</string>
     <string name="login_in_browser">在浏览器窗口完成登录</string>
+    <string name="edit_no_save">这将不会保存到将来的抓取中</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">在 %1$s 上获取此应用</string>
     <string name="first_artist">仅使用第一个艺人</string>
     <string name="external_metadata">外部元数据源</string>

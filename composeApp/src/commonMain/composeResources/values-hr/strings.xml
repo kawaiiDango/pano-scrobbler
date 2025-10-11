@@ -192,6 +192,7 @@
     <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
     <string name="time_just_now">upravo sada</string>
     <string name="no_mail_apps">Nema instaliranih klijenata za epoštu</string>
+    <string name="add">Dodaj novu stavku</string>
     <string name="loved" comment="Its a noun">Voljeno</string>
     <string name="unloved" comment="Its a noun">Nije voljeno</string>
     <string name="simple_edits">Uređivanja</string>
@@ -310,6 +311,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popularnost: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiza</string>
     <string name="enable" comment="To enable some feature">Omogući</string>
+    <string name="disable" comment="To disable some feature">Onemogući</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Ukloni: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Veličina</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Preskoči slike koje nedostaju</string>
     <string name="create_collage">Stvori kolaž</string>
@@ -365,15 +368,22 @@
     <string name="pref_search_in_source">Traži i reproduciraj u aplikaciji iz koje je scrobbleano</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Za podržane aplikacije</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Popisi</string>
+    <string name="regex_rules">Regex pravila</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Blokirani metapodatci</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">bilo što</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">postojeći podatci</string>
     <string name="pref_translate">Prevedi ovu aplikaciju</string>
     <string name="pref_translate_credits">Popis prevoditelja</string>
     <string name="pref_oss_credits">Licence otvorenog koda</string>
     <string name="pref_check_updates">Provjeri ažuriranja</string>
+    <string name="no_updates">Nema dostupnih ažuriranja</string>
+    <string name="pref_notify_updates">Automatska ažuriranja</string>
+    <string name="update_downloaded">Ažuriranje je preuzeto</string>
     <string name="pref_search_url_template">Predložak URL-a tražilice</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Koristite $query na mjestu pojma pretraživanja</string>
     <string name="pref_native_file_picker">Koristi izvorni birač datoteka</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostupno ažuriranje: %1$s</string>
+    <string name="downloading">Preuzimanje u tijeku</string>
     <string name="download" comment="Its a verb">Preuzimanje</string>
     <string name="changelog">Popis promjena</string>
     <string name="import_hey_wtf">Ovo vjerojatno nije datoteka izvoza iz Pano Scrobblera</string>
@@ -414,6 +424,10 @@
     <string name="password">Lozinka</string>
     <string name="open_existing" comment="Append to an existing file">Dodaj postojećem</string>
     <string name="create" comment="Create a new file">Stvori</string>
+    <string name="scan_qr">Skeniraj ovo za prijavu</string>
+    <string name="copy_from">Kopiraj iz</string>
+    <string name="nothing" comment="nothing/none">Ništa</string>
+    <string name="borders" comment="Borders between images in the generated collage">Rubovi</string>
     <string name="ok">U redu</string>
     <string name="cancel">Odustani</string>
     <string name="back">Natrag</string>
@@ -426,8 +440,19 @@
     <string name="high" comment="As in high/medium/low">Visoko</string>
     <string name="medium" comment="As in high/medium/low">Srednje</string>
     <string name="low" comment="As in high/medium/low">Nisko</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Neke aplikacije zahtijevaju dodatke</string>
+    <string name="reload" comment="Reload or refresh">Osvježi</string>
+    <string name="pref_tray_icon_theme">Tema ikone u traci sustava</string>
+    <string name="min_track_duration">Scrobblaj pjesme duže od</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Država relevantna za metapodatke iz servisa %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Dohvaćanje metapodataka koji nedostaju sa servisa %1$s</string>
+    <string name="login_in_browser">Dovrši prijavu u prozoru internetskog preglednika</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Preuzmi ovu aplikaciju za %1$s</string>
+    <string name="first_artist">Koristi samo prvog izvođača</string>
+    <string name="external_metadata">Vanjski izvori metapodataka</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
+    <string name="one_time_purchase">Jednom</string>
     <string name="help">Pomoć</string>
     <string name="pro_support">Ovo je jednostavan i brzi način za nevjerojatne korisnike kao što ste Vi da daju podršku ovoj aplikaciji.</string>
     <string name="pro_also_get">Dobit ćete i slijedeće značajke:</string>

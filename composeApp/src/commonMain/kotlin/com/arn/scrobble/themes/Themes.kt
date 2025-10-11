@@ -1,12 +1,12 @@
 package com.arn.scrobble.themes
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +26,7 @@ fun AppTheme(
     val dynamic by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDynamic }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
-    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val isSystemInDarkTheme by isSystemInDarkThemeNative()
 
     LaunchedEffect(licenseState) {
         if (licenseState != LicenseState.VALID) {
@@ -118,6 +118,9 @@ fun AppPreviewTheme(content: @Composable () -> Unit) {
         content()
     }
 }
+
+@Composable
+expect fun isSystemInDarkThemeNative(): State<Boolean>
 
 @Composable
 expect fun getDynamicColorScheme(dark: Boolean): ColorScheme

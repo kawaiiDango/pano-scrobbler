@@ -553,12 +553,14 @@ tasks.register<Exec>("packageWindowsNsis") {
     val nsisScriptFile = File(nsisFilesDir, "install-script.nsi")
     val iconFile = file("app-icons/pano-scrobbler.ico")
 
+    val nsisDir = System.getenv("PROGRAMFILES(x86)") + "\\NSIS"
+
     doFirst {
         distFile.parentFile.mkdirs()
     }
 
     commandLine(
-        "makensis",
+        "\"$nsisDir\\makensis\"",
         "/DOUTFILE=" + distFile.absolutePath,
         "/DAPPDIR=" + executableDir.absolutePath,
         "/DVERSION_CODE=$verCode",

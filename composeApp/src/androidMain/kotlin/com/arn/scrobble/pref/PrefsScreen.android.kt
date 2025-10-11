@@ -175,3 +175,6 @@ actual fun addToStartup(
 }
 
 actual suspend fun isAddedToStartup() = false
+
+actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
+}

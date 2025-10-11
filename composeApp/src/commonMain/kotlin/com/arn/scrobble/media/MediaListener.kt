@@ -158,7 +158,7 @@ abstract class MediaListener(
             if (BuildKonfig.DEBUG || (!sameAsOld || onlyDurationUpdated))
                 Logger.i { "${metadata.copy(appId = "")} $lastPlaybackState ${hashCode().toHexString()}" }
 
-            if (!sameAsOld || onlyDurationUpdated) {
+            if (!sameAsOld || onlyDurationUpdated && trackInfo.appId !in Stuff.IGNORE_DURATION_CHANGE) {
                 trackInfo.putOriginals(
                     artist = metadata.artist,
                     title = metadata.title,

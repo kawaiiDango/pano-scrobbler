@@ -225,6 +225,10 @@ object Stuff {
         "app.revanced.android.apps.youtube.music",
     )
 
+    val IGNORE_DURATION_CHANGE = setOf(
+        "com.ilv.vradio",
+    )
+
     val BLOCKED_MEDIA_SESSION_TAGS = mapOf(
         "*" to listOf("CastMediaSession"),
         PACKAGE_YAMAHA_MUSIC_CAST to listOf("NotificationService"),
@@ -325,17 +329,6 @@ object Stuff {
     val globalUpdateAction by lazy { MutableStateFlow<UpdateAction?>(null) }
 
     fun Number.format() = numberFormat.format(this)!!
-
-    fun exec(command: String): String {
-        var resp = ""
-        try {
-            val process = Runtime.getRuntime().exec(command)
-            resp = process.inputStream.bufferedReader().readText()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return resp
-    }
 
     @Composable
     fun <T> Flow<MainPrefs>.collectAsStateWithInitialValue(

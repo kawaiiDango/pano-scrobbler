@@ -9,7 +9,15 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import com.arn.scrobble.PanoNativeComponents
+
+@Composable
+actual fun isSystemInDarkThemeNative(): State<Boolean> {
+    return PanoNativeComponents.onDarkModeChangeFlow.collectAsState(false)
+}
 
 @Composable
 actual fun getDynamicColorScheme(dark: Boolean): ColorScheme {

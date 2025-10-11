@@ -24,6 +24,8 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.setResourceReaderAndroidContext
 
 
 class App : Application(), Configuration.Provider {
@@ -35,6 +37,7 @@ class App : Application(), Configuration.Provider {
         }.build()
 
 
+    @OptIn(ExperimentalResourceApi::class)
     override fun onCreate() {
         AndroidStuff.applicationContext = applicationContext
         AndroidStuff.isMainProcess = isMainProcess()
@@ -65,7 +68,7 @@ class App : Application(), Configuration.Provider {
 
             CrashReporter.config(crashlyticsKeys)
         }
-        setComposeResourcesAndroidContext(this)
+        setResourceReaderAndroidContext(this)
         createChannels()
         initConnectivityCheck()
     }
@@ -117,18 +120,6 @@ class App : Application(), Configuration.Provider {
                 Stuff.isOnline = availableNetworks.isNotEmpty()
             }
         })
-    }
-
-    private fun setComposeResourcesAndroidContext(context: Context) {
-        val clazz =
-            Class.forName("org.jetbrains.compose.resources.AndroidContextProvider")
-        val field = clazz.getDeclaredField("ANDROID_CONTEXT")
-        field.isAccessible = true
-
-        // only set value if it is null
-        if (field.get(null) == null) {
-            field.set(null, context)
-        }
     }
 
     fun isMainProcess(): Boolean {

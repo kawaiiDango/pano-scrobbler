@@ -1,7 +1,6 @@
 package com.arn.scrobble.main
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -38,18 +37,17 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
 import androidx.navigation.compose.rememberNavController
-import androidx.room.useReaderConnection
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
-import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.logger.JvmLogger
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
+import com.arn.scrobble.themes.isSystemInDarkThemeNative
 import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
@@ -179,7 +177,7 @@ fun main(args: Array<String>) {
 
         var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
         var windowCreated by remember { mutableStateOf(windowShown) }
-        val isSystemInDarkTheme = isSystemInDarkTheme()
+        val isSystemInDarkTheme by isSystemInDarkThemeNative()
         val trayIconTheme by PlatformStuff.mainPrefs.data
             .map { it.trayIconTheme }
             .collectAsState(Stuff.mainPrefsInitialValue.trayIconTheme)
@@ -212,7 +210,7 @@ fun main(args: Array<String>) {
             exitProcess(0)
         }
 
-        LaunchedEffect(trayIconTheme) {
+        LaunchedEffect(trayIconTheme, isSystemInDarkTheme) {
             combine(
                 PanoNotifications.playingTrackTrayInfo,
                 Stuff.globalUpdateAction

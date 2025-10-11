@@ -26,13 +26,6 @@
 -dontwarn org.conscrypt.**
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 
-# this should be accessible with reflection
--keepclassmembers class org.jetbrains.compose.resources.AndroidContextProvider {
-    static android.content.Context ANDROID_CONTEXT;
-}
-
-# used by zero-allocation-hashing
--dontwarn sun.nio.ch.DirectBuffer
 # A resource is loaded with a relative path so the package of this class must be preserved.
 #-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 

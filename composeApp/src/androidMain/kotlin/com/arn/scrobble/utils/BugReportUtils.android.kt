@@ -14,6 +14,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.email
 import pano_scrobbler.composeapp.generated.resources.no_mail_apps
 import java.io.File
+import java.io.IOException
 
 actual object BugReportUtils {
 
@@ -95,7 +96,7 @@ actual object BugReportUtils {
             }
         }
 
-        val log = Stuff.exec("logcat -d *:I")
+        val log = exec("logcat -d *:I")
         val logFile = File(AndroidStuff.applicationContext.cacheDir, "share/pano-scrobbler.log")
         logFile.parentFile!!.mkdirs()
         logFile.writeText(log)
@@ -107,5 +108,16 @@ actual object BugReportUtils {
 //            )
 
         return logFile.absolutePath
+    }
+
+    private fun exec(command: String): String {
+        var resp = ""
+        try {
+            val process = Runtime.getRuntime().exec(command)
+            resp = process.inputStream.bufferedReader().readText()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return resp
     }
 }

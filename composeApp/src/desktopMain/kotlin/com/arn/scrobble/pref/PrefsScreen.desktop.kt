@@ -5,6 +5,8 @@ import com.arn.scrobble.utils.DesktopStuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.run_on_start
+import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
+import pano_scrobbler.composeapp.generated.resources.use_something
 
 actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
     // no-op
@@ -48,3 +50,18 @@ actual fun addToStartup(
 }
 
 actual suspend fun isAddedToStartup() = DesktopStuff.isAddedToStartup()
+
+actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
+    if (DesktopStuff.os == DesktopStuff.Os.Windows) {
+        listScope.item(MainPrefs::tidalSteelSeries.name) {
+            SwitchPref(
+                text = stringResource(
+                    Res.string.use_something,
+                    stringResource(Res.string.tidal_steelseries)
+                ),
+                value = enabled,
+                copyToSave = { copy(tidalSteelSeries = it) }
+            )
+        }
+    }
+}

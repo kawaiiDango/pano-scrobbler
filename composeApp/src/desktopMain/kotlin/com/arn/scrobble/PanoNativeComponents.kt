@@ -7,7 +7,6 @@ import com.arn.scrobble.media.CommonPlaybackState
 import com.arn.scrobble.media.DesktopMediaListener
 import com.arn.scrobble.media.MetadataInfo
 import com.arn.scrobble.media.PlaybackInfo
-import com.arn.scrobble.media.PlayingTrackInfo
 import com.arn.scrobble.media.ScrobbleQueue
 import com.arn.scrobble.media.SessionInfo
 import com.arn.scrobble.media.listenForPlayingTrackEvents
@@ -15,12 +14,14 @@ import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Keep
 object PanoNativeComponents {
     var desktopMediaListener: DesktopMediaListener? = null
     val onFilePickedFlow = MutableSharedFlow<Pair<Int, String>>(extraBufferCapacity = 1)
+    val onDarkModeChangeFlow = MutableStateFlow<Boolean>(true)
 
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
@@ -129,6 +130,11 @@ object PanoNativeComponents {
     @JvmStatic
     fun onFilePicked(requestId: Int, uri: String) {
         onFilePickedFlow.tryEmit(requestId to uri)
+    }
+
+    @JvmStatic
+    fun onDarkModeChange(isDarkMode: Boolean) {
+        onDarkModeChangeFlow.value = isDarkMode
     }
 
     // external

@@ -87,7 +87,7 @@ and tapping on the "Copy last.fm session key" in the settings screen.
 - If you intend to package a build for desktop,
   use [Bellsoft's GraalVM based on OpenJDK 25](https://bell-sw.com/pages/downloads/native-image-kit/)
   as your gradle JDK and run gradle packageUberJarForCurrentOS. Also
-  have [makensis.exe](https://nsis.sourceforge.io/Main_Page) in your PATH for Windows.
+  have [NSIS](https://nsis.sourceforge.io/Main_Page) installed in Program Files on Windows.
 
 - Run ./gradlew composeApp:packageUberJarForCurrentOS
 

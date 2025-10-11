@@ -658,18 +658,7 @@ fun PrefsScreen(
             )
         }
 
-        if (PlatformStuff.isDesktop) {
-            item(MainPrefs::tidalSteelSeries.name) {
-                SwitchPref(
-                    text = stringResource(
-                        Res.string.use_something,
-                        stringResource(Res.string.tidal_steelseries)
-                    ),
-                    value = tidalSteelSeries,
-                    copyToSave = { copy(tidalSteelSeries = it) }
-                )
-            }
-        }
+        tidalSteelSeries(this, tidalSteelSeries)
 
         stickyHeader("misc_header") {
             SimpleHeaderItem(
@@ -913,3 +902,5 @@ expect fun addToStartup(
 )
 
 expect suspend fun isAddedToStartup(): Boolean
+
+expect fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean)

@@ -245,7 +245,7 @@ fixes java.lang.IllegalArgumentException: foregroundServiceType 0x00000001 is no
                 tools:node="remove" />
         </provider>
 
-        <!--   Do it with reflection instead to make it work for multi process     -->
+        <!--   Do it with setResourceReaderAndroidContext instead to make it work for multi process     -->
         <provider
             android:authorities="${applicationId}.resources.AndroidContextProvider"
             android:name="org.jetbrains.compose.resources.AndroidContextProvider"

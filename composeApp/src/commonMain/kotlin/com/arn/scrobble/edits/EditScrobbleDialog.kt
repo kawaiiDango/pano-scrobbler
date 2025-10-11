@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.outlined.HideSource
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.ButtonDefaults
@@ -41,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.icons.AlbumArtist
+import com.arn.scrobble.icons.ContentSaveOffOutline
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
@@ -238,7 +240,7 @@ fun EditScrobbleDialog(
                             imageVector = if (save)
                                 Icons.Filled.Save
                             else
-                                Icons.Outlined.Save,
+                                PanoIcons.ContentSaveOffOutline,
                             contentDescription = stringResource(Res.string.save),
                         )
                     }

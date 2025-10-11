@@ -84,7 +84,7 @@ jobs:
           LINUX_ARM64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-linux-aarch64.tar.gz'
         run: |
           set -euxo pipefail
-          mkdir -p "~/nik/downloads" "~/nik/extracted"
+          mkdir -p ~/nik/downloads ~/nik/extracted
 
           case "${{ matrix.resources-dir }}" in
             windows-x64)
@@ -103,16 +103,31 @@ jobs:
           esac
 
           echo "Downloading ${FILENAME} from ${LIBERICA_REPO} tag ${LIBERICA_TAG}"
-          gh release download "${LIBERICA_TAG}" -R "${LIBERICA_REPO}" -p "${FILENAME}" -D "~/nik/downloads"
+          gh release download "${LIBERICA_TAG}" -R "${LIBERICA_REPO}" -p "${FILENAME}" -D ~/nik/downloads
 
-          ARCHIVE="~/nik/downloads/${FILENAME}"
-          # tar on GitHub runners can extract both .zip and .tar.gz
-          tar -xf "${ARCHIVE}" -C "~/nik/extracted"
+          ARCHIVE=~/nik/downloads/${FILENAME}
+          DEST=~/nik/extracted
 
-          EXTRACT_DIR="$(find "~/nik/extracted" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+          case "${{ matrix.resources-dir }}" in
+            windows-x64)
+              7z x "$ARCHIVE" -o"$DEST" -y
+              ;;
+            linux-x64)
+              tar -xf "${ARCHIVE}" -C "${DEST}"
+              ;;
+            linux-arm64)
+              tar -xf "${ARCHIVE}" -C "${DEST}"
+              ;;
+            *)
+              echo "Unknown matrix.resources-dir: ${{ matrix.resources-dir }}" >&2
+              exit 1
+              ;;
+          esac
+
+          EXTRACT_DIR="$(find "${DEST}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
           if [ -z "${EXTRACT_DIR}" ]; then
             echo "Failed to locate extracted directory" >&2
-            ls -la "~/nik/extracted" || true
+            ls -la "${DEST}" || true
             exit 1
           fi
 

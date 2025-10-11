@@ -19,6 +19,7 @@
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">Più ascoltati %1$s</string>
     <string name="appwidget_loading">Caricamento…</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
+    <string name="persistent_noti_text">Tocca per nascondere</string>
     <string name="scrobbler_off">Scrobbler disattivato</string>
     <string name="scrobbler_on">Scrobbler attivato</string>
     <plurals name="num_weeks">

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">تنظیمات</string>
+    <string name="artists">هنرمندان</string>
+    <string name="albums">آلبوم‌ها</string>
+    <string name="tracks">آهنگ‌ها</string>
+    <string name="state_scrobbling">درحال اسکرابل…</string>
+    <string name="search">جستجو</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s رو تشخیص‌دادم</string>
+    <string name="new_player_prompt">این برنامه رو اسکرابل کنم؟</string>
+    <string comment="Its a noun" name="channel_err">خطای اسکرابل</string>
+    <string name="new_app">برنامه جدید</string>
+    <string name="pending_scrobbles">اسکرابل های منتظر</string>
+    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">نمودارها</string>
+    <string name="weekly">هفتگی</string>
+    <string name="monthly">ماهانه</string>
+    <string name="charts_overall">درمجموع</string>
+    <string name="charts_no_data">چیزی تو این بازه نیست</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s اسکرابل برتر</string>
+    <string name="appwidget_loading">درحال بارگیری…</string>
+    <string name="show_persistent_noti">یک اعلان مقاوم نشون بده</string>
+    <string name="persistent_noti_text">برای مخفی‌ کردن کلیک کن</string>
+    <string name="scrobbler_off">اسکرابل کننده خاموش</string>
+    <string name="scrobbler_on">اسکرابل کننده روشن</string>
+    <plurals name="num_weeks">
+                
+        <item quantity="one">%1$s هفته</item>
+                
+        <item quantity="other">%1$s هفته</item>
+            
+    </plurals>
+    <plurals name="num_months">
+                
+        <item quantity="one">%1$s ماه</item>
+                
+        <item quantity="other">%1$s ماه</item>
+            
+    </plurals>
+    <plurals name="num_years">
+                
+        <item quantity="one">%1$s سال</item>
+                
+        <item quantity="other">%1$s سال</item>
+            
+    </plurals>
+</resources>

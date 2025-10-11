@@ -84,7 +84,7 @@ jobs:
           LINUX_ARM64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-linux-aarch64.tar.gz'
         run: |
           set -euxo pipefail
-          mkdir -p "$RUNNER_TEMP/nik/downloads" "$RUNNER_TEMP/nik/extracted"
+          mkdir -p "~/nik/downloads" "~/nik/extracted"
 
           case "${{ matrix.resources-dir }}" in
             windows-x64)
@@ -103,16 +103,16 @@ jobs:
           esac
 
           echo "Downloading ${FILENAME} from ${LIBERICA_REPO} tag ${LIBERICA_TAG}"
-          gh release download "${LIBERICA_TAG}" -R "${LIBERICA_REPO}" -p "${FILENAME}" -D "$RUNNER_TEMP/nik/downloads"
+          gh release download "${LIBERICA_TAG}" -R "${LIBERICA_REPO}" -p "${FILENAME}" -D "~/nik/downloads"
 
-          ARCHIVE="$RUNNER_TEMP/nik/downloads/${FILENAME}"
+          ARCHIVE="~/nik/downloads/${FILENAME}"
           # tar on GitHub runners can extract both .zip and .tar.gz
-          tar -xf "${ARCHIVE}" -C "$RUNNER_TEMP/nik/extracted"
+          tar -xf "${ARCHIVE}" -C "~/nik/extracted"
 
-          EXTRACT_DIR="$(find "$RUNNER_TEMP/nik/extracted" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+          EXTRACT_DIR="$(find "~/nik/extracted" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
           if [ -z "${EXTRACT_DIR}" ]; then
             echo "Failed to locate extracted directory" >&2
-            ls -la "$RUNNER_TEMP/nik/extracted" || true
+            ls -la "~/nik/extracted" || true
             exit 1
           fi
 

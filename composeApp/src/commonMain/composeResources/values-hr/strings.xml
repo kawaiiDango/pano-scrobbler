@@ -219,6 +219,7 @@
     <string name="weeks">Tjedni</string>
     <string name="monthly">Mjesečni</string>
     <string name="months">Mjeseci</string>
+    <string name="days">Dana</string>
     <string name="years" comment="For the charts menu which displays year by year">Godine</string>
     <string name="charts_overall">Sveukupno</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktivnost slušanja</string>
@@ -444,9 +445,11 @@
     <string name="reload" comment="Reload or refresh">Osvježi</string>
     <string name="pref_tray_icon_theme">Tema ikone u traci sustava</string>
     <string name="min_track_duration">Scrobblaj pjesme duže od</string>
+    <string name="automation">Upravljajte Pano Scrobblerom iz aplikacija za automatizaciju</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Država relevantna za metapodatke iz servisa %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Dohvaćanje metapodataka koji nedostaju sa servisa %1$s</string>
     <string name="login_in_browser">Dovrši prijavu u prozoru internetskog preglednika</string>
+    <string name="edit_no_save">Ovo se neće spremiti za buduće scrobblove</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Preuzmi ovu aplikaciju za %1$s</string>
     <string name="first_artist">Koristi samo prvog izvođača</string>
     <string name="external_metadata">Vanjski izvori metapodataka</string>

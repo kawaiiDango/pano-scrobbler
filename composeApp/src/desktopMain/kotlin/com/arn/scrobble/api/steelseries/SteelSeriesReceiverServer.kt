@@ -114,11 +114,11 @@ actual object SteelSeriesReceiverServer {
     ) : NanoHTTPD(hostname, port) {
         override fun serve(session: IHTTPSession): Response {
             return if (session.method == Method.POST && session.uri == "/game_event") {
-                
+
                 // https://stackoverflow.com/questions/42504056/why-do-i-get-messy-code-of-chinese-filename-when-i-upload-files-to-nanohttpd-ser
                 // add "; charset=UTF-8" to the content type
                 val ct = ContentType(session.headers["content-type"]).tryUTF8()
-                session.headers.put("content-type", ct.contentTypeHeader)
+                session.headers["content-type"] = ct.contentTypeHeader
 
                 val files = mutableMapOf<String, String>()
                 session.parseBody(files)

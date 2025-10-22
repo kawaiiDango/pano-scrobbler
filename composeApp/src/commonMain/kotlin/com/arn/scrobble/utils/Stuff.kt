@@ -106,7 +106,12 @@ object Stuff {
 
     const val MANUFACTURER_HUAWEI = "huawei"
     const val MANUFACTURER_XIAOMI = "xiaomi"
+    const val MANUFACTURER_POCO = "poco"
     const val MANUFACTURER_SAMSUNG = "samsung"
+    const val MANUFACTURER_ONEPLUS = "oneplus"
+    const val MANUFACTURER_OPPO = "oppo"
+    const val MANUFACTURER_MEIZU = "meizu"
+    const val MANUFACTURER_VIVO = "vivo"
 
     const val PACKAGE_TV_SETTINGS = "com.android.tv.settings"
     const val ACTIVITY_TV_SETTINGS = "com.android.tv.settings.device.apps.AppsActivity"
@@ -240,22 +245,6 @@ object Stuff {
         PACKAGE_PIXEL_NP,
         PACKAGE_PIXEL_NP_R,
         PACKAGE_PIXEL_NP_AMM,
-    )
-
-    val STARTUPMGR_INTENTS = listOf(
-        //pkg, class
-        "com.miui.securitycenter" to "com.miui.permcenter.autostart.AutoStartManagementActivity",
-        "com.letv.android.letvsafe" to "com.letv.android.letvsafe.AutobootManageActivity",
-        "com.huawei.systemmanager" to "com.huawei.systemmanager.optimize.process.ProtectActivity",
-        "com.huawei.systemmanager" to "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity",
-        "com.coloros.safecenter" to "com.coloros.safecenter.permission.startup.StartupAppListActivity",
-        "com.coloros.safecenter" to "com.coloros.safecenter.startupapp.StartupAppListActivity",
-        "com.iqoo.secure" to "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity",
-        "com.iqoo.secure" to "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager",
-        "com.vivo.permissionmanager" to "com.vivo.permissionmanager.activity.BgStartUpManagerActivity",
-        "com.asus.mobilemanager" to "com.asus.mobilemanager.MainActivity",
-        "com.samsung.android.lool" to "com.samsung.android.sm.battery.ui.setting.SleepingAppsActivity",
-        "com.samsung.android.lool" to "com.samsung.android.sm.battery.ui.setting.AppPowerManagementActivity",
     )
 
     val disallowedWebviewUrls = listOf(

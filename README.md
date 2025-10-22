@@ -19,7 +19,7 @@
 
 **Windows:**
 
-[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe)
+[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe) [![winget](img/winget.svg)](https://winstall.app/apps/kawaiiDango.pano-scrobbler)
 
 **Linux:**
 

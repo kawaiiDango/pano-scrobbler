@@ -106,7 +106,6 @@ kotlin {
             implementation(libs.core)
             implementation(libs.appcompat)
 
-            implementation(compose.preview)
             implementation(libs.activity.compose)
             implementation(libs.androidx.work.runtime)
             implementation(libs.androidx.core.remoteviews)
@@ -129,7 +128,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.uiUtil)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(compose.preview)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)

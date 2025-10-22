@@ -90,15 +90,15 @@ object AndroidStuff {
 //    }
 
     fun isDkmaNeeded(): Boolean {
-        val packages = Stuff.STARTUPMGR_INTENTS.map { it.first }.toSet()
-        return packages.any {
-            try {
-                applicationContext.packageManager.getApplicationInfo(it, 0)
-                true
-            } catch (e: PackageManager.NameNotFoundException) {
-                false
-            }
-        }
+        val manufacturer = Build.MANUFACTURER.lowercase()
+
+        return manufacturer in arrayOf(
+            Stuff.MANUFACTURER_SAMSUNG,
+            Stuff.MANUFACTURER_ONEPLUS,
+            Stuff.MANUFACTURER_OPPO,
+            Stuff.MANUFACTURER_MEIZU,
+            Stuff.MANUFACTURER_VIVO,
+        )
     }
 
     fun createForegroundInfoNotification(title: String): ForegroundInfo {
@@ -133,6 +133,7 @@ object AndroidStuff {
                 Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(
             Stuff.MANUFACTURER_HUAWEI,
             Stuff.MANUFACTURER_XIAOMI,
+            Stuff.MANUFACTURER_POCO,
             Stuff.MANUFACTURER_SAMSUNG,
         )
     }

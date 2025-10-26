@@ -333,12 +333,7 @@ fun CollageGeneratorDialog(
     FilePicker(
         show = filePickerShown,
         mode = FilePickerMode.Save(
-            title = remember {
-                val cal = Calendar.getInstance()
-                "collage_" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" +
-                        cal[Calendar.DATE] + "_" + cal[Calendar.HOUR_OF_DAY] + "_" +
-                        cal[Calendar.MINUTE] + "_" + cal[Calendar.SECOND]
-            }
+            title = remember { "collage_" + Stuff.getFileNameDateSuffix() }
         ),
         type = FileType.PHOTO,
         onDismiss = { filePickerShown = false },

@@ -115,7 +115,7 @@ abstract class MediaListener(
                 return
             }
 
-            Logger.d { "playing: timePlayed=${trackInfo.timePlayed} title=${trackInfo.title} hash=${trackInfo.hash}" }
+            Logger.d { "playing: timePlayed=${trackInfo.timePlayed} title=${trackInfo.title} hash=${trackInfo.hash.toHexString()}" }
 
             scrobbleQueue.remove(trackInfo.lastScrobbleHash)
 
@@ -128,8 +128,8 @@ abstract class MediaListener(
             val delayFraction = scrobbleTimingPrefs.value.delayPercent / 100.0
             val delayMillisFraction = if (trackInfo.durationMillis > 0)
                 (trackInfo.durationMillis * delayFraction).toLong()
-            else
-                Long.MAX_VALUE
+            else // Assume 2 min track if duration is unknown. This happens mostly with radio apps
+                (120_000 * delayFraction).toLong()
 
             // don't scrobble < n seconds
             // -subtract some to round off. Sometimes 30 second tracks are reported as 29988ms
@@ -158,7 +158,7 @@ abstract class MediaListener(
             if (BuildKonfig.DEBUG || (!sameAsOld || onlyDurationUpdated))
                 Logger.i { "${metadata.copy(appId = "")} $lastPlaybackState ${hashCode().toHexString()}" }
 
-            if (!sameAsOld || onlyDurationUpdated && trackInfo.appId !in Stuff.IGNORE_DURATION_CHANGE) {
+            if (!sameAsOld || onlyDurationUpdated) {
                 trackInfo.putOriginals(
                     artist = metadata.artist,
                     title = metadata.title,

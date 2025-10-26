@@ -29,6 +29,7 @@ class ScrobblesPagingSource(
     private val addToPkgMap: (Long, String) -> Unit,
     private val onSetFirstScrobbleTime: (Long) -> Unit,
     private val onSetLastRecentsRefreshTime: (Long) -> Unit,
+    private val onSetTotal: (Int) -> Unit,
     private val onClearOverrides: () -> Unit,
 ) : PagingSource<ScrobblesLoaderPage, Track>() {
 
@@ -91,6 +92,8 @@ class ScrobblesPagingSource(
 
             if (page == 1)
                 onClearOverrides()
+
+            onSetTotal(total)
 
             if (shouldMarkFirstScrobbleOfTheDays)
                 markFirstScrobbleOfTheDays(entries)

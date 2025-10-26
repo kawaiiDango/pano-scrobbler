@@ -32,6 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
 import com.arn.scrobble.charts.HiddenTagsDialog
@@ -138,6 +142,39 @@ private fun PanoDialogs(
                     scrollState = scrollState,
                     modifier = modifier
                 )
+            }
+
+            is PanoDialog.MusicEntryInfoFromWidget -> {
+                val currentUser = Scrobblables.current?.userAccount?.user
+
+                if (currentUser != null) {
+                    val musicEntry = when {
+                        dialogArgs.track != null -> Track(
+                            name = dialogArgs.track,
+                            album = null,
+                            artist = Artist(name = dialogArgs.artist),
+                        )
+
+                        dialogArgs.album != null -> Album(
+                            name = dialogArgs.album,
+                            artist = Artist(name = dialogArgs.artist),
+                        )
+
+                        else -> Artist(
+                            name = dialogArgs.artist,
+                        )
+                    }
+
+                    MusicEntryInfoDialog(
+                        musicEntry = musicEntry,
+                        appId = null,
+                        user = currentUser,
+                        onNavigate = onNavigate,
+                        onOpenDialog = onOpenDialog,
+                        scrollState = scrollState,
+                        modifier = modifier
+                    )
+                }
             }
 
             is PanoDialog.TagInfo -> {

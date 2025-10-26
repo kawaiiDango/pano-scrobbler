@@ -67,72 +67,73 @@ jobs:
           ./gradlew composeApp:assembleReleaseGithub
           ./gradlew --stop
 
-      # - uses: graalvm/setup-graalvm@v1
-      #   with:
-      #     java-version: '21'
-      #     distribution: 'liberica'
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Install Liberica NIK (GraalVM)
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          LIBERICA_REPO: bell-sw/LibericaNIK
-          LIBERICA_TAG: '25.0.0+1-25+37'
-          WIN_X64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-windows-amd64.zip'
-          LINUX_X64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-linux-amd64.tar.gz'
-          LINUX_ARM64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-linux-aarch64.tar.gz'
-        run: |
-          set -euxo pipefail
-          mkdir -p ~/nik/downloads ~/nik/extracted
+        uses: graalvm/setup-graalvm@v1
+        with:
+         java-version: '25'
+         distribution: 'liberica'
+         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          case "${{ matrix.resources-dir }}" in
-            windows-x64)
-              FILENAME="${WIN_X64_FILE}"
-              ;;
-            linux-x64)
-              FILENAME="${LINUX_X64_FILE}"
-              ;;
-            linux-arm64)
-              FILENAME="${LINUX_ARM64_FILE}"
-              ;;
-            *)
-              echo "Unknown matrix.resources-dir: ${{ matrix.resources-dir }}" >&2
-              exit 1
-              ;;
-          esac
-
-          echo "Downloading ${FILENAME} from ${LIBERICA_REPO} tag ${LIBERICA_TAG}"
-          gh release download "${LIBERICA_TAG}" -R "${LIBERICA_REPO}" -p "${FILENAME}" -D ~/nik/downloads
-
-          ARCHIVE=~/nik/downloads/${FILENAME}
-          DEST=~/nik/extracted
-
-          case "${{ matrix.resources-dir }}" in
-            windows-x64)
-              7z x "$ARCHIVE" -o"$DEST" -y
-              ;;
-            linux-x64)
-              tar -xf "${ARCHIVE}" -C "${DEST}"
-              ;;
-            linux-arm64)
-              tar -xf "${ARCHIVE}" -C "${DEST}"
-              ;;
-            *)
-              echo "Unknown matrix.resources-dir: ${{ matrix.resources-dir }}" >&2
-              exit 1
-              ;;
-          esac
-
-          EXTRACT_DIR="$(find "${DEST}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
-          if [ -z "${EXTRACT_DIR}" ]; then
-            echo "Failed to locate extracted directory" >&2
-            ls -la "${DEST}" || true
-            exit 1
-          fi
-
-          echo "JAVA_HOME=${EXTRACT_DIR}" >> "$GITHUB_ENV"
-          echo "GRAALVM_HOME=${EXTRACT_DIR}" >> "$GITHUB_ENV"
+#      - name: Install Liberica NIK (GraalVM)
+#        shell: bash
+#        env:
+#          GH_TOKEN: ${{ github.token }}
+#          LIBERICA_REPO: bell-sw/LibericaNIK
+#          LIBERICA_TAG: '25.0.0+1-25+37'
+#          WIN_X64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-windows-amd64.zip'
+#          LINUX_X64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-linux-amd64.tar.gz'
+#          LINUX_ARM64_FILE: 'bellsoft-liberica-vm-openjdk25+37-25.0.0+1-linux-aarch64.tar.gz'
+#        run: |
+#          set -euxo pipefail
+#          mkdir -p ~/nik/downloads ~/nik/extracted
+#
+#          case "${{ matrix.resources-dir }}" in
+#            windows-x64)
+#              FILENAME="${WIN_X64_FILE}"
+#              ;;
+#            linux-x64)
+#              FILENAME="${LINUX_X64_FILE}"
+#              ;;
+#            linux-arm64)
+#              FILENAME="${LINUX_ARM64_FILE}"
+#              ;;
+#            *)
+#              echo "Unknown matrix.resources-dir: ${{ matrix.resources-dir }}" >&2
+#              exit 1
+#              ;;
+#          esac
+#
+#          echo "Downloading ${FILENAME} from ${LIBERICA_REPO} tag ${LIBERICA_TAG}"
+#          gh release download "${LIBERICA_TAG}" -R "${LIBERICA_REPO}" -p "${FILENAME}" -D ~/nik/downloads
+#
+#          ARCHIVE=~/nik/downloads/${FILENAME}
+#          DEST=~/nik/extracted
+#
+#          case "${{ matrix.resources-dir }}" in
+#            windows-x64)
+#              7z x "$ARCHIVE" -o"$DEST" -y
+#              ;;
+#            linux-x64)
+#              tar -xf "${ARCHIVE}" -C "${DEST}"
+#              ;;
+#            linux-arm64)
+#              tar -xf "${ARCHIVE}" -C "${DEST}"
+#              ;;
+#            *)
+#              echo "Unknown matrix.resources-dir: ${{ matrix.resources-dir }}" >&2
+#              exit 1
+#              ;;
+#          esac
+#
+#          EXTRACT_DIR="$(find "${DEST}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+#          if [ -z "${EXTRACT_DIR}" ]; then
+#            echo "Failed to locate extracted directory" >&2
+#            ls -la "${DEST}" || true
+#            exit 1
+#          fi
+#
+#          echo "JAVA_HOME=${EXTRACT_DIR}" >> "$GITHUB_ENV"
+#          echo "GRAALVM_HOME=${EXTRACT_DIR}" >> "$GITHUB_ENV"
 
       - name: Download native libraries
         shell: bash

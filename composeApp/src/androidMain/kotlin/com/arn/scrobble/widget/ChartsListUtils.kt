@@ -64,23 +64,19 @@ object ChartsListUtils {
 
         when (tab) {
             Stuff.TYPE_ARTISTS -> {
-                val artist = Artist(item.title)
                 deepLinkUri = DeepLinkUtils.buildDeepLink(
-                    PanoDialog.MusicEntryInfo(
-                        artist = artist,
-                        user = user
+                    PanoDialog.MusicEntryInfoFromWidget(
+                        artist = item.title,
                     )
                 )
             }
 
             Stuff.TYPE_ALBUMS -> {
                 if (item.subtitle != null) {
-                    val album = Album(item.title, Artist(item.subtitle))
-
                     deepLinkUri = DeepLinkUtils.buildDeepLink(
-                        PanoDialog.MusicEntryInfo(
-                            album = album,
-                            user = user
+                        PanoDialog.MusicEntryInfoFromWidget(
+                            artist = item.title,
+                            album = item.subtitle
                         )
                     )
                 }
@@ -88,12 +84,10 @@ object ChartsListUtils {
 
             Stuff.TYPE_TRACKS -> {
                 if (item.subtitle != null) {
-                    val track = Track(item.title, null, Artist(item.subtitle))
-
                     deepLinkUri = DeepLinkUtils.buildDeepLink(
-                        PanoDialog.MusicEntryInfo(
-                            track = track,
-                            user = user
+                        PanoDialog.MusicEntryInfoFromWidget(
+                            artist = item.title,
+                            track = item.subtitle
                         )
                     )
                 }

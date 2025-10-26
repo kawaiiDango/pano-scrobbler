@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,21 +37,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AppIcon
+import com.arn.scrobble.ui.EmptyText
+import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.PanoLazyColumn
+import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.needs_plugin
+import pano_scrobbler.composeapp.generated.resources.num_simple_edits
 import pano_scrobbler.composeapp.generated.resources.other_apps
 
 
@@ -65,14 +73,20 @@ fun AppListScreen(
     viewModel: AppListVM = viewModel { AppListVM() },
 ) {
     val appList by viewModel.appList.collectAsStateWithLifecycle()
+    val appListFiltered by viewModel.appListFiltered.collectAsStateWithLifecycle()
     val selectedPackages by viewModel.selectedPackages.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     var pluginsNeededExpanded by rememberSaveable { mutableStateOf(false) }
+    var searchTerm by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         if (!hasLoaded) {
             viewModel.load(packagesOverride)
         }
+    }
+
+    LaunchedEffect(searchTerm) {
+        viewModel.setFilter(searchTerm)
     }
 
     LaunchedEffect(preSelectedPackages) {
@@ -135,116 +149,143 @@ fun AppListScreen(
         }
     }
 
-    PanoLazyColumn(modifier = modifier) {
-        fun addItems(
-            items: List<AppItem>,
+    Column(modifier = modifier) {
+        if ((appList.musicPlayers.size + appList.otherApps.size) >
+            Stuff.MIN_ITEMS_TO_SHOW_SEARCH
         ) {
-            itemsIndexed(
-                items = items,
-                key = { idx, appItem -> appItem.appId }
-            ) { idx, appItem ->
-
-                val showAppId =
-                    items.getOrNull(idx - 1)?.friendlyLabel?.lowercase() == appItem.friendlyLabel.lowercase() ||
-                            items.getOrNull(idx + 1)?.friendlyLabel?.lowercase() == appItem.friendlyLabel.lowercase()
-
-                AppListItem(
-                    appItem = appItem,
-                    isSelected = selectedPackages.contains(appItem.appId),
-                    isSingleSelect = isSingleSelect,
-                    showAppId = showAppId,
-                    onToggle = { selected ->
-                        if (isSingleSelect) {
-                            viewModel.setSelectedPackages(setOf(appItem.appId))
-                        } else {
-                            viewModel.setMultiSelection(appItem.appId, selected)
-                        }
-                    },
-                    modifier = Modifier.animateItem(),
-                )
-            }
-        }
-
-        fun addPlaceholderItems(
-            count: Int,
-        ) {
-            items(
-                count,
-            ) {
-                AppListItem(
-                    appItem = null,
-                    isSelected = false,
-                    isSingleSelect = isSingleSelect,
-                    showAppId = false,
-                    onToggle = {},
-                    modifier = Modifier.shimmerWindowBounds().animateItem(),
-                    forShimmer = true,
-                )
-            }
-        }
-
-        stickyHeader("header_music_players") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.music_players),
-                icon = Icons.Outlined.PlayCircle
+            SearchField(
+                searchTerm = searchTerm,
+                onSearchTermChange = {
+                    searchTerm = it
+                },
+                modifier = Modifier
+                    .padding(panoContentPadding(bottom = false))
             )
         }
 
-        if (!hasLoaded) {
-            addPlaceholderItems(10)
-        } else {
-            addItems(appList.musicPlayers)
+        PanoLazyColumn(
+            contentPadding = panoContentPadding(),
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            fun addItems(
+                items: List<AppItem>,
+            ) {
+                itemsIndexed(
+                    items = items,
+                    key = { idx, appItem -> appItem.appId }
+                ) { idx, appItem ->
 
-            if (appList.otherApps.isNotEmpty()) {
-                stickyHeader("header_other_apps") {
-                    SimpleHeaderItem(
-                        text = stringResource(Res.string.other_apps),
-                        icon = Icons.Outlined.Apps
+                    val showAppId =
+                        items.getOrNull(idx - 1)?.friendlyLabel.equals(
+                            appItem.friendlyLabel,
+                            ignoreCase = true
+                        ) ||
+                                items.getOrNull(idx + 1)?.friendlyLabel.equals(
+                                    appItem.friendlyLabel,
+                                    ignoreCase = true
+                                )
+
+                    AppListItem(
+                        appItem = appItem,
+                        isSelected = selectedPackages.contains(appItem.appId),
+                        isSingleSelect = isSingleSelect,
+                        showAppId = showAppId,
+                        onToggle = { selected ->
+                            if (isSingleSelect) {
+                                viewModel.setSelectedPackages(setOf(appItem.appId))
+                            } else {
+                                viewModel.setMultiSelection(appItem.appId, selected)
+                            }
+                        },
+                        modifier = Modifier.animateItem(),
                     )
                 }
-
-                addItems(appList.otherApps)
             }
 
-            if (viewModel.pluginsNeeded.isNotEmpty()) {
-                stickyHeader("header_plugins_needed") {
-                    ExpandableHeaderItem(
-                        title = stringResource(Res.string.needs_plugin),
-                        icon = Icons.Outlined.Info,
-                        expanded = pluginsNeededExpanded,
-                        onToggle = { pluginsNeededExpanded = it },
+            fun addPlaceholderItems(
+                count: Int,
+            ) {
+                items(
+                    count,
+                ) {
+                    AppListItem(
+                        appItem = null,
+                        isSelected = false,
+                        isSingleSelect = isSingleSelect,
+                        showAppId = false,
+                        onToggle = {},
+                        modifier = Modifier.shimmerWindowBounds().animateItem(),
+                        forShimmer = true,
                     )
                 }
+            }
 
-                if (pluginsNeededExpanded) {
-                    items(viewModel.pluginsNeeded) { (appName, pluginUrl) ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable {
-                                    PlatformStuff.openInBrowser(pluginUrl)
-                                }
-                                .padding(
-                                    vertical = 8.dp,
-                                    horizontal = horizontalOverscanPadding()
-                                ),
-                        ) {
-                            Text(
-                                text = appName,
-                                maxLines = 1,
-                            )
+            if (appListFiltered.musicPlayers.isNotEmpty() || !hasLoaded) {
+                stickyHeader("header_music_players") {
+                    SimpleHeaderItem(
+                        text = stringResource(Res.string.music_players),
+                        icon = Icons.Outlined.PlayCircle
+                    )
+                }
+            }
 
-                            Spacer(
-                                modifier = Modifier.weight(1f)
-                            )
+            if (!hasLoaded) {
+                addPlaceholderItems(10)
+            } else {
+                addItems(appListFiltered.musicPlayers)
 
-                            Icon(
-                                imageVector = Icons.Outlined.OpenInBrowser,
-                                contentDescription = null,
+                if (appListFiltered.otherApps.isNotEmpty()) {
+                    stickyHeader("header_other_apps") {
+                        SimpleHeaderItem(
+                            text = stringResource(Res.string.other_apps),
+                            icon = Icons.Outlined.Apps
+                        )
+                    }
+
+                    addItems(appListFiltered.otherApps)
+                }
+
+                if (viewModel.pluginsNeeded.isNotEmpty()) {
+                    stickyHeader("header_plugins_needed") {
+                        ExpandableHeaderItem(
+                            title = stringResource(Res.string.needs_plugin),
+                            icon = Icons.Outlined.Info,
+                            expanded = pluginsNeededExpanded,
+                            onToggle = { pluginsNeededExpanded = it },
+                        )
+                    }
+
+                    if (pluginsNeededExpanded) {
+                        items(viewModel.pluginsNeeded) { (appName, pluginUrl) ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                            )
+                                    .fillMaxWidth()
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .clickable {
+                                        PlatformStuff.openInBrowser(pluginUrl)
+                                    }
+                                    .padding(
+                                        vertical = 8.dp,
+                                        horizontal = horizontalOverscanPadding()
+                                    ),
+                            ) {
+                                Text(
+                                    text = appName,
+                                    maxLines = 1,
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                Icon(
+                                    imageVector = Icons.Outlined.OpenInBrowser,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                )
+                            }
                         }
                     }
                 }

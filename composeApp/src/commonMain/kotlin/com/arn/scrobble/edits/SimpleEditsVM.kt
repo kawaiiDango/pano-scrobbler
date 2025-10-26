@@ -38,9 +38,7 @@ class SimpleEditsVM : ViewModel() {
     }
 
     fun setFilter(searchTerm: String) {
-        viewModelScope.launch {
-            _searchTerm.emit(searchTerm.trim())
-        }
+        _searchTerm.value = searchTerm.trim()
     }
 
 //    fun upsert(simpleEdit: SimpleEdit) {

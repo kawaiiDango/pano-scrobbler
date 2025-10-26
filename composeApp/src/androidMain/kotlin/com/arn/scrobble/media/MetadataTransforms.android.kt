@@ -19,7 +19,7 @@ actual fun transformMediaMetadata(
     var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
     val trackNumber = metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
     var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
-    if (durationMillis < -1)
+    if (durationMillis < -1 || trackInfo.appId in Stuff.IGNORE_DURATION)
         durationMillis = -1
 
     val extrasMap = mutableMapOf<String, String>()
@@ -47,7 +47,7 @@ actual fun transformMediaMetadata(
             }
             val idx = artist.lastIndexOf(" • ")
             if (idx != -1)
-                artist = artist.substring(0, idx)
+                artist = artist.take(idx)
         }
 
         Stuff.PACKAGE_SONOS,
@@ -62,7 +62,7 @@ actual fun transformMediaMetadata(
         Stuff.PACKAGE_DIFM -> {
             val extra = " - $album"
             if (artist.endsWith(extra))
-                artist = artist.substring(0, artist.length - extra.length)
+                artist = artist.dropLast(extra.length)
             title = album
             album = ""
             albumArtist = ""
@@ -73,7 +73,7 @@ actual fun transformMediaMetadata(
                 // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
                 val extra = " - $album"
                 if (artist.endsWith(extra))
-                    artist = artist.substring(0, artist.length - extra.length)
+                    artist = artist.dropLast(extra.length)
                 albumArtist = ""
             }
         }
@@ -86,7 +86,7 @@ actual fun transformMediaMetadata(
             // this is for removing "smart shuffle" etc
             val idx = artist.lastIndexOf(" • ")
             if (idx != -1)
-                artist = artist.substring(0, idx)
+                artist = artist.take(idx)
         }
 
         Stuff.PACKAGE_NINTENDO_MUSIC -> {

@@ -20,7 +20,7 @@ data class AppItem(
             else -> label
                 .ifEmpty {
                     if (appId.endsWith(EXE_SUFFIX))
-                        appId.substring(0, appId.length - EXE_SUFFIX.length)
+                        appId.dropLast(EXE_SUFFIX.length)
                     else if (appId.startsWith(MPSRIS_PREFIX))
                         appId.substring(MPSRIS_PREFIX.length)
                     else

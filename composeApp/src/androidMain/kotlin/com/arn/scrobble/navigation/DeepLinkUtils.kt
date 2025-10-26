@@ -143,6 +143,10 @@ object DeepLinkUtils {
                 PanoDialog.MusicEntryInfo.serializer()
             }
 
+            PanoDialog.MusicEntryInfoFromWidget::class.simpleName -> {
+                PanoDialog.MusicEntryInfoFromWidget.serializer()
+            }
+
             else -> return null
         }
 

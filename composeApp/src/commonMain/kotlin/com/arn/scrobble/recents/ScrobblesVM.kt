@@ -48,6 +48,8 @@ class ScrobblesVM : ViewModel() {
     val input = _input.asStateFlow()
     private val _firstScrobbleTime = MutableStateFlow<Long?>(null)
     val firstScrobbleTime = _firstScrobbleTime.asStateFlow()
+    private val _total = MutableStateFlow<Int?>(null)
+    val total = _total.filterNotNull()
 
     var totalPages = 1
         private set
@@ -85,6 +87,7 @@ class ScrobblesVM : ViewModel() {
                         onSetLastRecentsRefreshTime = {
                             _lastRecentsRefreshTime.value = it
                         },
+                        onSetTotal = { _total.value = it },
                         onClearOverrides = ::clearOverrides
                     )
                 }
@@ -113,7 +116,7 @@ class ScrobblesVM : ViewModel() {
         viewModelScope.launch {
             val hasPending = PanoDb.db.getPendingScrobblesDao().count() > 0
 
-            if (hasPending && Stuff.isOnline)
+            if (hasPending)
                 PendingScrobblesWork.checkAndSchedule(force = true)
         }
 

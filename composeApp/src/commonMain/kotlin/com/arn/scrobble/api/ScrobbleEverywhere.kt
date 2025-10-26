@@ -307,7 +307,7 @@ object ScrobbleEverywhere {
             val cacheKey = createCacheKey(query, country)
 
             val response = itunesTracksCache[cacheKey]
-                ?: if (!cacheOnly && Stuff.isOnline)
+                ?: if (!cacheOnly)
                     Requesters.itunesRequester.searchTrack(
                         query,
                         country = country,
@@ -334,7 +334,7 @@ object ScrobbleEverywhere {
             val cacheKey = createCacheKey(trackId.toString(), country)
 
             val response = itunesTracksCache[cacheKey]
-                ?: if (!cacheOnly && Stuff.isOnline)
+                ?: if (!cacheOnly)
                     Requesters.itunesRequester.lookupTrack(trackId)
                         .onFailure {
                             Logger.w(it) { "Failed to look up iTunes track" }
@@ -355,7 +355,7 @@ object ScrobbleEverywhere {
 
         val artistCacheKey = createCacheKey(track.artistId.toString(), country)
         val artistName = itunesArtistsCache[artistCacheKey]
-            ?: if (!cacheOnly && Stuff.isOnline)
+            ?: if (!cacheOnly)
                 Requesters.itunesRequester.lookupArtist(track.artistId)
                     .onFailure {
                         Logger.w(it) { "Failed to look up iTunes artist" }
@@ -379,7 +379,7 @@ object ScrobbleEverywhere {
                     createCacheKey(track.collectionArtistId.toString(), country)
 
                 itunesArtistsCache[albumArtistCacheKey]
-                    ?: if (!cacheOnly && Stuff.isOnline)
+                    ?: if (!cacheOnly)
                         Requesters.itunesRequester.lookupArtist(track.collectionArtistId)
                             .onFailure {
                                 Logger.w(it) { "Failed to look up iTunes album artist" }
@@ -427,7 +427,7 @@ object ScrobbleEverywhere {
                 val cacheKey = createCacheKey(trackId, country)
 
                 spotifyTrackIdToArtistCache[cacheKey]
-                    ?: if (!cacheOnly && Stuff.isOnline) {
+                    ?: if (!cacheOnly) {
                         Requesters.spotifyRequester.track(trackId, country)
                             .onFailure {
                                 Logger.w(it) { "Failed to search Spotify for track" }
@@ -464,7 +464,7 @@ object ScrobbleEverywhere {
 
         var track = deezerTracksCache[cacheKey]
 
-        if (track == null && !cacheOnly && Stuff.isOnline) {
+        if (track == null && !cacheOnly) {
             track = if (trackId != null) {
                 Requesters.deezerRequester.lookupTrack(trackId.toLong())
                     .onFailure {
@@ -654,7 +654,7 @@ object ScrobbleEverywhere {
 
         val trackObj = Track(track, null, Artist(artist))
 
-        if (!cacheOnly && Stuff.isOnline) {
+        if (!cacheOnly) {
             Requesters.lastfmUnauthedRequester.getInfo(trackObj)
                 .onSuccess {
                     lastfmTracksCache.put(cacheKey, it)

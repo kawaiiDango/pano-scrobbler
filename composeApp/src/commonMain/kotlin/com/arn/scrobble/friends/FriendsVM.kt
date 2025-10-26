@@ -110,7 +110,6 @@ class FriendsVM : ViewModel() {
                 username,
                 limit = 1,
                 includeNowPlaying = true,
-                cached = !Stuff.isOnline
             )
         }.mapCatching { pr ->
             if (pr.entries.isEmpty())

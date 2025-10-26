@@ -108,7 +108,6 @@ class ScrobbleQueue(
             // now playing for a new track or after that of the previously paused track has expired
             if (
                 timestampOverride == null &&
-                Stuff.isOnline &&
                 submitNowPlaying &&
                 (prevPlayStartTime == null ||
                         (System.currentTimeMillis() - prevPlayStartTime) > min(

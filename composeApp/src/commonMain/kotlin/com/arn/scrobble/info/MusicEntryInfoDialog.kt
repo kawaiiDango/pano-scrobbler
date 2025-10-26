@@ -218,9 +218,7 @@ fun MusicEntryInfoDialog(
     }
 
     LaunchedEffect(expandedHeaderType) {
-        val expandedEntry = infoMap?.get(expandedHeaderType)
-
-        when (expandedEntry) {
+        when (val expandedEntry = infoMap?.get(expandedHeaderType)) {
             is Track -> {
                 miscVM.setTrack(expandedEntry)
             }
@@ -286,8 +284,15 @@ fun MusicEntryInfoDialog(
                 originalEntry = viewModel.originalEntriesMap[type],
                 appId = appId,
                 user = user,
-                showUserTagsButton = account?.type == AccountType.LASTFM && userTags[type] == null && !PlatformStuff.isTv,
-                onUserTagsClick = { viewModel.loadTagsIfNeeded(type) },
+                userTagsButtonSelected = userTags[type] != null,
+                onUserTagsClick = if (account?.type == AccountType.LASTFM && !PlatformStuff.isTv) {
+                    {
+                        if (userTags[type] == null)
+                            viewModel.loadUserTagsIfNeeded(type)
+                        else
+                            viewModel.clearUserTags(type)
+                    }
+                } else null,
                 isLoved = isLoved,
                 onLoveClick = if ((entry as? Track)?.userloved != null) {
                     {
@@ -309,10 +314,10 @@ fun MusicEntryInfoDialog(
                     )
                 },
                 onUserTagAdd = {
-                    viewModel.addTag(type, it)
+                    viewModel.addUserTag(type, it)
                 },
                 onUserTagDelete = {
-                    viewModel.deleteTag(type, it)
+                    viewModel.deleteUserTag(type, it)
                 },
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
@@ -544,8 +549,8 @@ private fun InfoActionsRow(
     originalEntry: MusicEntry?,
     appId: String?,
     user: UserCached,
-    showUserTagsButton: Boolean,
-    onUserTagsClick: () -> Unit,
+    userTagsButtonSelected: Boolean,
+    onUserTagsClick: (() -> Unit)?,
     isLoved: Boolean?,
     onLoveClick: (() -> Unit)?,
     onNavigate: (PanoRoute) -> Unit,
@@ -554,10 +559,11 @@ private fun InfoActionsRow(
     val scope = rememberCoroutineScope()
 
     Row(modifier = modifier.fillMaxWidth()) {
-        if (showUserTagsButton) {
+        if (onUserTagsClick != null) {
             IconButtonWithTooltip(
                 icon = PanoIcons.UserTag,
                 onClick = onUserTagsClick,
+                filledStyle = userTagsButtonSelected,
                 contentDescription = stringResource(Res.string.my_tags),
             )
         }

@@ -239,7 +239,7 @@ class InfoVM : ViewModel() {
 
     // user tags
 
-    fun loadTagsIfNeeded(type: Int) {
+    fun loadUserTagsIfNeeded(type: Int) {
         if (type in userTags.value)
             return
         val entry = infoMap.value?.get(type) ?: return
@@ -260,7 +260,11 @@ class InfoVM : ViewModel() {
         }
     }
 
-    fun deleteTag(type: Int, tag: String) {
+    fun clearUserTags(type: Int) {
+        _userTags.value -= type
+    }
+
+    fun deleteUserTag(type: Int, tag: String) {
         val existingTags = userTags.value[type] ?: return
         val entry = infoMap.value?.get(type) ?: return
 
@@ -274,7 +278,7 @@ class InfoVM : ViewModel() {
         }
     }
 
-    fun addTag(type: Int, newTags: String) {
+    fun addUserTag(type: Int, newTags: String) {
         val existingTags = userTags.value[type] ?: return
         val entry = infoMap.value?.get(type) ?: return
 

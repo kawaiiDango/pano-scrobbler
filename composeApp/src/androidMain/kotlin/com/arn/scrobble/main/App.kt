@@ -44,12 +44,12 @@ class App : Application(), Configuration.Provider {
 
         super.onCreate()
 
-        runBlocking {
-            Stuff.mainPrefsInitialValue = PlatformStuff.mainPrefs.data.first()
-        }
-
         if (BuildConfig.DEBUG) {
             enableStrictMode()
+        }
+
+        runBlocking {
+            Stuff.mainPrefsInitialValue = PlatformStuff.mainPrefs.data.first()
         }
 
         Logger.setTag("scrobbler")
@@ -70,7 +70,6 @@ class App : Application(), Configuration.Provider {
         }
         setResourceReaderAndroidContext(this)
         createChannels()
-        initConnectivityCheck()
     }
 
     private fun enableStrictMode() {
@@ -96,32 +95,6 @@ class App : Application(), Configuration.Provider {
         )
     }
 
-    private fun initConnectivityCheck() {
-        val cm = ContextCompat.getSystemService(this, ConnectivityManager::class.java)!!
-        val nr = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-            .build()
-
-        cm.registerNetworkCallback(nr, object : ConnectivityManager.NetworkCallback() {
-            private val availableNetworks = mutableSetOf<Network>()
-
-            override fun onAvailable(network: Network) {
-                availableNetworks += network
-                updateOnlineStatus()
-            }
-
-            override fun onLost(network: Network) {
-                availableNetworks -= network
-                updateOnlineStatus()
-            }
-
-            private fun updateOnlineStatus() {
-                Stuff.isOnline = availableNetworks.isNotEmpty()
-            }
-        })
-    }
-
     fun isMainProcess(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // For API 28+ we can use Application.getProcessName()
@@ -144,58 +117,78 @@ class App : Application(), Configuration.Provider {
 
         val nm = ContextCompat.getSystemService(this, NotificationManager::class.java)!!
 
-        nm.createNotificationChannel(
-            NotificationChannel(
-                Stuff.CHANNEL_NOTI_SCROBBLING,
-                getString(R.string.state_scrobbling),
-                NotificationManager.IMPORTANCE_LOW
+        // check for existing channels to avoid recreating them on every app start
+        // because multiplatform getString() can cause ANRs
+        val existingChannels = nm.notificationChannels.map { it.id }.toSet()
+        val newChannels = mutableListOf<NotificationChannel>()
+
+        if (Stuff.CHANNEL_NOTI_SCROBBLING !in existingChannels) {
+            newChannels.add(
+                NotificationChannel(
+                    Stuff.CHANNEL_NOTI_SCROBBLING,
+                    getString(R.string.state_scrobbling),
+                    NotificationManager.IMPORTANCE_LOW
+                )
             )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                Stuff.CHANNEL_NOTI_SCR_ERR,
-                getString(R.string.channel_err),
-                NotificationManager.IMPORTANCE_MIN
+        }
+        if (Stuff.CHANNEL_NOTI_SCR_ERR !in existingChannels) {
+            newChannels.add(
+                NotificationChannel(
+                    Stuff.CHANNEL_NOTI_SCR_ERR,
+                    getString(R.string.channel_err),
+                    NotificationManager.IMPORTANCE_MIN
+                )
             )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                Stuff.CHANNEL_NOTI_NEW_APP,
-                getString(
-                    R.string.new_player,
+        }
+        if (Stuff.CHANNEL_NOTI_NEW_APP !in existingChannels) {
+            newChannels.add(
+                NotificationChannel(
+                    Stuff.CHANNEL_NOTI_NEW_APP,
                     getString(
-                        R.string.new_app
-                    )
-                ),
-                NotificationManager.IMPORTANCE_LOW
+                        R.string.new_player,
+                        Stuff.CHANNEL_NOTI_NEW_APP,
+                        getString(R.string.new_app)
+                    ),
+                    NotificationManager.IMPORTANCE_LOW
+                )
             )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                Stuff.CHANNEL_NOTI_PENDING,
-                getString(R.string.pending_scrobbles),
-                NotificationManager.IMPORTANCE_MIN
+        }
+        if (Stuff.CHANNEL_NOTI_PENDING !in existingChannels) {
+            newChannels.add(
+                NotificationChannel(
+                    Stuff.CHANNEL_NOTI_PENDING,
+                    getString(R.string.pending_scrobbles),
+                    NotificationManager.IMPORTANCE_MIN
+                )
             )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                Stuff.CHANNEL_NOTI_DIGEST_WEEKLY,
-                getString(
-                    R.string.s_top_scrobbles,
-                    getString(R.string.weekly)
-                ),
-                NotificationManager.IMPORTANCE_LOW
+        }
+        if (Stuff.CHANNEL_NOTI_DIGEST_WEEKLY !in existingChannels) {
+            newChannels.add(
+                NotificationChannel(
+                    Stuff.CHANNEL_NOTI_DIGEST_WEEKLY,
+                    getString(
+                        R.string.s_top_scrobbles,
+                        getString(R.string.weekly)
+                    ),
+                    NotificationManager.IMPORTANCE_LOW
+                )
             )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                Stuff.CHANNEL_NOTI_DIGEST_MONTHLY,
-                getString(
-                    R.string.s_top_scrobbles,
-                    getString(R.string.monthly)
-                ),
-                NotificationManager.IMPORTANCE_LOW
+        }
+        if (Stuff.CHANNEL_NOTI_DIGEST_MONTHLY !in existingChannels) {
+            newChannels.add(
+                NotificationChannel(
+                    Stuff.CHANNEL_NOTI_DIGEST_MONTHLY,
+                    getString(
+                        R.string.s_top_scrobbles,
+                        getString(R.string.monthly)
+                    ),
+                    NotificationManager.IMPORTANCE_LOW
+                )
             )
-        )
+        }
+
+        if (newChannels.isNotEmpty()) {
+            nm.createNotificationChannels(newChannels)
+        }
     }
 }

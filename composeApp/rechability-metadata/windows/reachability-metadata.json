@@ -1202,6 +1202,21 @@
       ]
     },
     {
+      "type": "java.awt.FontMetrics",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "font"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getHeight",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "java.awt.Frame",
       "jniAccessible": true,
       "fields": [
@@ -1593,6 +1608,10 @@
             "int",
             "double"
           ]
+        },
+        {
+          "name": "getWheelRotation",
+          "parameterTypes": []
         }
       ]
     },
@@ -3559,6 +3578,26 @@
           "parameterTypes": [
             "int"
           ]
+        }
+      ]
+    },
+    {
+      "type": "sun.font.FontUtilities",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "debugFonts",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.font.FreetypeFontScaler",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "invalidateScaler",
+          "parameterTypes": []
         }
       ]
     },

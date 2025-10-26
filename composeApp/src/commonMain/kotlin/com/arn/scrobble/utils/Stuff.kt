@@ -47,7 +47,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
-import java.io.IOException
 import java.security.MessageDigest
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -230,8 +229,9 @@ object Stuff {
         "app.revanced.android.apps.youtube.music",
     )
 
-    val IGNORE_DURATION_CHANGE = setOf(
+    val IGNORE_DURATION = setOf(
         "com.ilv.vradio",
+        "com.bbc.sounds",
     )
 
     val BLOCKED_MEDIA_SESSION_TAGS = mapOf(
@@ -255,8 +255,6 @@ object Stuff {
     )
 
     var isRunningInTest = false
-
-    var isOnline = true
 
     val isInDemoMode get() = mainPrefsInitialValue.demoModeP
 
@@ -353,7 +351,8 @@ object Stuff {
 
     fun getFileNameDateSuffix(): String {
         val cal = Calendar.getInstance()
-        return "" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE] + "_" + cal[Calendar.HOUR_OF_DAY] + "_" + cal[Calendar.MINUTE]
+        return "" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE] +
+                "_" + cal[Calendar.HOUR_OF_DAY] + "_" + cal[Calendar.MINUTE] + "_" + cal[Calendar.SECOND]
     }
 
     fun Long.timeToUTC() = this + TimeZone.getDefault().getOffset(System.currentTimeMillis())

@@ -34,6 +34,12 @@
       "jniAccessible": true
     },
     {
+      "type": "byte[]"
+    },
+    {
+      "type": "char[]"
+    },
+    {
       "type": "coil3.RealImageLoader"
     },
     {
@@ -1425,6 +1431,9 @@
       ]
     },
     {
+      "type": "java.io.Reader"
+    },
+    {
       "type": "java.lang.Boolean",
       "jniAccessible": true,
       "methods": [
@@ -1521,6 +1530,12 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "java.nio.ByteBuffer"
+    },
+    {
+      "type": "java.nio.CharBuffer"
     },
     {
       "type": "java.nio.file.Files"
@@ -3450,6 +3465,15 @@
         },
         {
           "name": "region"
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.pipe.ShapeSpanIterator",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "pData"
         }
       ]
     },

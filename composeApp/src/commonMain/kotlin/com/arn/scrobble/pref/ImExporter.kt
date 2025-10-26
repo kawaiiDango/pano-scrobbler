@@ -186,8 +186,6 @@ class ImExporter {
                 regexEdits?.let { db.getRegexEditsDao().import(it) }
                 exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insertIgnore(it) }
             }
-
-            else -> {}
         }
         exportData.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }
 

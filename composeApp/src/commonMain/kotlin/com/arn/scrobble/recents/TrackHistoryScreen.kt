@@ -54,6 +54,7 @@ fun TrackHistoryScreen(
     val listState = rememberLazyListState()
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstScrobbleTime by viewModel.firstScrobbleTime.collectAsStateWithLifecycle()
+    val total by viewModel.total.collectAsStateWithLifecycle(track.userplaycount)
     val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
     val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
@@ -75,8 +76,8 @@ fun TrackHistoryScreen(
         }
     }
 
-    DisposableEffect(deletedTracksSet) {
-        val formattedCount = ((track.userplaycount ?: 0) - deletedTracksSet.size)
+    DisposableEffect(total, deletedTracksSet) {
+        val formattedCount = ((total ?: 0) - deletedTracksSet.size)
             .coerceAtLeast(0)
             .format()
         val title = if (user.isSelf) {

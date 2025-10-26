@@ -33,10 +33,6 @@ class PendingScrobblesWorker(
     private val failsMap = AccountType.entries.associateWith { 0 }.toMutableMap()
 
     override suspend fun doWork(): CommonWorkerResult {
-        // do not run if offline, I was unable to infer from the docs whether this constraint is applied to expedited work
-        if (!Stuff.isOnline)
-            return CommonWorkerResult.Failure("Offline")
-
         var errored: Boolean
 
         val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
@@ -48,7 +44,7 @@ class PendingScrobblesWorker(
             deleteForLoggedOutServices()
             submitLoves()
             submitScrobbles()
-            
+
             errored = failsMap.values.any { it > 0 }
         }
 
@@ -115,7 +111,7 @@ class PendingScrobblesWorker(
                                 scrobblable.userAccount.type
                             } else
                                 null
-                        }
+                        }.toSet()
 
                 if (services.isEmpty())
                     idsToDelete += pendingScrobble._id
@@ -185,7 +181,7 @@ class PendingScrobblesWorker(
                             scrobblable.userAccount.type
                         else
                             null
-                    }
+                    }.toSet()
 
             if (services.isEmpty() && !MOCK)
                 dao.delete(entry)
@@ -228,7 +224,7 @@ class PendingScrobblesWorker(
 
     private suspend fun deleteForLoggedOutServices() {
         val loggedOutAccounts =
-            AccountType.entries.toSet() - Scrobblables.all.map { it.userAccount.type }
+            AccountType.entries.toSet() - Scrobblables.all.map { it.userAccount.type }.toSet()
 
         val loggedOutAccountsBitset =
             AccountBitmaskConverter.accountTypesToBitMask(loggedOutAccounts)

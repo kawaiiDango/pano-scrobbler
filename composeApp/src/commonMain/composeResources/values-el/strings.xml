@@ -92,6 +92,8 @@
     <string name="auto" comment="automatic or default setting">Αυτόματο</string>
     <string name="music_players">Προγραμμάματα αναπαραγωγής μουσικής</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Άλλες Εφαρμογές</string>
+    <string name="choose_an_app">Διάλεξε μια εφαρμογή</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Εφαρμογές</string>
     <string name="offline">Χωρίς σύνδεση. Τα δεδομένα που εμφανίζονται δεν είναι φρέσκα</string>
     <string name="unavailable_offline">Δεν είναι διαθέσιμο εκτός σύνδεσης</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Υπηρεσίες</string>
@@ -100,7 +102,10 @@
     <string name="share_sig">(μέσω Pano Scrobbler)</string>
     <string name="share">Κοινοποίηση</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Υπόμνημα</string>
+    <string name="grid" comment="Grid view">Πλέγμα</string>
+    <string name="list" comment="Single column list view">Λίστα</string>
     <string name="more_info">Περισσότερες πληροφορίες</string>
+    <string name="more" comment="More options menu in short">Περισσότερα</string>
     <string name="rank_change_no_change">Καμία αλλαγή</string>
     <string name="rank_change_new">Μη scrobbled εντός της προηγούμενης περιόδου</string>
     <string name="search">Αναζήτηση</string>
@@ -127,6 +132,7 @@
     <string name="show_all">Δες τα όλα</string>
     <string name="edit">Επεξεργασία</string>
     <string name="delete">Διαγραφή</string>
+    <string name="delete_all">Διαγραφή όλων</string>
     <string name="love" comment="Love/like a song">Αγάπησε</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Ξε-αγάπησε</string>
     <string name="pending_scrobbles">Εκκρεμούν Scrobbles</string>
@@ -172,6 +178,7 @@
     <string name="weeks">Εβδομάδες</string>
     <string name="monthly">Μηνιαία</string>
     <string name="months">Μήνες</string>
+    <string name="days">Μέρες</string>
     <string name="years" comment="For the charts menu which displays year by year">Χρόνια</string>
     <string name="charts_overall">Συνολικά</string>
     <string name="charts_no_data">Δεν υπάρχουν δεδομένα για την περίοδο αυτή</string>
@@ -210,6 +217,7 @@
     <string name="appwidget_alpha">Διαφάνεια φόντου</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Το widget θα ανανεώνεται κάθε %1$s</string>
     <string name="random_theme">Τυχαιοποίηση σε κάθε εκκίνηση</string>
+    <string name="edit_name" comment="name for regex pattern">Φιλική ονομασία</string>
     <string name="edit_regex">Μοτίβο Regex</string>
     <string name="edit_regex_replacement">Αντικατάσταση Regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Πεδία</string>
@@ -230,6 +238,7 @@
     <string name="skip" comment="skip to next track">Παράλειψη</string>
     <string name="mute" comment="mute the sound">Σίγαση</string>
     <string name="block" comment="block the track from scrobbling">Αποκλεισμός</string>
+    <string name="copy" comment="copy to clipboard">Αντιγραφή</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Κρυφές ετικέτες</string>
     <string name="pin" comment="pin a friend to the top">Καρφίτσωμα</string>
     <string name="unpin" comment="unpin a friend to the top">Ξεκαρφίτσωμα</string>
@@ -241,6 +250,10 @@
     <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
+    <string name="acoustic" comment="(Acoustic music)">Ακουστικό</string>
+    <string name="energetic" comment="(Energetic music)">Ενεργητικό</string>
+    <string name="valence" comment="(Musical positivity)">Θετικότητα</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Ανάλυση</string>
     <string name="enable" comment="To enable some feature">Ενεργοποιήση</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Μέγεθος</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Παράλειψη εικόνων που λείπουν</string>

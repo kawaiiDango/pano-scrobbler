@@ -385,6 +385,7 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Dla obsługiwanych aplikacji</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listy</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Zablokowane metadane</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">cokolwiek</string>
     <string name="pref_translate">Przetłumacz tę aplikację</string>
     <string name="pref_translate_credits">Podziękowania dla tłumaczy</string>
     <string name="pref_oss_credits">Źródła otwartego oprogramowania</string>
@@ -439,6 +440,7 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="ok">OK</string>
     <string name="cancel">Anuluj</string>
     <string name="back">Powrót</string>
+    <string name="done">Ukończ</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Spróbuj ponownie</string>
     <string name="run_on_start">Uruchom wraz z uruchomieniem urządzenia</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Zapisz logi</string>
@@ -448,6 +450,7 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="low" comment="As in high/medium/low">Niski</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Niektóre aplikacje potrzebują wtyczek</string>
     <string name="reload" comment="Reload or refresh">Przeładuj</string>
+    <string name="min_track_duration">Scrobbluj piosenki dłuższe niż</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>
     <string name="help">Pomoc</string>

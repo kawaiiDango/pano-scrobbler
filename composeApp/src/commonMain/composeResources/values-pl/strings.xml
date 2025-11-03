@@ -286,6 +286,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Wyodrębnij</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nazwij swoje grupy przechwytywania <i>track, album, artist</i> lub <i>albumArtist</i> aby wyciągnąć je z innych pól</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Na przykład, aby zamienić artystę i tytuł, umieścisz regex artist jako (?&lt;track&gt;.*) i regex track jako (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nie tłumacz artist, albumArtist, album, track, ponieważ użytkownik musi je wpisać, jak one są.
+https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Użyte wzory:</string>
     <string name="edit_continue">Jeśli znalezione, kontynuuj dopasowywanie innych regexów</string>
     <string name="edit_case_sensitive">Wielkość liter ma znaczenie</string>
@@ -325,6 +327,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popularność: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiza</string>
     <string name="enable" comment="To enable some feature">Włącz</string>
+    <string name="disable" comment="To disable some feature">Wyłącz</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Usuń: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Rozmiar</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Pomiń brakujące obrazy</string>
     <string name="create_collage">Utwórz kolaż</string>

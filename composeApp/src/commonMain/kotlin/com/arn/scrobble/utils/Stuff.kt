@@ -76,8 +76,8 @@ object Stuff {
     const val TYPE_ALBUM_ARTISTS = 4
     const val TYPE_LOVES = 5
     const val LIBREFM_KEY = "panoScrobbler"
-    const val LAST_KEY = Tokens.LAST_KEY
-    const val LAST_SECRET = Tokens.LAST_SECRET
+    const val LAST_KEY = Tokens.LASTFM_KEY
+    const val LAST_SECRET = Tokens.LASTFM_SECRET
     const val FRIENDS_RECENTS_DELAY = 800L
     const val MAX_PATTERNS = 50
     const val MAX_PINNED_FRIENDS = 10
@@ -205,6 +205,11 @@ object Stuff {
     const val LINK_BMC = "https://buymeacoffee.com/kawaiidango"
     const val NAME_KOFI = "Ko-fi (Uses Paypal)"
     const val NAME_BMC = "BuyMeACoffee (Uses Stripe)"
+    const val LICENSE_CHECKING_SERVER =
+        "https://license-sever.kawaiidango.workers.dev"
+    const val LICENSE_PUBLIC_KEY_BASE64 =
+        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
+    const val DISCORD_CLIENT_ID = "1299386213114970172"
 
     val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",
@@ -286,11 +291,11 @@ object Stuff {
             proProductId = PRO_PRODUCT_ID,
             appName = BuildKonfig.APP_NAME,
             publicKeyBase64 = if (PlatformStuff.isNonPlayBuild)
-                Tokens.LICENSE_PUBLIC_KEY_BASE64
+                LICENSE_PUBLIC_KEY_BASE64
             else
                 Tokens.PLAY_BILLING_PUBLIC_KEY_BASE64,
             httpClient = Requesters.genericKtorClient,
-            serverUrl = Tokens.LICENSE_CHECKING_SERVER,
+            serverUrl = LICENSE_CHECKING_SERVER,
             lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
             deviceIdentifier = { PlatformStuff.getDeviceIdentifier() },
             setLastcheckTime = { time ->

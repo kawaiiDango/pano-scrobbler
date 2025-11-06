@@ -49,7 +49,7 @@ class BillingRepository(
             if (_licenseState.value != LicenseState.VALID || System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY) {
                 LicenseChecker.checkLicenseOnline(
                     client = clientData.httpClient,
-                    url = clientData.serverUrl,
+                    url = clientData.serverUrl + "/license/verify",
                     did = clientData.deviceIdentifier(),
                     token = receipt
                 ).onSuccess {

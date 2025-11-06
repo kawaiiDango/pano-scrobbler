@@ -11,9 +11,9 @@
 [crowdin]: img/crowdin.svg
 [crowdin-link]: https://crowdin.com/project/pscrobbler
 
-<img src="screenshots/scrobbles-desktop.jpg" alt="scrobbles screen" width="250"/> <img src="screenshots/charts-desktop.jpg" alt="charts screen" width="250"/>
+<img src="desktop-screenshots/scrobbles-desktop.jpg" alt="scrobbles screen" width="250"/> <img src="desktop-screenshots/charts-desktop.jpg" alt="charts screen" width="250"/>
 
-<img src="screenshots/friends-mobile.jpg" alt="friends screen" width="150"/> <img src="screenshots/details-mobile.jpg" alt="details screen" width="150"/>
+<img src="desktop-screenshots/friends-mobile.jpg" alt="friends screen" width="150"/> <img src="desktop-screenshots/details-mobile.jpg" alt="details screen" width="150"/>
 
 ### Downloads
 

@@ -86,7 +86,8 @@ import com.kennycason.kumo.WordFrequency
 import com.kennycason.kumo.bg.CircleBackground
 import com.kennycason.kumo.palette.LinearGradientColorPalette
 import com.kennycason.kumo.scale.LinearFontScalar
-import io.github.koalaplot.core.bar.DefaultVerticalBar
+import io.github.koalaplot.core.bar.DefaultBar
+import io.github.koalaplot.core.bar.DefaultVerticalBarComposable
 import io.github.koalaplot.core.bar.VerticalBarPlot
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
@@ -538,13 +539,13 @@ private fun ListeningActivityContent(
                         VerticalBarPlot(
                             xData = xData,
                             yData = yData,
-                            bar = {
-                                val currentYValue = yData[it]
+                            bar = { series, index, value ->
+                                val currentYValue = value.y.end
                                 val fontSizeDp = with(density) {
                                     MaterialTheme.typography.labelSmall.fontSize.toDp()
                                 }
 
-                                DefaultVerticalBar(
+                                DefaultBar(
                                     color = tintColor.copy(
                                         alpha = 0.5f + 0.5f * (currentYValue / yValuesMax)
                                     ),

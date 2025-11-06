@@ -27,7 +27,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(project.dependencies.platform(libs.ktor.bom))
                 implementation(libs.ktor.client.core)
             }
         }

@@ -23,6 +23,11 @@ import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import kotlin.io.path.name
+import kotlin.io.use
+import kotlin.io.walk
+import kotlin.sequences.filter
+import kotlin.sequences.forEach
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -33,11 +38,9 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.github.release)
     alias(libs.plugins.play.publisher)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.baselineprofile)
-    alias(libs.plugins.hot.reload)
     id("kotlin-parcelize")
 }
 
@@ -113,28 +116,23 @@ kotlin {
             implementation(libs.compose.webview)
             implementation(libs.harmony)
             implementation(libs.coil.gif)
-//            implementation(libs.androidx.sqlite.framework)
-
-//            implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
-
         }
+
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlin.coroutines.core)
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.uiUtil)
-            implementation(compose.components.resources)
-            implementation(compose.preview)
+            implementation(libs.runtime)
+            implementation(libs.foundation)
+            implementation(libs.material3)
+            implementation(libs.material.icons.extended)
+            implementation(libs.ui)
+            implementation(libs.resources)
+            implementation(libs.tooling)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.okhttp)
-            implementation(project.dependencies.platform(libs.ktor.bom))
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.auth)
@@ -182,7 +180,6 @@ kotlin {
 dependencies {
     "baselineProfile"(projects.baselineprofile)
     implementation(libs.profileinstaller)
-    debugImplementation(compose.uiTooling)
 
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
@@ -307,8 +304,12 @@ android {
         dexLayoutOptimization = true
     }
 
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = true
+    }
+
     dependencies {
-//        implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
 
 //        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
 
@@ -520,18 +521,6 @@ tasks.register<Copy>("copyGithubReleaseApk") {
     )
 }
 
-//tasks.register<Copy>("copyReleaseExe") {
-//    val fileName = "$appNameWithoutSpaces-$resourcesDirName.exe"
-//
-//    from("build/compose/binaries/main-release/exe")
-//    into("dist")
-//    include("*.exe")
-//    rename(
-//        "(.*).exe",
-//        fileName
-//    )
-//}
-
 tasks.register<Copy>("copyReleaseDmg") {
     val fileName = "$appNameWithoutSpaces-$resourcesDirName.dmg"
     from("build/compose/binaries/main-release/dmg")
@@ -556,6 +545,23 @@ tasks.register<Exec>("packageWindowsNsis") {
 
     doFirst {
         distFile.parentFile.mkdirs()
+
+        // create install.log with relative paths of all regular files under executableDir
+        if (executableDir.exists()) {
+            val installLogFile = File(executableDir, "install.log")
+            val lines = mutableListOf<String>()
+            Files.walk(executableDir.toPath()).use { stream ->
+                stream.filter {
+                    Files.isRegularFile(it) && it.name != installLogFile.name
+                }
+                    .forEach { p ->
+                        val rel = executableDir.toPath().relativize(p).toString()
+                        lines.add(rel)
+                    }
+            }
+            lines.sort()
+            installLogFile.writeText(lines.joinToString("\n"))
+        }
     }
 
     commandLine(
@@ -620,6 +626,13 @@ tasks.register<Exec>("buildNativeImage") {
     val desktopFile = file("$appNameWithoutSpaces.desktop")
     val licenseFile = file("../LICENSE")
     val distDir = file("dist")
+
+    inputs.file(jarFile)
+    inputs.dir(nativeLibsDir)
+    inputs.dir(reachabilityFiles)
+    inputs.file(licenseFile)
+
+    outputs.dir(outputDir)
 
     val command = listOfNotNull(
         if (os.isWindows)
@@ -936,31 +949,29 @@ tasks.register("copyStringsToAndroid") {
     }
 }
 
-// play store and github publishing scripts ===================================================
-// remove if not needed
-
 android {
     signingConfigs {
-        register("release") {
-            if (
-                localProperties["release.keystore"] != null &&
-                localProperties["release.storePassword"] != null &&
-                localProperties["release.alias"] != null &&
-                localProperties["release.password"] != null
-            ) {
+        if (
+            localProperties["release.keystore"] != null &&
+            localProperties["release.storePassword"] != null &&
+            localProperties["release.alias"] != null &&
+            localProperties["release.password"] != null
+        ) {
+            register("release") {
                 storeFile = file(localProperties["release.keystore"]!!)
                 storePassword = localProperties["release.storePassword"]
                 keyAlias = localProperties["release.alias"]
                 keyPassword = localProperties["release.password"]
             }
         }
-        register("releaseGithub") {
-            if (
-                localProperties["releaseGithub.keystore"] != null &&
-                localProperties["releaseGithub.storePassword"] != null &&
-                localProperties["releaseGithub.alias"] != null &&
-                localProperties["releaseGithub.password"] != null
-            ) {
+
+        if (
+            localProperties["releaseGithub.keystore"] != null &&
+            localProperties["releaseGithub.storePassword"] != null &&
+            localProperties["releaseGithub.alias"] != null &&
+            localProperties["releaseGithub.password"] != null
+        ) {
+            register("releaseGithub") {
                 storeFile = file(localProperties["releaseGithub.keystore"]!!)
                 storePassword = localProperties["releaseGithub.storePassword"]
                 keyAlias = localProperties["releaseGithub.alias"]
@@ -971,15 +982,15 @@ android {
 
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("releaseGithub")
+            signingConfig = signingConfigs.findByName("releaseGithub")
         }
 
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
         }
 
         getByName("releaseGithub") {
-            signingConfig = signingConfigs.getByName("releaseGithub")
+            signingConfig = signingConfigs.findByName("releaseGithub")
         }
     }
 }
@@ -992,34 +1003,4 @@ play {
 
     fromTrack.set("beta")
     promoteTrack.set("production")
-}
-
-githubRelease {
-    localProperties["github.token"]?.let {
-        token(it)
-    }
-    owner = "kawaiidango"
-    repo = "pano-scrobbler"
-    val changelog = file("src/androidMain/play/release-notes/en-US/default.txt").readText() +
-            ""
-//            "\n\n" + "Copied from Play Store what's new, may not be accurate for minor updates."
-    body = changelog
-    tagName = verCode.toString()
-    releaseName = verName
-    targetCommitish = "main"
-
-    val assets = file("dist")
-        .listFiles { file -> file.isFile }
-        ?.map { it.absolutePath }
-        ?.toList() ?: emptyList()
-    releaseAssets(assets)
-
-    // by default this is true
-    draft = false
-    // Setting this to true will allow this plugin to upload artifacts to a release if it found an existing one. If overwrite is set to true, this option is ignored.
-    allowUploadToExisting = false
-    // by default false; if set to true, will delete an existing release with the same tag and name
-    overwrite = false
-    // by default false; you can use this to see what actions would be taken without making a release
-//    dryRun = true
 }

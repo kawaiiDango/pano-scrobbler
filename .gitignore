@@ -31,9 +31,7 @@ captures
 /composeApp/dist
 composeApp/src/androidRelease/generated
 composeApp/src/androidReleaseGithub/generated
-/composeApp/src/androidMain/res/**/strings-np.xml
-/composeApp/src/**/composeResources/files/pano-embedded-server-ks.bks
-/composeApp/src/**/composeResources/files/pano-embedded-server-ks.jks
+/composeApp/src/**/composeResources/files/pano-embedded-server-ks.p12
 /composeApp/src/**/composeResources/files/aboutlibraries.json
 crowdin.properties
 Gemfile.lock

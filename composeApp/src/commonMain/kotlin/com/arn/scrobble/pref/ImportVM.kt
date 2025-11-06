@@ -99,17 +99,18 @@ class ImportVM : ViewModel() {
         private val path: String,
         private val onImport: (String) -> Unit,
     ) : NanoHTTPD(port) {
-        private val keyFileExtension = if (PlatformStuff.isDesktop) "jks" else "bks"
 
         init {
-            val ksType = KeyStore.getDefaultType()
-            val ks = KeyStore.getInstance(ksType)
-            runBlocking { Res.readBytes("files/pano-embedded-server-ks.$keyFileExtension") }
+            val ks = KeyStore.getInstance("PKCS12")
+            runBlocking { Res.readBytes("files/pano-embedded-server-ks.p12") }
                 .inputStream()
                 .use {
                     ks.load(it, Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray())
                 }
-            val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+            val kmf =
+                KeyManagerFactory.getInstance(
+                    KeyManagerFactory.getDefaultAlgorithm()
+                )
             kmf.init(ks, Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray())
             makeSecure(makeSSLSocketFactory(ks, kmf), null)
         }

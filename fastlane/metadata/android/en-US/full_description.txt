@@ -1,0 +1,32 @@
+Features:
+
+#### For all platforms:
+
+- No ads ever
+- Scrobbles to Lastfm, Librefm, ListenBrainz, Pleroma and other compatible services
+- View song, album, artist, album artist, and tag details
+- View scrobbles from a specific time, such as last year or last month
+- Extract or fix metadata such as "Remastered" with regex pattern edits
+- Extract the first artist from a string of all performers before scrobbling
+- Block artists, songs, etc., and automatically skip or mute when they play
+- Check what your followed users are listening to and view their stats
+- Import and export settings, edits, and blocklists
+- View charts with change indicators for specific time periods,
+- View scrobble count graphs and tag clouds
+- Get a random song, album, or artist from your listening history
+- Search Lastfm for a songs, artists, or albums
+- Themes
+- Remember and see apps you scrobbled from and play directly in them
+
+#### Android only (except TV):
+
+- Scrobble to a CSV or JSONL file locally
+- Interactive notification - view song info, edit, love, cancel, or block songs directly from the
+  notification
+- Collage generator
+- Add or remove personal tags from the info screen
+- Edit or delete existing scrobbles. Remembers edits
+- Control Pano Scrobbler from automation apps on Android or command-line on desktop
+- Scrobble from music recognition apps and Pixel Now Playing
+- Charts as a customizable home-screen widget
+- Get your top scrobbles digests as a notification at the end of every week, month and year

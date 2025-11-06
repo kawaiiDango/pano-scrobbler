@@ -51,6 +51,37 @@ Var UninstallRemoveUserData
 Var IsExtractMode
 Var IsMinimalInteractionMode
 
+; Delete files listed in install.log
+!macro DELETE_FILES_FROM_INSTALL_LOG
+  IfFileExists "$INSTDIR\install.log" 0 +22
+  FileOpen $9 "$INSTDIR\install.log" r
+  loop_read_install_log:
+    ClearErrors
+    FileRead $9 $R0
+    IfErrors done_read_install_log
+    StrCpy $R1 $R0
+  trim_loop_install_log:
+    StrLen $R2 $R1
+    ${If} $R2 == 0
+      Goto loop_read_install_log
+    ${EndIf}
+    StrCpy $R3 "$R1" 1 -1
+    ${If} $R3 == "$\r"
+    ${OrIf} $R3 == "$\n"
+    ${OrIf} $R3 == " "
+      StrCpy $R1 "$R1" -1
+      Goto trim_loop_install_log
+    ${EndIf}
+    ${If} $R1 == ""
+      Goto loop_read_install_log
+    ${EndIf}
+    StrCpy $R4 "$INSTDIR\$R1"
+    Delete "$R4"
+    Goto loop_read_install_log
+  done_read_install_log:
+  FileClose $9
+!macroend
+
 !macro KILL_IF_RUNNING
   ; Kill running app process before upgrade, up to 3 attempts
   StrCpy $1 0 ; attempt counter
@@ -108,6 +139,10 @@ Function .onInit
   !insertmacro MULTIUSER_INIT
   !insertmacro GET_PREVIOUS_INSTALL_PROPS
 
+  ; Default: launch app after install. If running in silent mode, disable launch.
+  IfSilent 0 +3
+    StrCpy $LaunchApp 0
+    Goto +2
   StrCpy $LaunchApp 1
   StrCpy $StartWithWindows 1
 
@@ -311,12 +346,11 @@ Section "Install/Extract"
     !insertmacro KILL_IF_RUNNING
 
     ${If} $VersionCodePrev <> ""
-      RMDir /r "$INSTDIR"
+      !insertmacro DELETE_FILES_FROM_INSTALL_LOG
       CreateDirectory "$INSTDIR"
     ${EndIf}
 
   ${EndIf}
-
 
   ; Copy files
   File /r "${APPDIR}\*"
@@ -416,8 +450,12 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\${APP_NAME}.lnk"
   Delete "$SMSTARTUP\${APP_NAME}.lnk"
 
-  ; Remove installed files
-  RMDir /r "$INSTDIR"
+  !insertmacro DELETE_FILES_FROM_INSTALL_LOG
+  ; Remove things not listed in install.log
+  RMDir "$INSTDIR\bin"
+  Delete "$INSTDIR\install.log"
+  Delete "$INSTDIR\Uninstall.exe"
+  RMDir "$INSTDIR"
 
   ; Remove user data if checked
   SetShellVarContext current  ; Otherwise, uses ProgramData

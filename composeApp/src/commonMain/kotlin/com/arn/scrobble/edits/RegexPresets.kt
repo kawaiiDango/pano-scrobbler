@@ -317,16 +317,11 @@ object RegexPresets {
 
 
     private fun shouldParseTitle(scrobbleData: ScrobbleData): Boolean {
-        return if (
-            scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && !scrobbleData.album.isNullOrEmpty() ||
-            scrobbleData.appId == Stuff.PACKAGE_YOUTUBE_TV && !scrobbleData.album.isNullOrEmpty() ||
-            scrobbleData.appId == Stuff.PACKAGE_YMUSIC &&
-            scrobbleData.album?.replace("YMusic", "")?.isNotEmpty() == true
-        )
-            false
-        else ((scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
+        return ((scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
                 scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK) &&
-                !scrobbleData.artist.endsWith("- Topic")
-                )
+                scrobbleData.album.isNullOrEmpty() &&
+                !scrobbleData.artist.endsWith("- Topic")) ||
+
+                scrobbleData.appId == Stuff.PACKAGE_YMUSIC && scrobbleData.album == "YMusic"
     }
 }

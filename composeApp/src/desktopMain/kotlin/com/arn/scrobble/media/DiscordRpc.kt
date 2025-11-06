@@ -3,11 +3,12 @@ package com.arn.scrobble.media
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.PanoNativeComponents.desktopMediaListener
 import com.arn.scrobble.Tokens
+import com.arn.scrobble.utils.Stuff
 
 object DiscordRpc {
     fun updateDiscordActivity(trackInfo: PlayingTrackInfo, playbackInfo: PlaybackInfo) {
         PanoNativeComponents.updateDiscordActivity(
-            clientId = Tokens.DISCORD_CLIENT_ID,
+            clientId = Stuff.DISCORD_CLIENT_ID,
             state = trackInfo.artist,
             details = trackInfo.title,
             largeText = trackInfo.album,

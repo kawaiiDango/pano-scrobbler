@@ -484,10 +484,12 @@ fun main(args: Array<String>) {
             ) {
                 val density = LocalDensity.current
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(isSystemInDarkTheme) {
                     if (isSystemInDarkTheme && DesktopStuff.os == DesktopStuff.Os.Windows)
                         PanoNativeComponents.applyDarkModeToWindow(window.windowHandle)
+                }
 
+                LaunchedEffect(Unit) {
                     if (!BuildKonfig.DEBUG) {
                         val minDim = if (DesktopStuff.os == DesktopStuff.Os.Windows)
                             with(density) { 480.dp.roundToPx() }

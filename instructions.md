@@ -34,15 +34,7 @@ keytool -genkeypair \
   -J-Dkeystore.pkcs12.macAlgorithm=HmacPBESHA1
 ```
 
-Put it in composeApp/src/commonMain/composeResources/files/pano-embedded-server-ks.bks
-
-- To generate the [aboutLibraries](https://github.com/mikepenz/AboutLibraries) files, run
-
-```
-./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub
-./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=release
-./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
-```
+Put it in composeApp/src/commonMain/composeResources/files/pano-embedded-server-ks.p12
 
 ### For Android:
 
@@ -65,7 +57,15 @@ object Secrets {
 sessionKey can be obtained by logging in to LastFM with a debug build of this app
 and tapping on the "Copy last.fm session key" in the settings screen.
 
-- Run ./gradlew composeApp:assembleRelease or ./gradlew composeApp:assembleReleaseGithub
+Then run `./gradlew :baselineprofile:generateBaselineProfile`
+
+Currently, the FOSS builds skip this step.
+
+- Run `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=release` and
+`./gradlew composeApp:assembleRelease` for the Play Store build
+
+- or `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub` and
+`./gradlew composeApp:assembleReleaseGithub` for the FOSS build
 
 - Info: the build variant "release" includes Google Play billing, Crashlytics (has opt out) and
   Google Play Review API as its non-free dependencies, while the build variant "releaseGithub"
@@ -80,6 +80,7 @@ and tapping on the "Copy last.fm session key" in the settings screen.
   as your gradle JDK and run gradle packageUberJarForCurrentOS. Also
   have [NSIS](https://nsis.sourceforge.io/Main_Page) installed in Program Files on Windows.
 
-- Run ./gradlew composeApp:packageUberJarForCurrentOS
+- Run `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop`
+- Run `./gradlew composeApp:packageUberJarForCurrentOS`
 
 - Info: the desktop build includes no non-free dependencies.

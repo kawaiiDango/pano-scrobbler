@@ -74,7 +74,7 @@ class ImportVM : ViewModel() {
 
             try {
                 val base26Address = Base26Utils.encodeIpPort(localIp, randomPort)
-                val server = ImportServer(randomPort, base26Address) { postData ->
+                val server = ImportServer(localIp, randomPort, base26Address) { postData ->
                     _jsonText.tryEmit(postData)
                 }
                 server.start()
@@ -95,10 +95,11 @@ class ImportVM : ViewModel() {
     }
 
     private class ImportServer(
+        hostname: String,
         port: Int,
         private val path: String,
         private val onImport: (String) -> Unit,
-    ) : NanoHTTPD(port) {
+    ) : NanoHTTPD(hostname, port) {
 
         init {
             val ks = KeyStore.getInstance("PKCS12")

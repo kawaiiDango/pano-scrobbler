@@ -100,12 +100,6 @@ actual object BugReportUtils {
         val logFile = File(AndroidStuff.applicationContext.cacheDir, "share/pano-scrobbler.log")
         logFile.parentFile!!.mkdirs()
         logFile.writeText(log)
-//        val logUri =
-//            FileProvider.getUriForFile(
-//                AndroidStuff.application,
-//                "${BuildConfig.APPLICATION_ID}.fileprovider",
-//                logFile
-//            )
 
         return logFile.absolutePath
     }

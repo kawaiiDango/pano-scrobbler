@@ -8,7 +8,6 @@ import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.toBitmap
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
@@ -81,7 +80,7 @@ actual suspend fun showTrackShareSheet(track: Track, user: UserCached) {
 
             val albumArtUri = FileProvider.getUriForFile(
                 context,
-                "${BuildConfig.APPLICATION_ID}.fileprovider",
+                "${BuildKonfig.APP_ID}.fileprovider",
                 albumArtFile
             )
 

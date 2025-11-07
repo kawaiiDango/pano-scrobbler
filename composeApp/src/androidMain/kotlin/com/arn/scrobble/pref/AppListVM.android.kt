@@ -4,7 +4,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.media.MediaBrowserServiceCompat
-import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.AndroidStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +20,7 @@ actual suspend fun AppListVM.load(
     val packageManager = AndroidStuff.applicationContext.packageManager
 
     val packagesToNotConsider = setOf(
-        BuildConfig.APPLICATION_ID,
+        BuildKonfig.APP_ID,
         "com.android.bluetooth",
         "com.google.android.bluetooth"
     )

@@ -210,6 +210,7 @@ object Stuff {
     const val LICENSE_PUBLIC_KEY_BASE64 =
         "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
     const val DISCORD_CLIENT_ID = "1299386213114970172"
+    const val EMBEDDED_SERVER_KS = "Jjs5awQQB0YjN10vKCsWPC8AXW0"
 
     val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",
@@ -358,6 +359,18 @@ object Stuff {
         val cal = Calendar.getInstance()
         return "" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE] +
                 "_" + cal[Calendar.HOUR_OF_DAY] + "_" + cal[Calendar.MINUTE] + "_" + cal[Calendar.SECOND]
+    }
+
+    fun xorWithKeyBytes(data: ByteArray, keyBytes: ByteArray): ByteArray {
+        require(keyBytes.isNotEmpty()) { "Key bytes must not be empty" }
+        val out = ByteArray(data.size)
+        val klen = keyBytes.size
+        for (i in data.indices) {
+            val a = data[i].toInt() and 0xFF
+            val b = keyBytes[i % klen].toInt() and 0xFF
+            out[i] = (a xor b).toByte()
+        }
+        return out
     }
 
     fun Long.timeToUTC() = this + TimeZone.getDefault().getOffset(System.currentTimeMillis())

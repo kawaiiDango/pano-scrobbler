@@ -119,9 +119,7 @@ suspend fun listenForPlayingTrackEvents(
                     mediaListener.mute(hash)
                 }
 
-                if (!scrobbleQueue.has(hash)) {
-                    return@collect
-                } else {
+                if (scrobbleQueue.has(hash)) {
                     trackInfo.markAsScrobbled()
                     scrobbleQueue.remove(hash)
                 }

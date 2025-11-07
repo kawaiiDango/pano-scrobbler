@@ -31,10 +31,6 @@ android {
             jvmTarget = JvmTarget.JVM_21
         }
     }
-
-    buildFeatures {
-        buildConfig = true
-    }
 }
 
 dependencies {

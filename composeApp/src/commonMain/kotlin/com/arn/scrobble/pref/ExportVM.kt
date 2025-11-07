@@ -81,20 +81,10 @@ class ExportVM : ViewModel() {
         return HttpClient(OkHttp) {
             engine {
                 config {
-                    val ksType = KeyStore.getDefaultType()
-
-                    val keyStore = KeyStore.getInstance(ksType)
-                    val keyStoreStream =
-                        runBlocking { Res.readBytes("files/pano-embedded-server-ks.$keyFileExtension") }
-                            .inputStream()
-                    keyStore.load(
-                        keyStoreStream,
-                        Tokens.EMBEDDED_SERVER_KEYSTORE_PASSWORD.toCharArray()
-                    )
-
+                    val ks = ImportVM.readKeystore()
                     val trustManagerFactory =
                         TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-                    trustManagerFactory.init(keyStore)
+                    trustManagerFactory.init(ks)
                     val trustManagers = trustManagerFactory.trustManagers
                     val x509TrustManager = trustManagers[0] as X509TrustManager
 

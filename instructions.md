@@ -6,35 +6,15 @@ Welcome to my spaghetti
 
 ```
 package com.arn.scrobble
+
 object Tokens {
     const val LAST_KEY = "" // https://www.last.fm/api/account/create
     const val LAST_SECRET = ""
     // https://developer.spotify.com/dashboard/
     const val SPOTIFY_REFRESH_TOKEN = "<base64 encoded client_id:client_secret>"
     const val PLAY_BILLING_PUBLIC_KEY_BASE64 = "" // Use an empty string if you aren't using Play Billing
-    // password for the embedded https server PKCS #12 keystore, used for importing settings over local network
-    const val EMBEDDED_SERVER_KEYSTORE_PASSWORD = ""
 }
 ```
-
-- Create a PKCS #12 keystore for the embedded https server used for the import/export feature over local
-  network, with the password you used in EMBEDDED_SERVER_KEYSTORE_PASSWORD and alias selfsigned.
-
-```
-keytool -genkeypair \
-  -alias selfsigned \
-  -keystore pano-embedded-server-ks.p12 \
-  -storetype PKCS12 \
-  -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -validity 3650 \
-  -storepass <your-password> \
-  -dname "CN=localhost, OU=IT, O=kawaiiDango, C=IN" \
-  -ext "SAN=dns:localhost,ip:127.0.0.1" \
-  -J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHA1AndDESede \
-  -J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHA1AndRC2_40 \
-  -J-Dkeystore.pkcs12.macAlgorithm=HmacPBESHA1
-```
-
-Put it in composeApp/src/commonMain/composeResources/files/pano-embedded-server-ks.p12
 
 ### For Android:
 

@@ -4,9 +4,11 @@ import co.touchlab.kermit.Logger
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 
-object CrashReporter {
-    fun config(
-        keysMap: Map<String, String> = emptyMap(),
+object CrashReporter : BaseCrashReporter() {
+    override val isAvailable = true
+
+    override fun config(
+        keysMap: Map<String, String>,
     ) {
         keysMap.forEach { (key, value) ->
             Firebase.crashlytics.setCustomKey(key, value)

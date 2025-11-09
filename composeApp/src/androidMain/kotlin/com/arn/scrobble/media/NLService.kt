@@ -14,7 +14,6 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.content.ContextCompat
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.AndroidStuff
@@ -77,7 +76,7 @@ class NLService : NotificationListenerService() {
             job = SupervisorJob()
             coroutineScope = CoroutineScope(Dispatchers.Main + job!!)
 
-            if (BuildConfig.DEBUG)
+            if (PlatformStuff.isDebug)
                 toast(R.string.scrobbler_on)
             init()
         }
@@ -173,7 +172,7 @@ class NLService : NotificationListenerService() {
     }
 
     override fun onListenerDisconnected() { //api 24+ only
-        if (BuildConfig.DEBUG)
+        if (PlatformStuff.isDebug)
             toast(R.string.scrobbler_off)
 
         destroy()

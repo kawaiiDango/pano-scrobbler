@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import org.jetbrains.compose.resources.getString
@@ -40,7 +39,7 @@ actual object BugReportUtils {
         }
 
         var text = ""
-        text += BuildKonfig.APP_NAME + " v" + BuildConfig.VERSION_NAME + " " + BuildKonfig.BUILD_DATE + "\n"
+        text += BuildKonfig.APP_NAME + " v" + BuildKonfig.VER_NAME + "\n"
         text += "Android " + Build.VERSION.RELEASE + "\n"
         text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 
@@ -55,7 +54,7 @@ actual object BugReportUtils {
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"
 
-        text += if (PlatformStuff.billingRepository.isLicenseValid)
+        text += if (VariantStuff.billingRepository.isLicenseValid)
             "~~~~~~~~~~~~~~~~~~~~~~~~"
         else
             "------------------------"

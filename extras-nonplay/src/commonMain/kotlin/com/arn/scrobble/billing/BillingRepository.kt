@@ -9,15 +9,31 @@ import kotlinx.coroutines.flow.first
 class BillingRepository(
     context: Any?,
     clientData: BillingClientData,
+    openInBrowser: (url: String) -> Unit
 ) : BaseBillingRepository(
     context,
-    clientData
+    clientData,
+    openInBrowser
 ) {
 
     override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
-    private val CHECK_EVERY = 1000L * 60 * 60 * 24 // 1 day
+    override val publicKeyBase64 =
+        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
+    override val purchaseMethods = listOf(
+        PurchaseMethod(
+            displayName = "Ko-fi (Uses Paypal)",
+            link = "https://ko-fi.com/kawaiiDango"
+        ),
+        PurchaseMethod(
+            displayName = "BuyMeACoffee (Uses Stripe)",
+            link = "https://buymeacoffee.com/kawaiidango"
+        )
+    )
 
+    override val needsActivationCode = true
+    private val CHECK_EVERY = 1000L * 60 * 60 * 24 // 1 day
+    private val LICENSE_CHECKING_SERVER = "https://license-sever.kawaiidango.workers.dev"
 
     override fun initBillingClient() {
         val productDetails =
@@ -49,7 +65,7 @@ class BillingRepository(
             if (_licenseState.value != LicenseState.VALID || System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY) {
                 LicenseChecker.checkLicenseOnline(
                     client = clientData.httpClient,
-                    url = clientData.serverUrl + "/license/verify",
+                    url = LICENSE_CHECKING_SERVER + "/license/verify",
                     did = clientData.deviceIdentifier(),
                     token = receipt
                 ).onSuccess {
@@ -93,10 +109,11 @@ class BillingRepository(
         LicenseChecker.validateJwt(
             data,
             clientData.proProductId,
-            clientData.publicKeyBase64
+            publicKeyBase64
         )
 
-    override fun launchPlayBillingFlow(activity: Any) {
+    override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any) {
+        purchaseMethod.link?.let { openInBrowser(it) }
     }
 
 }

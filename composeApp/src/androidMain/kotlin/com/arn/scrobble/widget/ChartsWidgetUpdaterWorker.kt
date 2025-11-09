@@ -15,7 +15,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
@@ -200,7 +199,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
     }
 
     private fun logTimestampToFile(event: String) {
-        if (!BuildConfig.DEBUG) return
+        if (!PlatformStuff.isDebug) return
 
         val file = File(PlatformStuff.filesDir, "timestamps.txt")
         if (!file.exists()) {

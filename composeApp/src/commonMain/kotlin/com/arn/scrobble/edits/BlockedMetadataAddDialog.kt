@@ -32,6 +32,7 @@ import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -71,7 +72,7 @@ private fun BlockedMetadataAddContent(
     var useChannel by rememberSaveable { mutableStateOf(false) }
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
     val emptyText = stringResource(Res.string.required_fields_empty)
-    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
 
     LaunchedEffect(useChannel) {
         if (ignoredArtist != null) {

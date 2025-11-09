@@ -21,6 +21,7 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.cache.CacheStrategy
+import com.arn.scrobble.billing.BaseBillingRepository
 import com.arn.scrobble.billing.BillingClientData
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -201,14 +202,6 @@ object Stuff {
     const val LINK_CROWDIN = "https://crowdin.com/project/pscrobbler"
     const val LINK_PRIVACY_POLICY = "https://kawaiidango.github.io/pano-scrobbler/privacy-policy"
     const val LINK_FAQ = "https://kawaiidango.github.io/pano-scrobbler/faq"
-    const val LINK_KOFI = "https://ko-fi.com/kawaiiDango"
-    const val LINK_BMC = "https://buymeacoffee.com/kawaiidango"
-    const val NAME_KOFI = "Ko-fi (Uses Paypal)"
-    const val NAME_BMC = "BuyMeACoffee (Uses Stripe)"
-    const val LICENSE_CHECKING_SERVER =
-        "https://license-sever.kawaiidango.workers.dev"
-    const val LICENSE_PUBLIC_KEY_BASE64 =
-        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
     const val DISCORD_CLIENT_ID = "1299386213114970172"
     const val EMBEDDED_SERVER_KS = "Jjs5awQQB0YjN10vKCsWPC8AXW0"
 
@@ -291,12 +284,7 @@ object Stuff {
         BillingClientData(
             proProductId = PRO_PRODUCT_ID,
             appName = BuildKonfig.APP_NAME,
-            publicKeyBase64 = if (PlatformStuff.isNonPlayBuild)
-                LICENSE_PUBLIC_KEY_BASE64
-            else
-                Tokens.PLAY_BILLING_PUBLIC_KEY_BASE64,
             httpClient = Requesters.genericKtorClient,
-            serverUrl = LICENSE_CHECKING_SERVER,
             lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
             deviceIdentifier = { PlatformStuff.getDeviceIdentifier() },
             setLastcheckTime = { time ->

@@ -40,11 +40,15 @@ import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.ExtrasProps
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
+import com.arn.scrobble.billing.BillingRepository
+import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.logger.JvmLogger
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
+import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.themes.isSystemInDarkThemeNative
@@ -56,6 +60,7 @@ import com.arn.scrobble.utils.PanoTrayUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.toImageBitmap
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.delay
@@ -120,11 +125,15 @@ private fun init() {
 
     PanoNativeComponents.init()
 
-    // do a dummy query before the application starts to prevent a segfault on Linux
-    // no idea why that happens, and why this fixes it
-//    runBlocking {
-//        PanoDb.db.useReaderConnection { }
-//    }
+    VariantStuff.billingRepository = BillingRepository(
+        null,
+        Stuff.billingClientData,
+        PlatformStuff::openInBrowser
+    )
+
+    VariantStuff.crashReporter = CrashReporter
+    VariantStuff.reviewPrompter = ReviewPrompter
+    VariantStuff.extrasProps = ExtrasProps
 
 //    test()
 }

@@ -15,13 +15,14 @@ import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.VariantStuff
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppTheme(
     content: @Composable () -> Unit,
 ) {
-    val licenseState by PlatformStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
+    val licenseState by VariantStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
     val themeName by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeName }
     val dynamic by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDynamic }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }

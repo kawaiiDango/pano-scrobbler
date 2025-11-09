@@ -41,6 +41,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.getCurrentLocale
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.CommonWorkState
@@ -205,7 +206,7 @@ fun PrefsScreen(
     } else {
         PanoDb.db.getBlockedMetadataDao().count().collectAsStateWithLifecycle(0)
     }
-    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
 
     val scope = rememberCoroutineScope()
 
@@ -816,7 +817,7 @@ fun PrefsScreen(
 //                    else
 //                        stringResource(Res.string.desktop)
 //                ),
-                text = "v" + BuildKonfig.VER_NAME + " " + BuildKonfig.BUILD_DATE,
+                text = "v" + BuildKonfig.VER_NAME,
                 summary = Stuff.LINK_GITHUB,
                 onClick = {
                     PlatformStuff.openInBrowser(Stuff.LINK_GITHUB)

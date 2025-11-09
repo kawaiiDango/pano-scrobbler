@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,7 +49,7 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.drop
+import com.arn.scrobble.utils.VariantStuff
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -103,9 +104,11 @@ fun BillingScreen(
         else null,
     )
 
-    var purchaseOptionsExpanded by rememberSaveable { mutableStateOf(false) }
+    var purchaseMethodsExpanded by rememberSaveable { mutableStateOf(false) }
     var code by rememberSaveable { mutableStateOf("") }
     var codeError by rememberSaveable { mutableStateOf<String?>(null) }
+    val purchaseMethods = remember { VariantStuff.billingRepository.purchaseMethods }
+    val needsActivationCode = remember { VariantStuff.billingRepository.needsActivationCode }
 
     fun verifyLicenseOnline() {
         code.trim().ifEmpty { null }?.let {
@@ -162,10 +165,10 @@ fun BillingScreen(
             MediumExtendedFloatingActionButton(
                 onClick = {
                     if (proProductDetails != null) {
-                        if (PlatformStuff.isNonPlayBuild) {
-                            purchaseOptionsExpanded = true
-                        } else if (activity != null) {
-                            viewModel.makePlayPurchase(activity)
+                        if (purchaseMethods.size > 1) {
+                            purchaseMethodsExpanded = true
+                        } else if (activity != null && purchaseMethods.isNotEmpty()) {
+                            viewModel.makePurchase(purchaseMethods.first(), activity)
                         }
                     } else {
                         val failSnackbarData = PanoSnackbarVisuals(
@@ -198,35 +201,27 @@ fun BillingScreen(
                 },
             )
 
-            if (PlatformStuff.isNonPlayBuild) {
-                DropdownMenu(
-                    expanded = purchaseOptionsExpanded,
-                    onDismissRequest = { purchaseOptionsExpanded = false }
-                ) {
+            DropdownMenu(
+                expanded = purchaseMethodsExpanded,
+                onDismissRequest = { purchaseMethodsExpanded = false }
+            ) {
+                purchaseMethods.forEach { purchaseMethod ->
                     DropdownMenuItem(
                         onClick = {
-                            PlatformStuff.openInBrowser(Stuff.LINK_KOFI)
-                            purchaseOptionsExpanded = false
+                            if (activity != null) {
+                                viewModel.makePurchase(purchaseMethod, activity)
+                            }
+                            purchaseMethodsExpanded = false
                         },
                         text = {
-                            Text(Stuff.NAME_KOFI)
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        onClick = {
-                            PlatformStuff.openInBrowser(Stuff.LINK_BMC)
-                            purchaseOptionsExpanded = false
-                        },
-                        text = {
-                            Text(Stuff.NAME_BMC)
+                            Text(purchaseMethod.displayName)
                         }
                     )
                 }
             }
         }
 
-        if (PlatformStuff.isNonPlayBuild) {
+        if (needsActivationCode) {
             OutlinedTextField(
                 value = code,
                 onValueChange = {
@@ -278,7 +273,7 @@ fun BillingScreen(
     }
 
     LaunchedEffect(Unit) {
-        PlatformStuff.billingRepository.licenseState.collect { licenseState ->
+        VariantStuff.billingRepository.licenseState.collect { licenseState ->
             when (licenseState) {
                 LicenseState.VALID -> {
                     val thankYouSnackbarData = PanoSnackbarVisuals(

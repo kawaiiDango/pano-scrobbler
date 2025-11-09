@@ -33,6 +33,7 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -69,7 +70,7 @@ fun NavPopupDialog(
             drawSnowfall = drawSnowfall,
         )
 
-        if (!PlatformStuff.billingRepository.isLicenseValid) {
+        if (!VariantStuff.billingRepository.isLicenseValid) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth(1f)

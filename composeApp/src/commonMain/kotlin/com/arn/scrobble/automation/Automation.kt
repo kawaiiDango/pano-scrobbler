@@ -4,6 +4,7 @@ import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -26,7 +27,7 @@ object Automation {
         arg: String?,
         callingPackage: String?
     ): Boolean {
-        if (!PlatformStuff.billingRepository.isLicenseValid) {
+        if (!VariantStuff.billingRepository.isLicenseValid) {
             return false
         }
 

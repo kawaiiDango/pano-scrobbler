@@ -54,6 +54,7 @@ import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -82,8 +83,8 @@ fun SwitchPref(
 ) {
     val scope = rememberCoroutineScope()
     val enabled =
-        if (onNavigateToBilling != null) PlatformStuff.billingRepository.isLicenseValid else enabled
-    val locked = onNavigateToBilling != null && !PlatformStuff.billingRepository.isLicenseValid
+        if (onNavigateToBilling != null) VariantStuff.billingRepository.isLicenseValid else enabled
+    val locked = onNavigateToBilling != null && !VariantStuff.billingRepository.isLicenseValid
 
     Row(
         modifier = modifier

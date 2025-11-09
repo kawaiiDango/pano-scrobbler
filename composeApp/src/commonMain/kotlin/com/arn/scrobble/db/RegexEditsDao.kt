@@ -9,6 +9,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -80,7 +81,7 @@ interface RegexEditsDao {
             scrobbleData: ScrobbleData,
             regexEdits: List<RegexEdit>
         ): RegexResults {
-            val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+            val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
             var scrobbleData = scrobbleData
             val cumulativeMatches = mutableSetOf<RegexEdit>()
 

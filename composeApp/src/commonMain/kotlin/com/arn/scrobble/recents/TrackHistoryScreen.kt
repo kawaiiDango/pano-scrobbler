@@ -35,6 +35,7 @@ import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -60,7 +61,7 @@ fun TrackHistoryScreen(
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
-    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
+    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && VariantStuff.billingRepository.isLicenseValid }
     val myScrobblesStr = stringResource(Res.string.my_scrobbles)
     val density = LocalDensity.current
     val listViewportHeight = remember {

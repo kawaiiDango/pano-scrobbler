@@ -10,7 +10,7 @@ kotlin {
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
-    androidLibrary {
+    android {
         namespace = "com.arn.scrobble.extras.nonplay"
         compileSdk = libs.versions.targetSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()

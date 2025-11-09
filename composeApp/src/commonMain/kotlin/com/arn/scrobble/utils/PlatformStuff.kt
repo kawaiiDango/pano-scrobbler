@@ -15,8 +15,6 @@ expect object PlatformStuff {
 
     val mainPrefs: DataStore<MainPrefs>
 
-    val billingRepository: BaseBillingRepository
-
     val filesDir: File
 
     val cacheDir: File
@@ -34,8 +32,6 @@ expect object PlatformStuff {
     val isTv: Boolean
 
     val isDesktop: Boolean
-
-    val isNonPlayBuild: Boolean
 
     val noUpdateCheck: Boolean
 
@@ -63,8 +59,6 @@ expect object PlatformStuff {
     fun copyToClipboard(text: String)
 
     fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream)
-
-    suspend fun promptForReview(activity: Any?)
 
     fun getLocalIpAddress(): String?
 

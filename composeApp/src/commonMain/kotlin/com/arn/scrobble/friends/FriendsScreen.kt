@@ -83,6 +83,7 @@ import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -123,7 +124,7 @@ fun FriendsScreen(
     val totalFriends by viewModel.totalFriends.collectAsStateWithLifecycle()
     val friendsExtraDataMap by viewModel.friendsExtraDataMap.collectAsStateWithLifecycle()
     val friendsExtraDataMapState = remember { mutableStateMapOf<String, FriendExtraData>() }
-    val pinnedFriends by if (PlatformStuff.billingRepository.isLicenseValid && user.isSelf) {
+    val pinnedFriends by if (VariantStuff.billingRepository.isLicenseValid && user.isSelf) {
         viewModel.pinnedFriends.collectAsStateWithLifecycle()
     } else {
         remember { mutableStateOf(emptyList()) }
@@ -168,7 +169,7 @@ fun FriendsScreen(
     val followingText = stringResource(Res.string.following)
 
     LaunchedEffect(pinnedFriends) {
-        if (PlatformStuff.billingRepository.isLicenseValid) {
+        if (VariantStuff.billingRepository.isLicenseValid) {
             pinnedFriendsReordered = pinnedFriends
         }
     }
@@ -290,7 +291,7 @@ fun FriendsScreen(
                 return@PanoLazyColumn // return early
             }
 
-            if (user.isSelf && PlatformStuff.billingRepository.isLicenseValid) {
+            if (user.isSelf && VariantStuff.billingRepository.isLicenseValid) {
                 itemsIndexed(
                     pinnedFriendsReordered,
                     key = { idx, friend -> friend.name }
@@ -303,7 +304,7 @@ fun FriendsScreen(
                             pinIndex = idx,
                             canPinUnpin = user.isSelf,
                             onPinUnpin = { pin ->
-                                if (PlatformStuff.billingRepository.isLicenseValid) {
+                                if (VariantStuff.billingRepository.isLicenseValid) {
                                     if (pin && friend.name !in pinnedUsernamesSet)
                                         viewModel.addPinAndSave(friend)
                                     else if (!pin && friend.name in pinnedUsernamesSet)
@@ -354,7 +355,7 @@ fun FriendsScreen(
                                 extraData = friendsExtraDataMapState[friend.name],
                                 canPinUnpin = user.isSelf,
                                 onPinUnpin = { pin ->
-                                    if (PlatformStuff.billingRepository.isLicenseValid) {
+                                    if (VariantStuff.billingRepository.isLicenseValid) {
                                         if (pin && friend.name !in pinnedUsernamesSet)
                                             viewModel.addPinAndSave(friend)
                                         else if (!pin && friend.name in pinnedUsernamesSet)

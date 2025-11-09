@@ -8,6 +8,7 @@ import com.arn.scrobble.updates.doAfterUpdateCheck
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.getString
@@ -22,8 +23,9 @@ class UpdaterWorker(
     override val setProgress: suspend (CommonWorkProgress) -> Unit
 ) : CommonWorker {
     override suspend fun doWork(): CommonWorkerResult {
+        val url = VariantStuff.extrasProps.githubApiUrl
         val mainPrefs = PlatformStuff.mainPrefs
-        if (PlatformStuff.noUpdateCheck) {
+        if (PlatformStuff.noUpdateCheck || url == null) {
             return CommonWorkerResult.Failure("Update check disabled")
         }
 
@@ -50,10 +52,7 @@ class UpdaterWorker(
             )
         )
 
-        val latestRelease: Result<GithubReleases> = Github.getLatestRelease(
-            client = Requesters.genericKtorClient,
-            json = Stuff.myJson,
-        )
+        val latestRelease: Result<GithubReleases> = Github.getLatestRelease(url)
 
         latestRelease.onSuccess { release ->
             mainPrefs.updateData { it.copy(lastUpdateCheckTime = System.currentTimeMillis()) }

@@ -31,22 +31,15 @@ import kotlin.sequences.forEach
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.play.publisher)
     alias(libs.plugins.buildkonfig)
-    alias(libs.plugins.baselineprofile)
     id("kotlin-parcelize")
-}
-
-if (gradle.startParameter.taskNames.none { it.contains("releaseGithub", ignoreCase = true) }) {
-    apply(plugin = libs.plugins.google.services.get().pluginId)
-    apply(plugin = libs.plugins.crashlytics.get().pluginId)
 }
 
 val os = org.gradle.internal.os.OperatingSystem.current()!!
@@ -69,34 +62,26 @@ val resourcesDirName = when {
     else -> throw IllegalStateException("Unsupported platform: $os $arch")
 }
 
-val versionFile = file("version.txt")
-var verCode: Int
-if (versionFile.canRead()) {
-    verCode = versionFile.readText().toInt()
-    for (task in gradle.startParameter.taskNames) {
-        if (task.contains("publish")) {
-            verCode++
-            versionFile.writeText(verCode.toString())
-            break
-        }
-    }
-} else {
-    throw GradleException("Could not read version.txt!")
-}
-val verName = "${verCode / 100}.${verCode % 100}"
-val buildDate = SimpleDateFormat("YYYY, MMM dd", Locale.ENGLISH).format(Date())!!
-val appId = "com.arn.scrobble"
-val appName = "Pano Scrobbler"
-val appNameWithoutSpaces = "pano-scrobbler"
+val APP_ID: String by rootProject.extra
+val VER_CODE: Int by rootProject.extra
+val VER_NAME: String by rootProject.extra
+val BUILD_DATE: String by rootProject.extra
+val APP_NAME: String by rootProject.extra
+val APP_NAME_NO_SPACES: String by rootProject.extra
+val CHANGELOG: String by rootProject.extra
 
 val localProperties = gradleLocalProperties(rootDir, project.providers)
     .map { it.key to it.value.toString() }
     .toMap()
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+    android {
+        compileSdk = libs.versions.targetSdk.get().toInt()
+        namespace = APP_ID
+        minSdk = libs.versions.minSdk.get().toInt()
+
+        androidResources {
+            enable = true
         }
     }
 
@@ -116,6 +101,7 @@ kotlin {
             implementation(libs.compose.webview)
             implementation(libs.harmony)
             implementation(libs.coil.gif)
+            implementation(projects.extrasDebugFlag)
         }
 
         commonMain.dependencies {
@@ -178,9 +164,7 @@ kotlin {
 
 
 dependencies {
-    "baselineProfile"(projects.baselineprofile)
-    implementation(libs.profileinstaller)
-
+//    "baselineProfile"(projects.baselineprofile)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
 }
@@ -191,23 +175,15 @@ room {
 }
 
 buildkonfig {
-    packageName = appId
-
-    val changelogFile = file("src/androidMain/play/release-notes/en-US/default.txt")
-    val changelog = if (changelogFile.canRead()) {
-        changelogFile.readText()
-    } else {
-        "changelog_placeholder"
-    }
+    packageName = APP_ID
 
     // default config is required
     defaultConfigs {
-        buildConfigField(STRING, "APP_NAME", appName, const = true)
-        buildConfigField(STRING, "APP_ID", appId, const = true)
-        buildConfigField(INT, "VER_CODE", verCode.toString(), const = true)
-        buildConfigField(STRING, "VER_NAME", verName, const = true)
-        buildConfigField(STRING, "BUILD_DATE", buildDate, const = true)
-        buildConfigField(STRING, "CHANGELOG", changelog, const = true)
+        buildConfigField(STRING, "APP_NAME", APP_NAME, const = true)
+        buildConfigField(STRING, "APP_ID", APP_ID, const = true)
+        buildConfigField(INT, "VER_CODE", VER_CODE.toString(), const = true)
+        buildConfigField(STRING, "VER_NAME", VER_NAME, const = true)
+        buildConfigField(STRING, "CHANGELOG", CHANGELOG, const = true)
         buildConfigField(BOOLEAN, "DEBUG", (!isReleaseBuild).toString(), const = true)
 
     }
@@ -231,97 +207,6 @@ buildkonfig {
 
             buildConfigField(STRING, "OS_ARCH", resourcesDirName, const = true)
         }
-    }
-}
-
-
-android {
-    compileSdk = libs.versions.targetSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = appId
-        namespace = appId
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = verCode
-        versionName = verName
-        base.archivesName = appNameWithoutSpaces
-    }
-
-    buildFeatures {
-        buildConfig = true
-        compose = true
-    }
-
-    buildTypes {
-        getByName("release") {
-            isShrinkResources = true
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-
-        getByName("debug") {
-            versionNameSuffix = " DEBUG"
-        }
-
-        create("releaseGithub") {
-            initWith(getByName("release"))
-            versionNameSuffix = " GH"
-        }
-    }
-
-    packaging {
-        resources {
-            excludes.add("/META-INF/**/*.txt")
-        }
-
-        jniLibs {
-            useLegacyPackaging = false
-        }
-
-        bundle {
-            language {
-                enableSplit = false
-            }
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
-
-    baselineProfile {
-        dexLayoutOptimization = true
-    }
-
-    dependenciesInfo {
-        includeInApk = false
-        includeInBundle = true
-    }
-
-    dependencies {
-
-//        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
-
-        releaseImplementation(projects.extrasPlay)
-//        debugImplementation(projects.extrasPlay)
-        debugImplementation(projects.extrasNonplay)
-        "releaseGithubImplementation"(projects.extrasNonplay)
-
-        androidTestImplementation(libs.androidx.uiautomator)
-        androidTestImplementation(libs.androidx.runner)
-        androidTestImplementation(libs.androidx.espresso.core)
-        androidTestImplementation(libs.androidx.test.ext.junit)
     }
 }
 
@@ -399,9 +284,9 @@ compose.desktop {
             }
 
             targetFormats = formats
-            packageVersion = verName
+            packageVersion = VER_NAME
             vendor = "kawaiiDango"
-            packageName = appNameWithoutSpaces
+            packageName = APP_NAME_NO_SPACES
 
             appResourcesRootDir = project.layout.projectDirectory.dir("resources")
 
@@ -410,22 +295,22 @@ compose.desktop {
                 upgradeUuid = "85173f4e-ca52-4ec9-b77f-c2e0b1ff4209"
                 msiPackageVersion = packageVersion
                 exePackageVersion = packageVersion
-                menuGroup = appName
-                description = appNameWithoutSpaces
+                menuGroup = APP_NAME
+                description = APP_NAME_NO_SPACES
                 iconFile = file("app-icons/pano-scrobbler.ico")
             }
 
             linux {
-                menuGroup = appNameWithoutSpaces
-                description = appNameWithoutSpaces
+                menuGroup = APP_NAME_NO_SPACES
+                description = APP_NAME_NO_SPACES
                 iconFile = file("app-icons/pano-scrobbler.png")
             }
 
             macOS {
-                bundleID = appId
-                packageName = appName
-                dockName = appName
-                description = appName
+                bundleID = APP_ID
+                packageName = APP_NAME
+                dockName = APP_NAME
+                description = APP_NAME
                 appStore = false
 
                 iconFile = file("app-icons/pano-scrobbler.icns")
@@ -474,7 +359,7 @@ tasks.withType<ComposeHotRun>().configureEach {
         else -> throw IllegalStateException("unsupported os")
     }
 
-    val appDataDir = File(appDataRoot, "$appNameWithoutSpaces-debug").absolutePath
+    val appDataDir = File(appDataRoot, "$APP_NAME_NO_SPACES-debug").absolutePath
     args = listOf("--data-dir", appDataDir)
 }
 
@@ -517,12 +402,12 @@ tasks.register<Copy>("copyGithubReleaseApk") {
     include("*-releaseGithub.apk")
     rename(
         "(.*)-releaseGithub.apk",
-        "$appNameWithoutSpaces-android-universal.apk"
+        "$APP_NAME_NO_SPACES-android-universal.apk"
     )
 }
 
 tasks.register<Copy>("copyReleaseDmg") {
-    val fileName = "$appNameWithoutSpaces-$resourcesDirName.dmg"
+    val fileName = "$APP_NAME_NO_SPACES-$resourcesDirName.dmg"
     from("build/compose/binaries/main-release/dmg")
     into("dist")
     include("*.dmg")
@@ -537,7 +422,7 @@ tasks.register<Exec>("packageWindowsNsis") {
     val nsisFilesDir = file("nsis-files")
     val distDir = file("dist")
 
-    val distFile = File(distDir, "$appNameWithoutSpaces-$resourcesDirName.exe")
+    val distFile = File(distDir, "$APP_NAME_NO_SPACES-$resourcesDirName.exe")
     val nsisScriptFile = File(nsisFilesDir, "install-script.nsi")
     val iconFile = file("app-icons/pano-scrobbler.ico")
 
@@ -568,8 +453,8 @@ tasks.register<Exec>("packageWindowsNsis") {
         "\"$nsisDir\\makensis\"",
         "/DOUTFILE=" + distFile.absolutePath,
         "/DAPPDIR=" + executableDir.absolutePath,
-        "/DVERSION_CODE=$verCode",
-        "/DVERSION_NAME=$verName",
+        "/DVERSION_CODE=$VER_CODE",
+        "/DVERSION_NAME=$VER_NAME",
         "/DICON_FILE=" + iconFile.absolutePath,
         nsisScriptFile.absolutePath
     )
@@ -589,7 +474,7 @@ tasks.register<Exec>("buildNativeImage") {
     val copyDesktopAndIcon = os.isLinux
 
     val jarFile =
-        file("build/compose/jars/$appNameWithoutSpaces-$resourcesDirName-$verName.jar")
+        file("build/compose/jars/$APP_NAME_NO_SPACES-$resourcesDirName-$VER_NAME.jar")
     val jarTree = zipTree(jarFile)
     val jarFilesToExtract = if (os.isWindows && arch in archAmd64)
         arrayOf("skiko-windows-x64.dll", "icudtl.dat", "natives/windows_x64/sqliteJni.dll")
@@ -601,7 +486,7 @@ tasks.register<Exec>("buildNativeImage") {
         arrayOf()
 
     val outputDir = file("build/compose/native/$resourcesDirName")
-    val outputFile = File(outputDir, appNameWithoutSpaces)
+    val outputFile = File(outputDir, APP_NAME_NO_SPACES)
 
     val rechabilityFilesSuffix = if (Runtime.version().version().first() < 24) "-21" else ""
     val reachabilityFiles = file(
@@ -623,7 +508,7 @@ tasks.register<Exec>("buildNativeImage") {
 
     val nativeLibsDir = file("resources/$resourcesDirName/")
     val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
-    val desktopFile = file("$appNameWithoutSpaces.desktop")
+    val desktopFile = file("$APP_NAME_NO_SPACES.desktop")
     val licenseFile = file("../LICENSE")
     val distDir = file("dist")
 
@@ -736,9 +621,9 @@ afterEvaluate {
             finalizedBy(tasks.named("packageWindowsNsis"))
         }
 
-    tasks.named("packageReleaseGithub") {
-        finalizedBy(tasks.named("copyGithubReleaseApk"))
-    }
+//    tasks.named("packageReleaseGithub") {
+//        finalizedBy(tasks.named("copyGithubReleaseApk"))
+//    }
 
 }
 
@@ -947,60 +832,4 @@ tasks.register("copyStringsToAndroid") {
             }
         }
     }
-}
-
-android {
-    signingConfigs {
-        if (
-            localProperties["release.keystore"] != null &&
-            localProperties["release.storePassword"] != null &&
-            localProperties["release.alias"] != null &&
-            localProperties["release.password"] != null
-        ) {
-            register("release") {
-                storeFile = file(localProperties["release.keystore"]!!)
-                storePassword = localProperties["release.storePassword"]
-                keyAlias = localProperties["release.alias"]
-                keyPassword = localProperties["release.password"]
-            }
-        }
-
-        if (
-            localProperties["releaseGithub.keystore"] != null &&
-            localProperties["releaseGithub.storePassword"] != null &&
-            localProperties["releaseGithub.alias"] != null &&
-            localProperties["releaseGithub.password"] != null
-        ) {
-            register("releaseGithub") {
-                storeFile = file(localProperties["releaseGithub.keystore"]!!)
-                storePassword = localProperties["releaseGithub.storePassword"]
-                keyAlias = localProperties["releaseGithub.alias"]
-                keyPassword = localProperties["releaseGithub.password"]
-            }
-        }
-    }
-
-    buildTypes {
-        getByName("debug") {
-            signingConfig = signingConfigs.findByName("releaseGithub")
-        }
-
-        getByName("release") {
-            signingConfig = signingConfigs.findByName("release")
-        }
-
-        getByName("releaseGithub") {
-            signingConfig = signingConfigs.findByName("releaseGithub")
-        }
-    }
-}
-
-play {
-    track.set("beta") // or 'rollout' or 'beta' or 'alpha'
-//    userFraction = 1.0d // only necessary for 'rollout', in this case default is 0.1 (10% of the target)
-    defaultToAppBundles.set(true)
-    serviceAccountCredentials.set(file("play_api_keys.json"))
-
-    fromTrack.set("beta")
-    promoteTrack.set("production")
 }

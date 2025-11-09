@@ -51,6 +51,7 @@ import com.arn.scrobble.ui.colorSeed
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -83,7 +84,7 @@ class CollageGeneratorVM : ViewModel() {
     private lateinit var context: PlatformContext
 
     private val paddingPx = 16
-    private val isPro = PlatformStuff.billingRepository.isLicenseValid
+    private val isPro = VariantStuff.billingRepository.isLicenseValid
 
     fun generateCollage(
         context: PlatformContext,

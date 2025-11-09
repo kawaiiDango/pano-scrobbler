@@ -9,10 +9,12 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.billing.PurchaseMethod
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -61,7 +63,7 @@ class MainViewModel : ViewModel() {
 
     private val _pullToRefreshTriggered = MutableSharedFlow<Int>()
 
-    private val repository = PlatformStuff.billingRepository
+    private val repository = VariantStuff.billingRepository
 
     val proProductDetails = repository.proProductDetails
 
@@ -176,8 +178,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun makePlayPurchase(activity: Any) {
-        repository.launchPlayBillingFlow(activity)
+    fun makePurchase(purchaseMethod: PurchaseMethod, activity: Any) {
+        repository.launchBillingFlow(purchaseMethod, activity)
     }
 
     // pass null to load self user

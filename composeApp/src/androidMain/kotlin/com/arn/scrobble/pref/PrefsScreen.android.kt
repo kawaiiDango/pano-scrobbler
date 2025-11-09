@@ -21,6 +21,7 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.widget.ChartsWidgetConfigActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import kotlinx.coroutines.launch
@@ -77,7 +78,7 @@ actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean
 }
 
 actual fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boolean) {
-    if (!PlatformStuff.isNonPlayBuild) {
+    if (VariantStuff.crashReporter.isAvailable) {
         listScope.item(MainPrefs::crashReporterEnabled.name) {
             SwitchPref(
                 text = stringResource(Res.string.pref_crashlytics_enabled),

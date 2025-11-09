@@ -45,7 +45,7 @@ actual suspend fun showTrackShareSheet(track: Track, user: UserCached) {
             user.name
         )
 
-    if (!PlatformStuff.billingRepository.isLicenseValid)
+    if (!VariantStuff.billingRepository.isLicenseValid)
         shareText += "\n\n" + getString(Res.string.share_sig)
 
     val i = Intent(Intent.ACTION_SEND).apply {

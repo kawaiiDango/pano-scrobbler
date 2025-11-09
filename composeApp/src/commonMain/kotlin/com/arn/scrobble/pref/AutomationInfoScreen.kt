@@ -27,6 +27,7 @@ import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.VariantStuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.automation_cli_info
@@ -55,7 +56,7 @@ fun AutomationInfoScreen(
         )
     }
 
-    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
 
     val appIdPlaceholder = if (PlatformStuff.isDesktop)
         "<APP_ID/MPRIS_ID>"

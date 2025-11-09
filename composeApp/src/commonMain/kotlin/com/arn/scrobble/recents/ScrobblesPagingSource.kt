@@ -13,6 +13,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.Calendar
@@ -100,7 +101,7 @@ class ScrobblesPagingSource(
 
             if (
                 currentScrobblable !is FileScrobblable &&
-                PlatformStuff.billingRepository.isLicenseValid &&
+                VariantStuff.billingRepository.isLicenseValid &&
                 PlatformStuff.mainPrefs.data.map { it.showScrobbleSources }.first()
             ) {
                 val earliest = entries.lastOrNull()?.date

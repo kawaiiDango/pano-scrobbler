@@ -21,26 +21,87 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+private const val TAG = "BillingRepository"
 
 class BillingRepository(
     context: Context,
     clientData: BillingClientData,
+    openInBrowser: (url: String) -> Unit
 ) : BaseBillingRepository(
     context,
-    clientData
-),
-    PurchasesUpdatedListener, BillingClientStateListener {
+    clientData,
+    openInBrowser
+) {
 
-    // Breaking change in billing v4: callbacks don't run on main thread, always use LiveData.postValue()
-
-    // how long before the data source tries to reconnect to Google play
     override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
-    private val TAG = BillingRepository::class.simpleName!!
+    override val publicKeyBase64 =
+        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmdJDoSt28Ps1zqsHlMgIXqnLxDOKyT+qUl4dV8eto7RL0B58DrtiUYC0LlhaM+ilx+ClPbNYlYT9VI0u2Yk0/f0uIpy4W8Hxxv5P2/nlwyEzBPd8dvEtFi4c6YB+wA0dwokhVVSLb6S3XyCZ2ONmozwZZ8RT3B+/Zs3ZdnkZDqiYDyA9lQVReCcM/lHSXQpst8zcNo00DzXG+3ptVpa3fnNhWjm+kgqjntzAV+cT53D8Qc53sHpmqQG84pFzDhiQoNH2bCy+IDs0iP40Wdjj1mzm7N0RZ2gxFawZrUwWAhvHrgXWXOV+Vhd3upqZWAhBMeeV4K/4GAR7EOwTib1ngwIDAQAB"
+    override val purchaseMethods = listOf(
+        PurchaseMethod(
+            displayName = "Google Play",
+            link = null
+        ),
+    )
+    override val needsActivationCode = false
     private lateinit var playStoreBillingClient: BillingClient
     private var proProductDetailsList: List<ProductDetails>? = null
     private val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
 
+
+    val billingClientStateListener: BillingClientStateListener =
+        object : BillingClientStateListener {
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                when (billingResult.responseCode) {
+                    BillingClient.BillingResponseCode.OK -> {
+                        fetchProductDetails(clientData.proProductId)
+
+                        // this runs in a separate thread anyways
+                        runBlocking {
+                            queryPurchasesAsync()
+                        }
+                    }
+
+                    BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
+                        Logger.w(TAG) { "BILLING_UNAVAILABLE" }
+                        //Some apps may choose to make decisions based on this knowledge.
+                    }
+
+                    BillingClient.BillingResponseCode.ERROR -> {
+                        Logger.d(TAG) { billingResult.debugMessage }
+                    }
+
+                    else -> {
+                        //do nothing. Someone else will connect it through retry policy.
+                        //May choose to send to server though
+                    }
+                }
+            }
+
+            override fun onBillingServiceDisconnected() {
+                // now handled by enableAutoServiceReconnection()
+            }
+        }
+
+    val purchasesUpdatedListener = PurchasesUpdatedListener { billingResult, purchases ->
+        when (billingResult.responseCode) {
+            BillingClient.BillingResponseCode.OK -> {
+                // will handle server verification, consumables, and updating the local cache
+                purchases?.let { scope.launch { processPurchases(it.toSet()) } }
+            }
+
+            BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
+                // item already owned? call queryPurchasesAsync to verify and process all such items
+                runBlocking {
+                    queryPurchasesAsync()
+                }
+            }
+
+            else -> {
+                Logger.d(TAG) { billingResult.debugMessage }
+            }
+        }
+    }
 
     override fun initBillingClient() {
         playStoreBillingClient = BillingClient.newBuilder(context as Context)
@@ -48,58 +109,18 @@ class BillingRepository(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
             ) // required or app will crash
             .enableAutoServiceReconnection()
-            .setListener(this)
+            .setListener(purchasesUpdatedListener)
             .build()
     }
 
     override fun startDataSourceConnections() {
-        playStoreBillingClient.startConnection(this)
+        playStoreBillingClient.startConnection(billingClientStateListener)
     }
 
     override fun endDataSourceConnections() {
         playStoreBillingClient.endConnection()
     }
 
-
-    override fun onBillingSetupFinished(billingResult: BillingResult) {
-        when (billingResult.responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
-                fetchProductDetails(clientData.proProductId)
-
-                // this runs in a separate thread anyways
-                runBlocking {
-                    queryPurchasesAsync()
-                }
-            }
-
-            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Logger.w(TAG) { "BILLING_UNAVAILABLE" }
-                //Some apps may choose to make decisions based on this knowledge.
-            }
-
-            BillingClient.BillingResponseCode.ERROR -> {
-                Logger.d(TAG) { billingResult.debugMessage }
-            }
-
-            else -> {
-                //do nothing. Someone else will connect it through retry policy.
-                //May choose to send to server though
-            }
-        }
-    }
-
-    /**
-     * This method is called when the app has inadvertently disconnected from the [BillingClient].
-     * An attempt should be made to reconnect using a retry policy. Note the distinction between
-     * [endConnection][BillingClient.endConnection] and disconnected:
-     * - disconnected means it's okay to try reconnecting.
-     * - endConnection means the [playStoreBillingClient] must be re-instantiated and then start
-     *   a new connection because a [BillingClient] instance is invalid after endConnection has
-     *   been called.
-     **/
-    override fun onBillingServiceDisconnected() {
-        // now handled by enableAutoServiceReconnection()
-    }
 
     /**
      * BACKGROUND
@@ -180,7 +201,7 @@ class BillingRepository(
         return Security.verifyPurchase(
             data,
             s,
-            clientData.publicKeyBase64,
+            publicKeyBase64,
         )
     }
 
@@ -285,73 +306,25 @@ class BillingRepository(
      * launch the Google Play Billing flow. The response to this call is returned in
      * [onPurchasesUpdated]
      */
-    override fun launchPlayBillingFlow(activity: Any) {
-        findProProduct()?.let { productDetails ->
-            val flowParams = BillingFlowParams.newBuilder()
-                .setProductDetailsParamsList(
-                    listOf(
-                        ProductDetailsParams.newBuilder()
-                            .setProductDetails(productDetails)
-                            .build()
+    override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any) {
+        if (purchaseMethod.link == null) {
+            findProProduct()?.let { productDetails ->
+                val flowParams = BillingFlowParams.newBuilder()
+                    .setProductDetailsParamsList(
+                        listOf(
+                            ProductDetailsParams.newBuilder()
+                                .setProductDetails(productDetails)
+                                .build()
+                        )
                     )
-                )
-                .build()
+                    .build()
 
-            playStoreBillingClient.launchBillingFlow(activity as Activity, flowParams)
-        }
-    }
-
-    /**
-     * This method is called by the [playStoreBillingClient] when new purchases are detected.
-     * The purchase list in this method is not the same as the one in
-     * [queryPurchases][BillingClient.queryPurchasesAsync]. Whereas queryPurchases returns everything
-     * this user owns, [onPurchasesUpdated] only returns the items that were just now purchased or
-     * billed.
-     *
-     * The purchases provided here should be passed along to the secure server for
-     * [verification](https://developer.android.com/google/play/billing/billing_library_overview#Verify)
-     * and safekeeping. And if this purchase is consumable, it should be consumed, and the secure
-     * server should be told of the consumption. All that is accomplished by calling
-     * [queryPurchasesAsync].
-     */
-    override fun onPurchasesUpdated(
-        billingResult: BillingResult,
-        purchases: MutableList<Purchase>?,
-    ) {
-        when (billingResult.responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
-                // will handle server verification, consumables, and updating the local cache
-                purchases?.let { scope.launch { processPurchases(it.toSet()) } }
-            }
-
-            BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
-                // item already owned? call queryPurchasesAsync to verify and process all such items
-                runBlocking {
-                    queryPurchasesAsync()
-                }
-            }
-
-            else -> {
-                Logger.d(TAG) { billingResult.debugMessage }
+                playStoreBillingClient.launchBillingFlow(activity as Activity, flowParams)
             }
         }
     }
 
     override suspend fun checkAndStoreLicense(receipt: String) {
     }
-
-//    companion object {
-//        @Volatile
-//        private var INSTANCE: BillingRepository? = null
-//
-//        fun getInstance(application: Application): BillingRepository =
-//            INSTANCE ?: synchronized(this) {
-//                INSTANCE
-//                    ?: BillingRepository(application)
-//                        .also { INSTANCE = it }
-//            }
-//
-//    }
-
 }
 

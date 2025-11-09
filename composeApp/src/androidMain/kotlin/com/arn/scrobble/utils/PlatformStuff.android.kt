@@ -31,22 +31,19 @@ import androidx.room.ExperimentalRoomApi
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.ExtrasConsts
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.BaseBillingRepository
-import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.debugflag.DebugFlag
 import com.arn.scrobble.media.NLService
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsMigration5
 import com.arn.scrobble.pref.MainPrefsSerializer
-import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import com.arn.scrobble.utils.AndroidStuff.toast
@@ -81,10 +78,6 @@ actual object PlatformStuff {
         )
     }
 
-    actual val billingRepository: BaseBillingRepository by lazy {
-        BillingRepository(applicationContext, Stuff.billingClientData)
-    }
-
     actual val filesDir by lazy { applicationContext.filesDir!! }
 
     actual val cacheDir by lazy { applicationContext.cacheDir!! }
@@ -94,7 +87,7 @@ actual object PlatformStuff {
         return name.sha256Truncated()
     }
 
-    actual val isDebug = BuildConfig.DEBUG
+    actual val isDebug = DebugFlag.IS_DEBUG
 
     actual val isJava8OrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
@@ -125,9 +118,7 @@ actual object PlatformStuff {
 
     actual const val isDesktop = false
 
-    actual const val isNonPlayBuild = ExtrasConsts.isNonPlayBuild
-
-    actual const val noUpdateCheck = !isNonPlayBuild
+    actual const val noUpdateCheck = true
 
     actual fun String.toHtmlAnnotatedString() = AnnotatedString.fromHtml(this)
 
@@ -234,7 +225,7 @@ actual object PlatformStuff {
 
             putExtra(SearchManager.QUERY, searchQuery)
 
-            if (appId != null && billingRepository.isLicenseValid && searchInSource)
+            if (appId != null && VariantStuff.billingRepository.isLicenseValid && searchInSource)
                 `package` = appId
         }
         try {
@@ -329,15 +320,6 @@ actual object PlatformStuff {
         stream.use {
             imageBitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG, 95, it)
         }
-    }
-
-    actual suspend fun promptForReview(activity: Any?) {
-        ReviewPrompter(
-            activity as? Activity,
-            mainPrefs.data.first().lastReviewPromptTime
-        ) { t ->
-            mainPrefs.updateData { it.copy(lastReviewPromptTime = t) }
-        }.showIfNeeded()
     }
 
     actual fun getLocalIpAddress(): String? {

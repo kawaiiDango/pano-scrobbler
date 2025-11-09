@@ -1,3 +1,7 @@
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -13,8 +17,20 @@ plugins {
     alias(libs.plugins.aboutlibraries) apply false
     alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.buildkonfig) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false
+}
+
+extra.apply {
+    val versionFile = file("version.txt")
+    val verCode = versionFile.readText().trim().toInt()
+    set("VER_CODE", verCode)
+    set("VER_NAME", "${verCode / 100}.${verCode % 100}")
+    set("BUILD_DATE", SimpleDateFormat("yyyy, MMM dd", Locale.ENGLISH).format(Date()))
+    set("APP_ID", "com.arn.scrobble")
+    set("APP_NAME", "Pano Scrobbler")
+    set("APP_NAME_NO_SPACES", "pano-scrobbler")
+    val changelogFile = file("changelog.txt")
+    set("CHANGELOG", changelogFile.readText())
 }

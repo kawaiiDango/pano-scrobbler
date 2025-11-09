@@ -11,11 +11,15 @@ import kotlinx.coroutines.launch
 abstract class BaseBillingRepository(
     protected val context: Any?,
     protected val clientData: BillingClientData,
+    protected val openInBrowser: (url: String) -> Unit,
 ) {
     protected val scope = GlobalScope
 
     protected abstract val _proProductDetails: MutableStateFlow<MyProductDetails?>
     abstract val proProductDetails: StateFlow<MyProductDetails?>
+    abstract val publicKeyBase64: String
+    abstract val purchaseMethods: List<PurchaseMethod>
+    abstract val needsActivationCode: Boolean
     protected val _licenseState = MutableStateFlow(
         clientData.receipt.value.let { (r, s) ->
             getLicenseState(r, s)
@@ -52,5 +56,5 @@ abstract class BaseBillingRepository(
     abstract suspend fun queryPurchasesAsync()
     abstract suspend fun checkAndStoreLicense(receipt: String)
     protected abstract fun verifyPurchase(data: String, signature: String?): Boolean
-    abstract fun launchPlayBillingFlow(activity: Any)
+    abstract fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any)
 }

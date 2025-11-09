@@ -40,6 +40,7 @@ import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -59,7 +60,7 @@ fun ThemeChooserScreen(
     onNavigateToBilling: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
     var themeName: String? by rememberSaveable { mutableStateOf(null) }
     var dynamic: Boolean? by rememberSaveable { mutableStateOf(null) }
     var dayNightMode: DayNightMode? by rememberSaveable { mutableStateOf(null) }

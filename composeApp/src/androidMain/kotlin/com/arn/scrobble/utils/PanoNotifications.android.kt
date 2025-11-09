@@ -455,7 +455,7 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyUpdater(updateAction: UpdateAction) {
-        if (!PlatformStuff.isNonPlayBuild) return
+        if (PlatformStuff.noUpdateCheck) return
 
         // create channel if not exists
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

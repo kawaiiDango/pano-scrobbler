@@ -6,6 +6,7 @@ import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
@@ -180,7 +181,7 @@ suspend fun listenForPlayingTrackEvents(
                 val linkHeartButtonToRating =
                     PlatformStuff.mainPrefs.data.map { it.linkHeartButtonToRating }.first()
 
-                if (linkHeartButtonToRating && PlatformStuff.billingRepository.isLicenseValid) {
+                if (linkHeartButtonToRating && VariantStuff.billingRepository.isLicenseValid) {
                     if (event.loved)
                         mediaListener.love(trackInfo.hash)
                     else

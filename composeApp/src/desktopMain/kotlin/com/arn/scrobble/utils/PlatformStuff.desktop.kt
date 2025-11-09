@@ -57,8 +57,6 @@ actual object PlatformStuff {
 
     actual const val isDesktop = true
 
-    actual const val isNonPlayBuild = true
-
     actual val noUpdateCheck
         get() =
             DesktopStuff.noUpdateCheck
@@ -79,10 +77,6 @@ actual object PlatformStuff {
                 File(filesDir, MainPrefs.FILE_NAME)
             },
         )
-    }
-
-    actual val billingRepository: BaseBillingRepository by lazy {
-        BillingRepository(null, billingClientData)
     }
 
     actual fun openInBrowser(url: String) {
@@ -222,9 +216,6 @@ actual object PlatformStuff {
                 e.printStackTrace()
             }
         }
-    }
-
-    actual suspend fun promptForReview(activity: Any?) {
     }
 
     actual fun getLocalIpAddress(): String? {

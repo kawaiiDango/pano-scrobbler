@@ -42,10 +42,10 @@ Then run `./gradlew :baselineprofile:generateBaselineProfile`
 Currently, the FOSS builds skip this step.
 
 - Run `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=release` and
-`./gradlew composeApp:assembleRelease` for the Play Store build
+`./gradlew androidApp:assembleRelease` for the Play Store build
 
 - or `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub` and
-`./gradlew composeApp:assembleReleaseGithub` for the FOSS build
+`./gradlew androidApp:assembleReleaseGithub` for the FOSS build
 
 - Info: the build variant "release" includes Google Play billing, Crashlytics (has opt out) and
   Google Play Review API as its non-free dependencies, while the build variant "releaseGithub"

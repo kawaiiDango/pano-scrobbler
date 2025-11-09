@@ -59,6 +59,9 @@ import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -126,7 +129,12 @@ private fun PanoDialogs(
                     timePeriod = dialogArgs.timePeriod,
                     user = dialogArgs.user,
                     onAskForReview = {
-                        PlatformStuff.promptForReview(activity)
+                        VariantStuff.reviewPrompter.showIfNeeded(
+                            activity,
+                            { PlatformStuff.mainPrefs.data.map { it.lastReviewPromptTime }.first() }
+                        ) { t ->
+                            PlatformStuff.mainPrefs.updateData { it.copy(lastReviewPromptTime = t) }
+                        }
                     },
                     modifier = modifier
                 )

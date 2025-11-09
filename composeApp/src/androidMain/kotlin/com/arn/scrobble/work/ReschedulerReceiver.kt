@@ -38,7 +38,7 @@ class ReschedulerReceiver : BroadcastReceiver() {
 
             DigestWork.checkAndSchedule()
 
-            if (PlatformStuff.isNonPlayBuild && Stuff.mainPrefsInitialValue.autoUpdates) {
+            if (!PlatformStuff.noUpdateCheck && Stuff.mainPrefsInitialValue.autoUpdates) {
                 UpdaterWork.checkAndSchedule(true)
             }
         }

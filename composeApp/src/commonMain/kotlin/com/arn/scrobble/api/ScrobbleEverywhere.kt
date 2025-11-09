@@ -27,6 +27,7 @@ import com.arn.scrobble.utils.FirstArtistExtractor
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.PendingScrobblesWork
 import kotlinx.coroutines.delay
@@ -63,7 +64,7 @@ object ScrobbleEverywhere {
         runPresets: Boolean
     ): PreprocessResult {
         var scrobbleData = scrobbleData
-        if (PlatformStuff.billingRepository.isLicenseValid) {
+        if (VariantStuff.billingRepository.isLicenseValid) {
             val blockedMetadata = PanoDb.db
                 .getBlockedMetadataDao()
                 .getBlockedEntry(scrobbleData)

@@ -35,8 +35,6 @@ jobs:
         shell: bash
         run: |
           echo "${{ secrets.TOKENS_KT }}" | base64 -d - > composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
-          mkdir -p composeApp/src/desktopMain/composeResources/files
-          echo "${{ secrets.EMBEDDED_SERVER_P12 }}" | base64 -d - > composeApp/src/commonMain/composeResources/files/pano-embedded-server-ks.p12
 
       - if: matrix.resources-dir == 'linux-x64'
         name: Set up Android secrets
@@ -57,7 +55,7 @@ jobs:
         run: |
           export JAVA_HOME=$JAVA_HOME_21_X64
           ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub
-          ./gradlew composeApp:assembleReleaseGithub
+          ./gradlew androidApp:assembleReleaseGithub
           ./gradlew --stop
 
       - name: Install Liberica NIK (GraalVM)
@@ -134,5 +132,5 @@ jobs:
         with:
           tag_name: ${{ steps.get_version.outputs.verCode }}
           name: ${{ steps.get_version.outputs.verName }}
-          body_path: composeApp/src/androidMain/play/release-notes/en-US/default.txt
+          body_path: changelog.txt
           files: composeApp/dist/**

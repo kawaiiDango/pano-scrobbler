@@ -31,7 +31,7 @@ actual object BugReportUtils {
         // todo the values don't correspond to that shown in task manager (are too low)
 //        text += "RAM usage: $freeMemory M / $totalMemory M\n"
 
-        text += if (PlatformStuff.billingRepository.isLicenseValid)
+        text += if (VariantStuff.billingRepository.isLicenseValid)
             "~~~~~~~~~~~~~~~~~~~~~~~~"
         else
             "------------------------"

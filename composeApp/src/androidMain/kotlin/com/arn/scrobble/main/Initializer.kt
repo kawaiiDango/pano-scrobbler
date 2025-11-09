@@ -1,25 +1,14 @@
 package com.arn.scrobble.main
 
-import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Build
-import android.os.Process
-import android.os.StrictMode
 import androidx.core.content.ContextCompat
-import androidx.work.Configuration
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
-import com.arn.scrobble.crashreporter.CrashReporter
-import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.first
@@ -28,26 +17,10 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.setResourceReaderAndroidContext
 
 
-class App : Application(), Configuration.Provider {
-
-    override val workManagerConfiguration =
-        Configuration.Builder().apply {
-            if (BuildConfig.DEBUG)
-                setMinimumLoggingLevel(android.util.Log.INFO)
-        }.build()
-
+object Initializer {
 
     @OptIn(ExperimentalResourceApi::class)
-    override fun onCreate() {
-        AndroidStuff.applicationContext = applicationContext
-        AndroidStuff.isMainProcess = isMainProcess()
-
-        super.onCreate()
-
-        if (BuildConfig.DEBUG) {
-            enableStrictMode()
-        }
-
+    fun init(application: Application) {
         runBlocking {
             Stuff.mainPrefsInitialValue = PlatformStuff.mainPrefs.data.first()
         }
@@ -57,61 +30,11 @@ class App : Application(), Configuration.Provider {
             if (PlatformStuff.isDebug) Severity.Debug else Severity.Info
         )
 
-        // the built in content provider initializer only runs in the main process
-        val crashlyticsEnabled = AndroidStuff.isMainProcess &&
-                Stuff.mainPrefsInitialValue.crashReporterEnabled
-
-        if (crashlyticsEnabled) {
-            val crashlyticsKeys = mapOf(
-                "isDebug" to BuildConfig.DEBUG.toString(),
-            )
-
-            CrashReporter.config(crashlyticsKeys)
-        }
-        setResourceReaderAndroidContext(this)
-        createChannels()
+        setResourceReaderAndroidContext(application.applicationContext)
+        application.createChannels()
     }
 
-    private fun enableStrictMode() {
-        StrictMode.setThreadPolicy(
-            StrictMode.ThreadPolicy.Builder()
-//                     .detectDiskReads()
-//                    .detectDiskWrites()
-                .detectNetwork()   // or .detectAll() for all detectable problems
-                .detectCustomSlowCalls()
-                .penaltyLog()
-                .penaltyFlashScreen()
-                .build()
-        )
-        StrictMode.setVmPolicy(
-            StrictMode.VmPolicy.Builder()
-                .detectActivityLeaks()
-                .detectFileUriExposure()
-                .detectLeakedClosableObjects()
-                .detectLeakedRegistrationObjects()
-                .detectLeakedSqlLiteObjects()
-                .penaltyLog()
-                .build()
-        )
-    }
-
-    fun isMainProcess(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // For API 28+ we can use Application.getProcessName()
-            return getProcessName() == packageName
-        } else {
-            val manager = getSystemService(ActivityManager::class.java)
-            val pid = Process.myPid()
-            manager?.runningAppProcesses?.forEach { processInfo ->
-                if (processInfo.pid == pid) {
-                    return processInfo.processName == packageName
-                }
-            }
-        }
-        return false
-    }
-
-    private fun createChannels() {
+    private fun Context.createChannels() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             return
 

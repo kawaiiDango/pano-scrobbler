@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.VariantStuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.billing_troubleshoot
@@ -22,7 +23,7 @@ fun BillingTroubleshootScreen(
     Column(
         modifier = modifier
     ) {
-        val text = if (PlatformStuff.isNonPlayBuild) {
+        val text = if (VariantStuff.billingRepository.needsActivationCode) {
             stringResource(Res.string.billing_troubleshoot_github, 5, "July 2025")
         } else {
             stringResource(Res.string.billing_troubleshoot)

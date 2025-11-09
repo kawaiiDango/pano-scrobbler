@@ -78,6 +78,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.timeToLocal
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -138,7 +139,7 @@ fun ScrobblesScreen(
     val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
     val scrobblerEnabled by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
-    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && PlatformStuff.billingRepository.isLicenseValid }
+    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && VariantStuff.billingRepository.isLicenseValid }
     val account by Scrobblables.currentAccount.collectAsStateWithLifecycle()
     val otherPlatformsLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.otherPlatformsLearnt }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }

@@ -15,6 +15,7 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -131,7 +132,7 @@ class FriendsVM : ViewModel() {
     }
 
     fun addPinAndSave(user: UserCached) {
-        if (!PlatformStuff.billingRepository.isLicenseValid) return
+        if (!VariantStuff.billingRepository.isLicenseValid) return
 
         val newUser = user.copy(order = pinnedFriends.value.size)
 

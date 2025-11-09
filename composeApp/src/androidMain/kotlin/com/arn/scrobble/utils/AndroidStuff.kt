@@ -27,7 +27,6 @@ import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetPrefsMigration1
 import com.arn.scrobble.pref.WidgetPrefsSerializer
-import com.arn.scrobble.utils.PlatformStuff.isNonPlayBuild
 import com.arn.scrobble.utils.Stuff.SCROBBLER_PROCESS_NAME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -52,7 +51,8 @@ object AndroidStuff {
 
     val canShowPersistentNotiIfEnabled
         get() = !PlatformStuff.isTv &&
-                (Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU || isNonPlayBuild)
+                (Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU ||
+                        VariantStuff.extrasProps.hasForegroundServiceSpecialUse)
 
 //    @RequiresApi(Build.VERSION_CODES.Q)
 //    @Throws(IOException::class)

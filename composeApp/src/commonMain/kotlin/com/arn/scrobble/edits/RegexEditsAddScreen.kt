@@ -67,6 +67,7 @@ import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -164,7 +165,7 @@ fun RegexEditsAddScreen(
     }
 
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
-    val isLicenseValid = PlatformStuff.billingRepository.isLicenseValid
+    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
 
     var trackCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }
     var artistCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }

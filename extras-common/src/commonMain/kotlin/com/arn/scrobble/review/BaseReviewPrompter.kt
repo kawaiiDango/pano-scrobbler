@@ -3,33 +3,21 @@ package com.arn.scrobble.review
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-abstract class BaseReviewPrompter(
-    private val activity: Any?,
-    private val lastReviewPromptTime: Long?,
-    protected open val setReviewPromptTime: suspend (Long?) -> Unit,
-) {
-    fun showIfNeeded(): Boolean {
+abstract class BaseReviewPrompter {
+    open suspend fun showIfNeeded(
+        activity: Any?,
+        lastReviewPromptTime: suspend () -> Long?,
+        setReviewPromptTime: suspend (Long?) -> Unit,
+    ): Boolean {
+        val lastReviewPromptTime = lastReviewPromptTime()
         if (lastReviewPromptTime == null) {
-            GlobalScope.launch {
-                setReviewPromptTime(System.currentTimeMillis())
-            }
+            setReviewPromptTime(System.currentTimeMillis())
             return false
         }
 
         val shouldShowPrompt = System.currentTimeMillis() - lastReviewPromptTime >= INTERVAL
 
-        if (shouldShowPrompt)
-            launchReviewFlow()
-
         return shouldShowPrompt
-    }
-
-    abstract fun launchReviewFlow()
-
-    fun resetData() {
-        GlobalScope.launch {
-            setReviewPromptTime(null)
-        }
     }
 
     companion object {

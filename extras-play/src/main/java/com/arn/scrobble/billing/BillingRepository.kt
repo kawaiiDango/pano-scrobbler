@@ -22,6 +22,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 private const val TAG = "BillingRepository"
+private const val PUBLIC_KEY_BASE64 =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmdJDoSt28Ps1zqsHlMgIXqnLxDOKyT+qUl4dV8eto7RL0B58DrtiUYC0LlhaM+ilx+ClPbNYlYT9VI0u2Yk0/f0uIpy4W8Hxxv5P2/nlwyEzBPd8dvEtFi4c6YB+wA0dwokhVVSLb6S3XyCZ2ONmozwZZ8RT3B+/Zs3ZdnkZDqiYDyA9lQVReCcM/lHSXQpst8zcNo00DzXG+3ptVpa3fnNhWjm+kgqjntzAV+cT53D8Qc53sHpmqQG84pFzDhiQoNH2bCy+IDs0iP40Wdjj1mzm7N0RZ2gxFawZrUwWAhvHrgXWXOV+Vhd3upqZWAhBMeeV4K/4GAR7EOwTib1ngwIDAQAB"
 
 class BillingRepository(
     context: Context,
@@ -35,8 +37,6 @@ class BillingRepository(
 
     override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
-    override val publicKeyBase64 =
-        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmdJDoSt28Ps1zqsHlMgIXqnLxDOKyT+qUl4dV8eto7RL0B58DrtiUYC0LlhaM+ilx+ClPbNYlYT9VI0u2Yk0/f0uIpy4W8Hxxv5P2/nlwyEzBPd8dvEtFi4c6YB+wA0dwokhVVSLb6S3XyCZ2ONmozwZZ8RT3B+/Zs3ZdnkZDqiYDyA9lQVReCcM/lHSXQpst8zcNo00DzXG+3ptVpa3fnNhWjm+kgqjntzAV+cT53D8Qc53sHpmqQG84pFzDhiQoNH2bCy+IDs0iP40Wdjj1mzm7N0RZ2gxFawZrUwWAhvHrgXWXOV+Vhd3upqZWAhBMeeV4K/4GAR7EOwTib1ngwIDAQAB"
     override val purchaseMethods = listOf(
         PurchaseMethod(
             displayName = "Google Play",
@@ -201,7 +201,7 @@ class BillingRepository(
         return Security.verifyPurchase(
             data,
             s,
-            publicKeyBase64,
+            PUBLIC_KEY_BASE64,
         )
     }
 

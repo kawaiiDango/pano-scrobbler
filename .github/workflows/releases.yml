@@ -40,7 +40,7 @@ jobs:
         name: Set up Android secrets
         shell: bash
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > composeApp/android-keystore.jks
+          echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > androidApp/android-keystore.jks
           echo "${{ secrets.LOCAL_PROPERTIES }}" > local.properties
 
       - if: matrix.resources-dir == 'windows-x64'
@@ -96,14 +96,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pano-scrobbler-${{ matrix.resources-dir }}
-          path: composeApp/dist/pano-scrobbler-${{ matrix.resources-dir }}*
+          path: dist/pano-scrobbler-${{ matrix.resources-dir }}*
 
       - if: matrix.resources-dir == 'linux-x64'
         name: Upload Android binary
         uses: actions/upload-artifact@v4
         with:
           name: pano-scrobbler-android-universal
-          path: composeApp/dist/pano-scrobbler-android-universal*
+          path: dist/pano-scrobbler-android-universal*
   
   upload-release:
     needs: [build]
@@ -125,7 +125,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           merge-multiple: true
-          path: composeApp/dist
+          path: dist
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -133,4 +133,4 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.verCode }}
           name: ${{ steps.get_version.outputs.verName }}
           body_path: changelog.txt
-          files: composeApp/dist/**
+          files: dist/**

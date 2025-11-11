@@ -17,7 +17,6 @@ abstract class BaseBillingRepository(
 
     protected abstract val _proProductDetails: MutableStateFlow<MyProductDetails?>
     abstract val proProductDetails: StateFlow<MyProductDetails?>
-    abstract val publicKeyBase64: String
     abstract val purchaseMethods: List<PurchaseMethod>
     abstract val needsActivationCode: Boolean
     protected val _licenseState = MutableStateFlow(

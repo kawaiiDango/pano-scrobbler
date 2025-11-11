@@ -6,20 +6,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 
+private const val PUBLIC_KEY_BASE64 =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
+
 class BillingRepository(
     context: Any?,
     clientData: BillingClientData,
-    openInBrowser: (url: String) -> Unit
+    openInBrowser: (url: String) -> Unit,
 ) : BaseBillingRepository(
     context,
     clientData,
-    openInBrowser
+    openInBrowser,
 ) {
 
     override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
-    override val publicKeyBase64 =
-        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
     override val purchaseMethods = listOf(
         PurchaseMethod(
             displayName = "Ko-fi (Uses Paypal)",
@@ -109,7 +110,7 @@ class BillingRepository(
         LicenseChecker.validateJwt(
             data,
             clientData.proProductId,
-            publicKeyBase64
+            PUBLIC_KEY_BASE64
         )
 
     override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any) {

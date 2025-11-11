@@ -163,6 +163,22 @@ android {
     }
 }
 
+tasks.register<Copy>("copyGithubReleaseApk") {
+    from("build/outputs/apk/releaseGithub")
+    into("../dist")
+    include("*-releaseGithub.apk")
+    rename(
+        "(.*)-releaseGithub.apk",
+        "$APP_NAME_NO_SPACES-android-universal.apk"
+    )
+}
+
+afterEvaluate {
+    tasks.named("packageReleaseGithub") {
+        finalizedBy(tasks.named("copyGithubReleaseApk"))
+    }
+}
+
 //play {
 //    track.set("beta") // or 'rollout' or 'beta' or 'alpha'
 ////    userFraction = 1.0d // only necessary for 'rollout', in this case default is 0.1 (10% of the target)

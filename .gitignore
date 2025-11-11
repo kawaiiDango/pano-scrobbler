@@ -29,7 +29,7 @@ captures
 /androidApp/*.json
 /composeApp/src/commonTest/kotlin/com/arn/scrobble/AuthTest.kt
 /composeApp/src/desktopTest/kotlin/com/arn/scrobble/DesktopAuthTests.kt
-/composeApp/dist
+/dist
 composeApp/src/androidRelease/generated
 composeApp/src/androidReleaseGithub/generated
 /composeApp/src/**/composeResources/files/aboutlibraries.json

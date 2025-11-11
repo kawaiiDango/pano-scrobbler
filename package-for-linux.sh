@@ -9,7 +9,7 @@ else
     resourcesDirName="linux-x64"
 fi
 appNameWithoutSpaces="pano-scrobbler"
-nativeImageDir="$scriptDir/build/compose/native/$resourcesDirName"
+nativeImageDir="$scriptDir/composeApp/build/compose/native/$resourcesDirName"
 appDir="/tmp/PanoScrobbler.AppDir"
 libExecDir="$appDir/usr/libexec/pano-scrobbler"
 distDir="$scriptDir/dist"

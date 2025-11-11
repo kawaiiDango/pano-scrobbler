@@ -364,7 +364,7 @@ tasks.withType<ComposeHotRun>().configureEach {
 }
 
 tasks.register<DefaultTask>("generateSha256") {
-    val distDir = file("dist")
+    val distDir = file("../dist")
 
     doLast {
         distDir.listFiles { file ->
@@ -396,20 +396,11 @@ tasks.register<DefaultTask>("generateSha256") {
 //    destinationDirectory = file("dist")
 //}
 
-tasks.register<Copy>("copyGithubReleaseApk") {
-    from("build/outputs/apk/releaseGithub")
-    into("dist")
-    include("*-releaseGithub.apk")
-    rename(
-        "(.*)-releaseGithub.apk",
-        "$APP_NAME_NO_SPACES-android-universal.apk"
-    )
-}
 
 tasks.register<Copy>("copyReleaseDmg") {
     val fileName = "$APP_NAME_NO_SPACES-$resourcesDirName.dmg"
     from("build/compose/binaries/main-release/dmg")
-    into("dist")
+    into("../dist")
     include("*.dmg")
     rename(
         "(.*).dmg",
@@ -420,7 +411,7 @@ tasks.register<Copy>("copyReleaseDmg") {
 tasks.register<Exec>("packageWindowsNsis") {
     val executableDir = file("build/compose/native/$resourcesDirName")
     val nsisFilesDir = file("nsis-files")
-    val distDir = file("dist")
+    val distDir = file("../dist")
 
     val distFile = File(distDir, "$APP_NAME_NO_SPACES-$resourcesDirName.exe")
     val nsisScriptFile = File(nsisFilesDir, "install-script.nsi")
@@ -463,7 +454,7 @@ tasks.register<Exec>("packageWindowsNsis") {
 tasks.register<Exec>("packageLinuxAppImageAndTarball") {
     commandLine(
         "bash",
-        "package-for-linux.sh",
+        "../package-for-linux.sh",
     )
 }
 
@@ -510,7 +501,7 @@ tasks.register<Exec>("buildNativeImage") {
     val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
     val desktopFile = file("$APP_NAME_NO_SPACES.desktop")
     val licenseFile = file("../LICENSE")
-    val distDir = file("dist")
+    val distDir = file("../dist")
 
     inputs.file(jarFile)
     inputs.dir(nativeLibsDir)
@@ -620,10 +611,6 @@ afterEvaluate {
         tasks.named("buildNativeImage") {
             finalizedBy(tasks.named("packageWindowsNsis"))
         }
-
-//    tasks.named("packageReleaseGithub") {
-//        finalizedBy(tasks.named("copyGithubReleaseApk"))
-//    }
 
 }
 

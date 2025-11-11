@@ -1,7 +1,7 @@
 scriptDir="$(cd "$(dirname "$0")" && pwd)"
 
 # Update PKGBUILD (_pkgver, pkgver, sha256sums)
-pkgbuildDir="$scriptDir/../../pano-scrobbler-bin"
+pkgbuildDir="$scriptDir/../pano-scrobbler-bin"
 if [ -f "$pkgbuildDir/PKGBUILD" ]; then
     OWNER="kawaiiDango"
     REPO="pano-scrobbler"

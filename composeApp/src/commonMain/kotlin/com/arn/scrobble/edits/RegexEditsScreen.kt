@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SwipeLeftAlt
 import androidx.compose.material.icons.outlined.ToggleOff
 import androidx.compose.material.icons.outlined.ToggleOn
@@ -40,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +56,7 @@ import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.icons.MatchCase
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.DraggableItem
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -65,6 +68,9 @@ import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -80,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.item_options
 import pano_scrobbler.composeapp.generated.resources.move_down
 import pano_scrobbler.composeapp.generated.resources.move_up
 import pano_scrobbler.composeapp.generated.resources.num_regex_edits
+import pano_scrobbler.composeapp.generated.resources.settings
 
 @Composable
 fun RegexEditsScreen(
@@ -130,9 +137,7 @@ fun RegexEditsScreen(
             )
         },
         onPresetToggled = viewModel::updatePreset,
-        onNavigateToTest = {
-            onNavigate(PanoRoute.RegexEditsTest)
-        },
+        onNavigate = onNavigate,
         onImport = {
             onNavigate(PanoRoute.Import)
         },
@@ -151,10 +156,11 @@ private fun RegexEditsList(
     onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
     onDragEnd: () -> Unit,
     onPresetToggled: (RegexPreset, Boolean) -> Unit,
-    onNavigateToTest: () -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     onImport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
     val nonRegexItemsCount = remember {
         RegexPresets.filteredPresets.size + listOfNotNull(
             if (!PlatformStuff.isTv) 1 else null, // Test button
@@ -187,7 +193,9 @@ private fun RegexEditsList(
                         .fillMaxWidth(),
                 ) {
                     OutlinedButton(
-                        onClick = onNavigateToTest,
+                        onClick = {
+                            onNavigate(PanoRoute.RegexEditsTest)
+                        },
                     ) {
                         Text(text = stringResource(Res.string.edit_regex_test))
                     }
@@ -213,6 +221,23 @@ private fun RegexEditsList(
                 onToggle = { isChecked ->
                     onPresetToggled(preset, isChecked)
                 },
+                onNavigateSettings = if (preset in RegexPresets.hasSettings) {
+                    {
+                        scope.launch {
+                            val preSelectedPackages = PlatformStuff.mainPrefs.data.map {
+                                it.getRegexPresetApps(preset)
+                            }.first()
+
+                            onNavigate(
+                                PanoRoute.AppList(
+                                    isSingleSelect = false,
+                                    saveType = AppListSaveType.RegexPresetApps(preset),
+                                    preSelectedPackages = preSelectedPackages.toList()
+                                )
+                            )
+                        }
+                    }
+                } else null,
                 modifier = Modifier
                     .animateItem()
                     .fillMaxWidth()
@@ -277,14 +302,31 @@ private fun PresetItem(
     preset: RegexPreset,
     isChecked: Boolean,
     onToggle: (Boolean) -> Unit,
+    onNavigateSettings: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    LabeledCheckbox(
-        checked = isChecked,
-        onCheckedChange = onToggle,
-        text = RegexPresets.getString(preset),
-        modifier = modifier
-    )
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LabeledCheckbox(
+            checked = isChecked,
+            onCheckedChange = onToggle,
+            text = RegexPresets.getString(preset),
+            modifier = Modifier.weight(1f)
+        )
+
+        if (onNavigateSettings != null) {
+            IconButton(
+                onClick = onNavigateSettings
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Settings,
+                    contentDescription = stringResource(Res.string.settings),
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

@@ -205,10 +205,9 @@ object Stuff {
     const val DISCORD_CLIENT_ID = "1299386213114970172"
     const val EMBEDDED_SERVER_KS = "Jjs5awQQB0YjN10vKCsWPC8AXW0"
 
-    val IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
+    val DEFAULT_IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",
         "com.vanced.android.youtube",
-        "com.google.android.ogyoutube",
         "com.google.android.apps.youtube.mango",
         PACKAGE_YOUTUBE_TV,
         "com.google.android.youtube.tvkids",
@@ -218,7 +217,7 @@ object Stuff {
         "app.rvx.android.youtube",
     )
 
-    val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
+    val DEFAULT_IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
         PACKAGE_SOUNDCLOUD,
         PACKAGE_NICOBOX,
         PACKAGE_YMUSIC,

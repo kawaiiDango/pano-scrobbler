@@ -213,7 +213,7 @@ buildkonfig {
 aboutLibraries {
     offlineMode = true
     collect {
-        configPath = File("aboutLibsConfig")
+        configPath = File("../aboutLibsConfig")
         fetchRemoteLicense = false
         fetchRemoteFunding = false
         license.strictMode = StrictMode.WARN
@@ -233,12 +233,6 @@ aboutLibraries {
     }
 
     exports {
-        create("release") {
-            outputFile = file("src/androidRelease/composeResources/files/aboutlibraries.json")
-        }
-        create("releaseGithub") {
-            outputFile = file("src/androidReleaseGithub/composeResources/files/aboutlibraries.json")
-        }
         create("desktop") {
             outputFile = file("src/desktopMain/composeResources/files/aboutlibraries.json")
         }
@@ -612,6 +606,12 @@ afterEvaluate {
             finalizedBy(tasks.named("packageWindowsNsis"))
         }
 
+    tasks.named("copyNonXmlValueResourcesForAndroidMain") {
+        // Ensure AboutLibraries export runs first
+        dependsOn(":androidApp:exportLibraryDefinitions")
+        // Optional ordering guard
+        mustRunAfter(":androidApp:exportLibraryDefinitions")
+    }
 }
 
 data class CrowdinMember(val username: String)

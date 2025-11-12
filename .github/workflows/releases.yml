@@ -54,7 +54,6 @@ jobs:
         shell: bash
         run: |
           export JAVA_HOME=$JAVA_HOME_21_X64
-          ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub
           ./gradlew androidApp:assembleReleaseGithub
           ./gradlew --stop
 

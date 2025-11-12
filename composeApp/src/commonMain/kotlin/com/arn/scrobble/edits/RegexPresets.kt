@@ -46,6 +46,11 @@ object RegexPresets {
         RegexPreset.single_ep,
     )
 
+    val hasSettings = listOf(
+        RegexPreset.parse_title,
+        RegexPreset.parse_title_with_fallback,
+    )
+
     private val androidOnlyPresets = listOf(
         RegexPreset.parse_title,
         RegexPreset.parse_title_with_fallback,
@@ -82,7 +87,11 @@ object RegexPresets {
             .filter { it.name in presetNames }
             .filter { dataIsEdited && it !in applyOncePresets || !dataIsEdited }
             .forEach { preset ->
-                val sd = applyPreset(preset, newScrobbleData ?: scrobbleData)
+                val sd = applyPreset(
+                    newScrobbleData ?: scrobbleData,
+                    preset,
+                    PlatformStuff.mainPrefs.data.map { it.getRegexPresetApps(preset) }.first()
+                )
 
                 if (sd != null) {
                     appliedPresets.add(preset)
@@ -100,8 +109,9 @@ object RegexPresets {
     }
 
     private fun applyPreset(
-        regexPreset: RegexPreset,
         scrobbleData: ScrobbleData,
+        regexPreset: RegexPreset,
+        regexPresetsApps: Set<String>,
     ): ScrobbleData? {
         val regexEdits = mutableListOf<RegexEdit>()
         var newScrobbleData: ScrobbleData? = null
@@ -122,10 +132,12 @@ object RegexPresets {
 
             RegexPreset.parse_title,
             RegexPreset.parse_title_with_fallback -> {
-                if (regexPreset == RegexPreset.parse_title && scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK ||
-                    regexPreset == RegexPreset.parse_title_with_fallback && scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
-                ) {
-                    if (shouldParseTitle(scrobbleData)) {
+                if (scrobbleData.appId in regexPresetsApps) {
+                    val shouldParseTitle = (scrobbleData.album.isNullOrEmpty() &&
+                            !scrobbleData.artist.endsWith("- Topic")) ||
+                            scrobbleData.appId == Stuff.PACKAGE_YMUSIC && scrobbleData.album == "YMusic"
+
+                    if (shouldParseTitle) {
                         val (parsedArtist, parsedTitle) =
                             MetadataUtils.parseYoutubeTitle(scrobbleData.track)
                         if (!parsedArtist.isNullOrEmpty() && !parsedTitle.isNullOrEmpty()) {
@@ -313,15 +325,5 @@ object RegexPresets {
 //        RegexPreset.album_artist_as_artist -> stringResource(Res.string.preset_album_artist_as_artist)
         RegexPreset.parse_title -> stringResource(Res.string.preset_title_parse)
         RegexPreset.parse_title_with_fallback -> stringResource(Res.string.preset_title_parse_with_fallback)
-    }
-
-
-    private fun shouldParseTitle(scrobbleData: ScrobbleData): Boolean {
-        return ((scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
-                scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK) &&
-                scrobbleData.album.isNullOrEmpty() &&
-                !scrobbleData.artist.endsWith("- Topic")) ||
-
-                scrobbleData.appId == Stuff.PACKAGE_YMUSIC && scrobbleData.album == "YMusic"
     }
 }

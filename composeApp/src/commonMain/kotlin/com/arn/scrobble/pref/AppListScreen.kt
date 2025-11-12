@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.annotation.Keep
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,10 +36,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.edits.RegexPreset
+import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.ui.AppIcon
-import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
@@ -53,12 +51,11 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.pluralStringResource
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.needs_plugin
-import pano_scrobbler.composeapp.generated.resources.num_simple_edits
 import pano_scrobbler.composeapp.generated.resources.other_apps
 
 
@@ -101,18 +98,21 @@ fun AppListScreen(
                     viewModel.selectedPackages.value.contains(it.appId)
                 }
 
+                val checkedAppIdsSet = checked.map { it.appId }.toSet()
+                val uncheckedAppIdsSet = unchecked.map { it.appId }.toSet()
+
                 when (saveType) {
                     AppListSaveType.Scrobbling -> {
                         GlobalScope.launch {
-                            val allowedPackages = checked.map { it.appId }.toSet()
-                            val blockedPackages = unchecked.map { it.appId }.toSet()
-                            val firstArtistPackages =
-                                allowedPackages - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
-
                             PlatformStuff.mainPrefs.updateData { pref ->
+                                val firstArtistPackages =
+                                    checkedAppIdsSet - pref.getRegexPresetApps(RegexPreset.parse_title)
+
                                 pref.copy(
-                                    allowedPackages = allowedPackages,
-                                    blockedPackages = blockedPackages,
+                                    allowedPackages = pref.allowedPackages +
+                                            checkedAppIdsSet - uncheckedAppIdsSet,
+                                    blockedPackages = pref.blockedPackages +
+                                            uncheckedAppIdsSet - checkedAppIdsSet,
                                     extractFirstArtistPackages = firstArtistPackages.takeIf { !pref.appListWasRun }
                                         ?: pref.extractFirstArtistPackages,
                                     appListWasRun = true,
@@ -123,9 +123,10 @@ fun AppListScreen(
 
                     AppListSaveType.ExtractFirstArtist -> {
                         GlobalScope.launch {
-                            PlatformStuff.mainPrefs.updateData {
-                                it.copy(
-                                    extractFirstArtistPackages = checked.map { it.appId }.toSet(),
+                            PlatformStuff.mainPrefs.updateData { pref ->
+                                pref.copy(
+                                    extractFirstArtistPackages = pref.extractFirstArtistPackages +
+                                            checkedAppIdsSet - uncheckedAppIdsSet,
                                 )
                             }
                         }
@@ -133,10 +134,33 @@ fun AppListScreen(
 
                     AppListSaveType.Automation -> {
                         GlobalScope.launch {
-                            PlatformStuff.mainPrefs.updateData {
-                                it.copy(
-                                    allowedAutomationPackages = checked.map { it.appId }.toSet(),
+                            PlatformStuff.mainPrefs.updateData { pref ->
+                                pref.copy(
+                                    allowedAutomationPackages = pref.allowedAutomationPackages +
+                                            checkedAppIdsSet - uncheckedAppIdsSet,
                                 )
+                            }
+                        }
+                    }
+
+                    is AppListSaveType.RegexPresetApps -> {
+                        GlobalScope.launch {
+                            PlatformStuff.mainPrefs.updateData { pref ->
+                                val thisAllowList =
+                                    pref.getRegexPresetApps(saveType.preset) + checkedAppIdsSet - uncheckedAppIdsSet
+
+                                // Ensure no duplicates across presets. thisAllowList wins
+
+                                val updatedRegexPresetsApps =
+                                    RegexPresets.hasSettings.associateWith { p ->
+                                        if (p == saveType.preset) {
+                                            thisAllowList
+                                        } else {
+                                            pref.getRegexPresetApps(p) - thisAllowList
+                                        }
+                                    }.mapKeys { it.toString() }
+
+                                pref.copy(regexPresetsApps = updatedRegexPresetsApps)
                             }
                         }
                     }
@@ -362,7 +386,20 @@ private fun AppListItem(
     }
 }
 
-@Keep
-enum class AppListSaveType {
-    Scrobbling, ExtractFirstArtist, Automation, Callback
+@Serializable
+sealed interface AppListSaveType {
+    @Serializable
+    object Scrobbling : AppListSaveType
+
+    @Serializable
+    object ExtractFirstArtist : AppListSaveType
+
+    @Serializable
+    object Automation : AppListSaveType
+
+    @Serializable
+    class RegexPresetApps(val preset: RegexPreset) : AppListSaveType
+
+    @Serializable
+    object Callback : AppListSaveType
 }

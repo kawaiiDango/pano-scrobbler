@@ -13,6 +13,7 @@ import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
+import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.themes.ContrastMode
 import com.arn.scrobble.themes.DayNightMode
@@ -39,6 +40,10 @@ data class MainPrefs(
     val blockedPackages: Set<String> = emptySet(),
     val allowedAutomationPackages: Set<String> = emptySet(),
     val seenApps: Map<String, String> = emptyMap(),
+    private val regexPresetsApps: Map<String, Set<String>> = mapOf(
+        RegexPreset.parse_title.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITHOUT_FALLBACK,
+        RegexPreset.parse_title_with_fallback.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITH_FALLBACK
+    ),
     private val autoDetectApps: Boolean = true,
     private val delaySecs: Int = PREF_DELAY_SECS_DEFAULT,
     private val delayPercent: Int = PREF_DELAY_PER_DEFAULT,
@@ -183,6 +188,9 @@ data class MainPrefs(
         )
     }
 
+    fun getRegexPresetApps(regexPreset: RegexPreset): Set<String> =
+        regexPresetsApps.getOrDefault(regexPreset.name, emptySet())
+
     fun updateFromPublicPrefs(prefs: MainPrefsPublic) = copy(
         scrobblerEnabled = prefs.scrobblerEnabled,
         delaySecs = prefs.delaySecs.coerceIn(PREF_DELAY_SECS_MIN, PREF_DELAY_SECS_MAX),
@@ -205,6 +213,8 @@ data class MainPrefs(
         searchUrlTemplate = prefs.searchUrlTemplate,
         allowedPackages = prefs.allowedPackages,
         regexPresets = prefs.regexPresets,
+        extractFirstArtistPackages = prefs.extractFirstArtistPackages,
+        regexPresetsApps = prefs.regexPresetsApps
     )
 
     fun toPublicPrefs() = MainPrefsPublic(
@@ -231,6 +241,7 @@ data class MainPrefs(
         allowedPackages = this.allowedPackages,
         regexPresets = this.regexPresets,
         extractFirstArtistPackages = this.extractFirstArtistPackages,
+        regexPresetsApps = this.regexPresetsApps
     )
 
     companion object {
@@ -305,4 +316,8 @@ data class MainPrefsPublic(
     val extractFirstArtistPackages: Set<String> = emptySet(),
     @JsonNames("app_whitelist")
     val allowedPackages: Set<String>,
+    val regexPresetsApps: Map<String, Set<String>> = mapOf(
+        RegexPreset.parse_title.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITHOUT_FALLBACK,
+        RegexPreset.parse_title_with_fallback.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITH_FALLBACK
+    )
 )

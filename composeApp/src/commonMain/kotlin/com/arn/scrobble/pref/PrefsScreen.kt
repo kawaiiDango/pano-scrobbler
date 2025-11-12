@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -180,6 +181,13 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.fetchMissingMetadata } }
     val extractFirstArtistPackages by
     remember { derivedStateOf { mainPrefsData.extractFirstArtistPackages } }
+    val parseTitleWithFallbackApps by remember {
+        derivedStateOf {
+            mainPrefsData.getRegexPresetApps(
+                RegexPreset.parse_title_with_fallback
+            )
+        }
+    }
     val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
     var isAddedToStartup by remember { mutableStateOf(false) }
     val scrobblableLabels by remember {
@@ -295,9 +303,7 @@ fun PrefsScreen(
 
         item(MainPrefs::extractFirstArtistPackages.name) {
             val packagesOverride by remember(allowedPackages) {
-                mutableStateOf(
-                    allowedPackages - Stuff.IGNORE_ARTIST_META_WITHOUT_FALLBACK
-                )
+                mutableStateOf(allowedPackages - parseTitleWithFallbackApps)
             }
 
             AppIconsPref(

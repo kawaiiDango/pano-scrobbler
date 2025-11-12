@@ -21,6 +21,7 @@ import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.RegexEditsDao
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
+import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.edits.TitleParseException
 import com.arn.scrobble.utils.FirstArtistExtractor
@@ -132,9 +133,14 @@ object ScrobbleEverywhere {
                 scrobbleData.appId in
                 PlatformStuff.mainPrefs.data.map { it.extractFirstArtistPackages }.first()
             ) {
+                val parseTitleWithFallback =
+                    PlatformStuff.mainPrefs.data.map {
+                        it.getRegexPresetApps(RegexPreset.parse_title_with_fallback)
+                    }.first()
+
                 val firstArtist = FirstArtistExtractor.extract(
                     scrobbleData.artist,
-                    useAnd = scrobbleData.appId in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK
+                    useAnd = scrobbleData.appId in parseTitleWithFallback
                 )
 
                 if (firstArtist != scrobbleData.artist)

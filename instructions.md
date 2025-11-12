@@ -12,7 +12,6 @@ object Tokens {
     const val LAST_SECRET = ""
     // https://developer.spotify.com/dashboard/
     const val SPOTIFY_REFRESH_TOKEN = "<base64 encoded client_id:client_secret>"
-    const val PLAY_BILLING_PUBLIC_KEY_BASE64 = "" // Use an empty string if you aren't using Play Billing
 }
 ```
 
@@ -41,11 +40,9 @@ Then run `./gradlew :baselineprofile:generateBaselineProfile`
 
 Currently, the FOSS builds skip this step.
 
-- Run `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=release` and
-`./gradlew androidApp:assembleRelease` for the Play Store build
+- Run `./gradlew androidApp:assembleRelease` for the Play Store build
 
-- or `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=releaseGithub` and
-`./gradlew androidApp:assembleReleaseGithub` for the FOSS build
+- or `./gradlew androidApp:assembleReleaseGithub` for the FOSS build
 
 - Info: the build variant "release" includes Google Play billing, Crashlytics (has opt out) and
   Google Play Review API as its non-free dependencies, while the build variant "releaseGithub"

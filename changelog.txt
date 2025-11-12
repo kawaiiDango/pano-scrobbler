@@ -1,2 +1,7 @@
+- Apps list screen now has a search bar
+- The regex preset "Parse title" and "Parse title with fallback" no longer uses a hardcoded list of apps
+- Added support for VRadio and BBC Sounds
+- Linux ARM64 build now supports 16K pages
+- The uninstaller on Windows will now only remove the files it had installed
 - Bug fixes
 - Translation updates by the translators on Crowdin

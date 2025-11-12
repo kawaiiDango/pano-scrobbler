@@ -1,14 +1,25 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.mikepenz.aboutlibraries.plugin.DuplicateMode
+import com.mikepenz.aboutlibraries.plugin.StrictMode
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.aboutlibraries)
 //    alias(libs.plugins.baselineprofile)
 //    alias(libs.plugins.play.publisher)
 }
 
-if (gradle.startParameter.taskNames.none { it.contains("releaseGithub", ignoreCase = true) }) {
+val requestedTasks = gradle.startParameter.taskNames.map { it.lowercase() }
+
+if (requestedTasks.none { it.contains("releaseGithub") }) {
     apply(plugin = libs.plugins.google.services.get().pluginId)
     apply(plugin = libs.plugins.crashlytics.get().pluginId)
+}
+
+val aboutLibrariesVariant = when {
+    requestedTasks.any { it.contains("releasegithub") } -> "releaseGithub"
+    requestedTasks.any { it.contains("release") } -> "release"
+    else -> null
 }
 
 val APP_ID: String by rootProject.extra
@@ -161,6 +172,43 @@ android {
             signingConfig = signingConfigs.findByName("releaseGithub")
         }
     }
+}
+
+aboutLibraries {
+    offlineMode = true
+    collect {
+        configPath = File("../aboutLibsConfig")
+        fetchRemoteLicense = false
+        fetchRemoteFunding = false
+        license.strictMode = StrictMode.WARN
+        library.duplicationMode = DuplicateMode.MERGE
+    }
+
+    export {
+        excludeFields = listOf(
+            "developers",
+            "funding",
+            "description",
+            "organization",
+            "content",
+            "connection",
+            "developerConnection"
+        )
+
+        variant = aboutLibrariesVariant
+    }
+
+    exports {
+        create("release") {
+            outputFile =
+                file("../composeApp/src/androidMain/composeResources/files/aboutlibraries.json")
+        }
+        create("releaseGithub") {
+            outputFile =
+                file("../composeApp/src/androidMain/composeResources/files/aboutlibraries.json")
+        }
+    }
+
 }
 
 tasks.register<Copy>("copyGithubReleaseApk") {

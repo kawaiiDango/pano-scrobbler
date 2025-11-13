@@ -68,40 +68,26 @@ interface SimpleEditsDao {
     companion object {
         const val tableName = "simpleEdits"
 
-        suspend fun SimpleEditsDao.performEdit(
+        fun SimpleEdit.performEdit(
+            scrobbleData: ScrobbleData,
+        ): ScrobbleData {
+            return scrobbleData.copy(
+                track = track.takeIf { !it.isNullOrEmpty() } ?: scrobbleData.track,
+                artist = artist.takeIf { !it.isNullOrEmpty() } ?: scrobbleData.artist,
+                album = album ?: scrobbleData.album,
+                albumArtist = albumArtist ?: scrobbleData.albumArtist,
+            )
+        }
+
+        suspend fun SimpleEditsDao.findAndPerformEdit(
             scrobbleData: ScrobbleData,
         ): ScrobbleData? {
-
-            var track = scrobbleData.track
-            var artist = scrobbleData.artist
-            var album = scrobbleData.album
-            var albumArtist = scrobbleData.albumArtist
-
-            val foundEdit = find(
-                track.lowercase(),
-                artist.lowercase(),
-                album?.lowercase() ?: "",
-                albumArtist?.lowercase() ?: "",
-            ) ?: return null
-
-            if (!foundEdit.track.isNullOrEmpty())
-                track = foundEdit.track
-
-            if (!foundEdit.artist.isNullOrEmpty())
-                artist = foundEdit.artist
-
-            if (foundEdit.album != null)
-                album = foundEdit.album
-
-            if (foundEdit.albumArtist != null)
-                albumArtist = foundEdit.albumArtist
-
-            return scrobbleData.copy(
-                track = track,
-                artist = artist,
-                album = album,
-                albumArtist = albumArtist,
-            )
+            return find(
+                scrobbleData.track.lowercase(),
+                scrobbleData.artist.lowercase(),
+                scrobbleData.album?.lowercase() ?: "",
+                scrobbleData.albumArtist?.lowercase() ?: "",
+            )?.performEdit(scrobbleData)
         }
 
         suspend fun SimpleEditsDao.insertReplaceLowerCase(e: SimpleEdit) {

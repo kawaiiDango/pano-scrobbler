@@ -1,6 +1,7 @@
 package com.arn.scrobble.onboarding
 
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
@@ -20,7 +21,7 @@ object LoginDestinations {
 
                 val urlBuilder = URLBuilder("https://www.last.fm/api/auth")
                 urlBuilder.set {
-                    parameters.append("api_key", Stuff.LAST_KEY)
+                    parameters.append("api_key", Requesters.lastfmUnauthedRequester.apiKey)
                     parameters.append("cb", "${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/lastfm")
                 }
 

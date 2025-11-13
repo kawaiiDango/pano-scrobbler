@@ -48,7 +48,7 @@ fun TrackHistoryScreen(
     track: Track,
     onSetTitle: (String?) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
-    editDataFlow: Flow<Pair<String, ScrobbleData>>,
+    editDataFlow: Flow<Pair<String, Track>>,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {

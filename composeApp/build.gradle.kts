@@ -23,6 +23,7 @@ import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import kotlin.io.encoding.Base64
 import kotlin.io.path.name
 import kotlin.io.use
 import kotlin.io.walk
@@ -175,6 +176,23 @@ room {
 }
 
 buildkonfig {
+    fun xor(text: String, key: String): String {
+        require(text.isNotEmpty()) { "Key bytes must not be empty" }
+        val data = text.toByteArray()
+        val keyBytes = key.toByteArray()
+        val out = ByteArray(data.size)
+        val klen = keyBytes.size
+        for (i in data.indices) {
+            val a = data[i].toInt() and 0xFF
+            val b = keyBytes[i % klen].toInt() and 0xFF
+            out[i] = (a xor b).toByte()
+        }
+
+        return Base64
+            .withPadding(Base64.PaddingOption.ABSENT)
+            .encode(out)
+    }
+
     packageName = APP_ID
 
     // default config is required
@@ -185,6 +203,25 @@ buildkonfig {
         buildConfigField(STRING, "VER_NAME", VER_NAME, const = true)
         buildConfigField(STRING, "CHANGELOG", CHANGELOG, const = true)
         buildConfigField(BOOLEAN, "DEBUG", (!isReleaseBuild).toString(), const = true)
+
+        buildConfigField(
+            STRING,
+            "LASTFM_KEY",
+            xor(localProperties.getOrDefault("lastfm.key", "dummy"), APP_ID),
+            const = true
+        )
+        buildConfigField(
+            STRING,
+            "LASTFM_SECRET",
+            xor(localProperties.getOrDefault("lastfm.secret", "dummy"), APP_ID),
+            const = true
+        )
+        buildConfigField(
+            STRING,
+            "SPOTIFY_REFRESH_TOKEN",
+            xor(localProperties.getOrDefault("spotify.refreshToken", "dummy"), APP_ID),
+            const = true
+        )
 
     }
 

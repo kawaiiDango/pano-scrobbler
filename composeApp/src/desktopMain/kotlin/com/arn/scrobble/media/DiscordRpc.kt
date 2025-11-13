@@ -2,7 +2,6 @@ package com.arn.scrobble.media
 
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.PanoNativeComponents.desktopMediaListener
-import com.arn.scrobble.Tokens
 import com.arn.scrobble.utils.Stuff
 
 object DiscordRpc {

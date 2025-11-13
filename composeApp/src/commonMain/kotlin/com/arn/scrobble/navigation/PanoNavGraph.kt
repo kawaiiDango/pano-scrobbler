@@ -360,8 +360,14 @@ fun NavGraphBuilder.panoNavGraph(
 
         SimpleEditsAddScreen(
             simpleEdit = arguments.simpleEdit,
-            onBack = goBack,
-            modifier = modifier().padding(panoContentPadding())
+            onDone = goBack,
+            onReauthenticate = {},
+            origScrobbleData = null,
+            msid = null,
+            hash = null,
+            key = null,
+            notifyEdit = { _, _ -> },
+            modifier = modifier().addColumnPadding()
         )
     }
 

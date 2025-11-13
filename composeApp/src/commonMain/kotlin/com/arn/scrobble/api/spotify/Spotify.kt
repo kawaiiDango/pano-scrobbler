@@ -1,11 +1,12 @@
 package com.arn.scrobble.api.spotify
 
-import com.arn.scrobble.Tokens
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.parseJsonBody
 import com.arn.scrobble.api.cache.ExpirationPolicy
+import com.arn.scrobble.utils.Stuff
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -16,10 +17,16 @@ import io.ktor.client.request.parameter
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.parameters
+import io.ktor.util.decodeBase64Bytes
 import java.util.concurrent.TimeUnit
 
 class SpotifyRequester {
     private val client: HttpClient by lazy {
+        val refreshToken = Stuff.xorWithKeyBytes(
+            BuildKonfig.SPOTIFY_REFRESH_TOKEN.decodeBase64Bytes(),
+            BuildKonfig.APP_ID.toByteArray()
+        ).decodeToString()
+
         Requesters.genericKtorClient.config {
             install(CustomCachePlugin) {
                 policy = SpotifyCacheExpirationPolicy()
@@ -30,7 +37,7 @@ class SpotifyRequester {
                     loadTokens {
                         BearerTokens(
                             "null",
-                            Tokens.SPOTIFY_REFRESH_TOKEN
+                            refreshToken
                         )
                     }
 
@@ -42,16 +49,16 @@ class SpotifyRequester {
                             }
                         ) {
                             markAsRefreshTokenRequest()
-                            
+
                             header(
                                 HttpHeaders.Authorization,
-                                "Basic ${Tokens.SPOTIFY_REFRESH_TOKEN}"
+                                "Basic $refreshToken"
                             )
                         }.parseJsonBody<SpotifyTokenResponse>()
 
                         BearerTokens(
                             tokenResponse.access_token,
-                            Tokens.SPOTIFY_REFRESH_TOKEN
+                            refreshToken
                         )
                     }
 

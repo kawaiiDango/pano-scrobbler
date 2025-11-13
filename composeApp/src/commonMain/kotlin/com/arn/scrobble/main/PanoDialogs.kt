@@ -2,17 +2,13 @@ package com.arn.scrobble.main
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
@@ -40,8 +35,9 @@ import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
 import com.arn.scrobble.charts.HiddenTagsDialog
 import com.arn.scrobble.db.BlockPlayerAction
+import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.edits.BlockedMetadataAddDialog
-import com.arn.scrobble.edits.EditScrobbleDialog
+import com.arn.scrobble.edits.SimpleEditsAddScreen
 import com.arn.scrobble.info.MusicEntryInfoDialog
 import com.arn.scrobble.info.TagInfoDialog
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -226,32 +222,27 @@ private fun PanoDialogs(
             }
 
             is PanoDialog.EditScrobble -> {
-                EditScrobbleDialog(
-                    scrobbleData = dialogArgs.scrobbleData,
+                SimpleEditsAddScreen(
+                    simpleEdit = SimpleEdit(
+                        track = dialogArgs.origScrobbleData.track,
+                        artist = dialogArgs.origScrobbleData.artist,
+                        album = dialogArgs.origScrobbleData.album.orEmpty(),
+                        albumArtist = dialogArgs.origScrobbleData.albumArtist.orEmpty(),
+                        origTrack = dialogArgs.origScrobbleData.track,
+                        origArtist = dialogArgs.origScrobbleData.artist,
+                        origAlbum = dialogArgs.origScrobbleData.album.orEmpty(),
+                        origAlbumArtist = dialogArgs.origScrobbleData.albumArtist.orEmpty(),
+                        hasOrigTrack = true,
+                        hasOrigArtist = true,
+                        hasOrigAlbum = true,
+                        hasOrigAlbumArtist = !dialogArgs.origScrobbleData.albumArtist.isNullOrEmpty(),
+                    ),
+                    origScrobbleData = dialogArgs.origScrobbleData,
                     msid = dialogArgs.msid,
                     hash = dialogArgs.hash,
-                    onDone = {
-                        if (dialogArgs.hash != null) { // from notification
-                            notifyPlayingTrackEvent(
-                                PlayingTrackNotifyEvent.TrackScrobbleLocked(
-                                    hash = dialogArgs.hash,
-                                    locked = false
-                                ),
-                            )
-
-                            notifyPlayingTrackEvent(
-                                PlayingTrackNotifyEvent.TrackCancelled(
-                                    hash = dialogArgs.hash,
-                                    showUnscrobbledNotification = false,
-                                    blockPlayerAction = BlockPlayerAction.ignore,
-                                )
-                            )
-                        } else if (dialogArgs.key != null) { // from scrobble history
-                            mainViewModel.notifyEdit(dialogArgs.key, it)
-                        }
-
-                        onDismissRequest()
-                    },
+                    key = dialogArgs.key,
+                    notifyEdit = mainViewModel::notifyEdit,
+                    onDone = onDismissRequest,
                     onReauthenticate = {
                         onDismissRequest()
                         onNavigate(LoginDestinations.route(AccountType.LASTFM))

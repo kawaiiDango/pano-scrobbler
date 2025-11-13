@@ -3,7 +3,6 @@ package com.arn.scrobble.pref
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.Tokens
 import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.HttpClient

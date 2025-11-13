@@ -34,14 +34,13 @@ jobs:
       - name: Set up common secrets
         shell: bash
         run: |
-          echo "${{ secrets.TOKENS_KT }}" | base64 -d - > composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
+          echo "${{ secrets.LOCAL_PROPERTIES }}" > local.properties
 
       - if: matrix.resources-dir == 'linux-x64'
         name: Set up Android secrets
         shell: bash
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > androidApp/android-keystore.jks
-          echo "${{ secrets.LOCAL_PROPERTIES }}" > local.properties
 
       - if: matrix.resources-dir == 'windows-x64'
         name: Set up NSIS

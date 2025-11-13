@@ -2,17 +2,13 @@
 
 Welcome to my spaghetti
 
-- Create composeApp/src/commonMain/kotlin/com/arn/scrobble/Tokens.kt
-
+Put these keys in local.properties
 ```
-package com.arn.scrobble
-
-object Tokens {
-    const val LAST_KEY = "" // https://www.last.fm/api/account/create
-    const val LAST_SECRET = ""
-    // https://developer.spotify.com/dashboard/
-    const val SPOTIFY_REFRESH_TOKEN = "<base64 encoded client_id:client_secret>"
-}
+# // https://www.last.fm/api/account/create
+lastfm.key=
+lastfm.secret=
+# // https://developer.spotify.com/dashboard/
+spotify.refreshToken=<base64 encoded client_id:client_secret>
 ```
 
 ### For Android:

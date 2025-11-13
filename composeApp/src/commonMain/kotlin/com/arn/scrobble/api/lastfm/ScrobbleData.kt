@@ -20,6 +20,7 @@ data class ScrobbleData(
     fun toTrack() = Track(
         name = track,
         artist = Artist(artist),
+        date = timestamp,
         album = album?.ifEmpty { null }
             ?.let { Album(album, Artist(albumArtist.orEmpty().ifEmpty { artist })) },
         duration = duration,

@@ -778,6 +778,23 @@
       ]
     },
     {
+      "type": "com.arn.scrobble.pref.AppListSaveType",
+      "fields": [
+        {
+          "name": "Companion"
+        }
+      ]
+    },
+    {
+      "type": "com.arn.scrobble.pref.AppListSaveType$Companion",
+      "methods": [
+        {
+          "name": "serializer",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.arn.scrobble.ui.FilePicker_desktopKt$FilePicker$2$1$1"
     },
     {

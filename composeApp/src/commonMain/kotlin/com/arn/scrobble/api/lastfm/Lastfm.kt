@@ -1,5 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
@@ -36,8 +37,8 @@ import java.util.Calendar
 import java.util.TreeMap
 
 open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
-    open val apiKey: String = Stuff.LAST_KEY
-    open val secret: String = Stuff.LAST_SECRET
+    protected open val apiKey = Requesters.lastfmUnauthedRequester.apiKey
+    protected open val apiSecret = Requesters.lastfmUnauthedRequester.apiSecret
 
     private val apiRoot = when (userAccount.type) {
         AccountType.LASTFM -> Stuff.LASTFM_API_ROOT
@@ -68,7 +69,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         )
 
         return client.postResult<NowPlayingResponse> {
-            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleIgnored(it.nowplaying.ignoredMessage.code != 0) }
     }
 
@@ -89,7 +90,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         )
 
         return client.postResult<ScrobbleResponse> {
-            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
     }
 
@@ -113,7 +114,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
 
         return client.postResult<ScrobbleResponse> {
-            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
     }
 
@@ -128,7 +129,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         )
 
         return client.postResult<String> {
-            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleIgnored(false) }
     }
 
@@ -402,7 +403,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
 
         return client.postResult<String> {
-            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }
     }
 
@@ -433,7 +434,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
 
         return client.postResult<String> {
-            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }
     }
 
@@ -549,12 +550,12 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
 
         suspend fun authAndGetSession(userAccountTemp: UserAccountTemp): Result<Session> {
             val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
-                Stuff.LAST_KEY
+                Requesters.lastfmUnauthedRequester.apiKey
             else
                 Stuff.LIBREFM_KEY
 
             val apiSecret = if (userAccountTemp.type == AccountType.LASTFM)
-                Stuff.LAST_SECRET
+                Requesters.lastfmUnauthedRequester.apiSecret
             else
                 Stuff.LIBREFM_KEY
 

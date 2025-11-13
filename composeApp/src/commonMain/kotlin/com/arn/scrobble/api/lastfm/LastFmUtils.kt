@@ -8,7 +8,10 @@ open class ApiException(
     val code: Int,
     val description: String,
     override val cause: Throwable? = null,
-) : Exception("$description ($code)", cause) {
+) : Exception(
+    description + (if (code != -1) " ($code)" else ""),
+    cause
+) {
 
     init {
         reportRateLimitErrors()

@@ -764,6 +764,23 @@
       ]
     },
     {
+      "type": "com.arn.scrobble.pref.AppListSaveType",
+      "fields": [
+        {
+          "name": "Companion"
+        }
+      ]
+    },
+    {
+      "type": "com.arn.scrobble.pref.AppListSaveType$Companion",
+      "methods": [
+        {
+          "name": "serializer",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.sun.crypto.provider.AESCipher$General",
       "methods": [
         {

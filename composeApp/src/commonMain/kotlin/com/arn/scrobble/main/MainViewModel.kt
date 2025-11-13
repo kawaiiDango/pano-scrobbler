@@ -9,6 +9,7 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.PurchaseMethod
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -54,7 +55,7 @@ class MainViewModel : ViewModel() {
                     System.currentTimeMillis() - it > TimeUnit.HOURS.toMillis(12)
         }
 
-    private val _editData = MutableSharedFlow<Pair<String, ScrobbleData>>(extraBufferCapacity = 1)
+    private val _editData = MutableSharedFlow<Pair<String, Track>>(extraBufferCapacity = 1)
     val editDataFlow = _editData.asSharedFlow()
 
     private val _tabIdx =
@@ -201,8 +202,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun notifyEdit(key: String, sd: ScrobbleData) {
-        _editData.tryEmit(key to sd)
+    fun notifyEdit(key: String, track: Track) {
+        _editData.tryEmit(key to track)
     }
 
     fun notifyPullToRefresh(id: Int) {

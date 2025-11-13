@@ -168,7 +168,7 @@ actual object PanoNotifications {
 
         if (event.nowPlaying) {
             val editDialogArgs = PanoDialog.EditScrobble(
-                scrobbleData = event.origScrobbleData,
+                origScrobbleData = event.origScrobbleData,
                 hash = event.hash
             )
 
@@ -234,7 +234,7 @@ actual object PanoNotifications {
             .also {
                 if (event.scrobbleError.canFixMetadata) {
                     val editDialogArgs = PanoDialog.EditScrobble(
-                        scrobbleData = event.scrobbleData,
+                        origScrobbleData = event.scrobbleData,
                         hash = event.hash
                     )
 

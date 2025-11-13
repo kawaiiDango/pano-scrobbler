@@ -443,10 +443,12 @@ fun ButtonWithIcon(
     icon: ImageVector,
     text: String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     OutlinedButton(
         onClick = onClick,
         contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+        enabled = enabled,
         modifier = modifier
     ) {
         Icon(

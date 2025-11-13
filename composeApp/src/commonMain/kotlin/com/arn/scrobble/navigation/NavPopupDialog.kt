@@ -70,7 +70,7 @@ fun NavPopupDialog(
             drawSnowfall = drawSnowfall,
         )
 
-        if (!VariantStuff.billingRepository.isLicenseValid) {
+        if (!VariantStuff.billingRepository.isLicenseValid && VariantStuff.billingRepository.needsActivationCode) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth(1f)

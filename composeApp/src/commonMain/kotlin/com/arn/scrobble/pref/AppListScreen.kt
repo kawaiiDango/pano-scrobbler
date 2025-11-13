@@ -158,7 +158,7 @@ fun AppListScreen(
                                         } else {
                                             pref.getRegexPresetApps(p) - thisAllowList
                                         }
-                                    }.mapKeys { it.toString() }
+                                    }.mapKeys { (k, v) -> k.name }
 
                                 pref.copy(regexPresetsApps = updatedRegexPresetsApps)
                             }

@@ -118,7 +118,7 @@ fun ScrobblesScreen(
     onNavigate: (PanoRoute) -> Unit,
     onOpenDialog: (PanoDialog) -> Unit,
     onTitleChange: (String?) -> Unit,
-    editDataFlow: Flow<Pair<String, ScrobbleData>>,
+    editDataFlow: Flow<Pair<String, Track>>,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
 ) {

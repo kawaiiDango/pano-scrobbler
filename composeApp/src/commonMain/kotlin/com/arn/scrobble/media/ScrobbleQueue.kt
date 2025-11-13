@@ -299,11 +299,11 @@ class ScrobbleQueue(
 
     fun remove(hash: Int) {
         if (hash == lockedHash) {
-            Logger.d { "$hash locked" }
+            Logger.d { "${hash.toHexString()} locked" }
             return
         }
 
         scrobbleTasks.remove(hash)?.cancel()
-        Logger.d { "$hash cancelled" }
+        Logger.d { "${hash.toHexString()} cancelled" }
     }
 }

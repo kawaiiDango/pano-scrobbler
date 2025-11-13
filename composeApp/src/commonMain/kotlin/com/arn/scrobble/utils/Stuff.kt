@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.Tokens
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
@@ -77,8 +76,6 @@ object Stuff {
     const val TYPE_ALBUM_ARTISTS = 4
     const val TYPE_LOVES = 5
     const val LIBREFM_KEY = "panoScrobbler"
-    const val LAST_KEY = Tokens.LASTFM_KEY
-    const val LAST_SECRET = Tokens.LASTFM_SECRET
     const val FRIENDS_RECENTS_DELAY = 800L
     const val MAX_PATTERNS = 50
     const val MAX_PINNED_FRIENDS = 10

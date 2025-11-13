@@ -54,12 +54,12 @@ fun OobLastfmLibrefmLoginScreen(
 
     LaunchedEffect(Unit) {
         val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
-            Stuff.LAST_KEY
+            Requesters.lastfmUnauthedRequester.apiKey
         else
             Stuff.LIBREFM_KEY
 
         val apiSecret = if (userAccountTemp.type == AccountType.LASTFM)
-            Stuff.LAST_SECRET
+            Requesters.lastfmUnauthedRequester.apiSecret
         else
             Stuff.LIBREFM_KEY
 

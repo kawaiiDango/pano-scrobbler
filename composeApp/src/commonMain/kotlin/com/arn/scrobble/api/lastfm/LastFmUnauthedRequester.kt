@@ -1,5 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
@@ -11,12 +12,20 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
+import io.ktor.util.decodeBase64Bytes
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 
 class LastFmUnauthedRequester {
 
-    private val apiKey = Stuff.LAST_KEY
+    val apiKey = Stuff.xorWithKeyBytes(
+        BuildKonfig.LASTFM_KEY.decodeBase64Bytes(),
+        BuildKonfig.APP_ID.toByteArray()
+    ).decodeToString()
+    val apiSecret = Stuff.xorWithKeyBytes(
+        BuildKonfig.LASTFM_SECRET.decodeBase64Bytes(),
+        BuildKonfig.APP_ID.toByteArray()
+    ).decodeToString()
     private val client by lazy { Requesters.genericKtorClient }
 
     // search

@@ -15,7 +15,7 @@ import io.ktor.client.request.setBody
 
 class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
     override val apiKey: String = Stuff.LIBREFM_KEY
-    override val secret: String = Stuff.LIBREFM_KEY
+    override val apiSecret: String = Stuff.LIBREFM_KEY
 
     override suspend fun delete(track: Track): Result<Unit> {
         val params = mapOf(
@@ -30,7 +30,7 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
         )
 
         val result = client.postResult<GnuFmResult> {
-            setBody(FormDataContent(toFormParametersWithSig(params, secret)))
+            setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }
 
         // {"error":{"#text":"Invalid resource specified","code":"7"}}

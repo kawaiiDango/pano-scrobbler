@@ -1,6 +1,8 @@
 - Apps list screen now has a search bar
-- The regex preset "Parse title" and "Parse title with fallback" no longer uses a hardcoded list of apps
+- The edit dialog can now be expanded for partial edits mode
+- The regex presets "Parse title" and "Parse title with fallback" no longer use a hardcoded list of apps
 - Added support for VRadio and BBC Sounds
+- Reacts to system dark mode changes on Windows and Linux immediately without needing a restart
 - Linux ARM64 build now supports 16K pages
 - The uninstaller on Windows will now only remove the files it had installed
 - Bug fixes

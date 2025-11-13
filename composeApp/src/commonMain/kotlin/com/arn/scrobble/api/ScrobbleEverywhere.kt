@@ -20,7 +20,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.RegexEditsDao
 import com.arn.scrobble.db.ScrobbleSource
-import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
+import com.arn.scrobble.db.SimpleEditsDao.Companion.findAndPerformEdit
 import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.edits.TitleParseException
@@ -82,7 +82,7 @@ object ScrobbleEverywhere {
         var presetsApplied = false
         var titleParseFailed = false
 
-        PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
+        PanoDb.db.getSimpleEditsDao().findAndPerformEdit(scrobbleData)
             ?.also {
                 scrobbleData = it
                 simpleEditsApplied = true
@@ -106,7 +106,7 @@ object ScrobbleEverywhere {
         }
 
         if (regexEditsApplied) {
-            PanoDb.db.getSimpleEditsDao().performEdit(scrobbleData)
+            PanoDb.db.getSimpleEditsDao().findAndPerformEdit(scrobbleData)
                 ?.also {
                     scrobbleData = it
                     simpleEditsApplied = true
@@ -252,7 +252,10 @@ object ScrobbleEverywhere {
 //                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_TV ||
                         scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||
                                 scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN_EXE ||
-                                scrobbleData.appId?.lowercase() == Stuff.PACKAGE_DEEZER_WIN_STORE.lowercase()
+                                scrobbleData.appId.equals(
+                                    Stuff.PACKAGE_DEEZER_WIN_STORE,
+                                    ignoreCase = true
+                                )
                         ) -> {
                     fetchFromDeezer(
                         scrobbleData,
@@ -268,7 +271,10 @@ object ScrobbleEverywhere {
                 tidalSteelSeries && (
                         scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN ||
                                 scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN_EXE ||
-                                scrobbleData.appId?.lowercase() == Stuff.PACKAGE_TIDAL_WIN_STORE.lowercase()
+                                scrobbleData.appId.equals(
+                                    Stuff.PACKAGE_TIDAL_WIN_STORE,
+                                    ignoreCase = true
+                                )
                         ) -> {
                     getFromSteelSeriesTidal(scrobbleData)
                         ?.let {

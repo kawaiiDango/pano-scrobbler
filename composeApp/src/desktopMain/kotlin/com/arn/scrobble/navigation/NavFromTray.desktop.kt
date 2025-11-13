@@ -53,7 +53,7 @@ actual fun NavFromTrayEffect(
 
                 PanoTrayUtils.ItemId.Edit -> {
                     val dialog = PanoDialog.EditScrobble(
-                        scrobbleData = scrobblingEvent.origScrobbleData,
+                        origScrobbleData = scrobblingEvent.origScrobbleData,
                         hash = scrobblingEvent.hash
                     )
                     onOpenDialog(dialog)
@@ -84,7 +84,7 @@ actual fun NavFromTrayEffect(
 
                     if (scrobbleError.canFixMetadata) {
                         val dialog = PanoDialog.EditScrobble(
-                            scrobbleData = errorEvent.scrobbleData,
+                            origScrobbleData = errorEvent.scrobbleData,
                             hash = scrobblingEvent.hash
                         )
                         onOpenDialog(dialog)

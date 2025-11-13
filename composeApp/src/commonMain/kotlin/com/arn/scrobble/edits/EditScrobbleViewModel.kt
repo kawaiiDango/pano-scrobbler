@@ -12,12 +12,16 @@ import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
+import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
+import com.arn.scrobble.media.PlayingTrackNotifyEvent
+import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
@@ -28,102 +32,111 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.rank_change_no_change
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 
 class EditScrobbleViewModel : ViewModel() {
-    private val _result = MutableSharedFlow<Result<ScrobbleData>>()
+    private val _result = MutableSharedFlow<Pair<ScrobbleData?, Result<Unit>>>()
     val result = _result.asSharedFlow()
 
-    private val _updatedAlbum = MutableSharedFlow<String>()
+    private val _updatedAlbum = MutableSharedFlow<Pair<ScrobbleData, String>>()
     val updatedAlbum = _updatedAlbum.asSharedFlow()
 
-    private val _updatedAlbumArtist = MutableSharedFlow<String>()
+    private val _updatedAlbumArtist = MutableSharedFlow<Pair<ScrobbleData, String>>()
     val updatedAlbumArtist = _updatedAlbumArtist.asSharedFlow()
 
     fun doEdit(
-        origScrobbleData: ScrobbleData,
-        newScrobbleData: ScrobbleData,
+        simpleEdit: SimpleEdit,
+        origScrobbleData: ScrobbleData?,
         msid: String?,
-        isNowPlaying: Boolean,
+        hash: Int?,
+        key: String?,
+        notifyEdit: (String, Track) -> Unit,
         save: Boolean,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val r = scrobbleAndDelete(
-                origScrobbleData,
-                newScrobbleData,
-                msid,
-                isNowPlaying
-            )
-                .onSuccess {
-                    if (save)
-                        saveEdit(origScrobbleData, newScrobbleData)
-                }
-                .recoverCatching {
-                    if (it is ScrobbleIgnoredException) {
-                        if (System.currentTimeMillis() - it.scrobbleTime >= Stuff.LASTFM_MAX_PAST_SCROBBLE && save) {
-                            saveEdit(origScrobbleData, newScrobbleData)
-                            throw ApiException(
-                                -1,
-                                "Scrobble too old, edit saved only for future scrobbles"
+            if (origScrobbleData != null) {
+                val newScrobbleData = simpleEdit.performEdit(origScrobbleData)
+
+                val r = scrobbleAndDelete(
+                    origScrobbleData,
+                    newScrobbleData,
+                    msid,
+                    isNowPlaying = hash != null
+                )
+                    .onSuccess { editedSd ->
+                        if (save)
+                            PanoDb.db.getSimpleEditsDao().insertReplaceLowerCase(simpleEdit)
+
+                        if (hash != null) { // from notification
+                            notifyPlayingTrackEvent(
+                                PlayingTrackNotifyEvent.TrackScrobbleLocked(
+                                    hash = hash,
+                                    locked = false
+                                ),
                             )
+
+                            notifyPlayingTrackEvent(
+                                PlayingTrackNotifyEvent.TrackCancelled(
+                                    hash = hash,
+                                    showUnscrobbledNotification = false,
+                                    blockPlayerAction = BlockPlayerAction.ignore,
+                                )
+                            )
+                        } else if (key != null) { // from scrobble history
+                            notifyEdit(key, editedSd.toTrack())
                         }
                     }
-                    throw it
-                }
-            _result.emit(r)
-        }
-    }
-
-
-    private suspend fun saveEdit(
-        origScrobbleData: ScrobbleData,
-        newScrobbleData: ScrobbleData,
-    ) {
-        if (!(origScrobbleData.track == newScrobbleData.track &&
-                    origScrobbleData.artist == newScrobbleData.artist &&
-                    origScrobbleData.album == newScrobbleData.album &&
-                    newScrobbleData.albumArtist == "")
-        ) {
-            val dao = PanoDb.db.getSimpleEditsDao()
-            val e = SimpleEdit(
-                artist = newScrobbleData.artist,
-                album = newScrobbleData.album ?: "",
-                albumArtist = newScrobbleData.albumArtist ?: "",
-                track = newScrobbleData.track,
-                origArtist = origScrobbleData.artist,
-                origAlbum = origScrobbleData.album ?: "",
-                origTrack = origScrobbleData.track,
-            )
-            dao.insertReplaceLowerCase(e)
+                    .recoverCatching {
+                        if (it is ScrobbleIgnoredException) {
+                            if (System.currentTimeMillis() - it.scrobbleTime >= Stuff.LASTFM_MAX_PAST_SCROBBLE && save) {
+                                PanoDb.db.getSimpleEditsDao().insertReplaceLowerCase(simpleEdit)
+                                throw ApiException(
+                                    -1,
+                                    "Scrobble too old, edit saved only for future scrobbles"
+                                )
+                            }
+                        }
+                        throw it
+                    }
+                _result.emit(origScrobbleData to r.map { })
+            } else if (save) {
+                PanoDb.db.getSimpleEditsDao().insertReplaceLowerCase(simpleEdit)
+                _result.emit(origScrobbleData to Result.success(Unit))
+            }
         }
     }
 
     private suspend fun scrobbleAndDelete(
-        origScrobbleData: ScrobbleData,
-        newScrobbleData: ScrobbleData,
+        _origScrobbleData: ScrobbleData,
+        _newScrobbleData: ScrobbleData,
         msid: String?,
         isNowPlaying: Boolean
     ): Result<ScrobbleData> {
-        val track = newScrobbleData.track.trim()
+        val newScrobbleData = _newScrobbleData.trimmed()
+        val origScrobbleData = _origScrobbleData.trimmed()
+
+        val track = newScrobbleData.track
         val origTrack = origScrobbleData.track
-        var album = newScrobbleData.album?.trim()?.ifEmpty { null }
+        var album = newScrobbleData.album
         val origAlbum = origScrobbleData.album
-        var albumArtist = newScrobbleData.albumArtist?.trim()?.ifEmpty { null }
-        val artist = newScrobbleData.artist.trim()
+        var albumArtist = newScrobbleData.albumArtist
+        val origAlbumArtist = origScrobbleData.albumArtist
+        val artist = newScrobbleData.artist
         val origArtist = origScrobbleData.artist
         val timeMillis = origScrobbleData.timestamp
 
-        if (track.isBlank() || artist.isBlank()) {
+        if (track.isEmpty() || artist.isEmpty()) {
             return Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
         }
-        
+
         val fetchAlbum = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
         val fetchAlbumAndAlbumArtist =
-            album.isNullOrBlank() && origAlbum.isNullOrBlank() && fetchAlbum
+            album.isNullOrEmpty() && origAlbum.isNullOrEmpty() && fetchAlbum
         val rescrobbleRequired = !isNowPlaying && (fetchAlbumAndAlbumArtist ||
                 (track.equals(origTrack, ignoreCase = true) &&
                         artist.equals(origArtist, ignoreCase = true)
-                        && (album != origAlbum || !albumArtist.isNullOrBlank())))
+                        && (album != origAlbum || !albumArtist.isNullOrEmpty())))
         var scrobbleData = ScrobbleData(
             artist = artist,
             track = track,
@@ -144,12 +157,11 @@ class EditScrobbleViewModel : ViewModel() {
             msid = msid
         )
 
-
-        if (!isNowPlaying && track == origTrack &&
-            artist == origArtist && album == origAlbum && albumArtist == "" &&
-            !(album == "" && fetchAlbum)
+        if (track == origTrack &&
+            artist == origArtist && album == origAlbum && albumArtist == origAlbumArtist &&
+            !(album.isNullOrEmpty() && fetchAlbum)
         ) {
-            return Result.success(newScrobbleData)
+            return Result.failure(IllegalArgumentException(getString(Res.string.rank_change_no_change)))
         }
 
         if (fetchAlbumAndAlbumArtist) {
@@ -159,15 +171,15 @@ class EditScrobbleViewModel : ViewModel() {
                 .getInfo(newTrack)
                 .getOrNull()
 
-            if (album.isNullOrBlank() && fetchedTrack?.album != null) {
+            if (album.isNullOrEmpty() && fetchedTrack?.album != null) {
                 album = fetchedTrack.album.name
                 scrobbleData = scrobbleData.copy(album = album)
-                _updatedAlbum.emit(album)
+                _updatedAlbum.emit(_origScrobbleData to album)
             }
-            if (albumArtist.isNullOrBlank() && fetchedTrack?.album?.artist != null) {
+            if (albumArtist.isNullOrEmpty() && fetchedTrack?.album?.artist != null) {
                 albumArtist = fetchedTrack.album.artist.name
                 scrobbleData = scrobbleData.copy(albumArtist = albumArtist)
-                _updatedAlbumArtist.emit(albumArtist)
+                _updatedAlbumArtist.emit(_origScrobbleData to albumArtist)
             }
         }
 
@@ -214,5 +226,10 @@ class EditScrobbleViewModel : ViewModel() {
         return Result.success(scrobbleData)
     }
 
-
+    fun deleteSimpleEdit(simpleEdit: SimpleEdit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            PanoDb.db.getSimpleEditsDao().delete(simpleEdit)
+            _result.emit(null to Result.success(Unit))
+        }
+    }
 }

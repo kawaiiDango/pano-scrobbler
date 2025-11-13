@@ -760,20 +760,20 @@ fun LazyListScope.scrobblesListItems(
                             appId = appItem?.appId,
                             onOpenDialog = onOpenDialog,
                             user = user,
-                            onEdit = if (canEdit) {
-                                {
+                            onEdit = if (canEdit && track.date != null) {
+                                { // no editing of now playing from here
                                     val sd = ScrobbleData(
                                         track = track.name,
                                         artist = track.artist.name,
                                         album = track.album?.name,
-                                        timestamp = track.date ?: 0,
+                                        timestamp = track.date,
                                         albumArtist = null,
                                         duration = null,
                                         appId = null
                                     )
 
                                     val dialogArgs = PanoDialog.EditScrobble(
-                                        scrobbleData = sd,
+                                        origScrobbleData = sd,
                                         msid = track.msid,
                                         key = key,
                                     )
@@ -840,20 +840,10 @@ fun LazyListScope.scrobblesListItems(
 @Composable
 fun OnEditEffect(
     viewModel: ScrobblesVM,
-    editDataFlow: Flow<Pair<String, ScrobbleData>>
+    editDataFlow: Flow<Pair<String, Track>>
 ) {
     LaunchedEffect(Unit) {
-        editDataFlow.collect { (key, newScrobbleData) ->
-            val _artist = Artist(newScrobbleData.artist)
-            val _album = newScrobbleData.album?.let { Album(it, _artist) }
-
-            val editedTrack = Track(
-                newScrobbleData.track,
-                _album,
-                _artist,
-                date = newScrobbleData.timestamp.takeIf { it > 0L }
-            )
-
+        editDataFlow.collect { (key, editedTrack) ->
             viewModel.editTrack(key, editedTrack)
         }
     }

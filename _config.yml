@@ -32,11 +32,13 @@ exclude:
   - "*.properties"
   - "Gemfile"
   - "Gemfile.lock"
+  - "*.sh"
 
 keep_files:
   - fdroid
   - img
-  - screenshots
+  - fastlane
+  - desktop-screenshots
   - composeApp
 
 plugins:

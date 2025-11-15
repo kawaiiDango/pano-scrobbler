@@ -151,6 +151,7 @@
     <string name="more" comment="More options menu in short">Więcej</string>
     <string name="learn" comment="(Learn java regex syntax)">Naucz się</string>
     <string name="hide">Ukryj</string>
+    <string name="rank_change" comment="%1= delta change">Zmiana w rankingu: %1$s</string>
     <string name="rank_change_no_change">Bez zmian</string>
     <string name="rank_change_new">Nie scrobblowano w poprzednim okresie</string>
     <string name="search">Szukaj</string>
@@ -171,6 +172,7 @@
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Wykryto %1$s</string>
     <string name="new_player_prompt">Scrobblować z tej aplikacji?</string>
     <string name="new_player_prompt_desktop">Przejdź do ustawień, by zacząć scrobblować tę aplikację</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Brak dostępu do: %1$s</string>
     <string name="file_exists_confirm_overwrite">Plik istnieje. Naciśnij ponownie, by go nadpisać.</string>
     <string name="no_scrobbles">Jeszcze nie ma tutaj utworów…</string>
     <string name="no_friends">Nikogo jeszcze nie obserwujesz…</string>
@@ -183,6 +185,8 @@
     <string name="delete">Usuń</string>
     <string name="delete_all">Usuń wszystko</string>
     <string name="love" comment="Love/like a song">Polub</string>
+    <string name="hate" comment="Hate or dislike a song">Znienawidź</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Odnienawidź</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Usuń z polubionych</string>
     <string name="pending_scrobbles">Oczekujące Scrobble</string>
     <string name="following" comment="accounts you are following on lastfm">Obserwowanie</string>
@@ -280,6 +284,10 @@
     <string name="edit_first" comment="First occurrence of a pattern">Pierwszy</string>
     <string name="edit_all" comment="All occurrences of a pattern">Wszystkie</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Wyodrębnij</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nazwij swoje grupy przechwytywania <i>track, album, artist</i> lub <i>albumArtist</i> aby wyciągnąć je z innych pól</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Na przykład, aby zamienić artystę i tytuł, umieścisz regex artist jako (?&lt;track&gt;.*) i regex track jako (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nie tłumacz artist, albumArtist, album, track, ponieważ użytkownik musi je wpisać, jak one są.
+https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Użyte wzory:</string>
     <string name="edit_continue">Jeśli znalezione, kontynuuj dopasowywanie innych regexów</string>
     <string name="edit_case_sensitive">Wielkość liter ma znaczenie</string>
@@ -319,6 +327,8 @@
     <string name="popularity" formatted="true" comment="popularity of a track">Popularność: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiza</string>
     <string name="enable" comment="To enable some feature">Włącz</string>
+    <string name="disable" comment="To disable some feature">Wyłącz</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Usuń: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Rozmiar</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Pomiń brakujące obrazy</string>
     <string name="create_collage">Utwórz kolaż</string>
@@ -375,6 +385,7 @@
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Dla obsługiwanych aplikacji</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listy</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Zablokowane metadane</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">cokolwiek</string>
     <string name="pref_translate">Przetłumacz tę aplikację</string>
     <string name="pref_translate_credits">Podziękowania dla tłumaczy</string>
     <string name="pref_oss_credits">Źródła otwartego oprogramowania</string>
@@ -429,6 +440,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Anuluj</string>
     <string name="back">Powrót</string>
+    <string name="done">Ukończ</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Spróbuj ponownie</string>
     <string name="run_on_start">Uruchom wraz z uruchomieniem urządzenia</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Zapisz logi</string>
@@ -438,6 +450,7 @@
     <string name="low" comment="As in high/medium/low">Niski</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Niektóre aplikacje potrzebują wtyczek</string>
     <string name="reload" comment="Reload or refresh">Przeładuj</string>
+    <string name="min_track_duration">Scrobbluj piosenki dłuższe niż</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>
     <string name="help">Pomoc</string>

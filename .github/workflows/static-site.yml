@@ -67,8 +67,8 @@ jobs:
 
       - name: Copy static site assets
         run: |
-          cp -r img static-site
-          cp -r screenshots static-site
+          cp -r img static-site/
+          cp -r fastlane static-site/
           mkdir -p static-site/composeApp/src/commonMain/composeResources/drawable/
           cp -r composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg static-site/composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg
           mkdir -p static-site/composeApp/src/commonMain/composeResources/files/

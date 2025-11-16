@@ -45,8 +45,6 @@ import java.net.URI
 
 actual object PlatformStuff {
 
-    actual const val isDebug = BuildKonfig.DEBUG
-
     actual const val isJava8OrGreater = true
 
     actual fun isNotificationListenerEnabled() = true

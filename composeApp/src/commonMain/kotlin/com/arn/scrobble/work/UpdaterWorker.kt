@@ -101,6 +101,6 @@ class UpdaterWorker(
 
     companion object {
         const val NAME = "updater"
-        private val MOCK = PlatformStuff.isDebug && false
+        private val MOCK = BuildKonfig.DEBUG && false
     }
 }

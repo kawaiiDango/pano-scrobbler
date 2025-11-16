@@ -1,5 +1,6 @@
 package com.arn.scrobble.work
 
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
@@ -238,7 +239,7 @@ class PendingScrobblesWorker(
 
     companion object {
         const val NAME = "pending_scrobbles"
-        private val MOCK = PlatformStuff.isDebug && false
+        private val MOCK = BuildKonfig.DEBUG && false
         private const val HARD_LIMIT = 2500
         private var BATCH_SIZE = 40 //max 50
         private const val DELAY = 400L

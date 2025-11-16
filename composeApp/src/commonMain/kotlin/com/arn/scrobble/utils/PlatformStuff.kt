@@ -21,8 +21,6 @@ expect object PlatformStuff {
 
     fun getDeviceIdentifier(): String
 
-    val isDebug: Boolean
-
     val isJava8OrGreater: Boolean
 
     val supportsDynamicColors: Boolean

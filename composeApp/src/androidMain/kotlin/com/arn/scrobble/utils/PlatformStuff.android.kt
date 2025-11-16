@@ -39,7 +39,6 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.BaseBillingRepository
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.debugflag.DebugFlag
 import com.arn.scrobble.media.NLService
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsMigration5
@@ -86,8 +85,6 @@ actual object PlatformStuff {
         val name = Build.BRAND + "|" + Build.MODEL + "|" + Build.DEVICE + "|" + Build.BOARD
         return name.sha256Truncated()
     }
-
-    actual val isDebug = DebugFlag.IS_DEBUG
 
     actual val isJava8OrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 

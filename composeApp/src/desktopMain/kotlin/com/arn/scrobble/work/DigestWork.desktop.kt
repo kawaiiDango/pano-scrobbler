@@ -1,6 +1,7 @@
 package com.arn.scrobble.work
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
@@ -23,7 +24,7 @@ actual object DigestWork : CommonWork {
         }
 
         val dailyTestDigests = false
-        if (PlatformStuff.isDebug && dailyTestDigests)
+        if (BuildKonfig.DEBUG && dailyTestDigests)
             enqueue(DigestType.DIGEST_DAILY)
         enqueue(DigestType.DIGEST_WEEKLY)
         enqueue(DigestType.DIGEST_MONTHLY)

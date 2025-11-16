@@ -115,12 +115,13 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>) =
         submitListens(scrobbleDatas, "import")
 
-    suspend fun lookupMbid(track: Track): ListenBrainzMbidLookup? {
+    suspend fun lookupMbid(track: Track): Result<ListenBrainzMbidLookup> {
         return client.getResult<ListenBrainzMbidLookup>("metadata/lookup") {
             parameter("artist_name", track.artist.name)
             parameter("recording_name", track.name)
             parameter("release_name", track.album?.name)
-        }.getOrNull()
+        }
+//        200 OK – lookup succeeded, does not indicate whether a match was found or not
     }
 
     private fun createImageMap(releaseMbid: String?): List<LastFmImage>? {
@@ -153,7 +154,13 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     ): Result<ScrobbleIgnored> {
         val msid = track.msid
         val mbid = if (msid == null)
-            track.mbid ?: lookupMbid(track)?.recording_mbid
+            track.mbid ?: lookupMbid(track).getOrElse {
+                // should only retry for official listenbrainz servers
+                if (userAccount.apiRoot == Stuff.LISTENBRAINZ_API_ROOT)
+                    return Result.failure(it)
+                else
+                    null
+            }?.recording_mbid
         else
             null
 

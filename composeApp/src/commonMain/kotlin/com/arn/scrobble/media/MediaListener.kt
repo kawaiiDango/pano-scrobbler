@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlin.math.min
+import kotlin.text.ifEmpty
 
 abstract class MediaListener(
     val scope: CoroutineScope,

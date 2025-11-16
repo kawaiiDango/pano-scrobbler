@@ -26,7 +26,6 @@ if [ -f "$pkgbuildDir/PKGBUILD" ]; then
     release_json="$(
       curl "${CURL_ARGS[@]}" \
         -H "Accept: application/vnd.github+json" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
         "${AUTH_HEADER[@]}" \
         "$RELEASES_URL"
     )"

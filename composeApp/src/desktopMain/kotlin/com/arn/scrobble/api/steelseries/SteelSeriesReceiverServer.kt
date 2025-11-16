@@ -1,6 +1,7 @@
 package com.arn.scrobble.api.steelseries
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -137,7 +138,7 @@ actual object SteelSeriesReceiverServer {
                     MIME_PLAINTEXT,
                     "Ok"
                 )
-            } else if (PlatformStuff.isDebug && session.method == Method.GET && session.uri == "/test") {
+            } else if (BuildKonfig.DEBUG && session.method == Method.GET && session.uri == "/test") {
                 newFixedLengthResponse("Ok")
             } else {
                 return super.serve(session)

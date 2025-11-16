@@ -17,12 +17,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.SwapVert
+import androidx.compose.material.icons.outlined.ToggleOff
+import androidx.compose.material.icons.outlined.ToggleOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -517,7 +522,7 @@ fun SimpleEditsAddScreen(
                         ) {
                             Icon(
                                 imageVector = if (save)
-                                    Icons.Filled.Save
+                                    Icons.Outlined.Save
                                 else
                                     PanoIcons.ContentSaveOffOutline,
                                 contentDescription = stringResource(Res.string.save),
@@ -568,9 +573,9 @@ private fun InlineCheckButton(
     ) {
         Icon(
             imageVector = if (checked)
-                Icons.Outlined.CheckCircle
+                Icons.Outlined.ToggleOn
             else
-                Icons.Outlined.Circle,
+                Icons.Outlined.ToggleOff,
             contentDescription = if (checked)
                 stringResource(Res.string.disable)
             else

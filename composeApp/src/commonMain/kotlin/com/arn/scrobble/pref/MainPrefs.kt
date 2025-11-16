@@ -3,6 +3,7 @@
 package com.arn.scrobble.pref
 
 import androidx.datastore.core.Serializer
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserAccountSerializable
@@ -154,7 +155,7 @@ data class MainPrefs(
         get() = minDurationSecs.coerceIn(PREF_MIN_DURATON_SECS_MIN, PREF_MIN_DURATON_SECS_MAX)
 
     val demoModeP
-        get() = demoMode && PlatformStuff.isDebug
+        get() = demoMode && BuildKonfig.DEBUG
 
     val lastMaxIndexedScrobbleTime
         get() = lastDeltaIndexedScrobbleTime ?: lastFullIndexedScrobbleTime

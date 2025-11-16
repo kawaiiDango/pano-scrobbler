@@ -47,8 +47,7 @@ android {
 
     buildFeatures {
         aidl = false
-        buildConfig = false
-        renderScript = false
+        buildConfig = true
         resValues = false
         shaders = false
     }
@@ -176,6 +175,7 @@ android {
 
 aboutLibraries {
     offlineMode = true
+
     collect {
         configPath = File("../aboutLibsConfig")
         fetchRemoteLicense = false

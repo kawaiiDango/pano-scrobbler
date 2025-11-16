@@ -8,6 +8,7 @@ import android.os.StrictMode
 import android.util.Log
 import androidx.work.Configuration
 import com.arn.scrobble.ExtrasProps
+import com.arn.scrobble.androidApp.BuildConfig
 import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.review.ReviewPrompter
@@ -21,7 +22,7 @@ class App : Application(), Configuration.Provider {
 
     override val workManagerConfiguration =
         Configuration.Builder().apply {
-            if (PlatformStuff.isDebug)
+            if (BuildConfig.DEBUG)
                 setMinimumLoggingLevel(Log.INFO)
         }.build()
 
@@ -32,7 +33,7 @@ class App : Application(), Configuration.Provider {
 
         super.onCreate()
 
-        if (PlatformStuff.isDebug) {
+        if (BuildConfig.DEBUG) {
             enableStrictMode()
         }
 
@@ -54,7 +55,7 @@ class App : Application(), Configuration.Provider {
 
         if (crashlyticsEnabled) {
             val crashlyticsKeys = mapOf(
-                "isDebug" to PlatformStuff.isDebug.toString(),
+                "isDebug" to BuildConfig.DEBUG.toString(),
             )
 
             CrashReporter.config(crashlyticsKeys)
@@ -89,13 +90,13 @@ class App : Application(), Configuration.Provider {
             // For API 28+ we can use Application.getProcessName()
             return getProcessName() == packageName
         } else {
-            val manager = getSystemService(ActivityManager::class.java)
-            val pid = Process.myPid()
-            manager?.runningAppProcesses?.forEach { processInfo ->
-                if (processInfo.pid == pid) {
-                    return processInfo.processName == packageName
-                }
-            }
+            val currentProcessName = Class
+                .forName("android.app.ActivityThread")
+                .getDeclaredMethod("currentProcessName")
+                .apply { isAccessible = true }
+                .invoke(null) as String
+            
+            return currentProcessName == packageName
         }
         return false
     }

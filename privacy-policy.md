@@ -39,7 +39,7 @@ information used to identify you.
 Link to privacy policies of third party service providers used by the app
 
 - [Last.fm](https://www.last.fm/legal/privacy)
-- [Libre.fm](https://github.com/foocorp/hacienda/issues/73)
+- [Libre.fm](https://libre.fm/privacy)
 - [ListenBrainz](https://metabrainz.org/privacy)
 - [Spotify](https://www.spotify.com/legal/privacy-policy)
 - [Firebase Crashlytics](https://firebase.google.com/support/privacy) (for the Google Play version

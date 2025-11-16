@@ -823,7 +823,7 @@ fun PrefsScreen(
 //                    else
 //                        stringResource(Res.string.desktop)
 //                ),
-                text = "v" + BuildKonfig.VER_NAME,
+                text = "v" + BuildKonfig.VER_NAME + if (BuildKonfig.DEBUG) " (Debug)" else "",
                 summary = Stuff.LINK_GITHUB,
                 onClick = {
                     PlatformStuff.openInBrowser(Stuff.LINK_GITHUB)
@@ -841,7 +841,7 @@ fun PrefsScreen(
 //            )
 //        }
 
-        if (PlatformStuff.isDebug) {
+        if (BuildKonfig.DEBUG) {
             stickyHeader("debug_header") {
                 SimpleHeaderItem(
                     text = stringResource(Res.string.debug_menu),

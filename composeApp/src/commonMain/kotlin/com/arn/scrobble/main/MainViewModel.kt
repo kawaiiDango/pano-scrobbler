@@ -3,6 +3,7 @@ package com.arn.scrobble.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Scrobblables
@@ -51,7 +52,7 @@ class MainViewModel : ViewModel() {
         }
         .filterNotNull()
         .map {
-            PlatformStuff.isDebug && Scrobblables.currentAccount.value?.type == AccountType.LASTFM &&
+            BuildKonfig.DEBUG && Scrobblables.currentAccount.value?.type == AccountType.LASTFM &&
                     System.currentTimeMillis() - it > TimeUnit.HOURS.toMillis(12)
         }
 
@@ -75,7 +76,7 @@ class MainViewModel : ViewModel() {
 
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
-        PlatformStuff.isDebug ||
+        BuildKonfig.DEBUG ||
                 (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
                 (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
     }
@@ -139,7 +140,7 @@ class MainViewModel : ViewModel() {
 
     init {
         Stuff.globalExceptionFlow.mapLatest { e ->
-            if (PlatformStuff.isDebug)
+            if (BuildKonfig.DEBUG)
                 e.printStackTrace()
 
             if (e is ApiException && e.code != 504) { // suppress cache not found exceptions

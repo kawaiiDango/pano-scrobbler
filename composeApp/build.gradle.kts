@@ -102,7 +102,6 @@ kotlin {
             implementation(libs.compose.webview)
             implementation(libs.harmony)
             implementation(libs.coil.gif)
-            implementation(projects.extrasDebugFlag)
         }
 
         commonMain.dependencies {
@@ -204,22 +203,31 @@ buildkonfig {
         buildConfigField(STRING, "CHANGELOG", CHANGELOG, const = true)
         buildConfigField(BOOLEAN, "DEBUG", (!isReleaseBuild).toString(), const = true)
 
+        val lastfmKey = localProperties["lastfm.key"]
+            ?: throw IllegalStateException("lastfm.key not found in local.properties")
+
+        val lastfmSecret = localProperties["lastfm.secret"]
+            ?: throw IllegalStateException("lastfm.secret not found in local.properties")
+
+        val spotifyRefreshToken = localProperties["spotify.refreshToken"]
+            ?: throw IllegalStateException("spotify.refreshToken not found in local.properties")
+
         buildConfigField(
             STRING,
             "LASTFM_KEY",
-            xor(localProperties.getOrDefault("lastfm.key", "dummy"), APP_ID),
+            xor(lastfmKey, APP_ID),
             const = true
         )
         buildConfigField(
             STRING,
             "LASTFM_SECRET",
-            xor(localProperties.getOrDefault("lastfm.secret", "dummy"), APP_ID),
+            xor(lastfmSecret, APP_ID),
             const = true
         )
         buildConfigField(
             STRING,
             "SPOTIFY_REFRESH_TOKEN",
-            xor(localProperties.getOrDefault("spotify.refreshToken", "dummy"), APP_ID),
+            xor(spotifyRefreshToken, APP_ID),
             const = true
         )
 

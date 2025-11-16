@@ -33,6 +33,7 @@ exclude:
   - "Gemfile"
   - "Gemfile.lock"
   - "*.sh"
+  - "*.bat"
 
 keep_files:
   - fdroid

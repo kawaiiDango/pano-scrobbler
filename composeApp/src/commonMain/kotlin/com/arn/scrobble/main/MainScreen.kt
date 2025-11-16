@@ -431,7 +431,7 @@ fun PanoAppContent(
                 }
             }
 
-//            if (PlatformStuff.isDebug && PlatformStuff.isTv) {
+//            if (BuildKonfig.DEBUG && PlatformStuff.isTv) {
 //                Box(
 //                    modifier = Modifier
 //                        .fillMaxSize()

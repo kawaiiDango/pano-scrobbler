@@ -259,7 +259,7 @@ class SessListener(
                 return
             }
 
-//            if (PlatformStuff.isDebug)
+//            if (BuildKonfig.DEBUG)
 //                metadata.dump()
 
             val (metadataInfo, extras) = transformMediaMetadata(trackInfo, metadata)

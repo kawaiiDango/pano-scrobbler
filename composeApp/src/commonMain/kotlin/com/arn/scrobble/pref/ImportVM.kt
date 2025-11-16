@@ -130,7 +130,7 @@ class ImportVM : ViewModel() {
                     MIME_PLAINTEXT,
                     "Ok"
                 )
-            } else if (PlatformStuff.isDebug && session.method == Method.GET && session.uri == "/test") {
+            } else if (BuildKonfig.DEBUG && session.method == Method.GET && session.uri == "/test") {
                 newFixedLengthResponse("Ok")
             } else {
                 return super.serve(session)

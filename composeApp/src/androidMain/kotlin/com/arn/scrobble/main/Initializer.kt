@@ -8,11 +8,13 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.R
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.setResourceReaderAndroidContext
 
@@ -27,11 +29,12 @@ object Initializer {
 
         Logger.setTag("scrobbler")
         Logger.setMinSeverity(
-            if (PlatformStuff.isDebug) Severity.Debug else Severity.Info
+            if (BuildKonfig.DEBUG) Severity.Debug else Severity.Info
         )
 
         setResourceReaderAndroidContext(application.applicationContext)
         application.createChannels()
+        OkHttp.initialize(application)
     }
 
     private fun Context.createChannels() {

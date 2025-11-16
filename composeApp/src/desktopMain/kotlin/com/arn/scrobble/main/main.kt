@@ -105,7 +105,7 @@ import kotlin.time.Duration.Companion.seconds
 private fun init() {
     // init: run once
 
-    if (!PlatformStuff.isDebug)
+    if (!BuildKonfig.DEBUG)
         preventMultipleInstances()
 
     Stuff.mainPrefsInitialValue = runBlocking { PlatformStuff.mainPrefs.data.first() }
@@ -118,7 +118,7 @@ private fun init() {
     )
     Logger.setTag("scrobbler")
     Logger.setMinSeverity(
-        if (PlatformStuff.isDebug) Severity.Debug else Severity.Info
+        if (BuildKonfig.DEBUG) Severity.Debug else Severity.Info
     )
 
     setAppLocale(Stuff.mainPrefsInitialValue.locale, force = false)

@@ -38,6 +38,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
 import coil3.toBitmap
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
@@ -168,7 +169,7 @@ class CollageGeneratorVM : ViewModel() {
             return
 
 
-        val collages = results.map { entries ->
+        val collagesAndTexts = results.map { entries ->
             fetchAndDrawImages(
                 musicEntries = entries.getOrThrow(),
                 cols = cols,
@@ -185,7 +186,7 @@ class CollageGeneratorVM : ViewModel() {
         }
 
         val image = addHeaderAndFooter(
-            collages,
+            collagesAndTexts.map { it.first },
             type,
             timePeriod,
             user.name.takeIf { username },
@@ -214,9 +215,9 @@ class CollageGeneratorVM : ViewModel() {
         val shareSig = if (!isPro) "\n\n" + getString(Res.string.share_sig) else ""
 
         val shareBody = if (type == Stuff.TYPE_ALL)
-            createDigestShareText(results.map { it.getOrThrow() })
+            createDigestShareText(collagesAndTexts.map { it.second })
         else
-            createSpecificCollageShareText(results.first().getOrThrow())
+            createSpecificCollageShareText(collagesAndTexts.first().second)
 
         _sharableCollage.emit(image to (shareTitle + shareBody + shareSig))
     }
@@ -284,7 +285,7 @@ class CollageGeneratorVM : ViewModel() {
         albumPlaceholder: Painter,
         trackPlaceholder: Painter,
         placeholderColors: List<Color>,
-    ): ImageBitmap {
+    ): Pair<ImageBitmap, List<MusicEntry>> {
         val limit = cols * rows
         val cellSize = 300
         val cellPadding = if (borders) paddingPx else 0
@@ -472,7 +473,7 @@ class CollageGeneratorVM : ViewModel() {
             }
         }
 
-        return bitmap
+        return bitmap to entriesPlaced
     }
 
     private fun measureText(
@@ -652,7 +653,7 @@ class CollageGeneratorVM : ViewModel() {
                 size = Size(totalWidth.toFloat() - 2 * paddingPx - brandTextWidth, 100f)
             )
 
-            if (!isPro || PlatformStuff.isDebug) {
+            if (!isPro || BuildKonfig.DEBUG) {
 
                 val appIconScaledSize = brandTlr.size.height
 
@@ -701,10 +702,12 @@ class CollageGeneratorVM : ViewModel() {
         }
     }
 
-    private suspend fun createSpecificCollageShareText(musicEntries: List<MusicEntry>): String {
+    private suspend fun createSpecificCollageShareText(
+        musicEntries: List<MusicEntry>,
+    ): String {
         if (musicEntries.isEmpty()) return ""
         var pos = 1
-        val list = musicEntries.take(10).map {
+        val list = musicEntries.map {
             when (it) {
                 is Track -> getString(
                     Res.string.charts_num_text,
@@ -725,7 +728,9 @@ class CollageGeneratorVM : ViewModel() {
         return list
     }
 
-    private suspend fun createDigestShareText(musicEntriesAll: List<List<MusicEntry>>): String {
+    private suspend fun createDigestShareText(
+        musicEntriesAll: List<List<MusicEntry>>,
+    ): String {
         val shareTextList = mutableListOf<String>()
         val resultsMap = mapOf(
             Res.string.top_artists to musicEntriesAll[0],
@@ -735,7 +740,7 @@ class CollageGeneratorVM : ViewModel() {
         resultsMap.forEach { (titleRes, musicEntries) ->
 
             val title = getString(titleRes)
-            val text = musicEntries.take(3).joinToString { it.name }
+            val text = musicEntries.joinToString { it.name }
             shareTextList += "$title:\n$text"
         }
 

@@ -114,7 +114,7 @@ jobs:
       - name: Read version
         id: get_version
         run: |
-          verCode=$(cat "composeApp/version.txt")
+          verCode=$(cat "version.txt")
           verName="$((verCode / 100)).$((verCode % 100))"
           echo "verCode=$verCode" >> $GITHUB_OUTPUT
           echo "verName=$verName" >> $GITHUB_OUTPUT

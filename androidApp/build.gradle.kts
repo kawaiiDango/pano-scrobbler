@@ -81,7 +81,7 @@ android {
         jniLibs {
             useLegacyPackaging = false
             // remove the need for heavyweight ndk
-            keepDebugSymbols += setOf("lib/*/*.so")
+            keepDebugSymbols.add("**/*.so")
         }
 
         bundle {

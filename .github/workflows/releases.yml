@@ -106,7 +106,7 @@ jobs:
   upload-release:
     needs: [build]
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.upload-release == true }}
+    if: ${{ inputs.upload-release == true }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5

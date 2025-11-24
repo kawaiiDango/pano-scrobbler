@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">환경설정</string>
     <string name="artists">아티스트</string>
     <string name="albums">앨범</string>
@@ -23,18 +22,12 @@
     <string name="scrobbler_off">스크로블러 비활성화</string>
     <string name="scrobbler_on">스크로블러 활성화</string>
     <plurals name="num_weeks">
-                
         <item quantity="other">%1$s주</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="other">%1$s개월</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="other">%1$s년 전</item>
-            
     </plurals>
 </resources>

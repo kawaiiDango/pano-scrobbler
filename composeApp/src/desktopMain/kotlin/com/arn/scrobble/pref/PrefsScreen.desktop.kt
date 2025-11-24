@@ -1,9 +1,11 @@
 package com.arn.scrobble.pref
 
 import androidx.compose.foundation.lazy.LazyListScope
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.DesktopStuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.run_on_start
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
 import pano_scrobbler.composeapp.generated.resources.use_something
@@ -50,6 +52,16 @@ actual fun addToStartup(
 }
 
 actual suspend fun isAddedToStartup() = DesktopStuff.isAddedToStartup()
+
+actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit) {
+    listScope.item(MainPrefs::discordRpc.name) {
+        TextPref(
+            text = stringResource(Res.string.discord_rich_presence) + " (Experimental)",
+            onClick = { onNavigate(PanoRoute.DiscordRpcSettings) }
+        )
+    }
+}
+
 
 actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
     if (DesktopStuff.os == DesktopStuff.Os.Windows) {

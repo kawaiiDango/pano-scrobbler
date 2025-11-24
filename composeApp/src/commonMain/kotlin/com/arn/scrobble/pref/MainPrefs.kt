@@ -135,8 +135,13 @@ data class MainPrefs(
     @Serializable
     data class DiscordRpcSettings(
         val enabled: Boolean = false,
-        val statusIsState: Boolean = true,
+        val statusLine: Int = 2,
         val albumArt: Boolean = true,
+        val line1Format: String = $$"$title",
+        val line2Format: String = $$"$artist",
+        val line3Format: String = $$"$album",
+        val showPausedForSecs: Int = 60,
+        val showUrlButton: Boolean = true,
     )
 
     val autoDetectAppsP

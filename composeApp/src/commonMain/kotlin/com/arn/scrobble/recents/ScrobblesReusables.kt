@@ -63,6 +63,7 @@ import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.media.getNowPlayingFromMainProcess
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.ExpandableHeaderItem
@@ -115,7 +116,7 @@ private fun TrackDropdownMenu(
     appId: String?,
     onOpenDialog: (PanoDialog) -> Unit,
     user: UserCached,
-    onEdit: (() -> Unit)?,
+    editDialogArgs: (() -> PanoDialog?)?,
     onLove: ((Boolean) -> Unit)?,
     onHate: ((Boolean) -> Unit)?,
     onDelete: (() -> Unit)?,
@@ -126,7 +127,7 @@ private fun TrackDropdownMenu(
 
     var menuLevel by remember(expanded) {
         mutableStateOf(
-            if (onEdit == null && onLove == null && onHate == null && onDelete == null)
+            if (editDialogArgs == null && onLove == null && onHate == null && onDelete == null)
                 TrackMenuLevel.More
             else
                 TrackMenuLevel.Root
@@ -243,11 +244,11 @@ private fun TrackDropdownMenu(
                         )
                     }
 
-                    if (onEdit != null) {
+                    editDialogArgs?.invoke()?.let { dialogArgs ->
                         DropdownMenuItem(
                             onClick = {
                                 onDismissRequest()
-                                onEdit.invoke()
+                                onOpenDialog(dialogArgs)
                             },
                             text = {
                                 Text(stringResource(Res.string.edit))
@@ -760,25 +761,43 @@ fun LazyListScope.scrobblesListItems(
                             appId = appItem?.appId,
                             onOpenDialog = onOpenDialog,
                             user = user,
-                            onEdit = if (canEdit && track.date != null) {
-                                { // no editing of now playing from here
-                                    val sd = ScrobbleData(
-                                        track = track.name,
-                                        artist = track.artist.name,
-                                        album = track.album?.name,
-                                        timestamp = track.date,
-                                        albumArtist = null,
-                                        duration = null,
-                                        appId = null
-                                    )
+                            editDialogArgs = if (canEdit) {
+                                {
+                                    val sd: ScrobbleData
+                                    val msid: String?
+                                    val hash: Int?
 
-                                    val dialogArgs = PanoDialog.EditScrobble(
+                                    if (track.date != null) {
+                                        // no editing of now playing from here
+                                        sd = ScrobbleData(
+                                            track = track.name,
+                                            artist = track.artist.name,
+                                            album = track.album?.name,
+                                            timestamp = track.date,
+                                            albumArtist = null,
+                                            duration = null,
+                                            appId = null
+                                        )
+                                        msid = track.msid
+                                        hash = null
+                                    } else {
+                                        val sdToHash = getNowPlayingFromMainProcess()
+                                        if (sdToHash != null) {
+                                            sd = sdToHash.first
+                                            hash = sdToHash.second
+                                            msid = null
+                                        } else {
+
+                                            return@TrackDropdownMenu null
+                                        }
+                                    }
+
+                                    PanoDialog.EditScrobble(
                                         origScrobbleData = sd,
                                         msid = track.msid,
                                         key = key,
+                                        hash = hash
                                     )
-
-                                    onOpenDialog(dialogArgs)
                                 }
                             } else null,
                             onLove = if (canLove) {

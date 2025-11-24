@@ -161,5 +161,8 @@ sealed interface PanoRoute {
     data object Help : PanoRoute
 
     @Serializable
+    data object DiscordRpcSettings : PanoRoute
+
+    @Serializable
     data object Exit : PanoRoute
 }

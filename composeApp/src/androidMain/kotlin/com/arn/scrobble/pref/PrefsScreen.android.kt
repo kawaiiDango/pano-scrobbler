@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.R
 import com.arn.scrobble.media.PersistentNotificationService
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -176,6 +177,10 @@ actual fun addToStartup(
 }
 
 actual suspend fun isAddedToStartup() = false
+
+actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit) {
+    // no-op
+}
 
 actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
 }

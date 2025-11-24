@@ -94,8 +94,8 @@ class BillingRepository(
 
                     clientData.setLastcheckTime(System.currentTimeMillis())
                 }.onFailure { e ->
-                    _licenseState.emit(LicenseState.NETWORK_ERROR)
                     e.printStackTrace()
+                    _networkError.emit(Unit)
                 }
             }
         } else {

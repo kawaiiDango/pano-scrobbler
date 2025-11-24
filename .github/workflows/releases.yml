@@ -105,7 +105,7 @@ jobs:
   
   upload-release:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     if: ${{ inputs.upload-release == true }}
     steps:
       - name: Checkout repository
@@ -113,6 +113,7 @@ jobs:
 
       - name: Read version
         id: get_version
+        shell: bash
         run: |
           verCode=$(cat "version.txt")
           verName="$((verCode / 100)).$((verCode % 100))"
@@ -132,3 +133,15 @@ jobs:
           name: ${{ steps.get_version.outputs.verName }}
           body_path: changelog.txt
           files: dist/**
+
+      - name: Submit to winget-pkgs
+        env:
+          WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          sleep 7
+          winget install --id Microsoft.WingetCreate --accept-package-agreements --accept-source-agreements --disable-interactivity
+          wingetcreate update kawaiiDango.pano-scrobbler \
+            --version ${{ steps.get_version.outputs.verName }} \
+            --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.get_version.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
+            --submit

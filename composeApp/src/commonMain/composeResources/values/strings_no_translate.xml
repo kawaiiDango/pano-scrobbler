@@ -28,9 +28,22 @@
     <string name="jsonl" translatable="false">JSONL</string>
     <string name="special_app_access" translatable="false">Special app access</string>
     <string name="automation_cp" translatable="false">ContentProvider URIs</string>
+    <string name="discord_rich_presence">Discord Rich Presence</string>
+    <string name="as_text"
+        comment="Like, copy as text etc"
+        >As text</string>
+
 
     <!--  strings for unfinalized stuff  -->
-
+    <string name="line_n" formatted="true"
+        comment="%1$s is the line number, currently used in the context of Discord Rich Presence"
+        >Line %1$s</string>
+    <string name="compact_view_line">Show as "Listening to": </string>
+    <string name="available_placeholders" formatted="true"
+        comment="%1 = placeholder strings, e.g. $artist, $title etc."
+        >Available placeholders: %1$s</string>
+    <string name="show_paused_for">Show paused media for</string>
+    <string name="show_track_url">Track URL</string>
     <string name="edit_example">e.g. To replace Artist1 with Artist2 while keeping the rest of the metadata unchanged, enable only the artist field, and fill in the original and corrected artist values, leaving the other fields disabled.</string>
     <string name="edit_extract_track_example"
         comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"

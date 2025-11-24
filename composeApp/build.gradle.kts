@@ -19,10 +19,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
 import kotlin.io.encoding.Base64
 import kotlin.io.path.name
 import kotlin.io.use
@@ -805,7 +801,8 @@ tasks.register("copyStringsToAndroid") {
             val targetFile = File(targetDir, "strings-android.xml")
 
             if (sourceFile.exists()) {
-                val docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                val docBuilderFactory = DocumentBuilderFactory.newInstance()
+                val docBuilder = docBuilderFactory.newDocumentBuilder()
                 val sourceDoc = docBuilder.parse(sourceFile)
                 val targetDoc = docBuilder.newDocument()
 
@@ -857,10 +854,23 @@ tasks.register("copyStringsToAndroid") {
                     }
                 }
 
-                val transformer = TransformerFactory.newInstance().newTransformer()
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes")
-                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4")
-                transformer.transform(DOMSource(targetDoc), StreamResult(targetFile))
+                // Use LSSerializer to control line endings (LF only)
+                val domImpl = docBuilderFactory.newDocumentBuilder()
+                    .domImplementation
+                val domImplLS =
+                    domImpl.getFeature("LS", "3.0") as org.w3c.dom.ls.DOMImplementationLS
+                val serializer = domImplLS.createLSSerializer()
+
+                val config = serializer.domConfig
+                config.setParameter("format-pretty-print", true)
+
+                serializer.setNewLine("\n")
+                val lsOutput = domImplLS.createLSOutput()
+                targetFile.outputStream().use { fos ->
+                    lsOutput.byteStream = fos
+                    lsOutput.encoding = "UTF-8"
+                    serializer.write(targetDoc, lsOutput)
+                }
             }
         }
     }

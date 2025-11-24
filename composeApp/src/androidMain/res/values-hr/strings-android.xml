@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Konfiguracija</string>
     <string name="artists">Izvođači</string>
     <string name="albums">Albumi</string>
@@ -23,30 +22,18 @@
     <string name="scrobbler_off">Scrobbler onemogućen</string>
     <string name="scrobbler_on">Scrobbler aktivan</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s tjedan</item>
-                
         <item quantity="few">%1$s tjedna</item>
-                
         <item quantity="other">%1$s tjedana</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s mjesec</item>
-                
         <item quantity="few">%1$s mjeseca</item>
-                
         <item quantity="other">%1$s mjeseci</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s godina</item>
-                
         <item quantity="few">%1$s godine</item>
-                
         <item quantity="other">%1$s godina</item>
-            
     </plurals>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
@@ -62,9 +63,13 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
+import pano_scrobbler.composeapp.generated.resources.as_text
 import pano_scrobbler.composeapp.generated.resources.borders
 import pano_scrobbler.composeapp.generated.resources.captions
+import pano_scrobbler.composeapp.generated.resources.charts_num_text
 import pano_scrobbler.composeapp.generated.resources.edit_all
+import pano_scrobbler.composeapp.generated.resources.external_metadata
+import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.saved_to_gallery
 import pano_scrobbler.composeapp.generated.resources.share
@@ -99,7 +104,6 @@ fun CollageGeneratorDialog(
         .collectAsStateWithInitialValue { it.collageSize }
     val includeCaptions by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { it.collageCaptions }
-    val collageText by rememberSaveable { mutableStateOf(true) }
     val collageUsername by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { it.collageUsername }
     val collageSkipMissing by PlatformStuff.mainPrefs.data
@@ -109,6 +113,7 @@ fun CollageGeneratorDialog(
     var shareCollageClicked by remember { mutableStateOf(false) }
     var saveCollageClicked by remember { mutableStateOf(false) }
     var showSavedMessage by remember { mutableStateOf(false) }
+    var shareTextToCopy by remember { mutableStateOf<String?>(null) }
     val iconPainters = IconPaintersForCollage(
         app = painterResource(Res.drawable.vd_launcher_fg_for_collage),
         user = placeholderImageVectorPainter(null, Icons.Outlined.Person),
@@ -141,6 +146,9 @@ fun CollageGeneratorDialog(
     }
 
     fun generateCollage() {
+        shareTextToCopy = null
+        collageBitmap = null
+
         viewModel.generateCollage(
             context = context,
             type = collageType,
@@ -170,8 +178,10 @@ fun CollageGeneratorDialog(
 
     LaunchedEffect(Unit) {
         viewModel.sharableCollage.collectLatest { (image, text) ->
+            shareTextToCopy = text.ifBlank { null }
+
             if (shareCollageClicked) {
-                showCollageShareSheet(image, text.takeIf { collageText && text.isNotBlank() })
+                showCollageShareSheet(image, shareTextToCopy)
                 shareCollageClicked = false
             }
             if (saveCollageClicked) {
@@ -188,14 +198,32 @@ fun CollageGeneratorDialog(
         modifier = modifier,
     ) {
 
-        collageBitmap?.let {
-            Image(
-                bitmap = it,
-                contentDescription = null,
+        collageBitmap?.let { collageBitmap ->
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .fillMaxWidth(0.25f)
-                    .align(Alignment.CenterHorizontally),
-            )
+                    .fillMaxWidth()
+            ) {
+                Image(
+                    bitmap = collageBitmap,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth(0.25f),
+                )
+
+                OutlinedButton(
+                    onClick = {
+                        shareTextToCopy?.let { PlatformStuff.copyToClipboard(it) }
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(stringResource(Res.string.as_text))
+                }
+            }
         }
 
         ErrorText(errorText)

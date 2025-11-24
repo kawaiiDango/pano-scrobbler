@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Ayarlar</string>
     <string name="artists">Sanatçılar</string>
     <string name="albums">Albümler</string>
@@ -23,24 +22,15 @@
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s hafta</item>
-                
         <item quantity="other">%1$s hafta</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s ay</item>
-                
         <item quantity="other">%1$s ay</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s yıl</item>
-                
         <item quantity="other">%1$s yıl</item>
-            
     </plurals>
 </resources>

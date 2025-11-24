@@ -28,9 +28,6 @@ class App : Application(), Configuration.Provider {
 
 
     override fun onCreate() {
-        AndroidStuff.applicationContext = applicationContext
-        AndroidStuff.isMainProcess = isMainProcess()
-
         super.onCreate()
 
         if (BuildConfig.DEBUG) {
@@ -83,21 +80,5 @@ class App : Application(), Configuration.Provider {
                 .penaltyLog()
                 .build()
         )
-    }
-
-    fun isMainProcess(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // For API 28+ we can use Application.getProcessName()
-            return getProcessName() == packageName
-        } else {
-            val currentProcessName = Class
-                .forName("android.app.ActivityThread")
-                .getDeclaredMethod("currentProcessName")
-                .apply { isAccessible = true }
-                .invoke(null) as String
-            
-            return currentProcessName == packageName
-        }
-        return false
     }
 }

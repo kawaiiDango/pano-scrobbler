@@ -339,6 +339,7 @@ fun NavGraphBuilder.panoNavGraph(
         onSetTitleRes(it.id, Res.string.settings)
         PrefsScreen(
             onNavigate = navigate,
+            onOpenDialog = onOpenDialog,
             modifier = modifier()
         )
     }

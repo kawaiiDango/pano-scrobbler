@@ -20,7 +20,7 @@ open class ApiException(
     private fun reportRateLimitErrors() {
         // report rate limit errors to crashlytics
         if (code in arrayOf(29, 9, 429)) {
-            Logger.w(this) { description }
+            Logger.w(cause ?: this) { description }
         }
     }
 }

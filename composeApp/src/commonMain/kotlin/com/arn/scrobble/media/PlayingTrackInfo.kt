@@ -4,11 +4,21 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 import java.util.Objects
+import kotlin.math.abs
 
 class PlayingTrackInfo(
     val appId: String,
     val sessionId: String,
 ) {
+    enum class ScrobbledState {
+        NONE,
+        PREPARED,
+        PREPROCESSED,
+        ADDITIONAL_METADATA_FETCHED,
+        SUBMITTED,
+        CANCELLED,
+    }
+
     var title: String = ""
         private set
     var origTitle: String = ""
@@ -30,7 +40,13 @@ class PlayingTrackInfo(
     var origAlbumArtist: String = ""
         private set
 
+    var artUrl: String = ""
+        private set
+
     var trackId: String? = null
+        private set
+
+    var timelineStartTime: Long = 0
         private set
 
     var playStartTime: Long = 0
@@ -51,19 +67,10 @@ class PlayingTrackInfo(
     var userLoved: Boolean = false
         private set
 
-    var lastScrobbleHash: Int = 0
-        private set
-
-    var lastSubmittedScrobbleHash: Int = 0
+    var scrobbledState: ScrobbledState = ScrobbledState.NONE
         private set
 
     var timePlayed: Long = 0L
-        private set
-
-    var preprocessed: Boolean = false
-        private set
-
-    var additionalMetadataFetched: Boolean = false
         private set
 
     val extras = mutableMapOf<String, String>()
@@ -74,7 +81,7 @@ class PlayingTrackInfo(
                     ?.contains(sessionId) == true)
 
     fun resetMeta() =
-        putOriginals("", "", "", "", 0, null, emptyMap())
+        putOriginals("", "", "", "", 0, null, "", emptyMap())
 
     fun putOriginals(
         artist: String,
@@ -83,6 +90,7 @@ class PlayingTrackInfo(
         albumArtist: String,
         durationMillis: Long,
         trackId: String?,
+        artUrl: String,
         extraData: Map<String, String>
     ) {
         origArtist = artist
@@ -96,16 +104,46 @@ class PlayingTrackInfo(
 
         this.durationMillis = durationMillis
         hash = Objects.hash(albumArtist, artist, album, title, appId, sessionId)
-        preprocessed = false
-        additionalMetadataFetched = false
         this.trackId = trackId
+
+        this.artUrl = artUrl
 
         extras.clear()
         extras.putAll(extraData)
+
+        scrobbledState = ScrobbledState.NONE
+    }
+
+    fun setArtUrl(artUrl: String?) {
+        this.artUrl = artUrl.orEmpty()
+    }
+
+    // this is only done for desktop
+    fun setTimelineStartTime(seekPosition: Long): Boolean {
+        if (seekPosition == -1L)
+            return false
+
+        if (durationMillis <= 0) {
+            if (timelineStartTime != 0L) {
+                timelineStartTime = 0L
+                return true
+            }
+            return false
+        }
+
+        val startTime = System.currentTimeMillis() - seekPosition
+
+        // only change if delta is significant
+        if (abs(timelineStartTime - startTime) > 1000) {
+            timelineStartTime = startTime
+            return true
+        }
+
+        return false
     }
 
     fun prepareForScrobbling() {
-        if (!preprocessed) {
+        if (scrobbledState < ScrobbledState.PREPROCESSED) {
             artist = MetadataUtils.sanitizeArtist(origArtist)
             album = MetadataUtils.sanitizeAlbum(origAlbum)
             albumArtist = MetadataUtils.sanitizeAlbumArtist(origAlbumArtist)
@@ -115,8 +153,7 @@ class PlayingTrackInfo(
 
         isPlaying = true
         playStartTime = System.currentTimeMillis()
-        lastScrobbleHash = hash
-        lastSubmittedScrobbleHash = 0
+        scrobbledState = minOf(ScrobbledState.ADDITIONAL_METADATA_FETCHED, scrobbledState)
     }
 
     fun updateUserProps(
@@ -135,14 +172,33 @@ class PlayingTrackInfo(
         timePlayed += System.currentTimeMillis() - playStartTime
     }
 
+    fun paused() {
+        isPlaying = false
+    }
+
+    fun resumed() {
+        isPlaying = true
+    }
+
     fun toScrobbleData(useOriginals: Boolean) = ScrobbleData(
         track = if (useOriginals) origTitle else title,
         artist = if (useOriginals) origArtist else artist,
         album = (if (useOriginals) origAlbum else album).ifEmpty { null },
         albumArtist = (if (useOriginals) origAlbumArtist else albumArtist).ifEmpty { null },
         timestamp = playStartTime,
-        duration = durationMillis.takeIf { it >= 30000L },
+        duration = durationMillis.takeIf { it > 0 },
         appId = appId,
+    )
+
+    fun toTrackPlayingEvent() = PlayingTrackNotifyEvent.TrackPlaying(
+        scrobbleData = toScrobbleData(false),
+        origScrobbleData = toScrobbleData(true),
+        hash = hash,
+        nowPlaying = scrobbledState < ScrobbledState.SUBMITTED,
+        userLoved = userLoved,
+        userPlayCount = userPlayCount,
+        artUrl = artUrl,
+        timelineStartTime = timelineStartTime,
     )
 
     fun putPreprocessedData(sd: ScrobbleData, additionalMetadataFetched: Boolean) {
@@ -150,14 +206,18 @@ class PlayingTrackInfo(
         album = sd.album.orEmpty()
         artist = sd.artist
         albumArtist = sd.albumArtist.orEmpty()
-        preprocessed = true
-        this.additionalMetadataFetched = additionalMetadataFetched
+
+        if (additionalMetadataFetched)
+            scrobbledState = ScrobbledState.ADDITIONAL_METADATA_FETCHED
+        else
+            scrobbledState = ScrobbledState.PREPROCESSED
     }
 
-    fun markAsScrobbled() {
-        if (lastScrobbleHash == hash) {
-            lastSubmittedScrobbleHash = hash
-            isPlaying = false
-        }
+    fun scrobbled() {
+        scrobbledState = ScrobbledState.SUBMITTED
+    }
+
+    fun cancelled() {
+        scrobbledState = ScrobbledState.CANCELLED
     }
 }

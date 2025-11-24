@@ -40,6 +40,8 @@ abstract class MediaListener(
                         Stuff.mainPrefsInitialValue.scrobbleAccounts.isNotEmpty()
             )
 
+    abstract protected val notifyTimelineUpdates: Boolean
+
     private val scrobbleTimingPrefs =
         PlatformStuff.mainPrefs.data.map {
             ScrobbleTimingPrefs(
@@ -103,8 +105,8 @@ abstract class MediaListener(
         val trackInfo: PlayingTrackInfo,
     ) {
 
-        var lastPlaybackState: CommonPlaybackState? = null
-        private var lastPosition: Long = -1
+        private var lastPlaybackState: CommonPlaybackState? = null
+        private var lastScrobbleHash = 0
         var isMuted = false
 
         private fun scrobble() {
@@ -118,7 +120,8 @@ abstract class MediaListener(
 
             Logger.d { "playing: timePlayed=${trackInfo.timePlayed} title=${trackInfo.title} hash=${trackInfo.hash.toHexString()}" }
 
-            scrobbleQueue.remove(trackInfo.lastScrobbleHash)
+            scrobbleQueue.remove(lastScrobbleHash)
+            lastScrobbleHash = trackInfo.hash
 
             // if another player tried to scrobble, unmute whatever was muted
             // if self was muted, clear the muted hash too
@@ -167,6 +170,7 @@ abstract class MediaListener(
                     albumArtist = metadata.albumArtist,
                     durationMillis = metadata.duration,
                     trackId = metadata.trackId.ifEmpty { null },
+                    artUrl = metadata.artUrl,
                     extraData = extras,
                 )
 
@@ -188,9 +192,9 @@ abstract class MediaListener(
 
         private fun ignoreScrobble() {
             // scrobbling may have already started from onMetadataChanged
-            scrobbleQueue.remove(trackInfo.lastScrobbleHash)
+            scrobbleQueue.remove(lastScrobbleHash)
             PanoNotifications.removeNotificationByTag(trackInfo.appId)
-
+            trackInfo.cancelled()
             // do not scrobble again
             lastPlaybackState = CommonPlaybackState.None
         }
@@ -210,8 +214,14 @@ abstract class MediaListener(
             val isPossiblyAtStart =
                 playbackInfo.position != -1L && playbackInfo.position < START_POS_LIMIT
 
-            if (lastPlaybackState == playbackInfo.state /* bandcamp does this */ &&
-                !(playbackInfo.state == CommonPlaybackState.Playing && isPossiblyAtStart)
+            val timelineChanged = trackInfo.setTimelineStartTime(playbackInfo.position) &&
+                    playbackInfo.state == CommonPlaybackState.Playing
+
+            val playbackStateChanged = lastPlaybackState != playbackInfo.state
+
+            if (!playbackStateChanged /* bandcamp does this */ &&
+                !(playbackInfo.state == CommonPlaybackState.Playing && isPossiblyAtStart) &&
+                !timelineChanged
             )
                 return
 
@@ -229,23 +239,32 @@ abstract class MediaListener(
                         unmute(clearMutedHash = isMuted)
 
                     if (trackInfo.title != "" && trackInfo.artist != "") {
+                        trackInfo.resumed()
 
                         if (!isMuted && trackInfo.hash == mutedHash)
                             mute(trackInfo.hash)
-                        // ignore state=playing, pos=lowValue spam
-                        if (lastPlaybackState == playbackInfo.state && trackInfo.lastScrobbleHash == trackInfo.hash &&
-                            System.currentTimeMillis() - trackInfo.playStartTime < START_POS_LIMIT * 2
-                        )
-                            return
 
-                        if (trackInfo.hash != trackInfo.lastScrobbleHash || (playbackInfo.position >= 0L && isPossiblyAtStart))
+                        if (trackInfo.hash != lastScrobbleHash ||
+                            (playbackInfo.position >= 0L && isPossiblyAtStart && timelineChanged)
+                        )
                             trackInfo.resetTimePlayed()
 
                         if (!scrobbleQueue.has(trackInfo.hash) &&
                             ((playbackInfo.position >= 0L && isPossiblyAtStart) ||
-                                    trackInfo.hash != trackInfo.lastSubmittedScrobbleHash)
+                                    trackInfo.scrobbledState < PlayingTrackInfo.ScrobbledState.SUBMITTED &&
+                                    // ignore state=playing, pos=lowValue spam
+                                    !(!playbackStateChanged &&
+                                            lastScrobbleHash == trackInfo.hash &&
+                                            System.currentTimeMillis() - trackInfo.playStartTime < START_POS_LIMIT * 2
+                                            )
+                                    )
                         ) {
                             scrobble()
+                        } else if ((timelineChanged && notifyTimelineUpdates || playbackStateChanged) &&
+                            trackInfo.scrobbledState <= PlayingTrackInfo.ScrobbledState.SUBMITTED
+                        ) {
+                            // update notification
+                            notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
                         }
                     }
                 }
@@ -254,8 +273,6 @@ abstract class MediaListener(
                 }
             }
 
-            lastPosition = playbackInfo.position // can be -1
-
             if (playbackInfo.state != CommonPlaybackState.Waiting)
                 lastPlaybackState = playbackInfo.state
 
@@ -263,15 +280,14 @@ abstract class MediaListener(
 
         fun pause() {
             if (lastPlaybackState == CommonPlaybackState.Playing) {
-                if (scrobbleQueue.has(trackInfo.lastScrobbleHash))
+                if (scrobbleQueue.has(lastScrobbleHash))
                     trackInfo.addTimePlayed()
                 else
                     trackInfo.resetTimePlayed()
+                trackInfo.paused()
             }
 
-            scrobbleQueue.remove(
-                trackInfo.lastScrobbleHash,
-            )
+            scrobbleQueue.remove(lastScrobbleHash)
             if (!hasOtherPlayingControllers(trackInfo.appId, trackInfo.sessionId))
                 PanoNotifications.removeNotificationByTag(trackInfo.appId)
             if (isMuted)

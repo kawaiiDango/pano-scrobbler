@@ -16,7 +16,11 @@ import java.util.concurrent.TimeUnit
 
 actual object DigestWork : CommonWork {
     override fun checkAndSchedule(force: Boolean) {
-        val workManager = WorkManager.getInstance(AndroidStuff.applicationContext)
+        val workManager = try {
+            WorkManager.getInstance(AndroidStuff.applicationContext)
+        } catch (e: IllegalStateException) {
+            return
+        }
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Ustawienia</string>
     <string name="artists">Wykonawcy</string>
     <string name="albums">Albumy</string>
@@ -23,36 +22,21 @@
     <string name="scrobbler_off">Scrobbler wyłączony</string>
     <string name="scrobbler_on">Scrobbler aktywny</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s tydzień</item>
-                
         <item quantity="few">%1$s tygodnie</item>
-                
         <item quantity="many">%1$s tygodni</item>
-                
         <item quantity="other">%1$s tygodni</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s miesiąc</item>
-                
         <item quantity="few">%1$s miesiące</item>
-                
         <item quantity="many">%1$s miesięcy</item>
-                
         <item quantity="other">%1$s miesięcy</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s rok</item>
-                
         <item quantity="few">%1$s lata</item>
-                
         <item quantity="many">%1$s lat</item>
-                
         <item quantity="other">%1$s lat</item>
-            
     </plurals>
 </resources>

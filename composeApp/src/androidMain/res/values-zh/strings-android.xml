@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">设置</string>
     <string name="artists">艺术家</string>
     <string name="albums">专辑</string>
@@ -23,18 +22,12 @@
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
     <plurals name="num_weeks">
-                
         <item quantity="other">%1$s 周</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="other">%1$s 月</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="other">%1$s 年</item>
-            
     </plurals>
 </resources>

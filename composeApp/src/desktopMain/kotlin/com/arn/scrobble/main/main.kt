@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowDecoration
@@ -45,9 +44,11 @@ import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.crashreporter.CrashReporter
+import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.logger.JvmLogger
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
+import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
@@ -135,6 +136,7 @@ private fun init() {
     VariantStuff.reviewPrompter = ReviewPrompter
     VariantStuff.extrasProps = ExtrasProps
 
+    DiscordRpc.start()
 //    test()
 }
 
@@ -233,14 +235,14 @@ fun main(args: Array<String>) {
                 val tooltip = playingTrackInfo.entries.firstOrNull()
                     ?.let { (appId, it) ->
                         val playingState =
-                            if ((it as? PlayingTrackNotifyEvent.TrackScrobbling)?.nowPlaying == false)
+                            if ((it as? PlayingTrackNotifyEvent.TrackPlaying)?.nowPlaying == false)
                                 "✔️ "
                             else
                                 ""
 
                         playingState + it.scrobbleData.track + "\n" +
                                 it.scrobbleData.artist + "\n" +
-                                (appIdToNames[appId]?.ifEmpty { null } ?: appId)
+                                (AppItem(appId, appIdToNames[appId].orEmpty()).friendlyLabel)
                     }
                     ?: BuildKonfig.APP_NAME
 
@@ -251,7 +253,7 @@ fun main(args: Array<String>) {
 
                 playingTrackInfo.forEach { (appId, playingTrackState) ->
                     when (playingTrackState) {
-                        is PlayingTrackNotifyEvent.TrackScrobbling -> {
+                        is PlayingTrackNotifyEvent.TrackPlaying -> {
                             val scrobbleData = playingTrackState.scrobbleData
                             val nowPlaying = playingTrackState.nowPlaying
 
@@ -285,9 +287,13 @@ fun main(args: Array<String>) {
                             trayItems += PanoTrayUtils.ItemId.Edit.withSuffix(appId) to
                                     "✏️ " +
                                     getString(Res.string.edit)
-                            trayItems += PanoTrayUtils.ItemId.Cancel.withSuffix(appId) to
-                                    "❌ " +
-                                    getString(Res.string.cancel)
+
+                            if (playingTrackState.nowPlaying) {
+                                trayItems += PanoTrayUtils.ItemId.Cancel.withSuffix(appId) to
+                                        "❌ " +
+                                        getString(Res.string.cancel)
+                            }
+
                             trayItems += PanoTrayUtils.ItemId.Block.withSuffix(appId) to
                                     "⛔ " +
                                     getString(Res.string.block)
@@ -460,22 +466,6 @@ fun main(args: Array<String>) {
         }
 
         LaunchedEffect(Unit) {
-            PanoNotifications.setNotifyFn { title, body ->
-                if (DesktopStuff.os == DesktopStuff.Os.Macos) {
-                    trayState.sendNotification(
-                        Notification(
-                            title = title,
-                            message = body,
-                            type = Notification.Type.Info
-                        )
-                    )
-                } else {
-                    PanoNativeComponents.notify(title, body)
-                }
-            }
-        }
-
-        LaunchedEffect(Unit) {
             if (!DesktopStuff.noUpdateCheck && Stuff.mainPrefsInitialValue.autoUpdates) {
                 // this app runs at startup, so wait for an internet connection
                 delay(1.minutes)
@@ -565,7 +555,7 @@ private suspend fun trayMenuClickListener(
 
             else -> {
                 val scrobblingState =
-                    (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackScrobbling)
+                    (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackPlaying)
                         ?: return@collect
                 val scrobbleData = scrobblingState.scrobbleData
 

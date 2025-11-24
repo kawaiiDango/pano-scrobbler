@@ -41,7 +41,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.main.MainViewModel
-import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
@@ -85,7 +84,7 @@ fun BillingScreen(
 ) {
     val activity = getActivityOrNull()
     val proProductDetails by viewModel.proProductDetails.collectAsStateWithLifecycle()
-    var noticeText by rememberSaveable { mutableStateOf<String?>(null) }
+    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
 
     val bulletStrings = listOfNotNull(
         Icons.Outlined.Palette to stringResource(Res.string.pref_themes),
@@ -106,7 +105,6 @@ fun BillingScreen(
 
     var purchaseMethodsExpanded by rememberSaveable { mutableStateOf(false) }
     var code by rememberSaveable { mutableStateOf("") }
-    var codeError by rememberSaveable { mutableStateOf<String?>(null) }
     val purchaseMethods = remember { VariantStuff.billingRepository.purchaseMethods }
     val needsActivationCode = remember { VariantStuff.billingRepository.needsActivationCode }
 
@@ -158,6 +156,9 @@ fun BillingScreen(
                 )
             }
         }
+
+        if (!needsActivationCode)
+            ErrorText(errorText)
 
         Box(
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -226,7 +227,7 @@ fun BillingScreen(
                 value = code,
                 onValueChange = {
                     code = it
-                    codeError = null
+                    errorText = null
                 },
                 label = { Text(stringResource(Res.string.pref_imexport_code)) },
                 keyboardOptions = KeyboardOptions(
@@ -248,17 +249,21 @@ fun BillingScreen(
                     }
                 } else
                     null,
-                isError = codeError != null,
+                isError = errorText != null,
+                supportingText = if (errorText != null) {
+                    {
+                        Text(
+                            text = errorText ?: "",
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                } else
+                    null,
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
                     .padding(top = 16.dp)
                     .align(Alignment.CenterHorizontally)
-            )
-
-            ErrorText(
-                errorText = codeError,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
 
@@ -285,19 +290,15 @@ fun BillingScreen(
                 }
 
                 LicenseState.PENDING -> {
-                    noticeText = getString(Res.string.purchase_pending)
+                    errorText = getString(Res.string.purchase_pending)
                 }
 
                 LicenseState.REJECTED -> {
-                    noticeText = getString(Res.string.not_found)
+                    errorText = getString(Res.string.not_found)
                 }
 
                 LicenseState.MAX_DEVICES_REACHED -> {
-                    noticeText = getString(Res.string.billing_max_devices_reached, 8)
-                }
-
-                LicenseState.NETWORK_ERROR -> {
-                    noticeText = getString(Res.string.network_error)
+                    errorText = getString(Res.string.billing_max_devices_reached, 8)
                 }
 
                 LicenseState.NO_LICENSE -> {}
@@ -306,10 +307,9 @@ fun BillingScreen(
 
     }
 
-    if (noticeText != null) {
-        AlertDialogOk(
-            text = noticeText!!,
-            onConfirmation = { noticeText = null },
-        )
+    LaunchedEffect(Unit) {
+        VariantStuff.billingRepository.networkError.collect {
+            errorText = getString(Res.string.network_error)
+        }
     }
 }

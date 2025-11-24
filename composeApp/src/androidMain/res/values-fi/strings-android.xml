@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Asetukset</string>
     <string name="artists">Esittäjät</string>
     <string name="albums">Albumit</string>
@@ -22,24 +21,15 @@
     <string name="scrobbler_off">Scrobblaaja pois päältä</string>
     <string name="scrobbler_on">Scrobblaaja päällä</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s viikko</item>
-                
         <item quantity="other">%1$s viikkoa</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s kuukausi</item>
-                
         <item quantity="other">%1$s kuukautta</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s vuosi</item>
-                
         <item quantity="other">%1$s vuotta</item>
-            
     </plurals>
 </resources>

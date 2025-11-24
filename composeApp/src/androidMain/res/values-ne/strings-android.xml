@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">सेटिंग्स</string>
     <string name="artists">कलाकारहरू</string>
     <string name="albums">एलबमहरू</string>
@@ -23,24 +22,15 @@
     <string name="scrobbler_off">स्क्रोब्बलर निष्क्रिय</string>
     <string name="scrobbler_on">स्क्रोब्ल्लेर सञ्चालन</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s हप्ता</item>
-                
         <item quantity="other">%1$s हप्ता</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s महिना</item>
-                
         <item quantity="other">%1$s महिना</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s वर्ष</item>
-                
         <item quantity="other">%1$s वर्ष</item>
-            
     </plurals>
 </resources>

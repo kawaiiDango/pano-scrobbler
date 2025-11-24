@@ -39,6 +39,7 @@ actual fun transformMediaMetadata(
         albumArtist = albumArtist,
         trackNumber = trackNumber,
         duration = durationMillis,
+        artUrl = metadata.artUrl,
     )
 
     return metadataInfo to emptyMap()

@@ -2,6 +2,7 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.PanoNativeComponents
+import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -20,6 +21,8 @@ class DesktopMediaListener(
     scrobbleQueue: ScrobbleQueue,
 ) : MediaListener(scope, scrobbleQueue) {
 
+    override val notifyTimelineUpdates = true
+
     private val sessionTrackersMap = mutableMapOf<String, SessionTracker>()
     private var sessionInfos: List<SessionInfo> = emptyList()
 
@@ -30,15 +33,6 @@ class DesktopMediaListener(
                 SharingStarted.Eagerly,
                 Stuff.mainPrefsInitialValue.seenApps
             )
-
-    private val discordRpcSettings =
-        PlatformStuff.mainPrefs.data.mapLatest { it.discordRpc }
-            .stateIn(
-                scope,
-                SharingStarted.Eagerly,
-                Stuff.mainPrefsInitialValue.discordRpc
-            )
-
 
     fun start() {
         PanoNativeComponents.startListeningMediaInThread()
@@ -126,6 +120,7 @@ class DesktopMediaListener(
             if (sessionKey !in tokensToKeep || appIdsToKeep?.contains(sessionKey.substringBefore('|')) == false) {
                 sessionTracker.pause()
                 it.remove()
+                DiscordRpc.clearDiscordActivity(sessionTracker.trackInfo.appId)
             }
         }
     }
@@ -137,10 +132,10 @@ class DesktopMediaListener(
         sessionTrackersMap.keys.find { it.startsWith("$appId|") }
 
     private fun findSessionTrackerByHash(hash: Int) =
-        sessionTrackersMap.values.firstOrNull { it.trackInfo.lastScrobbleHash == hash }
+        sessionTrackersMap.values.firstOrNull { it.trackInfo.hash == hash }
 
     fun findControllersByHash(hash: Int) =
-        sessionTrackersMap.values.filter { it.trackInfo.lastScrobbleHash == hash }
+        sessionTrackersMap.values.filter { it.trackInfo.hash == hash }
 
     override fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later

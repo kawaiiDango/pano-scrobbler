@@ -300,12 +300,13 @@ class NLService : NotificationListenerService() {
     private fun stopScrobbleFromNoti(pkgName: String) {
         val trackInfo = sessListener?.findTrackInfoByKey("$pkgName|$TAG_NOTI") ?: return
 
-        if (scrobbleQueue.has(trackInfo.lastScrobbleHash))
+        if (scrobbleQueue.has(trackInfo.hash))
             trackInfo.addTimePlayed()
         else
             trackInfo.resetTimePlayed()
+        trackInfo.paused()
 
-        scrobbleQueue.remove(trackInfo.lastScrobbleHash)
+        scrobbleQueue.remove(trackInfo.hash)
 
         PanoNotifications.removeNotificationByTag(trackInfo.appId)
 
@@ -339,6 +340,7 @@ class NLService : NotificationListenerService() {
                 albumArtist = scrobbleData.albumArtist.orEmpty(),
                 durationMillis = scrobbleData.duration ?: 0L,
                 trackId = null,
+                artUrl = "",
                 extraData = emptyMap()
             )
 

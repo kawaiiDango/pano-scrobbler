@@ -89,7 +89,8 @@ object PanoNativeComponents {
             album = album,
             albumArtist = albumArtist,
             trackNumber = trackNumber,
-            duration = duration
+            duration = duration,
+            artUrl = artUrl,
         )
 
         desktopMediaListener?.platformMetadataChanged(metadataInfo)
@@ -144,9 +145,6 @@ object PanoNativeComponents {
 
     @JvmStatic
     external fun setAllowedAppIds(appIds: Array<String>)
-
-    @JvmStatic
-    external fun albumArtEnabled(enabled: Boolean)
 
     @JvmStatic
     private external fun startListeningMedia()
@@ -212,12 +210,14 @@ object PanoNativeComponents {
         endTime: Long,
         artUrl: String,
         isPlaying: Boolean,
-        statusIsState: Boolean
-    )
+        statusLine: Int,
+        buttonTexts: Array<String>,
+        buttonUrls: Array<String>,
+    ): Boolean
 
     @JvmStatic
-    external fun clearDiscordActivity()
+    external fun clearDiscordActivity(): Boolean
 
     @JvmStatic
-    external fun stopDiscordActivity()
+    external fun stopDiscordActivity(): Boolean
 }

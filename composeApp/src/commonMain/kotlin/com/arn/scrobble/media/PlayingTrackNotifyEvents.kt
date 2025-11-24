@@ -36,13 +36,15 @@ sealed interface PlayingTrackNotifyEvent {
     ) : PlayingTrackNotifyEvent, PlayingTrackState
 
     @Serializable
-    data class TrackScrobbling(
+    data class TrackPlaying(
         override val scrobbleData: ScrobbleData,
         val origScrobbleData: ScrobbleData,
         val hash: Int,
         val nowPlaying: Boolean,
         val userLoved: Boolean,
         val userPlayCount: Int,
+        val artUrl: String?,
+        val timelineStartTime: Long,
     ) : PlayingTrackNotifyEvent, PlayingTrackState
 
     @Serializable
@@ -88,16 +90,15 @@ suspend fun listenForPlayingTrackEvents(
 
                 if (event.scrobbleError.canFixMetadata) {
                     scrobbleQueue.remove(event.hash)
-                    mediaListener.findTrackInfoByHash(event.hash)?.markAsScrobbled()
+                    mediaListener.findTrackInfoByHash(event.hash)?.scrobbled()
                 }
             }
 
-            is PlayingTrackNotifyEvent.TrackScrobbling -> {
+            is PlayingTrackNotifyEvent.TrackPlaying -> {
+                val trackInfo = mediaListener.findTrackInfoByHash(event.hash)
                 if (!event.nowPlaying) {
-                    val trackInfo = mediaListener.findTrackInfoByHash(event.hash)
                     if (trackInfo != null && trackInfo.userPlayCount > 0)
                         trackInfo.updateUserProps(userPlayCount = trackInfo.userPlayCount + 1)
-                    trackInfo?.markAsScrobbled()
                 }
 
                 PanoNotifications.notifyScrobble(event)
@@ -120,8 +121,9 @@ suspend fun listenForPlayingTrackEvents(
                     mediaListener.mute(hash)
                 }
 
+                trackInfo.cancelled()
+
                 if (scrobbleQueue.has(hash)) {
-                    trackInfo.markAsScrobbled()
                     scrobbleQueue.remove(hash)
                 }
 
@@ -167,16 +169,6 @@ suspend fun listenForPlayingTrackEvents(
 
                 trackInfo.updateUserProps(userLoved = event.loved)
 
-                val scrobbleEvent = PlayingTrackNotifyEvent.TrackScrobbling(
-                    scrobbleData = scrobbleData,
-                    origScrobbleData = origScrobbleData,
-                    hash = trackInfo.hash,
-                    nowPlaying = scrobbleQueue.has(trackInfo.hash),
-                    userLoved = event.loved,
-                    userPlayCount = trackInfo.userPlayCount,
-                )
-
-                PanoNotifications.notifyScrobble(scrobbleEvent)
 
                 val linkHeartButtonToRating =
                     PlatformStuff.mainPrefs.data.map { it.linkHeartButtonToRating }.first()
@@ -187,6 +179,19 @@ suspend fun listenForPlayingTrackEvents(
                     else
                         mediaListener.unlove(trackInfo.hash)
                 }
+
+                val scrobbleEvent = PlayingTrackNotifyEvent.TrackPlaying(
+                    scrobbleData = scrobbleData,
+                    origScrobbleData = origScrobbleData,
+                    hash = trackInfo.hash,
+                    nowPlaying = scrobbleQueue.has(trackInfo.hash),
+                    userLoved = event.loved,
+                    userPlayCount = trackInfo.userPlayCount,
+                    artUrl = trackInfo.artUrl,
+                    timelineStartTime = trackInfo.timelineStartTime,
+                )
+
+                globalTrackEventFlow.emit(scrobbleEvent)
             }
 
             is PlayingTrackNotifyEvent.AppAllowedBlocked -> {
@@ -202,3 +207,5 @@ suspend fun listenForPlayingTrackEvents(
 }
 
 expect fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent)
+
+expect fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>?

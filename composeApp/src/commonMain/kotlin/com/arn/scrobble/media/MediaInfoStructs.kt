@@ -15,6 +15,7 @@ data class MetadataInfo(
     val albumArtist: String,
     val trackNumber: Int,
     val duration: Long,
+    val artUrl: String,
 )
 
 data class PlaybackInfo(

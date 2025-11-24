@@ -364,6 +364,20 @@
       ]
     },
     {
+      "type": "com.arn.scrobble.navigation.PanoRoute$DiscordRpcSettings",
+      "fields": [
+        {
+          "name": "INSTANCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "serializer",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.arn.scrobble.navigation.PanoRoute$ImageSearch",
       "fields": [
         {

@@ -21,7 +21,7 @@ actual fun NavFromTrayEffect(
 
             val user = Scrobblables.currentAccount.value?.user ?: return@collect
             val scrobblingEvent =
-                (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackScrobbling)
+                (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackPlaying)
                     ?: return@collect
             val scrobbleData = scrobblingEvent.scrobbleData
 

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">設定</string>
     <string name="artists">アーティスト</string>
     <string name="albums">アルバム</string>
@@ -22,18 +21,12 @@
     <string name="scrobbler_off">Scrobbler停止中</string>
     <string name="scrobbler_on">Scrobbler稼働中</string>
     <plurals name="num_weeks">
-                
         <item quantity="other">%1$s週間</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="other">%1$sヶ月</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="other">%1$s年</item>
-            
     </plurals>
 </resources>

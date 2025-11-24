@@ -83,7 +83,9 @@ class EditScrobbleViewModel : ViewModel() {
                                     blockPlayerAction = BlockPlayerAction.ignore,
                                 )
                             )
-                        } else if (key != null) { // from scrobble history
+                        }
+                        
+                        if (key != null) { // from scrobble history
                             notifyEdit(key, editedSd.toTrack())
                         }
                     }

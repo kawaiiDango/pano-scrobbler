@@ -1,6 +1,7 @@
 package com.arn.scrobble.main
 
 import android.app.Application
+import android.app.Application.getProcessName
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -10,6 +11,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.R
+import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.first
@@ -23,6 +25,25 @@ object Initializer {
 
     @OptIn(ExperimentalResourceApi::class)
     fun init(application: Application) {
+        fun isMainProcess(): Boolean {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                // For API 28+ we can use Application.getProcessName()
+                return getProcessName() == application.packageName
+            } else {
+                val currentProcessName = Class
+                    .forName("android.app.ActivityThread")
+                    .getDeclaredMethod("currentProcessName")
+                    .apply { isAccessible = true }
+                    .invoke(null) as String
+
+                return currentProcessName == application.packageName
+            }
+            return false
+        }
+
+        AndroidStuff.applicationContext = application.applicationContext
+        AndroidStuff.isMainProcess = isMainProcess()
+
         runBlocking {
             Stuff.mainPrefsInitialValue = PlatformStuff.mainPrefs.data.first()
         }

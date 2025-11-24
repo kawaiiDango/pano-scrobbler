@@ -32,6 +32,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.edits.RegexPreset
+import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -56,6 +57,8 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.also_available_on
+import pano_scrobbler.composeapp.generated.resources.android
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.copy_sk
@@ -66,6 +69,7 @@ import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
+import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
@@ -126,6 +130,7 @@ import java.util.Locale
 @Composable
 fun PrefsScreen(
     onNavigate: (PanoRoute) -> Unit,
+    onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val onNavigateToBilling = { onNavigate(PanoRoute.Billing) }
@@ -674,6 +679,8 @@ fun PrefsScreen(
             )
         }
 
+        discordRpc(this, onNavigate)
+
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
             item(MainPrefs::preventDuplicateAmbientScrobbles.name) {
                 SwitchPref(
@@ -801,7 +808,6 @@ fun PrefsScreen(
         }
 
         item(key = "privacy_policy") {
-
             TextPref(
                 text = stringResource(Res.string.pref_privacy_policy),
                 onClick = {
@@ -814,32 +820,30 @@ fun PrefsScreen(
         }
 
         item(key = "github_link") {
-
             TextPref(
-//                text = stringResource(
-//                    Res.string.also_available_on,
-//                    if (PlatformStuff.isDesktop)
-//                        stringResource(Res.string.android)
-//                    else
-//                        stringResource(Res.string.desktop)
-//                ),
-                text = "v" + BuildKonfig.VER_NAME + if (BuildKonfig.DEBUG) " (Debug)" else "",
-                summary = Stuff.LINK_GITHUB,
+                text = stringResource(
+                    Res.string.also_available_on,
+                    if (PlatformStuff.isDesktop)
+                        stringResource(Res.string.android)
+                    else
+                        stringResource(Res.string.desktop)
+                ),
+                summary = Stuff.LINK_HOMEPAGE,
                 onClick = {
-                    PlatformStuff.openInBrowser(Stuff.LINK_GITHUB)
+                    onOpenDialog(PanoDialog.ShowLink(Stuff.LINK_HOMEPAGE))
                 }
             )
         }
 
-//        item(key = "version") {
-//            Text(
-//                text = "v" + BuildKonfig.VER_NAME + " " + BuildKonfig.BUILD_DATE,
-//                modifier = Modifier.padding(
-//                    vertical = 16.dp,
-//                    horizontal = horizontalOverscanPadding()
-//                )
-//            )
-//        }
+        item(key = "version") {
+            Text(
+                text = ("v" + BuildKonfig.VER_NAME + if (BuildKonfig.DEBUG) " (Debug)" else ""),
+                modifier = Modifier.padding(
+                    vertical = 16.dp,
+                    horizontal = horizontalOverscanPadding()
+                )
+            )
+        }
 
         if (BuildKonfig.DEBUG) {
             stickyHeader("debug_header") {
@@ -910,4 +914,5 @@ expect fun addToStartup(
 
 expect suspend fun isAddedToStartup(): Boolean
 
+expect fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit)
 expect fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean)

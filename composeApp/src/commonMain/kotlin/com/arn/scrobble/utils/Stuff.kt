@@ -194,7 +194,6 @@ object Stuff {
     )
 
     const val LINK_TV = "https://kawaiidango.github.io/pano-scrobbler/tv"
-    const val LINK_GITHUB = "https://github.com/kawaiiDango/pano-scrobbler"
     const val LINK_HOMEPAGE = "https://kawaiidango.github.io"
     const val LINK_CROWDIN = "https://crowdin.com/project/pscrobbler"
     const val LINK_PRIVACY_POLICY = "https://kawaiidango.github.io/pano-scrobbler/privacy-policy"

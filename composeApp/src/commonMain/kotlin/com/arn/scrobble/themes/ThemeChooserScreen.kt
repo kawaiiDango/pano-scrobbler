@@ -159,7 +159,7 @@ fun ThemeChooserScreen(
             }
         }
 
-        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+        if (PlatformStuff.supportsDynamicColors && !PlatformStuff.isTv) {
             LabeledCheckbox(
                 text = stringResource(Res.string.system_colors),
                 checked = dynamic == true,

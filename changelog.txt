@@ -1,3 +1,7 @@
+4.15:
+- Customizable Discord Rich Presence on Linux and Windows
+
+4.14:
 - Apps list screen now has a search bar
 - The edit dialog can now be expanded for partial edits mode
 - The regex presets "Parse title" and "Parse title with fallback" no longer use a hardcoded list of apps

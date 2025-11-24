@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Настроить</string>
     <string name="artists">Исполнители</string>
     <string name="albums">Альбомы</string>
@@ -23,36 +22,21 @@
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s неделя</item>
-                
         <item quantity="few">%1$s недели</item>
-                
         <item quantity="many">%1$s недель</item>
-                
         <item quantity="other">%1$s недели</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s месяц</item>
-                
         <item quantity="few">%1$s месяца</item>
-                
         <item quantity="many">%1$s месяцев</item>
-                
         <item quantity="other">%1$s месяцев</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s год</item>
-                
         <item quantity="few">%1$s года</item>
-                
         <item quantity="many">%1$s лет</item>
-                
         <item quantity="other">%1$s лет</item>
-            
     </plurals>
 </resources>

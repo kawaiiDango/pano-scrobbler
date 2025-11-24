@@ -42,6 +42,7 @@ class SessListener(
     private val audioManager: AudioManager,
 ) : MediaListener(scope, scrobbleQueue), OnActiveSessionsChangedListener {
 
+    override val notifyTimelineUpdates = false
     private val mainPrefs = PlatformStuff.mainPrefs
     private val controllersMap =
         mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
@@ -153,10 +154,10 @@ class SessListener(
         controllersMap.values.filter { it.first.packageName == appId }.map { it.first }
 
     private fun findCallbackByHash(hash: Int) =
-        controllersMap.values.firstOrNull { it.second.trackInfo.lastScrobbleHash == hash }?.second
+        controllersMap.values.firstOrNull { it.second.trackInfo.hash == hash }?.second
 
     fun findControllersByHash(hash: Int) =
-        controllersMap.values.filter { it.second.trackInfo.lastScrobbleHash == hash }
+        controllersMap.values.filter { it.second.trackInfo.hash == hash }
             .map { it.first }
 
     private val MediaController.tagCompat

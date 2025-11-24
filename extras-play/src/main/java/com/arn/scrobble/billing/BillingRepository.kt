@@ -46,7 +46,7 @@ class BillingRepository(
     override val needsActivationCode = false
     private lateinit var playStoreBillingClient: BillingClient
     private var proProductDetailsList: List<ProductDetails>? = null
-    private val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
+    private val PENDING_PURCHASE_NOTIFY_THRESHOLD = 60 * 1000L
 
 
     val billingClientStateListener: BillingClientStateListener =
@@ -178,7 +178,7 @@ class BillingRepository(
                 if (clientData.proProductId in purchase.products) {
                     // This doesn't go away after the slow card gets declined. So, only notify recent purchases
                     if (System.currentTimeMillis() - purchase.purchaseTime < PENDING_PURCHASE_NOTIFY_THRESHOLD)
-                        _licenseState.emit(LicenseState.PENDING)
+                        _licenseState.value = LicenseState.PENDING
                 }
             }
         }
@@ -213,8 +213,10 @@ class BillingRepository(
      */
     private suspend fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
         if (nonConsumables.isEmpty() || !nonConsumables.any { clientData.proProductId in it.products }) {
-            _licenseState.emit(LicenseState.NO_LICENSE)
-            clientData.setReceipt(null, null)
+            if (_licenseState.value == LicenseState.VALID) {
+                _licenseState.value = LicenseState.NO_LICENSE
+                clientData.setReceipt(null, null)
+            }
             return
         }
 
@@ -227,13 +229,13 @@ class BillingRepository(
                 when (billingResult.responseCode) {
                     BillingClient.BillingResponseCode.OK -> {
                         if (clientData.proProductId in purchase.products) {
-                            _licenseState.tryEmit(LicenseState.VALID)
+                            _licenseState.value = LicenseState.VALID
                         }
                     }
 
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
                         if (clientData.proProductId in purchase.products) {
-                            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+                            _licenseState.value = LicenseState.NO_LICENSE
                             scope.launch {
                                 clientData.setReceipt(null, null)
                             }
@@ -255,8 +257,8 @@ class BillingRepository(
         )
             productDetails
         else if (productDetails != null) {
-            _proProductDetails.tryEmit(null)
-            _licenseState.tryEmit(LicenseState.NO_LICENSE)
+            _proProductDetails.value = null
+            _licenseState.value = LicenseState.NO_LICENSE
 //            clientData.setReceipt(null, null)
             null
         } else null
@@ -282,7 +284,7 @@ class BillingRepository(
                 BillingClient.BillingResponseCode.OK -> {
                     proProductDetailsList = productDetailsResult.productDetailsList
                     findProProduct()?.let {
-                        _proProductDetails.tryEmit(
+                        _proProductDetails.value =
                             MyProductDetails(
                                 it.productId,
                                 it.title,
@@ -290,7 +292,6 @@ class BillingRepository(
                                 it.description,
                                 it.oneTimePurchaseOfferDetails!!.formattedPrice
                             )
-                        )
                     }
                 }
 

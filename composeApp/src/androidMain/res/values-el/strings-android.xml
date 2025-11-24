@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Διαμόρφωση</string>
     <string name="artists">Καλλιτέχνες</string>
     <string name="albums">Άλμπουμ</string>
@@ -22,24 +21,15 @@
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s εβδομάδα</item>
-                
         <item quantity="other">%1$s εβδομάδες</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s μήνα</item>
-                
         <item quantity="other">%1$s μήνες</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s έτος</item>
-                
         <item quantity="other">%1$s έτη</item>
-            
     </plurals>
 </resources>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Nastavení</string>
     <string name="artists">Interpreti</string>
     <string name="albums">Alba</string>
@@ -23,36 +22,21 @@
     <string name="scrobbler_off">Scrobbler zakázán</string>
     <string name="scrobbler_on">Scrobbler je aktivní</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s týden</item>
-                
         <item quantity="few">%1$s týdny</item>
-                
         <item quantity="many">%1$s týdnů</item>
-                
         <item quantity="other">%1$s týdnů</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s měsíc</item>
-                
         <item quantity="few">%1$s měsíce</item>
-                
         <item quantity="many">%1$s měsíců</item>
-                
         <item quantity="other">%1$s měsíců</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s rok</item>
-                
         <item quantity="few">%1$s roky</item>
-                
         <item quantity="many">%1$s let</item>
-                
         <item quantity="other">%1$s let</item>
-            
     </plurals>
 </resources>

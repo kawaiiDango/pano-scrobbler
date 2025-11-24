@@ -18,6 +18,7 @@ actual fun transformMediaMetadata(
     var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
     var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
     val trackNumber = metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
+//    val artUrl = metadata.getString(MediaMetadata.METADATA_KEY_ART_URI)?.trim() ?: ""
     var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
     if (durationMillis < -1 || trackInfo.appId in Stuff.IGNORE_DURATION)
         durationMillis = -1
@@ -141,6 +142,7 @@ actual fun transformMediaMetadata(
         albumArtist = albumArtist,
         trackNumber = trackNumber,
         duration = durationMillis,
+        artUrl = ""
     )
 
     return metadataInfo to extrasMap

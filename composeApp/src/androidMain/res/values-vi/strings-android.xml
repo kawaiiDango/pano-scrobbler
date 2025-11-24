@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Tùy chỉnh</string>
     <string name="artists">Nghệ sĩ</string>
     <string name="albums">Album</string>
@@ -11,18 +10,12 @@
     <string name="charts_no_data">Không có dữ liệu trong giai đoạn này</string>
     <string name="appwidget_loading">Đang tải…</string>
     <plurals name="num_weeks">
-                
         <item quantity="other">%1$s tuần</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="other">%1$s tháng</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="other">%1$s năm</item>
-            
     </plurals>
 </resources>

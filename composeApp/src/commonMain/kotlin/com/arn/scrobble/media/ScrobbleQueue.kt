@@ -88,7 +88,11 @@ class ScrobbleQueue(
 
         val submitAtTime = PlatformStuff.monotonicTimeMs() + delay
         val hash = trackInfo.hash
-        val prevPlayStartTime = if (trackInfo.preprocessed) trackInfo.playStartTime else null
+        val prevPlayStartTime =
+            if (trackInfo.scrobbledState > PlayingTrackInfo.ScrobbledState.PREPROCESSED)
+                trackInfo.playStartTime
+            else
+                null
         trackInfo.prepareForScrobbling()
         val scrobbleData = trackInfo.toScrobbleData(useOriginals = false)
             .let {
@@ -153,26 +157,32 @@ class ScrobbleQueue(
                 ScrobbleEverywhere.scrobble(scrobbleSd)
             }
 
+            trackInfo.scrobbled()
+
             notifyPlayingTrackEvent(
-                PlayingTrackNotifyEvent.TrackScrobbling(
+                PlayingTrackNotifyEvent.TrackPlaying(
                     hash = hash,
                     scrobbleData = sd,
                     origScrobbleData = origScrobbleData,
                     nowPlaying = false,
                     userLoved = trackInfo.userLoved,
-                    userPlayCount = trackInfo.userPlayCount
+                    userPlayCount = trackInfo.userPlayCount,
+                    timelineStartTime = trackInfo.timelineStartTime,
+                    artUrl = trackInfo.artUrl
                 )
             )
         }
 
         notifyPlayingTrackEvent(
-            PlayingTrackNotifyEvent.TrackScrobbling(
+            PlayingTrackNotifyEvent.TrackPlaying(
                 hash = hash,
                 scrobbleData = scrobbleData,
                 origScrobbleData = origScrobbleData,
                 nowPlaying = true,
                 userLoved = trackInfo.userLoved,
-                userPlayCount = trackInfo.userPlayCount
+                userPlayCount = trackInfo.userPlayCount,
+                timelineStartTime = trackInfo.timelineStartTime,
+                artUrl = trackInfo.artUrl
             )
         )
 
@@ -192,10 +202,10 @@ class ScrobbleQueue(
             // potentially wasting an api call. sleep and throw cancellation exception in that case
             delay(Stuff.META_WAIT)
 
-            if (trackInfo.preprocessed) {
+            if (trackInfo.scrobbledState in PlayingTrackInfo.ScrobbledState.PREPROCESSED..PlayingTrackInfo.ScrobbledState.ADDITIONAL_METADATA_FETCHED) {
                 nowPlayingAndSubmit(
                     trackInfo.toScrobbleData(false),
-                    !trackInfo.additionalMetadataFetched
+                    trackInfo.scrobbledState == PlayingTrackInfo.ScrobbledState.PREPROCESSED
                 )
                 return@launch
             }
@@ -240,13 +250,15 @@ class ScrobbleQueue(
                     trackInfo.putPreprocessedData(preprocessResult.scrobbleData, !shouldFetchAgain)
 
                     notifyPlayingTrackEvent(
-                        PlayingTrackNotifyEvent.TrackScrobbling(
+                        PlayingTrackNotifyEvent.TrackPlaying(
                             hash = hash,
                             scrobbleData = preprocessResult.scrobbleData,
                             origScrobbleData = additionalMetadataScrobbleData ?: origScrobbleData,
                             nowPlaying = true,
                             userLoved = trackInfo.userLoved,
-                            userPlayCount = trackInfo.userPlayCount
+                            userPlayCount = trackInfo.userPlayCount,
+                            timelineStartTime = trackInfo.timelineStartTime,
+                            artUrl = trackInfo.artUrl
                         )
                     )
 
@@ -303,7 +315,8 @@ class ScrobbleQueue(
             return
         }
 
-        scrobbleTasks.remove(hash)?.cancel()
-        Logger.d { "${hash.toHexString()} cancelled" }
+        if (scrobbleTasks.remove(hash)?.cancel() != null) {
+            Logger.d { "${hash.toHexString()} cancelled" }
+        }
     }
 }

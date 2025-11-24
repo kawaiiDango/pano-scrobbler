@@ -15,6 +15,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.main.MainActivity
@@ -31,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.blocked_metadata_noti
 import pano_scrobbler.composeapp.generated.resources.charts
 import pano_scrobbler.composeapp.generated.resources.create_collage
@@ -57,6 +59,7 @@ actual object PanoNotifications {
         get() = AndroidStuff.applicationContext
     private val notificationManager = AndroidStuff.notificationManager
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
+    private val nowPlayingScrobbleDataToHash = mutableMapOf<String, Pair<ScrobbleData, Int>>()
 
     private fun buildNotification(): NotificationCompat.Builder {
         return NotificationCompat.Builder(context)
@@ -66,7 +69,13 @@ actual object PanoNotifications {
     }
 
 
-    actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
+    actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
+        if (event.nowPlaying)
+            nowPlayingScrobbleDataToHash[event.scrobbleData.appId!!] =
+                event.origScrobbleData to event.hash
+        else
+            nowPlayingScrobbleDataToHash.remove(event.scrobbleData.appId!!)
+
         if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
             return
 
@@ -103,19 +112,6 @@ actual object PanoNotifications {
             lovePi
         )
 
-        val cancelIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
-            .setPackage(context.packageName)
-            .putExtra(
-                PlayingTrackEventReceiver.EXTRA_EVENT,
-                Stuff.myJson.encodeToString(cancelEvent)
-            )
-            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, cancelEvent::class.simpleName)
-
-        val cancelToastIntent = PendingIntent.getBroadcast(
-            context, 5, cancelIntent,
-            AndroidStuff.updateCurrentOrImmutable
-        )
-
 
         val state =
             if (event.nowPlaying)
@@ -130,13 +126,12 @@ actual object PanoNotifications {
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setStyle(style)
-            .addAction(loveAction)
             .apply {
                 val user = Scrobblables.currentAccount.value?.user
                 if (user != null) {
                     val dialogArgs = PanoDialog.MusicEntryInfo(
                         track = event.scrobbleData.toTrack(),
-                        appId = null,
+                        appId = event.origScrobbleData.appId,
                         user = user
                     )
 
@@ -184,31 +179,71 @@ actual object PanoNotifications {
                 editPi
             )
 
-            val unscrobbleAction = AndroidStuff.getNotificationAction(
+            val cancelIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
+                .setPackage(context.packageName)
+                .putExtra(
+                    PlayingTrackEventReceiver.EXTRA_EVENT,
+                    Stuff.myJson.encodeToString(cancelEvent)
+                )
+                .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, cancelEvent::class.simpleName)
+
+            val cancelToastIntent = PendingIntent.getBroadcast(
+                context, 5, cancelIntent,
+                AndroidStuff.updateCurrentOrImmutable
+            )
+
+            val cancelAction = AndroidStuff.getNotificationAction(
                 R.drawable.vd_remove,
                 "⛔️",
                 context.getString(android.R.string.cancel),
                 cancelToastIntent
             )
 
+            nb.addAction(cancelAction)
             nb.addAction(editAction)
-            nb.addAction(unscrobbleAction)
+            nb.addAction(loveAction)
             style.setShowActionsInCompactView(0, 1, 2)
         } else {
-            style.setShowActionsInCompactView(0)
+            val blockedMetadata = BlockedMetadata(
+                track = event.scrobbleData.track,
+                album = event.scrobbleData.album.orEmpty(),
+                artist = event.scrobbleData.artist,
+                albumArtist = event.scrobbleData.albumArtist.orEmpty(),
+            )
+
+            val dialogArgs = PanoDialog.BlockedMetadataAdd(
+                blockedMetadata = blockedMetadata,
+                hash = event.hash
+            )
+
+            val blockDeepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
+
+            val blockPi = DeepLinkUtils.createDestinationPendingIntent(blockDeepLinkUri)
+            val blockAction = AndroidStuff.getNotificationAction(
+                R.drawable.vd_ban,
+                "🚫",
+                getString(Res.string.block),
+                blockPi
+            )
+            nb.addAction(blockAction)
+            nb.addAction(loveAction)
+            style.setShowActionsInCompactView(0, 1)
         }
 
         try {
-            notificationManager.notify(event.scrobbleData.appId, 0, nb.build())
+            notificationManager.notify(event.origScrobbleData.appId, 0, nb.build())
         } catch (e: RuntimeException) {
             val nExpandable = nb.setLargeIcon(null as Bitmap?)
                 .setStyle(null)
                 .build()
-            notificationManager.notify(event.scrobbleData.appId, 0, nExpandable)
+            notificationManager.notify(event.origScrobbleData.appId, 0, nExpandable)
         }
     }
 
     actual suspend fun notifyError(event: PlayingTrackNotifyEvent.Error) {
+        if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCR_ERR))
+            return
+
         val subtitle = event.scrobbleError.description
             ?: Stuff.formatBigHyphen(
                 event.scrobbleData.artist,
@@ -254,6 +289,9 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
+        if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
+            return
+
         val allowEvent = PlayingTrackNotifyEvent.AppAllowedBlocked(
             appId = appId,
             allowed = true
@@ -338,7 +376,6 @@ actual object PanoNotifications {
 
         val dialogArgs = PanoDialog.BlockedMetadataAdd(
             blockedMetadata = blockedMetadata,
-//            ignoredArtist = trackInfo.origArtist,
             hash = hash
         )
 
@@ -498,6 +535,12 @@ actual object PanoNotifications {
     }
 
     actual fun removeNotificationByTag(tag: String) {
+        nowPlayingScrobbleDataToHash.remove(tag)
+
         notificationManager.cancel(tag, 0)
+    }
+
+    fun getNowPlayingFromBackgroundProcess(): Pair<ScrobbleData, Int>? {
+        return nowPlayingScrobbleDataToHash.values.firstOrNull()
     }
 }

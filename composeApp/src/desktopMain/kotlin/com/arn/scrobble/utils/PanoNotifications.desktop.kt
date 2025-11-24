@@ -1,15 +1,15 @@
 package com.arn.scrobble.utils
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.updates.UpdateAction
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.digest_monthly
@@ -26,17 +26,7 @@ actual object PanoNotifications {
     private val _playingTrackTrayInfo =
         MutableStateFlow<Map<String, PlayingTrackNotifyEvent.PlayingTrackState>>(emptyMap())
     val playingTrackTrayInfo = _playingTrackTrayInfo.asStateFlow()
-
-    private var notify: ((String, String) -> Unit) = { title, text ->
-    }
-
-    fun setNotifyFn(
-        fn: (String, String) -> Unit
-    ) {
-        notify = fn
-    }
-
-    actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackScrobbling) {
+    actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
         if (event.scrobbleData.appId != null)
             _playingTrackTrayInfo.value += event.scrobbleData.appId to event
     }
@@ -47,7 +37,7 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
-        notify(
+        PanoNativeComponents.notify(
             getString(Res.string.new_player, appLabel.ifEmpty { appId }),
             getString(Res.string.new_player_prompt_desktop)
         )
@@ -84,7 +74,7 @@ actual object PanoNotifications {
 
         val notificationText = notificationTextList.joinToString("\n")
 
-        notify(
+        PanoNativeComponents.notify(
             notificationTitle,
             notificationText
         )
@@ -95,7 +85,7 @@ actual object PanoNotifications {
     actual suspend fun notifyUpdater(
         updateAction: UpdateAction
     ) {
-        notify(
+        PanoNativeComponents.notify(
             getString(Res.string.update_downloaded),
             updateAction.version
         )

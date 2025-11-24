@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">सेटिंग</string>
     <string name="artists">कलाकार</string>
     <string name="albums">एल्बम</string>
@@ -19,24 +18,15 @@
     <string name="appwidget_loading">लोड हो रहा है…</string>
     <string name="scrobbler_off">स्क्रौब्ल करना बंद है</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s सप्ताह</item>
-                
         <item quantity="other">%1$s सप्ताह</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s महीना</item>
-                
         <item quantity="other">%1$s महीने</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s वर्ष</item>
-                
         <item quantity="other">%1$s वर्ष</item>
-            
     </plurals>
 </resources>

@@ -1,5 +1,7 @@
 ## <img src="composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg" alt="app icon" width="32"/> Pano Scrobbler
 
+[\[repository\]](https://github.com/kawaiiDango/pano-scrobbler)
+
 [play-store]: img/play-store.svg
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
 [obtainium]: img/obtainium.svg
@@ -78,6 +80,9 @@ This may help prevent the system from killing the app in the background on devic
 - Scrobble from music recognition apps and Pixel Now Playing
 - Charts as a customizable home-screen widget
 - Get your top scrobbles digests as a notification at the end of every week, month and year
+
+#### Desktop only:
+- Customizable Discord Rich Presence
 
 ### Credits
 

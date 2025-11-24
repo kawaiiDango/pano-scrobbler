@@ -5,7 +5,11 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.utils.AndroidStuff.toast
+import com.arn.scrobble.utils.PanoNotifications
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
@@ -31,10 +35,14 @@ class AutomationProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String?>?,
         sortOrder: String?
-    ): Cursor? {
+    ): Cursor {
         val callingPackage = callingPackage ?: return createCursor(false)
         val command = uri.pathSegments?.first() ?: return createCursor(false)
         val arg = uri.pathSegments.getOrNull(1)
+
+        if (command == Automation.ANDROID_NOW_PLAYING && callingPackage == BuildKonfig.APP_ID) {
+            return nowPlayingDataCursor()
+        }
 
         val wasSuccessful = Automation.executeAction(
             command,
@@ -61,6 +69,27 @@ class AutomationProvider : ContentProvider() {
                     "Failed"
             )
         )
+
+        return cursor
+    }
+
+    private fun nowPlayingDataCursor(): Cursor {
+        val data = PanoNotifications.getNowPlayingFromBackgroundProcess()
+        val cursor = MatrixCursor(
+            arrayOf(
+                PlayingTrackNotifyEvent.TrackPlaying::origScrobbleData.name,
+                PlayingTrackNotifyEvent.TrackPlaying::hash.name,
+            )
+        )
+
+        if (data != null) {
+            cursor.addRow(
+                arrayOf(
+                    Stuff.myJson.encodeToString(data.first),
+                    data.second.toString(),
+                )
+            )
+        }
 
         return cursor
     }

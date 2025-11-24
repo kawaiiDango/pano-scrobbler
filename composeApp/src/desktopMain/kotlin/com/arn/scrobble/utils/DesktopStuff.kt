@@ -39,14 +39,15 @@ object DesktopStuff {
 
     val logsDir by lazy { File(appDataRoot, "logs") }
 
-    val noUpdateCheck: Boolean
-        get() = System.getenv("APPDIR") != null ?: cmdlineArgs.noUpdateCheck
-
     val os = when (BuildKonfig.OS_ORDINAL) {
         Os.Windows.ordinal -> Os.Windows
         Os.Macos.ordinal -> Os.Macos
         else -> Os.Linux
     }
+
+    val noUpdateCheck: Boolean
+        get() = os == Os.Linux && System.getenv("APPDIR").isNullOrEmpty() ||
+                cmdlineArgs.noUpdateCheck
 
     fun parseCmdlineArgs(args: Array<String>): CmdlineArgs {
         var minimized = false

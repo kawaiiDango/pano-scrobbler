@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Konfigūruoti</string>
     <string name="artists">Atlikėjai</string>
     <string name="albums">Albumai</string>
@@ -23,36 +22,21 @@
     <string name="scrobbler_off">Skrobuoklis išjungtas</string>
     <string name="scrobbler_on">Skrobuoklis aktyvus</string>
     <plurals name="num_weeks">
-                
         <item quantity="one">%1$s savaitė</item>
-                
         <item quantity="few">%1$s savaitės</item>
-                
         <item quantity="many">%1$s savaites</item>
-                
         <item quantity="other">%1$s savaičių</item>
-            
     </plurals>
     <plurals name="num_months">
-                
         <item quantity="one">%1$s mėnesis</item>
-                
         <item quantity="few">%1$s mėnesiai</item>
-                
         <item quantity="many">%1$s mėnesio</item>
-                
         <item quantity="other">%1$s mėnesių</item>
-            
     </plurals>
     <plurals name="num_years">
-                
         <item quantity="one">%1$s metus</item>
-                
         <item quantity="few">%1$s metai</item>
-                
         <item quantity="many">%1$s metų</item>
-                
         <item quantity="other">%1$s metų</item>
-            
     </plurals>
 </resources>

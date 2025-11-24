@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.PanoDb
@@ -63,6 +64,7 @@ import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
+import com.arn.scrobble.ui.HighlighterVisualTransformation
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
@@ -464,6 +466,7 @@ fun RegexEditsAddScreen(
                             isLicenseValid
                         else
                             true,
+                        highlightCaptureGroups = true,
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -493,6 +496,7 @@ fun RegexEditsAddScreen(
                             isLicenseValid
                         else
                             true,
+                        highlightCaptureGroups = false,
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -691,9 +695,21 @@ private fun SearchFields(
         albumArtist: String,
     ) -> Unit,
     enabled: Boolean,
+    highlightCaptureGroups: Boolean,
     modifier: Modifier = Modifier
 ) {
     val labelPrefix = stringResource(Res.string.edit_regex) + ": "
+
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
+    val captureGroupsVisualTransformation = remember(highlightCaptureGroups) {
+        if (highlightCaptureGroups)
+            HighlighterVisualTransformation(
+                stringsToHighlight = RegexEdit.Field.entries.map { "<" + it.name + ">" },
+                highlightColor = tertiaryColor
+            )
+        else
+            VisualTransformation.None
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -713,6 +729,7 @@ private fun SearchFields(
             onValueChange = { onValueChange(it, album, artist, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.track)) },
             modifier = Modifier.fillMaxWidth(),
+            visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -724,6 +741,7 @@ private fun SearchFields(
             onValueChange = { onValueChange(track, album, it, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.artist)) },
             modifier = Modifier.fillMaxWidth(),
+            visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -735,6 +753,7 @@ private fun SearchFields(
             onValueChange = { onValueChange(track, it, artist, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.album)) },
             modifier = Modifier.fillMaxWidth(),
+            visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -746,6 +765,7 @@ private fun SearchFields(
             onValueChange = { onValueChange(track, album, artist, it) },
             label = { Text(labelPrefix + stringResource(Res.string.album_artist)) },
             modifier = Modifier.fillMaxWidth(),
+            visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
@@ -959,7 +979,7 @@ private suspend fun validate(regexEdit: RegexEdit): Result<Unit> {
 
     if (regexEdit.name.isBlank()) {
         errorText = getString(Res.string.required_fields_empty)
-    } else if (regexEdit.replacement == null) {
+    } else if (regexEdit.replacement == null && regexEdit.blockPlayerAction == null) {
 
         val extractRulesResult = areExtractionRulesValid(regexEdit)
 

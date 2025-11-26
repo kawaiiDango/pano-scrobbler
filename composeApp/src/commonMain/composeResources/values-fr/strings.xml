@@ -68,7 +68,7 @@
     <string name="no">Non</string>
     <string name="reset">Réinitialiser</string>
     <string name="settings">Configurer</string>
-    <string name="bug_report">Signaler un Bug</string>
+    <string name="bug_report">Signaler un bug</string>
     <string name="faq">FAQ</string>
     <string name="album_art">Pochette d&apos;album</string>
     <string name="artist_image">Image d&apos;artiste</string>
@@ -316,7 +316,7 @@
     <string name="pref_spotify_remote">Scrobbler depuis Spotify utilisé sur d&apos;autres appareils</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Utiliser la recherche approximative d&apos;images d&apos;artistes</string>
     <string name="pref_link_heart_button_rating">Utilisez le bouton en forme de cœur sur la notification pour également le mettre en favori sur le lecteur</string>
-    <string name="pref_prevent_duplicate_ambient_scrobbles">Désactiver le scrobbling continu depuis le microphone lorsque l\'appareil joue de la musique</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Désactiver le scrobbling continu depuis le microphone lorsque l&apos;appareil joue de la musique</string>
     <string name="pref_delay">Délai de prise en compte du scrobble (le plus rapide sera choisi)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutes</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Pourcentage</string>
@@ -398,7 +398,7 @@
     <string name="fix_it_title">Corrections possibles</string>
     <string name="fix_it_startup_title">Économiseurs d\'énergie / gestionnaires de démarrage</string>
     <string name="fix_it_battery_title">Désactiver les optimisations de la batterie</string>
-    <string name="fix_it_energy_title">Désactiver les optimisations d\'énergie</string>
+    <string name="fix_it_energy_title">Désactiver les optimisations d&apos;énergie</string>
     <string name="fix_it_action" comment="(To open an app)">Ouvrir</string>
     <string name="delete_account">Supprimer votre compte</string>
     <string name="delete_account_custom_servers">Pour les serveurs personnalisés, consultez leurs documentations respectives.</string>

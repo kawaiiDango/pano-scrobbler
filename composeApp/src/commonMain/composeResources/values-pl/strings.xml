@@ -4,12 +4,12 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="few">%1$s scrobble</item>
         <item quantity="many">%1$s scrobbli</item>
-        <item quantity="other">%1$s scrobbla</item>
+        <item quantity="other">%1$s scrobble</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
-        <item quantity="one">%1$s jeden</item>
-        <item quantity="few">%1$s kilka</item>
-        <item quantity="many">%1$s wiele</item>
+        <item quantity="one">%1$s dzisiaj</item>
+        <item quantity="few">%1$s dzisiaj</item>
+        <item quantity="many">%1$s dzisiaj</item>
         <item quantity="other">%1$s inne</item>
     </plurals>
     <plurals name="num_listeners">
@@ -288,6 +288,8 @@
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Na przykład, aby zamienić artystę i tytuł, umieścisz regex artist jako (?&lt;track&gt;.*) i regex track jako (?&lt;artist&gt;.*)</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nie tłumacz artist, albumArtist, album, track, ponieważ użytkownik musi je wpisać, jak one są.
 https://www.google.com/search?q=regex+named+capture+groups</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Twoje regexy zawierają więcej niż jedną grupę przechwytywania \"%1$s\", co jest niedozwolone</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Nieprawidłowy regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Użyte wzory:</string>
     <string name="edit_continue">Jeśli znalezione, kontynuuj dopasowywanie innych regexów</string>
     <string name="edit_case_sensitive">Wielkość liter ma znaczenie</string>
@@ -384,8 +386,10 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="pref_search_in_source">Szukaj &amp; odtwarzaj w aplikacji, z której scrobblowałeś</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Dla obsługiwanych aplikacji</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listy</string>
+    <string name="regex_rules">Reguły regex</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Zablokowane metadane</string>
     <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">cokolwiek</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">istniejące dane</string>
     <string name="pref_translate">Przetłumacz tę aplikację</string>
     <string name="pref_translate_credits">Podziękowania dla tłumaczy</string>
     <string name="pref_oss_credits">Źródła otwartego oprogramowania</string>
@@ -394,6 +398,8 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="pref_notify_updates">Automatyczne aktualizacje</string>
     <string name="update_downloaded">Aktualizacja pobrana</string>
     <string name="pref_search_url_template">Wyszukaj URL szablonu</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Użyj $query jako zastępczego terminu wyszukiwania</string>
+    <string name="pref_native_file_picker">Użyj natywnego eksploratora plików</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostępna aktualizacja: %1$s</string>
     <string name="downloading">Pobieranie</string>
     <string name="download" comment="Its a verb">Pobierz</string>
@@ -409,6 +415,7 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="import_settings">Ustawienia importu</string>
     <string name="copied">Skopiowano!</string>
     <string name="lastfm_reauth">Uwierzytelnii ponownie, aby edytować lub usunąć scrobble</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Instancja podobna do %1$s</string>
     <string name="failed_encode_url">Nie udało się wprowadzić adresu URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Sprawdź %1$s</string>
     <string name="no_browser">Brak zainstalowanej przeglądarki</string>
@@ -435,14 +442,17 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="password">Hasło</string>
     <string name="open_existing" comment="Append to an existing file">Dołącz do istniejącego</string>
     <string name="create" comment="Create a new file">Utwórz</string>
+    <string name="scan_qr">Zeskanuj, aby zalogować się</string>
     <string name="copy_from">Kopiuj z</string>
     <string name="nothing" comment="nothing/none">Nic</string>
+    <string name="borders" comment="Borders between images in the generated collage">Krawędzie</string>
     <string name="ok">OK</string>
     <string name="cancel">Anuluj</string>
     <string name="back">Powrót</string>
     <string name="done">Ukończ</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Spróbuj ponownie</string>
     <string name="run_on_start">Uruchom wraz z uruchomieniem urządzenia</string>
+    <string name="use_browser">Użyj w tym celu przeglądarki na obsługiwanym urządzeniu.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Zapisz logi</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Kontrast</string>
     <string name="high" comment="As in high/medium/low">Wysoki</string>
@@ -450,9 +460,19 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="low" comment="As in high/medium/low">Niski</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Niektóre aplikacje potrzebują wtyczek</string>
     <string name="reload" comment="Reload or refresh">Przeładuj</string>
+    <string name="pref_tray_icon_theme">Motyw ikony zasobnika</string>
     <string name="min_track_duration">Scrobbluj piosenki dłuższe niż</string>
+    <string name="automation">Kontroluj Pano Scrobbler z aplikacji automatyzacyjnych</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Kraj dla metadanych %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Pobierz brakujące metadane dla %1$s</string>
+    <string name="login_in_browser">Ukończ logowanie w oknie przeglądarki</string>
+    <string name="edit_no_save">To nie będzie zapisywane dla przyszłych scrobbli</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Pobierz tę aplikację na %1$s</string>
+    <string name="first_artist">Użyj tylko pierwszego artysty</string>
+    <string name="external_metadata">Zewnętrzne źródła metadanych</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>
+    <string name="one_time_purchase">Jednorazowo</string>
     <string name="help">Pomoc</string>
     <string name="pro_support">Jest to prosty i szybki sposób dla niesamowitych użytkowników takich jak Ty, aby pokazać że doceniasz wartość, jaką oferuje ta aplikacja.</string>
     <string name="pro_also_get">Otrzymasz również następujące funkcje:</string>
@@ -471,4 +491,5 @@ Twoje zakupy są zarządzane przez Google Play. Są one połączone z kontem Goo
     <string name="billing_sharing">Usuń nazwę aplikacji podczas udostępniania</string>
     <string name="billing_scrobble_source">Zapamiętaj i zobacz aplikacje, z których scrobblowałeś i przeszukaj w nich bezpośrednio</string>
     <string name="billing_regex_extract">Napisz niestandardowe zasady ekstrakcji metadanych używając regex</string>
+    <string name="billing_max_devices_reached" formatted="true">Ten kod został już użyty na maksymalnie (%1$d) urządzeniach.</string>
 </resources>

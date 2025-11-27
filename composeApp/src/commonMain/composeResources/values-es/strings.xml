@@ -355,6 +355,7 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="regex_rules">Reglas de expresiones regulares</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadatos bloqueados</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">cualquier cosa</string>
     <string name="pref_translate">Traduzca esta aplicación</string>
     <string name="pref_translate_credits">Créditos de traducción</string>
     <string name="pref_oss_credits">Créditos de código abierto</string>
@@ -431,8 +432,12 @@
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">País para los metadatos de %1$s</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Obtener metadatos restantes para %1$s</string>
     <string name="login_in_browser">Completa el inicio de sesión en el navegador</string>
+    <string name="edit_no_save">Esto no será guardado para scrobbles futuros</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Obtén esta app en %1$s</string>
+    <string name="first_artist">Usar solo el primer artista</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
+    <string name="one_time_purchase">Una vez</string>
     <string name="help">Ayuda</string>
     <string name="pro_support">Esta es una forma sencilla y rápida para que usuarios asombrosos como tú hagan una demostración de apoyo reconociendo el valor que proporciona esta aplicación.</string>
     <string name="pro_also_get">También recibirás las siguientes características:</string>

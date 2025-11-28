@@ -197,7 +197,7 @@
     <string name="grant_notification_access_desc">Potrzebne do pobierania metadanych muzyki. Nie czytamy żadnych powiadomień</string>
     <string name="send_notifications">Zezwól na powiadomienia</string>
     <string name="notification_channel_blocked">To wymaga włączenia powiadomień</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Sprawdź status i liczby scrobblowania
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Sprawdź status i liczby scrobblowania
 - Polub lub blokuj bezpośrednio z powiadomienia
 - Otrzymuj powiadomienia o błędach scrobblowania i działaniach, które możesz podjąć
 - Otrzymuj co tydzień top listę scrobbli
@@ -288,7 +288,7 @@
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Na przykład, aby zamienić artystę i tytuł, umieścisz regex artist jako (?&lt;track&gt;.*) i regex track jako (?&lt;artist&gt;.*)</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nie tłumacz artist, albumArtist, album, track, ponieważ użytkownik musi je wpisać, jak one są.
 https://www.google.com/search?q=regex+named+capture+groups</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Twoje regexy zawierają więcej niż jedną grupę przechwytywania \"%1$s\", co jest niedozwolone</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Twoje regexy zawierają więcej niż jedną grupę przechwytywania "%1$s\", co jest niedozwolone</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Nieprawidłowy regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Użyte wzory:</string>
     <string name="edit_continue">Jeśli znalezione, kontynuuj dopasowywanie innych regexów</string>
@@ -364,7 +364,7 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="server_url" comment="For self hosted scrobbling services">Adres URL serwera</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Możesz znaleźć swój token uwierzytelniania na: %1$s</string>
-    <string name="pref_now_playing">Przesyłaj \"Co jest grane\"</string>
+    <string name="pref_now_playing">Przesyłaj "Co jest grane\"</string>
     <string name="pref_fetch_album">Pobierz brakujące dane albumu z lastFM</string>
     <string name="pref_locale">Języki</string>
     <string name="pref_change_locale">Zmień język</string>

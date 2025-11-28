@@ -180,7 +180,7 @@
     <string name="loved" comment="Its a noun">J&apos;aime</string>
     <string name="unloved" comment="Its a noun">Je n&apos;aime plus</string>
     <string name="simple_edits">Modifications</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Statistiques</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Statistiques</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuage de tags</string>
     <string name="add_to_hs">Ajouter à l&apos;écran d'accueil</string>
     <string name="press_back">Appuyer sur retour une fois terminé</string>
@@ -254,8 +254,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraire</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l'album</i> pour les extraire d&apos;autres champs</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Par exemple pour échanger l&apos;artiste et le titre, vous définiriez l&apos;expression régulière de l&apos;artiste en tant que (?&lt;track&gt;.*) et celle du titre en tant que (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières devraient au moins contenir ces groupes de capture : "track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d&apos;un groupe de capture "%1$s\", ce qui n\'est pas autorisé</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières devraient au moins contenir ces groupes de capture : "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d&apos;un groupe de capture "%1$s", ce qui n'est pas autorisé</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Expression regex invalide : %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Modèles utilisés :</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
@@ -447,11 +447,11 @@
     <string name="purchase_pending">Votre achat n'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
     <string name="billing_troubleshoot">Déjà acheté?
 
-Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qui a fait l'achat. Lorsque vous installez l\'application sur un nouvel appareil avec plusieurs comptes, Google Play peut l\'associer à un mauvais appareil. La meilleure solution pour sélectionner explicitement le compte possédant un achat est d\'installer l\'application depuis un ordinateur via la page web Google Play :
+Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qui a fait l'achat. Lorsque vous installez l'application sur un nouvel appareil avec plusieurs comptes, Google Play peut l'associer à un mauvais appareil. La meilleure solution pour sélectionner explicitement le compte possédant un achat est d'installer l'application depuis un ordinateur via la page web Google Play :
 
 • Désinstaller cette application.
 • Ouvrez la page Web de Google Play depuis votre ordinateur.
-• Connectez-vous avec un compte propriétaire de l\'achat.
+• Connectez-vous avec un compte propriétaire de l'achat.
 • Installez cette application directement depuis la page web de Google Play.</string>
     <string name="billing_block">Bloquer cet artiste/ce titre et automatiquement passer la chanson ou couper le son</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Épingler jusqu'à %1$d amis et classer les</string>

@@ -165,12 +165,12 @@
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
     <string name="send_notifications">Permitir notificações</string>
     <string name="notification_channel_blocked">Isto requer que as notificações estejam ativadas</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Verifique o estado e a contagem dos scrobbles
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Verifique o estado e a contagem dos scrobbles
 - Favorite ou bloqueie diretamente da notificação
 - Seja notificado sobre erros de scrobble e possíveis soluções para o problema
 - Confira a sua tabela de scrobbles todas as semanas
 - E muito mais
-- As notifcações não reproduzem nenhum som\"\"</string>
+- As notifcações não reproduzem nenhum som""</string>
     <string name="will_not_scrobble">Ignorar esta etapa desativará o scrobbling</string>
     <string name="swap" comment="(Swap title and artist)">Inverter</string>
     <string name="rate_msg">Está a gostar da aplicação?</string>
@@ -180,7 +180,7 @@
     <string name="loved" comment="Its a noun">Favoritas</string>
     <string name="unloved" comment="Its a noun">Tirada das favoritas</string>
     <string name="simple_edits">Edições</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Tabelas</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Tabelas</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuvem de etiquetas</string>
     <string name="add_to_hs">Adicionar ao ecrã principal</string>
     <string name="press_back">Pressione voltar quando terminar</string>
@@ -254,8 +254,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrair</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nomeie os seus grupos de captura <i>track, album, artist</i> ou <i>albumArtist</i> para extraí-los de outros campos</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">ex.: Para trocar o artista e o título da música, coloque a regex do artista como (?&lt;track&gt;.*) e a regex da faixa como (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Os seus regexes devem ter, pelo menos, estes grupos de captura nomeados: "faixa\", \"artista\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Os seus regexes contêm mais de um grupo de captura denominado "%1$s\", o que não é permitido</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Os seus regexes devem ter, pelo menos, estes grupos de captura nomeados: "faixa", "artista"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Os seus regexes contêm mais de um grupo de captura denominado "%1$s", o que não é permitido</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Expressão inválida: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Padrões usados:</string>
     <string name="edit_continue">Se encontrado, continuar a corresponder com outros regexes</string>

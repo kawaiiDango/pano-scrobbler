@@ -143,12 +143,12 @@
     <string name="grant_notification_access_desc">Diperlukan untuk mengambil metadata musik. Tidak ada notifikasi non-musik yang dibaca</string>
     <string name="send_notifications">Izinkan notifikasi</string>
     <string name="notification_channel_blocked">Ini memerlukan notifikasi untuk diaktifkan</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Periksa status dan jumlah scrobble
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Periksa status dan jumlah scrobble
 - Sukai atau blokir langsung dari notifikasi
 - Dapatkan pemberitahuan tentang kesalahan scrobble dan tindakan yang dapat Anda ambil
 - Dapatkan scrobble terbaik Anda setiap minggu
 - Dan banyak lagi
-- Notifikasi tidak berbunyi\"\"</string>
+- Notifikasi tidak berbunyi""</string>
     <string name="will_not_scrobble">Melewatkan langkah ini akan menonaktifkan scrobbling</string>
     <string name="swap" comment="(Swap title and artist)">Tukar</string>
     <string name="rate_msg">Menikmati aplikasi ini?</string>
@@ -157,7 +157,7 @@
     <string name="loved" comment="Its a noun">Disukai</string>
     <string name="unloved" comment="Its a noun">Tak di sukai</string>
     <string name="simple_edits">Penyuntingan</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Tangga lagu</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Tangga lagu</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tandai awan</string>
     <string name="add_to_hs">Tambahkan ke layar beranda</string>
     <string name="press_back">Tekan kembali setelah selesai</string>
@@ -229,8 +229,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Ekstrak</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Beri nama grup pengambilan Anda <i>lagu, album, artis</i> atau <i>albumArtist</i> untuk mengekstraknya dari bidang lain</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">misalnya Untuk menukar artis dan judul, Anda akan memasukkan regex artis sebagai (?&lt;track&gt;.*) dan regex lagu sebagai (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Regex Anda setidaknya harus memiliki grup tangkapan bernama ini: "track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Regex Anda berisi lebih dari satu grup tangkapan "%1$s\", dan ini tidak diperbolehkan</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Regex Anda setidaknya harus memiliki grup tangkapan bernama ini: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Regex Anda berisi lebih dari satu grup tangkapan "%1$s", dan ini tidak diperbolehkan</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex tidak valid: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Pola yang digunakan:</string>
     <string name="edit_continue">Jika ditemukan, lanjutkan mencocokkan regex lainnya</string>

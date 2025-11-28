@@ -164,12 +164,12 @@
     <string name="grant_notification_access_desc">संगीत मेटाडेटा प्राप्त गर्न आवश्यक छ। अन्य कुनै पनि गैर-संगीत सूचनाहरू पढिने छैनन्</string>
     <string name="send_notifications">सूचनाहरूलाई अनुमति दिनुहोस्</string>
     <string name="notification_channel_blocked">यसका लागि सूचनाहरू सक्षम गर्न आवश्यक छ</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- स्क्रबल स्थिति र गणनाहरू जाँच गर्न 
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- स्क्रबल स्थिति र गणनाहरू जाँच गर्न 
 - सूचनाबाट सीधा माया वा रोक्नु लगाउनुहोस्
 - स्क्रबल त्रुटिहरू र तपाईंले गर्न सक्ने कार्यहरूको बारेमा सूचना प्राप्त गर्नुहोस् 
 - प्रत्येक हप्ता तपाईंको शीर्ष स्क्रबलहरू प्राप्त गर्नुहोस् 
 - र थप 
-- सूचनाहरूले आवाज जनाउँदैन\"\"</string>
+- सूचनाहरूले आवाज जनाउँदैन""</string>
     <string name="will_not_scrobble">यो चरण छोड्दा स्क्रबल असक्षम हुनेछ</string>
     <string name="swap" comment="(Swap title and artist)">स्वाप</string>
     <string name="rate_msg">एपलाई मन पराउँदै हो?</string>
@@ -178,7 +178,7 @@
     <string name="loved" comment="Its a noun">मन पराएको</string>
     <string name="unloved" comment="Its a noun">मन नपरेको</string>
     <string name="simple_edits">सम्पादनहरू</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्ट्स</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्ट्स</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">ट्याग क्लाउड</string>
     <string name="add_to_hs">होमस्क्रिनमा थप्नुहोस्</string>
     <string name="press_back">सकिएपछि ब्याक थिच्नुहोस्</string>

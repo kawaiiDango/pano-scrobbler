@@ -165,7 +165,7 @@
     <string name="grant_notification_access_desc">Necessário para recuperar metadados da música. Nenhum outro tipo notificação é lida</string>
     <string name="send_notifications">Permitir notificações</string>
     <string name="notification_channel_blocked">Isto requer que as notificações sejam ativadas</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\'\'\'\'- Verificar status e contagem dos scrobbles
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">'\'\'\'- Verificar status e contagem dos scrobbles
 - Favoritar ou deletar diretamente da notificação
 - Receber notificações sobre erros nos scrobbles e ações que você pode tomar
 - Receber seu top de scrobbles toda semana
@@ -254,8 +254,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrair</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nomeie seus grupos de captura <i>faixa, álbum, artista</i> ou <i>álbum</i> para extraí-los de outros campos</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">ex: Para trocar o artista e o título, colocaria a regex do artista como (?&lt;track&gt;.*) e a regex da faixa como (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Seus regexes devem ter, pelo menos, estes grupos de captura nomeados: \"faixa\", \"artista\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Seus regexes contêm mais de um \"%1$sgrupos de captura, o que não é permitido</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Seus regexes devem ter, pelo menos, estes grupos de captura nomeados: "faixa\", \"artista\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Seus regexes contêm mais de um "%1$sgrupos de captura, o que não é permitido</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex inválido: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Padrões usados:</string>
     <string name="edit_continue">Se encontrado, continuar correspondendo com outros regexes</string>

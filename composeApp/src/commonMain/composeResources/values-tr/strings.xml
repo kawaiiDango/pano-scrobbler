@@ -140,7 +140,7 @@
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s algılandı</string>
     <string name="new_player_prompt">Bu uygulama skroplanmaya devam edilsin mi?</string>
     <string name="new_player_prompt_desktop">Bu uygulamayı scrobblelamaya başlamak için ayarlara gidin</string>
-    <string name="cannot_access" comment="%1$s= the file or folder name">Erişim mümkün değil "%1$s\"</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Erişim mümkün değil "%1$s"</string>
     <string name="file_exists_confirm_overwrite">Dosya mevcut. Üstüne yazmak için tıklayın.</string>
     <string name="no_scrobbles">Henüz hiç şarkı yok…</string>
     <string name="no_friends">Henüz kimse takip edilmiyor...</string>
@@ -165,12 +165,12 @@
     <string name="grant_notification_access_desc">Müzik meta verilerini almak için gerekli. Müzik dışı bildirimler okunmaz</string>
     <string name="send_notifications">Bildirimlere izin ver</string>
     <string name="notification_channel_blocked">Bildirimlerin etkinleştirilmesi gerekiyor</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Skrop durumunu ve sayılarını kontrol edin
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Skrop durumunu ve sayılarını kontrol edin
 - Doğrudan bildirimden beğenin veya engelleyin
 - Skroplama hataları ve olası çözümler konusunda bilgilendirilirsiniz
 - En çok dinlenenleri haftalık olarak gösterme
 - Ve dahası
-- Bildirimler sesli değildir\"\"</string>
+- Bildirimler sesli değildir""</string>
     <string name="will_not_scrobble">Bu adımı atlamak skroplamayı devre dışı bırakacaktır</string>
     <string name="swap" comment="(Swap title and artist)">Değiştir</string>
     <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
@@ -180,7 +180,7 @@
     <string name="loved" comment="Its a noun">Beğenilenler</string>
     <string name="unloved" comment="Its a noun">Beğeni kaldırıldı</string>
     <string name="simple_edits">Düzenlemeler</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listeler</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listeler</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Etiket bulutu</string>
     <string name="add_to_hs">Ana ekrana ekle</string>
     <string name="press_back">Bittiğinde geri tuşuna basın</string>
@@ -254,8 +254,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Çıkart</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Yakalama gruplarınızı diğer alanlardan çıkarabilmek için yakalama gruplarınızı <i>track, album, artist</i> veya <i>albumArtist</i> olarak adlandırın</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Örneğin sanatçıyı ve başlığı değiştirmek için, sanatçı düzenli ifadesini (?&lt;artist&gt;.*) ve parça düzenli ifadesini (?&lt;track&gt;.*) olarak değiştirirsiniz.</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz en azından şu adlandırılmış yakalama gruplarına sahip olmalıdır: "track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz birden fazla "%1$s\" yakalama grubu içeriyor ve buna izin verilmiyor</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz en azından şu adlandırılmış yakalama gruplarına sahip olmalıdır: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Düzenli ifadeleriniz birden fazla "%1$s" yakalama grubu içeriyor ve buna izin verilmiyor</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Geçersiz düzenli ifade: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Kullanılan desenler:</string>
     <string name="edit_continue">Mevcutsa, diğer düzenli ifadeleri de eşleştirmeye devam et</string>
@@ -280,7 +280,7 @@
     <string name="pin_limit_reached" formatted="true">Sabitleme sınırına ulaşıldı (%1$d)</string>
     <string name="pin_help">Sabitlenen ögeleri yeniden sıralamak için basılı tutun</string>
     <string name="use_channel" comment="(Use youtube channel name)">Kanal ismini kullan</string>
-    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">"%1$s\" kalıp düzenlemesini etkinleştirmek istiyor musunuz?</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">"%1$s" kalıp düzenlemesini etkinleştirmek istiyor musunuz?</string>
     <string name="show_persistent_noti">Kalıcı bildirim göster</string>
     <string name="fix_it_desc">Bu düzeltmeler, bazı cihazlarda skroplayıcının arkaplanda çalışmasını sağlayabilir</string>
     <string name="persistent_noti_text">Gizlemek için tıkla</string>

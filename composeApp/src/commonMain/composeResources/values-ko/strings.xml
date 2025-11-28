@@ -124,7 +124,7 @@
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s 감지됨</string>
     <string name="new_player_prompt">이 앱을 계속 스크롤빙 할까요?</string>
     <string name="new_player_prompt_desktop">설정으로 이동해 이 앱의 스크로블을 시작하세요</string>
-    <string name="cannot_access" comment="%1$s= the file or folder name">\"%1$s\"에 접근할 수 없음</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">"%1$s"에 접근할 수 없음</string>
     <string name="file_exists_confirm_overwrite">파일이 이미 존재합니다. 다시 클릭하여 덮어쓰기하십시오.</string>
     <string name="no_scrobbles">여기엔 아직 노래가 없습니다...</string>
     <string name="no_friends">아직 아무도 팔로잉하고 있지 않습니다...</string>
@@ -149,12 +149,12 @@
     <string name="grant_notification_access_desc">음악 메타데이터를 검색하는 데 필요합니다. 음악 알림이 아니면 읽지 않습니다.</string>
     <string name="send_notifications">알림 허용</string>
     <string name="notification_channel_blocked">이를 위해서는 알림이 활성화되어야 합니다.</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- 스크로블 상태 및 횟수 확인
-- 알림에서 직접 \'좋아요\' 또는 \'차단\'
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- 스크로블 상태 및 횟수 확인
+- 알림에서 직접 '좋아요' 또는 '차단'
 - 스크로블 오류 및 조치 가능한 작업에 대한 알림
 - 매주 최상위 스크로블 받기
 - 그 외 다양한 기능
-- 알림은 소리를 내지 않습니다.\"\"</string>
+- 알림은 소리를 내지 않습니다.""</string>
     <string name="will_not_scrobble">이 단계를 건너뛰면 스크로블링이 비활성화됩니다</string>
     <string name="swap" comment="(Swap title and artist)">맞교환</string>
     <string name="rate_msg">이 앱에 만족하십니까?</string>
@@ -164,7 +164,7 @@
     <string name="loved" comment="Its a noun">좋아요</string>
     <string name="unloved" comment="Its a noun">좋아요 해제</string>
     <string name="simple_edits">편집</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">태그 클라우드</string>
     <string name="add_to_hs">홈화면에 추가하기</string>
     <string name="press_back">완료되면 뒤로 가기를 누르세요</string>
@@ -238,8 +238,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">추출</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">다른 필드에서 이들을 추출하려면 <i>track, album, artist</i> 또는 <i>albumArtist</i>로 캡처 그룹에 이름을 붙이세요.</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">예를 들어, 아티스트와 제목을 교체하려면 아티스트 정규식을 (?&lt;track&gt;.*)로, 트랙 정규식을 (?&lt;artist&gt;.*)로 설정하면 됩니다.</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">정규식은 적어도 이러한 이름의 캡처 그룹을 포함해야 합니다: \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">정규식이 하나 이상의 허용되지 않는 \"%1$s\" 캡처 그룹을 포함하고 있습니다</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">정규식은 적어도 이러한 이름의 캡처 그룹을 포함해야 합니다: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">정규식이 하나 이상의 허용되지 않는 "%1$s" 캡처 그룹을 포함하고 있습니다</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">유효하지 않은 정규표현식: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">사용된 패턴:</string>
     <string name="edit_continue">존재하면, 다른 정규표현식을 계속 확인</string>

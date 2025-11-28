@@ -181,12 +181,12 @@
     <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>
     <string name="send_notifications">Dopusti obavijesti</string>
     <string name="notification_channel_blocked">Za ovo je potrebno omogućiti obavijesti</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- provjera statusa scrobbleanja i prikaz brojača
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- provjera statusa scrobbleanja i prikaz brojača
 - označavanje kao voljeno ili blokiranje izravno iz obavijesti
 - obavještavanje o greškama kod scrobbleanja i kako ih ispraviti
 - obavještavanje o top scrobbleovima svakog tjedna
 - i više toga
-- obavijesti su tihe\"</string>
+- obavijesti su tihe"</string>
     <string name="will_not_scrobble">Ako preskočite ovaj korak, scrobbleanje bit će onemogućeno</string>
     <string name="swap" comment="(Swap title and artist)">Zamijeni mjesta</string>
     <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
@@ -196,7 +196,7 @@
     <string name="loved" comment="Its a noun">Voljeno</string>
     <string name="unloved" comment="Its a noun">Nije voljeno</string>
     <string name="simple_edits">Uređivanja</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
     <string name="add_to_hs">Dodaj na početni zaslon</string>
     <string name="press_back">Pritisnite natrag kada ste gotovi</string>
@@ -269,9 +269,9 @@
     <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Izdvoji</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Imenujte svoje grupe za dohvaćanje <i>track, album, artist</i> ili <i>albumArtist</i> kako biste ih izdvojili iz ostalih polja</string>
-    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Npr. za zamjenu izvođača i naslova, možete u regex \"artist\" upisati (?&lt;track&gt;.*), a u regex \"track\" upisati (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vaši regexi bi barem trebali imati ove imenovane grupe za dohvaćanje: \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vaši regexi sadrže više od jedne grupe za dohvaćanje \"%1$s\", što nije dozvoljeno</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Npr. za zamjenu izvođača i naslova, možete u regex "artist" upisati (?&lt;track&gt;.*), a u regex "track" upisati (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vaši regexi bi barem trebali imati ove imenovane grupe za dohvaćanje: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vaši regexi sadrže više od jedne grupe za dohvaćanje "%1$s", što nije dozvoljeno</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Nevažeći regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Korišteni predlošci:</string>
     <string name="edit_continue">Ako je pronađeno, nastavi provjeravati ostale regexe</string>
@@ -282,7 +282,7 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Dosegnuto ograničenje šablona (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Ručka za povlačenje</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Budite sigurni da razumijete <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> prije korištenja ove funkcije ili koristite neki od dostupnih <b>predložaka</b>. Traženje podudaranja pomoću regexa provodi se od vrha prema dnu</string>
-    <string name="blocked_metadata_info">ℹ️ Ispunjavanje više od jednog od ovih polja primijenit će \"I\" (\"AND\") operator između njih</string>
+    <string name="blocked_metadata_info">ℹ️ Ispunjavanje više od jednog od ovih polja primijenit će "I" ("AND") operator između njih</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Dodirnite za blokiranje i preskakanje</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Radnje reproduktora glazbe</string>
     <string name="skip" comment="skip to next track">Preskoči</string>
@@ -324,7 +324,7 @@
     <string name="pref_master_qs_already_addded">Pločica brzih postavki već je dodana</string>
     <string name="pref_noti">Obavijesti</string>
     <string name="pref_lockscreen_noti">Obavijesti na zaslonu zaključavanja</string>
-    <string name="pref_offline_info">ℹ️ Izvanmrežni scrobbleovi i oznake \"voljeno\" bit će spremljene i poslane kasnije.</string>
+    <string name="pref_offline_info">ℹ️ Izvanmrežni scrobbleovi i oznake "voljeno" bit će spremljene i poslane kasnije.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblaj iz</string>
     <string name="pref_enabled_apps_summary">ℹ️ Podržane su aplikacije koje dijele metapodatke o glazbi. Da biste izbjegli duplo scrobbleanje sa Spotifya, samo aktivirajte značajku na jednom mjestu.</string>
     <string name="pref_enabled_apps_title">Odaberite aplikacije</string>

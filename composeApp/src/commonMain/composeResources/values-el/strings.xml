@@ -142,12 +142,12 @@
     <string name="grant_notification_access_desc">Απαιτείται για την ανάκτηση μεταδεδομένων μουσικής. Δεν διαβάζονται ειδοποιήσεις εκτος της μουσικής</string>
     <string name="send_notifications">Να επιτρέπονται οι ειδοποιήσεις</string>
     <string name="notification_channel_blocked">Αυτό απαιτεί οι ειδοποιήσεις να είναι ενεργοποιημένες</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Ελέγξτε την κατάσταση scrobble και τις μετρήσεις
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Ελέγξτε την κατάσταση scrobble και τις μετρήσεις
 - Αγαπήστε ή μπλοκάρετε απευθείας από την ειδοποίηση
 - Ενημερωθείτε για σφάλματα scrobble και ενέργειες που μπορείτε να πάρετε
 - Αποκτήστε τα κορυφαία scrobbles σας κάθε εβδομάδα
 - Και περισσότερα
-- Οι ειδοποιήσεις δεν κάνουν ήχο\"\"</string>
+- Οι ειδοποιήσεις δεν κάνουν ήχο""</string>
     <string name="will_not_scrobble">Η παράλειψη αυτού του βήματος θα απενεργοποιήσει το scrobbling</string>
     <string name="swap" comment="(Swap title and artist)">Ανταλλαγή</string>
     <string name="rate_msg">Σας αρέσει η εφαρμογή;</string>
@@ -156,7 +156,7 @@
     <string name="loved" comment="Its a noun">Αγαπημένο</string>
     <string name="unloved" comment="Its a noun">Ξε-αγαπημένο</string>
     <string name="simple_edits">Επεξεργασίες</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Charts</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Charts</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Σύννεφο ετικετών</string>
     <string name="add_to_hs">Προσθήκη στην αρχική οθόνη</string>
     <string name="press_back">Πατήστε πίσω όταν τελειώσετε</string>

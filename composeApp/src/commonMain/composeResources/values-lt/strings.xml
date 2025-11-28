@@ -212,7 +212,7 @@
     <string name="loved" comment="Its a noun">Pamėgta</string>
     <string name="unloved" comment="Its a noun">Panaikinta pamėgtą</string>
     <string name="simple_edits">Redagavimai</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Žymių debesis</string>
     <string name="add_to_hs">Pridėti prie pradžios ekrano</string>
     <string name="press_back">Paspauskite atgal, kai baigsite</string>

@@ -165,12 +165,12 @@
     <string name="grant_notification_access_desc">Benötigt, um Musik-Metadaten abzurufen. Keine Nicht-Musik-Benachrichtigungen werden gelesen</string>
     <string name="send_notifications">Benachrichtigungen zulassen</string>
     <string name="notification_channel_blocked">Dafür müssen Benachrichtigungen aktiviert sein</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Überprüfen Sie Scrobble-Status und -Statistiken
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Überprüfen Sie Scrobble-Status und -Statistiken
 - Favorisieren oder blocken direkt über die Benachrichtigung
 - Benachrichtigungen bei Fehler des Scrobbeln und mögliche Lösungsvorschläge
 - Wöchentliche Top-Scrobbels
 - Und mehr
-- Benachrichtigungen sind stumm\"\"</string>
+- Benachrichtigungen sind stumm""</string>
     <string name="will_not_scrobble">Wenn Sie diesen Schritt überspringen, wird das Scrobbling deaktiviert</string>
     <string name="swap" comment="(Swap title and artist)">Tauschen</string>
     <string name="rate_msg">Gefällt Ihnen diese App?</string>
@@ -180,7 +180,7 @@
     <string name="loved" comment="Its a noun">Favorisiert</string>
     <string name="unloved" comment="Its a noun">Nicht mehr favorisiert</string>
     <string name="simple_edits">Änderungen</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramme</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramme</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Schlagwortwolke</string>
     <string name="add_to_hs">Zum Startbildschirm hinzufügen</string>
     <string name="press_back">Drücke zurück, wenn fertig</string>
@@ -254,8 +254,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrahieren</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Benenne deine Capture-Gruppen <i>track, album, artist</i> oder <i>albumArtist</i> um diese aus anderen Feldern zu extrahieren</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">z.B. um den Interpreten und Titel zu tauschen, kannst du als Interpreten Regex-Ausdruck (?&lt;track&gt;.*) und als Titel Regex-Ausdruck (?&lt;artist&gt;.*) hinterlegen</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Deine Regex-Ausdrücke sollten mindestens die folgenden genannten Capture-Gruppen beinhalten: \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Der Regex-Ausdruck enthält mehr als eine \"%1$s\" Capture-Gruppen, was nicht zulässig ist</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Deine Regex-Ausdrücke sollten mindestens die folgenden genannten Capture-Gruppen beinhalten: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Der Regex-Ausdruck enthält mehr als eine "%1$s" Capture-Gruppen, was nicht zulässig ist</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Ungültiger Regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Verwendete Muster:</string>
     <string name="edit_continue">Wenn gefunden, setze die Suche mit anderen Regexes fort</string>
@@ -331,7 +331,7 @@
     <string name="api_url" comment="For Listenbrainz">API-URL</string>
     <string name="server_url" comment="For self hosted scrobbling services">Server URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Du findest deinen Authentifizierungs-Token unter: %1$s</string>
-    <string name="pref_now_playing">\"Scrobbelt gerade\" senden</string>
+    <string name="pref_now_playing">"Scrobbelt gerade" senden</string>
     <string name="pref_fetch_album">Fehlende Albumdaten von lastFM abrufen</string>
     <string name="pref_locale">Sprachen</string>
     <string name="pref_change_locale">Sprache ändern</string>

@@ -108,7 +108,7 @@
     <string name="network_error">Помилка мережі</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Скробблів ігнорується</string>
     <string name="scrobble_ignored_save_edit">Lastfm проігнорував редагування ймовірно тому, що скробл занадто старий. Ви хочете зберегти цю зміну для подальшого скроблінгу?</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Обов\'язкові поля відсутні</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Обов'язкові поля відсутні</string>
     <string name="artist">Виконавець</string>
     <string name="artists">Виконавці</string>
     <string name="top_artists" comment="Top artists the user has listened to">Топ виконавців</string>
@@ -197,12 +197,12 @@
     <string name="grant_notification_access_desc">Потрібний для отримання метаданих. Немузичні сповіщення не зчитуються</string>
     <string name="send_notifications">Дозволити сповіщення</string>
     <string name="notification_channel_blocked">Це вимагає ввімкнення сповіщень</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Перевірте статус скроблінгу і підрахунки
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Перевірте статус скроблінгу і підрахунки
 - Уподобайка чи блок безпосередньо від сповіщення
 - Отримуйте сповіщення про помилки скроблінгу та дії, які ви можете зробити
 - Отримайте топ скробли кожної неделі
 -Та більше
-- Сповіщення беззвучні\"\"</string>
+- Сповіщення беззвучні""</string>
     <string name="will_not_scrobble">Пропуск цього кроку вимкне скробблінг</string>
     <string name="swap" comment="(Swap title and artist)">Замінити</string>
     <string name="rate_msg">Подобається цей додаток?</string>
@@ -212,7 +212,7 @@
     <string name="loved" comment="Its a noun">Уподобання</string>
     <string name="unloved" comment="Its a noun">Скасувати вподобання</string>
     <string name="simple_edits">Зміни</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарти</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарти</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Хмара тегів</string>
     <string name="add_to_hs">Додати на головний екран</string>
     <string name="press_back">Після завершення натисніть назад</string>
@@ -286,8 +286,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Розпакувати</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Назвіть групи запису <i>track, album, artist</i> або <i>albumArtist</i>, щоб витягти їх з інших полів</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">напр. Щоб змінити виконавця та назву, потрібно поставити regex виконавця як (?&lt;track&gt;.*), і regex композиції як (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Ваші regex\'и повинні мати принаймні ці іменовані групи: \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Ваші regex\'и містять більше \"%1$s\" груп, що забороняється</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Ваші regex'и повинні мати принаймні ці іменовані групи: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Ваші regex'и містять більше "%1$s" груп, що забороняється</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Неприпустимий regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Використані шаблони:</string>
     <string name="edit_continue">Якщо знайдено, продовжуйте співпадати з іншими регулярними виразами</string>
@@ -332,7 +332,7 @@
     <string name="skip_missing_images" comment="(while generating a collage)">Пропуск відсутніх зображень</string>
     <string name="create_collage">Створити колаж</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Підписи зображень</string>
-    <string name="username" comment="last.fm Username">Ім\'я користувача</string>
+    <string name="username" comment="last.fm Username">Ім'я користувача</string>
     <string name="pref_master">Скроблінг пісень</string>
     <string name="pref_master_qs_add">Додати плитку швидких налаштувань</string>
     <string name="pref_master_qs_already_addded">Плитка швидких налаштувань вже додана</string>
@@ -374,7 +374,7 @@
     <string name="pref_import">Імпорт</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Мережа</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Код</string>
-    <string name="pref_imexport_network_notice">Для режиму мережі обидва пристрої повинні бути під\'єднані до однієї мережі.</string>
+    <string name="pref_imexport_network_notice">Для режиму мережі обидва пристрої повинні бути під'єднані до однієї мережі.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Персоналізація</string>
     <string name="pref_themes" comment="Color themes">Теми</string>
     <string name="pref_widget_charts">Віджет на головному екрані</string>
@@ -406,7 +406,7 @@
     <string name="import_lists_nope">Не імпортувати зміни і блокуючий список</string>
     <string name="import_lists_replace_all">Замінити всі зміни і блокування</string>
     <string name="import_lists_replace_existing">Злиття, заміна існуючих редагувань і блокованих списків</string>
-    <string name="import_lists_keep">Об\'єднання, збереження існуючих змін і блокованих списків</string>
+    <string name="import_lists_keep">Об'єднання, збереження існуючих змін і блокованих списків</string>
     <string name="import_settings">Імпортувати налаштування</string>
     <string name="copied">Скопійовано!</string>
     <string name="lastfm_reauth">Вам потрібно перезапустити автентифікацію для редагування або видалення скробблів</string>
@@ -446,7 +446,7 @@
     <string name="back">Назад</string>
     <string name="done">Готово</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Повторити спробу</string>
-    <string name="run_on_start">Запускати при запуску комп\'ютера</string>
+    <string name="run_on_start">Запускати при запуску комп'ютера</string>
     <string name="use_browser">Будь ласка, використовуйте для цього браузер на підтримуваному пристрої.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Зберегти журнали</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Контраст</string>
@@ -473,16 +473,16 @@
     <string name="purchase_pending">Ваша покупка ще не підтверджена Вашим провайдером платежу. Перегляньте її через кілька хвилин.</string>
     <string name="billing_troubleshoot">Вже придбано?
 
-Ваші покупки здійснюються в Google Play. Вони пов\'язані з обліковим записом Google Play, який здійснив покупку. При встановленні додатку на новому пристрої з декількома обліковими записами, Google Play може пов’язати їх із неправильним. Найкращим рішенням для явного вибору облікового запису є встановлення програми з комп\'ютера через веб-сторінку Google Play:
+Ваші покупки здійснюються в Google Play. Вони пов'язані з обліковим записом Google Play, який здійснив покупку. При встановленні додатку на новому пристрої з декількома обліковими записами, Google Play може пов’язати їх із неправильним. Найкращим рішенням для явного вибору облікового запису є встановлення програми з комп'ютера через веб-сторінку Google Play:
 
 • Видалення цього додатку.
-• Відкрити веб-сторінку Google Play з вашого комп\'ютера.
+• Відкрити веб-сторінку Google Play з вашого комп'ютера.
 • Увійти через обліковий запис, на якому відбулась покупка.
 • Встановити цю програму безпосередньо з веб-сторінки Google Play.</string>
     <string name="billing_block">Блокувати виконавців/пісні і автоматично пропустити або вимкнути звук</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закріпити до %1$d друзів і змінити їх порядок</string>
-    <string name="billing_sharing">Видаляти ім\'я застосунку при поширенні</string>
-    <string name="billing_scrobble_source">Запам\'ятати та переглянути програми, з яких ви скробблили, і шукати прямо в них</string>
+    <string name="billing_sharing">Видаляти ім'я застосунку при поширенні</string>
+    <string name="billing_scrobble_source">Запам'ятати та переглянути програми, з яких ви скробблили, і шукати прямо в них</string>
     <string name="billing_regex_extract">Записати правила вилучення користувацьких метаданих використовуючи regex</string>
     <string name="billing_max_devices_reached" formatted="true">Цей код вже використовується на максимальній кількості пристроїв (%1$d).</string>
 </resources>

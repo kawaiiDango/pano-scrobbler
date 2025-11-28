@@ -197,12 +197,12 @@
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
     <string name="send_notifications">Разрешить уведомления</string>
     <string name="notification_channel_blocked">Это требует включенные уведомления</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Проверяйте статус скроббла и количество
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Проверяйте статус скроббла и количество
 - Лайкайте или блокируйте прямо из уведомления
 - Получайте уведомления об ошибках и действиях, которые вы можете совершить
 - Получайте ваш топ скробблов каждую неделю
 - И более
-- Уведомления не издают звук\"\"</string>
+- Уведомления не издают звук""</string>
     <string name="will_not_scrobble">Пропуск этого шага отключит скробблинг</string>
     <string name="swap" comment="(Swap title and artist)">Поменять</string>
     <string name="rate_msg">Нравится это приложение?</string>
@@ -212,7 +212,7 @@
     <string name="loved" comment="Its a noun">Любимые</string>
     <string name="unloved" comment="Its a noun">Не любимые</string>
     <string name="simple_edits">Редактирования</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарты</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарты</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Облако тегов</string>
     <string name="add_to_hs">Добавить на главный экран</string>
     <string name="press_back">Нажмите назад, когда закончите</string>
@@ -286,8 +286,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Извлечь</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Назовите ваши группы захвата <i>track, album, artist</i> или <i>albumArtist</i>, чтобы извлечь их из других полей</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Например, чтобы поменять местами исполнителя и название, можно задать регулярное выражение для исполнителя как (?&lt;track&gt;.*), а для трека - (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Ваши регулярные выражения должны содержать по крайней мере эти именованные группы: \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Ваши регулярные выражения содержат более одной группы \"%1$s\", что недопустимо</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Ваши регулярные выражения должны содержать по крайней мере эти именованные группы: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Ваши регулярные выражения содержат более одной группы "%1$s", что недопустимо</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Неверное регулярное выражение: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Используемые шаблоны:</string>
     <string name="edit_continue">Если найдено, продолжить сопоставление с другими регулярными выражениями</string>

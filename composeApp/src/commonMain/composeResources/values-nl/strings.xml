@@ -152,12 +152,12 @@
     <string name="grant_notification_access_desc">Nodig om de muziekmetadata op te halen. Niet-muziek-meldingen worden niet gelezen</string>
     <string name="send_notifications">Meldingen toestaan</string>
     <string name="notification_channel_blocked">Dit vereist dat meldingen ingeschakeld zijn</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Controleer de scrobble status en aantallen
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Controleer de scrobble status en aantallen
 - Love of blokkeer direct vanuit de melding
 - Krijg een melding over scrobble fouten en acties die je kan ondernemen
 - Krijg uw top scrobbles elke week
 - En meer
-- De meldingen maken geen geluid\"\"</string>
+- De meldingen maken geen geluid""</string>
     <string name="will_not_scrobble">Het overslaan van deze stap zal scrobblen uitschakelen</string>
     <string name="swap" comment="(Swap title and artist)">Wissel</string>
     <string name="rate_msg">Tevreden over de app?</string>
@@ -166,7 +166,7 @@
     <string name="loved" comment="Its a noun">Geloved</string>
     <string name="unloved" comment="Its a noun">Geunloved</string>
     <string name="simple_edits">Bewerkingen</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitlijsten</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitlijsten</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tagwolk</string>
     <string name="add_to_hs">Toevoegen aan homescherm</string>
     <string name="press_back">Druk op terug wanneer u klaar bent</string>
@@ -234,7 +234,7 @@
     <string name="edit_replace">Vervangen</string>
     <string name="edit_first" comment="First occurrence of a pattern">Eerste</string>
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Uw reguliere expressies bevatten meer dan één \"%1$s\" capture groep, wat niet is toegestaan</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Uw reguliere expressies bevatten meer dan één "%1$s" capture groep, wat niet is toegestaan</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Ongeldige regex: %1$s</string>
     <string name="edit_continue">Indien gevonden, ga door met andere regexes matchen</string>
     <string name="edit_case_sensitive">Hoofdlettergevoelig</string>
@@ -311,7 +311,7 @@
     <string name="pref_import">Importeren</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Code</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalisatie</string>
-    <string name="pref_themes" comment="Color themes">Thema\'s</string>
+    <string name="pref_themes" comment="Color themes">Thema's</string>
     <string name="pref_widget_charts">Homescherm widget - Lijsten</string>
     <string name="pref_show_scrobble_sources">Toon icoontjes van apps waar u heeft gescrobbeld</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…naast elke scrobble. Deze gegevens verlaten uw apparaat niet</string>

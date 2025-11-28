@@ -174,7 +174,7 @@
     <string name="loved" comment="Its a noun">دوست داشته</string>
     <string name="unloved" comment="Its a noun">دوست نداشته</string>
     <string name="simple_edits">اصلاحات</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">نمودارها</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">نمودارها</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">ابر کلیدواژه</string>
     <string name="add_to_hs">افزودن به صفحه خانگی</string>
     <string name="press_back">دکمه برگشت رو هروقت تموم‌شد بزن</string>
@@ -246,7 +246,7 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">استخراج</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">گروه‌های ضبط خود را <i>آهنگ، آلبوم، هنرمند</i> یا <i>هنرمندآلبوم‌</i> نامگذاری کنید تا آنها را از فیلدهای دیگر استخراج کنید</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">برای مثال، برای جابجایی هنرمند و عنوان، باید ریجکس هنرمند را به صورت (؟&lt;track&gt;.*) و ریجکس آهنگ را به صورت (؟&lt;artist&gt;.*) قرار دهید</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما باید حداقل این گروه های ضبط را نام برده باشد: \"آهنگ\", \"هنرمند\"</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما باید حداقل این گروه های ضبط را نام برده باشد: "آهنگ", "هنرمند"</string>
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما قابل قبول نیست چون بیشتر از یک گروه ضبط (%1$s) دارد</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">ریجکس نامعتبر: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">الگوهای استفاده‌شده:</string>

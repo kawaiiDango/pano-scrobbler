@@ -102,7 +102,7 @@
     <string name="music_players">Lettori musicali</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altre app</string>
     <string name="choose_apps">Scegli le app</string>
-    <string name="choose_an_app">Scegli un\'app</string>
+    <string name="choose_an_app">Scegli un'app</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">App</string>
     <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
     <string name="unavailable_offline">Non disponibile offline</string>
@@ -139,7 +139,7 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opzioni per questo elemento</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s rilevata</string>
     <string name="new_player_prompt">Vuoi continuare lo scrobbling su questa app?</string>
-    <string name="new_player_prompt_desktop">Vai alle impostazioni per iniziare lo scrobbling di quest\'app</string>
+    <string name="new_player_prompt_desktop">Vai alle impostazioni per iniziare lo scrobbling di quest'app</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">Impossibile accedere a %1$s</string>
     <string name="file_exists_confirm_overwrite">Il file esiste già. Clicca di nuovo per sovrascriverlo.</string>
     <string name="no_scrobbles">Nessuna canzone per ora…</string>
@@ -165,12 +165,12 @@
     <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>
     <string name="send_notifications">Consenti le notifiche</string>
     <string name="notification_channel_blocked">Questo richiede che le notifiche siano abilitate</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Controlla il numero e lo stato di scrobbling
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Controlla il numero e lo stato di scrobbling
 - Blocca o aggiungi ai preferiti direttamente dalla notifica
 - Ricevi notifiche sugli errori di scrobbling e come risolverli
 - Ricevi la lista dei tuoi artisti, album e brani più ascoltati della settimana
 - E altro ancora
-- Le notifiche non sono sonore\"\"</string>
+- Le notifiche non sono sonore""</string>
     <string name="will_not_scrobble">Saltando questo passaggio, lo scrobbling sarà disabilitato</string>
     <string name="swap" comment="(Swap title and artist)">Scambia</string>
     <string name="rate_msg">Ti piace questa app?</string>
@@ -180,7 +180,7 @@
     <string name="loved" comment="Its a noun">Preferiti</string>
     <string name="unloved" comment="Its a noun">Rimosso dai preferiti</string>
     <string name="simple_edits">Modifiche</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Classifiche</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Classifiche</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuvola di tag</string>
     <string name="add_to_hs">Aggiungi alla schermata home</string>
     <string name="press_back">Al termine, premere indietro</string>
@@ -193,7 +193,7 @@
     <string name="scrobbles">Scrobbling</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
-    <string name="user_loved" formatted="true" comment="%1= username">%1$s l\'ha aggiunto ai preferiti</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s l'ha aggiunto ai preferiti</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="save" comment="saves a file">Salva</string>
@@ -245,7 +245,7 @@
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Il widget si aggiornerà ogni %1$s minuti</string>
     <string name="random_theme">Casuale a ogni avvio</string>
     <string name="edit_name" comment="name for regex pattern">Nome descrittivo</string>
-    <string name="edit_regex">Modello dell\'Espressione Regolare (regex)</string>
+    <string name="edit_regex">Modello dell'Espressione Regolare (regex)</string>
     <string name="edit_regex_replacement">Sostituzione del regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Campi</string>
     <string name="edit_replace">Sostituisci</string>
@@ -253,9 +253,9 @@
     <string name="edit_all" comment="All occurrences of a pattern">Tutte</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Estrai</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Dai un nome ai tuoi gruppi di acquisizione <i>track, album, artist</i> o <i>albumArtist</i> per estrarli da altri campi</string>
-    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">es. Per scambiare l\'artista con il titolo, imposteresti il regex artista come (?&lt;track&gt;.*) e il regex della traccia come (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">I tuoi regex dovrebbero almeno avere questi gruppi di acquisizione: \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">I tuoi regex contengono più di un gruppo di acquisizione \"%1$s\", il che non è consentito</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">es. Per scambiare l'artista con il titolo, imposteresti il regex artista come (?&lt;track&gt;.*) e il regex della traccia come (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">I tuoi regex dovrebbero almeno avere questi gruppi di acquisizione: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">I tuoi regex contengono più di un gruppo di acquisizione "%1$s", il che non è consentito</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex non valido: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Pattern utilizzati:</string>
     <string name="edit_continue">Se trovato, continua ad abbinare altri regex</string>
@@ -265,7 +265,7 @@
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Preset: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite pattern raggiunto (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Maniglia di trascinamento</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall\'alto al basso</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall'alto al basso</string>
     <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Tocca per bloccare e saltare</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Comandi lettore musicale</string>
@@ -328,11 +328,11 @@
     <string name="pref_scrobble_only">(Solo scrobbling)</string>
     <string name="pref_user_label" comment="(Like username)">Utente</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token di autenticazione</string>
-    <string name="api_url" comment="For Listenbrainz">URL dell\'API</string>
+    <string name="api_url" comment="For Listenbrainz">URL dell'API</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL del server</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Puoi trovare il tuo token di autenticazione su: %1$s</string>
     <string name="pref_now_playing">Invia scrobbling in corso</string>
-    <string name="pref_fetch_album">Recupera i dati dell\'album mancanti da lastFM</string>
+    <string name="pref_fetch_album">Recupera i dati dell'album mancanti da lastFM</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
@@ -382,7 +382,7 @@
     <string name="import_settings">Importa le configurazioni</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
-    <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
+    <string name="failed_encode_url">Codificazione dell'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="no_browser">Nessun browser installato</string>
     <string name="no_player">Nessun lettore musicale installato</string>
@@ -396,14 +396,14 @@
     <string name="cleared_disabled_apps">App disabilitate cancellate</string>
     <string name="fix_it_title">Possibili soluzioni</string>
     <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
-    <string name="fix_it_battery_title">Disattiva l\'ottimizzazione della batteria</string>
+    <string name="fix_it_battery_title">Disattiva l'ottimizzazione della batteria</string>
     <string name="fix_it_energy_title">Disattiva ottimizzazione batteria</string>
     <string name="fix_it_action" comment="(To open an app)">Apri</string>
     <string name="delete_account">Cancella il tuo account</string>
     <string name="delete_account_custom_servers">Per i server personalizzati, controlla le rispettive documentazioni.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Aggiungi o cambia immagine</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Dalla galleria</string>
-    <string name="square_photo_hint">Usa un\'immagine quadrata per risultati migliori</string>
+    <string name="square_photo_hint">Usa un'immagine quadrata per risultati migliori</string>
     <string name="scrobble_to_file">File</string>
     <string name="password">Password</string>
     <string name="open_existing" comment="Append to an existing file">Concatena a file esistente</string>
@@ -417,7 +417,7 @@
     <string name="back">Indietro</string>
     <string name="done">Fatto</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Riprova</string>
-    <string name="run_on_start">Esegui all\'avvio del computer</string>
+    <string name="run_on_start">Esegui all'avvio del computer</string>
     <string name="use_browser">Ti chiediamo di usare un browser su un dispositivo supportato.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Salva registri di debug</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Contrasto</string>
@@ -433,7 +433,7 @@
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Recupera i metadata mancanti per %1$s</string>
     <string name="login_in_browser">Completa il login nella finestra del browser</string>
     <string name="edit_no_save">Questo non sarà salvato per gli scrobble futuri</string>
-    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Scarica quest\'app su %1$s</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Scarica quest'app su %1$s</string>
     <string name="first_artist">Usa solo il primo artista</string>
     <string name="external_metadata">Fonti esterni di metadata</string>
     <!--  pro  -->

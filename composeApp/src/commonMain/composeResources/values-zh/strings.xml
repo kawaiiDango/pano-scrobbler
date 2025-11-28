@@ -149,12 +149,12 @@
     <string name="grant_notification_access_desc">借此获取音乐元数据信息，不会读取非音乐类通知</string>
     <string name="send_notifications">允许通知</string>
     <string name="notification_channel_blocked">需要开启通知权限</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- 检查记录状态和计数
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- 检查记录状态和计数
 - 从通知中直接收藏或屏蔽记录
 - 记录出错或需要执行操作时收到提醒
 - 获取每周热门记录报告
 - 以及更多
-- 通知不会发出声音\"\"</string>
+- 通知不会发出声音""</string>
     <string name="will_not_scrobble">跳过该步骤将禁用记录</string>
     <string name="swap" comment="(Swap title and artist)">切换</string>
     <string name="rate_msg">喜欢这个应用吗？</string>
@@ -164,7 +164,7 @@
     <string name="loved" comment="Its a noun">已点赞</string>
     <string name="unloved" comment="Its a noun">不再喜爱的</string>
     <string name="simple_edits">编辑</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">图表</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">图表</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">标签云</string>
     <string name="add_to_hs">添加到主屏幕</string>
     <string name="press_back">完成后点击返回</string>
@@ -238,8 +238,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">提取</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">为捕获组 <i>track、album、artist</i> 或 <i>albumArtist</i> 命名以从其他字段中进行提取</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">例如，若要交换艺术家和标题，您应将艺术家的正则表达式设为 (?&lt;track&gt;.*)，将歌曲正则表达式设为 (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">你的正则表达式至少需要包含以下命名的捕获组： \"track\"、\"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">你的正则表达式包含超过一个名为\"%1$s\"的捕获组，这是不被允许的</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">你的正则表达式至少需要包含以下命名的捕获组： "track"、"artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">你的正则表达式包含超过一个名为"%1$s"的捕获组，这是不被允许的</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">无效的正则表达式：%1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">已使用模式：</string>
     <string name="edit_continue">若有结果，继续匹配其它正则</string>

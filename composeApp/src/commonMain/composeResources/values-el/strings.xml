@@ -142,7 +142,7 @@
     <string name="grant_notification_access_desc">Απαιτείται για την ανάκτηση μεταδεδομένων μουσικής. Δεν διαβάζονται ειδοποιήσεις εκτος της μουσικής</string>
     <string name="send_notifications">Να επιτρέπονται οι ειδοποιήσεις</string>
     <string name="notification_channel_blocked">Αυτό απαιτεί οι ειδοποιήσεις να είναι ενεργοποιημένες</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Ελέγξτε την κατάσταση scrobble και τις μετρήσεις
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Ελέγξτε την κατάσταση scrobble και τις μετρήσεις
 - Αγαπήστε ή μπλοκάρετε απευθείας από την ειδοποίηση
 - Ενημερωθείτε για σφάλματα scrobble και ενέργειες που μπορείτε να πάρετε
 - Αποκτήστε τα κορυφαία scrobbles σας κάθε εβδομάδα

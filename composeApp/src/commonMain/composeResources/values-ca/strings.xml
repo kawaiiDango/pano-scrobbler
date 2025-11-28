@@ -66,7 +66,7 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">No s'ha pogut analitzar el títol</string>
     <string name="network_error">Error de xarxa</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorat</string>
-    <string name="scrobble_ignored_save_edit">Last.fm ha ignorat l'edició probablement perquè l\'scrobble és massa antic. Vols desar l\'edició per a futurs scrobbles?</string>
+    <string name="scrobble_ignored_save_edit">Last.fm ha ignorat l'edició probablement perquè l'scrobble és massa antic. Vols desar l'edició per a futurs scrobbles?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Hi ha camps obligatoris buits</string>
     <string name="artist">Artista</string>
     <string name="artists">Artistes</string>
@@ -132,14 +132,14 @@
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles des del %2$s</string>
     <string name="allow_background">Permet fer scrobbling en segon pla</string>
     <string name="send_notifications">Permet notificacions</string>
-    <string name="will_not_scrobble">Si salteu aquest pas, es desactivarà l'enviament d\'scrobbles</string>
+    <string name="will_not_scrobble">Si salteu aquest pas, es desactivarà l'enviament d'scrobbles</string>
     <string name="swap" comment="(Swap title and artist)">Intercanvia</string>
-    <string name="rate_msg">T'agrada l\'aplicació?</string>
+    <string name="rate_msg">T'agrada l'aplicació?</string>
     <string name="time_just_now">ara mateix</string>
     <string name="loved" comment="Its a noun">Preferits</string>
     <string name="unloved" comment="Its a noun">Eliminat dels preferits</string>
     <string name="simple_edits">Edicions</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Gràfics</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Gràfics</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Núvol d'etiquetes</string>
     <string name="add_to_hs">Afegeix a la pantalla d'inici</string>
     <string name="saved_as_pending">S'ha desat com a scrobble pendent</string>
@@ -248,9 +248,9 @@
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalització</string>
     <string name="pref_themes" comment="Color themes">Temes</string>
     <string name="pref_widget_charts">Giny de la pantalla d'inici – Gràfics</string>
-    <string name="pref_show_scrobble_sources">Mostra les icones de les aplicacions des d'on es fa l\'scrobble</string>
+    <string name="pref_show_scrobble_sources">Mostra les icones de les aplicacions des d'on es fa l'scrobble</string>
     <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…al costat de cada scrobble. Aquesta informació es queda al teu dispositiu</string>
-    <string name="pref_search_in_source">Cerca i reprodueix en l'aplicació des d\'on s\'ha fet l\'scrobble</string>
+    <string name="pref_search_in_source">Cerca i reprodueix en l'aplicació des d'on s'ha fet l'scrobble</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Per a les aplicacions compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Llistes</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadades bloquejades</string>

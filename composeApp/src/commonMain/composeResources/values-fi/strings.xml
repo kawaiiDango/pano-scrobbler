@@ -144,7 +144,7 @@
     <string name="delete_all">Poista kaikki</string>
     <string name="love" comment="Love/like a song">Tykkää</string>
     <string name="hate" comment="Hate or dislike a song">En tykkää</string>
-    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Poista \'en tykkää\'</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Poista 'en tykkää\'</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Poista tykkäys</string>
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
     <string name="following" comment="accounts you are following on lastfm">Seurataan</string>
@@ -155,7 +155,7 @@
     <string name="grant_notification_access_desc">Tarvitaan musiikin metadatan hakemiseen. Ei lueta muita kuin musiikkia koskevia ilmoituksia</string>
     <string name="send_notifications">Salli ilmoitukset</string>
     <string name="notification_channel_blocked">Tämä edellyttää ilmoitusten käyttöönottoa</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Tarkista scrobblausten tila ja lukumäärät
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Tarkista scrobblausten tila ja lukumäärät
 - Tykkää tai estä suoraan ilmoituksesta
 - Saa ilmoituksia scrobblausvirheistä ja toiminnoista, joita voit tehdä
 - Saa joka viikko kuunnelluimmat scrobblauksesi

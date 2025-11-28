@@ -53,6 +53,8 @@ jobs:
         shell: bash
         run: |
           export JAVA_HOME=$JAVA_HOME_21_X64
+          $ANDROID_HOME/cmdline-tools/**/bin/sdkmanager "cmdline-tools;latest"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
           ./gradlew androidApp:assembleReleaseGithub
           ./gradlew --stop
 

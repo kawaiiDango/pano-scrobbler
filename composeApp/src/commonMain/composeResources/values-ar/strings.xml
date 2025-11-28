@@ -111,7 +111,7 @@
     <string name="grant_notification_access_desc">تحتاج لاسترداد بيانات التعريف الموسيقية. لا يتم قراءة أي إشعارات غير موسيقية</string>
     <string name="send_notifications">السماح بالإشعارات</string>
     <string name="notification_channel_blocked">هذا يتطلب الإشعارات لتكون مفعلة</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- تحقق من حالة مسح الأغاني والحساب
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- تحقق من حالة مسح الأغاني والحساب
 - الحب أو الحظر مباشرة من الإشعار
 - احصل على تنبيه حول أخطاء مسح الأغاني والإجراءات التي يمكنك اتخاذها
 - احصل على أعلى الأغاني الممسوحة كل أسبوع

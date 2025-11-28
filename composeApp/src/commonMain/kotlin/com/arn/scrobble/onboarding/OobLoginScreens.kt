@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.AccountType
@@ -35,10 +37,13 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
+import pano_scrobbler.composeapp.generated.resources.retry
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -49,43 +54,38 @@ fun OobLastfmLibrefmLoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
-    var url by rememberSaveable { mutableStateOf<String?>(null) }
     var exception by remember { mutableStateOf<Throwable?>(null) }
+    val token by viewModel.tokenResult
+        .filterNotNull()
+        .map {
+            it.getOrElse {
+                exception = it
+                null
+            }
+        }.collectAsStateWithLifecycle(null)
+    val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
+        Requesters.lastfmUnauthedRequester.apiKey
+    else
+        Stuff.LIBREFM_KEY
+
+    val apiSecret = if (userAccountTemp.type == AccountType.LASTFM)
+        Requesters.lastfmUnauthedRequester.apiSecret
+    else
+        Stuff.LIBREFM_KEY
+    val url = if (token == null)
+        null
+    else if (userAccountTemp.type == AccountType.LASTFM)
+        "https://www.last.fm/api/auth?api_key=$apiKey&token=$token"
+    else
+        "https://libre.fm/api/auth/?api_key=$apiKey&token=$token"
+    var browserOpened by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
-            Requesters.lastfmUnauthedRequester.apiKey
-        else
-            Stuff.LIBREFM_KEY
-
-        val apiSecret = if (userAccountTemp.type == AccountType.LASTFM)
-            Requesters.lastfmUnauthedRequester.apiSecret
-        else
-            Stuff.LIBREFM_KEY
-
-        withContext(Dispatchers.IO) {
-            Requesters.lastfmUnauthedRequester.getToken(
-                userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT,
-                apiKey,
-                apiSecret,
-            )
-        }.onSuccess {
-            url = if (userAccountTemp.type == AccountType.LASTFM)
-                "https://www.last.fm/api/auth?api_key=$apiKey&token=${it.token}"
-            else
-                "https://libre.fm/api/auth/?api_key=$apiKey&token=${it.token}"
-
-            if (!PlatformStuff.isTv) {
-                PlatformStuff.openInBrowser(url!!)
-            }
-
-            viewModel.lastfmOobLogin(
-                userAccountTemp,
-                it.token,
-            )
-        }.onFailure {
-            exception = it
-        }
+        viewModel.fetchToken(
+            userAccountTemp,
+            apiKey,
+            apiSecret
+        )
     }
 
     LaunchedEffect(Unit) {
@@ -98,6 +98,22 @@ fun OobLastfmLibrefmLoginScreen(
         }
     }
 
+    LaunchedEffect(url) {
+        if (!browserOpened && url != null) {
+            browserOpened = true
+
+            if (!PlatformStuff.isTv)
+                PlatformStuff.openInBrowser(url)
+
+            if (token != null) {
+                viewModel.lastfmOobLogin(
+                    userAccountTemp,
+                    token!!,
+                )
+            }
+        }
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -105,7 +121,7 @@ fun OobLastfmLibrefmLoginScreen(
     ) {
         if (PlatformStuff.isTv && url != null) {
             QrCodeCanvas(
-                url = url!!,
+                url = url,
                 modifier = Modifier.weight(0.8f),
             )
         }
@@ -113,6 +129,21 @@ fun OobLastfmLibrefmLoginScreen(
         if (exception != null) {
             exception?.printStackTrace()
             ErrorText(exception?.redactedMessage)
+
+            if (token != null) {
+                OutlinedButton(
+                    onClick = {
+                        viewModel.lastfmOobLogin(
+                            userAccountTemp,
+                            token!!,
+                        )
+                    }
+                ) {
+                    Text(
+                        stringResource(Res.string.retry)
+                    )
+                }
+            }
         } else
             CircularWavyProgressIndicator()
     }

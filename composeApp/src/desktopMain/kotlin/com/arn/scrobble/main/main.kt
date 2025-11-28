@@ -68,6 +68,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -78,6 +79,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.cancel
 import pano_scrobbler.composeapp.generated.resources.copy
+import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.fix_it_action
 import pano_scrobbler.composeapp.generated.resources.ic_launcher_with_bg
@@ -221,11 +223,18 @@ fun main(args: Array<String>) {
             exitProcess(0)
         }
 
+        fun openIfNeeded() {
+            windowOpenTrigger.tryEmit(Unit)
+            windowCreated = true
+            windowShown = true
+        }
+
         LaunchedEffect(trayIconTheme, isSystemInDarkTheme) {
             combine(
                 PanoNotifications.playingTrackTrayInfo,
+                DiscordRpc.wasSuccessFul,
                 Stuff.globalUpdateAction
-            ) { playingTrackInfo, updateAction ->
+            ) { playingTrackInfo, discordRpcSuccessful, updateAction ->
                 val trayIconPainter = when {
                     playingTrackInfo.isEmpty() -> trayIconNotPlaying
                     playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> trayIconError
@@ -313,6 +322,18 @@ fun main(args: Array<String>) {
                     trayItems += PanoTrayUtils.ItemId.Separator.name to ""
                 }
 
+                discordRpcSuccessful?.let { discordRpcSuccessful ->
+                    val rpcStatus = if (discordRpcSuccessful)
+                        "✔️ "
+                    else
+                        "❌ "
+
+                    if (BuildKonfig.DEBUG) // todo remove
+                        trayItems += PanoTrayUtils.ItemId.DiscordRpc.name to rpcStatus + getString(
+                            Res.string.discord_rich_presence
+                        )
+                }
+
                 updateAction?.let {
                     trayItems += PanoTrayUtils.ItemId.Update.name to "🔄️ " + getString(
                         Res.string.update_downloaded
@@ -352,11 +373,7 @@ fun main(args: Array<String>) {
 
         LaunchedEffect(Unit) {
             trayMenuClickListener(
-                onOpenIfNeeded = {
-                    windowOpenTrigger.emit(Unit)
-                    windowCreated = true
-                    windowShown = true
-                },
+                onOpenIfNeeded = ::openIfNeeded,
                 onExit = ::onExit
             )
         }
@@ -403,7 +420,9 @@ fun main(args: Array<String>) {
             }
 
             var trayMouseListenerSet by remember { mutableStateOf(false) }
-            var trayClickedEvent by remember { mutableStateOf<PanoTrayUtils.TrayClickEvent?>(null) }
+            val trayClickedEventFlow =
+                remember { MutableSharedFlow<PanoTrayUtils.TrayClickEvent?>(extraBufferCapacity = 3) }
+            var trayMenuPos by remember { mutableStateOf<Pair<Int, Int>?>(null) }
 
             LaunchedEffect(trayData) {
                 if (!trayMouseListenerSet && trayData != null) {
@@ -412,11 +431,19 @@ fun main(args: Array<String>) {
                         trayIcon.addMouseListener(
                             object : MouseListener {
                                 override fun mouseClicked(e: MouseEvent?) {
-                                    trayClickedEvent = PanoTrayUtils.TrayClickEvent(
-                                        x = e?.x ?: 0,
-                                        y = e?.y ?: 0,
-                                        button = e?.button ?: 0
-                                    )
+                                    // open main window on left double click
+                                    if (e?.button == MouseEvent.BUTTON1 && e.clickCount == 2) {
+                                        openIfNeeded()
+                                        trayClickedEventFlow.tryEmit(null)
+                                    } else {
+                                        trayClickedEventFlow.tryEmit(
+                                            PanoTrayUtils.TrayClickEvent(
+                                                x = e?.x ?: 0,
+                                                y = e?.y ?: 0,
+                                                button = e?.button ?: 0
+                                            )
+                                        )
+                                    }
                                 }
 
                                 override fun mousePressed(e: MouseEvent?) {
@@ -437,14 +464,27 @@ fun main(args: Array<String>) {
                 }
             }
 
-            if (trayClickedEvent != null && trayData != null) {
+            LaunchedEffect(Unit) {
+                trayClickedEventFlow
+                    .debounce(100)
+                    .collectLatest { event ->
+                        if (event != null) {
+                            trayMenuPos = Pair(event.x, event.y)
+                        } else {
+                            trayMenuPos = null
+                        }
+                    }
+            }
+
+            if (trayMenuPos != null && trayData != null) {
+                val (x, y) = trayMenuPos!!
                 TrayWindow(
-                    x = trayClickedEvent!!.x,
-                    y = trayClickedEvent!!.y,
+                    x = x,
+                    y = y,
                     menuItemIds = trayData!!.menuItemIds,
                     menuItemTexts = trayData!!.menuItemTexts,
                 ) {
-                    trayClickedEvent = null
+                    trayMenuPos = null
                 }
             }
         } else {
@@ -517,7 +557,7 @@ fun main(args: Array<String>) {
 }
 
 private suspend fun trayMenuClickListener(
-    onOpenIfNeeded: suspend () -> Unit,
+    onOpenIfNeeded: () -> Unit,
     onExit: () -> Unit
 ) {
     PanoTrayUtils.onTrayMenuItemClicked.collect { id ->
@@ -691,6 +731,11 @@ private fun TrayWindow(
                         },
                 ) {
                     menuItemIds.zip(menuItemTexts).forEach { (id, text) ->
+                        val isClickable = id !in arrayOf(
+                            PanoTrayUtils.ItemId.Separator.name,
+                            PanoTrayUtils.ItemId.DiscordRpc.name
+                        )
+
                         if (id == PanoTrayUtils.ItemId.Separator.name) {
                             Spacer(
                                 modifier = Modifier
@@ -708,7 +753,7 @@ private fun TrayWindow(
                                         else
                                             Modifier
                                     )
-                                    .clickable {
+                                    .clickable(isClickable) {
                                         PanoTrayUtils.onTrayMenuItemClickedFn(id)
                                         onDismiss()
                                     }

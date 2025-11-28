@@ -2,24 +2,25 @@ package com.arn.scrobble.api.steelseries
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.api.AdditionalMetadataResult
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import fi.iki.elonen.NanoHTTPD
 import fi.iki.elonen.NanoHTTPD.Response.Status
+import kotlinx.coroutines.delay
 import java.io.File
 import java.io.IOException
 
 actual object SteelSeriesReceiverServer {
     private var lastGameEvent: SteelSeriesGameEvent? = null
 
-    actual var serverStartAttempted = false
-        private set
+    private var serverStartAttempted = false
 
     private var server: ReceiverServer? = null
 
-    actual fun startServer() {
+    private fun startServer() {
         if (serverStartAttempted) {
             Logger.w { "SteelSeriesReceiverServer already started or attempted to start." }
             return
@@ -59,7 +60,7 @@ actual object SteelSeriesReceiverServer {
         }
     }
 
-    actual fun stopServer() {
+    private fun stopServer() {
         server?.stop()
         server = null
         serverStartAttempted = false
@@ -67,7 +68,7 @@ actual object SteelSeriesReceiverServer {
         Logger.i { "SteelSeriesReceiverServer stopped." }
     }
 
-    actual fun putAlbum(scrobbleData: ScrobbleData): ScrobbleData? {
+    actual suspend fun getAdditionalData(scrobbleData: ScrobbleData): AdditionalMetadataResult {
         /*
         sample data:
         {
@@ -92,6 +93,16 @@ actual object SteelSeriesReceiverServer {
         "CORAÇAO (20th Anniversary Mix)" becomes "CORAÇAO"
          */
 
+        if (!SteelSeriesReceiverServer.serverStartAttempted) {
+            SteelSeriesReceiverServer.startServer()
+
+            // wait for data to be available
+            delay(2000)
+        }
+
+        // wait for data to be available
+        delay(2000)
+
         val lastGameEvent = lastGameEvent
         if (
             lastGameEvent != null &&
@@ -99,14 +110,23 @@ actual object SteelSeriesReceiverServer {
             lastGameEvent.event == "MEDIA_PLAYBACK" &&
             lastGameEvent.data.frame.title in scrobbleData.track
         ) {
-            return scrobbleData.copy(
+            val sd = scrobbleData.copy(
                 album = lastGameEvent.data.frame.album,
+            )
+
+            return AdditionalMetadataResult(
+                scrobbleData = sd,
+                artUrl = lastGameEvent.data.frame.imageUrl,
             )
         } else {
             Logger.w { "SteelSeries game event did not match: $lastGameEvent" }
         }
 
-        return null
+        return AdditionalMetadataResult(
+            scrobbleData = null,
+            artUrl = null,
+            shouldFetchAgain = true
+        )
     }
 
     private class ReceiverServer(

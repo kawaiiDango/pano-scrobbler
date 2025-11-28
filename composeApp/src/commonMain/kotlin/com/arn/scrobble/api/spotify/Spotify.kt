@@ -86,9 +86,6 @@ class SpotifyRequester {
             parameter("market", market)
         }
 
-    suspend fun trackFeatures(trackId: String) =
-        client.getResult<TrackFeatures>("https://api.spotify.com/v1/audio-features/$trackId")
-
     suspend fun artist(
         artistId: String,
         market: String = "US"

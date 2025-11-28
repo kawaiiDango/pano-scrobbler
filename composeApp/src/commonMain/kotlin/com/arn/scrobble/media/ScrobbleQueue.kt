@@ -29,6 +29,11 @@ import kotlin.math.min
 class ScrobbleQueue(
     private val scope: CoroutineScope,
 ) {
+    class NetworkRequestNeededException(
+        message: String = "Network request needed",
+        cause: Throwable? = null
+    ) : IllegalStateException(message, cause)
+
     // delays scrobbling this hash until it becomes null again
     private var lockedHash: Int? = null
 
@@ -63,7 +68,7 @@ class ScrobbleQueue(
         lockedHash = hash
     }
 
-    private suspend fun canFetchAdditionalMetadata(): Boolean {
+    private suspend fun canFetchAdditionalMetadata() {
         // was still getting java.util.NoSuchElementException: ArrayDeque is empty, so use lock
         return fetchAdditionalMetadataMutex.withLock {
             val now = System.currentTimeMillis()
@@ -73,7 +78,9 @@ class ScrobbleQueue(
             }
             val can = fetchAdditionalMetadataTimestamps.size < 2
             fetchAdditionalMetadataTimestamps.addLast(System.currentTimeMillis())
-            can
+
+            if (!can)
+                throw NetworkRequestNeededException()
         }
     }
 
@@ -124,6 +131,21 @@ class ScrobbleQueue(
                         ScrobbleEverywhere.nowPlaying(sd)
                     }
 
+                if (npResults != null && shouldFetchNpArtUrl() && trackInfo.artUrl == null) {
+                    val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
+                        scrobbleData,
+                        null,
+                        ::canFetchAdditionalMetadata,
+                        true,
+                    )
+
+                    if (additionalMetadata.artUrl != null) {
+                        Logger.d { "fetched artUrl for now playing: ${additionalMetadata.artUrl}" }
+                        trackInfo.setArtUrl(additionalMetadata.artUrl)
+                        notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
+                    }
+                }
+
                 if (npResults != null && npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
                         npResults,
@@ -141,14 +163,14 @@ class ScrobbleQueue(
             // launch it in a separate scope, so that it does not get cancelled
             scope.launch(Dispatchers.IO) {
                 val scrobbleSd = if (fetchAdditionalMetadata) {
-                    val (additionalMetadataScrobbleData, _) = ScrobbleEverywhere.fetchAdditionalMetadata(
+                    val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
                         scrobbleData,
                         trackInfo.trackId,
-                        false
+                        { }
                     )
 
                     ScrobbleEverywhere.preprocessMetadata(
-                        additionalMetadataScrobbleData ?: scrobbleData
+                        additionalMetadata.scrobbleData ?: scrobbleData
                     ).scrobbleData
                 } else {
                     sd
@@ -210,14 +232,14 @@ class ScrobbleQueue(
                 return@launch
             }
 
-            val (additionalMetadataScrobbleData, shouldFetchAgain) = ScrobbleEverywhere.fetchAdditionalMetadata(
+            val additionalMeta = ScrobbleEverywhere.fetchAdditionalMetadata(
                 scrobbleData,
                 trackInfo.trackId,
-                !canFetchAdditionalMetadata()
+                ::canFetchAdditionalMetadata
             )
 
             val preprocessResult = ScrobbleEverywhere.preprocessMetadata(
-                additionalMetadataScrobbleData ?: scrobbleData
+                additionalMeta.scrobbleData ?: scrobbleData
             )
 
             when {
@@ -247,13 +269,20 @@ class ScrobbleQueue(
                 }
 
                 else -> {
-                    trackInfo.putPreprocessedData(preprocessResult.scrobbleData, !shouldFetchAgain)
+                    trackInfo.putPreprocessedData(
+                        preprocessResult.scrobbleData,
+                        !additionalMeta.shouldFetchAgain
+                    )
+
+                    if (additionalMeta.artUrl != null) {
+                        trackInfo.setArtUrl(additionalMeta.artUrl)
+                    }
 
                     notifyPlayingTrackEvent(
                         PlayingTrackNotifyEvent.TrackPlaying(
                             hash = hash,
                             scrobbleData = preprocessResult.scrobbleData,
-                            origScrobbleData = additionalMetadataScrobbleData ?: origScrobbleData,
+                            origScrobbleData = additionalMeta.scrobbleData ?: origScrobbleData,
                             nowPlaying = true,
                             userLoved = trackInfo.userLoved,
                             userPlayCount = trackInfo.userPlayCount,
@@ -262,7 +291,10 @@ class ScrobbleQueue(
                         )
                     )
 
-                    nowPlayingAndSubmit(preprocessResult.scrobbleData, shouldFetchAgain)
+                    nowPlayingAndSubmit(
+                        preprocessResult.scrobbleData,
+                        additionalMeta.shouldFetchAgain
+                    )
                 }
             }
         }

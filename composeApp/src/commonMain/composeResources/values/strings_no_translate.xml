@@ -38,6 +38,11 @@
     <string name="line_n" formatted="true"
         comment="%1$s is the line number, currently used in the context of Discord Rich Presence"
         >Line %1$s</string>
+    <string name="album_art_now_playing">Fetch art from last.fm Now Playing if required</string>
+    <string name="album_art_now_playing_desc">Needs last.fm login</string>
+    <string name="you_have_disabled" formatted="true"
+        comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found"
+        >You've turned off %1$s in %2$s</string>
     <string name="compact_view_line">Show as "Listening to": </string>
     <string name="available_placeholders" formatted="true"
         comment="%1 = placeholder strings, e.g. $artist, $title etc."

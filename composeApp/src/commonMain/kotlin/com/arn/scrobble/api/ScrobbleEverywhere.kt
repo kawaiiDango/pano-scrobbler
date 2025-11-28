@@ -1,6 +1,7 @@
 package com.arn.scrobble.api
 
 import androidx.collection.LruCache
+import androidx.compose.ui.text.toLowerCase
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.deezer.DeezerTrack
 import com.arn.scrobble.api.itunes.ItunesTrackResponse
@@ -24,6 +25,8 @@ import com.arn.scrobble.db.SimpleEditsDao.Companion.findAndPerformEdit
 import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.edits.TitleParseException
+import com.arn.scrobble.imageloader.StarMapper
+import com.arn.scrobble.media.ScrobbleQueue
 import com.arn.scrobble.utils.FirstArtistExtractor
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -47,18 +50,24 @@ data class PreprocessResult(
     val userPlayCount: Int = 0,
 )
 
-private class NetworkRequestNeededException(
-    message: String = "Network request needed",
-    cause: Throwable? = null
-) : Exception(message, cause)
+data class AdditionalMetadataResult(
+    val scrobbleData: ScrobbleData?,
+    val artUrl: String?,
+    val shouldFetchAgain: Boolean = false,
+) {
+    companion object {
+        val Empty = AdditionalMetadataResult(
+            scrobbleData = null,
+            artUrl = null,
+        )
+    }
+}
 
 object ScrobbleEverywhere {
 
-    val itunesArtistsCache = LruCache<String, String>(100)
-    val itunesTracksCache = LruCache<String, ItunesTrackResponse>(50)
-    val spotifyTrackIdToArtistCache = LruCache<String, String>(100)
     val deezerTracksCache = LruCache<String, DeezerTrack>(50)
     val lastfmTracksCache = LruCache<String, Track>(50)
+    val lastfmAlbumsCache = LruCache<String, Album>(50)
 
     private suspend fun performEditsAndBlocks(
         scrobbleData: ScrobbleData,
@@ -203,11 +212,9 @@ object ScrobbleEverywhere {
     suspend fun fetchAdditionalMetadata(
         scrobbleData: ScrobbleData,
         trackId: String?,
-        cacheOnly: Boolean,
-    ): Pair<ScrobbleData?, Boolean> {
-        var newScrobbleData: ScrobbleData? = null
-        var shouldFetchAgain = false
-
+        onNetworkRequestMade: suspend () -> Unit,
+        fetchArtUrlOnly: Boolean = false
+    ): AdditionalMetadataResult {
         val fetchMissingMetadata =
             PlatformStuff.mainPrefs.data.map { it.fetchMissingMetadata }.first()
         val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
@@ -247,6 +254,11 @@ object ScrobbleEverywhere {
                 }
                  */
 
+                fetchArtUrlOnly && !scrobbleData.album.isNullOrEmpty()
+                    -> {
+                    return fetchNowPlaying(scrobbleData, onNetworkRequestMade)
+                }
+
                 fetchMissingMetadata && (
 //                        scrobbleData.appId == Stuff.PACKAGE_DEEZER ||
 //                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_TV ||
@@ -257,15 +269,13 @@ object ScrobbleEverywhere {
                                     ignoreCase = true
                                 )
                         ) -> {
-                    fetchFromDeezer(
+                    return fetchFromDeezer(
                         scrobbleData,
                         trackId
                             ?.takeIf { it.startsWith("0.") }
                             ?.removePrefix("0."),
-                        cacheOnly
-                    )?.let {
-                        newScrobbleData = it
-                    }
+                        onNetworkRequestMade
+                    )
                 }
 
                 tidalSteelSeries && (
@@ -276,257 +286,20 @@ object ScrobbleEverywhere {
                                     ignoreCase = true
                                 )
                         ) -> {
-                    getFromSteelSeriesTidal(scrobbleData)
-                        ?.let {
-                            newScrobbleData = it
-                        }
+
+                    return SteelSeriesReceiverServer.getAdditionalData(scrobbleData)
                 }
 
                 fetchMissingMetadataLastfm && scrobbleData.album.isNullOrEmpty() -> {
-                    val track = getLastfmTrack(
-                        scrobbleData.artist,
-                        scrobbleData.track,
-                        cacheOnly
-                    )
-
-                    if (track != null) {
-                        newScrobbleData = scrobbleData.copy(
-                            artist = track.artist.name,
-                            track = track.name,
-                            album = track.album?.name,
-                            albumArtist = track.album?.artist?.name,
-                        )
-                    }
+                    return fetchLastfmTrack(scrobbleData, onNetworkRequestMade)
                 }
             }
-        } catch (e: NetworkRequestNeededException) {
-            shouldFetchAgain = true
+        } catch (e: ScrobbleQueue.NetworkRequestNeededException) {
+            Logger.d { "Network request needed to fetch additional metadata" }
+            AdditionalMetadataResult.Empty.copy(shouldFetchAgain = true)
         }
 
-        return newScrobbleData to shouldFetchAgain
-    }
-
-    private fun createCacheKey(id: String, country: String) = "$id||$country"
-
-    private suspend fun fetchFromItunes(
-        scrobbleData: ScrobbleData,
-        trackId: Long?,
-        cacheOnly: Boolean
-    ): ScrobbleData? {
-        val country = PlatformStuff.mainPrefs.data.map { it.itunesCountryP }.first()
-
-        val track = if (trackId == null) {
-            val query = scrobbleData.artist + " " + scrobbleData.track
-            val cacheKey = createCacheKey(query, country)
-
-            val response = itunesTracksCache[cacheKey]
-                ?: if (!cacheOnly)
-                    Requesters.itunesRequester.searchTrack(
-                        query,
-                        country = country,
-                        limit = 5
-                    ).onFailure {
-                        Logger.w(it) { "Failed to search iTunes for track" }
-                    }
-                        .getOrNull()
-                        ?.also { itunesTracksCache.put(cacheKey, it) }
-                else
-                    throw NetworkRequestNeededException()
-
-            response
-                ?.results
-                ?.firstOrNull {
-                    it.wrapperType == ItunesWrapperType.track &&
-                            it.artistName.equals(scrobbleData.artist, ignoreCase = true) &&
-                            it.trackName.equals(scrobbleData.track, ignoreCase = true) &&
-                            (scrobbleData.album == null || it.collectionName != null &&
-                                    it.collectionName.replace(" - (Single|EP)$".toRegex(), "")
-                                        .equals(scrobbleData.album, ignoreCase = true))
-                }
-        } else {
-            val cacheKey = createCacheKey(trackId.toString(), country)
-
-            val response = itunesTracksCache[cacheKey]
-                ?: if (!cacheOnly)
-                    Requesters.itunesRequester.lookupTrack(trackId)
-                        .onFailure {
-                            Logger.w(it) { "Failed to look up iTunes track" }
-                        }
-                        .getOrNull()
-                        ?.also { itunesTracksCache.put(cacheKey, it) }
-                else
-                    throw NetworkRequestNeededException()
-
-            response
-                ?.results
-                ?.firstOrNull { it.wrapperType == ItunesWrapperType.track }
-        }
-
-        if (track == null) {
-            return null
-        }
-
-        val artistCacheKey = createCacheKey(track.artistId.toString(), country)
-        val artistName = itunesArtistsCache[artistCacheKey]
-            ?: if (!cacheOnly)
-                Requesters.itunesRequester.lookupArtist(track.artistId)
-                    .onFailure {
-                        Logger.w(it) { "Failed to look up iTunes artist" }
-                    }
-                    .getOrNull()
-                    ?.results
-                    ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
-                    ?.artistName
-                    ?.also { itunesArtistsCache.put(artistCacheKey, it) }
-            else
-                throw NetworkRequestNeededException()
-
-        val albumArtistName =
-            if (track.collectionArtistName == null ||
-                track.collectionArtistId == null ||
-                track.collectionArtistId == track.artistId
-            ) {
-                artistName
-            } else {
-                val albumArtistCacheKey =
-                    createCacheKey(track.collectionArtistId.toString(), country)
-
-                itunesArtistsCache[albumArtistCacheKey]
-                    ?: if (!cacheOnly)
-                        Requesters.itunesRequester.lookupArtist(track.collectionArtistId)
-                            .onFailure {
-                                Logger.w(it) { "Failed to look up iTunes album artist" }
-                            }
-                            .getOrNull()
-                            ?.results
-                            ?.firstOrNull { it.wrapperType == ItunesWrapperType.artist }
-                            ?.artistName
-                            ?.also { itunesArtistsCache.put(albumArtistCacheKey, it) }
-                    else
-                        throw NetworkRequestNeededException()
-            }
-
-        if (artistName != null) {
-            return scrobbleData.copy(
-                artist = artistName,
-                album = scrobbleData.album ?: track.collectionName,
-                albumArtist = albumArtistName
-            )
-        }
-        return null
-    }
-
-    private suspend fun fetchFromSpotify(
-        scrobbleData: ScrobbleData,
-        trackId: String?,
-        cacheOnly: Boolean,
-    ): ScrobbleData? {
-        if (!scrobbleData.artist.contains(", ")) {
-            return null
-        }
-
-        if (trackId == null) return null
-
-        val firstArtistName =
-            if (scrobbleData.albumArtist != null &&
-                (scrobbleData.artist == scrobbleData.albumArtist || // the artist itself may have a ", " in it
-                        scrobbleData.artist.startsWith(scrobbleData.albumArtist + ", "))
-            ) {
-                // sometimes, the first artist is the album artist
-                scrobbleData.albumArtist
-            } else {
-                val country = PlatformStuff.mainPrefs.data.map { it.spotifyCountryP }.first()
-
-                val cacheKey = createCacheKey(trackId, country)
-
-                spotifyTrackIdToArtistCache[cacheKey]
-                    ?: if (!cacheOnly) {
-                        Requesters.spotifyRequester.track(trackId, country)
-                            .onFailure {
-                                Logger.w(it) { "Failed to search Spotify for track" }
-                            }
-                            .getOrNull()
-                            ?.artists
-                            ?.firstOrNull()
-                            ?.name
-                            ?.also { spotifyTrackIdToArtistCache.put(cacheKey, it) }
-                    } else
-                        throw NetworkRequestNeededException()
-
-            }
-
-        if (firstArtistName != null) {
-            return scrobbleData.copy(
-                artist = firstArtistName,
-            )
-        }
-        return null
-    }
-
-    private suspend fun fetchFromDeezer(
-        scrobbleData: ScrobbleData,
-        trackId: String?,
-        cacheOnly: Boolean,
-    ): ScrobbleData? {
-        // on android, the trackId is non-null and scrobbleData has the album
-        if (trackId != null && !scrobbleData.artist.contains(", ")) {
-            return null
-        }
-
-        val cacheKey = trackId ?: (scrobbleData.artist + " - " + scrobbleData.track)
-
-        var track = deezerTracksCache[cacheKey]
-
-        if (track == null && !cacheOnly) {
-            track = if (trackId != null) {
-                Requesters.deezerRequester.lookupTrack(trackId.toLong())
-                    .onFailure {
-                        Logger.w(it) { "Failed to look up Deezer track" }
-                    }
-                    .getOrNull()
-            } else {
-                Requesters.deezerRequester.searchTrack(
-                    scrobbleData.artist,
-                    scrobbleData.track,
-                    limit = 5
-                ).onFailure {
-                    Logger.w(it) { "Failed to search Deezer for track" }
-                }.getOrNull()?.data?.firstOrNull {
-                    it.title.equals(scrobbleData.track, ignoreCase = true)
-                    // the album may be absent in scrobbleData, and the artist may contain multiple artists,
-                    // so we don't check them here
-                }
-            }
-        } else
-            throw NetworkRequestNeededException()
-
-        if (track != null) {
-            deezerTracksCache.put(cacheKey, track)
-
-            return scrobbleData.copy(
-                artist = track.artist.name,
-                albumArtist = null,
-                album = scrobbleData.album ?: track.album.title
-            )
-        }
-
-        return null
-    }
-
-    private suspend fun getFromSteelSeriesTidal(
-        scrobbleData: ScrobbleData,
-    ): ScrobbleData? {
-        if (!SteelSeriesReceiverServer.serverStartAttempted) {
-            SteelSeriesReceiverServer.startServer()
-
-            // wait for data to be available
-            delay(2000)
-        }
-
-        // wait for data to be available
-        delay(2000)
-
-        return SteelSeriesReceiverServer.putAlbum(scrobbleData)
+        return AdditionalMetadataResult.Empty
     }
 
     suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleIgnored>> {
@@ -658,24 +431,177 @@ object ScrobbleEverywhere {
         }
     }
 
-    private suspend fun getLastfmTrack(artist: String, track: String, cacheOnly: Boolean): Track? {
-        val cacheKey = "$artist||$track"
-        val cachedTrack = lastfmTracksCache[cacheKey]
-        if (cachedTrack != null) {
-            return cachedTrack
+    private fun createCacheKey(one: String, two: String): String {
+        return "${one.lowercase()}||${two.lowercase()}"
+    }
+
+    private suspend fun fetchLastfmTrack(
+        scrobbleData: ScrobbleData,
+        onNetworkRequestMade: suspend () -> Unit,
+    ): AdditionalMetadataResult {
+        val artist = scrobbleData.artist
+        val title = scrobbleData.track
+
+        val cacheKey = createCacheKey(artist, title)
+        var track = lastfmTracksCache[cacheKey]
+
+        if (track == null) {
+            val trackObj = Track(title, null, Artist(artist))
+            onNetworkRequestMade()
+            track = Requesters.lastfmUnauthedRequester.getInfo(trackObj)
+                .getOrNull()
+            if (track != null)
+                lastfmTracksCache.put(cacheKey, track)
         }
 
-        val trackObj = Track(track, null, Artist(artist))
 
-        if (!cacheOnly) {
-            Requesters.lastfmUnauthedRequester.getInfo(trackObj)
-                .onSuccess {
-                    lastfmTracksCache.put(cacheKey, it)
-                    return it
+        if (track != null)
+            return extractAlbum(track, scrobbleData)
+
+        return AdditionalMetadataResult.Empty
+    }
+
+    private fun extractAlbum(
+        track: Track,
+        scrobbleData: ScrobbleData,
+    ): AdditionalMetadataResult {
+        val albumArtistName = track.album?.artist?.name
+
+        if (track.album != null) {
+            var cacheKey = createCacheKey(
+                track.artist.name,
+                track.album.name
+            )
+            lastfmAlbumsCache.put(cacheKey, track.album)
+
+            // also cache with album artist if different
+            if (albumArtistName != null && albumArtistName != track.artist.name) {
+                cacheKey = createCacheKey(
+                    albumArtistName,
+                    track.album.name
+                )
+                lastfmAlbumsCache.put(cacheKey, track.album)
+            }
+        }
+
+        val sd = scrobbleData.copy(
+            artist = track.artist.name,
+            track = track.name,
+            album = track.album?.name,
+            albumArtist = albumArtistName,
+        )
+
+        val artUrl = track.album?.image?.lastOrNull()?.url?.let {
+            it.takeIf { StarMapper.STAR_PATTERN !in it }
+        }
+
+        return AdditionalMetadataResult(
+            scrobbleData = sd,
+            artUrl = artUrl,
+        )
+    }
+
+    private suspend fun fetchNowPlaying(
+        scrobbleData: ScrobbleData,
+        onNetworkRequestMade: suspend () -> Unit,
+    ): AdditionalMetadataResult {
+        val cacheKeyAlbum = createCacheKey(
+            scrobbleData.artist,
+            scrobbleData.album ?: return AdditionalMetadataResult.Empty
+        )
+
+        val album =
+            lastfmAlbumsCache[cacheKeyAlbum] ?: scrobbleData.albumArtist?.let { albumArtist ->
+                lastfmAlbumsCache[createCacheKey(scrobbleData.album, albumArtist)]
+            }
+
+        if (album != null) {
+            return AdditionalMetadataResult(
+                scrobbleData = null,
+                artUrl = album.image?.lastOrNull()?.url?.let {
+                    it.takeIf { StarMapper.STAR_PATTERN !in it }
+                },
+            )
+        }
+
+        if (PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()) {
+            Scrobblables.all.firstOrNull { it.userAccount.type == AccountType.LASTFM }
+                ?.also {
+                    onNetworkRequestMade()
+                    delay(1000) // wait a bit to let lastfm update now playing
+                }
+                ?.getRecents(1, includeNowPlaying = true, limit = 1)
+                ?.onSuccess {
+                    val npTrack = it.entries.firstOrNull {
+                        it.album?.name?.equals(scrobbleData.album, ignoreCase = true) == true
+                    }
+                    if (npTrack != null) {
+                        Logger.d { "fetched artUrl for now playing" }
+                        return extractAlbum(
+                            npTrack,
+                            scrobbleData,
+                        ).copy(scrobbleData = null)
+                    } else {
+                        Logger.i { "no matching now playing album found" }
+                    }
                 }
         }
 
-        return null
+        return AdditionalMetadataResult.Empty
     }
 
+    private suspend fun fetchFromDeezer(
+        scrobbleData: ScrobbleData,
+        trackId: String?,
+        onNetworkRequestMade: suspend () -> Unit,
+    ): AdditionalMetadataResult {
+
+        // on android, the trackId is non-null and scrobbleData has the album
+        if (trackId != null && !scrobbleData.artist.contains(", ")) {
+            return AdditionalMetadataResult.Empty
+        }
+
+        val cacheKey = trackId ?: createCacheKey(scrobbleData.artist, scrobbleData.track)
+        var track = deezerTracksCache[cacheKey]
+
+        if (track == null) {
+            onNetworkRequestMade()
+            track = if (trackId != null) {
+                Requesters.deezerRequester.lookupTrack(trackId.toLong())
+                    .onFailure {
+                        Logger.w(it) { "Failed to look up Deezer track" }
+                    }
+                    .getOrNull()
+            } else {
+                Requesters.deezerRequester.searchTrack(
+                    scrobbleData.artist,
+                    scrobbleData.track,
+                    limit = 5
+                ).onFailure {
+                    Logger.w(it) { "Failed to search Deezer for track" }
+                }.getOrNull()?.data?.firstOrNull {
+                    it.title.equals(scrobbleData.track, ignoreCase = true)
+                    // the album may be absent in scrobbleData, and the artist may contain multiple artists,
+                    // so we don't check them here
+                }
+            }
+        }
+
+        if (track != null) {
+            deezerTracksCache.put(cacheKey, track)
+
+            val sd = scrobbleData.copy(
+                artist = track.artist.name,
+                albumArtist = null,
+                album = scrobbleData.album ?: track.album.title
+            )
+
+            return AdditionalMetadataResult(
+                scrobbleData = sd,
+                artUrl = track.album.cover_medium,
+            )
+        }
+
+        return AdditionalMetadataResult.Empty
+    }
 }

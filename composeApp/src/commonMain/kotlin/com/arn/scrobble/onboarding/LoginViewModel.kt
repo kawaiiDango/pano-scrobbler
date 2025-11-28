@@ -3,6 +3,7 @@ package com.arn.scrobble.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.GnuFm
@@ -11,21 +12,28 @@ import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.failed_encode_url
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import java.io.IOException
+import java.net.UnknownHostException
 
 class LoginViewModel : ViewModel() {
     private val _result = MutableSharedFlow<Result<Unit>>()
     val result = _result.asSharedFlow()
     private val _pleromaCredsResult = MutableSharedFlow<Result<PleromaOauthClientCreds>>()
     val pleromaCredsResult = _pleromaCredsResult.asSharedFlow()
+
+    private val _tokenResult = MutableStateFlow<Result<String>?>(null)
+    val tokenResult = _tokenResult.asStateFlow()
 
     fun gnufmLogin(
         apiRoot: String,
@@ -59,6 +67,18 @@ class LoginViewModel : ViewModel() {
                     Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
                 }
             _result.emit(result)
+        }
+    }
+
+    fun fetchToken(userAccountTemp: UserAccountTemp, apiKey: String, apiSecret: String) {
+        if (_tokenResult.value != null) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _tokenResult.value = Requesters.lastfmUnauthedRequester.getToken(
+                userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT,
+                apiKey,
+                apiSecret,
+            ).map { it.token }
         }
     }
 
@@ -170,7 +190,10 @@ class LoginViewModel : ViewModel() {
                 )
 
                 // 14 - This token has not been authorized
-                if (result.isFailure && (result.exceptionOrNull() as? ApiException)?.code == 14) {
+                if (
+                    result.isFailure && ((result.exceptionOrNull() as? ApiException)?.code == 14 ||
+                            (result.exceptionOrNull() is UnknownHostException))
+                ) {
                     delay(5000)
                     val hasTimeLeft = tryAgainTimeout - System.currentTimeMillis() > 0
 

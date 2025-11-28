@@ -27,6 +27,7 @@ class MusicEntryImageInterceptor : Interceptor {
     private val semaphore = Semaphore(2)
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
     private val spotifyArtistSearchApproximate by lazy { PlatformStuff.mainPrefs.data.map { it.spotifyArtistSearchApproximate } }
+    private val useSpotify by lazy { PlatformStuff.mainPrefs.data.map { it.useSpotify } }
 
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
@@ -47,16 +48,18 @@ class MusicEntryImageInterceptor : Interceptor {
 
                             val customMapping = customSpotifyMappingsDao.searchArtist(entry.name)
                             val imageUrls = if (customMapping != null) {
-                                if (customMapping.spotifyId != null) {
+                                if (customMapping.spotifyId == null) {
+                                    FetchedImageUrls(customMapping.fileUri)
+                                } else if (useSpotify.first()) {
                                     Requesters.spotifyRequester.artist(
                                         customMapping.spotifyId
                                     ).getOrNull()?.let {
                                         FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
                                     }
                                 } else {
-                                    FetchedImageUrls(customMapping.fileUri)
+                                    FetchedImageUrls(null)
                                 }
-                            } else {
+                            } else if (useSpotify.first()) {
                                 val spotifyArtists = Requesters.spotifyRequester.search(
                                     entry.name,
                                     SpotifySearchType.artist,
@@ -84,6 +87,8 @@ class MusicEntryImageInterceptor : Interceptor {
                                 artistItem?.let {
                                     FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
                                 }
+                            } else {
+                                null
                             }
                             imageUrls
                         }
@@ -113,7 +118,9 @@ class MusicEntryImageInterceptor : Interceptor {
                         }
 
                         if (customMapping != null) {
-                            if (customMapping.spotifyId != null) {
+                            if (customMapping.spotifyId == null)
+                                FetchedImageUrls(customMapping.fileUri)
+                            else if (useSpotify.first()) {
                                 semaphore.withPermit {
                                     delay(delayMs)
                                     Requesters.spotifyRequester.album(
@@ -122,8 +129,9 @@ class MusicEntryImageInterceptor : Interceptor {
                                         FetchedImageUrls(it.mediumImageUrl, it.largeImageUrl)
                                     }
                                 }
-                            } else
-                                FetchedImageUrls(customMapping.fileUri)
+                            } else {
+                                FetchedImageUrls(null)
+                            }
                         } else {
                             var webp300 = album?.webp300
                             val needImage = webp300 == null ||

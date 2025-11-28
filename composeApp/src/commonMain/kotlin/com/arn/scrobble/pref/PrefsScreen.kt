@@ -57,8 +57,10 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.also_available_on
 import pano_scrobbler.composeapp.generated.resources.android
+import pano_scrobbler.composeapp.generated.resources.artist_image
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.copy_sk
@@ -120,9 +122,9 @@ import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.scrobbles
+import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.spotify
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
-import pano_scrobbler.composeapp.generated.resources.use_something
 import java.util.Calendar
 import java.util.Locale
 
@@ -178,6 +180,8 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.autoUpdates } }
     val crashReporterEnabled by
     remember { derivedStateOf { mainPrefsData.crashReporterEnabled } }
+    val useSpotify by
+    remember { derivedStateOf { mainPrefsData.useSpotify } }
     val spotifyCountryP by
     remember { derivedStateOf { mainPrefsData.spotifyCountryP } }
     val itunesCountryP by
@@ -609,6 +613,42 @@ fun PrefsScreen(
             )
         }
 
+        item(MainPrefs::useSpotify.name) {
+            SwitchPref(
+                text = stringResource(Res.string.spotify),
+                summary = stringResource(Res.string.search) + ": " +
+                        stringResource(Res.string.artist_image) + ", " +
+                        stringResource(Res.string.album_art),
+                value = useSpotify,
+                copyToSave = { copy(useSpotify = it) }
+            )
+        }
+
+        item(MainPrefs::spotifyCountryP.name) {
+            val countryCodes = remember { Locale.getISOCountries().toList() }
+
+            DropdownPref(
+                text = stringResource(
+                    Res.string.country_for_api,
+                    stringResource(Res.string.spotify)
+                ),
+                selectedValue = spotifyCountryP,
+                values = countryCodes,
+                toLabel = { it },
+                copyToSave = { copy(spotifyCountry = it) },
+                enabled = useSpotify
+            )
+        }
+
+        item(MainPrefs::spotifyArtistSearchApproximate.name) {
+            SwitchPref(
+                text = stringResource(Res.string.pref_spotify_artist_search_approximate),
+                value = spotifyArtistSearchApproximate,
+                copyToSave = { copy(spotifyArtistSearchApproximate = it) },
+                enabled = useSpotify
+            )
+        }
+
         if (PlatformStuff.isDesktop) {
             item(MainPrefs::fetchMissingMetadata.name) {
                 val metadataServices = listOf(
@@ -623,45 +663,6 @@ fun PrefsScreen(
             }
         }
 
-        /*
-        item(MainPrefs::itunesCountryP.name) {
-            val countryCodes = remember { Locale.getISOCountries().toList() }
-
-            DropdownPref(
-                text = stringResource(
-                    Res.string.country_for_api,
-                    stringResource(Res.string.apple_music)
-                ),
-                selectedValue = itunesCountryP,
-                values = countryCodes,
-                toLabel = { it },
-                copyToSave = { copy(itunesCountry = it) }
-            )
-        }
-         */
-
-        item(MainPrefs::spotifyCountryP.name) {
-            val countryCodes = remember { Locale.getISOCountries().toList() }
-
-            DropdownPref(
-                text = stringResource(
-                    Res.string.country_for_api,
-                    stringResource(Res.string.spotify)
-                ),
-                selectedValue = spotifyCountryP,
-                values = countryCodes,
-                toLabel = { it },
-                copyToSave = { copy(spotifyCountry = it) }
-            )
-        }
-
-        item(MainPrefs::spotifyArtistSearchApproximate.name) {
-            SwitchPref(
-                text = stringResource(Res.string.pref_spotify_artist_search_approximate),
-                value = spotifyArtistSearchApproximate,
-                copyToSave = { copy(spotifyArtistSearchApproximate = it) }
-            )
-        }
         item(MainPrefs::fetchAlbum.name) {
             SwitchPref(
                 text = stringResource(Res.string.pref_fetch_album),

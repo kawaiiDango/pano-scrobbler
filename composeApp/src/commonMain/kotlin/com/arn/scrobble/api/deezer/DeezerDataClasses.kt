@@ -32,6 +32,6 @@ data class DeezerArtist(
 data class DeezerAlbum(
     val id: Long,
     val title: String,
-    val cover: String,
+    val cover_medium: String?,
     val type: String
 )

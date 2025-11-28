@@ -209,3 +209,5 @@ suspend fun listenForPlayingTrackEvents(
 expect fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent)
 
 expect fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>?
+
+expect suspend fun shouldFetchNpArtUrl(): Boolean

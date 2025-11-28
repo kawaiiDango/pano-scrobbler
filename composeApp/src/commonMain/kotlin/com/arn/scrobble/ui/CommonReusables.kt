@@ -288,6 +288,7 @@ fun SearchField(
     searchTerm: String,
     onSearchTermChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     label: String = stringResource(Res.string.search),
 ) {
     OutlinedTextField(
@@ -319,6 +320,7 @@ fun SearchField(
             imeAction = ImeAction.Done
         ),
         singleLine = true,
+        enabled = enabled
     )
 }
 

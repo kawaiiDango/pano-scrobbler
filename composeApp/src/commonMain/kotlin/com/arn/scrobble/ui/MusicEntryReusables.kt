@@ -952,11 +952,10 @@ fun DismissableNotice(
     }
 }
 
-fun <T> LazyListScope.expandableSublist(
+fun LazyListScope.expandableSublist(
     headerText: String,
     headerIcon: ImageVector,
-    items: List<T>,
-    transformToMusicEntry: (T) -> MusicEntry = { it as MusicEntry },
+    items: List<MusicEntry>,
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
     onItemClick: (MusicEntry) -> Unit,
@@ -984,13 +983,12 @@ fun <T> LazyListScope.expandableSublist(
 
     items(
         items.take(if (expanded) items.size else minItems),
-        key = { it.hashCode() }
+        key = { it.generateKey() }
     ) { item ->
-        val musicEntry = transformToMusicEntry(item)
 
         MusicEntryListItem(
-            musicEntry,
-            onEntryClick = { onItemClick(musicEntry) },
+            item,
+            onEntryClick = { onItemClick(item) },
             fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
             modifier = Modifier.animateItem(),
         )

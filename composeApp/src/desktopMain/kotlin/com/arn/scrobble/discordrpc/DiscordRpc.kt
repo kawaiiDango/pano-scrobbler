@@ -3,7 +3,6 @@ package com.arn.scrobble.discordrpc
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
-import com.arn.scrobble.media.globalTrackEventFlow
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.PanoNotifications
@@ -14,12 +13,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 private sealed interface DiscordActivity {
@@ -62,15 +61,24 @@ object DiscordRpc {
 
     private val discordActivity = MutableStateFlow<DiscordActivity>(DiscordActivity.Stop)
 
-    // null = don't clear, 0 = clear immediately, >0 = clear after secs
+    // null = don't clear, >0 = clear after secs
     private val discordActivityKeepTill = MutableStateFlow<Long?>(null)
+
+    private val _wasSuccessful = MutableStateFlow<Boolean?>(null)
+    val wasSuccessFul = _wasSuccessful.asStateFlow()
+    private val retryDelay = 7.seconds
 
     fun start() {
         combine(discordActivity, discordActivityKeepTill) { activity, keepTill ->
             activity to keepTill
         }
             .mapLatest { (activity, keepTill) ->
-                delay(500)
+                delay(
+                    if (_wasSuccessful.value != false)
+                        500.milliseconds
+                    else
+                        retryDelay
+                )
 
                 when (activity) {
                     is DiscordActivity.Activity -> {
@@ -108,6 +116,8 @@ object DiscordRpc {
                                 buttonUrls = activity.buttonUrls,
                             )
 
+                            _wasSuccessful.value = success
+
                             Logger.d { activity.toString() }
 
                             if (!success) {
@@ -125,10 +135,12 @@ object DiscordRpc {
 
                     is DiscordActivity.Clear -> {
                         PanoNativeComponents.clearDiscordActivity()
+                        _wasSuccessful.value = null
                     }
 
                     is DiscordActivity.Stop -> {
                         PanoNativeComponents.stopDiscordActivity()
+                        _wasSuccessful.value = null
                     }
                 }
             }.launchIn(GlobalScope)
@@ -152,17 +164,6 @@ object DiscordRpc {
                     discordActivity.value = transform(appId, event, settings)
             }
         }.launchIn(GlobalScope)
-
-        globalTrackEventFlow
-            .filterIsInstance<PlayingTrackNotifyEvent.TrackCancelled>()
-            .onEach { event ->
-                val activity = discordActivity.value as? DiscordActivity.Activity
-                if (activity != null && (event.hash == null || event.hash == activity.hash)) {
-                    discordActivity.value = DiscordActivity.Clear
-                }
-            }
-            .launchIn(GlobalScope)
-
     }
 
     private fun transform(
@@ -177,9 +178,7 @@ object DiscordRpc {
         val startTimeMillis =
             trackPlaying.timelineStartTime.takeIf { it > 0 } ?: System.currentTimeMillis()
         val durationMillis = trackPlaying.scrobbleData.duration
-        val artUrl = trackPlaying.artUrl
-            ?.takeIf { settings.albumArt && it.startsWith("https://") == true }
-            .orEmpty()
+        val artUrl = trackPlaying.artUrl?.takeIf { settings.albumArt }.orEmpty()
         val statusLine = settings.statusLine
         val buttonTexts = mutableListOf<String>()
         val buttonUrls = mutableListOf<String>()
@@ -208,6 +207,13 @@ object DiscordRpc {
     fun clearDiscordActivity(appId: String) {
         if ((discordActivity.value as? DiscordActivity.Activity)?.appId == appId)
             discordActivity.value = DiscordActivity.Clear
+    }
+
+    fun clearDiscordActivity(hash: Int?) {
+        val activity = discordActivity.value as? DiscordActivity.Activity
+        if (activity != null && (hash == null || hash == activity.hash)) {
+            discordActivity.value = DiscordActivity.Clear
+        }
     }
 
     private fun formatLine(

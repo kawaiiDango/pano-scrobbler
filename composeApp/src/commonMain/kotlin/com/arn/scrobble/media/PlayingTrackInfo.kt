@@ -40,7 +40,8 @@ class PlayingTrackInfo(
     var origAlbumArtist: String = ""
         private set
 
-    var artUrl: String = ""
+    // null = not fetched, empty = fetched but no art
+    var artUrl: String? = null
         private set
 
     var trackId: String? = null
@@ -81,7 +82,7 @@ class PlayingTrackInfo(
                     ?.contains(sessionId) == true)
 
     fun resetMeta() =
-        putOriginals("", "", "", "", 0, null, "", emptyMap())
+        putOriginals("", "", "", "", 0, null, null, emptyMap())
 
     fun putOriginals(
         artist: String,
@@ -90,7 +91,7 @@ class PlayingTrackInfo(
         albumArtist: String,
         durationMillis: Long,
         trackId: String?,
-        artUrl: String,
+        artUrl: String?,
         extraData: Map<String, String>
     ) {
         origArtist = artist
@@ -115,7 +116,7 @@ class PlayingTrackInfo(
     }
 
     fun setArtUrl(artUrl: String?) {
-        this.artUrl = artUrl.orEmpty()
+        this.artUrl = artUrl
     }
 
     // this is only done for desktop

@@ -41,10 +41,12 @@ actual fun transformPlaybackState(
     }
 
     // do not scrobble youtube music ads (they are not seekable)
+    // no longer works with latest YTM versions
     if (trackInfo.appId in arrayOf(
             Stuff.PACKAGE_YOUTUBE_MUSIC,
             Stuff.PACKAGE_YOUTUBE_TV
         ) &&
+        playbackInfo.state == PlaybackState.STATE_PLAYING &&
         trackInfo.durationMillis > 0 &&
         playbackInfo.actions and PlaybackState.ACTION_SEEK_TO == 0L
     ) {

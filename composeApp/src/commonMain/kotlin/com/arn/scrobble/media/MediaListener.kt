@@ -170,7 +170,7 @@ abstract class MediaListener(
                     albumArtist = metadata.albumArtist,
                     durationMillis = metadata.duration,
                     trackId = metadata.trackId.ifEmpty { null },
-                    artUrl = metadata.artUrl,
+                    artUrl = metadata.artUrl.ifEmpty { null },
                     extraData = extras,
                 )
 

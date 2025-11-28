@@ -6,6 +6,7 @@ import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.lastfm.LastFm.Companion.toFormParametersWithSig
+import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
@@ -40,6 +41,7 @@ class LastFmUnauthedRequester {
             parameter("api_key", apiKey)
         }
 
+        // search API sometimes returns duplicates
         val artists = async {
             client.getResult<ArtistSearchResponse>(Stuff.LASTFM_API_ROOT) {
                 takeFrom(request)

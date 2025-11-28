@@ -1,5 +1,6 @@
 4.15:
 - Customizable Discord Rich Presence on Linux and Windows
+- Spotify search can now be turned off
 
 4.14:
 - Apps list screen now has a search bar

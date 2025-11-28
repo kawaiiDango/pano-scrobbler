@@ -9,6 +9,7 @@ import com.arn.scrobble.db.CachedAlbum.Companion.toAlbum
 import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -43,7 +44,15 @@ class SearchVM : ViewModel() {
                     val results = when (searchType) {
                         SearchType.GLOBAL -> {
                             _hasLoaded.value = false
-                            val r = Requesters.lastfmUnauthedRequester.search(term)
+                            val r = Requesters.lastfmUnauthedRequester
+                                .search(term)
+                                .map {
+                                    it.copy(
+                                        tracks = it.tracks.distinctBy { it.generateKey() },
+                                        albums = it.albums.distinctBy { it.generateKey() },
+                                        artists = it.artists.distinctBy { it.generateKey() },
+                                    )
+                                }
                             _hasLoaded.value = true
                             r
                         }

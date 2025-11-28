@@ -90,7 +90,7 @@ object PanoNativeComponents {
             albumArtist = albumArtist,
             trackNumber = trackNumber,
             duration = duration,
-            artUrl = artUrl,
+            artUrl = artUrl.takeIf { it.startsWith("https://") }.orEmpty(),
         )
 
         desktopMediaListener?.platformMetadataChanged(metadataInfo)

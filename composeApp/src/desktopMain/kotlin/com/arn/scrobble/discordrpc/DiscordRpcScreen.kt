@@ -37,6 +37,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
+import pano_scrobbler.composeapp.generated.resources.album_art_now_playing
+import pano_scrobbler.composeapp.generated.resources.album_art_now_playing_desc
 import pano_scrobbler.composeapp.generated.resources.available_placeholders
 import pano_scrobbler.composeapp.generated.resources.compact_view_line
 import pano_scrobbler.composeapp.generated.resources.enable
@@ -109,11 +111,21 @@ fun DiscordRpcScreen(
 
         SwitchPref(
             text = stringResource(Res.string.album_art),
-            summary = "Not yet fully implemented".uppercase(),
             value = settings.albumArt,
             copyToSave = {
                 copy(
                     discordRpc = settings.copy(albumArt = it)
+                )
+            }
+        )
+
+        SwitchPref(
+            text = stringResource(Res.string.album_art_now_playing),
+            summary = stringResource(Res.string.album_art_now_playing_desc),
+            value = settings.albumArtFromNowPlaying,
+            copyToSave = {
+                copy(
+                    discordRpc = settings.copy(albumArtFromNowPlaying = it)
                 )
             }
         )

@@ -65,3 +65,7 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
     cursor.close()
     return null
 }
+
+actual suspend fun shouldFetchNpArtUrl(): Boolean {
+    return false
+}

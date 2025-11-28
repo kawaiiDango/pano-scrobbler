@@ -8,7 +8,6 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.run_on_start
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
-import pano_scrobbler.composeapp.generated.resources.use_something
 
 actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
     // no-op
@@ -67,10 +66,7 @@ actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
     if (DesktopStuff.os == DesktopStuff.Os.Windows) {
         listScope.item(MainPrefs::tidalSteelSeries.name) {
             SwitchPref(
-                text = stringResource(
-                    Res.string.use_something,
-                    stringResource(Res.string.tidal_steelseries)
-                ),
+                text = stringResource(Res.string.tidal_steelseries),
                 value = enabled,
                 copyToSave = { copy(tidalSteelSeries = it) }
             )

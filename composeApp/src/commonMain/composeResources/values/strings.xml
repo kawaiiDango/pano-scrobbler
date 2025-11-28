@@ -764,6 +764,19 @@
         >Get this app on %1$s</string>
     <string name="first_artist">Use the first artist only</string>
     <string name="external_metadata">External metadata sources</string>
+    <string name="line_n" formatted="true"
+        comment="%1$s is the line number, currently used in the context of Discord Rich Presence"
+        >Line %1$s</string>
+    <string name="album_art_now_playing">Fetch album art from Now Playing, if required</string>
+    <string name="you_have_disabled" formatted="true"
+        comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found"
+        >You've turned off %1$s in %2$s</string>
+    <string name="discord_compact_view_line">Show as "Listening to":</string>
+    <string name="available_placeholders" formatted="true"
+        comment="%1 = placeholder strings, e.g. $artist, $title etc."
+        >Available placeholders: %1$s</string>
+    <string name="show_paused_for">Show paused media for</string>
+    <string name="edit_example">e.g. To replace Artist1 with Artist2 while keeping the rest of the metadata unchanged, enable only the artist field, and fill in the original and corrected artist values, leaving the other fields disabled.</string>
 
 <!--  pro  -->
     <string name="get_pro">Support this app</string>

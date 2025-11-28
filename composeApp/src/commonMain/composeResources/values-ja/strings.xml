@@ -147,12 +147,12 @@
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
     <string name="send_notifications">通知を許可する</string>
     <string name="notification_channel_blocked">このアプリからの通知を有効にしてください</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Scrobbleの状態や回数の確認
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Scrobbleの状態や回数の確認
 - 通知から直接のLoveやブロック
 - Scrobbleのエラーと対処法についての通知
 - 週初のトップScrobbleのお知らせ
 - などなど
-- 通知音は鳴りません\"\"</string>
+- 通知音は鳴りません""</string>
     <string name="will_not_scrobble">この項目をスキップすると、Scrobbleが行われません</string>
     <string name="swap" comment="(Swap title and artist)">入れ替え</string>
     <string name="rate_msg">アプリに満足していただいていますか？</string>
@@ -162,7 +162,7 @@
     <string name="loved" comment="Its a noun">Loveトラック</string>
     <string name="unloved" comment="Its a noun">未Loveトラック</string>
     <string name="simple_edits">訂正</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">チャート</string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">チャート</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">タグクラウド</string>
     <string name="add_to_hs">ホーム画面に追加</string>
     <string name="press_back">終了時に戻るを押す</string>
@@ -235,8 +235,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">抽出</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">キャプチャグループ <i>track, album, artist</i> もしくは <i>albumArtist</i> を他のフィールドから抽出して利用します。</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">例: アーティストとタイトルを入れ替えるには、アーティストの正規表現を (?&lt;track&gt;.*) 、トラックの正規表現を (?&lt;artist&gt;.*) として入力します。</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">正規表現は、少なくとも次のキャプチャグループを含んでいる必要があります: "track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">複数の "%1$s\" キャプチャグループが含まれる正規表現は許可されていません</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">正規表現は、少なくとも次のキャプチャグループを含んでいる必要があります: "track", "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">複数の "%1$s" キャプチャグループが含まれる正規表現は許可されていません</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">無効な正規表現: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">使用されるパターン:</string>
     <string name="edit_continue">これに一致した場合でも、他の正規表現を実行する</string>

@@ -197,7 +197,7 @@
     <string name="grant_notification_access_desc">Nutné pro získání metadat skladeb. Nebudou přečtena žádná nehudební oznámení</string>
     <string name="send_notifications">Povolit oznámení</string>
     <string name="notification_channel_blocked">Je nutné povolit oznámení</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">\"\"- Možnost kontrolovat stav a počet scrobblů
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"- Možnost kontrolovat stav a počet scrobblů
 - Přidávejte do oblíbených či zablokovaných přímo skrz oznámení
 - Buďte v obraze o chybách při scrobblování a co s nimi můžete dělat
 - Dostávejte top scrobbly každý týden
@@ -284,8 +284,8 @@
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrahovat</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pojmenováním záchytné regex skupiny <i>track, album, artist</i> nebo <i>albumArtist</i> extrahujete data z jiných polí</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">např. pro prohození interpreta a názvu skladby nastavíte regex interpreta na (?&lt;track&gt;.*) a regex skladby na (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vaše regexy by měly obsahovat alespoň tyto pojmenované záchytné skupiny: \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vaše regexy obsahují více než jednu \"%1$s\" záchytnou skupinu, což není možné</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vaše regexy by měly obsahovat alespoň tyto pojmenované záchytné skupiny: "track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vaše regexy obsahují více než jednu "%1$s\" záchytnou skupinu, což není možné</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Neplatný regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Použité vzory:</string>
     <string name="edit_continue">Při nalezení pokračovat ve srovnávání ostatních regexů</string>

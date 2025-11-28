@@ -274,7 +274,7 @@
         >Unloved</string>
     <string name="simple_edits">Edits</string>
     <string name="charts"
-        comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud"
+        comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud"
         >Charts</string>
     <string name="tag_cloud"
         comment="https://www.google.com/search?&amp;q=tag+cloud"
@@ -424,10 +424,10 @@
         >e.g. To swap the artist and title, you would put the artist regex as (?&lt;track&gt;.*) and the track regex as (?&lt;artist&gt;.*)</string>
     <string name="edit_extract_no_groups"
         comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
-        >Your regexes should at least have these named capture groups: \"track\", \"artist\"</string>
+        >Your regexes should at least have these named capture groups: "track", "artist"</string>
     <string name="edit_extract_extra_groups" formatted="true"
         comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups"
-        >Your regexes contain more than one \"%1$s\" capture groups, which is not allowed</string>
+        >Your regexes contain more than one "%1$s" capture groups, which is not allowed</string>
     <string name="edit_regex_invalid" formatted="true"
         comment="%1= the regex error message"
         >Invalid regex: %1$s</string>

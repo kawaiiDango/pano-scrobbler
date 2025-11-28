@@ -80,7 +80,7 @@
     <string name="artist">Artiste</string>
     <string name="artists">Artistes</string>
     <string name="top_artists" comment="Top artists the user has listened to">Meilleurs artistes</string>
-    <string name="album_artist">Artiste de l\'album</string>
+    <string name="album_artist">Artiste de l'album</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artiste / Chaîne</string>
     <string name="similar_artists">Artistes similaires</string>
     <string name="album_optional">Album (optionnel)</string>
@@ -182,7 +182,7 @@
     <string name="simple_edits">Modifications</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Statistiques</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuage de tags</string>
-    <string name="add_to_hs">Ajouter à l&apos;écran d\'accueil</string>
+    <string name="add_to_hs">Ajouter à l&apos;écran d'accueil</string>
     <string name="press_back">Appuyer sur retour une fois terminé</string>
     <string name="details">Détails</string>
     <string name="saved_as_pending">Enregistré en tant que scrobble en attente</string>
@@ -252,10 +252,10 @@
     <string name="edit_first" comment="First occurrence of a pattern">Premier</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraire</string>
-    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l\'album</i> pour les extraire d&apos;autres champs</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l'album</i> pour les extraire d&apos;autres champs</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Par exemple pour échanger l&apos;artiste et le titre, vous définiriez l&apos;expression régulière de l&apos;artiste en tant que (?&lt;track&gt;.*) et celle du titre en tant que (?&lt;artist&gt;.*)</string>
-    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières devraient au moins contenir ces groupes de capture : \"track\", \"artist\"</string>
-    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d&apos;un groupe de capture \"%1$s\", ce qui n\'est pas autorisé</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières devraient au moins contenir ces groupes de capture : "track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d&apos;un groupe de capture "%1$s\", ce qui n\'est pas autorisé</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Expression regex invalide : %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Modèles utilisés :</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
@@ -265,7 +265,7 @@
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Présélection : %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de modèles atteinte (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Poignée de classement glissante</string>
-    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠️ Assurez-vous de bien comprendre <a href="https://www.google.com/search?q=regex+tutorial">les regex java</a> avant d\'utiliser ceci, ou utilisez l&apos;un des presets <b></b> fournis. Les correspondances avec les regex sont faites du haut vers le bas</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠️ Assurez-vous de bien comprendre <a href="https://www.google.com/search?q=regex+tutorial">les regex java</a> avant d'utiliser ceci, ou utilisez l&apos;un des presets <b></b> fournis. Les correspondances avec les regex sont faites du haut vers le bas</string>
     <string name="blocked_metadata_info">Remplir plusieurs de ces champs appliquera un opérateur ET entre eux</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Appuyer pour bloquer et passer</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
@@ -277,7 +277,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tags cachés</string>
     <string name="pin" comment="pin a friend to the top">Épingler</string>
     <string name="unpin" comment="unpin a friend to the top">Désépingler</string>
-    <string name="pin_limit_reached" formatted="true">Limite d\'épingles atteinte (%1$d)</string>
+    <string name="pin_limit_reached" formatted="true">Limite d'épingles atteinte (%1$d)</string>
     <string name="pin_help">Appuyer longuement sur les éléments épinglés pour les classer</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utiliser le nom de la chaîne</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Voulez-vous rendre cette règle d&apos;édition répétitive pour ce schéma %1$s?</string>
@@ -371,7 +371,7 @@
     <string name="downloading">Téléchargement en cours</string>
     <string name="download" comment="Its a verb">Télécharger</string>
     <string name="changelog">Journal des modifications</string>
-    <string name="import_hey_wtf">Ce n&apos;est probablement pas un fichier d\'exportation Pano Scrobbler</string>
+    <string name="import_hey_wtf">Ce n&apos;est probablement pas un fichier d'exportation Pano Scrobbler</string>
     <string name="export_failed">Échec de l&apos;export</string>
     <string name="imported">Importé</string>
     <string name="import_options">Options d&apos;import</string>
@@ -396,7 +396,7 @@
     <string name="bar_chart">Histogramme</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>
-    <string name="fix_it_startup_title">Économiseurs d\'énergie / gestionnaires de démarrage</string>
+    <string name="fix_it_startup_title">Économiseurs d'énergie / gestionnaires de démarrage</string>
     <string name="fix_it_battery_title">Désactiver les optimisations de la batterie</string>
     <string name="fix_it_energy_title">Désactiver les optimisations d&apos;énergie</string>
     <string name="fix_it_action" comment="(To open an app)">Ouvrir</string>
@@ -427,7 +427,7 @@
     <string name="low" comment="As in high/medium/low">Bas</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Nécessite un plugin</string>
     <string name="reload" comment="Reload or refresh">Recharger</string>
-    <string name="pref_tray_icon_theme">Thème de l&apos;icône de la barre d\'état</string>
+    <string name="pref_tray_icon_theme">Thème de l&apos;icône de la barre d'état</string>
     <string name="min_track_duration">Titres scrobblés plus long que</string>
     <string name="automation">Contrôler Pano Scrobbler à partir d&apos;applications d&apos;automatisation</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Pays des métadonnées %1$s</string>
@@ -444,17 +444,17 @@
     <string name="pro_support">C&apos;est une façon simple et rapide pour les utilisateurs incroyables comme vous de montrer leur soutien en reconnaissant la valeur de cette application.</string>
     <string name="pro_also_get">Vous obtiendrez également les fonctionnalités suivantes :</string>
     <string name="thank_you">Merci !</string>
-    <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
+    <string name="purchase_pending">Votre achat n'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
     <string name="billing_troubleshoot">Déjà acheté?
 
-Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qui a fait l\'achat. Lorsque vous installez l\'application sur un nouvel appareil avec plusieurs comptes, Google Play peut l\'associer à un mauvais appareil. La meilleure solution pour sélectionner explicitement le compte possédant un achat est d\'installer l\'application depuis un ordinateur via la page web Google Play :
+Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qui a fait l'achat. Lorsque vous installez l\'application sur un nouvel appareil avec plusieurs comptes, Google Play peut l\'associer à un mauvais appareil. La meilleure solution pour sélectionner explicitement le compte possédant un achat est d\'installer l\'application depuis un ordinateur via la page web Google Play :
 
 • Désinstaller cette application.
 • Ouvrez la page Web de Google Play depuis votre ordinateur.
 • Connectez-vous avec un compte propriétaire de l\'achat.
 • Installez cette application directement depuis la page web de Google Play.</string>
     <string name="billing_block">Bloquer cet artiste/ce titre et automatiquement passer la chanson ou couper le son</string>
-    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Épingler jusqu\'à %1$d amis et classer les</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Épingler jusqu'à %1$d amis et classer les</string>
     <string name="billing_sharing">Supprimer le nom de l&apos;application lors du partage</string>
     <string name="billing_scrobble_source">Enregistrer et montrer les applications depuis lesquelles vous avez scrobblé et recherchez directement depuis celles-ci</string>
     <string name="billing_regex_extract">Écrire des règles d&apos;extraction de métadonnées personnalisées à l&apos;aide d&apos;expression régulières</string>

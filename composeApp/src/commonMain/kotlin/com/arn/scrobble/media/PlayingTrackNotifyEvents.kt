@@ -3,6 +3,8 @@ package com.arn.scrobble.media
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.BlockPlayerAction
+import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.BlockedMetadataDao
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -51,7 +53,7 @@ sealed interface PlayingTrackNotifyEvent {
     data class TrackCancelled(
         val hash: Int?,
         val showUnscrobbledNotification: Boolean,
-        val blockPlayerAction: BlockPlayerAction = BlockPlayerAction.ignore,
+        val blockedMetadata: BlockedMetadata = BlockedMetadata(blockPlayerAction = BlockPlayerAction.ignore),
     ) : PlayingTrackNotifyEvent
 
     @Serializable
@@ -113,11 +115,24 @@ suspend fun listenForPlayingTrackEvents(
 
                 trackInfo ?: return@collect
 
-                val hash = trackInfo.hash
+                val shouldCancel = if (event.hash == null)
+                    BlockedMetadataDao.shouldBlock(
+                        event.blockedMetadata,
+                        trackInfo.toScrobbleData(false)
+                    )
+                else
+                    true
 
-                if (event.blockPlayerAction == BlockPlayerAction.skip) {
+                if (!shouldCancel) {
+                    return@collect
+                }
+
+                val hash = trackInfo.hash
+                val blockPlayerAction = event.blockedMetadata.blockPlayerAction
+
+                if (blockPlayerAction == BlockPlayerAction.skip) {
                     mediaListener.skip(hash)
-                } else if (event.blockPlayerAction == BlockPlayerAction.mute) {
+                } else if (blockPlayerAction == BlockPlayerAction.mute) {
                     mediaListener.mute(hash)
                 }
 

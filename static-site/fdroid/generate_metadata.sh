@@ -19,8 +19,6 @@ SourceCode: https://github.com/kawaiiDango/pano-scrobbler
 Summary: 'Feature packed cross-platform music tracker for Last.fm, ListenBrainz, Libre.fm, Pleroma and other compatible services'
 Description: |
 $features
-AntiFeatures:
-  - NonFreeNet
 WebSite: https://kawaiiDango.github.io/pano-scrobbler
 Translation: https://crowdin.com/project/pscrobbler
 Donate: https://ko-fi.com/kawaiiDango

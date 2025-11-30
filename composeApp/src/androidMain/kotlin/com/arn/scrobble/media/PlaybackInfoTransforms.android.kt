@@ -33,8 +33,9 @@ actual fun transformPlaybackState(
 
     // do not scrobble spotify remote playback
     if (!options.scrobbleSpotifyRemote &&
-        trackInfo.appId == Stuff.PACKAGE_SPOTIFY
-        && playbackInfo.extras?.getBoolean("com.spotify.music.extra.ACTIVE_PLAYBACK_LOCAL") == false
+        trackInfo.appId == Stuff.PACKAGE_SPOTIFY &&
+        playbackInfo.state == PlaybackState.STATE_PLAYING &&
+        playbackInfo.extras?.getBoolean("com.spotify.music.extra.ACTIVE_PLAYBACK_LOCAL") == false
     ) {
         Logger.i { "ignoring spotify remote playback" }
         ignoreScrobble = true

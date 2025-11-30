@@ -1,8 +1,8 @@
 package com.kennycason.kumo.collide
 
-import com.kennycason.kumo.collide.checkers.RectanglePixelCollisionChecker
 import com.arn.scrobble.graphics.KumoPoint
 import com.arn.scrobble.graphics.KumoRect
+import com.kennycason.kumo.collide.checkers.RectanglePixelCollisionChecker
 import com.kennycason.kumo.image.CollisionRaster
 
 /**

@@ -50,7 +50,10 @@ class DigestWorker(
             withContext(coExceptionHandler) {
                 fetchAndNotify(lastfmPeriod)
                 // yearly digest
-                if (lastfmPeriod == LastfmPeriod.MONTH && cal[Calendar.MONTH] == Calendar.DECEMBER) {
+                if (lastfmPeriod == LastfmPeriod.MONTH &&
+                    (cal[Calendar.DAY_OF_YEAR] == cal.getActualMaximum(Calendar.DAY_OF_YEAR) ||
+                            cal[Calendar.DAY_OF_YEAR] == 1)
+                ) {
                     fetchAndNotify(LastfmPeriod.YEAR)
                 }
             }

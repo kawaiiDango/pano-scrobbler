@@ -3,9 +3,8 @@
 ### [android] The app skips scrobbles when it is in the background / The app says that it has been killed
 
 1. Some manufacturers such as Xiaomi, Huawei, OnePlus and others do not allow 3rd party apps to run
-   in the background by default. Try disabling battery optimizations for this app. Sometimes, that
-   step may not be enough. Please check [dontkillmyapp.com](https://dontkillmyapp.com) to see if
-   there are any solutions for your device. The non-Play version of this app can optionally display
+   in the background by default. Check [dontkillmyapp.com](https://dontkillmyapp.com) and follow all
+   the steps in there, for your device. The non-Play version of this app can optionally display
    a persistent notification at all times, which may help. It may be impossible to use this app on a
    stock ROM from certain manufacturers, due to the said restrictions.
 
@@ -17,8 +16,8 @@
 
 ### All of my scrobbles from Spotify are duplicated
 
-This happens if you have more than one scrobbler running. Disable or uninstall other scrobblers.
-Disconnect your Spotify account from the last.fm website.
+This happens if you have more than one scrobbler connected/running. Disable or uninstall other
+scrobblers. Disconnect your Spotify account from the last.fm website.
 
 ### How do I scrobble only the first artist instead of all the performers?
 

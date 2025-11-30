@@ -50,11 +50,11 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.from_gallery
+import pano_scrobbler.composeapp.generated.resources.is_turned_off
 import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.reset
 import pano_scrobbler.composeapp.generated.resources.spotify
 import pano_scrobbler.composeapp.generated.resources.square_photo_hint
-import pano_scrobbler.composeapp.generated.resources.you_have_disabled
 
 
 @Composable
@@ -107,7 +107,7 @@ fun ImageSearchScreen(
         )
     }
 
-    val useSpotify by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.useSpotify }
+    val useSpotify by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.spotifyApi }
     val existingMappings by viewModel.existingMappings.collectAsStateWithLifecycle()
     val squarePhotoLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.squarePhotoLearnt }
     var showSquarePhotoDialog by rememberSaveable { mutableStateOf(false) }
@@ -133,7 +133,7 @@ fun ImageSearchScreen(
                 printableEntryName
             else
                 stringResource(
-                    Res.string.you_have_disabled,
+                    Res.string.is_turned_off,
                     stringResource(Res.string.spotify),
                     stringResource(Res.string.external_metadata),
                 ),

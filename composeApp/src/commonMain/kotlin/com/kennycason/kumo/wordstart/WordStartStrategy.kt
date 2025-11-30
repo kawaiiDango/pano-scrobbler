@@ -1,8 +1,8 @@
 package com.kennycason.kumo.wordstart
 
-import com.kennycason.kumo.Word
 import com.arn.scrobble.graphics.KumoPoint
 import com.arn.scrobble.graphics.KumoRect
+import com.kennycason.kumo.Word
 
 /**
  * The WordSpreadScheme provides a possible starting position for a word on the

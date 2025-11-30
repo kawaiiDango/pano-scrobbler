@@ -5,6 +5,7 @@ import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -247,8 +248,8 @@ class ScrobbleQueue(
                     notifyPlayingTrackEvent(
                         PlayingTrackNotifyEvent.TrackCancelled(
                             hash = hash,
-                            blockPlayerAction = preprocessResult.blockPlayerAction,
-                            showUnscrobbledNotification = false
+                            showUnscrobbledNotification = false,
+                            blockedMetadata = BlockedMetadata(blockPlayerAction = preprocessResult.blockPlayerAction),
                         )
                     )
                 }

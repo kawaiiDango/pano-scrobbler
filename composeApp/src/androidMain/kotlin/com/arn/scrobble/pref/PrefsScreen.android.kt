@@ -184,3 +184,6 @@ actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit)
 
 actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
 }
+
+actual fun deezerApi(listScope: LazyListScope, enabled: Boolean) {
+}

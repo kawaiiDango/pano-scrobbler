@@ -6,11 +6,10 @@
     <string name="state_scrobbling">Maintenant en scrobbling…</string>
     <string name="search">Rechercher</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s détecté</string>
-    <string name="new_player_prompt">Continuer de scrobbler cette app ?</string>
     <string comment="Its a noun" name="channel_err">Erreurs de scrobble</string>
     <string name="new_app">Nouvelle application</string>
     <string name="pending_scrobbles">Scrobbles en attente</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Statistiques</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Statistiques</string>
     <string name="weekly">Hebdomadaire</string>
     <string name="monthly">Mensuel</string>
     <string name="charts_overall">Global</string>

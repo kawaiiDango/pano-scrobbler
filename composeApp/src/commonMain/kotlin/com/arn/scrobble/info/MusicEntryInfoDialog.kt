@@ -98,6 +98,7 @@ import com.arn.scrobble.ui.placeholderPainter
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
@@ -184,6 +185,9 @@ fun MusicEntryInfoDialog(
     val artistTopTracks = miscVM.topTracks.collectAsLazyPagingItems()
     val artistTopAlbums = miscVM.topAlbums.collectAsLazyPagingItems()
     val similarArtists = miscVM.similarArtists.collectAsLazyPagingItems()
+    val useLastfm by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.lastfmApiAlways || Scrobblables.currentAccount.value?.type == AccountType.LASTFM
+    }
     val entries = remember(infoMap) {
         allTypes.mapNotNull { type ->
             val entry = infoMap?.get(type)
@@ -245,7 +249,10 @@ fun MusicEntryInfoDialog(
             InfoSimpleHeader(
                 text = entry.name,
                 icon = getMusicEntryIcon(type),
-                onClick = { expandedHeaderType = if (expandedHeaderType == type) -1 else type },
+                onClick = if (!useLastfm && entry is Track) null
+                else {
+                    { expandedHeaderType = if (expandedHeaderType == type) -1 else type }
+                },
                 leadingContent = {
                     AnimatedVisibility(expandedHeaderType != type) {
                         if (entry is Album || entry is Artist) {
@@ -351,7 +358,7 @@ fun MusicEntryInfoDialog(
                                     },
                                 )
                             }
-                        } else if (entry is Artist) {
+                        } else if (entry is Artist && useLastfm) {
                             EntriesRow(
                                 title = stringResource(Res.string.top_tracks),
                                 entries = artistTopTracks,
@@ -422,7 +429,7 @@ fun MusicEntryInfoDialog(
                             )
                         }
 
-                    } else if (entry is Track) {
+                    } else if (entry is Track && useLastfm) {
                         EntriesRow(
                             title = stringResource(Res.string.similar_tracks),
                             entries = similarTracks,
@@ -448,12 +455,14 @@ fun MusicEntryInfoDialog(
                 }
             }
 
-            InfoCountsForMusicEntry(
-                entry = entry,
-                user = user,
-                onNavigate = onNavigate,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
+            if (entry.playcount != null || entry.listeners != null || !infoLoaded) {
+                InfoCountsForMusicEntry(
+                    entry = entry,
+                    user = user,
+                    onNavigate = onNavigate,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+            }
 
             entry.wiki?.content?.let {
                 InfoWikiText(

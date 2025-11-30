@@ -25,7 +25,6 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.R
 import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.pref.WidgetPrefsMigration1
 import com.arn.scrobble.pref.WidgetPrefsSerializer
 import com.arn.scrobble.utils.Stuff.SCROBBLER_PROCESS_NAME
 import kotlinx.coroutines.Dispatchers
@@ -147,9 +146,6 @@ object AndroidStuff {
     val widgetPrefs by lazy {
         MultiProcessDataStoreFactory.create(
             serializer = WidgetPrefsSerializer,
-            migrations = listOf(
-                WidgetPrefsMigration1(),
-            ),
             corruptionHandler = null,
             produceFile = {
                 File(PlatformStuff.filesDir, WidgetPrefs.FILE_NAME)

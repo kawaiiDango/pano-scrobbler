@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="mdcolor_sakurapink_10">#FFFBFA</color>
     <color name="mdcolor_sakurapink_100">#FFD8E5</color>
     <color name="mdcolor_green_500">#3E8456</color>
     <color name="mdcolor_blue_500">#5776B2</color>
@@ -9,7 +8,6 @@
     <color name="mdcolor_red_200">#FFB2B6</color>
     <color name="mdcolor_green_200">#8FD6A2</color>
 
-    <color name="pinkLightStart">@color/mdcolor_sakurapink_10</color>
     <color name="pinkLight">@color/mdcolor_sakurapink_100</color>
     <color name="pinkDark">#AB2C5D</color>
     <color name="pinkExtraDark">#66002E</color>

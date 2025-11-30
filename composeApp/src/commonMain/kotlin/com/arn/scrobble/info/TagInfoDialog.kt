@@ -26,7 +26,6 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.more_info
 import pano_scrobbler.composeapp.generated.resources.taggers
 import pano_scrobbler.composeapp.generated.resources.taggings
-import java.net.URLEncoder
 
 @Composable
 fun TagInfoDialog(

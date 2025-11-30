@@ -40,7 +40,11 @@ fun getFabData(dest: NavDestination?): PanoFabData? {
             Res.string.add,
             Icons.Outlined.Add,
             route = null,
-            dialog = PanoDialog.BlockedMetadataAdd(ignoredArtist = null, hash = null)
+            dialog = PanoDialog.BlockedMetadataAdd(
+                blockedMetadata = null,
+                ignoredArtist = null,
+                hash = null
+            )
         )
 
         dest.hasRoute<PanoRoute.AppList>() ||

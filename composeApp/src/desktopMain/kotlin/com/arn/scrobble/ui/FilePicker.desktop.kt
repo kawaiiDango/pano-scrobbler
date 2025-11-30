@@ -1,9 +1,6 @@
 package com.arn.scrobble.ui
 
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,10 +11,7 @@ import androidx.compose.ui.awt.AwtWindow
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformFile
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.create

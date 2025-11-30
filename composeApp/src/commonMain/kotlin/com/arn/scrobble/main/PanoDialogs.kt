@@ -34,14 +34,11 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
 import com.arn.scrobble.charts.HiddenTagsDialog
-import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.edits.BlockedMetadataAddDialog
 import com.arn.scrobble.edits.SimpleEditsAddScreen
 import com.arn.scrobble.info.MusicEntryInfoDialog
 import com.arn.scrobble.info.TagInfoDialog
-import com.arn.scrobble.media.PlayingTrackNotifyEvent
-import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.navigation.NavPopupDialog
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
@@ -235,7 +232,7 @@ private fun PanoDialogs(
                         hasOrigTrack = true,
                         hasOrigArtist = true,
                         hasOrigAlbum = true,
-                        hasOrigAlbumArtist = !dialogArgs.origScrobbleData.albumArtist.isNullOrEmpty(),
+                        hasOrigAlbumArtist = false,
                     ),
                     origScrobbleData = dialogArgs.origScrobbleData,
                     msid = dialogArgs.msid,

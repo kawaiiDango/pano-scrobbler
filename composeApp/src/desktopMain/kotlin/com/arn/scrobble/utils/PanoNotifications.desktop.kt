@@ -5,7 +5,6 @@ import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.updates.UpdateAction
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +43,8 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
-
+        if (scrobbleData.appId != null)
+            removeNotificationByTag(scrobbleData.appId)
     }
 
     actual suspend fun notifyDigest(timePeriod: TimePeriod, resultsList: List<Pair<Int, String>>) {

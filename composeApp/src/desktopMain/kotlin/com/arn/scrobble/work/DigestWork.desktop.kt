@@ -2,7 +2,6 @@ package com.arn.scrobble.work
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 

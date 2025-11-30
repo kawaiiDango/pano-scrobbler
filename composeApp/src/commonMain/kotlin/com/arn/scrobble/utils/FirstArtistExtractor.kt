@@ -179,6 +179,6 @@ object FirstArtistExtractor {
         }
 
         // Fallback: return text up to first delimiter
-        return trimmed.substring(0, earliestDelimiterPos).trim()
+        return trimmed.take(earliestDelimiterPos).trim()
     }
 }

@@ -1,6 +1,5 @@
 package com.arn.scrobble.edits
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -10,24 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.CheckBox
-import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.SwapVert
-import androidx.compose.material.icons.outlined.ToggleOff
-import androidx.compose.material.icons.outlined.ToggleOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -52,11 +42,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -69,10 +56,10 @@ import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
+import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.redactedMessage
 import com.valentinilk.shimmer.LocalShimmerTheme
-import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -87,11 +74,9 @@ import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.collapse
 import pano_scrobbler.composeapp.generated.resources.corrected
 import pano_scrobbler.composeapp.generated.resources.delete
-import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.edit_example
 import pano_scrobbler.composeapp.generated.resources.edit_no_save
-import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.existing_value
 import pano_scrobbler.composeapp.generated.resources.expand
 import pano_scrobbler.composeapp.generated.resources.original
@@ -560,26 +545,5 @@ fun SimpleEditsAddScreen(
                     Modifier
             )
         }
-    }
-}
-
-@Composable
-private fun InlineCheckButton(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-) {
-    IconButton(
-        onClick = { onCheckedChange(!checked) },
-    ) {
-        Icon(
-            imageVector = if (checked)
-                Icons.Outlined.ToggleOn
-            else
-                Icons.Outlined.ToggleOff,
-            contentDescription = if (checked)
-                stringResource(Res.string.disable)
-            else
-                stringResource(Res.string.enable),
-        )
     }
 }

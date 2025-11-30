@@ -5,7 +5,6 @@ import androidx.core.net.toUri
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.utils.AndroidStuff
-import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.Stuff
 
 

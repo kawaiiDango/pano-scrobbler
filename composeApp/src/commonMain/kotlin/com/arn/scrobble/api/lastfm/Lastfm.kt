@@ -1,6 +1,5 @@
 package com.arn.scrobble.api.lastfm
 
-import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters

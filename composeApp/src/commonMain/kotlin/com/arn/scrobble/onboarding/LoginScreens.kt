@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -175,6 +176,7 @@ fun GnufmLoginScreen(
             singleLine = true,
             value = password,
             onValueChange = { password = it },
+            visualTransformation = remember { PasswordVisualTransformation() },
             label = { Text(stringResource(Res.string.password)) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,

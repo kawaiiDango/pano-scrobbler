@@ -1,11 +1,8 @@
 package com.arn.scrobble.api
 
 import androidx.collection.LruCache
-import androidx.compose.ui.text.toLowerCase
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.deezer.DeezerTrack
-import com.arn.scrobble.api.itunes.ItunesTrackResponse
-import com.arn.scrobble.api.itunes.ItunesWrapperType
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
@@ -215,10 +212,9 @@ object ScrobbleEverywhere {
         onNetworkRequestMade: suspend () -> Unit,
         fetchArtUrlOnly: Boolean = false
     ): AdditionalMetadataResult {
-        val fetchMissingMetadata =
-            PlatformStuff.mainPrefs.data.map { it.fetchMissingMetadata }.first()
+        val fetchMissingMetadataDeezer = PlatformStuff.mainPrefs.data.map { it.deezerApi }.first()
         val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
-        val tidalSteelSeries = PlatformStuff.mainPrefs.data.map { it.tidalSteelSeries }.first()
+        val tidalSteelSeries = PlatformStuff.mainPrefs.data.map { it.tidalSteelSeriesApi }.first()
 
         try {
             when {
@@ -259,7 +255,7 @@ object ScrobbleEverywhere {
                     return fetchNowPlaying(scrobbleData, onNetworkRequestMade)
                 }
 
-                fetchMissingMetadata && (
+                fetchMissingMetadataDeezer && (
 //                        scrobbleData.appId == Stuff.PACKAGE_DEEZER ||
 //                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_TV ||
                         scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||

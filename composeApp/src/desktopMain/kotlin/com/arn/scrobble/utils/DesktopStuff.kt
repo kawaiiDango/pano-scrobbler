@@ -4,14 +4,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.work.DesktopWorkManager
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.done
 import java.io.File
 
 object DesktopStuff {

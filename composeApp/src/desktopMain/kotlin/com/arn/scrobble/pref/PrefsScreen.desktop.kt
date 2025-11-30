@@ -5,9 +5,13 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.DesktopStuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
+import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
 import pano_scrobbler.composeapp.generated.resources.run_on_start
+import pano_scrobbler.composeapp.generated.resources.tidal
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
+import pano_scrobbler.composeapp.generated.resources.when_using
 
 actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
     // no-op
@@ -64,11 +68,34 @@ actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit)
 
 actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
     if (DesktopStuff.os == DesktopStuff.Os.Windows) {
-        listScope.item(MainPrefs::tidalSteelSeries.name) {
+        listScope.item(MainPrefs::tidalSteelSeriesApi.name) {
             SwitchPref(
                 text = stringResource(Res.string.tidal_steelseries),
+                summary = stringResource(
+                    Res.string.when_using,
+                    stringResource(Res.string.tidal)
+                ),
                 value = enabled,
-                copyToSave = { copy(tidalSteelSeries = it) }
+                copyToSave = { copy(tidalSteelSeriesApi = it) }
+            )
+        }
+    }
+}
+
+actual fun deezerApi(listScope: LazyListScope, enabled: Boolean) {
+    if (DesktopStuff.os == DesktopStuff.Os.Windows) {
+        listScope.item(MainPrefs::deezerApi.name) {
+            SwitchPref(
+                text = stringResource(
+                    Res.string.fetch_missing_metadata,
+                    stringResource(Res.string.deezer)
+                ),
+                summary = stringResource(
+                    Res.string.when_using,
+                    stringResource(Res.string.deezer)
+                ),
+                value = enabled,
+                copyToSave = { copy(deezerApi = it) }
             )
         }
     }

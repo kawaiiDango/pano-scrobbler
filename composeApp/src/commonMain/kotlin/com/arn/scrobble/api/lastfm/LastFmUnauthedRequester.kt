@@ -6,7 +6,6 @@ import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.lastfm.LastFm.Companion.toFormParametersWithSig
-import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent

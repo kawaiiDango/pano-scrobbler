@@ -5,9 +5,7 @@ import io.ktor.http.encodeURLPathPart
 import io.ktor.http.encodeURLQueryComponent
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.bug_report
 import pano_scrobbler.composeapp.generated.resources.email
-import java.net.URLEncoder
 
 
 actual object BugReportUtils {

@@ -4,20 +4,22 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SplitButtonDefaults
-import androidx.compose.material3.SplitButtonLayout
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,14 +36,12 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
-import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.fix_it_action
-import pano_scrobbler.composeapp.generated.resources.lastfm
-import pano_scrobbler.composeapp.generated.resources.more
+import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.skip
 
 
@@ -82,58 +82,44 @@ fun ButtonsStepper(
 fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
     val accountTypesToStrings =
         AccountType.entries.filterNot {
-            it == AccountType.LASTFM || PlatformStuff.isTv && it == AccountType.FILE
+            PlatformStuff.isTv && it == AccountType.FILE
         }.associateWith {
             accountTypeLabel(it)
         }
 
     var dropDownShown by remember { mutableStateOf(false) }
 
-    SplitButtonLayout(
-        leadingButton = {
-            SplitButtonDefaults.OutlinedLeadingButton(
-                onClick = { navigate(LoginDestinations.route(AccountType.LASTFM)) }
-            ) {
-                Text(text = stringResource(Res.string.lastfm))
-            }
+    OutlinedToggleButton(
+        checked = dropDownShown,
+        onCheckedChange = {
+            dropDownShown = it
         },
-        trailingButton = {
-            SplitButtonDefaults.OutlinedTrailingButton(
-                onCheckedChange = {
-                    dropDownShown = it
-                },
-                checked = dropDownShown,
-                modifier = Modifier
-                    .testTag("login_type_dropdown"),
-            ) {
-                Icon(
-                    Icons.Outlined.ArrowDropDown,
-                    contentDescription = stringResource(Res.string.more)
-                )
+    ) {
+        Text(
+            stringResource(Res.string.scrobble_services)
+        )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
 
-                DropdownMenu(
-                    expanded = dropDownShown,
-                    onDismissRequest = { dropDownShown = false }
-                ) {
-                    accountTypesToStrings.forEach { (accType, string) ->
-                        DropdownMenuItem(
-                            onClick = {
-                                navigate(LoginDestinations.route(accType))
-                                dropDownShown = false
-                            },
-                            text = {
-                                Text(string)
-                            },
-                            modifier = Modifier
-                                .testTag("login_type_" + accType.name)
-                        )
-                    }
-                }
+        DropdownMenu(
+            expanded = dropDownShown,
+            onDismissRequest = { dropDownShown = false }
+        ) {
+            accountTypesToStrings.forEach { (accType, string) ->
+                DropdownMenuItem(
+                    onClick = {
+                        navigate(LoginDestinations.route(accType))
+                        dropDownShown = false
+                    },
+                    text = {
+                        Text(string)
+                    },
+                    modifier = Modifier
+                        .testTag("login_type_" + accType.name)
+                )
             }
-        },
-        modifier = Modifier
-            .testTagsAsResId()
-    )
+        }
+    }
 }
 
 @Composable

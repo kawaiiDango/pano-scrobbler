@@ -6,11 +6,10 @@
     <string name="state_scrobbling">Nyní scrobbluji…</string>
     <string name="search">Hledat</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s detekováno</string>
-    <string name="new_player_prompt">Nadále scrobblovat tuto aplikaci?</string>
     <string comment="Its a noun" name="channel_err">Chyby při scrobblování</string>
     <string name="new_app">Nová aplikace</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Hitparády</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Hitparády</string>
     <string name="weekly">Týdenní</string>
     <string name="monthly">Měsíční</string>
     <string name="charts_overall">Celkově</string>

@@ -1,8 +1,8 @@
 package com.kennycason.kumo.wordstart
 
-import com.kennycason.kumo.Word
 import com.arn.scrobble.graphics.KumoPoint
 import com.arn.scrobble.graphics.KumoRect
+import com.kennycason.kumo.Word
 
 /**
  * Always returns the Center of the image

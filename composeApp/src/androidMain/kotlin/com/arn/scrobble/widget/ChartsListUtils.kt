@@ -7,9 +7,6 @@ import android.widget.RemoteViews
 import androidx.core.net.toUri
 import com.arn.scrobble.R
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.lastfm.Album
-import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.pref.SpecificWidgetPrefs

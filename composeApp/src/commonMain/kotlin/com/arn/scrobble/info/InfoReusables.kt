@@ -85,7 +85,7 @@ fun InfoWikiText(
         displayText.indexOf("<a href=\"http://www.last.fm").takeIf { it != -1 }
             ?: displayText.indexOf("<a href=\"https://www.last.fm")
     if (idx != -1) {
-        displayText = displayText.substring(0, idx).trim()
+        displayText = displayText.take(idx).trim()
     }
     if (displayText.isNotBlank()) {
         if (!PlatformStuff.isTv) {
@@ -188,9 +188,9 @@ fun InfoCounts(
     avatarUrl: String?,
     avatarName: String?,
     firstItemIsUsers: Boolean,
+    modifier: Modifier = Modifier,
     onClickFirstItem: (() -> Unit)? = null,
     forShimmer: Boolean = false,
-    modifier: Modifier = Modifier,
 ) {
 
     Row(
@@ -265,9 +265,9 @@ fun InfoSimpleHeader(
     text: String,
     icon: ImageVector,
     onClick: (() -> Unit)?,
-    leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)?,
     modifier: Modifier = Modifier,
+    leadingContent: @Composable (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier

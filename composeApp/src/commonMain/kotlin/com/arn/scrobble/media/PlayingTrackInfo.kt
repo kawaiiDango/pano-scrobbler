@@ -150,11 +150,11 @@ class PlayingTrackInfo(
             albumArtist = MetadataUtils.sanitizeAlbumArtist(origAlbumArtist)
             userPlayCount = 0
             userLoved = false
+            scrobbledState = ScrobbledState.PREPARED
         }
 
         isPlaying = true
         playStartTime = System.currentTimeMillis()
-        scrobbledState = minOf(ScrobbledState.ADDITIONAL_METADATA_FETCHED, scrobbledState)
     }
 
     fun updateUserProps(

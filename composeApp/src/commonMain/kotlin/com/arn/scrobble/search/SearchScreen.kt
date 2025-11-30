@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -46,16 +47,21 @@ import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
+import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.global
+import pano_scrobbler.composeapp.generated.resources.is_turned_off
+import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.library
 import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.reindex
+import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.searched_n_items
 import pano_scrobbler.composeapp.generated.resources.tracks
 
@@ -80,6 +86,9 @@ fun SearchScreen(
     val albumsText = stringResource(Res.string.albums)
     val tracksText = stringResource(Res.string.tracks)
     val lovedText = stringResource(Res.string.loved)
+    val useLastfm by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.lastfmApiAlways || Scrobblables.currentAccount.value?.type == AccountType.LASTFM
+    }
 
     val focusRequester = remember { FocusRequester() }
 
@@ -111,7 +120,16 @@ fun SearchScreen(
         modifier = modifier
     ) {
         SearchField(
-            searchTerm = searchTerm,
+            searchTerm = if (useLastfm) searchTerm else "",
+            label = if (useLastfm)
+                stringResource(Res.string.search)
+            else
+                stringResource(
+                    Res.string.is_turned_off,
+                    stringResource(Res.string.lastfm),
+                    stringResource(Res.string.external_metadata),
+                ),
+            enabled = useLastfm,
             onSearchTermChange = { searchTerm = it },
             modifier = Modifier
                 .padding(panoContentPadding(bottom = false))

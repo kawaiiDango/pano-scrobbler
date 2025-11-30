@@ -27,6 +27,7 @@ import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +39,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,6 +61,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -69,11 +73,14 @@ import com.arn.scrobble.graphics.toImageBitmap
 import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ButtonWithIcon
+import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.ExpandableHeaderMenu
+import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.OptionalHorizontalScrollbar
 import com.arn.scrobble.ui.TextHeaderItem
+import com.arn.scrobble.ui.YesNoDropdown
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.horizontalOverscanPadding
@@ -81,13 +88,13 @@ import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.kennycason.kumo.WordCloud
 import com.kennycason.kumo.WordFrequency
 import com.kennycason.kumo.bg.CircleBackground
 import com.kennycason.kumo.palette.LinearGradientColorPalette
 import com.kennycason.kumo.scale.LinearFontScalar
 import io.github.koalaplot.core.bar.DefaultBar
-import io.github.koalaplot.core.bar.DefaultVerticalBarComposable
 import io.github.koalaplot.core.bar.VerticalBarPlot
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
@@ -95,18 +102,23 @@ import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
+import pano_scrobbler.composeapp.generated.resources.based_on
 import pano_scrobbler.composeapp.generated.resources.charts
 import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.charts_no_data
 import pano_scrobbler.composeapp.generated.resources.create_collage
 import pano_scrobbler.composeapp.generated.resources.days
+import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.hidden_tags
+import pano_scrobbler.composeapp.generated.resources.is_turned_off
+import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.listening_activity
 import pano_scrobbler.composeapp.generated.resources.months
 import pano_scrobbler.composeapp.generated.resources.not_enough_data
@@ -114,6 +126,7 @@ import pano_scrobbler.composeapp.generated.resources.num_albums
 import pano_scrobbler.composeapp.generated.resources.num_artists
 import pano_scrobbler.composeapp.generated.resources.num_tracks
 import pano_scrobbler.composeapp.generated.resources.scrobbles
+import pano_scrobbler.composeapp.generated.resources.spotify_consent
 import pano_scrobbler.composeapp.generated.resources.tag_cloud
 import pano_scrobbler.composeapp.generated.resources.tracks
 import pano_scrobbler.composeapp.generated.resources.weeks
@@ -140,6 +153,14 @@ fun ChartsOverviewScreen(
 
     val tagCloud by viewModel.tagCloud.collectAsStateWithLifecycle()
     val listeningActivity by viewModel.listeningActivity.collectAsStateWithLifecycle()
+    val useLastfm by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.lastfmApiAlways || Scrobblables.currentAccount.value?.type == AccountType.LASTFM
+    }
+    val spotifyConsentLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.spotifyConsentLearnt
+    }
+    var spotifyConsentLearntDropdownShown by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     val scrollState = rememberScrollState()
     var tagCloudOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
@@ -208,6 +229,48 @@ fun ChartsOverviewScreen(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
+            if (!spotifyConsentLearnt) {
+                DismissableNotice(
+                    title = stringResource(Res.string.spotify_consent),
+                    icon = Icons.Outlined.QuestionMark,
+                    onClick = {
+                        spotifyConsentLearntDropdownShown = true
+                    },
+                    onDismiss = {
+                        scope.launch {
+                            PlatformStuff.mainPrefs.updateData {
+                                it.copy(spotifyConsentLearnt = true)
+                            }
+                        }
+                    }
+                )
+
+                Box(
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    YesNoDropdown(
+                        expanded = spotifyConsentLearntDropdownShown,
+                        onDismissRequest = {
+                            spotifyConsentLearntDropdownShown = false
+                        },
+                        onYes = {
+                            scope.launch {
+                                PlatformStuff.mainPrefs.updateData {
+                                    it.copy(spotifyConsentLearnt = true, spotifyApi = true)
+                                }
+                            }
+                        },
+                        onNo = {
+                            scope.launch {
+                                PlatformStuff.mainPrefs.updateData {
+                                    it.copy(spotifyConsentLearnt = true, spotifyApi = false)
+                                }
+                            }
+                        },
+                    )
+                }
+            }
+
             EntriesRow(
                 title = getMusicEntryQString(
                     Res.string.artists,
@@ -350,6 +413,7 @@ fun ChartsOverviewScreen(
                 onHeaderMenuClick = {
                     onOpenDialog(PanoDialog.HiddenTags)
                 },
+                enabled = useLastfm,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontalOverscanPadding())
@@ -366,6 +430,7 @@ fun ChartsOverviewScreen(
 private fun TagCloudContent(
     tagCloud: Map<String, Float>?,
     onHeaderMenuClick: () -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var kumoBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -408,39 +473,62 @@ private fun TagCloudContent(
                 .fillMaxWidth()
         )
 
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .widthIn(max = 370.dp)
-                .aspectRatio(1f)
-                .clip(CircleShape)
-                .indication(interactionSource, LocalIndication.current)
-                .focusable(interactionSource = interactionSource)
-                .onGloballyPositioned { coordinates ->
-                    tagCloudSizePx = coordinates.size.width
-                }
-                .then(
-                    if (isLoading) Modifier
-                        .backgroundForShimmer(true, shape = CircleShape)
-                        .shimmerWindowBounds() else Modifier
-                )
-        ) {
-            EmptyText(
-                visible = tagCloud?.isEmpty() == true,
-                text = stringResource(Res.string.not_enough_data),
+        if (!enabled) {
+            InfoText(
+                stringResource(
+                    Res.string.is_turned_off,
+                    stringResource(Res.string.lastfm),
+                    stringResource(Res.string.external_metadata),
+                ),
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            if (tagCloud?.isNotEmpty() == true) {
-                kumoBitmap?.let {
-                    Image(
-                        bitmap = it,
-                        contentDescription = stringResource(Res.string.tag_cloud),
-                        modifier = Modifier
-                            .fillMaxSize()
+        } else {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .widthIn(max = 370.dp)
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+                    .indication(interactionSource, LocalIndication.current)
+                    .focusable(interactionSource = interactionSource)
+                    .onGloballyPositioned { coordinates ->
+                        tagCloudSizePx = coordinates.size.width
+                    }
+                    .then(
+                        if (isLoading) Modifier
+                            .backgroundForShimmer(true, shape = CircleShape)
+                            .shimmerWindowBounds() else Modifier
                     )
+            ) {
+                EmptyText(
+                    visible = tagCloud?.isEmpty() == true,
+                    text = stringResource(Res.string.not_enough_data),
+                )
+
+                if (tagCloud?.isNotEmpty() == true) {
+                    kumoBitmap?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = stringResource(Res.string.tag_cloud),
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
+
+            Text(
+                stringResource(
+                    Res.string.based_on,
+                    stringResource(Res.string.artists) + " (" +
+                            stringResource(Res.string.lastfm) + ")"
+                ),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(end = 8.dp)
+            )
         }
     }
 }

@@ -215,7 +215,7 @@ object MetadataUtils {
             val separator = findSeparator(str, separators)
 
             if (separator != null) {
-                first = str.substring(0, separator.index)
+                first = str.take(separator.index)
                 second = str.substring(separator.index + separator.length)
 
                 if (swap) {

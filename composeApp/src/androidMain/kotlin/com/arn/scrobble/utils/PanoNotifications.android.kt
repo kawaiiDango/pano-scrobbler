@@ -15,7 +15,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.main.MainActivity

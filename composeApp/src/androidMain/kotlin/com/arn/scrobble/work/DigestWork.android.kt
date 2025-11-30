@@ -9,7 +9,6 @@ import androidx.work.workDataOf
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.AndroidStuff
-import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit

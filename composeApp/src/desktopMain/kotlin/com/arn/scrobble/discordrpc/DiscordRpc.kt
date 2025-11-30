@@ -150,10 +150,9 @@ object DiscordRpc {
             PlatformStuff.mainPrefs.data.mapLatest { it.discordRpc }
         ) { appIdToEvent, settings ->
 
-            if (!settings.enabled)
+            if (!settings.enabled) {
                 discordActivity.value = DiscordActivity.Stop
-
-            if (appIdToEvent == null) {
+            } else if (appIdToEvent == null) {
                 discordActivityKeepTill.value =
                     System.currentTimeMillis() + settings.showPausedForSecs * 1000L
             } else {

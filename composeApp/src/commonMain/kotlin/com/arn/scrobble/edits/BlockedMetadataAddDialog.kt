@@ -28,7 +28,7 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
-import com.arn.scrobble.ui.InfoText
+import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
@@ -40,10 +40,10 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album
 import pano_scrobbler.composeapp.generated.resources.album_artist
+import pano_scrobbler.composeapp.generated.resources.any_value
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.artist_channel
 import pano_scrobbler.composeapp.generated.resources.block
-import pano_scrobbler.composeapp.generated.resources.blocked_metadata_info
 import pano_scrobbler.composeapp.generated.resources.do_nothing
 import pano_scrobbler.composeapp.generated.resources.mute
 import pano_scrobbler.composeapp.generated.resources.player_actions
@@ -54,24 +54,37 @@ import pano_scrobbler.composeapp.generated.resources.use_channel
 
 @Composable
 private fun BlockedMetadataAddContent(
-    blockedMetadata: BlockedMetadata,
+    blockedMetadata: BlockedMetadata?,
     ignoredArtist: String?,
     onSave: (BlockedMetadata) -> Unit,
     onNavigateToBilling: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var artist by rememberSaveable { mutableStateOf(blockedMetadata.artist) }
-    var albumArtist by rememberSaveable { mutableStateOf(blockedMetadata.albumArtist) }
-    var album by rememberSaveable { mutableStateOf(blockedMetadata.album) }
-    var track by rememberSaveable { mutableStateOf(blockedMetadata.track) }
-    var blockPlayerAction by rememberSaveable(saver = jsonSerializableSaver()) {
+    var artist by rememberSaveable(blockedMetadata) { mutableStateOf(blockedMetadata?.artist.orEmpty()) }
+    var hasArtist by rememberSaveable(blockedMetadata) {
+        mutableStateOf(blockedMetadata?.artist?.isNotEmpty() ?: true)
+    }
+    var albumArtist by rememberSaveable(blockedMetadata) { mutableStateOf(blockedMetadata?.albumArtist.orEmpty()) }
+    var hasAlbumArtist by rememberSaveable(blockedMetadata) {
+        mutableStateOf(blockedMetadata?.albumArtist?.isNotEmpty() ?: false)
+    }
+    var album by rememberSaveable(blockedMetadata) { mutableStateOf(blockedMetadata?.album.orEmpty()) }
+    var hasAlbum by rememberSaveable(blockedMetadata) {
+        mutableStateOf(blockedMetadata?.album?.isNotEmpty() ?: true)
+    }
+    var track by rememberSaveable(blockedMetadata) { mutableStateOf(blockedMetadata?.track.orEmpty()) }
+    var hasTrack by rememberSaveable(blockedMetadata) {
+        mutableStateOf(blockedMetadata?.track?.isNotEmpty() ?: true)
+    }
+    var blockPlayerAction by rememberSaveable(blockedMetadata, saver = jsonSerializableSaver()) {
         mutableStateOf(
-            blockedMetadata.blockPlayerAction
+            blockedMetadata?.blockPlayerAction ?: BlockPlayerAction.ignore
         )
     }
-    var useChannel by rememberSaveable { mutableStateOf(false) }
-    var errorText by rememberSaveable { mutableStateOf<String?>(null) }
+    var useChannel by rememberSaveable(blockedMetadata) { mutableStateOf(false) }
+    var errorText by rememberSaveable(blockedMetadata) { mutableStateOf<String?>(null) }
     val emptyText = stringResource(Res.string.required_fields_empty)
+    val anythingText = "< " + stringResource(Res.string.any_value) + " >"
     val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
 
     LaunchedEffect(useChannel) {
@@ -79,7 +92,7 @@ private fun BlockedMetadataAddContent(
             artist = if (useChannel) {
                 ignoredArtist
             } else {
-                blockedMetadata.artist
+                blockedMetadata?.artist.orEmpty()
             }
         }
     }
@@ -89,19 +102,26 @@ private fun BlockedMetadataAddContent(
         modifier = modifier
     ) {
         OutlinedTextFieldTvSafe(
-            value = track,
+            value = if (hasTrack) track else anythingText,
             onValueChange = { track = it },
             label = { Text(stringResource(Res.string.track)) },
+            isError = hasTrack && track.isEmpty(),
+            leadingIcon = {
+                InlineCheckButton(
+                    checked = hasTrack,
+                    onCheckedChange = { hasTrack = it }
+                )
+            },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
-            enabled = isLicenseValid,
+            enabled = isLicenseValid && hasTrack,
             modifier = Modifier
                 .fillMaxWidth()
         )
 
         OutlinedTextFieldTvSafe(
-            value = artist,
+            value = if (hasArtist) artist else anythingText,
             onValueChange = { artist = it },
             label = {
                 Text(
@@ -113,39 +133,60 @@ private fun BlockedMetadataAddContent(
                     )
                 )
             },
+            isError = hasArtist && artist.isEmpty(),
+            leadingIcon = {
+                InlineCheckButton(
+                    checked = hasArtist,
+                    onCheckedChange = { hasArtist = it }
+                )
+            },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
-            enabled = isLicenseValid,
+            enabled = isLicenseValid && hasArtist,
             modifier = Modifier
                 .fillMaxWidth()
         )
 
         OutlinedTextFieldTvSafe(
-            value = album,
+            value = if (hasAlbum) album else anythingText,
             onValueChange = { album = it },
             label = { Text(stringResource(Res.string.album)) },
+            leadingIcon = {
+                InlineCheckButton(
+                    checked = hasAlbum,
+                    onCheckedChange = { hasAlbum = it }
+                )
+            },
+            isError = hasAlbum && album.isEmpty(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
-            enabled = isLicenseValid,
+            enabled = isLicenseValid && hasAlbum,
             modifier = Modifier
                 .fillMaxWidth()
         )
 
         OutlinedTextFieldTvSafe(
-            value = albumArtist,
+            value = if (hasAlbumArtist) albumArtist else anythingText,
             onValueChange = { albumArtist = it },
             label = { Text(stringResource(Res.string.album_artist)) },
+            leadingIcon = {
+                InlineCheckButton(
+                    checked = hasAlbumArtist,
+                    onCheckedChange = { hasAlbumArtist = it }
+                )
+            },
+            isError = hasAlbumArtist && albumArtist.isEmpty(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
-            enabled = isLicenseValid,
+            enabled = isLicenseValid && hasAlbumArtist,
             modifier = Modifier
                 .fillMaxWidth()
         )
 
-        if (ignoredArtist != null && ignoredArtist != blockedMetadata.artist) {
+        if (ignoredArtist != null && ignoredArtist != blockedMetadata?.artist) {
             LabeledCheckbox(
                 text = stringResource(Res.string.use_channel),
                 checked = useChannel,
@@ -160,11 +201,6 @@ private fun BlockedMetadataAddContent(
             enabled = isLicenseValid,
         )
 
-        InfoText(
-            text = stringResource(Res.string.blocked_metadata_info),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
         ErrorText(errorText)
 
         OutlinedButton(
@@ -172,14 +208,20 @@ private fun BlockedMetadataAddContent(
                 if (!isLicenseValid) {
                     onNavigateToBilling()
                 } else {
-                    val newBlockedMetadata = blockedMetadata.copy(
-                        artist = artist,
-                        albumArtist = albumArtist,
-                        album = album,
-                        track = track,
+                    val newBlockedMetadata = BlockedMetadata(
+                        _id = blockedMetadata?._id ?: 0,
+                        artist = if (hasArtist) artist else "",
+                        albumArtist = if (hasAlbumArtist) albumArtist else "",
+                        album = if (hasAlbum) album else "",
+                        track = if (hasTrack) track else "",
                         blockPlayerAction = blockPlayerAction,
                     )
-                    if (listOf(artist, albumArtist, album, track).all { it.isEmpty() }) {
+                    if (listOf(artist, albumArtist, album, track).all { it.isEmpty() } ||
+                        hasArtist && artist.isEmpty() ||
+                        hasAlbumArtist && albumArtist.isEmpty() ||
+                        hasAlbum && album.isEmpty() ||
+                        hasTrack && track.isEmpty()
+                    ) {
                         errorText = emptyText
                     } else {
                         onSave(newBlockedMetadata)
@@ -242,7 +284,7 @@ fun BlockPlayerActions(
 
 @Composable
 fun BlockedMetadataAddDialog(
-    blockedMetadata: BlockedMetadata,
+    blockedMetadata: BlockedMetadata?,
     ignoredArtist: String?,
     hash: Int?,
     onDismiss: () -> Unit,
@@ -261,15 +303,13 @@ fun BlockedMetadataAddDialog(
                         .insertLowerCase(listOf(blockedMetadata), ignore = false)
                 }
 
-                if (hash != null) {
-                    notifyPlayingTrackEvent(
-                        PlayingTrackNotifyEvent.TrackCancelled(
-                            hash = hash,
-                            showUnscrobbledNotification = false,
-                            blockPlayerAction = blockedMetadata.blockPlayerAction,
-                        ),
-                    )
-                }
+                notifyPlayingTrackEvent(
+                    PlayingTrackNotifyEvent.TrackCancelled(
+                        hash = hash,
+                        showUnscrobbledNotification = false,
+                        blockedMetadata = blockedMetadata,
+                    ),
+                )
 
                 onDismiss()
             }

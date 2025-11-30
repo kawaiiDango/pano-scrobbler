@@ -59,6 +59,30 @@ interface BlockedMetadataDao {
     companion object {
         const val tableName = "blockedMetadata"
 
+        fun shouldBlock(
+            blockedMetadata: BlockedMetadata,
+            scrobbleData: ScrobbleData
+        ): Boolean {
+            val artistMatch =
+                blockedMetadata.artist.isBlank() || blockedMetadata.artist.equals(
+                    scrobbleData.artist, ignoreCase = true
+                )
+            val albumMatch =
+                blockedMetadata.album.isBlank() || blockedMetadata.album.equals(
+                    scrobbleData.album.orEmpty(), ignoreCase = true
+                )
+            val albumArtistMatch =
+                blockedMetadata.albumArtist.isBlank() || blockedMetadata.albumArtist.equals(
+                    scrobbleData.albumArtist.orEmpty(), ignoreCase = true
+                )
+            val trackMatch =
+                blockedMetadata.track.isBlank() || blockedMetadata.track.equals(
+                    scrobbleData.track, ignoreCase = true
+                )
+
+            return artistMatch && albumMatch && albumArtistMatch && trackMatch
+        }
+
         suspend fun BlockedMetadataDao.getBlockedEntry(
             scrobbleData: ScrobbleData,
         ): BlockedMetadata? {

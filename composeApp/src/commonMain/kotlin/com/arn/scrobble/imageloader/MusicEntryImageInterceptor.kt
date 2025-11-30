@@ -2,7 +2,9 @@ package com.arn.scrobble.imageloader
 
 import androidx.collection.LruCache
 import coil3.intercept.Interceptor
+import coil3.network.HttpException
 import coil3.request.ImageResult
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -27,7 +29,7 @@ class MusicEntryImageInterceptor : Interceptor {
     private val semaphore = Semaphore(2)
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
     private val spotifyArtistSearchApproximate by lazy { PlatformStuff.mainPrefs.data.map { it.spotifyArtistSearchApproximate } }
-    private val useSpotify by lazy { PlatformStuff.mainPrefs.data.map { it.useSpotify } }
+    private val useSpotify by lazy { PlatformStuff.mainPrefs.data.map { it.spotifyApi } }
 
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
@@ -137,7 +139,9 @@ class MusicEntryImageInterceptor : Interceptor {
                             val needImage = webp300 == null ||
                                     StarMapper.STAR_PATTERN in webp300
 
-                            if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing) {
+                            if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing &&
+                                musicEntryImageReq.accountType == AccountType.LASTFM
+                            ) {
                                 semaphore.withPermit {
                                     delay(delayMs)
                                     val albumOrTrack =
@@ -177,6 +181,15 @@ class MusicEntryImageInterceptor : Interceptor {
 
         val request = chain.request.newBuilder()
             .data(fetchedImageUrl ?: "")
+            .listener(
+                onError = { req, err ->
+                    // cache the errors too, to avoid repeated failed fetches
+                    // e.g. coil3.network.HttpException: HTTP 404
+                    val httpException = err.throwable as? HttpException
+                    if (httpException != null && httpException.response.code >= 400)
+                        musicEntryCache.put(key, FetchedImageUrls(null))
+                }
+            )
             .build()
 
         return chain.withRequest(request).proceed()

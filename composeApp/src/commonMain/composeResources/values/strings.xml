@@ -97,7 +97,6 @@
         comment="Artist or youtube channel"
         >Artist / channel</string>
     <string name="similar_artists">Similar artists</string>
-    <string name="album_optional">Album (optional)</string>
     <string name="album">Album</string>
     <string name="albums">Albums</string>
     <string name="top_albums"
@@ -113,7 +112,6 @@
     <string name="state_scrobbled">Scrobbled</string>
     <string name="state_unscrobbled">Unscrobbled</string>
     <string name="tap_to_edit">(Tap to edit)</string>
-    <string name="recently_scrobbled">Recently Scrobbled</string>
     <string name="recents"
         comment="Short for recently scrobbled"
         >Recents</string>
@@ -280,7 +278,6 @@
         comment="https://www.google.com/search?&amp;q=tag+cloud"
         >Tag cloud</string>
     <string name="add_to_hs">Add to homescreen</string>
-    <string name="press_back">Press back when done</string>
     <string name="details">Details</string>
     <string name="saved_as_pending">Saved as a pending scrobble</string>
     <string name="sort">Sort</string>
@@ -502,24 +499,6 @@
     <string name="scrobbler_on">Scrobbler active</string>
     <string name="duration">Duration</string>
     <string name="total_listen_time">Total listen time</string>
-    <string name="acoustic"
-        comment="(Acoustic music)"
-        >Acoustic</string>
-    <string name="instrumental">Instrumental</string>
-    <string name="energetic"
-        comment="(Energetic music)"
-        >Energetic</string>
-    <string name="danceable">Danceable</string>
-    <string name="valence"
-        comment="(Musical positivity)"
-        >Positivity</string>
-    <string name="popularity"
-        formatted="true"
-        comment="popularity of a track"
-        >Popularity: %1$d%%</string>
-    <string name="analysis"
-        comment="musical analysis such as key, bpm, time signature, dancability etc"
-        >Analysis</string>
     <string name="enable"
         comment="To enable some feature"
         >Enable</string>
@@ -552,7 +531,6 @@
         comment="Scrobble from (these apps)"
         >Scrobble from</string>
     <string name="pref_enabled_apps_summary">Supports apps that reveal music metadata. To avoid double scrobbles from Spotify, enable it only in one place.</string>
-    <string name="pref_enabled_apps_title">Choose apps</string>
     <string name="pref_auto_detect">Automatically scrobble from new apps</string>
     <string name="pref_spotify_remote">Scrobble Spotify playing on other devices</string>
     <string name="pref_spotify_artist_search_approximate"
@@ -696,7 +674,6 @@
         comment="For pending scrobbles"
         >Submitting a batch</string>
     <string name="bar_chart">Bar chart</string>
-    <string name="cleared_disabled_apps">Cleared disabled apps</string>
 
     <string name="fix_it_title">Possible fixes</string>
     <string name="fix_it_startup_title">Power savers / startup managers</string>
@@ -768,15 +745,24 @@
         comment="%1$s is the line number, currently used in the context of Discord Rich Presence"
         >Line %1$s</string>
     <string name="album_art_now_playing">Fetch album art from Now Playing, if required</string>
-    <string name="you_have_disabled" formatted="true"
+    <string name="is_turned_off" formatted="true"
         comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found"
-        >You've turned off %1$s in %2$s</string>
+        >%1$s is turned off in %2$s</string>
     <string name="discord_compact_view_line">Show as "Listening to":</string>
     <string name="available_placeholders" formatted="true"
         comment="%1 = placeholder strings, e.g. $artist, $title etc."
         >Available placeholders: %1$s</string>
     <string name="show_paused_for">Show paused media for</string>
     <string name="edit_example">e.g. To replace Artist1 with Artist2 while keeping the rest of the metadata unchanged, enable only the artist field, and fill in the original and corrected artist values, leaving the other fields disabled.</string>
+    <string name="when_using" formatted="true"
+        comment="%1$s is the web service or media player name"
+        >When using %1$s</string>
+    <string name="when_not_using" formatted="true"
+        comment="%1$s is the web service or media player name"
+        >When not using %1$s</string>
+    <string name="as_text"
+        comment="Like copy as text etc"
+        >As text</string>
 
 <!--  pro  -->
     <string name="get_pro">Support this app</string>

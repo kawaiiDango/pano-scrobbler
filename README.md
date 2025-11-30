@@ -8,8 +8,6 @@
 [obtainium-link]: https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/kawaiiDango/pano-scrobbler
 [fdroid]: img/fdroid.svg
 [fdroid-link]: https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
-[ko-fi]: img/ko-fi.svg
-[ko-fi-link]: https://ko-fi.com/kawaiiDango
 [crowdin]: img/crowdin.svg
 [crowdin-link]: https://crowdin.com/project/pscrobbler
 

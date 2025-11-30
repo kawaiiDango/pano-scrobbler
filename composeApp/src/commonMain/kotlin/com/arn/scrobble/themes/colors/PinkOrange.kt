@@ -5,7 +5,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
 object PinkOrange : ThemeVariants {
-    override val name = this::class.java.simpleName
+    override val name = this::class.simpleName!!
 
     override val light
         get() = lightColorScheme(

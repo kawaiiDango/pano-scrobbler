@@ -16,11 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import pano_scrobbler.composeapp.generated.resources.Res
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.security.KeyStore
 import java.security.SecureRandom
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory

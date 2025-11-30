@@ -17,7 +17,7 @@ class HybridCacheStorage(
             ?.substringAfter("=")
             ?.toIntOrNull() ?: 0
 
-        return if (maxAgeSeconds > 0 && maxAgeSeconds <= minAgeSeconds) {
+        return if (maxAgeSeconds in 1..minAgeSeconds) {
             memoryCache.store(url, data)
         } else {
             fileCache.store(url, data)

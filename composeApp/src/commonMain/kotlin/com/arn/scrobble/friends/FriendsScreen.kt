@@ -106,7 +106,6 @@ import pano_scrobbler.composeapp.generated.resources.sort
 import pano_scrobbler.composeapp.generated.resources.track
 import pano_scrobbler.composeapp.generated.resources.unpin
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FriendsScreen(
     user: UserCached,

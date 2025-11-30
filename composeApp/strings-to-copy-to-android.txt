@@ -7,7 +7,6 @@ search
 settings
 charts_no_data
 new_player
-new_player_prompt
 scrobbler_off
 scrobbler_on
 show_persistent_noti

@@ -6,11 +6,10 @@
     <string name="state_scrobbling">अभी स्क्रॉबल हो रहा है…</string>
     <string name="search">ढुंढे</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s मिला</string>
-    <string name="new_player_prompt">इस एप्लिकेशन को स्क्रॉबल करना जारी रखे?</string>
     <string comment="Its a noun" name="channel_err">स्क्रौब्ल की त्रुटिया</string>
     <string name="new_app">नया एप्लिकेशन</string>
     <string name="pending_scrobbles">बाकी स्क्रौब्ल</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">चार्ट</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">चार्ट</string>
     <string name="weekly">साप्ताहिक</string>
     <string name="monthly">मासिक</string>
     <string name="charts_overall">सम्पूर्ण काल</string>

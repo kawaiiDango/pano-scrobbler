@@ -12,7 +12,6 @@ import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
@@ -80,11 +79,10 @@ class EditScrobbleViewModel : ViewModel() {
                                 PlayingTrackNotifyEvent.TrackCancelled(
                                     hash = hash,
                                     showUnscrobbledNotification = false,
-                                    blockPlayerAction = BlockPlayerAction.ignore,
                                 )
                             )
                         }
-                        
+
                         if (key != null) { // from scrobble history
                             notifyEdit(key, editedSd.toTrack())
                         }

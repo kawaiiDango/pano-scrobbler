@@ -6,11 +6,10 @@
     <string name="state_scrobbling">Dabar skrobuolinama…</string>
     <string name="search">Ieškoti</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">Aptikta „%1$s“</string>
-    <string name="new_player_prompt">Toliau skrobuolinti šią programėlę?</string>
     <string comment="Its a noun" name="channel_err">Skroblo klaidos</string>
     <string name="new_app">Nauja programėlė</string>
     <string name="pending_scrobbles">Laukiami skroblai</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Diagramos</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Diagramos</string>
     <string name="weekly">Savaitinis</string>
     <string name="monthly">Mėnesinis</string>
     <string name="charts_overall">Iš viso</string>

@@ -67,15 +67,14 @@ import pano_scrobbler.composeapp.generated.resources.copy_sk
 import pano_scrobbler.composeapp.generated.resources.country_for_api
 import pano_scrobbler.composeapp.generated.resources.dark
 import pano_scrobbler.composeapp.generated.resources.debug_menu
-import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
 import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.external_metadata
-import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
+import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
 import pano_scrobbler.composeapp.generated.resources.notification_channel_blocked
@@ -124,7 +123,7 @@ import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.spotify
-import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
+import pano_scrobbler.composeapp.generated.resources.when_not_using
 import java.util.Calendar
 import java.util.Locale
 
@@ -164,8 +163,9 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.linkHeartButtonToRating } }
     val firstDayOfWeek by remember { derivedStateOf { mainPrefsData.firstDayOfWeek } }
     val locale by remember { derivedStateOf { mainPrefsData.locale } }
+    val lastfmApiAlways by remember { derivedStateOf { mainPrefsData.lastfmApiAlways } }
     val fetchAlbum by remember { derivedStateOf { mainPrefsData.fetchAlbum } }
-    val tidalSteelSeries by remember { derivedStateOf { mainPrefsData.tidalSteelSeries } }
+    val tidalSteelSeries by remember { derivedStateOf { mainPrefsData.tidalSteelSeriesApi } }
     val spotifyArtistSearchApproximate by
     remember { derivedStateOf { mainPrefsData.spotifyArtistSearchApproximate } }
     val preventDuplicateAmbientScrobbles by
@@ -181,13 +181,13 @@ fun PrefsScreen(
     val crashReporterEnabled by
     remember { derivedStateOf { mainPrefsData.crashReporterEnabled } }
     val useSpotify by
-    remember { derivedStateOf { mainPrefsData.useSpotify } }
+    remember { derivedStateOf { mainPrefsData.spotifyApi } }
     val spotifyCountryP by
     remember { derivedStateOf { mainPrefsData.spotifyCountryP } }
     val itunesCountryP by
     remember { derivedStateOf { mainPrefsData.itunesCountryP } }
-    val fetchMissingMetadata by
-    remember { derivedStateOf { mainPrefsData.fetchMissingMetadata } }
+    val deezerApi by
+    remember { derivedStateOf { mainPrefsData.deezerApi } }
     val extractFirstArtistPackages by
     remember { derivedStateOf { mainPrefsData.extractFirstArtistPackages } }
     val parseTitleWithFallbackApps by remember {
@@ -613,14 +613,34 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::useSpotify.name) {
+        item(MainPrefs::lastfmApiAlways.name) {
+            SwitchPref(
+                text = stringResource(Res.string.lastfm),
+                value = lastfmApiAlways,
+                summary = stringResource(
+                    Res.string.when_not_using,
+                    stringResource(Res.string.lastfm)
+                ),
+                copyToSave = { copy(lastfmApiAlways = it) }
+            )
+        }
+
+        item(MainPrefs::fetchAlbum.name) {
+            SwitchPref(
+                text = stringResource(Res.string.pref_fetch_album),
+                value = fetchAlbum,
+                copyToSave = { copy(fetchAlbum = it) }
+            )
+        }
+
+        item(MainPrefs::spotifyApi.name) {
             SwitchPref(
                 text = stringResource(Res.string.spotify),
                 summary = stringResource(Res.string.search) + ": " +
                         stringResource(Res.string.artist_image) + ", " +
                         stringResource(Res.string.album_art),
                 value = useSpotify,
-                copyToSave = { copy(useSpotify = it) }
+                copyToSave = { copy(spotifyApi = it) }
             )
         }
 
@@ -649,27 +669,7 @@ fun PrefsScreen(
             )
         }
 
-        if (PlatformStuff.isDesktop) {
-            item(MainPrefs::fetchMissingMetadata.name) {
-                val metadataServices = listOf(
-                    stringResource(Res.string.deezer),
-                ).joinToString()
-
-                SwitchPref(
-                    text = stringResource(Res.string.fetch_missing_metadata, metadataServices),
-                    value = fetchMissingMetadata,
-                    copyToSave = { copy(fetchMissingMetadata = it) }
-                )
-            }
-        }
-
-        item(MainPrefs::fetchAlbum.name) {
-            SwitchPref(
-                text = stringResource(Res.string.pref_fetch_album),
-                value = fetchAlbum,
-                copyToSave = { copy(fetchAlbum = it) }
-            )
-        }
+        deezerApi(this, deezerApi)
 
         tidalSteelSeries(this, tidalSteelSeries)
 
@@ -917,3 +917,5 @@ expect suspend fun isAddedToStartup(): Boolean
 
 expect fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit)
 expect fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean)
+
+expect fun deezerApi(listScope: LazyListScope, enabled: Boolean)

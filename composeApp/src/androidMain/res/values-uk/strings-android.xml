@@ -6,11 +6,10 @@
     <string name="state_scrobbling">Відбувається скроблінг…</string>
     <string name="search">Пошук</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s виявлено</string>
-    <string name="new_player_prompt">Чи скроблювати з цього додатку?</string>
     <string comment="Its a noun" name="channel_err">Помилки скроблінгу</string>
     <string name="new_app">Новий додаток</string>
     <string name="pending_scrobbles">Очікуючі Скробли</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Чарти</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Чарти</string>
     <string name="weekly">За тиждень</string>
     <string name="monthly">За місяць</string>
     <string name="charts_overall">Всього</string>

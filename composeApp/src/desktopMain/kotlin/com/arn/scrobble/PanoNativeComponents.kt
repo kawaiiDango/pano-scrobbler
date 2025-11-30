@@ -186,9 +186,6 @@ object PanoNativeComponents {
     external fun sendIpcCommand(command: String, arg: String): Boolean
 
     @JvmStatic
-    external fun getSystemLocale(): String
-
-    @JvmStatic
     external fun isFileLocked(path: String): Boolean
 
     @JvmStatic

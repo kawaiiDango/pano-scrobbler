@@ -9,7 +9,6 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.ApiException
-import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.PurchaseMethod
 import com.arn.scrobble.pref.AppItem

@@ -28,10 +28,9 @@ datastore = "1.2.0"
 espresso-core = "3.7.0"
 firebase-bom = "34.6.0"
 google-services = "4.4.3"
-harmony = "1.2.7"
 immutable = "0.4.0"
 kermit = "2.0.8"
-koalaplot = "0.10.2"
+koalaplot = "0.10.3"
 kotlinCsvJvm = "1.10.0"
 ksp = "2.3.3"
 ktor = "3.3.3"
@@ -98,7 +97,6 @@ core = { module = "androidx.core:core", version.ref = "core" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
-harmony = { module = "com.frybits.harmony:harmony", version.ref = "harmony" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-json" }
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }

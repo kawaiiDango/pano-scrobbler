@@ -8,21 +8,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.DesktopWebView
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.billing.BaseBillingRepository
-import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
-import com.arn.scrobble.utils.Stuff.billingClientData
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -70,6 +66,7 @@ actual object PlatformStuff {
     actual val mainPrefs by lazy {
         DataStoreFactory.create(
             serializer = MainPrefsSerializer,
+            migrations = MainPrefs.migrations(),
             corruptionHandler = null,
             produceFile = {
                 File(filesDir, MainPrefs.FILE_NAME)
@@ -110,7 +107,6 @@ actual object PlatformStuff {
 
 
     actual fun isScrobblerRunning(): Boolean {
-        // todo implement after porting NLService
         return true
     }
 

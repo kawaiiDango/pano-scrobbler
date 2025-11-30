@@ -6,11 +6,10 @@
     <string name="state_scrobbling">正在记录…</string>
     <string name="search">搜索</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">检测到 %1$s</string>
-    <string name="new_player_prompt">继续为此应用启用音乐记录吗？</string>
     <string comment="Its a noun" name="channel_err">音乐记录错误</string>
     <string name="new_app">新应用</string>
     <string name="pending_scrobbles">待记录的音乐</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">图表</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">图表</string>
     <string name="weekly">每周</string>
     <string name="monthly">每月</string>
     <string name="charts_overall">总览</string>

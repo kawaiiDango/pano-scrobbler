@@ -7,7 +7,7 @@
     <string name="search">Sök</string>
     <string name="new_app">Ny app</string>
     <string name="pending_scrobbles">Väntande scrobbles</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Topplistor</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Topplistor</string>
     <plurals name="num_weeks">
         <item quantity="one">%1$s vecka</item>
         <item quantity="other">%1$s veckor</item>

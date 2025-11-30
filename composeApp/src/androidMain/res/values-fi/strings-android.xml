@@ -6,11 +6,10 @@
     <string name="state_scrobbling">Nyt scrobblaa…</string>
     <string name="search">Hae</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s havaittu</string>
-    <string name="new_player_prompt">Jatketaanko tämän sovelluksen scrobblausta?</string>
     <string comment="Its a noun" name="channel_err">Scrobblausvirheet</string>
     <string name="new_app">Uusi sovellus</string>
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
-    <string comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listat</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listat</string>
     <string name="weekly">Viikottainen</string>
     <string name="monthly">Kuukausittainen</string>
     <string name="charts_overall">Kaikki</string>

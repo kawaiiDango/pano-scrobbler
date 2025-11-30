@@ -69,11 +69,13 @@ class InfoVM : ViewModel() {
                     _userTags.emit(emptyMap())
                     _infoMap.emit(infos)
 
-                    val infosFetched = withContext(Dispatchers.IO) {
-                        getInfos(infos, _username)
+                    if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM ||
+                        PlatformStuff.mainPrefs.data.map { it.lastfmApiAlways }.first()
+                    ) {
+                        _infoMap.value = withContext(Dispatchers.IO) {
+                            getInfos(infos, _username)
+                        }
                     }
-
-                    _infoMap.emit(infosFetched)
                     _infoLoaded.emit(true)
                 }
         }

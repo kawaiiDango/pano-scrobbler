@@ -9,9 +9,7 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
-import androidx.compose.ui.res.stringResource
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.R
 import com.arn.scrobble.media.PlayerActions.love
 import com.arn.scrobble.media.PlayerActions.skip
 import com.arn.scrobble.media.PlayerActions.unlove

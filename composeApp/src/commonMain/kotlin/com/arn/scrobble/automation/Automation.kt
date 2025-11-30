@@ -1,6 +1,5 @@
 package com.arn.scrobble.automation
 
-import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.utils.PlatformStuff
@@ -60,7 +59,6 @@ object Automation {
                 val event = PlayingTrackNotifyEvent.TrackCancelled(
                     hash = null,
                     showUnscrobbledNotification = false,
-                    blockPlayerAction = BlockPlayerAction.ignore
                 )
 
                 notifyPlayingTrackEvent(event)

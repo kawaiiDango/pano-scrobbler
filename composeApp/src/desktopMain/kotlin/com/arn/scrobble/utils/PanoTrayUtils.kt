@@ -40,7 +40,7 @@ object PanoTrayUtils {
         Error,
         Open,
         Update,
-        DiscordRpc,
+        DiscordRpcDisabled,
         Exit;
 
         fun withSuffix(suffix: String): String {

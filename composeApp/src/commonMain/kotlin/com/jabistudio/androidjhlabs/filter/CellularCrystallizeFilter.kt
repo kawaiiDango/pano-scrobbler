@@ -207,7 +207,7 @@ class CellularCrystallizeFilter : Function2D {
             coefficients[3] = v
         }
 
-    inner class Point {
+    class Point {
         var index: Int = 0
         var x: Float = 0f
         var y: Float = 0f

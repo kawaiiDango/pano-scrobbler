@@ -75,7 +75,7 @@ sealed interface PanoDialog {
 
     @Serializable
     data class BlockedMetadataAdd(
-        val blockedMetadata: BlockedMetadata = BlockedMetadata(),
+        val blockedMetadata: BlockedMetadata?,
         val ignoredArtist: String? = null,
         val hash: Int? = null,
     ) : PanoDialog

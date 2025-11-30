@@ -1,6 +1,5 @@
 package com.arn.scrobble.utils
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.app.NotificationManager
 import android.app.SearchManager
@@ -32,16 +31,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.billing.BaseBillingRepository
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.media.NLService
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.pref.MainPrefsMigration5
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
@@ -67,9 +63,7 @@ actual object PlatformStuff {
     actual val mainPrefs by lazy {
         MultiProcessDataStoreFactory.create(
             serializer = MainPrefsSerializer,
-            migrations = listOf(
-                MainPrefsMigration5(),
-            ),
+            migrations = MainPrefs.migrations(),
             corruptionHandler = null,
             produceFile = {
                 File(filesDir, MainPrefs.FILE_NAME)

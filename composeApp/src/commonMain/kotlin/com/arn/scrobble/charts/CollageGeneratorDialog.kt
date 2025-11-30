@@ -66,10 +66,7 @@ import pano_scrobbler.composeapp.generated.resources.artists
 import pano_scrobbler.composeapp.generated.resources.as_text
 import pano_scrobbler.composeapp.generated.resources.borders
 import pano_scrobbler.composeapp.generated.resources.captions
-import pano_scrobbler.composeapp.generated.resources.charts_num_text
 import pano_scrobbler.composeapp.generated.resources.edit_all
-import pano_scrobbler.composeapp.generated.resources.external_metadata
-import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.saved_to_gallery
 import pano_scrobbler.composeapp.generated.resources.share
@@ -78,7 +75,6 @@ import pano_scrobbler.composeapp.generated.resources.skip_missing_images
 import pano_scrobbler.composeapp.generated.resources.tracks
 import pano_scrobbler.composeapp.generated.resources.username
 import pano_scrobbler.composeapp.generated.resources.vd_launcher_fg_for_collage
-import java.util.Calendar
 
 data class IconPaintersForCollage(
     val app: Painter,
@@ -110,10 +106,10 @@ fun CollageGeneratorDialog(
         .collectAsStateWithInitialValue { it.collageSkipMissing }
     val collageBorders by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { it.collageBorders }
-    var shareCollageClicked by remember { mutableStateOf(false) }
-    var saveCollageClicked by remember { mutableStateOf(false) }
-    var showSavedMessage by remember { mutableStateOf(false) }
-    var shareTextToCopy by remember { mutableStateOf<String?>(null) }
+    var shareCollageClicked by remember(collageType) { mutableStateOf(false) }
+    var saveCollageClicked by remember(collageType) { mutableStateOf(false) }
+    var showSavedMessage by remember(collageType) { mutableStateOf(false) }
+    var shareTextToCopy by remember(collageType) { mutableStateOf<String?>(null) }
     val iconPainters = IconPaintersForCollage(
         app = painterResource(Res.drawable.vd_launcher_fg_for_collage),
         user = placeholderImageVectorPainter(null, Icons.Outlined.Person),
@@ -127,12 +123,12 @@ fun CollageGeneratorDialog(
 
     val errorText by viewModel.errorText.collectAsStateWithLifecycle(null)
     val progress by viewModel.progress.collectAsStateWithLifecycle()
-    var collageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var collageBitmap by remember(collageType) { mutableStateOf<ImageBitmap?>(null) }
 
     val textMeasurer = rememberTextMeasurer()
     val scope = rememberCoroutineScope()
 
-    var filePickerShown by remember { mutableStateOf(false) }
+    var filePickerShown by remember(collageType) { mutableStateOf(false) }
 
     val collageTypes = mapOf(
         Stuff.TYPE_ALL to stringResource(Res.string.edit_all),

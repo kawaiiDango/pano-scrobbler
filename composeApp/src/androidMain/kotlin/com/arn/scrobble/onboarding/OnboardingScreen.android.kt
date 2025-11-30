@@ -47,6 +47,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.allow_background
 import pano_scrobbler.composeapp.generated.resources.check_nls
 import pano_scrobbler.composeapp.generated.resources.choose_apps
+import pano_scrobbler.composeapp.generated.resources.dont_kill_my_app_url
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access_desc
 import pano_scrobbler.composeapp.generated.resources.pref_login
@@ -281,7 +282,7 @@ actual fun OnboardingScreen(
 
                     VerticalStepperItem(
                         titleRes = Res.string.allow_background,
-                        descriptionRes = null,
+                        descriptionRes = Res.string.dont_kill_my_app_url,
                         openAction = {
                             PlatformStuff.openInBrowser(
                                 "https://dontkillmyapp.com/" + Build.MANUFACTURER.lowercase()

@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.onSizeChanged
@@ -328,10 +329,9 @@ fun main(args: Array<String>) {
                     else
                         "❌ "
 
-                    if (BuildKonfig.DEBUG) // todo remove
-                        trayItems += PanoTrayUtils.ItemId.DiscordRpc.name to rpcStatus + getString(
-                            Res.string.discord_rich_presence
-                        )
+                    trayItems += PanoTrayUtils.ItemId.DiscordRpcDisabled.name to rpcStatus + getString(
+                        Res.string.discord_rich_presence
+                    )
                 }
 
                 updateAction?.let {
@@ -731,10 +731,7 @@ private fun TrayWindow(
                         },
                 ) {
                     menuItemIds.zip(menuItemTexts).forEach { (id, text) ->
-                        val isClickable = id !in arrayOf(
-                            PanoTrayUtils.ItemId.Separator.name,
-                            PanoTrayUtils.ItemId.DiscordRpc.name
-                        )
+                        val isClickable = !id.endsWith("Disabled")
 
                         if (id == PanoTrayUtils.ItemId.Separator.name) {
                             Spacer(
@@ -753,10 +750,15 @@ private fun TrayWindow(
                                         else
                                             Modifier
                                     )
-                                    .clickable(isClickable) {
-                                        PanoTrayUtils.onTrayMenuItemClickedFn(id)
-                                        onDismiss()
-                                    }
+                                    .then(
+                                        if (isClickable)
+                                            Modifier.clickable {
+                                                PanoTrayUtils.onTrayMenuItemClickedFn(id)
+                                                onDismiss()
+                                            }
+                                        else
+                                            Modifier.alpha(0.5f)
+                                    )
                                     .padding(vertical = 4.dp, horizontal = 16.dp)
                             )
                         }

@@ -1,7 +1,6 @@
 package com.arn.scrobble.work
 
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.github.Github
 import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.updates.doAfterUpdateCheck

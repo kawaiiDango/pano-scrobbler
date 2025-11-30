@@ -1,8 +1,8 @@
 package com.kennycason.kumo.image
 
-import com.arn.scrobble.graphics.PlatformBitmap
 import com.arn.scrobble.graphics.KumoPoint
 import com.arn.scrobble.graphics.KumoRect
+import com.arn.scrobble.graphics.PlatformBitmap
 import java.util.BitSet
 
 /**

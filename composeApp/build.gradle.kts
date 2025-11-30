@@ -96,7 +96,6 @@ kotlin {
             implementation(libs.androidx.core.remoteviews)
             implementation(libs.media)
             implementation(libs.compose.webview)
-            implementation(libs.harmony)
             implementation(libs.coil.gif)
         }
 
@@ -109,7 +108,7 @@ kotlin {
             implementation(libs.material.icons.extended)
             implementation(libs.ui)
             implementation(libs.resources)
-            implementation(libs.tooling)
+//            implementation(libs.tooling)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
@@ -163,6 +162,7 @@ dependencies {
 //    "baselineProfile"(projects.baselineprofile)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
+    "androidRuntimeClasspath"(libs.tooling)
 }
 
 room {
@@ -514,10 +514,8 @@ tasks.register<Exec>("buildNativeImage") {
     val outputDir = file("build/compose/native/$resourcesDirName")
     val outputFile = File(outputDir, APP_NAME_NO_SPACES)
 
-    val rechabilityFilesSuffix = if (Runtime.version().version().first() < 24) "-21" else ""
     val reachabilityFiles = file(
-        "rechability-metadata${rechabilityFilesSuffix}/" +
-                if (os.isWindows) "windows" else "linux"
+        "rechability-metadata/" + if (os.isWindows) "windows" else "linux"
     )
     val jawtDirName = if (os.isWindows)
         "bin"
@@ -550,7 +548,6 @@ tasks.register<Exec>("buildNativeImage") {
             "$graalvmHome\\bin\\native-image.cmd"
         else
             "$graalvmHome/bin/native-image",
-        "--strict-image-heap",
         "--no-fallback",
         "-march=" + if (arch in archArm64) "armv8.1-a" else "x86-64-v2",
         if (os.isLinux && arch in archArm64) "-H:PageSize=16384" else null,
@@ -568,11 +565,8 @@ tasks.register<Exec>("buildNativeImage") {
 //        "-g",
 //        "--enable-monitoring=nmt",
         "--enable-native-access=ALL-UNNAMED",
-        if (Runtime.version().version().first() < 24) null else "-H:+ForeignAPISupport",
-        if (Runtime.version().version().first() < 24)
-            "-H:+IncludeAllLocales"
-        else
-            "--include-locales",
+        "-H:+ForeignAPISupport",
+        "--include-locales",
         if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
         if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,
         if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.absolutePath}\"" else null,

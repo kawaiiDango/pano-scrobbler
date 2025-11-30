@@ -3,21 +3,21 @@ import csv
 import json
 import xxhash
 
+x = xxhash.xxh3_64()
 
-def main():
-    x = xxhash.xxh3_64()
-    parser = argparse.ArgumentParser(
-        description="Collect artist names and aliases containing specific substrings."
-    )
-    parser.add_argument(
-        "artists_file", help="Path to the MusicBrainz artist JSONL dump file"
-    )
-    parser.add_argument(
-        "canonical_data_file",
-        help="Path to the MusicBrainz canonical_musicbrainz_data csv file",
-    )
-    parser.add_argument("output_file", help="Path to output text file")
-    args = parser.parse_args()
+def lookup_name(name: str, hashed_names_set: set) -> bytes | None:
+    x.reset()
+    x.update(name.lower().encode())
+    h = x.digest()
+    found = h in hashed_names_set
+    return h if found else None
+
+def collect_artist_names(
+        artists_file: str,
+        canonical_data_file: str,
+        hashes_file: str,
+        debug_file: str | None,
+) -> None:
 
     substrings = [
         ", ",
@@ -87,17 +87,12 @@ def main():
         " 및 ",  # Korean
     ]
 
-    equivalent_separators = [
-        (" & ", " and "),  # fixes "Siouxsie & the Banshees"
-        # Add more pairs as needed
-    ]
-
     names_set = set()
     credit_names_set = set()
     filtered_credit_names_set = set()
     hashed_names_set = set()
 
-    with open(args.artists_file, encoding="utf-8") as jsonl_file:
+    with open(artists_file, encoding="utf-8") as jsonl_file:
         for line in jsonl_file:
             try:
                 artist = json.loads(line)
@@ -115,31 +110,24 @@ def main():
 
     print(f"{len(names_set)} artist names and aliases")
 
-    with open(args.canonical_data_file, newline="", encoding="utf-8") as csvfile:
+    with open(canonical_data_file, newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
+            artist_mbids = row.get("artist_mbids")
+            # pick only single artists
+            if not artist_mbids or "," in artist_mbids:
+                continue
             artist_name = row.get("artist_credit_name")
-            if artist_name:
+            if artist_name and any(sub in artist_name for sub in substrings):
                 credit_names_set.add(artist_name.lower())
 
     print(f"{len(credit_names_set)} artist credit names.")
 
-    for name in names_set:
-        for sep1, sep2 in equivalent_separators:
-            if sep1 in name:
-                equivalent_name = name.replace(sep1, sep2)
-                if (
-                    equivalent_name not in names_set
-                    and equivalent_name in credit_names_set
-                ):
-                    filtered_credit_names_set.add(equivalent_name)
-            elif sep2 in name:
-                equivalent_name = name.replace(sep2, sep1)
-                if (
-                    equivalent_name not in names_set
-                    and equivalent_name in credit_names_set
-                ):
-                    filtered_credit_names_set.add(equivalent_name)
+    for name in credit_names_set:
+        if (
+            name not in names_set
+        ):
+            filtered_credit_names_set.add(name)
 
     print(f"{len(filtered_credit_names_set)} filtered artist credit names.")
 
@@ -147,27 +135,83 @@ def main():
 
     print(f"{len(names_set)} artist names and aliases with equivalent names")
 
-    with open(args.output_file, "wb") as outfile:
-        for name in names_set:
-            x.reset()
-            x.update(name.encode())
-            h = x.digest()
-            hashed_names_set.add(h)
+    if debug_file:
+        with open(debug_file, "w", encoding="utf-8") as dbgfile:
+            for name in sorted(filtered_credit_names_set):
+                dbgfile.write(f"{name}\n")
+
+    for name in names_set:
+        x.reset()
+        x.update(name.encode())
+        h = x.digest()
+        hashed_names_set.add(h)
+
+    # sort the hashes to make output deterministic
+    hashed_names_sorted = sorted(hashed_names_set)
+
+    with open(hashes_file, "wb") as outfile:
+        for h in hashed_names_sorted:
             outfile.write(h)
 
     # print the length of the collected names
-    print(f"{len(hashed_names_set)} hashed names")
+    print(f"{len(hashed_names_sorted)} hashed names")
 
     # test
-    test_name = "Alice Schach and the Magic Orchestra".lower()
-    x.reset()
-    x.update(test_name.encode())
-    test_hash = x.digest()
-    test_hash_found = test_hash in hashed_names_set
-    # print the hash as hex
-    print(f"Hash for '{test_name}': {test_hash.hex()}")
-    print(f"Hash found in set: {test_hash_found}")
-
+    test_strings = [
+        "The Beatles",
+        "Simon & Garfunkel",
+        "Siouxsie and the Banshees",
+        "Siouxsie & the Banshees",
+        "AC/DC",
+        "Guns N' Roses",
+        "Earth, Wind & Fire",
+        "Florence and the Machine",
+        "Salt-N-Pepa",
+        "Bell Biv DeVoe",
+        "Crosby, Stills, Nash & Young",
+        "Alice Schach and the Magic Orchestra",
+        "Invent, Animate",
+    ]
+    
+    for test_name in test_strings:
+        test_hash = lookup_name(test_name, hashed_names_set)
+        # print the hash as hex
+        print(f"Hash for '{test_name}': {test_hash.hex() if test_hash else None}")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description="Collect artist names and aliases containing specific substrings."
+    )
+    parser.add_argument(
+        "--artists_file", help="Path to the MusicBrainz artist JSONL dump file", required=False
+    )
+    parser.add_argument(
+        "--canonical_data_file",
+        help="Path to the MusicBrainz canonical_musicbrainz_data csv file",
+        required=False,
+    )
+    parser.add_argument("--hashes_file", help="Path to output hashes file", required=True)
+    parser.add_argument("--debug_file", help="Path to output debug file", required=False)
+    parser.add_argument("--test_string", help="Test string to look up", required=False)
+    args = parser.parse_args()
+
+    if args.test_string and args.hashes_file:
+        # Load hashed names from output file
+        hashed_names_set = set()
+        with open(args.hashes_file, "rb") as infile:
+            while True:
+                h = infile.read(8)  # xxh3_64 produces 8-byte hashes
+                if not h:
+                    break
+                hashed_names_set.add(h)
+        test_hash = lookup_name(args.test_string, hashed_names_set)
+        print(f"Hash for '{args.test_string}': {test_hash.hex() if test_hash else None}")
+    elif args.artists_file and args.canonical_data_file and args.hashes_file:
+        collect_artist_names(
+            args.artists_file,
+            args.canonical_data_file,
+            args.hashes_file,
+            args.debug_file
+         )
+    else:
+        parser.print_help()

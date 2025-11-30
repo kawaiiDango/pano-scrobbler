@@ -2,6 +2,7 @@
 
 package com.arn.scrobble.pref
 
+import androidx.datastore.core.DataMigration
 import androidx.datastore.core.Serializer
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
@@ -94,6 +95,7 @@ data class MainPrefs(
     val regexLearnt: Boolean = false,
     val otherPlatformsLearnt: Boolean = false,
     val squarePhotoLearnt: Boolean = false,
+    val spotifyConsentLearnt: Boolean = false,
     val changelogSeenHashcode: Int? = null,
     val searchHistory: List<String> = emptyList(),
     val tagHistory: List<String> = emptyList(),
@@ -125,10 +127,11 @@ data class MainPrefs(
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
     val windowState: SerializableWindowState? = null,
     private val itunesCountry: String? = null,
-    val useSpotify: Boolean = true,
+    val spotifyApi: Boolean = false,
     private val spotifyCountry: String? = null,
-    val tidalSteelSeries: Boolean = true,
-    val fetchMissingMetadata: Boolean = true,
+    val tidalSteelSeriesApi: Boolean = true,
+    val deezerApi: Boolean = true,
+    val lastfmApiAlways: Boolean = false,
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
 ) {
@@ -252,6 +255,7 @@ data class MainPrefs(
         regexPresetsApps = this.regexPresetsApps
     )
 
+
     companion object {
         const val FILE_NAME = "main-prefs.json"
 
@@ -264,6 +268,10 @@ data class MainPrefs(
         const val PREF_MIN_DURATON_SECS_DEFAULT = 30
         const val PREF_MIN_DURATON_SECS_MIN = 10
         const val PREF_MIN_DURATON_SECS_MAX = 60
+
+        fun migrations() = listOf<DataMigration<MainPrefs>>(
+            MainPrefsMigration6(),
+        )
     }
 }
 

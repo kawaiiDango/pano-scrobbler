@@ -27,6 +27,8 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ToggleOff
+import androidx.compose.material.icons.outlined.ToggleOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -42,6 +44,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
@@ -99,12 +102,15 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.delete
+import pano_scrobbler.composeapp.generated.resources.disable
+import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.librefm
 import pano_scrobbler.composeapp.generated.resources.like_instance
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.login_submit
 import pano_scrobbler.composeapp.generated.resources.network_error
+import pano_scrobbler.composeapp.generated.resources.no
 import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_import
@@ -112,6 +118,7 @@ import pano_scrobbler.composeapp.generated.resources.profile_pic
 import pano_scrobbler.composeapp.generated.resources.retry
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 import pano_scrobbler.composeapp.generated.resources.search
+import pano_scrobbler.composeapp.generated.resources.yes
 import kotlin.math.abs
 
 @Composable
@@ -335,6 +342,7 @@ fun OutlinedTextFieldTvSafe(
     maxLines: Int = Int.MAX_VALUE,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -350,12 +358,14 @@ fun OutlinedTextFieldTvSafe(
         maxLines = maxLines,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
+        isError = isError,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun <T> ButtonWithSpinner(
     prefixText: String?,
@@ -366,9 +376,10 @@ fun <T> ButtonWithSpinner(
 ) {
     var dropDownShown by remember { mutableStateOf(false) }
 
-    OutlinedButton(
-        onClick = { dropDownShown = true },
-        modifier = modifier.padding(end = 8.dp)
+    OutlinedToggleButton(
+        checked = dropDownShown,
+        onCheckedChange = { dropDownShown = it },
+        modifier = modifier
     ) {
         Text(
             if (prefixText == null) {
@@ -377,6 +388,7 @@ fun <T> ButtonWithSpinner(
                 "$prefixText: ${itemToTexts[selected] ?: ""}"
             }
         )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
 
         DropdownMenu(
@@ -752,6 +764,57 @@ fun customFpsInfiniteAnimation(
     }
 
     return animatable.asState()
+}
+
+@Composable
+fun YesNoDropdown(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onYes: () -> Unit,
+    onNo: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        modifier = modifier
+    ) {
+        DropdownMenuItem(
+            text = { Text(stringResource(Res.string.yes)) },
+            onClick = {
+                onYes()
+                onDismissRequest()
+            },
+        )
+        DropdownMenuItem(
+            text = { Text(stringResource(Res.string.no)) },
+            onClick = {
+                onNo()
+                onDismissRequest()
+            },
+        )
+    }
+}
+
+@Composable
+fun InlineCheckButton(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    IconButton(
+        onClick = { onCheckedChange(!checked) },
+    ) {
+        Icon(
+            imageVector = if (checked)
+                Icons.Outlined.ToggleOn
+            else
+                Icons.Outlined.ToggleOff,
+            contentDescription = if (checked)
+                stringResource(Res.string.disable)
+            else
+                stringResource(Res.string.enable),
+        )
+    }
 }
 
 @Composable

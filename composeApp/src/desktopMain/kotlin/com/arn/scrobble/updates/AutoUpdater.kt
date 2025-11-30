@@ -126,7 +126,7 @@ object AutoUpdater {
         return withContext(Dispatchers.IO) {
             Requesters.genericKtorClient.prepareGet(downloadUrl) {
                 timeout {
-                    requestTimeoutMillis = HttpTimeoutConfig.Companion.INFINITE_TIMEOUT_MS
+                    requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
                 }
             }
                 .execute { response ->

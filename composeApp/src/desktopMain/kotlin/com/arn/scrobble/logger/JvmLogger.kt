@@ -7,8 +7,6 @@ import co.touchlab.kermit.MessageStringFormatter
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.Tag
 import com.arn.scrobble.utils.DesktopStuff
-import com.arn.scrobble.utils.PlatformStuff
-import java.io.File
 import java.io.PrintStream
 import java.util.logging.FileHandler
 import java.util.logging.Level

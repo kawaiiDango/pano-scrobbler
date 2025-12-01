@@ -132,11 +132,11 @@
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatinis</string>
     <string name="music_players">Muzikos leistuvės</string>
-    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Kitos programėlės</string>
-    <string name="choose_apps">Pasirinkti programėles</string>
-    <string name="choose_an_app">Pasirinkti programėlę</string>
-    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programėlės</string>
-    <string name="offline">Neprisijungus. Rodomi duomenys nėra nauji.</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Kitos programos</string>
+    <string name="choose_apps">Pasirinkti programas</string>
+    <string name="choose_an_app">Pasirinkti programą</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Programos</string>
+    <string name="offline">Neprisijungta. Rodomi duomenys nėra nauji.</string>
     <string name="unavailable_offline">Nepasiekiama neprisijungus.</string>
     <string name="tv_url_notice">Atverkite šį URL adresą kito įrenginio naršyklėje</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Paslaugos</string>
@@ -169,16 +169,16 @@
     <string name="profile">Profilis</string>
     <string name="profile_pic">Profilio nuotrauka</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Šio elemento parinktys</string>
-    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Aptikta „%1$s“</string>
-    <string name="new_player_prompt">Toliau skrobuolinti šią programėlę?</string>
-    <string name="new_player_prompt_desktop">Eikite į nustatymus, kad pradėtumėte skrobuolinti šią programėlę</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">„%1$s“ aptikta</string>
+    <string name="new_player_prompt">Toliau skrobuolinti šią programą?</string>
+    <string name="new_player_prompt_desktop">Eikite į nustatymus, kad pradėtumėte skrobuolinti šią programą</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">Negalima pasiekti „%1$s“.</string>
     <string name="file_exists_confirm_overwrite">Failas egzistuoja. Spauskite dar kartą, kad perrašyti.</string>
     <string name="no_scrobbles">Čia dar nėra dainų…</string>
     <string name="no_friends">Dar nė vieno nesekate…</string>
     <string name="channel_err" comment="Its a noun">Skroblo klaidos</string>
-    <string name="new_app">Nauja programėlė</string>
-    <string name="no_apps_enabled">Nėra įjungtų programėlių</string>
+    <string name="new_app">Nauja programa</string>
+    <string name="no_apps_enabled">Nėra įjungtų programų</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d daugiau</string>
     <string name="show_all">Žiūrėti viską</string>
     <string name="edit">Redaguoti</string>
@@ -205,9 +205,9 @@
 - Pranešimai nedaro garso.</string>
     <string name="will_not_scrobble">Praleidus šį žingsnį, bus išjungtas skrobuolinimas</string>
     <string name="swap" comment="(Swap title and artist)">Apkeisti</string>
-    <string name="rate_msg">Patinka ši programėlė?</string>
+    <string name="rate_msg">Patinka ši programa?</string>
     <string name="time_just_now">ką tik</string>
-    <string name="no_mail_apps">Nėra įdiegta el. pašto kliento programėlė</string>
+    <string name="no_mail_apps">Nėra įdiegta el. pašto kliento programa</string>
     <string name="add">Pridėti naują elementą</string>
     <string name="loved" comment="Its a noun">Pamėgta</string>
     <string name="unloved" comment="Its a noun">Panaikinta pamėgtą</string>
@@ -215,10 +215,10 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Žymių debesis</string>
     <string name="add_to_hs">Pridėti prie pradžios ekrano</string>
-    <string name="press_back">Paspauskite atgal, kai baigsite</string>
+    <string name="press_back">Paspauskite atgal, kai baigta</string>
     <string name="details">Išsamiau</string>
     <string name="saved_as_pending">Išsaugotas kaip laukiamas skroblas</string>
-    <string name="sort">Rūšiuoti</string>
+    <string name="sort">Rikiuoti</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Laiko šuolis</string>
     <string name="my_scrobbles">Mano skroblai</string>
     <string name="listeners">Klausytojai (-ų)</string>
@@ -470,25 +470,25 @@
     <string name="first_artist">Naudoti tik pirmąjį atlikėją</string>
     <string name="external_metadata">Išoriniai metaduomenų šaltiniai</string>
     <!--  pro  -->
-    <string name="get_pro">Paremti šią programėlę</string>
+    <string name="get_pro">Paremti šią programą</string>
     <string name="one_time_purchase">Vienkartinis</string>
     <string name="help">Pagalba</string>
     <string name="pro_support">Tai – paprastas ir spartus būdas nuostabiems naudotojams, kaip jūs, išreikšti paramą, pripažįstant šios programėlės teikiamą vertę.</string>
     <string name="pro_also_get">Taip pat gausite toliau nurodytas funkcijas:</string>
     <string name="thank_you">Ačiū!</string>
-    <string name="purchase_pending">Jūsų mokėjimo paslaugų teikėjas dar nepatvirtino pirkimo. Patikrinkite po kelių minučių.</string>
+    <string name="purchase_pending">Jūsų mokėjimo teikėjas dar nepatvirtino pirkinio. Patikrinkite po kelių minučių.</string>
     <string name="billing_troubleshoot">Jau nusipirkote?
 
-Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programėlę naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programėlę iš kompiuterio per „Google Play“ tinklalapį:
+Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programą naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programą iš kompiuterio per „Google Play“ tinklalapį:
 
-• Išdiegkite šią programėlę.
+• Išdiegkite šią programą.
 • Atverkite „Google Play“ tinklalapį iš kompiuterio.
 • Prisijunkite su paskyra, kuriai priklauso pirkimas.
-• Įdiekite šią programėlę tiesiogiai iš „Google Play“ tinklalapio.</string>
-    <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti</string>
-    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos</string>
-    <string name="billing_sharing">Šalinti programėlės pavadinimą bendrinant</string>
-    <string name="billing_scrobble_source">Prisiminti ir matyti programėles, kurias nuskrobuolinote, ir tiesiogiai jose ieškoti</string>
-    <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliariąją reiškinį</string>
+• Diegkite šią programą tiesiogiai iš „Google Play“ tinklalapio.</string>
+    <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti.</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos.</string>
+    <string name="billing_sharing">Šalinti programos pavadinimą bendrinant.</string>
+    <string name="billing_scrobble_source">Prisiminti ir matyti programas, kurias nuskrobuolinote, ir tiesiogiai jose ieškoti.</string>
+    <string name="billing_regex_extract">Rašyti pasirinktines metaduomenų išskyrimo taisykles naudojant reguliariąją reiškinį.</string>
     <string name="billing_max_devices_reached" formatted="true">Šis kodas jau buvo panaudotas daugiausiuose (%1$d) įrenginiuose.</string>
 </resources>

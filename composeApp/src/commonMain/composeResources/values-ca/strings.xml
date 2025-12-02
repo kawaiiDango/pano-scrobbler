@@ -74,7 +74,6 @@
     <string name="album_artist">Artista de l'àlbum</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artista o canal</string>
     <string name="similar_artists">Artistes similars</string>
-    <string name="album_optional">Àlbum (opcional)</string>
     <string name="album">Àlbum</string>
     <string name="albums">Àlbums</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Àlbums més reproduïts</string>
@@ -86,7 +85,6 @@
     <string name="state_scrobbled">Scrobble fet</string>
     <string name="state_unscrobbled">Scrobble eliminat</string>
     <string name="tap_to_edit">(Toca per a editar)</string>
-    <string name="recently_scrobbled">Scrobbles recents</string>
     <string name="recents" comment="Short for recently scrobbled">Recents</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble fet el %1$s</string>
     <string name="auto" comment="automatic or default setting">Automàtic</string>
@@ -227,7 +225,6 @@
     <string name="pref_offline_info">ℹ️ Es desaran els scrobbles i els preferits fora de línia i s'enviaran més tard.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Fes scrobble des de</string>
     <string name="pref_enabled_apps_summary">ℹ️ Són compatibles les aplicacions que mostren metadades de música. Per a evitar scrobbles d'Spotify duplicats, activa-ho només en un lloc.</string>
-    <string name="pref_enabled_apps_title">Tria les aplicacions</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuts</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentatge</string>
     <string name="pref_logout">Tanca la sessió</string>

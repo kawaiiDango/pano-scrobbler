@@ -79,7 +79,6 @@
     <string name="album_artist">Albumin esittäjä</string>
     <string name="artist_channel" comment="Artist or youtube channel">Esittäjä / kanava</string>
     <string name="similar_artists">Samankaltaisia artisteja</string>
-    <string name="album_optional">Albumi (valinnainen)</string>
     <string name="album">Albumi</string>
     <string name="albums">Albumit</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Kuunnelluimmat albumit</string>
@@ -91,7 +90,6 @@
     <string name="state_scrobbled">Scrobblattu</string>
     <string name="state_unscrobbled">Scrobblaus poistettu</string>
     <string name="tap_to_edit">(Muokkaa napauttamalla)</string>
-    <string name="recently_scrobbled">Äskettäin scrobblattu</string>
     <string name="recents" comment="Short for recently scrobbled">Viimeaikaiset</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobblattu ensimmäistä kertaa: %1$s</string>
     <string name="auto" comment="automatic or default setting">Automaattinen</string>
@@ -172,7 +170,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listat</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tunnistepilvi</string>
     <string name="add_to_hs">Lisää aloitusnäyttöön</string>
-    <string name="press_back">Paina takaisin, kun valmis</string>
     <string name="details">Lisätiedot</string>
     <string name="saved_as_pending">Tallennettu odottavana scrobblauksena</string>
     <string name="sort">Järjestä</string>
@@ -257,13 +254,6 @@
     <string name="fix_it_desc">Nämä voivat auttaa pitämään scrobblerin käynnissä taustalla joillakin laitteilla</string>
     <string name="scrobbler_off">Scrobblaaja pois päältä</string>
     <string name="scrobbler_on">Scrobblaaja päällä</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustinen</string>
-    <string name="instrumental">Instrumentaalinen</string>
-    <string name="energetic" comment="(Energetic music)">Energinen</string>
-    <string name="danceable">Tanssittava</string>
-    <string name="valence" comment="(Musical positivity)">Positiivisuus</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Suosio: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyysi</string>
     <string name="enable" comment="To enable some feature">Ota käyttöön</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Koko</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Ohita puuttuvat kuvat</string>
@@ -278,7 +268,6 @@
     <string name="pref_offline_info">ℹ️ Offline-tilan scrobblaukset &amp; tykkäykset tallennetaan myöhemmin lähetettäväksi.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblaa</string>
     <string name="pref_enabled_apps_summary">ℹ️ Tukee musiikin metadatan paljastavia sovelluksia. Välttääksesi kaksoiscrobblauksia Spotifysta, ota scrobblaus käyttöön vain yhdessä paikassa.</string>
-    <string name="pref_enabled_apps_title">Valitse sovellukset</string>
     <string name="pref_auto_detect">Scrobblaa automaattisesti uusista sovelluksista</string>
     <string name="pref_spotify_remote">Scrobblaa Spotify muista laitteista</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Poista käytöstä jatkuva scrobblaus mikrofonista, kun laite toistaa musiikkia</string>
@@ -347,7 +336,6 @@
     <string name="submitting_loves" formatted="true">Lähetetään tykkäyksiä, %1$d jäljellä</string>
     <string name="pending_batch" comment="For pending scrobbles">Lähetetään erää</string>
     <string name="bar_chart">Pylväsdiagrammi</string>
-    <string name="cleared_disabled_apps">Tyhjennetty käytöstä poistetut sovellukset</string>
     <string name="fix_it_title">Mahdolliset korjaukset</string>
     <string name="fix_it_startup_title">Virransäästäjät / startup-managerit</string>
     <string name="fix_it_battery_title">Poista akun optimointi käytöstä</string>

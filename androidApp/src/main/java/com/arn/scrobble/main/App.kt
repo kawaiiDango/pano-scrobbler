@@ -1,9 +1,6 @@
 package com.arn.scrobble.main
 
-import android.app.ActivityManager
 import android.app.Application
-import android.os.Build
-import android.os.Process
 import android.os.StrictMode
 import android.util.Log
 import androidx.work.Configuration

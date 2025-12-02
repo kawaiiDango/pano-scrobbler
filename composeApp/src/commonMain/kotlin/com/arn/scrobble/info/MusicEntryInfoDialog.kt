@@ -18,14 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Favorite
@@ -36,10 +33,8 @@ import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.Piano
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -64,8 +59,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -81,8 +74,6 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.spotify.TrackWithFeatures
-import com.arn.scrobble.icons.Metronome
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.icons.UserTag
 import com.arn.scrobble.imageloader.MusicEntryImageReq
@@ -91,7 +82,6 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyRow
-import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
@@ -100,41 +90,23 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
-import io.github.koalaplot.core.ChartLayout
-import io.github.koalaplot.core.Symbol
-import io.github.koalaplot.core.legend.LegendLocation
-import io.github.koalaplot.core.polar.DefaultPolarPoint
-import io.github.koalaplot.core.polar.PolarGraph
-import io.github.koalaplot.core.polar.PolarGraphDefaults
-import io.github.koalaplot.core.polar.PolarPlotSeries
-import io.github.koalaplot.core.polar.RadialGridType
-import io.github.koalaplot.core.polar.rememberCategoryAngularAxisModel
-import io.github.koalaplot.core.polar.rememberFloatRadialAxisModel
-import io.github.koalaplot.core.style.AreaStyle
-import io.github.koalaplot.core.style.LineStyle
-import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.acoustic
 import pano_scrobbler.composeapp.generated.resources.add_photo
 import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.artist_image
 import pano_scrobbler.composeapp.generated.resources.collapse
 import pano_scrobbler.composeapp.generated.resources.copy
-import pano_scrobbler.composeapp.generated.resources.danceable
 import pano_scrobbler.composeapp.generated.resources.delete
-import pano_scrobbler.composeapp.generated.resources.energetic
 import pano_scrobbler.composeapp.generated.resources.expand
-import pano_scrobbler.composeapp.generated.resources.instrumental
 import pano_scrobbler.composeapp.generated.resources.listeners
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.more_info
 import pano_scrobbler.composeapp.generated.resources.my_tags
 import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.num_tracks
-import pano_scrobbler.composeapp.generated.resources.popularity
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.similar_artists
@@ -144,10 +116,6 @@ import pano_scrobbler.composeapp.generated.resources.top_tracks
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.user_loved
 import pano_scrobbler.composeapp.generated.resources.user_tags_hint
-import pano_scrobbler.composeapp.generated.resources.valence
-import java.text.DateFormat
-import java.util.Locale
-import kotlin.math.roundToInt
 
 @Composable
 fun MusicEntryInfoDialog(
@@ -761,136 +729,6 @@ private fun ColumnScope.InfoTags(
                     )
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalKoalaPlotApi::class)
-@Composable
-private fun TrackFeaturesPlot(
-    trackWithFeatures: TrackWithFeatures,
-    modifier: Modifier = Modifier,
-) {
-    val features = trackWithFeatures.features ?: return
-
-    val categories = listOf(
-        stringResource(Res.string.acoustic),
-        stringResource(Res.string.danceable),
-        stringResource(Res.string.energetic),
-        stringResource(Res.string.instrumental),
-        stringResource(Res.string.valence),
-    )
-
-    val values = remember {
-        listOf(
-            features.acousticness,
-            features.danceability,
-            features.energy,
-            features.instrumentalness,
-            features.valence,
-        )
-    }
-
-    val data = remember(trackWithFeatures) {
-        values.mapIndexed { index, value ->
-            DefaultPolarPoint(value, categories[index])
-        }
-    }
-
-    val dateFormat = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-    ) {
-        ChartLayout(
-            legendLocation = LegendLocation.NONE,
-            modifier = modifier
-                .size(300.dp)
-                .align(Alignment.CenterHorizontally),
-        ) {
-            val angularAxisGridLineStyle =
-                LineStyle(SolidColor(Color.LightGray), strokeWidth = 1.dp)
-
-            PolarGraph(
-                rememberFloatRadialAxisModel(listOf(0f, 0.5f, 1f)),
-                rememberCategoryAngularAxisModel(categories),
-                radialAxisLabels = { },
-                angularAxisLabels = {
-                    Text(
-                        it,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                },
-                polarGraphProperties = PolarGraphDefaults.PolarGraphPropertyDefaults()
-                    .copy(
-                        radialGridType = RadialGridType.LINES,
-                        angularAxisGridLineStyle = angularAxisGridLineStyle,
-                        radialAxisGridLineStyle = angularAxisGridLineStyle
-                    )
-            ) {
-                PolarPlotSeries(
-                    data = data,
-                    lineStyle = LineStyle(
-                        brush = SolidColor(MaterialTheme.colorScheme.secondary),
-                        strokeWidth = 1.5.dp
-                    ),
-                    areaStyle = AreaStyle(
-                        brush = SolidColor(MaterialTheme.colorScheme.secondary),
-                        alpha = 0.3f
-                    ),
-                    symbols = {
-                        Symbol(
-                            shape = CircleShape,
-                            fillBrush = SolidColor(MaterialTheme.colorScheme.tertiary)
-                        )
-                    }
-                )
-            }
-        }
-
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                CircularProgressIndicator(
-                    progress = { trackWithFeatures.track.popularity.toFloat() / 100 },
-                    modifier = Modifier.size(24.dp),
-                )
-                Text(
-                    text = stringResource(
-                        Res.string.popularity,
-                        trackWithFeatures.track.popularity
-                    ),
-                )
-            }
-            trackWithFeatures.track.getReleaseDateDate()?.time?.let {
-                TextWithIcon(
-                    icon = Icons.Outlined.CalendarToday,
-                    text = dateFormat.format(it),
-                )
-            }
-
-            TextWithIcon(
-                icon = Icons.AutoMirrored.Outlined.VolumeUp,
-                text = String.format(Locale.getDefault(), "%.2f dB", features.loudness),
-            )
-
-            features.getKeyString()?.let {
-                TextWithIcon(
-                    icon = Icons.Outlined.Piano,
-                    text = it,
-                )
-            }
-
-            TextWithIcon(
-                icon = PanoIcons.Metronome,
-                text = "${features.tempo.roundToInt()} bpm • ${features.time_signature}/4",
-            )
-
         }
     }
 }

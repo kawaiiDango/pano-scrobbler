@@ -67,7 +67,6 @@
     <string name="album_artist">Album Artis</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artis / kanal</string>
     <string name="similar_artists">Artis serupa</string>
-    <string name="album_optional">Album (opsional)</string>
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album teratas</string>
@@ -79,7 +78,6 @@
     <string name="state_scrobbled">Ter-scrobble</string>
     <string name="state_unscrobbled">Scrobble dibatalkan</string>
     <string name="tap_to_edit">(Ketuk untuk menyunting)</string>
-    <string name="recently_scrobbled">Baru-baru ini Di-scrobble</string>
     <string name="recents" comment="Short for recently scrobbled">Baru-baru ini</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pertama kali di scrobble %1$s</string>
     <string name="auto" comment="automatic or default setting">Otomatis</string>
@@ -160,7 +158,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Tangga lagu</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tandai awan</string>
     <string name="add_to_hs">Tambahkan ke layar beranda</string>
-    <string name="press_back">Tekan kembali setelah selesai</string>
     <string name="details">Rincian</string>
     <string name="saved_as_pending">Disimpan sebagai scrobble yang tertunda</string>
     <string name="sort">Urutkan</string>
@@ -260,13 +257,6 @@
     <string name="scrobbler_on">Scrobbler aktif</string>
     <string name="duration">Durasi</string>
     <string name="total_listen_time">Total waktu mendengarkan</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustik</string>
-    <string name="instrumental">Instrumental</string>
-    <string name="energetic" comment="(Energetic music)">Energik</string>
-    <string name="danceable">Bisa menari</string>
-    <string name="valence" comment="(Musical positivity)">Positif</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Kepopuleran: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analisa</string>
     <string name="enable" comment="To enable some feature">Aktifkan</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Ukuran</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Lewati gambar yang hilang</string>
@@ -281,7 +271,6 @@
     <string name="pref_offline_info">ℹ️ Scrobblenya luring &amp; suka akan disimpan, untuk dikirim nanti jika sudah daring kembali.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble dari</string>
     <string name="pref_enabled_apps_summary">ℹ️ Mendukung aplikasi yang mengungkapkan metadata musik. Untuk menghindari scrobble ganda dari Spotify, aktifkan hanya di satu tempat.</string>
-    <string name="pref_enabled_apps_title">Pilih Aplikasi</string>
     <string name="pref_auto_detect">Scrobble otomatis dari aplikasi baru</string>
     <string name="pref_spotify_remote">Scrobble Spotify diputar di perangkat lain</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Gunakan pencarian perkiraan untuk gambar artis</string>
@@ -352,7 +341,6 @@
     <string name="submitting_loves" formatted="true">Mengirimkan suka, %1$d tersisa</string>
     <string name="pending_batch" comment="For pending scrobbles">Mengirimkan kelompok</string>
     <string name="bar_chart">Grafik batang</string>
-    <string name="cleared_disabled_apps">Menghapus aplikasi yang dinonaktifkan</string>
     <string name="fix_it_title">Kemungkinan bisa diperbaiki</string>
     <string name="fix_it_startup_title">Penghemat daya/manajer startup</string>
     <string name="fix_it_battery_title">Nonaktifkan pengoptimalan baterai</string>

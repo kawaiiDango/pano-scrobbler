@@ -74,7 +74,6 @@
     <string name="album_artist">Καλλιτέχνης του Άλμπουμ</string>
     <string name="artist_channel" comment="Artist or youtube channel">Καλλιτέχνης / κανάλι</string>
     <string name="similar_artists">Παρόμοιοι καλλιτέχνες</string>
-    <string name="album_optional">Άλμπουμ (προαιρετικό)</string>
     <string name="album">Άλμπουμ</string>
     <string name="albums">Άλμπουμ</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Κορυφαία άλμπουμ</string>
@@ -86,7 +85,6 @@
     <string name="state_scrobbled">Scrobbλαρισμένα</string>
     <string name="state_unscrobbled">Αφαιρέθηκε απο τα scrobbles σου</string>
     <string name="tap_to_edit">(πατήστε για επεξεργασία)</string>
-    <string name="recently_scrobbled">Πρόσφατα Scrobbled</string>
     <string name="recents" comment="Short for recently scrobbled">Πρόσφατα</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Έγινε πρώτη φορά scrobble στις %1$s</string>
     <string name="auto" comment="automatic or default setting">Αυτόματο</string>
@@ -159,7 +157,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Charts</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Σύννεφο ετικετών</string>
     <string name="add_to_hs">Προσθήκη στην αρχική οθόνη</string>
-    <string name="press_back">Πατήστε πίσω όταν τελειώσετε</string>
     <string name="details">Λεπτομέρειες</string>
     <string name="saved_as_pending">Αποθηκεύτηκε ως scrobble που εκκρεμεί</string>
     <string name="sort">Ταξινόμηση</string>
@@ -250,10 +247,6 @@
     <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
-    <string name="acoustic" comment="(Acoustic music)">Ακουστικό</string>
-    <string name="energetic" comment="(Energetic music)">Ενεργητικό</string>
-    <string name="valence" comment="(Musical positivity)">Θετικότητα</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Ανάλυση</string>
     <string name="enable" comment="To enable some feature">Ενεργοποιήση</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Μέγεθος</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Παράλειψη εικόνων που λείπουν</string>
@@ -268,7 +261,6 @@
     <string name="pref_offline_info">ℹ️ Τα offline scrobbles &amp; loves θα αποθηκευτούν, για να σταλούν αργότερα.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble από</string>
     <string name="pref_enabled_apps_summary">ℹ️ Υποστηρίζει εφαρμογές που αποκαλύπτουν μεταδεδομένα μουσικής. Για να αποφύγετε τα διπλά scrobbles από το Spotify, ενεργοποιήστε το μόνο σε ένα μέρος.</string>
-    <string name="pref_enabled_apps_title">Επιλέξτε εφαρμογές</string>
     <string name="pref_delay">Καθυστέρηση Scrobble (όποιο είναι νωρίτερα)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Λεπτά</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Ποσοστό</string>
@@ -325,7 +317,6 @@
     <string name="login_submit" comment="Verifies the login details">Επαλήθευση</string>
     <string name="submitting_loves" formatted="true">Υποβολή loves, %1$d απομένουν</string>
     <string name="pending_batch" comment="For pending scrobbles">Υποβολή μιας παρτίδας</string>
-    <string name="cleared_disabled_apps">Εκκαθάριση απενεργοποιημένων εφαρμογών</string>
     <string name="fix_it_title">Πιθανές διορθώσεις</string>
     <string name="fix_it_startup_title">Εξοικονομητές ενέργειας / διαχειριστές εκκίνησης</string>
     <string name="fix_it_battery_title">Απενεργοποίηση βελτιστοποιήσεων μπαταρίας</string>

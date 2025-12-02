@@ -13,10 +13,9 @@ class MainPrefsMigration6 : DataMigration<MainPrefs> {
             return currentData.copy(
                 version = 6,
             )
-        // dont show prompt for existing installations
+        // keep spotifyApi = true for existing installations, but show prompt
         else
             return currentData.copy(
-                spotifyConsentLearnt = true,
                 spotifyApi = true,
                 version = 6,
             )

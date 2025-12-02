@@ -115,7 +115,6 @@
     <string name="album_artist">Interpret alba</string>
     <string name="artist_channel" comment="Artist or youtube channel">Interpret / kanál</string>
     <string name="similar_artists">Podobní umělci</string>
-    <string name="album_optional">Album (volitelné)</string>
     <string name="album">Album</string>
     <string name="albums">Alba</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Nejlepší alba</string>
@@ -127,7 +126,6 @@
     <string name="state_scrobbled">Scroblováno</string>
     <string name="state_unscrobbled">Zrušeno</string>
     <string name="tap_to_edit">(Klepněte pro upravení)</string>
-    <string name="recently_scrobbled">Nedávno Scrobblováno</string>
     <string name="recents" comment="Short for recently scrobbled">Nedávné</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Poprvé scrobblováno dne %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
@@ -214,7 +212,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitparády</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Shluk tagů</string>
     <string name="add_to_hs">Přidat na domovskou obrazovku</string>
-    <string name="press_back">Po dokončení stiskněte tlačítko zpět</string>
     <string name="details">Detaily</string>
     <string name="saved_as_pending">Uloženo jako čekající scrobble</string>
     <string name="sort">Seřadit</string>
@@ -318,13 +315,6 @@
     <string name="scrobbler_on">Scrobbler je aktivní</string>
     <string name="duration">Délka</string>
     <string name="total_listen_time">Celkový čas poslechu</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustická</string>
-    <string name="instrumental">Instrumentální</string>
-    <string name="energetic" comment="(Energetic music)">Energetická</string>
-    <string name="danceable">Taneční</string>
-    <string name="valence" comment="(Musical positivity)">Pozitivita</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Popularita: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analýza</string>
     <string name="enable" comment="To enable some feature">Povolit</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Velikost</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Přeskočit chybějící obrázky</string>
@@ -339,7 +329,6 @@
     <string name="pref_offline_info">ℹ️ Offline scrobbly a oblíbené budou uloženy pro pozdější odeslání.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblovat z</string>
     <string name="pref_enabled_apps_summary">ℹ️ Podporuje aplikace, které odhalují metadata hudby. Chcete-li zabránit dvojímu scrobblu ze Spotify, povolte jej pouze na jednom místě.</string>
-    <string name="pref_enabled_apps_title">Vybrat aplikace</string>
     <string name="pref_auto_detect">Automaticky scrobblovat z nových aplikací</string>
     <string name="pref_spotify_remote">Scrobblovat ze Spotify hrajícího na jiných zařízeních</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Použít přibližné vyhledávání pro obrázky interpretů</string>
@@ -415,7 +404,6 @@
     <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
     <string name="pending_batch" comment="For pending scrobbles">Odesílám várku</string>
     <string name="bar_chart">Sloupcový graf</string>
-    <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>
     <string name="fix_it_title">Možné opravy</string>
     <string name="fix_it_startup_title">Spořiče napájení / správci spouštění</string>
     <string name="fix_it_battery_title">Zakázat optimalizace výdrže baterie</string>

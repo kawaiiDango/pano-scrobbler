@@ -83,7 +83,6 @@
     <string name="album_artist">Album artiest</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artiest / Kanaal</string>
     <string name="similar_artists">Vergelijkbare artiesten</string>
-    <string name="album_optional">Album (optioneel)</string>
     <string name="album">Album</string>
     <string name="albums">Albums</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albums</string>
@@ -95,7 +94,6 @@
     <string name="state_scrobbled">Gescrobbeld</string>
     <string name="state_unscrobbled">Geonscrobbeld</string>
     <string name="tap_to_edit">(Klik om te bewerken)</string>
-    <string name="recently_scrobbled">Recent gescrobbeld</string>
     <string name="recents" comment="Short for recently scrobbled">Recenten</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Voor het eerst gescrobbeld op %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatisch</string>
@@ -169,7 +167,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitlijsten</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tagwolk</string>
     <string name="add_to_hs">Toevoegen aan homescherm</string>
-    <string name="press_back">Druk op terug wanneer u klaar bent</string>
     <string name="details">Details</string>
     <string name="saved_as_pending">Opgeslagen als een wachtende scrobble</string>
     <string name="sort">Sorteren</string>
@@ -261,13 +258,6 @@
     <string name="fix_it_desc">Deze kunnen helpen om de scrobbler in de achtergrond op sommige apparaten actief te houden</string>
     <string name="scrobbler_off">Scrobbler uitgeschakeld</string>
     <string name="scrobbler_on">Scrobbler actief</string>
-    <string name="acoustic" comment="(Acoustic music)">Akoestisch</string>
-    <string name="instrumental">Instrumentaal</string>
-    <string name="energetic" comment="(Energetic music)">Energiek</string>
-    <string name="danceable">Dansbaar</string>
-    <string name="valence" comment="(Musical positivity)">Positiviteit</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Populariteit: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable some feature">Schakel in</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Formaat</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Ontbrekende afbeeldingen overslaan</string>
@@ -282,7 +272,6 @@
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves worden opgeslagen, om later verstuurd te worden.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble vanaf</string>
     <string name="pref_enabled_apps_summary">ℹ️ Ondersteunt apps die muziek metadata onthullen. Om dubbele scrobbles van Spotify te voorkomen, schakel het alleen in op één plek.</string>
-    <string name="pref_enabled_apps_title">Kies apps</string>
     <string name="pref_auto_detect">Automatisch van nieuwe apps scroblen</string>
     <string name="pref_spotify_remote">Scrobble Spotify terwijl deze op andere apparaten speelt</string>
     <string name="pref_delay">Scrobble-vertraging (welke vroeger is)</string>
@@ -347,7 +336,6 @@
     <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
     <string name="pending_batch" comment="For pending scrobbles">Een batch indienen</string>
     <string name="bar_chart">Staafdiagram</string>
-    <string name="cleared_disabled_apps">Uitgeschakelde apps gewist</string>
     <string name="fix_it_title">Mogelijke oplossingen</string>
     <string name="fix_it_startup_title">Energiespaarders / opstartmanagers</string>
     <string name="fix_it_battery_title">Schakel batterij-optimalisaties uit</string>

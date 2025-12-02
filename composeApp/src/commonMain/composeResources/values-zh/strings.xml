@@ -67,7 +67,6 @@
     <string name="album_artist">专辑艺术家</string>
     <string name="artist_channel" comment="Artist or youtube channel">艺术家/频道</string>
     <string name="similar_artists">相似的艺术家</string>
-    <string name="album_optional">专辑（可选）</string>
     <string name="album">专辑</string>
     <string name="albums">专辑</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">热门专辑</string>
@@ -79,7 +78,6 @@
     <string name="state_scrobbled">已记录</string>
     <string name="state_unscrobbled">已撤销记录</string>
     <string name="tap_to_edit">（点击以编辑）</string>
-    <string name="recently_scrobbled">最近的记录</string>
     <string name="recents" comment="Short for recently scrobbled">最近的</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">首次记录于 %1$s</string>
     <string name="auto" comment="automatic or default setting">自动</string>
@@ -167,7 +165,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">图表</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">标签云</string>
     <string name="add_to_hs">添加到主屏幕</string>
-    <string name="press_back">完成后点击返回</string>
     <string name="details">详细资料</string>
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
@@ -272,13 +269,6 @@
     <string name="scrobbler_on">已激活记录器</string>
     <string name="duration">持续时间</string>
     <string name="total_listen_time">总监听时间</string>
-    <string name="acoustic" comment="(Acoustic music)">原声</string>
-    <string name="instrumental">纯音乐</string>
-    <string name="energetic" comment="(Energetic music)">活跃</string>
-    <string name="danceable">舞曲</string>
-    <string name="valence" comment="(Musical positivity)">情绪性</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable some feature">启用</string>
     <string name="disable" comment="To disable some feature">停用</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">移除： %1$s</string>
@@ -295,7 +285,6 @@
     <string name="pref_offline_info">ℹ️ 离线歌曲记录 &amp; 喜爱曲目将会被保存，用以稍后发送。</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">记录来源</string>
     <string name="pref_enabled_apps_summary">ℹ️ 支持能够提供音乐元数据的应用。为了避免出现重复的 Spotify 记录，请仅在一个地方进行启用。</string>
-    <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect">为新应用自动开启记录</string>
     <string name="pref_spotify_remote">记录其他设备上的 Spotify 播放</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">使用近似搜索艺术家图像</string>
@@ -378,7 +367,6 @@
     <string name="submitting_loves" formatted="true">正在提交喜爱曲目，还剩 %1$d 条</string>
     <string name="pending_batch" comment="For pending scrobbles">正在提交批量记录</string>
     <string name="bar_chart">柱状图表</string>
-    <string name="cleared_disabled_apps">已清除禁用应用</string>
     <string name="fix_it_title">可能的解决方案</string>
     <string name="fix_it_startup_title">省电程序/启动管理器</string>
     <string name="fix_it_battery_title">禁用电池优化</string>

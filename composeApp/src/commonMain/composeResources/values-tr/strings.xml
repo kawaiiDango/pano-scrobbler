@@ -83,7 +83,6 @@
     <string name="album_artist">Albüm sanatçısı</string>
     <string name="artist_channel" comment="Artist or youtube channel">Sanatçı / kanal</string>
     <string name="similar_artists">Benzer sanatçılar</string>
-    <string name="album_optional">Albüm (opsiyonel)</string>
     <string name="album">Albüm</string>
     <string name="albums">Albümler</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">En çok dinlenen albümler</string>
@@ -95,7 +94,6 @@
     <string name="state_scrobbled">Skroplandı</string>
     <string name="state_unscrobbled">Skroplama geri alındı</string>
     <string name="tap_to_edit">(Düzenlemek için dokunun)</string>
-    <string name="recently_scrobbled">En Son Skroplananlar</string>
     <string name="recents" comment="Short for recently scrobbled">Son dinlemeler</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">İlk %1$s tarihinde skroplandı</string>
     <string name="auto" comment="automatic or default setting">Otomatik</string>
@@ -183,7 +181,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listeler</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Etiket bulutu</string>
     <string name="add_to_hs">Ana ekrana ekle</string>
-    <string name="press_back">Bittiğinde geri tuşuna basın</string>
     <string name="details">Ayrıntılar</string>
     <string name="saved_as_pending">Bekleyen skrop olarak kaydedildi</string>
     <string name="sort">Tür</string>
@@ -288,13 +285,6 @@
     <string name="scrobbler_on">Skroplayıcı aktif</string>
     <string name="duration">Süre</string>
     <string name="total_listen_time">Toplam dinleme zamanı</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustik</string>
-    <string name="instrumental">Enstrümental</string>
-    <string name="energetic" comment="(Energetic music)">Enerjik</string>
-    <string name="danceable">Danslık</string>
-    <string name="valence" comment="(Musical positivity)">Pozitivite</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Popülarite: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiz</string>
     <string name="enable" comment="To enable some feature">Etkinleştir</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Boyut</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Eksik resimleri atla</string>
@@ -309,7 +299,6 @@
     <string name="pref_offline_info">ℹ️ Çevrmdışı skroplar &amp; beğeniler daha sonra gönderilmek üzere kaydedilecektir.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Müzik uygulamaları</string>
     <string name="pref_enabled_apps_summary">ℹ️ Müzik metaverisini paylaşan uygulamaları destekler. Spotify'da oluşabilecek çift skropları engellemek için sadece bir yerde etkin bırakın.</string>
-    <string name="pref_enabled_apps_title">Uygulamaları seçin</string>
     <string name="pref_auto_detect">Yeni uygulamalardan otomatik olarak skropla</string>
     <string name="pref_spotify_remote">Başka cihazlarda çalan Spotify şarkılarını skropla</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Sanatçı görselleri için yaklaşık aramayı kullan</string>
@@ -390,7 +379,6 @@
     <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
     <string name="pending_batch" comment="For pending scrobbles">Skroplar gönderiliyor</string>
     <string name="bar_chart">Çubuk grafiği</string>
-    <string name="cleared_disabled_apps">Devre dışı uygulamalar temizlendi</string>
     <string name="fix_it_title">Muhtemel düzeltmeler</string>
     <string name="fix_it_startup_title">Pil tasarufu ve başlangıç yöneticileri</string>
     <string name="fix_it_battery_title">Pil optimizasyonlarını devre dışı bırak</string>

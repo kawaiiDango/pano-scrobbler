@@ -47,7 +47,6 @@
     <string name="artists">Nghệ sĩ</string>
     <string name="top_artists" comment="Top artists the user has listened to">Nghệ sĩ hàng đầu</string>
     <string name="artist_channel" comment="Artist or youtube channel">Tác giả</string>
-    <string name="album_optional">Album (tuỳ chọn)</string>
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album hàng đầu</string>
@@ -139,7 +138,6 @@
     <string name="unpin" comment="unpin a friend to the top">Bỏ ghim</string>
     <string name="duration">Thời lượng</string>
     <string name="total_listen_time">Tổng thời lượng nghe</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Phân tích</string>
     <string name="enable" comment="To enable some feature">Bật</string>
     <string name="username" comment="last.fm Username">Tên người dùng</string>
     <string name="pref_noti">Thông báo</string>

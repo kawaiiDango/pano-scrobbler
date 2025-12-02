@@ -83,7 +83,6 @@
     <string name="album_artist">صاحب آلبوم</string>
     <string name="artist_channel" comment="Artist or youtube channel">کانال هنرمند</string>
     <string name="similar_artists">هنرمندان مشابه</string>
-    <string name="album_optional">آلبوم (اختیاری)</string>
     <string name="album">آلبوم</string>
     <string name="albums">آلبوم‌ها</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">بهترین آلبوم‌ها</string>
@@ -95,7 +94,6 @@
     <string name="state_scrobbled">اسکرابل‌شده</string>
     <string name="state_unscrobbled">اسکرابل‌نشده</string>
     <string name="tap_to_edit">(کلیک برای اصلاح)</string>
-    <string name="recently_scrobbled">به تازگی اسکرابل‌شده</string>
     <string name="recents" comment="Short for recently scrobbled">اخیر</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">اولین اسکرابل در %1$s</string>
     <string name="auto" comment="automatic or default setting">خودکار</string>
@@ -177,7 +175,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">نمودارها</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">ابر کلیدواژه</string>
     <string name="add_to_hs">افزودن به صفحه خانگی</string>
-    <string name="press_back">دکمه برگشت رو هروقت تموم‌شد بزن</string>
     <string name="details">جزئیات</string>
     <string name="saved_as_pending">به عنوان اسکرابل منتظر ذخیره شد</string>
     <string name="sort">ترتیب</string>
@@ -277,13 +274,6 @@
     <string name="scrobbler_on">اسکرابل کننده روشن</string>
     <string name="duration">مدت زمان</string>
     <string name="total_listen_time">کل زمان گوش‌دادن</string>
-    <string name="acoustic" comment="(Acoustic music)">آکوستیک</string>
-    <string name="instrumental">بی‌کلام</string>
-    <string name="energetic" comment="(Energetic music)">پرانرژی</string>
-    <string name="danceable">قابل رقص</string>
-    <string name="valence" comment="(Musical positivity)">شاداب</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">محبویت: %1$d٪٪</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">بررسی</string>
     <string name="enable" comment="To enable some feature">فعال</string>
     <string name="disable" comment="To disable some feature">غیرفعال</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">حذف: %1$s</string>
@@ -298,7 +288,6 @@
     <string name="pref_offline_info">اسکرابل‌های آفلاین &amp; مواردعلاقه برای ارسال در آینده ذخیره میشوند.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">اسکرابل از</string>
     <string name="pref_enabled_apps_summary">از برنامه هایی که فراداده آهنگ رو نشان میدهند پشتیبانی می‌کند، برای جلوگیری ار اسکرابل تکراری از اسپاتیفای فقط در یک جا فعالش کنید.</string>
-    <string name="pref_enabled_apps_title">برنامه مدنظر رو انتخاب کن</string>
     <string name="pref_auto_detect">از یرنامه های تازه به صورت خودکار اسکرابل کن</string>
     <string name="pref_spotify_remote">اسکرابل کردن اسپاتیفای وقتی که در دستگاه‌های دیگر درحال پخش است</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">از جستجوی تقریبی برای تصاویر هنرمند استفاده کن</string>
@@ -381,7 +370,6 @@
     <string name="submitting_loves" formatted="true">ارسال مواردعلاقه٬ %1$d تا باقیمانده</string>
     <string name="pending_batch" comment="For pending scrobbles">انجام ارسال دسته ای</string>
     <string name="bar_chart">نموداد نواری</string>
-    <string name="cleared_disabled_apps">برنامه‌های غیرفعال پاک شدند</string>
     <string name="fix_it_title">راه حل ممکنه</string>
     <string name="fix_it_startup_title">بهینه‌ساز مصرف برق / مدیران استارت‌آپ</string>
     <string name="fix_it_battery_title">غیرفعال کردن بهینه‌ساز باتری</string>

@@ -115,7 +115,6 @@
     <string name="album_artist">Виконавець альбому</string>
     <string name="artist_channel" comment="Artist or youtube channel">Виконавець / канал</string>
     <string name="similar_artists">Схожі виконавці</string>
-    <string name="album_optional">Альбом (необов’язково)</string>
     <string name="album">Альбом</string>
     <string name="albums">Альбоми</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Топ альбомів</string>
@@ -127,7 +126,6 @@
     <string name="state_scrobbled">Заскроблено</string>
     <string name="state_unscrobbled">Нескроблено</string>
     <string name="tap_to_edit">(Натисніть для редагування)</string>
-    <string name="recently_scrobbled">Нещодавно Заскроблені</string>
     <string name="recents" comment="Short for recently scrobbled">Останні</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Вперше заскорблено %1$s</string>
     <string name="auto" comment="automatic or default setting">Автоматично</string>
@@ -215,7 +213,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарти</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Хмара тегів</string>
     <string name="add_to_hs">Додати на головний екран</string>
-    <string name="press_back">Після завершення натисніть назад</string>
     <string name="details">Деталі</string>
     <string name="saved_as_pending">Збережено як відкладений скробл</string>
     <string name="sort">Сортувати</string>
@@ -320,13 +317,6 @@
     <string name="scrobbler_on">Скроблер увімкнений</string>
     <string name="duration">Тривалість</string>
     <string name="total_listen_time">Загальний час прослуховування</string>
-    <string name="acoustic" comment="(Acoustic music)">Акустична</string>
-    <string name="instrumental">Інструментальна</string>
-    <string name="energetic" comment="(Energetic music)">Енергетика</string>
-    <string name="danceable">Танцювальність</string>
-    <string name="valence" comment="(Musical positivity)">Позитивність</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Популярність: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Аналіз</string>
     <string name="enable" comment="To enable some feature">Увімкнути</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Розмір</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Пропуск відсутніх зображень</string>
@@ -341,7 +331,6 @@
     <string name="pref_offline_info">ℹ️ Офлайн-скробли та вподобайки будуть збережені, щоб бути відправленими пізніше.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скроблінг з</string>
     <string name="pref_enabled_apps_summary">ℹ️ Підтримує застосунки, що показують музикальні метадані. Щоб уникнути подвійного скроблінгу зі Spotify, увімкніть його тільки в одному місці.</string>
-    <string name="pref_enabled_apps_title">Виберіть додатки</string>
     <string name="pref_auto_detect">Автоматично скробблити з нових додатків</string>
     <string name="pref_spotify_remote">Скробблити Spotify, коли він грає на інших пристроях</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Використовувати приблизний пошук зображень виконавця</string>
@@ -422,7 +411,6 @@
     <string name="submitting_loves" formatted="true">Відправка вподобайок, %1$d залишилось</string>
     <string name="pending_batch" comment="For pending scrobbles">Відправка пакета</string>
     <string name="bar_chart">Гістограма</string>
-    <string name="cleared_disabled_apps">Видалені вимкнені програми</string>
     <string name="fix_it_title">Можливі виправлення</string>
     <string name="fix_it_startup_title">Економія енергії, менеджер запусків</string>
     <string name="fix_it_battery_title">Вимкнути оптимізацію використання батареї</string>

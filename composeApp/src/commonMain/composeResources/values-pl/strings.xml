@@ -115,7 +115,6 @@
     <string name="album_artist">Wykonawca albumu</string>
     <string name="artist_channel" comment="Artist or youtube channel">Wykonawca / kanał</string>
     <string name="similar_artists">Podobni wykonawcy</string>
-    <string name="album_optional">Album (opcjonalnie)</string>
     <string name="album">Album</string>
     <string name="albums">Albumy</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Najczęściej odtwarzane albumy</string>
@@ -127,7 +126,6 @@
     <string name="state_scrobbled">Zascrobblowano</string>
     <string name="state_unscrobbled">Odscrobblowano</string>
     <string name="tap_to_edit">(Kliknij, aby edytować)</string>
-    <string name="recently_scrobbled">Ostatnio scrobblowane</string>
     <string name="recents" comment="Short for recently scrobbled">Ostatnie</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pierwsze scrobblowanie w %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatycznie</string>
@@ -215,7 +213,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Wykresy</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Chmura znaczników</string>
     <string name="add_to_hs">Dodaj do ekranu głównego</string>
-    <string name="press_back">Naciśnij wstecz po zakończeniu</string>
     <string name="details">Szczegóły</string>
     <string name="saved_as_pending">Zapisano jako oczekujący scrobble</string>
     <string name="sort">Sortuj</string>
@@ -321,13 +318,6 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="scrobbler_on">Scrobbler aktywny</string>
     <string name="duration">Czas trwania</string>
     <string name="total_listen_time">Całkowity czas słuchania</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustyczny</string>
-    <string name="instrumental">Instrumentalny</string>
-    <string name="energetic" comment="(Energetic music)">Energiczny</string>
-    <string name="danceable">Taneczny</string>
-    <string name="valence" comment="(Musical positivity)">Pozytywny</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Popularność: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiza</string>
     <string name="enable" comment="To enable some feature">Włącz</string>
     <string name="disable" comment="To disable some feature">Wyłącz</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Usuń: %1$s</string>
@@ -344,7 +334,6 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="pref_offline_info">ℹ️ Scrobble offline &amp; polubione zostaną zapisane do wysłania później.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbluj z</string>
     <string name="pref_enabled_apps_summary">ℹ️ Obsługuje aplikacje, które ujawniają metadane muzyki. Aby uniknąć podwójnych scrobbli ze Spotify, włącz je tylko w jednym miejscu.</string>
-    <string name="pref_enabled_apps_title">Wybierz aplikacje</string>
     <string name="pref_auto_detect">Automatycznie scrobble z nowych aplikacji</string>
     <string name="pref_spotify_remote">Scrobble Spotify odtwarzane na innych urządzeniach</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Użyj przybliżonego wyszukiwania obrazów artystów</string>
@@ -427,7 +416,6 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="submitting_loves" formatted="true">Przesyłanie polubionych, pozostało %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Przesyłanie pakietu</string>
     <string name="bar_chart">Wykres słupkowy</string>
-    <string name="cleared_disabled_apps">Wyczyszczono wyłączone aplikacje</string>
     <string name="fix_it_title">Możliwe poprawki</string>
     <string name="fix_it_startup_title">Oszczędzanie energii / menedżery uruchamiania</string>
     <string name="fix_it_battery_title">Wyłącz optymalizację baterii</string>

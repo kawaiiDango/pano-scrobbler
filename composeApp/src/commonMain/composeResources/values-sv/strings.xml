@@ -83,7 +83,6 @@
     <string name="album_artist">Albumartist</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artist / kanal</string>
     <string name="similar_artists">Liknande artister</string>
-    <string name="album_optional">Album (valfritt)</string>
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Toppalbum</string>
@@ -95,7 +94,6 @@
     <string name="state_scrobbled">Scrobblades</string>
     <string name="state_unscrobbled">Avscrobblad</string>
     <string name="tap_to_edit">(Tryck för att redigera)</string>
-    <string name="recently_scrobbled">Nyligen Scrobblad</string>
     <string name="recents" comment="Short for recently scrobbled">Senaste</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Först scrobblad på %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>

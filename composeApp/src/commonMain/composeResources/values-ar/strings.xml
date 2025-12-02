@@ -35,7 +35,6 @@
     <string name="album_artist">فنان الألبوم</string>
     <string name="artist_channel" comment="Artist or youtube channel">الفنان / قناة</string>
     <string name="similar_artists">فنانون مشابهون</string>
-    <string name="album_optional">الألبوم (أختياري)</string>
     <string name="album">الألبوم </string>
     <string name="albums">الألبومات</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">أعلى الألبومات</string>
@@ -47,7 +46,6 @@
     <string name="state_scrobbled">سكروبلد</string>
     <string name="state_unscrobbled">لم يتم أسكروبلنج</string>
     <string name="tap_to_edit">(اضغط للتعديل)</string>
-    <string name="recently_scrobbled">تم الاسكروبلنج موخرا</string>
     <string name="recents" comment="Short for recently scrobbled">الحديثة</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">تم مسحه أولاً في %1$s</string>
     <string name="auto" comment="automatic or default setting">تلقائي</string>
@@ -128,7 +126,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">الأشكال البيانية</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">سحابة العلامات</string>
     <string name="add_to_hs">إضافة إلى الشاشة الرئيسية</string>
-    <string name="press_back">اضغط على زر الرجوع عند الانتهاء</string>
     <string name="details">التفاصيل</string>
     <string name="saved_as_pending">تم حفظه كمسح أغنية معلق</string>
     <string name="sort">فرز</string>

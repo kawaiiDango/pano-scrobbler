@@ -99,7 +99,6 @@
     <string name="album_artist">Izvođač albuma</string>
     <string name="artist_channel" comment="Artist or youtube channel">Izvođač / kanal</string>
     <string name="similar_artists">Slični izvođači</string>
-    <string name="album_optional">Album (neobavezno)</string>
     <string name="album">Album</string>
     <string name="albums">Albumi</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albumi</string>
@@ -111,7 +110,6 @@
     <string name="state_scrobbled">Scrobbleano</string>
     <string name="state_unscrobbled">Scrobble uklonjen</string>
     <string name="tap_to_edit">(dodirni za uređivanje)</string>
-    <string name="recently_scrobbled">Nedavno scrobbleano</string>
     <string name="recents" comment="Short for recently scrobbled">Nedavno</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Prvi puta scrobbleano %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
@@ -199,7 +197,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
     <string name="add_to_hs">Dodaj na početni zaslon</string>
-    <string name="press_back">Pritisnite natrag kada ste gotovi</string>
     <string name="details">Detalji</string>
     <string name="saved_as_pending">Spremljeno kao scrobble na čekanju</string>
     <string name="sort">Sortiraj</string>
@@ -304,13 +301,6 @@
     <string name="scrobbler_on">Scrobbler aktivan</string>
     <string name="duration">Trajanje</string>
     <string name="total_listen_time">Ukupno vrijeme slušanja</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustična</string>
-    <string name="instrumental">Instrumental</string>
-    <string name="energetic" comment="(Energetic music)">Energična</string>
-    <string name="danceable">Plesna</string>
-    <string name="valence" comment="(Musical positivity)">Pozitivnost</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Popularnost: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiza</string>
     <string name="enable" comment="To enable some feature">Omogući</string>
     <string name="disable" comment="To disable some feature">Onemogući</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Ukloni: %1$s</string>
@@ -327,7 +317,6 @@
     <string name="pref_offline_info">ℹ️ Izvanmrežni scrobbleovi i oznake "voljeno" bit će spremljene i poslane kasnije.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblaj iz</string>
     <string name="pref_enabled_apps_summary">ℹ️ Podržane su aplikacije koje dijele metapodatke o glazbi. Da biste izbjegli duplo scrobbleanje sa Spotifya, samo aktivirajte značajku na jednom mjestu.</string>
-    <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
     <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
     <string name="pref_spotify_remote">Scrobblaj Spotify s drugih uređaja</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Koristi približnu pretragu slike izvođača</string>
@@ -410,7 +399,6 @@
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Prenošenje više scrobbleova</string>
     <string name="bar_chart">Stupčasti dijagram</string>
-    <string name="cleared_disabled_apps">Očišćene onemogućene aplikacije</string>
     <string name="fix_it_title">Mogući ispravci</string>
     <string name="fix_it_startup_title">Štednja baterije / upravitelji pokretanja</string>
     <string name="fix_it_battery_title">Onemogući optimizaciju baterije</string>

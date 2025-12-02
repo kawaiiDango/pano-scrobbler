@@ -115,7 +115,6 @@
     <string name="album_artist">Исполнитель альбома</string>
     <string name="artist_channel" comment="Artist or youtube channel">Исполнитель / канал</string>
     <string name="similar_artists">Похожие исполнители</string>
-    <string name="album_optional">Альбом (необязательно)</string>
     <string name="album">Альбом</string>
     <string name="albums">Альбомы</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Популярные альбомы</string>
@@ -127,7 +126,6 @@
     <string name="state_scrobbled">Заскробблено</string>
     <string name="state_unscrobbled">Скроббл удален</string>
     <string name="tap_to_edit">(Нажмите для редактирования)</string>
-    <string name="recently_scrobbled">Недавно заскроббленные</string>
     <string name="recents" comment="Short for recently scrobbled">Недавние</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Первый скроббл был %1$s</string>
     <string name="auto" comment="automatic or default setting">Автоматический выбор</string>
@@ -215,7 +213,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарты</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Облако тегов</string>
     <string name="add_to_hs">Добавить на главный экран</string>
-    <string name="press_back">Нажмите назад, когда закончите</string>
     <string name="details">Подробности</string>
     <string name="saved_as_pending">Сохранено как отложенный скроббл</string>
     <string name="sort">Сортировка</string>
@@ -320,13 +317,6 @@
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="duration">Продолжительность</string>
     <string name="total_listen_time">Общее время прослушивания</string>
-    <string name="acoustic" comment="(Acoustic music)">Акустическая</string>
-    <string name="instrumental">Инструментальная</string>
-    <string name="energetic" comment="(Energetic music)">Энергичная</string>
-    <string name="danceable">Танцевальная</string>
-    <string name="valence" comment="(Musical positivity)">Позитивная</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Популярность: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Анализ</string>
     <string name="enable" comment="To enable some feature">Включить</string>
     <string name="disable" comment="To disable some feature">Отключить</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Удалить: %1$s</string>
@@ -343,7 +333,6 @@
     <string name="pref_offline_info">ℹ️ Офлайн-скробблы и лайки, будут сохранены для отправки позже.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скробблинг из</string>
     <string name="pref_enabled_apps_summary">ℹ️ Поддерживает приложения, отображающие музыкальные метаданные. Чтобы избежать двойного скробблинга из Spotify, включайте его только в одном месте.</string>
-    <string name="pref_enabled_apps_title">Выберите приложения</string>
     <string name="pref_auto_detect">Автоматически скробблить из новых приложений</string>
     <string name="pref_spotify_remote">Скробблинг Spotify, играющий на других устройствах</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Использовать примерный поиск изображений исполнителей</string>
@@ -426,7 +415,6 @@
     <string name="submitting_loves" formatted="true">Отправка лайков, осталось %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Отправка пакета</string>
     <string name="bar_chart">Гистограмма</string>
-    <string name="cleared_disabled_apps">Отключенные приложения очищены</string>
     <string name="fix_it_title">Возможные исправления</string>
     <string name="fix_it_startup_title">Экономия энергии / менеджеры запусков</string>
     <string name="fix_it_battery_title">Отключить оптимизацию батареи</string>

@@ -67,7 +67,6 @@
     <string name="album_artist">Album artis</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artis / saluran</string>
     <string name="similar_artists">Artis yang serupa</string>
-    <string name="album_optional">Album (pilihan)</string>
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album top</string>
@@ -79,7 +78,6 @@
     <string name="state_scrobbled">Telah scrobble</string>
     <string name="state_unscrobbled">Tidak dapat scrobble</string>
     <string name="tap_to_edit">(Tekan untuk edit)</string>
-    <string name="recently_scrobbled">Scrobble Baru-baru Ini</string>
     <string name="recents" comment="Short for recently scrobbled">Baru-baru ini</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobble pertama di %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
@@ -166,7 +164,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Carta</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Kumpulan teks</string>
     <string name="add_to_hs">Tambah di skrin utama</string>
-    <string name="press_back">Tekan kembali selepas selesai</string>
     <string name="details">Butiran</string>
     <string name="saved_as_pending">Simpan sebagai scrobble sementara</string>
     <string name="sort">Susun</string>
@@ -271,13 +268,6 @@
     <string name="scrobbler_on">Scrobbler aktif</string>
     <string name="duration">Tempoh masa</string>
     <string name="total_listen_time">Tempoh masa mendengar</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustik</string>
-    <string name="instrumental">Intrumental</string>
-    <string name="energetic" comment="(Energetic music)">Energetik</string>
-    <string name="danceable">Menari</string>
-    <string name="valence" comment="(Musical positivity)">Positif</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Popular: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analisis</string>
     <string name="enable" comment="To enable some feature">Membenarkan</string>
     <string name="disable" comment="To disable some feature">Nyahaktif</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Buang: %1$s</string>
@@ -294,7 +284,6 @@
     <string name="pref_offline_info">Scrobble ketika tiada internet &amp; kesukaan akan disimpan, dan dihantar selepas itu.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble dari</string>
     <string name="pref_enabled_apps_summary">Aplikasi sokongan yang menunjukkan metadata muzik. Untuk mengelakkan bertindih scrobble dari Spotify, pilih satu sahaja.</string>
-    <string name="pref_enabled_apps_title">Pilih aplikasi</string>
     <string name="pref_auto_detect">Automatik scrobble dari aplikasi baru</string>
     <string name="pref_spotify_remote">Scrobble Spotify dari peranti lain</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Guna gambar yang tepat ketika mencari gambar artis</string>
@@ -375,7 +364,6 @@
     <string name="submitting_loves" formatted="true">Hantar disukai, tinggal %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Hantar sekumpulan</string>
     <string name="bar_chart">Carta bar</string>
-    <string name="cleared_disabled_apps">Padam aplikasi tidak berkaitan</string>
     <string name="fix_it_title">Pembetulan</string>
     <string name="fix_it_startup_title">Penjimatan kuasa / pengurusan ketetapan</string>
     <string name="fix_it_battery_title">Nyahaktif penjimatan bateri</string>

@@ -67,7 +67,6 @@
     <string name="album_artist">アルバムアーティスト</string>
     <string name="artist_channel" comment="Artist or youtube channel">アーティスト / チャンネル</string>
     <string name="similar_artists">似ているアーティスト</string>
-    <string name="album_optional">アルバム (任意)</string>
     <string name="album">アルバム</string>
     <string name="albums">アルバム</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">トップアルバム</string>
@@ -79,7 +78,6 @@
     <string name="state_scrobbled">Scrobble済み</string>
     <string name="state_unscrobbled">Scrobble取り消し済み</string>
     <string name="tap_to_edit">(タップで編集)</string>
-    <string name="recently_scrobbled">最近のScrobble</string>
     <string name="recents" comment="Short for recently scrobbled">履歴</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">初Scrobble: %1$s</string>
     <string name="auto" comment="automatic or default setting">自動</string>
@@ -165,7 +163,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">チャート</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">タグクラウド</string>
     <string name="add_to_hs">ホーム画面に追加</string>
-    <string name="press_back">終了時に戻るを押す</string>
     <string name="details">詳細</string>
     <string name="saved_as_pending">保留中のScrobbleとして保存しました</string>
     <string name="sort">並べ替え</string>
@@ -267,13 +264,6 @@
     <string name="scrobbler_off">Scrobbler停止中</string>
     <string name="scrobbler_on">Scrobbler稼働中</string>
     <string name="total_listen_time">合計リスニング時間</string>
-    <string name="acoustic" comment="(Acoustic music)">アコースティックらしさ</string>
-    <string name="instrumental">インストらしさ</string>
-    <string name="energetic" comment="(Energetic music)">激しさ</string>
-    <string name="danceable">踊りやすさ</string>
-    <string name="valence" comment="(Musical positivity)">明るさ</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">人気度: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable some feature">有効化</string>
     <string name="disable" comment="To disable some feature">無効化</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">サイズ</string>
@@ -289,7 +279,6 @@
     <string name="pref_offline_info">ℹ️ オフライン時のScrobbleおよびLoveは保存され、ネットワークに接続された際に送信されます</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble対象</string>
     <string name="pref_enabled_apps_summary">ℹ️ 音楽のメタデータを表示するアプリに対応しています。Spotify利用時にScrobbleが重複する場合は、他の対象アプリを無効にしてみてください。</string>
-    <string name="pref_enabled_apps_title">アプリを選択</string>
     <string name="pref_auto_detect">新規アプリから自動的にScrobbleする</string>
     <string name="pref_spotify_remote">他のデバイスで再生中のSpotifyをScrobbleする</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">アーティスト画像に近似検索を使用する</string>
@@ -363,7 +352,6 @@
     <string name="submitting_loves" formatted="true">Loveを送信中、残り%1$d件</string>
     <string name="pending_batch" comment="For pending scrobbles">バッチを送信中</string>
     <string name="bar_chart">棒グラフ</string>
-    <string name="cleared_disabled_apps">無効化されたアプリを消去しました</string>
     <string name="fix_it_title">修正可能な項目</string>
     <string name="fix_it_startup_title">パワーセーバー / スタートアップマネージャー</string>
     <string name="fix_it_battery_title">バッテリーの最適化の無効化</string>

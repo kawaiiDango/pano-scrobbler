@@ -83,7 +83,6 @@
     <string name="album_artist">एल्बम के कलाकार</string>
     <string name="artist_channel" comment="Artist or youtube channel">कलाकार/चैनल</string>
     <string name="similar_artists">समान कलाकार</string>
-    <string name="album_optional">एल्बम (वैकल्पिक)</string>
     <string name="album">एल्बम</string>
     <string name="albums">एल्बम</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">अधिकतर सुनें गए एल्बम</string>
@@ -95,7 +94,6 @@
     <string name="state_scrobbled">स्क्रौब्ल हो गया</string>
     <string name="state_unscrobbled">स्क्रौब्ल निकाल दिया</string>
     <string name="tap_to_edit">(सुधार करने के लिए यहां दबाएं)</string>
-    <string name="recently_scrobbled">अभी स्क्रौब्ल किए गए</string>
     <string name="recents" comment="Short for recently scrobbled">इतिहास</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">प्रथम स्क्रौब्ल %1$s को किया था</string>
     <string name="auto" comment="automatic or default setting">स्वतः</string>
@@ -177,7 +175,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्ट</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">टैग क्लाउड</string>
     <string name="add_to_hs">होम स्क्रीन पर स्थापित करें</string>
-    <string name="press_back">हो जाने पर बैक दबाएं</string>
     <string name="details">विवरण</string>
     <string name="saved_as_pending">लंबित स्क्रौब्ल की तरह रखा है</string>
     <string name="sort">क्रम</string>
@@ -248,12 +245,10 @@
     <string name="pin_help">पिन किए गए वस्तु का क्रम बदलने के लिए दबाए रखे</string>
     <string name="use_channel" comment="(Use youtube channel name)">यूट्यूब चैनल के नाम का उपयोग करें</string>
     <string name="scrobbler_off">स्क्रौब्ल करना बंद है</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">विश्लेषण</string>
     <string name="pref_master">संगीत स्क्रौब्ल करें</string>
     <string name="pref_noti">सूचनाएं</string>
     <string name="pref_lockscreen_noti">लॉक स्क्रीन पर की सूचनाएं</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">स्क्रौब्ल लक्ष्य</string>
-    <string name="pref_enabled_apps_title">एप को चुनें</string>
     <string name="pref_delay">स्क्रौब्ल कब करें (जोभी पहले हो)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">मिनिट</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">प्रतिशत</string>

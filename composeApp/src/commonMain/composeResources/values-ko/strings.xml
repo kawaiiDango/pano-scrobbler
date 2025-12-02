@@ -67,7 +67,6 @@
     <string name="album_artist">앨범 아티스트</string>
     <string name="artist_channel" comment="Artist or youtube channel">아티스트 / 채널</string>
     <string name="similar_artists">비슷한 아티스트</string>
-    <string name="album_optional">앨범 (선택사항)</string>
     <string name="album">앨범</string>
     <string name="albums">앨범</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">인기 앨범</string>
@@ -79,7 +78,6 @@
     <string name="state_scrobbled">스크로블됨</string>
     <string name="state_unscrobbled">스크로블 취소됨</string>
     <string name="tap_to_edit">(눌러서 편집)</string>
-    <string name="recently_scrobbled">최근 스크로블</string>
     <string name="recents" comment="Short for recently scrobbled">최근</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">%1$s에 처음 기록됨</string>
     <string name="auto" comment="automatic or default setting">자동</string>
@@ -167,7 +165,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">차트</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">태그 클라우드</string>
     <string name="add_to_hs">홈화면에 추가하기</string>
-    <string name="press_back">완료되면 뒤로 가기를 누르세요</string>
     <string name="details">세부사항</string>
     <string name="saved_as_pending">보류 중인 스크로블로 저장됨</string>
     <string name="sort">정렬</string>
@@ -272,12 +269,6 @@
     <string name="scrobbler_on">스크로블러 활성화</string>
     <string name="duration">길이</string>
     <string name="total_listen_time">총 감상 시간</string>
-    <string name="acoustic" comment="(Acoustic music)">어쿠스틱</string>
-    <string name="instrumental">인스트루멘탈</string>
-    <string name="energetic" comment="(Energetic music)">에너제틱</string>
-    <string name="danceable">댄서블</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">인기도: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">분석</string>
     <string name="enable" comment="To enable some feature">활성화</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">크기</string>
     <string name="skip_missing_images" comment="(while generating a collage)">누락된 이미지 건너뛰기</string>
@@ -292,7 +283,6 @@
     <string name="pref_offline_info">&amp; 오프라인 상태에서의 스크로블과 좋아요는 저장되었다가 나중에 전송됩니다.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">다음에서 스크로블</string>
     <string name="pref_enabled_apps_summary">음악 메타데이터를 공개하는 앱을 지원합니다. Spotify에서는 중복 스크로블을 피하기 위해 한 군데에서만 활성화하세요.</string>
-    <string name="pref_enabled_apps_title">앱 선택</string>
     <string name="pref_auto_detect">자동으로 새 앱을 통해 스크로블</string>
     <string name="pref_spotify_remote">Spotify가 다른 기기에서 재생 중일 때 스크로블</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">아티스트의 사진을 검색할 때 근사 검색 사용</string>
@@ -371,7 +361,6 @@
     <string name="submitting_loves" formatted="true">좋아요 등록 중, %1$d 남음</string>
     <string name="pending_batch" comment="For pending scrobbles">일괄 등록 중</string>
     <string name="bar_chart">막대 차트</string>
-    <string name="cleared_disabled_apps">비활성화된 앱 지우기</string>
     <string name="fix_it_startup_title">절전 모드 / 시작 앱 관리</string>
     <string name="fix_it_battery_title">배터리 최적화 비활성화</string>
     <string name="fix_it_action" comment="(To open an app)">열기</string>

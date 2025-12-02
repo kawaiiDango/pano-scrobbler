@@ -83,7 +83,6 @@
     <string name="album_artist">Artista del álbum</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artista / canal</string>
     <string name="similar_artists">Artistas similares</string>
-    <string name="album_optional">Álbum (opcional)</string>
     <string name="album">Álbum</string>
     <string name="albums">Álbumes</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Álbumes más escuchados</string>
@@ -95,7 +94,6 @@
     <string name="state_scrobbled">Scrobbleado</string>
     <string name="state_unscrobbled">Scrobble removido</string>
     <string name="tap_to_edit">(Toca para editar)</string>
-    <string name="recently_scrobbled">Recientemente Scrobbled</string>
     <string name="recents" comment="Short for recently scrobbled">Recientes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble el %1$s</string>
     <string name="auto" comment="automatic or default setting">Automático</string>
@@ -183,7 +181,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listas</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nube de etiquetas</string>
     <string name="add_to_hs">Agregar a la pantalla de inicio</string>
-    <string name="press_back">Presione atrás cuando haya terminado</string>
     <string name="details">Detalles</string>
     <string name="saved_as_pending">Guardado como scrobble pendiente</string>
     <string name="sort">Ordenar</string>
@@ -288,13 +285,6 @@
     <string name="scrobbler_on">Scrobbler activado</string>
     <string name="duration">Duración</string>
     <string name="total_listen_time">Tiempo total de escucha</string>
-    <string name="acoustic" comment="(Acoustic music)">Acústica</string>
-    <string name="instrumental">Instrumental</string>
-    <string name="energetic" comment="(Energetic music)">Enérgica</string>
-    <string name="danceable">Bailable</string>
-    <string name="valence" comment="(Musical positivity)">Positiva</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Popularidad: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Análisis</string>
     <string name="enable" comment="To enable some feature">Habilitar</string>
     <string name="disable" comment="To disable some feature">Deshabilitar</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Eliminar: %1$s</string>
@@ -311,7 +301,6 @@
     <string name="pref_offline_info">ℹ️ Scrobbles sin conexión &amp; los favoritos se guardarán, para ser enviados más tarde.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble desde</string>
     <string name="pref_enabled_apps_summary">Soporta aplicaciones que revelan metadatos de música. Para evitar dobles scrobbles de Spotify, habilítelo sólo en un lugar.</string>
-    <string name="pref_enabled_apps_title">Escoge las aplicaciones</string>
     <string name="pref_auto_detect">Automáticamente hace scrobble de nuevas aplicaciones</string>
     <string name="pref_spotify_remote">Haz scrobble de Spotify reproduciendo en otros dispositivos</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Usar búsqueda aproximada para imágenes de artistas</string>
@@ -393,7 +382,6 @@
     <string name="submitting_loves" formatted="true">Enviando favoritos, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">Enviar un lote</string>
     <string name="bar_chart">Barra de listas</string>
-    <string name="cleared_disabled_apps">Limpiar aplicaciones desactivadas</string>
     <string name="fix_it_title">Posibles soluciones</string>
     <string name="fix_it_startup_title">Ahorradores de energía / gestores de arranque</string>
     <string name="fix_it_battery_title">Desactivar las optimizaciones de batería</string>

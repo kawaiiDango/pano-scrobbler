@@ -115,7 +115,6 @@
     <string name="album_artist">Albumo atlikėjas</string>
     <string name="artist_channel" comment="Artist or youtube channel">Atlikėjas / kanalas</string>
     <string name="similar_artists">Panašūs atlikėjai</string>
-    <string name="album_optional">Albumas (pasirinktinis)</string>
     <string name="album">Albumas</string>
     <string name="albums">Albumai</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Geriausi albumai</string>
@@ -127,7 +126,6 @@
     <string name="state_scrobbled">Nuskrobuolinta</string>
     <string name="state_unscrobbled">Nenuskrobuolinta</string>
     <string name="tap_to_edit">(Palieskite, kad redaguotumėte)</string>
-    <string name="recently_scrobbled">Neseniai nuskrobuolinta</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobuolinta %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatinis</string>
@@ -215,7 +213,6 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Diagramos</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Žymių debesis</string>
     <string name="add_to_hs">Pridėti prie pradžios ekrano</string>
-    <string name="press_back">Paspauskite atgal, kai baigta</string>
     <string name="details">Išsamiau</string>
     <string name="saved_as_pending">Išsaugotas kaip laukiamas skroblas</string>
     <string name="sort">Rikiuoti</string>
@@ -320,13 +317,6 @@
     <string name="scrobbler_on">Skrobuoklis aktyvus</string>
     <string name="duration">Trukmė</string>
     <string name="total_listen_time">Bendras klausymo laikas</string>
-    <string name="acoustic" comment="(Acoustic music)">Akustika</string>
-    <string name="instrumental">Instrumentinė</string>
-    <string name="energetic" comment="(Energetic music)">Energinga</string>
-    <string name="danceable">Šokiakumas</string>
-    <string name="valence" comment="(Musical positivity)">Pozityvumas</string>
-    <string name="popularity" formatted="true" comment="popularity of a track">Populiarumas: %1$d%%</string>
-    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analizė</string>
     <string name="enable" comment="To enable some feature">Įjungti</string>
     <string name="disable" comment="To disable some feature">Išjungti</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Šalinti „%1$s“</string>
@@ -343,7 +333,6 @@
     <string name="pref_offline_info">ℹ️ Neprisijungus skroblai ir mėgstami bus išsaugoti, kad būtų išsiųsti vėliau.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Skrobuolinti iš</string>
     <string name="pref_enabled_apps_summary">ℹ️ Palaiko muzikos metaduomenis atskleidžiančias programas. Kad išvengtumėte dvigubo „Spotify“ skroblo, įjunkite tai tik vienoje vietoje.</string>
-    <string name="pref_enabled_apps_title">Pasirinkti programas</string>
     <string name="pref_auto_detect">Automatiškai skrobuolinti iš naujų programų</string>
     <string name="pref_spotify_remote">Skrobuolinti „Spotify“ leidžiant kituose įrenginiuose</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Naudoti apytikslę atlikėjo vaizdų paiešką</string>
@@ -426,7 +415,6 @@
     <string name="submitting_loves" formatted="true">Siunčiami mėgstami. Liko %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Siunčiamas paketas</string>
     <string name="bar_chart">Juostinė diagrama</string>
-    <string name="cleared_disabled_apps">Išvalytos išjungtos programos</string>
     <string name="fix_it_title">Galimi taisymai</string>
     <string name="fix_it_startup_title">Maitinimo taupyklės / paleidimo tvarkytuvai</string>
     <string name="fix_it_battery_title">Išjungti akumuliatoriaus optimizavimą</string>
@@ -471,7 +459,6 @@
     <string name="external_metadata">Išoriniai metaduomenų šaltiniai</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">%1$s eilutė</string>
     <string name="album_art_now_playing">Gauti albumo viršelį iš dabar leidžiama, jei privalomas</string>
-    <string name="you_have_disabled" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">Išjungėte „%1$s“ sekcijoje „%2$s“.</string>
     <string name="discord_compact_view_line">Rodyti kaip „Klausausi“:</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Galimi reikšmių laikikliai: %1$s</string>
     <string name="show_paused_for">Rodyti pristabdytą mediją, skirta</string>

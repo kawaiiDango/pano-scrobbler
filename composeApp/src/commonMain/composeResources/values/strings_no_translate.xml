@@ -2,7 +2,6 @@
 <resources>
     <!-- DO NOT TRANSLATE -->
     <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
-    <string name="dont_kill_my_app_url" translatable="false">https://dontkillmyapp.com</string>
     <string name="spotify" translatable="false">Spotify</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
@@ -50,6 +49,7 @@ WebView2 provided by Microsoft Edge Chromium
 
     <!--  strings for unfinalized stuff  -->
 
+    <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>>
     <string name="album_art_now_playing_desc">Needs a last.fm login</string>
     <string name="spotify_consent">Fetch artist images from Spotify?</string>
     <string name="show_track_url">Track URL</string>

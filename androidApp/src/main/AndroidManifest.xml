@@ -33,7 +33,6 @@
         android:name="com.arn.scrobble.main.App"
         android:allowBackup="true"
         android:appCategory="audio"
-        android:banner="@mipmap/ic_banner"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
@@ -44,7 +43,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
-        tools:targetApi="UPSIDE_DOWN_CAKE">
+        tools:targetApi="BAKLAVA">
 
         <!--        <profileable android:shell="true" />-->
 
@@ -99,6 +98,7 @@
 
         <activity
             android:name="com.arn.scrobble.main.MainActivity"
+            android:banner="@mipmap/ic_banner"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
             android:launchMode="singleTop"
@@ -246,8 +246,8 @@
 
         <!--   Do it with setResourceReaderAndroidContext instead to make it work for multi process     -->
         <provider
-            android:authorities="${applicationId}.resources.AndroidContextProvider"
             android:name="org.jetbrains.compose.resources.AndroidContextProvider"
+            android:authorities="${applicationId}.resources.AndroidContextProvider"
             tools:node="remove" />
 
     </application>

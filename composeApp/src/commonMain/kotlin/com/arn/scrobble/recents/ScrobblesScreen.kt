@@ -476,7 +476,6 @@ private fun ScrobblesTypeSelectorButton(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = { PlainTooltip { Text(text) } },
         state = rememberTooltipState(),
-        focusable = !checked,
         enableUserInput = !checked,
     ) {
         OutlinedToggleButton(
@@ -564,7 +563,6 @@ private fun ScrobblesTypeSelector(
             positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
             tooltip = { PlainTooltip { Text(stringResource(Res.string.time_jump)) } },
             state = rememberTooltipState(),
-            focusable = selectedType != ScrobblesType.TIME_JUMP,
             enableUserInput = selectedType != ScrobblesType.TIME_JUMP,
         ) {
             OutlinedToggleButton(

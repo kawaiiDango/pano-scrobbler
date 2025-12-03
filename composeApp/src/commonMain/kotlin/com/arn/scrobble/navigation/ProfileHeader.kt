@@ -161,7 +161,7 @@ fun ProfileHeader(
                     .clip(MaterialTheme.shapes.large)
                     .then(
                         if (drawSnowfall) {
-                            val snowflakes = remember { List(50) { generateRandomSnowflake() } }
+                            val snowflakes = remember { List(25) { generateRandomSnowflake() } }
                             val infiniteTransition =
                                 rememberInfiniteTransition(label = "SnowfallTransition")
                             var size by remember { mutableStateOf(IntSize.Zero) }

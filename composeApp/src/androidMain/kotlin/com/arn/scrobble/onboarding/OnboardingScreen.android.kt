@@ -47,9 +47,9 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.allow_background
 import pano_scrobbler.composeapp.generated.resources.check_nls
 import pano_scrobbler.composeapp.generated.resources.choose_apps
-import pano_scrobbler.composeapp.generated.resources.dont_kill_my_app_url
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access_desc
+import pano_scrobbler.composeapp.generated.resources.notification_access_tv
 import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
 import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
@@ -89,7 +89,7 @@ private fun NotificationPermissionStep(
 
     VerticalStepperItem(
         titleRes = Res.string.send_notifications,
-        descriptionRes = Res.string.send_notifications_desc,
+        description = stringResource(Res.string.send_notifications_desc),
         onSkip = onDone,
         openAction = {
             permRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -110,10 +110,7 @@ private fun NotificationListenerStep(
 
     val toastText = stringResource(
         Res.string.check_nls,
-        if (PlatformStuff.isTv)
-            stringResource(Res.string.special_app_access)
-        else
-            BuildKonfig.APP_NAME
+        BuildKonfig.APP_NAME
     )
 
     LifecycleResumeEffect(Unit) {
@@ -128,7 +125,9 @@ private fun NotificationListenerStep(
 
     VerticalStepperItem(
         titleRes = Res.string.grant_notification_access,
-        descriptionRes = Res.string.grant_notification_access_desc,
+        description = stringResource(Res.string.grant_notification_access_desc) +
+                if (PlatformStuff.isTv) "\n" + stringResource(Res.string.notification_access_tv)
+                else "",
         openAction = {
             val intent = if (PlatformStuff.isTv &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
@@ -147,8 +146,6 @@ private fun NotificationListenerStep(
             ) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 AndroidStuff.applicationContext.startActivity(intent)
-                Toast.makeText(AndroidStuff.applicationContext, toastText, Toast.LENGTH_SHORT)
-                    .show()
             } else {
                 navigate(PanoRoute.WebView(Stuff.LINK_TV))
             }
@@ -182,11 +179,11 @@ actual fun OnboardingScreen(
         listOfNotNull(
             OnboardingStepType.LOGIN,
             OnboardingStepType.NOTIFICATION_LISTENER,
-            if (AndroidStuff.isDkmaNeeded() && !PlatformStuff.isNotificationListenerEnabled())
+            if (!PlatformStuff.isTv && AndroidStuff.isDkmaNeeded() && !PlatformStuff.isNotificationListenerEnabled())
                 OnboardingStepType.DKMA
             else null,
             OnboardingStepType.CHOOSE_APPS,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            if (!PlatformStuff.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 OnboardingStepType.SEND_NOTIFICATIONS
             else null,
         )
@@ -258,7 +255,7 @@ actual fun OnboardingScreen(
                 OnboardingStepType.LOGIN -> {
                     VerticalStepperItem(
                         titleRes = Res.string.pref_login,
-                        descriptionRes = null,
+                        description = null,
                         openAction = {},
                         isDone = isDone,
                         isExpanded = step == currentStep,
@@ -282,7 +279,7 @@ actual fun OnboardingScreen(
 
                     VerticalStepperItem(
                         titleRes = Res.string.allow_background,
-                        descriptionRes = Res.string.dont_kill_my_app_url,
+                        description = "https://dontkillmyapp.com/",
                         openAction = {
                             PlatformStuff.openInBrowser(
                                 "https://dontkillmyapp.com/" + Build.MANUFACTURER.lowercase()
@@ -298,7 +295,7 @@ actual fun OnboardingScreen(
                 OnboardingStepType.CHOOSE_APPS -> {
                     VerticalStepperItem(
                         titleRes = Res.string.pref_scrobble_from,
-                        descriptionRes = Res.string.choose_apps,
+                        description = stringResource(Res.string.choose_apps),
                         openAction = {
                             onNavigate(
                                 PanoRoute.AppList(

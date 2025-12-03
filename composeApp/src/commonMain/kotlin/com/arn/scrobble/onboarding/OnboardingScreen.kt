@@ -36,6 +36,7 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -94,6 +95,8 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
         onCheckedChange = {
             dropDownShown = it
         },
+        modifier = Modifier
+            .testTag("login_type_dropdown")
     ) {
         Text(
             stringResource(Res.string.scrobble_services)
@@ -116,6 +119,7 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
                     },
                     modifier = Modifier
                         .testTag("login_type_" + accType.name)
+                        .testTagsAsResId()
                 )
             }
         }
@@ -125,7 +129,7 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
 @Composable
 fun VerticalStepperItem(
     titleRes: StringResource,
-    descriptionRes: StringResource?,
+    description: String?,
     openAction: () -> Unit,
     isDone: Boolean,
     isExpanded: Boolean,
@@ -174,9 +178,9 @@ fun VerticalStepperItem(
                 Column(
                     modifier = modifier.fillMaxWidth()
                 ) {
-                    if (descriptionRes != null) {
+                    if (description != null) {
                         Text(
-                            text = stringResource(descriptionRes),
+                            text = description,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }

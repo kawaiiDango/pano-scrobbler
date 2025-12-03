@@ -5,7 +5,7 @@ minSdkBaselineProfile = "28"
 android-application = "9.0.0-beta03"
 compose-multiplatform = "1.10.0-rc01"
 
-kotlin = "2.3.0-RC"
+kotlin = "2.3.0-RC2"
 
 aboutlibraries = "13.1.0"
 activity = "1.12.0-rc01"

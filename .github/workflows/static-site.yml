@@ -1,11 +1,9 @@
 name: Generate F-droid repo and static site
 
 on:
-  release:
-    types: [published]
+  repository_dispatch:
+    types: [static_site]
   workflow_dispatch:
-#  schedule:
-#  - cron: "45 2 * * *"
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:

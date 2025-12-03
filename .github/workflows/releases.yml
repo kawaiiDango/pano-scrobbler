@@ -63,7 +63,7 @@ jobs:
         with:
          java-version: '25'
          distribution: 'liberica'
-         github-token: ${{ secrets.GITHUB_TOKEN }}
+         github-token: ${{ github.token }}
 
       - name: Download native libraries
         shell: bash
@@ -147,3 +147,11 @@ jobs:
             --version ${{ steps.get_version.outputs.verName }} \
             --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.get_version.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
             --submit
+      
+      - name: Dispatch static site build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh api repos/${{ github.repository }}/dispatches \
+            -F event_type='static_site'

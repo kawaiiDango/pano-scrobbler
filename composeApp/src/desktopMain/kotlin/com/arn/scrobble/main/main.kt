@@ -86,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.fix_it_action
 import pano_scrobbler.composeapp.generated.resources.ic_launcher_with_bg
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.quit
+import pano_scrobbler.composeapp.generated.resources.settings
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.update_downloaded
 import pano_scrobbler.composeapp.generated.resources.vd_noti
@@ -230,11 +231,11 @@ fun main(args: Array<String>) {
             windowShown = true
         }
 
-        LaunchedEffect(trayIconTheme, isSystemInDarkTheme) {
+        LaunchedEffect(trayIconTheme, isSystemInDarkTheme, windowShown) {
             combine(
                 PanoNotifications.playingTrackTrayInfo,
                 DiscordRpc.wasSuccessFul,
-                Stuff.globalUpdateAction
+                Stuff.globalUpdateAction,
             ) { playingTrackInfo, discordRpcSuccessful, updateAction ->
                 val trayIconPainter = when {
                     playingTrackInfo.isEmpty() -> trayIconNotPlaying
@@ -340,9 +341,11 @@ fun main(args: Array<String>) {
                     ) + ": " + it.version
                 }
 
-                // always show these
+                if (!windowShown)
+                    trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
 
-                trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
+                // always show these
+                trayItems += PanoTrayUtils.ItemId.Settings.name to getString(Res.string.settings)
 
                 trayItems += PanoTrayUtils.ItemId.Exit.name to getString(Res.string.quit)
 
@@ -571,7 +574,8 @@ private suspend fun trayMenuClickListener(
                 onExit()
             }
 
-            PanoTrayUtils.ItemId.Open -> {
+            PanoTrayUtils.ItemId.Open,
+            PanoTrayUtils.ItemId.Settings -> {
                 onOpenIfNeeded()
             }
 

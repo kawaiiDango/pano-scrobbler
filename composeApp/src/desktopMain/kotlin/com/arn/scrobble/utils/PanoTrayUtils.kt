@@ -39,6 +39,7 @@ object PanoTrayUtils {
         Copy,
         Error,
         Open,
+        Settings,
         Update,
         DiscordRpcDisabled,
         Exit;

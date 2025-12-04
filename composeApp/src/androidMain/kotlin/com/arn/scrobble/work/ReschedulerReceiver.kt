@@ -27,6 +27,9 @@ class ReschedulerReceiver : BroadcastReceiver() {
             // a BroadcastReceiver is initialized before the Application class's onCreate() method is called
             AndroidStuff.applicationContext = context.applicationContext
 
+            if (PlatformStuff.isTv)
+                return
+
             // widget updater
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(

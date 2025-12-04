@@ -106,10 +106,10 @@ fun CollageGeneratorDialog(
         .collectAsStateWithInitialValue { it.collageSkipMissing }
     val collageBorders by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { it.collageBorders }
-    var shareCollageClicked by remember(collageType) { mutableStateOf(false) }
-    var saveCollageClicked by remember(collageType) { mutableStateOf(false) }
-    var showSavedMessage by remember(collageType) { mutableStateOf(false) }
-    var shareTextToCopy by remember(collageType) { mutableStateOf<String?>(null) }
+    var shareCollageClicked by remember { mutableStateOf(false) }
+    var saveCollageClicked by remember { mutableStateOf(false) }
+    var showSavedMessage by remember { mutableStateOf(false) }
+    var shareTextToCopy by remember { mutableStateOf<String?>(null) }
     val iconPainters = IconPaintersForCollage(
         app = painterResource(Res.drawable.vd_launcher_fg_for_collage),
         user = placeholderImageVectorPainter(null, Icons.Outlined.Person),
@@ -123,12 +123,11 @@ fun CollageGeneratorDialog(
 
     val errorText by viewModel.errorText.collectAsStateWithLifecycle(null)
     val progress by viewModel.progress.collectAsStateWithLifecycle()
-    var collageBitmap by remember(collageType) { mutableStateOf<ImageBitmap?>(null) }
+    var collageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var fileName by remember { mutableStateOf<String?>(null) }
 
     val textMeasurer = rememberTextMeasurer()
     val scope = rememberCoroutineScope()
-
-    var filePickerShown by remember(collageType) { mutableStateOf(false) }
 
     val collageTypes = mapOf(
         Stuff.TYPE_ALL to stringResource(Res.string.edit_all),
@@ -181,7 +180,7 @@ fun CollageGeneratorDialog(
                 shareCollageClicked = false
             }
             if (saveCollageClicked) {
-                filePickerShown = true
+                fileName = "collage_" + Stuff.getFileNameDateSuffix()
                 saveCollageClicked = false
                 launchedShowSavedMessage()
             }
@@ -355,12 +354,12 @@ fun CollageGeneratorDialog(
     }
 
     FilePicker(
-        show = filePickerShown,
+        show = fileName != null,
         mode = FilePickerMode.Save(
-            title = remember { "collage_" + Stuff.getFileNameDateSuffix() }
+            title = fileName ?: "dummy",
         ),
         type = FileType.PHOTO,
-        onDismiss = { filePickerShown = false },
+        onDismiss = { fileName = null },
     ) { platformFile ->
         collageBitmap?.let {
             writeImage(it, platformFile)

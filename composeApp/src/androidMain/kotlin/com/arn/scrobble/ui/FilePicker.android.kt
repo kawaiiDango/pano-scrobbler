@@ -103,6 +103,7 @@ actual fun FilePicker(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && type == FileType.PHOTO) {
                         savePictureQ(mode.title, createMimeType!!) { uri ->
                             onFilePicked(PlatformFile(uri))
+                            onDismiss()
                         }
                     } else {
                         createLauncher!!.launch(addExtensionIfNeeded(mode.title))

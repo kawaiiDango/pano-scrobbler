@@ -238,6 +238,7 @@ fun PanoAppContent(
 
     NavFromTrayEffect(
         onOpenDialog = { currentDialogArgs = it },
+        onNavigate = navController::navigate,
     )
 
     setSingletonImageLoaderFactory { context ->

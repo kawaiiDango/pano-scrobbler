@@ -2,6 +2,9 @@ package com.arn.scrobble.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -11,9 +14,21 @@ import com.arn.scrobble.utils.PanoTrayUtils
 @Composable
 actual fun NavFromTrayEffect(
     onOpenDialog: (PanoDialog) -> Unit,
+    onNavigate: (PanoRoute) -> Unit
 ) {
-    LaunchedEffect(Unit) {
+    val isStarted =
+        LocalLifecycleOwner.current.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+
+    LaunchedEffect(isStarted) {
+        if (!isStarted) return@LaunchedEffect
+
         PanoTrayUtils.onTrayMenuItemClicked.collect { id ->
+            // settings
+            if (id == PanoTrayUtils.ItemId.Settings.name) {
+                onNavigate(PanoRoute.Prefs)
+                return@collect
+            }
+
             val splits = id.split(":", limit = 2)
             val itemId = splits.first().let { PanoTrayUtils.ItemId.valueOf(it) }
             val suffix = splits.getOrNull(1)

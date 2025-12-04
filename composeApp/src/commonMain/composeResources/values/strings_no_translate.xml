@@ -49,6 +49,9 @@ WebView2 provided by Microsoft Edge Chromium
 
     <!--  strings for unfinalized stuff  -->
 
+    <string name="forget_unchecked_apps"
+        comment="Shown in the 'Scrobble From' apps list on desktop"
+        >Forget unchecked apps</string>>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>>
     <string name="album_art_now_playing_desc">Needs a last.fm login</string>
     <string name="spotify_consent">Fetch artist images from Spotify?</string>

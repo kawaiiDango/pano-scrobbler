@@ -82,6 +82,25 @@ class AppListVM : ViewModel() {
     fun setFilter(searchTerm: String) {
         _searchTerm.value = searchTerm.trim()
     }
+
+    fun forgetUncheckedApps() {
+        viewModelScope.launch {
+            val selectedPackages = selectedPackages.value
+            val seenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }.first()
+
+            PlatformStuff.mainPrefs.updateData { prefs ->
+                prefs.copy(
+                    seenApps = prefs.seenApps.filterKeys { it in selectedPackages },
+                    extractFirstArtistPackages = prefs.extractFirstArtistPackages intersect selectedPackages,
+                )
+            }
+
+            _appList.value = AppList(
+                musicPlayers = _appList.value.musicPlayers.filter { it.appId in selectedPackages },
+                otherApps = _appList.value.otherApps.filter { it.appId in selectedPackages }
+            )
+        }
+    }
 }
 
 expect suspend fun AppListVM.load(

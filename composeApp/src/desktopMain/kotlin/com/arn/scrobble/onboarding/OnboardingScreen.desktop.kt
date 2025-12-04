@@ -55,7 +55,7 @@ actual fun OnboardingScreen(
 
         VerticalStepperItem(
             titleRes = Res.string.pref_login,
-            descriptionRes = null,
+            description = null,
             openAction = {},
             isDone = isLoggedIn,
             isExpanded = true,

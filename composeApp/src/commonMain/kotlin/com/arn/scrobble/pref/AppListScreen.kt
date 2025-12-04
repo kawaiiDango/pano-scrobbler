@@ -15,12 +15,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +58,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.forget_unchecked_apps
 import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.needs_plugin
 import pano_scrobbler.composeapp.generated.resources.other_apps
@@ -270,46 +275,69 @@ fun AppListScreen(
                     addItems(appListFiltered.otherApps)
                 }
 
-                if (viewModel.pluginsNeeded.isNotEmpty()) {
-                    stickyHeader("header_plugins_needed") {
-                        ExpandableHeaderItem(
-                            title = stringResource(Res.string.needs_plugin),
-                            icon = Icons.Outlined.Info,
-                            expanded = pluginsNeededExpanded,
-                            onToggle = { pluginsNeededExpanded = it },
-                        )
+                if (saveType == AppListSaveType.Scrobbling && PlatformStuff.isDesktop) {
+                    if (viewModel.pluginsNeeded.isNotEmpty()) {
+                        stickyHeader("header_plugins_needed") {
+                            ExpandableHeaderItem(
+                                title = stringResource(Res.string.needs_plugin),
+                                icon = Icons.Outlined.Info,
+                                expanded = pluginsNeededExpanded,
+                                onToggle = { pluginsNeededExpanded = it },
+                            )
+                        }
+
+                        if (pluginsNeededExpanded) {
+                            items(viewModel.pluginsNeeded) { (appName, pluginUrl) ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .clickable {
+                                            PlatformStuff.openInBrowser(pluginUrl)
+                                        }
+                                        .padding(
+                                            vertical = 8.dp,
+                                            horizontal = horizontalOverscanPadding()
+                                        ),
+                                ) {
+                                    Text(
+                                        text = appName,
+                                        maxLines = 1,
+                                    )
+
+                                    Spacer(
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    Icon(
+                                        imageVector = Icons.Outlined.OpenInBrowser,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                    )
+                                }
+                            }
+                        }
                     }
 
-                    if (pluginsNeededExpanded) {
-                        items(viewModel.pluginsNeeded) { (appName, pluginUrl) ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .clickable {
-                                        PlatformStuff.openInBrowser(pluginUrl)
-                                    }
-                                    .padding(
-                                        vertical = 8.dp,
-                                        horizontal = horizontalOverscanPadding()
-                                    ),
-                            ) {
-                                Text(
-                                    text = appName,
-                                    maxLines = 1,
-                                )
+                    item("forget_unchecked_apps") {
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.forgetUncheckedApps()
+                            },
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = null,
+                            )
 
-                                Spacer(
-                                    modifier = Modifier.weight(1f)
-                                )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
 
-                                Icon(
-                                    imageVector = Icons.Outlined.OpenInBrowser,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                )
-                            }
+                            Text(
+                                stringResource(Res.string.forget_unchecked_apps)
+                            )
                         }
                     }
                 }

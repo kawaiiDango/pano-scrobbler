@@ -31,6 +31,10 @@ chmod 644 "$libExecDir"/lib/*.*
 chmod 644 "$libExecDir/LICENSE"
 chmod 755 "$libExecDir/$appNameWithoutSpaces"
 
+# Strip .so files
+strip --strip-unneeded "$libExecDir"/*.so
+strip --strip-unneeded "$libExecDir"/lib/*.so
+
 # Create tarball
 tarFile="$distDir/$appNameWithoutSpaces-$resourcesDirName.tar.gz"
 tar -czf "$tarFile" -C "$libExecDir" .

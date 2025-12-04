@@ -459,10 +459,14 @@
     <string name="external_metadata">Išoriniai metaduomenų šaltiniai</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">%1$s eilutė</string>
     <string name="album_art_now_playing">Gauti albumo viršelį iš dabar leidžiama, jei privalomas</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">„%1$s“ išjungta sekcijoje „%2$s“.</string>
     <string name="discord_compact_view_line">Rodyti kaip „Klausausi“:</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Galimi reikšmių laikikliai: %1$s</string>
     <string name="show_paused_for">Rodyti pristabdytą mediją, skirta</string>
     <string name="edit_example">pvz., kad pakeistumėte Atlikėją1 su Atlikėju2, paliekant kitus metaduomenis nepakitusius, įjunkite tik atlikėjo lauką ir užpildykite originalią ir pataisytą atlikėjo reikšmę, palikdami kitus laukus išjungtus.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kai naudojant „%1$s“</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kai nenaudojant „%1$s“</string>
+    <string name="as_text" comment="Like copy as text etc">Kaip tekstas</string>
     <!--  pro  -->
     <string name="get_pro">Paremti šią programą</string>
     <string name="one_time_purchase">Vienkartinis</string>

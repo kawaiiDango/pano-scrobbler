@@ -66,6 +66,7 @@ if [ -f "$pkgbuildDir/PKGBUILD" ]; then
 
     sed -i "s/^_pkgver=.*/_pkgver=$tag/" "$pkgbuildDir/PKGBUILD"
     sed -i "s/^pkgver=.*/pkgver=$verName/" "$pkgbuildDir/PKGBUILD"
+    sed -i "s/^pkgrel=.*/pkgrel=1/" "$pkgbuildDir/PKGBUILD"
     sed -i "s/^sha256sums_x86_64=(.*/sha256sums_x86_64=('$sha_x64')/" "$pkgbuildDir/PKGBUILD"
     sed -i "s/^sha256sums_aarch64=(.*/sha256sums_aarch64=('$sha_arm64')/" "$pkgbuildDir/PKGBUILD"
     echo "PKGBUILD updated: _pkgver=$tag, pkgver=$verName, sha_x64=$sha_x64, sha_arm64=$sha_arm64"

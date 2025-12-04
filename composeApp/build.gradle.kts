@@ -97,6 +97,7 @@ kotlin {
             implementation(libs.media)
             implementation(libs.compose.webview)
             implementation(libs.coil.gif)
+            implementation(libs.qrcode)
         }
 
         commonMain.dependencies {
@@ -135,7 +136,6 @@ kotlin {
             implementation(libs.nanohttpd)
             implementation(libs.androidx.room.runtime)
             implementation(libs.kotlinx.immutable)
-            implementation(libs.qrcode)
             implementation(libs.cryptohash)
             implementation(projects.extrasCommon)
         }

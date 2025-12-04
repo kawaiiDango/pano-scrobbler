@@ -16,13 +16,13 @@ object Journeys {
             device.executeShellCommand("cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.media.NLService")
 
             device.findObject(By.res("login_type_dropdown")).click()
-            device.wait(Until.hasObject(By.text("Last.fm-like instance")), TIMEOUT)
-            device.findObject(By.text("Last.fm-like instance")).click()
+            device.wait(Until.hasObject(By.res("login_type_GNUFM"))), TIMEOUT)
+            device.findObject(By.res("login_type_GNUFM")).click()
             device.wait(Until.hasObject(By.res("login_url")), TIMEOUT)
             device.findObject(By.res("login_url")).text = "test_creds_${Secrets.type}"
             device.findObject(By.res("login_username")).text = Secrets.username
             device.findObject(By.res("login_password")).text = Secrets.sessionKey
-            device.findObject(By.text("Verify")).click()
+            device.findObject(By.res("button_verify")).click()
             Thread.sleep(DELAY)
             device.findObject(By.res("button_stepper_open")).click()
             Thread.sleep(DELAY)

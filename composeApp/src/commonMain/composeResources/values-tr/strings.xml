@@ -286,6 +286,8 @@
     <string name="duration">Süre</string>
     <string name="total_listen_time">Toplam dinleme zamanı</string>
     <string name="enable" comment="To enable some feature">Etkinleştir</string>
+    <string name="disable" comment="To disable some feature">Devre dışı bırak</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Kaldır: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Boyut</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Eksik resimleri atla</string>
     <string name="create_collage">Kolaj oluştur</string>
@@ -342,6 +344,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listeler</string>
     <string name="regex_rules">Düzenli ifade kuralları</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Engellenmiş meta veri</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">herhangi bir şey</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">mevcut veri</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
     <string name="pref_translate_credits">Çeviri ekibi</string>
     <string name="pref_oss_credits">Açık kaynak lisansları</string>
@@ -411,6 +415,8 @@
     <string name="low" comment="As in high/medium/low">Düşük</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Bazı uygulamalar eklentilere ihtiyaç duyar</string>
     <string name="reload" comment="Reload or refresh">Yeniden yükle</string>
+    <string name="pref_tray_icon_theme">Tepsi simgesi teması</string>
+    <string name="min_track_duration">Şundan uzun parçaları skropla</string>
     <string name="automation">Pano Scrobbler'ı otomasyon uygulamaları üzerinden kontrol edin</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s üst verileri için ülke</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s için eksik üst verileri al</string>
@@ -419,6 +425,8 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Uygulamayı %1$s üzerinden edin</string>
     <string name="first_artist">Sadece ilk sanatçıyı kullan</string>
     <string name="external_metadata">Harici üst veri kaynakları</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Satır %1$s</string>
+    <string name="album_art_now_playing">Gerektiğinde, albüm kapağını Şimdi Oynatılıyor'dan al</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="one_time_purchase">Bir kez</string>

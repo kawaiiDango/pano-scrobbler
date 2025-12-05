@@ -56,14 +56,6 @@ sealed interface PanoDialog {
         val appId: String? = null,
     ) : PanoDialog, NestedScrollable
 
-    // lightweight version to prevent ANRs
-    @Serializable
-    data class MusicEntryInfoFromWidget(
-        val artist: String,
-        val album: String? = null,
-        val track: String? = null,
-    ) : PanoDialog, NestedScrollable
-
     @Serializable
     data object Index : PanoDialog
 

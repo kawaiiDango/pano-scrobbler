@@ -102,7 +102,6 @@ object Stuff {
 
     const val MANUFACTURER_HUAWEI = "huawei"
     const val MANUFACTURER_XIAOMI = "xiaomi"
-    const val MANUFACTURER_POCO = "poco"
     const val MANUFACTURER_SAMSUNG = "samsung"
     const val MANUFACTURER_ONEPLUS = "oneplus"
     const val MANUFACTURER_OPPO = "oppo"

@@ -25,6 +25,8 @@
 
 [![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage) [![github-arm64](img/github-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-liinux-arm64.AppImage) [![aur](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin)
 
+The desktop versions do not use any closed source libraries.
+
 **Android (phones, tablets, TVs and Chromebooks):**
 
 [![github](img/github.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases) [![fdroid][fdroid]][fdroid-link] [![obtainium][obtainium]][obtainium-link] [![play-store][play-store]][play-store-link]
@@ -32,7 +34,9 @@
 Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
 
 The non-Play variant can optionally display a persistent notification on Android 14+.
-This may help prevent the system from killing the app in the background on devices from certain manufacturers.
+This may or may not help prevent the system from killing the app in the background on devices from certain manufacturers.
+
+Installing the non-Play version from the F-Droid compatible repo or Obtainium will get you automatic updates.
 
 **APK SHA256 fingerprint for non-Play builds:**
 ```

@@ -92,6 +92,7 @@ object AndroidStuff {
         val manufacturer = Build.MANUFACTURER.lowercase()
 
         return manufacturer in arrayOf(
+            Stuff.MANUFACTURER_XIAOMI,
             Stuff.MANUFACTURER_SAMSUNG,
             Stuff.MANUFACTURER_ONEPLUS,
             Stuff.MANUFACTURER_OPPO,
@@ -132,7 +133,6 @@ object AndroidStuff {
                 Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(
             Stuff.MANUFACTURER_HUAWEI,
             Stuff.MANUFACTURER_XIAOMI,
-            Stuff.MANUFACTURER_POCO,
             Stuff.MANUFACTURER_SAMSUNG,
         )
     }

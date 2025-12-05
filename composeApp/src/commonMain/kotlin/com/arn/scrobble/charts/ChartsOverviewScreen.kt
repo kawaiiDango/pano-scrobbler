@@ -101,6 +101,7 @@ import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -178,6 +179,8 @@ fun ChartsOverviewScreen(
     }
 
     LaunchedEffect(scrollState.value) {
+        delay(100)
+
         val scrollBottomOffset = scrollState.value + scrollState.viewportSize
         val minAdditionalOffset = 96.dp.value * density.density
 

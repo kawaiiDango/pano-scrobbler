@@ -262,7 +262,7 @@ private fun TrackDropdownMenu(
                         )
                     }
 
-                    if (onDelete != null && track.date != null && track.date > 0) {
+                    if (onDelete != null && track.date != null && track.date > 0 && !track.isNowPlaying) {
                         DropdownMenuItem(
                             onClick = {
                                 GlobalScope.launch {
@@ -767,7 +767,7 @@ fun LazyListScope.scrobblesListItems(
                                     val msid: String?
                                     val hash: Int?
 
-                                    if (track.date != null) {
+                                    if (!track.isNowPlaying && track.date != null) {
                                         // no editing of now playing from here
                                         sd = ScrobbleData(
                                             track = track.name,

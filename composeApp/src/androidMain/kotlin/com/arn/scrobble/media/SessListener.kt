@@ -1,5 +1,6 @@
 package com.arn.scrobble.media
 
+import android.content.ComponentName
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -8,8 +9,10 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
+import android.service.quicksettings.TileService
 import android.support.v4.media.MediaMetadataCompat
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.media.PlayerActions.love
 import com.arn.scrobble.media.PlayerActions.skip
 import com.arn.scrobble.media.PlayerActions.unlove
@@ -76,6 +79,15 @@ class SessListener(
                         .toSet()
                     removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
                 }
+        }
+
+        scope.launch {
+            scrobblerEnabled.collectLatest {
+                TileService.requestListeningState(
+                    AndroidStuff.applicationContext,
+                    ComponentName(AndroidStuff.applicationContext, MasterSwitchQS::class.java)
+                )
+            }
         }
     }
 

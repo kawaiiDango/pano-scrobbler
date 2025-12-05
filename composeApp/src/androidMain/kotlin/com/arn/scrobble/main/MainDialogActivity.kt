@@ -27,13 +27,7 @@ class MainDialogActivity : ComponentActivity() {
             var currentDialogArgs by remember { mutableStateOf<PanoDialog?>(null) }
             DisposableEffect(Unit) {
                 val consumer = Consumer<Intent> {
-                    val uri = it.data
-
-                    if (uri == null) {
-                        finish()
-                        return@Consumer
-                    }
-                    currentDialogArgs = DeepLinkUtils.parseDeepLink(uri)
+                    currentDialogArgs = DeepLinkUtils.parseDialogDeepLink(it)
 
                     if (currentDialogArgs == null) {
                         finish()

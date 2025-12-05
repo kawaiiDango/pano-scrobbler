@@ -2,7 +2,7 @@
 
 Welcome to my spaghetti
 
-Put these keys in local.properties
+Put these in local.properties
 ```
 # // https://www.last.fm/api/account/create
 lastfm.key=

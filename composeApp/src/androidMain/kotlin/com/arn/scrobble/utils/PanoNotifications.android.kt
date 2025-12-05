@@ -56,7 +56,8 @@ import pano_scrobbler.composeapp.generated.resources.yes
 actual object PanoNotifications {
     private val context
         get() = AndroidStuff.applicationContext
-    private val notificationManager = AndroidStuff.notificationManager
+    private val notificationManager
+        get() = AndroidStuff.notificationManager
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
     private val nowPlayingScrobbleDataToHash = mutableMapOf<String, Pair<ScrobbleData, Int>>()
 
@@ -134,8 +135,7 @@ actual object PanoNotifications {
                         user = user
                     )
 
-                    val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
-                    val launchPi = DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
+                    val launchPi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
 
                     setContentIntent(launchPi)
                 }
@@ -166,10 +166,8 @@ actual object PanoNotifications {
                 hash = event.hash
             )
 
-            val editDeepLinkUri = DeepLinkUtils.buildDeepLink(editDialogArgs)
-
             val editPi =
-                DeepLinkUtils.createDestinationPendingIntent(editDeepLinkUri)
+                DeepLinkUtils.buildDialogPendingIntent(editDialogArgs)
 
             val editAction = AndroidStuff.getNotificationAction(
                 R.drawable.vd_edit,
@@ -215,9 +213,7 @@ actual object PanoNotifications {
                 hash = event.hash
             )
 
-            val blockDeepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
-
-            val blockPi = DeepLinkUtils.createDestinationPendingIntent(blockDeepLinkUri)
+            val blockPi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
             val blockAction = AndroidStuff.getNotificationAction(
                 R.drawable.vd_ban,
                 "🚫",
@@ -272,10 +268,8 @@ actual object PanoNotifications {
                         hash = event.hash
                     )
 
-                    val editDeepLinkUri = DeepLinkUtils.buildDeepLink(editDialogArgs)
-
                     val editPi =
-                        DeepLinkUtils.createDestinationPendingIntent(editDeepLinkUri)
+                        DeepLinkUtils.buildDialogPendingIntent(editDialogArgs)
 
                     it.setContentIntent(editPi)
                     it.setChannelId(Stuff.CHANNEL_NOTI_SCR_ERR)
@@ -378,10 +372,7 @@ actual object PanoNotifications {
             hash = hash
         )
 
-        val deepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
-
-        val blockPi =
-            DeepLinkUtils.createDestinationPendingIntent(deepLinkUri)
+        val blockPi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
 
         val nb = buildNotification()
             .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
@@ -438,13 +429,10 @@ actual object PanoNotifications {
             user = Scrobblables.currentAccount.value?.user ?: return
         )
 
-        val collageDeepLinkUri = DeepLinkUtils.buildDeepLink(dialogArgs)
-
-        val collagePi =
-            DeepLinkUtils.createDestinationPendingIntent(collageDeepLinkUri)
+        val collagePi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
 
         val chartsDeepLinkUri =
-            DeepLinkUtils.createDeepLinkUri(PanoRoute.SelfHomePager(timePeriod.lastfmPeriod.name))!!
+            DeepLinkUtils.createMainActivityDeepLinkUri(PanoRoute.SelfHomePager(timePeriod.lastfmPeriod.name))!!
         val chartsPi =
             PendingIntent.getActivity(
                 context,

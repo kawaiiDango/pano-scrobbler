@@ -57,44 +57,42 @@ object ChartsListUtils {
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
 
-        var deepLinkUri: String? = null
+        val fillInIntent = Intent()
 
         when (tab) {
             Stuff.TYPE_ARTISTS -> {
-                deepLinkUri = DeepLinkUtils.buildDeepLink(
-                    PanoDialog.MusicEntryInfoFromWidget(
-                        artist = item.title,
-                    )
+                DeepLinkUtils.fillInIntentForMusicEntryInfo(
+                    fillInIntent,
+                    artist = item.title,
+                    album = null,
+                    track = null,
                 )
             }
 
             Stuff.TYPE_ALBUMS -> {
                 if (item.subtitle != null) {
-                    deepLinkUri = DeepLinkUtils.buildDeepLink(
-                        PanoDialog.MusicEntryInfoFromWidget(
-                            artist = item.title,
-                            album = item.subtitle
-                        )
+                    DeepLinkUtils.fillInIntentForMusicEntryInfo(
+                        fillInIntent,
+                        artist = item.title,
+                        album = item.subtitle,
+                        track = null,
                     )
                 }
             }
 
             Stuff.TYPE_TRACKS -> {
                 if (item.subtitle != null) {
-                    deepLinkUri = DeepLinkUtils.buildDeepLink(
-                        PanoDialog.MusicEntryInfoFromWidget(
-                            artist = item.title,
-                            track = item.subtitle
-                        )
+                    DeepLinkUtils.fillInIntentForMusicEntryInfo(
+                        fillInIntent,
+                        artist = item.subtitle,
+                        album = null,
+                        track = item.title,
                     )
                 }
             }
         }
 
-        if (deepLinkUri != null) {
-            val fillInIntent = Intent().setData(deepLinkUri.toUri())
-            rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
-        }
+        rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
 
         return rv
     }

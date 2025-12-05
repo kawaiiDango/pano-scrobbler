@@ -145,39 +145,6 @@ private fun PanoDialogs(
                 )
             }
 
-            is PanoDialog.MusicEntryInfoFromWidget -> {
-                val currentUser = Scrobblables.current?.userAccount?.user
-
-                if (currentUser != null) {
-                    val musicEntry = when {
-                        dialogArgs.track != null -> Track(
-                            name = dialogArgs.track,
-                            album = null,
-                            artist = Artist(name = dialogArgs.artist),
-                        )
-
-                        dialogArgs.album != null -> Album(
-                            name = dialogArgs.album,
-                            artist = Artist(name = dialogArgs.artist),
-                        )
-
-                        else -> Artist(
-                            name = dialogArgs.artist,
-                        )
-                    }
-
-                    MusicEntryInfoDialog(
-                        musicEntry = musicEntry,
-                        appId = null,
-                        user = currentUser,
-                        onNavigate = onNavigate,
-                        onOpenDialog = onOpenDialog,
-                        scrollState = scrollState,
-                        modifier = modifier
-                    )
-                }
-            }
-
             is PanoDialog.TagInfo -> {
                 TagInfoDialog(
                     tag = dialogArgs.tag,

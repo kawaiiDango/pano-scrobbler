@@ -427,6 +427,14 @@
     <string name="external_metadata">Harici üst veri kaynakları</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Satır %1$s</string>
     <string name="album_art_now_playing">Gerektiğinde, albüm kapağını Şimdi Oynatılıyor'dan al</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%2$s içerisinde %1$s kapatıldı</string>
+    <string name="discord_compact_view_line">"Şu anda dinliyor": olarak göster</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Mevcut yer tutucular: %1$s</string>
+    <string name="show_paused_for">Şunun için duraklatılmış medyayı göster</string>
+    <string name="edit_example">Örn. Sanatçı1'i Sanatçı2 ile değiştirmek ve meta verilerinin geri kalanını değiştirmemek için yalnızca sanatçı alanını etkinleştirin ve orijinal ve düzeltilmiş sanatçı değerlerini doldurun, diğer alanları devre dışı bırakın.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">%1$s kullanılıyorken</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">%1$s kullanılmıyorken</string>
+    <string name="as_text" comment="Like copy as text etc">Metin olarak</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="one_time_purchase">Bir kez</string>

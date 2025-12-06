@@ -26,8 +26,8 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.ui.MinimalHtmlParser.decodeHtmlEntities
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.PlatformStuff.toHtmlAnnotatedString
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
@@ -119,9 +119,9 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
             .map {
                 val tracks = it.map { track ->
                     Track(
-                        artist = Artist(track.artist.toHtmlAnnotatedString().text),
-                        name = track.title.toHtmlAnnotatedString().text,
-                        album = track.album?.let { Album(it.toHtmlAnnotatedString().text) },
+                        artist = Artist(track.artist.decodeHtmlEntities()),
+                        name = track.title.decodeHtmlEntities(),
+                        album = track.album?.let { Album(it.decodeHtmlEntities()) },
                         duration = track.length,
                         date = Instant.parseOrNull(track.created_at!!)?.toEpochMilliseconds() ?: 0L,
                     )

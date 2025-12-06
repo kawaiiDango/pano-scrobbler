@@ -349,7 +349,11 @@ fun OutlinedTextFieldTvSafe(
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = {
+            onValueChange(
+                it.filterNot { it == '\n' || it == '\r' }
+            )
+        },
         label = label,
         modifier = modifier,
         enabled = enabled && !PlatformStuff.isTv, // Disable on TV

@@ -200,6 +200,7 @@ class PlayingTrackInfo(
         userPlayCount = userPlayCount,
         artUrl = artUrl,
         timelineStartTime = timelineStartTime,
+        preprocessed = scrobbledState >= ScrobbledState.PREPROCESSED,
     )
 
     fun putPreprocessedData(sd: ScrobbleData, additionalMetadataFetched: Boolean) {

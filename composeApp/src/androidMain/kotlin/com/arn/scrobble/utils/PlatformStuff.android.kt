@@ -111,8 +111,6 @@ actual object PlatformStuff {
 
     actual const val noUpdateCheck = true
 
-    actual fun String.toHtmlAnnotatedString() = AnnotatedString.fromHtml(this)
-
 
     actual fun isScrobblerRunning(): Boolean {
         val serviceComponent = ComponentName(applicationContext, NLService::class.java)

@@ -159,7 +159,7 @@ object DiscordRpc {
                 discordActivityKeepTill.value = null
                 val (appId, event) = appIdToEvent
 
-                if (event is PlayingTrackNotifyEvent.TrackPlaying)
+                if (event is PlayingTrackNotifyEvent.TrackPlaying && event.preprocessed)
                     discordActivity.value = transform(appId, event, settings)
             }
         }.launchIn(GlobalScope)

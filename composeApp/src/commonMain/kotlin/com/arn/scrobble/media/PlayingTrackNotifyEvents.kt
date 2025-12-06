@@ -47,6 +47,7 @@ sealed interface PlayingTrackNotifyEvent {
         val userPlayCount: Int,
         val artUrl: String?,
         val timelineStartTime: Long,
+        val preprocessed: Boolean,
     ) : PlayingTrackNotifyEvent, PlayingTrackState
 
     @Serializable
@@ -175,15 +176,7 @@ suspend fun listenForPlayingTrackEvents(
                 if (trackInfo.artist.isEmpty() || trackInfo.title.isEmpty())
                     return@collect
 
-                val scrobbleData = trackInfo.toScrobbleData(false)
-                val origScrobbleData = trackInfo.toScrobbleData(true)
-
-                mediaListener.scope.launch(Dispatchers.IO) {
-                    ScrobbleEverywhere.loveOrUnlove(scrobbleData.toTrack(), event.loved)
-                }
-
                 trackInfo.updateUserProps(userLoved = event.loved)
-
 
                 val linkHeartButtonToRating =
                     PlatformStuff.mainPrefs.data.map { it.linkHeartButtonToRating }.first()
@@ -195,16 +188,13 @@ suspend fun listenForPlayingTrackEvents(
                         mediaListener.unlove(trackInfo.hash)
                 }
 
-                val scrobbleEvent = PlayingTrackNotifyEvent.TrackPlaying(
-                    scrobbleData = scrobbleData,
-                    origScrobbleData = origScrobbleData,
-                    hash = trackInfo.hash,
-                    nowPlaying = scrobbleQueue.has(trackInfo.hash),
-                    userLoved = event.loved,
-                    userPlayCount = trackInfo.userPlayCount,
-                    artUrl = trackInfo.artUrl,
-                    timelineStartTime = trackInfo.timelineStartTime,
-                )
+                val scrobbleEvent = trackInfo.toTrackPlayingEvent()
+
+                val scrobbleData = scrobbleEvent.scrobbleData
+
+                mediaListener.scope.launch(Dispatchers.IO) {
+                    ScrobbleEverywhere.loveOrUnlove(scrobbleData.toTrack(), event.loved)
+                }
 
                 globalTrackEventFlow.emit(scrobbleEvent)
             }

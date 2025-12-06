@@ -32,8 +32,6 @@ expect object PlatformStuff {
 
     val noUpdateCheck: Boolean
 
-    fun String.toHtmlAnnotatedString(): AnnotatedString
-
     fun isScrobblerRunning(): Boolean
 
     fun openInBrowser(url: String)

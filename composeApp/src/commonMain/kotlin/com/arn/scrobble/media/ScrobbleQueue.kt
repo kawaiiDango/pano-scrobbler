@@ -183,29 +183,14 @@ class ScrobbleQueue(
             trackInfo.scrobbled()
 
             notifyPlayingTrackEvent(
-                PlayingTrackNotifyEvent.TrackPlaying(
-                    hash = hash,
-                    scrobbleData = sd,
-                    origScrobbleData = origScrobbleData,
-                    nowPlaying = false,
-                    userLoved = trackInfo.userLoved,
-                    userPlayCount = trackInfo.userPlayCount,
-                    timelineStartTime = trackInfo.timelineStartTime,
-                    artUrl = trackInfo.artUrl
-                )
+                trackInfo.toTrackPlayingEvent()
             )
         }
 
         notifyPlayingTrackEvent(
-            PlayingTrackNotifyEvent.TrackPlaying(
-                hash = hash,
+            trackInfo.toTrackPlayingEvent().copy(
                 scrobbleData = scrobbleData,
-                origScrobbleData = origScrobbleData,
                 nowPlaying = true,
-                userLoved = trackInfo.userLoved,
-                userPlayCount = trackInfo.userPlayCount,
-                timelineStartTime = trackInfo.timelineStartTime,
-                artUrl = trackInfo.artUrl
             )
         )
 
@@ -280,15 +265,10 @@ class ScrobbleQueue(
                     }
 
                     notifyPlayingTrackEvent(
-                        PlayingTrackNotifyEvent.TrackPlaying(
-                            hash = hash,
-                            scrobbleData = preprocessResult.scrobbleData,
+
+                        trackInfo.toTrackPlayingEvent().copy(
                             origScrobbleData = additionalMeta.scrobbleData ?: origScrobbleData,
                             nowPlaying = true,
-                            userLoved = trackInfo.userLoved,
-                            userPlayCount = trackInfo.userPlayCount,
-                            timelineStartTime = trackInfo.timelineStartTime,
-                            artUrl = trackInfo.artUrl
                         )
                     )
 

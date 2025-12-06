@@ -190,13 +190,6 @@ fun PrefsScreen(
     remember { derivedStateOf { mainPrefsData.deezerApi } }
     val extractFirstArtistPackages by
     remember { derivedStateOf { mainPrefsData.extractFirstArtistPackages } }
-    val parseTitleWithFallbackApps by remember {
-        derivedStateOf {
-            mainPrefsData.getRegexPresetApps(
-                RegexPreset.parse_title_with_fallback
-            )
-        }
-    }
     val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
     var isAddedToStartup by remember { mutableStateOf(false) }
     val scrobblableLabels by remember {
@@ -311,20 +304,16 @@ fun PrefsScreen(
         }
 
         item(MainPrefs::extractFirstArtistPackages.name) {
-            val packagesOverride by remember(allowedPackages) {
-                mutableStateOf(allowedPackages - parseTitleWithFallbackApps)
-            }
-
             AppIconsPref(
                 packageNames = extractFirstArtistPackages,
                 seenAppsMap = seenApps,
                 title = stringResource(Res.string.first_artist),
-                enabled = packagesOverride.isNotEmpty(),
+                enabled = allowedPackages.isNotEmpty(),
                 onClick = {
                     onNavigate(
                         PanoRoute.AppList(
                             saveType = AppListSaveType.ExtractFirstArtist,
-                            packagesOverride = packagesOverride.toList(),
+                            packagesOverride = allowedPackages.toList(),
                             preSelectedPackages = extractFirstArtistPackages.toList(),
                             isSingleSelect = false,
                         )
@@ -352,6 +341,8 @@ fun PrefsScreen(
                 stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
             )
         }
+
+        discordRpc(this, onNavigate)
 
         stickyHeader("pref_delay_header") {
             SimpleHeaderItem(
@@ -679,8 +670,6 @@ fun PrefsScreen(
                 icon = Icons.Outlined.MoreHoriz
             )
         }
-
-        discordRpc(this, onNavigate)
 
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
             item(MainPrefs::preventDuplicateAmbientScrobbles.name) {

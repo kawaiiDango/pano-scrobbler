@@ -102,10 +102,6 @@ actual object PlatformStuff {
         }
     }
 
-    actual fun String.toHtmlAnnotatedString() =
-        AnnotatedString(this) // todo implement if possible
-
-
     actual fun isScrobblerRunning(): Boolean {
         return true
     }

@@ -7,17 +7,19 @@ PACKAGE=com.arn.scrobble
 REPO_URL="https://api.github.com/repos/$USER/$REPO/releases"
 
 # Use curl to get the JSON response for all releases
-JSON=$(curl --silent "$REPO_URL")
+JSON=$(curl --silent --fail-with-body "$REPO_URL")
 
 # Extract the URLs of the assets named "pano-scrobbler-release.apk", the corresponding tags, the created_at dates
-ASSET_URLS=$(echo "$JSON" | jq -r '.[] | select(.assets[0].name | endswith(".apk")) | .assets[0].browser_download_url')
-TAGS=$(echo "$JSON" | jq -r '.[] | select(.assets[0].name | endswith(".apk")) | .tag_name')
-DATES=$(echo "$JSON" | jq -r '.[] | select(.assets[0].name | endswith(".apk")) | .created_at')
+readarray -t TAGS < <(jq -r '.[0:3][] | .tag_name' <<<"$JSON")
 
-# Convert the URLs, tags, dates to arrays
-ASSET_URLS=($ASSET_URLS)
-TAGS=($TAGS)
-DATES=($DATES)
+readarray -t ASSET_URLS < <(
+  jq -r '.[0:3][]
+    | .assets[]
+    | select(.name | endswith(".apk"))
+    | .browser_download_url' <<<"$JSON"
+)
+
+readarray -t DATES < <(jq -r '.[0:3][] | .created_at' <<<"$JSON")
 
 # Download the last 3 assets and create the changelogs
 mkdir -p "metadata/${PACKAGE}/en-US/changelogs"

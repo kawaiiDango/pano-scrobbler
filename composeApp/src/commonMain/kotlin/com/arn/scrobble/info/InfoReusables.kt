@@ -43,7 +43,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,10 +50,10 @@ import androidx.compose.ui.unit.dp
 import com.arn.scrobble.icons.AlbumArtist
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.ui.AvatarOrInitials
+import com.arn.scrobble.ui.MinimalHtmlParser
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.PlatformStuff.toHtmlAnnotatedString
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.launch
@@ -80,17 +79,17 @@ fun InfoWikiText(
     var maxYInColumn by remember { mutableFloatStateOf(0f) }
 
 
-    var displayText = text
-    val idx =
-        displayText.indexOf("<a href=\"http://www.last.fm").takeIf { it != -1 }
-            ?: displayText.indexOf("<a href=\"https://www.last.fm")
-    if (idx != -1) {
-        displayText = displayText.take(idx).trim()
+    val displayText by remember(text) {
+        mutableStateOf(
+            text
+                .replaceFirst(
+                    """<a href="https?://[^"]+">Read more on Last\.fm</a>""".toRegex(),
+                    "\n\n$0"
+                )
+        )
     }
+
     if (displayText.isNotBlank()) {
-        if (!PlatformStuff.isTv) {
-            displayText = displayText.replace("<br>", "\n")
-        }
         Box(
             modifier = modifier
                 .border(
@@ -108,10 +107,14 @@ fun InfoWikiText(
                 },
         ) {
             Text(
-                text = if (PlatformStuff.isTv || PlatformStuff.isDesktop)
-                    AnnotatedString(displayText)
-                else
-                    displayText.toHtmlAnnotatedString(),
+                text = MinimalHtmlParser.parseLinksToAnnotatedString(
+                    text = displayText,
+                    onLinkClick = if (PlatformStuff.isTv)
+                        null
+                    else {
+                        { url -> PlatformStuff.openInBrowser(url) }
+                    }
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = if (expanded) Int.MAX_VALUE else maxLinesWhenCollapsed,
                 overflow = TextOverflow.Ellipsis,

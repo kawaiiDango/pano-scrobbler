@@ -2,13 +2,9 @@
 
 [\[repository\]](https://github.com/kawaiiDango/pano-scrobbler)
 
-[play-store]: img/play-store.svg
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
-[obtainium]: img/obtainium.svg
 [obtainium-link]: https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/kawaiiDango/pano-scrobbler
-[fdroid]: img/fdroid.svg
 [fdroid-link]: https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
-[crowdin]: img/crowdin.svg
 [crowdin-link]: https://crowdin.com/project/pscrobbler
 
 <img src="desktop-screenshots/1-scrobbles-desktop.jpg" alt="scrobbles screen" width="250"/> <img src="desktop-screenshots/2-charts-desktop.jpg" alt="charts screen" width="250"/>
@@ -29,7 +25,7 @@ The desktop versions do not use any closed source libraries.
 
 **Android (phones, tablets, TVs and Chromebooks):**
 
-[![github](img/github.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases) [![fdroid][fdroid]][fdroid-link] [![obtainium][obtainium]][obtainium-link] [![play-store][play-store]][play-store-link]
+[![github](img/github.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases) [![fdroid](img/fdroid.svg)][fdroid-link] [![obtainium](img/obtainium.svg)][obtainium-link] [![IzzyOnDroid](img/izzyondroid.svg)](https://apt.izzysoft.de/fdroid/index/apk/com.arn.scrobble) [![play-store](img/play-store.svg)][play-store-link]
 
 Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
 
@@ -45,7 +41,7 @@ Installing the non-Play version from the F-Droid compatible repo or Obtainium wi
 
 ### Translate
 
-[![translate][crowdin]][crowdin-link]
+[![translate](img/crowdin.svg)][crowdin-link]
 
 ## [FAQ](faq.md) • [Privacy](privacy-policy.md) • [Compiling](instructions.md) • [TV](tv.md)
 

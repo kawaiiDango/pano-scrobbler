@@ -425,6 +425,10 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Auch verfügbar auf %1$s</string>
     <string name="first_artist">Nur den ersten Künstler verwenden</string>
     <string name="external_metadata">Externe Metadaten Quellen</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linie %1$s</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Bei Verwendung von %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Nicht bei Verwendung von %1$s</string>
+    <string name="as_text" comment="Like copy as text etc">Als Text</string>
     <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
     <string name="one_time_purchase">Einmalig</string>

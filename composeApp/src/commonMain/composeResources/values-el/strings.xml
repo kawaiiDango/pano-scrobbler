@@ -84,7 +84,7 @@
     <string name="similar_tracks">Παρόμοια κομμάτια</string>
     <string name="state_scrobbling">Τώρα κάνεις scrobbling…</string>
     <string name="state_scrobbled">Scrobbλαρισμένα</string>
-    <string name="state_unscrobbled">Αφαιρέθηκε απο τα scrobbles σου</string>
+    <string name="state_unscrobbled">Αφαιρέθηκε από τα scrobbles σου</string>
     <string name="tap_to_edit">(πατήστε για επεξεργασία)</string>
     <string name="recents" comment="Short for recently scrobbled">Πρόσφατα</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Έγινε πρώτη φορά scrobble στις %1$s</string>
@@ -251,6 +251,8 @@
     <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
+    <string name="duration">Διάρκεια</string>
+    <string name="total_listen_time">Συνολικός χρόνος ακρόασης</string>
     <string name="enable" comment="To enable some feature">Ενεργοποιήση</string>
     <string name="disable" comment="To disable some feature">Απενεργοποίηση</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Μέγεθος</string>
@@ -282,11 +284,13 @@
     <string name="pref_change_locale">Αλλαγή γλώσσας</string>
     <string name="pref_crashlytics_enabled">Αυτόματη αναφορά σφαλμάτων</string>
     <string name="pref_misc">Διάφορα.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Αρχή της εβδομάδας</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Εισαγωγή &amp; εξαγωγή</string>
     <string name="pref_export">Εξαγωγή</string>
     <string name="pref_export_desc">Δημιουργεί αντίγραφα ασφαλείας ρυθμίσεων, επεξεργασιών και blocklist. Δεν αποθηκεύει συνδέσεις για λόγους ασφαλείας. Χρήσιμο για μετακίνηση μεταξύ συσκευών ή κοινή χρήση με φίλους.</string>
     <string name="pref_import">Εισαγωγή</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Κωδικός</string>
+    <string name="pref_imexport_network_notice">Για τη λειτουργία δικτύου, και οι δύο συσκευές πρέπει να είναι συνδεδεμένες στο ίδιο δίκτυο.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Εξατομίκευση</string>
     <string name="pref_themes" comment="Color themes">Θέματα</string>
     <string name="pref_widget_charts">Αρχικό widget - Διαγράμματα</string>
@@ -295,12 +299,16 @@
     <string name="pref_search_in_source">Αναζητήστε &amp; παίξτε στην εφαρμογή που κάνατε scrobble από</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Για υποστηριζόμενες εφαρμογές</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Λίστες</string>
+    <string name="regex_rules">Κανόνες Regex</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Μπλοκαρισμένα μεταδεδομένα</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">οτιδήποτε</string>
     <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">Υπάρχοντα δεδομένα</string>
     <string name="pref_translate">Μεταφράστε αυτήν την εφαρμογή</string>
     <string name="pref_translate_credits">Εύσημα μετάφρασης</string>
     <string name="pref_oss_credits">Αναφορές ανοικτού κώδικα</string>
     <string name="pref_check_updates">Έλεγχος Ενημερώσεων</string>
+    <string name="no_updates">Δεν υπάρχουν διαθέσιμες ενημερώσεις</string>
+    <string name="pref_notify_updates">Αυτόματες ενημερώσεις</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Διαθέσιμη ενημέρωση: %1$s</string>
     <string name="download" comment="Its a verb">Λήψη</string>
     <string name="changelog">Αρχείο αλλαγών</string>
@@ -344,8 +352,10 @@
     <string name="medium" comment="As in high/medium/low">Μέτριο</string>
     <string name="low" comment="As in high/medium/low">Χαμηλό</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Γραμμή %1$s</string>
+    <string name="as_text" comment="Like copy as text etc">Σαν κείμενο</string>
     <!--  pro  -->
     <string name="get_pro">Υποστήριξη αυτής της εφαρμογής</string>
+    <string name="one_time_purchase">Μια φορά</string>
     <string name="help">Βοήθεια</string>
     <string name="pro_support">Αυτός είναι ένας απλός και γρήγορος τρόπος για καταπληκτικούς χρήστες, όπως εσείς για να κάνετε μια επίδειξη υποστήριξης αναγνωρίζοντας την αξία που παρέχει αυτή η εφαρμογή.</string>
     <string name="pro_also_get">Θα λάβετε επίσης τα ακόλουθα προνόμια:</string>

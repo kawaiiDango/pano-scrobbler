@@ -441,6 +441,16 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Preuzmi ovu aplikaciju za %1$s</string>
     <string name="first_artist">Koristi samo prvog izvođača</string>
     <string name="external_metadata">Vanjski izvori metapodataka</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linija %1$s</string>
+    <string name="album_art_now_playing">Dohvati naslovnicu albuma iz značajke „Sada svira”, ako je potrebno</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">Usluga %1$s je isključena u sekciji postavki „%2$s”</string>
+    <string name="discord_compact_view_line">Prikaži kao „Sluša”:</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Dostupni zamjenski tekstovi: %1$s</string>
+    <string name="show_paused_for">Prikaži pauzirane medije za</string>
+    <string name="edit_example">npr. za zamjenu izvođača 1 s izvođačem 2 bez da se mijenjaju drugi metapodaci, omogućite samo polje izvođača i popunite samo izvorno i ispravljeno ime izvođača, a ostala polja ostavite onemogućena.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kada se koristi %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kada se ne koristi %1$s</string>
+    <string name="as_text" comment="Like copy as text etc">Kao tekst</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>

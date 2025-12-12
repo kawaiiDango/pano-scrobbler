@@ -216,7 +216,7 @@
     <string name="details">Szczegóły</string>
     <string name="saved_as_pending">Zapisano jako oczekujący scrobble</string>
     <string name="sort">Sortuj</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">Skok czasu</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Skok w czasie</string>
     <string name="my_scrobbles">Moje scrobble</string>
     <string name="listeners">Słuchacze</string>
     <string name="scrobbles">Scrobble</string>
@@ -458,6 +458,16 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Pobierz tę aplikację na %1$s</string>
     <string name="first_artist">Użyj tylko pierwszego artysty</string>
     <string name="external_metadata">Zewnętrzne źródła metadanych</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linijka %1$s</string>
+    <string name="album_art_now_playing">Pobierz okładkę albumu z Teraz Odtwarzane, jeśli jest to wymagane</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s jest wyłączony w %2$s</string>
+    <string name="discord_compact_view_line">Pokaż jako "Słucha":</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Dostępne znaczniki: %1$s</string>
+    <string name="show_paused_for">Pokaż wstrzymane media dla</string>
+    <string name="edit_example">np. aby zastąpić Artist1 z Artist2 przy zachowaniu pozostałych metadanych bez zmian, włącz tylko pole artysty, i wypełnij oryginalne i poprawione wartości artysty, pozostawiając inne pola wyłączone.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Podczas używania %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Podczas gdy nie jest używane %1$s</string>
+    <string name="as_text" comment="Like copy as text etc">Jako tekst</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>
     <string name="one_time_purchase">Jednorazowo</string>

@@ -385,7 +385,7 @@
     <string name="no_updates">Nėra naujinimų</string>
     <string name="pref_notify_updates">Automatiniai naujinimai</string>
     <string name="update_downloaded">Naujinimas atsisiųstas</string>
-    <string name="pref_search_url_template">Ieškoti URL šablono</string>
+    <string name="pref_search_url_template">Paieškos URL šablonas</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Naudokite $query kaip paieškos termino vietaženklį.</string>
     <string name="pref_native_file_picker">Naudoti vietinį failų parinkiklį</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Yra naujinimas: %1$s</string>

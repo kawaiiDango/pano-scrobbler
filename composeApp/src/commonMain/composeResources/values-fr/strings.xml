@@ -425,6 +425,16 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Téléchargez cette application sur %1$s</string>
     <string name="first_artist">Utiliser uniquement le premier artiste</string>
     <string name="external_metadata">Sources de métadonnées externes</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Ligne %1$s</string>
+    <string name="album_art_now_playing">Récupérer les pochettes depuis la lecture en cours, si nécessaire</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s est désactivé dans %2$s</string>
+    <string name="discord_compact_view_line">Affiche en tant que "Écoute" :</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Espacements disponibles : %1$s</string>
+    <string name="show_paused_for">Afficher les médias en pause pour</string>
+    <string name="edit_example">par exemple pour remplacer Artist1 par Artist2 tout en gardant le reste des métadonnées inchangées, activer seulement le champ artiste, et remplissez les valeurs originales et corrigées de l'artiste, laissant les autres champs désactivés.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">En utilisant %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">En n'utilisant pas %1$s</string>
+    <string name="as_text" comment="Like copy as text etc">En tant que texte</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="one_time_purchase">Achat unique</string>

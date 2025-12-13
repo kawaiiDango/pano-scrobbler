@@ -4,11 +4,9 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
-import androidx.core.net.toUri
 import com.arn.scrobble.R
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.navigation.DeepLinkUtils
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff

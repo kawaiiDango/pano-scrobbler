@@ -264,7 +264,7 @@ fun PleromaLoginScreen(
     val result by viewModel.pleromaCredsResult.collectAsStateWithLifecycle(null)
     val redirectUri = remember {
         if (PlatformStuff.isTv)
-            Stuff.DEEPLINK_PROTOCOL_NAME + "://auth/pleroma"
+            Stuff.DEEPLINK_SCHEME + "://auth/pleroma"
         else
             "urn:ietf:wg:oauth:2.0:oob"
     }

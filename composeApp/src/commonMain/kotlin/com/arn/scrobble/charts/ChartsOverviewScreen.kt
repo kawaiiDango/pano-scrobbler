@@ -70,7 +70,6 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.graphics.KumoRect
 import com.arn.scrobble.graphics.toImageBitmap
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.DismissableNotice
@@ -138,8 +137,7 @@ fun ChartsOverviewScreen(
     user: UserCached,
     digestTimePeriod: LastfmPeriod?,
     onNavigate: (PanoRoute) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
-    onTitleChange: (String?) -> Unit,
+    onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM() },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
@@ -290,7 +288,7 @@ fun ChartsOverviewScreen(
                     onNavigate(
                         PanoRoute.ChartsPager(
                             user = user,
-                            type = Stuff.TYPE_ARTISTS
+                            chartsType = Stuff.TYPE_ARTISTS
                         )
                     )
                 },
@@ -298,8 +296,8 @@ fun ChartsOverviewScreen(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_ARTISTS)
                 },
                 onItemClick = {
-                    onOpenDialog(
-                        PanoDialog.MusicEntryInfo(
+                    onNavigate(
+                        PanoRoute.Modal.MusicEntryInfo(
                             artist = it as Artist,
                             user = user,
                             appId = null
@@ -324,7 +322,7 @@ fun ChartsOverviewScreen(
                     onNavigate(
                         PanoRoute.ChartsPager(
                             user = user,
-                            type = Stuff.TYPE_ALBUMS
+                            chartsType = Stuff.TYPE_ALBUMS
                         )
                     )
                 },
@@ -332,8 +330,8 @@ fun ChartsOverviewScreen(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_ALBUMS)
                 },
                 onItemClick = {
-                    onOpenDialog(
-                        PanoDialog.MusicEntryInfo(
+                    onNavigate(
+                        PanoRoute.Modal.MusicEntryInfo(
                             album = it as Album,
                             user = user,
                             appId = null
@@ -358,7 +356,7 @@ fun ChartsOverviewScreen(
                     onNavigate(
                         PanoRoute.ChartsPager(
                             user = user,
-                            type = Stuff.TYPE_TRACKS
+                            chartsType = Stuff.TYPE_TRACKS
                         )
                     )
                 },
@@ -366,8 +364,8 @@ fun ChartsOverviewScreen(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS)
                 },
                 onItemClick = {
-                    onOpenDialog(
-                        PanoDialog.MusicEntryInfo(
+                    onNavigate(
+                        PanoRoute.Modal.MusicEntryInfo(
                             track = it as Track,
                             user = user,
                             appId = null
@@ -386,8 +384,8 @@ fun ChartsOverviewScreen(
                 ) {
                     ButtonWithIcon(
                         onClick = {
-                            onOpenDialog(
-                                PanoDialog.CollageGenerator(
+                            onNavigate(
+                                PanoRoute.Modal.CollageGenerator(
                                     collageType = Stuff.TYPE_ALL,
                                     user = user,
                                     timePeriod = chartsPeriodViewModel.selectedPeriod.value
@@ -414,7 +412,7 @@ fun ChartsOverviewScreen(
             TagCloudContent(
                 tagCloud = tagCloud,
                 onHeaderMenuClick = {
-                    onOpenDialog(PanoDialog.HiddenTags)
+                    onNavigate(PanoRoute.Modal.HiddenTags)
                 },
                 enabled = useLastfm,
                 modifier = Modifier

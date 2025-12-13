@@ -14,15 +14,6 @@ kotlin {
         namespace = "com.arn.scrobble.extras.nonplay"
         compileSdk = libs.versions.targetSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
     }
 
     // Source set declarations.
@@ -39,12 +30,6 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(projects.extrasCommon)
-            }
-        }
-
-        commonTest {
-            dependencies {
-                implementation(libs.kotlin.test)
             }
         }
 

@@ -12,6 +12,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
+import com.arn.scrobble.imageloader.StarMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
@@ -56,7 +57,9 @@ actual suspend fun showTrackShareSheet(track: Track, user: UserCached) {
     }
 
     withContext(Dispatchers.IO) {
-        val shareAlbumArt = if (track.album?.webp300 == null) {
+        val shareAlbumArt = if (track.album?.webp300 == null ||
+            track.album.webp300?.contains(StarMapper.STAR_PATTERN) == true
+        ) {
             null
         } else {
             try {

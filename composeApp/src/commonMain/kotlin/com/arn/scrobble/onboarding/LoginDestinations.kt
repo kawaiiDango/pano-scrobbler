@@ -22,7 +22,7 @@ object LoginDestinations {
                 val urlBuilder = URLBuilder("https://www.last.fm/api/auth")
                 urlBuilder.set {
                     parameters.append("api_key", Requesters.lastfmUnauthedRequester.apiKey)
-                    parameters.append("cb", "${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/lastfm")
+                    parameters.append("cb", "${Stuff.DEEPLINK_SCHEME}://auth/lastfm")
                 }
 
                 PanoRoute.WebView(

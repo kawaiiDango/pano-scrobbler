@@ -1,6 +1,7 @@
 package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.ScrobbleIgnored
@@ -13,8 +14,10 @@ import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -112,12 +115,17 @@ class ScrobbleQueue(
             }
         val origScrobbleData = trackInfo.toScrobbleData(useOriginals = true)
 
-        suspend fun nowPlayingAndSubmit(sd: ScrobbleData, fetchAdditionalMetadata: Boolean) {
+        suspend fun nowPlayingAndSubmit(
+            sd: ScrobbleData,
+            fetchAdditionalMetadata: Boolean
+        ) = coroutineScope {
             Logger.d { "will submit in ${submitAtTime - PlatformStuff.monotonicTimeMs()}ms" }
 
-            val submitNowPlaying = PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()
+            val submitNowPlaying =
+                PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()
 
             // now playing for a new track or after that of the previously paused track has expired
+            var lastfmNpSucc = false
             if (
                 timestampOverride == null &&
                 submitNowPlaying &&
@@ -132,21 +140,6 @@ class ScrobbleQueue(
                         ScrobbleEverywhere.nowPlaying(sd)
                     }
 
-                if (npResults != null && shouldFetchNpArtUrl() && trackInfo.artUrl == null) {
-                    val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
-                        scrobbleData,
-                        null,
-                        ::canFetchAdditionalMetadata,
-                        true,
-                    )
-
-                    if (additionalMetadata.artUrl != null) {
-                        Logger.d { "fetched artUrl for now playing: ${additionalMetadata.artUrl}" }
-                        trackInfo.setArtUrl(additionalMetadata.artUrl)
-                        notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
-                    }
-                }
-
                 if (npResults != null && npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
                         npResults,
@@ -154,12 +147,37 @@ class ScrobbleQueue(
                         hash
                     )
                 }
+
+                lastfmNpSucc =
+                    npResults?.any { (k, v) -> k.userAccount.type == AccountType.LASTFM && v.isSuccess } == true
             }
+
+            // discord rpc album art
+            val npArtFetchJob =
+                if (lastfmNpSucc && trackInfo.artUrl == null && shouldFetchNpArtUrl().firstOrNull { it } == true) {
+                    launch(Dispatchers.IO) {
+                        val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
+                            scrobbleData,
+                            null,
+                            ::canFetchAdditionalMetadata,
+                            true,
+                        )
+
+                        if (additionalMetadata.artUrl != null) {
+                            Logger.d { "fetched artUrl for now playing: ${additionalMetadata.artUrl}" }
+                            trackInfo.setArtUrl(additionalMetadata.artUrl)
+                            notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
+                        }
+                    }
+                } else
+                    null
 
             // tick every n milliseconds
             while (submitAtTime > PlatformStuff.monotonicTimeMs() || hash == lockedHash) {
                 delay(tickEveryMs)
             }
+
+            npArtFetchJob?.cancel()
 
             // launch it in a separate scope, so that it does not get cancelled
             scope.launch(Dispatchers.IO) {

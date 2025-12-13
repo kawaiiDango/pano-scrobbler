@@ -36,7 +36,6 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
-import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
@@ -547,12 +546,8 @@ fun main(args: Array<String>) {
                     }
                 }
 
-                val navController = rememberNavController()
-
                 AppTheme {
-                    PanoAppContent(
-                        navController
-                    )
+                    PanoAppContent()
                 }
             }
         }

@@ -1,7 +1,6 @@
 package com.arn.scrobble.info
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -14,7 +13,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.main.PanoPager
-import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.ui.EntriesGridOrList
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
@@ -28,30 +27,19 @@ fun InfoPagerScreen(
     musicEntry: Artist,
     user: UserCached,
     appId: String?,
-    onSetTabData: (String, List<PanoTab>?) -> Unit,
+    tabsList: List<PanoTab>,
     tabIdx: Int,
     onSetTabIdx: (Int) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
     val artistTopTracks = viewModel.topTracks.collectAsLazyPagingItems()
     val artistTopAlbums = viewModel.topAlbums.collectAsLazyPagingItems()
     val similarArtists = viewModel.similarArtists.collectAsLazyPagingItems()
-    val tabsList = remember { getTabData() }
 
     LaunchedEffect(musicEntry) {
         viewModel.setArtist(musicEntry)
-    }
-
-    DisposableEffect(user) {
-        val id = musicEntry.toString()
-
-        onSetTabData(id, tabsList)
-
-        onDispose {
-            onSetTabData(id, null)
-        }
     }
 
     PanoPager(
@@ -86,8 +74,8 @@ fun InfoPagerScreen(
                 getMusicEntryPlaceholderItem(type, showScrobbleCount = type != Stuff.TYPE_ARTISTS)
             },
             onItemClick = {
-                onOpenDialog(
-                    PanoDialog.MusicEntryInfo(
+                onNavigate(
+                    PanoRoute.Modal.MusicEntryInfo(
                         track = it as? Track,
                         artist = it as? Artist,
                         album = it as? Album,
@@ -99,10 +87,3 @@ fun InfoPagerScreen(
         )
     }
 }
-
-private fun getTabData() =
-    listOf(
-        PanoTab.TopArtists,
-        PanoTab.TopAlbums,
-        PanoTab.TopTracks,
-    )

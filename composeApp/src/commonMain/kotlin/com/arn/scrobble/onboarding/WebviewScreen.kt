@@ -12,7 +12,7 @@ expect fun WebViewScreen(
     initialUrl: String,
     userAccountTemp: UserAccountTemp? = null,
     pleromaOauthClientCreds: PleromaOauthClientCreds? = null,
-    onSetTitle: (String?) -> Unit,
+    onSetTitle: (String) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable ColumnScope.() -> Unit = {},
     viewModel: WebViewVM = viewModel { WebViewVM() },

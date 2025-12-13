@@ -57,11 +57,6 @@ class MainViewModel : ViewModel() {
 
     private val _editData = MutableSharedFlow<Pair<String, Track>>(extraBufferCapacity = 1)
     val editDataFlow = _editData.asSharedFlow()
-
-    private val _tabIdx =
-        MutableSharedFlow<Pair<String, Int>>(replay = 1, extraBufferCapacity = 1)
-    val tabIdx = _tabIdx.asSharedFlow()
-
     private val _pullToRefreshTriggered = MutableSharedFlow<Int>()
 
     private val repository = VariantStuff.billingRepository
@@ -160,10 +155,6 @@ class MainViewModel : ViewModel() {
         repository.startDataSourceConnections()
 
         queryPurchasesAsync()
-    }
-
-    fun setTabIdx(backStackEntryId: String, tabIdx: Int) {
-        _tabIdx.tryEmit(backStackEntryId to tabIdx)
     }
 
     fun checkAndStoreLicense(receipt: String) {

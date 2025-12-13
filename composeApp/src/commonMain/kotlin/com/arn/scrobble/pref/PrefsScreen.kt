@@ -31,8 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.edits.RegexPreset
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -131,7 +129,6 @@ import java.util.Locale
 @Composable
 fun PrefsScreen(
     onNavigate: (PanoRoute) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val onNavigateToBilling = { onNavigate(PanoRoute.Billing) }
@@ -308,12 +305,12 @@ fun PrefsScreen(
                 packageNames = extractFirstArtistPackages,
                 seenAppsMap = seenApps,
                 title = stringResource(Res.string.first_artist),
-                enabled = allowedPackages.isNotEmpty(),
+                enabled = (allowedPackages.size + extractFirstArtistPackages.size) > 0,
                 onClick = {
                     onNavigate(
                         PanoRoute.AppList(
                             saveType = AppListSaveType.ExtractFirstArtist,
-                            packagesOverride = allowedPackages.toList(),
+                            packagesOverride = (allowedPackages union extractFirstArtistPackages).toList(),
                             preSelectedPackages = extractFirstArtistPackages.toList(),
                             isSingleSelect = false,
                         )
@@ -820,7 +817,7 @@ fun PrefsScreen(
                 ),
                 summary = Stuff.LINK_HOMEPAGE,
                 onClick = {
-                    onOpenDialog(PanoDialog.ShowLink(Stuff.LINK_HOMEPAGE))
+                    onNavigate(PanoRoute.Modal.ShowLink(Stuff.LINK_HOMEPAGE))
                 }
             )
         }

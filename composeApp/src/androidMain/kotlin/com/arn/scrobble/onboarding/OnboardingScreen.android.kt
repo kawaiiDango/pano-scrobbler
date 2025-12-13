@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -55,7 +54,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
 import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
 import pano_scrobbler.composeapp.generated.resources.send_notifications
 import pano_scrobbler.composeapp.generated.resources.send_notifications_desc
-import pano_scrobbler.composeapp.generated.resources.special_app_access
 import pano_scrobbler.composeapp.generated.resources.will_not_scrobble
 
 

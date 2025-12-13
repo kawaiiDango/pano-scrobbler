@@ -240,9 +240,9 @@
     <string name="followers"
         comment="your lastfm followers"
         >Followers</string>
-    <string name="num_scrobbles_since" formatted="true"
-        comment="%1= number, %2= date of joining lastfm"
-        >%1$s scrobbles, since %2$s</string>
+    <string name="since_time" formatted="true"
+        comment="%1= date of joining lastfm"
+        >Since %1$s</string>
     <string name="allow_background">Allow scrobbling in background</string>
     <string name="grant_notification_access">Grant notification access</string>
     <string name="grant_notification_access_desc">Needed to retrieve music metadata. No non-music notifications are read</string>
@@ -761,7 +761,7 @@
         comment="%1$s is the web service or media player name"
         >When not using %1$s</string>
     <string name="as_text"
-        comment="Like copy as text etc"
+        comment="Like copy as text, but in short"
         >As text</string>
 
 <!--  pro  -->

@@ -1,59 +1,41 @@
 package com.arn.scrobble.main
 
+import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.DisposableEffect
-import androidx.core.util.Consumer
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowInsetsControllerCompat
+import com.arn.scrobble.navigation.LocalActivityRestoredFlag
 import com.arn.scrobble.themes.AppTheme
-import com.arn.scrobble.themes.DayNightMode
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        // this is required for SystemBarStyle.auto to correctly detect night mode
-        when (Stuff.mainPrefsInitialValue.themeDayNight) {
-            DayNightMode.SYSTEM -> {
-                enableEdgeToEdge()
-            }
-
-            DayNightMode.DARK, DayNightMode.LIGHT -> {
-                enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) {
-                        Stuff.mainPrefsInitialValue.themeDayNight == DayNightMode.DARK
-                    },
-                    navigationBarStyle = SystemBarStyle.auto(DefaultLightScrim, DefaultDarkScrim) {
-                        Stuff.mainPrefsInitialValue.themeDayNight == DayNightMode.DARK
-                    }
-                )
-            }
-        }
-
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         setContent {
             AppTheme {
-                val navController = rememberNavController()
+                val isDarkTheme = LocalThemeAttributes.current.isDark
+                val view = LocalView.current
 
-                DisposableEffect(navController) {
-                    val consumer = Consumer<Intent> {
-                        navController.handleDeepLink(it)
-                    }
-                    addOnNewIntentListener(consumer)
-                    onDispose {
-                        removeOnNewIntentListener(consumer)
+                LaunchedEffect(isDarkTheme) {
+                    val window = (view.context as Activity).window
+                    WindowInsetsControllerCompat(window, window.decorView).apply {
+                        isAppearanceLightStatusBars = !isDarkTheme
+                        isAppearanceLightNavigationBars = !isDarkTheme
                     }
                 }
 
-                PanoAppContent(navController)
+                CompositionLocalProvider(LocalActivityRestoredFlag provides (savedInstanceState != null)) {
+                    PanoAppContent()
+                }
             }
         }
 
@@ -68,13 +50,3 @@ class MainActivity : ComponentActivity() {
     }
 
 }
-// copied from EdgeToEdge.kt
-
-// The light scrim color used in the platform API 29+
-// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/com/android/internal/policy/DecorView.java;drc=6ef0f022c333385dba2c294e35b8de544455bf19;l=142
-private val DefaultLightScrim = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
-
-// The dark scrim color used in the platform.
-// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/res/color/system_bar_background_semi_transparent.xml
-// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/remote_color_resources_res/values/colors.xml;l=67
-private val DefaultDarkScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)

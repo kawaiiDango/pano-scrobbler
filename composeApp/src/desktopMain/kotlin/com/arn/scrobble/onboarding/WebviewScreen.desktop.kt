@@ -33,7 +33,7 @@ actual fun WebViewScreen(
     initialUrl: String,
     userAccountTemp: UserAccountTemp?,
     pleromaOauthClientCreds: PleromaOauthClientCreds?,
-    onSetTitle: (String?) -> Unit,
+    onSetTitle: (String) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable ColumnScope.() -> Unit,
     viewModel: WebViewVM,
@@ -55,7 +55,7 @@ actual fun WebViewScreen(
             webViewLoaded = true
             DesktopWebView.launchWebView(
                 initialUrl,
-                Stuff.DEEPLINK_PROTOCOL_NAME,
+                Stuff.DEEPLINK_SCHEME,
                 DesktopStuff.webViewDir.absolutePath
             )
 
@@ -67,7 +67,6 @@ actual fun WebViewScreen(
 
 
         onDispose {
-            onSetTitle(null)
             if (webViewLoaded)
                 DesktopWebView.quitWebView()
         }
@@ -76,7 +75,7 @@ actual fun WebViewScreen(
     LaunchedEffect(Unit) {
         WebViewEventFlows.pageLoaded.collect { url ->
             val urlObj = Url(url)
-            if (urlObj.protocol.name == Stuff.DEEPLINK_PROTOCOL_NAME && urlObj.segments.isNotEmpty()) {
+            if (urlObj.protocol.name == Stuff.DEEPLINK_SCHEME && urlObj.segments.isNotEmpty()) {
                 val callbackHandled =
                     viewModel.handleCallbackUrl(
                         urlObj,

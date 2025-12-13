@@ -1,7 +1,6 @@
 package com.arn.scrobble.utils
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.text.AnnotatedString
 import androidx.datastore.core.DataStore
 import androidx.room.RoomDatabase
 import com.arn.scrobble.api.lastfm.MusicEntry

@@ -2,7 +2,6 @@ package com.arn.scrobble.utils
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
-import androidx.compose.ui.text.AnnotatedString
 import androidx.datastore.core.DataStoreFactory
 import androidx.room.Room
 import androidx.room.RoomDatabase

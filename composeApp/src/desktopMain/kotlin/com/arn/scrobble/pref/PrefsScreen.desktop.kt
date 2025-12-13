@@ -59,7 +59,7 @@ actual suspend fun isAddedToStartup() = DesktopStuff.isAddedToStartup()
 actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit) {
     listScope.item(MainPrefs::discordRpc.name) {
         TextPref(
-            text = stringResource(Res.string.discord_rich_presence) + " (Experimental)",
+            text = stringResource(Res.string.discord_rich_presence),
             onClick = { onNavigate(PanoRoute.DiscordRpcSettings) }
         )
     }

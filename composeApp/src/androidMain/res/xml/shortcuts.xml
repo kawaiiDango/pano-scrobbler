@@ -11,7 +11,7 @@
         android:shortcutShortLabel="@string/settings">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="pano-scrobbler://screen/Prefs"
+            android:data="pano-scrobbler://screen?route=%7B%22type%22%3A%22com.arn.scrobble.navigation.PanoRoute.Prefs%22%7D"
             android:targetClass="com.arn.scrobble.main.MainActivity"
             android:targetPackage="com.arn.scrobble" />
     </shortcut>
@@ -24,7 +24,7 @@
         android:shortcutShortLabel="@string/search">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="pano-scrobbler://screen/Search"
+            android:data="pano-scrobbler://screen?route=%7B%22type%22%3A%22com.arn.scrobble.navigation.PanoRoute.Search%22%7D"
             android:targetClass="com.arn.scrobble.main.MainActivity"
             android:targetPackage="com.arn.scrobble" />
     </shortcut>

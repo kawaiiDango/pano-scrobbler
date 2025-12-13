@@ -1,8 +1,6 @@
-4.15:
-- Customizable Discord Rich Presence on Linux and Windows (Experimental)
-- Spotify search now requires user consent
-- No longer uses last.fm by default when not using last.fm
-- "Copy as text" button in the collage generator
-- Blocking a scrobble from the Scrobbles page now blocks it in real time
+4.19:
+- Updates Discord Rich Presence only after applying the edits to the metadata
+- Parses last.fm wiki html with clickable links while preserving line breaks
+- No longer accepts newlines in some textfields
 - Bug fixes
 - Translation updates by the translators on Crowdin

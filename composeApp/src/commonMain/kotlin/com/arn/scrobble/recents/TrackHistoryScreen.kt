@@ -28,7 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
@@ -45,8 +45,8 @@ import pano_scrobbler.composeapp.generated.resources.my_scrobbles
 fun TrackHistoryScreen(
     user: UserCached,
     track: Track,
-    onSetTitle: (String?) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
+    onSetTitle: (String) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     editDataFlow: Flow<Pair<String, Track>>,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
@@ -76,7 +76,7 @@ fun TrackHistoryScreen(
         }
     }
 
-    DisposableEffect(total, deletedTracksSet) {
+    LaunchedEffect(total, deletedTracksSet) {
         val formattedCount = ((total ?: 0) - deletedTracksSet.size)
             .coerceAtLeast(0)
             .format()
@@ -86,10 +86,6 @@ fun TrackHistoryScreen(
             "${user.name}: $formattedCount"
         }
         onSetTitle(title)
-
-        onDispose {
-            onSetTitle(null)
-        }
     }
 
     LaunchedEffect(user, track) {
@@ -150,7 +146,7 @@ fun TrackHistoryScreen(
             canHate = false,
             expandedKey = { expandedKey },
             onExpand = { expandedKey = it },
-            onOpenDialog = onOpenDialog,
+            onNavigate = onNavigate,
             animateListItemContentSize = animateListItemContentSize,
             maxHeight = listViewportHeight,
             viewModel = viewModel,

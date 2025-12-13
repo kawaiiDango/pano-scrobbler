@@ -7,33 +7,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
-import com.arn.scrobble.db.PanoDb
+import androidx.navigation3.runtime.EntryProviderScope
 import com.arn.scrobble.discordrpc.DiscordRpcScreen
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.addColumnPadding
-import com.arn.scrobble.work.DesktopWorkManager
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
-import kotlin.system.exitProcess
 
-actual fun NavGraphBuilder.panoPlatformSpecificNavGraph(
-    onSetTitle: (String, String?) -> Unit,
+actual fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
+    onSetTitle: (PanoRoute, String) -> Unit,
     navigate: (PanoRoute) -> Unit,
-    goUp: () -> Unit,
+    goBack: () -> Unit,
     mainViewModel: MainViewModel,
 ) {
     @Composable
-    fun onSetTitleString(destId: String, title: String) {
-        DisposableEffect(title) {
-            onSetTitle(destId, title)
+    fun onSetTitleRes(route: PanoRoute, resId: StringResource) {
+        val title = stringResource(resId)
 
-            onDispose {
-                onSetTitle(destId, null)
-            }
+        LaunchedEffect(resId) {
+            onSetTitle(route, title)
         }
     }
 
@@ -42,17 +36,9 @@ actual fun NavGraphBuilder.panoPlatformSpecificNavGraph(
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.surface)
 
-    dialog<PanoRoute.Exit> {
-        LaunchedEffect(Unit) {
-            DesktopWorkManager.clearAll()
-            PanoDb.db.close()
-            exitProcess(0)
-        }
-    }
-
-
-    composable<PanoRoute.DiscordRpcSettings> {
-        onSetTitleString(it.id, stringResource(Res.string.discord_rich_presence))
+    entry<PanoRoute.DiscordRpcSettings>(
+    ) { route ->
+        onSetTitleRes(route, Res.string.discord_rich_presence)
         DiscordRpcScreen(
             modifier = modifier().addColumnPadding()
         )

@@ -113,7 +113,7 @@ android {
 
     dependencies {
         implementation(projects.composeApp)
-        implementation(libs.androidx.work.runtime)
+        implementation(libs.work.runtime)
         implementation(projects.extrasCommon)
 
 
@@ -124,10 +124,10 @@ android {
         debugImplementation(projects.extrasNonplay)
         "releaseGithubImplementation"(projects.extrasNonplay)
 
-        androidTestImplementation(libs.androidx.uiautomator)
-        androidTestImplementation(libs.androidx.runner)
-        androidTestImplementation(libs.androidx.espresso.core)
-        androidTestImplementation(libs.androidx.test.ext.junit)
+        androidTestImplementation(libs.test.uiautomator)
+        androidTestImplementation(libs.test.runner)
+        androidTestImplementation(libs.test.espresso.core)
+        androidTestImplementation(libs.test.junit)
     }
 
     signingConfigs {

@@ -25,7 +25,7 @@ class WebViewVM : ViewModel() {
         creds: PleromaOauthClientCreds?,
     ): Boolean {
         val path = url.segments.lastOrNull() ?: return false
-        if (url.protocol.name != Stuff.DEEPLINK_PROTOCOL_NAME) return false
+        if (url.protocol.name != Stuff.DEEPLINK_SCHEME) return false
 
         when (path) {
             "lastfm" -> {

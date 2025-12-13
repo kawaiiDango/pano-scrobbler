@@ -10,11 +10,6 @@ data class ThemeAttributes(
     val allSecondaryContainerColors: List<Color>,
 )
 
-val LocalThemeAttributes = compositionLocalOf {
-    ThemeAttributes(
-        isDark = true,
-        contrastMode = ContrastMode.LOW,
-        allOnSecondaryContainerColors = listOf(Color.Magenta),
-        allSecondaryContainerColors = listOf(Color.Blue),
-    )
+val LocalThemeAttributes = compositionLocalOf<ThemeAttributes> {
+    error("No ThemeAttributes provided")
 }

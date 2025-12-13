@@ -3,9 +3,7 @@ package com.arn.scrobble.navigation
 import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
-import androidx.core.net.toUri
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
@@ -13,25 +11,41 @@ import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 
 
 object DeepLinkUtils {
-    inline fun <reified T : PanoDialog> buildDialogPendingIntent(
-        dialogArgs: T,
+    private const val SCHEME = Stuff.DEEPLINK_SCHEME
+    const val AUTHORITY = "screen"
+    const val ROUTE = "route"
+
+    val deepLinkSerializer by lazy {
+        Json {
+            explicitNulls = false
+            serializersModule = SerializersModule {
+                polymorphic(PanoRoute.DeepLinkable::class)
+            }
+        }
+    }
+
+    fun buildDialogPendingIntent(
+        route: PanoRoute.DeepLinkable,
     ): PendingIntent {
         val intent = Intent(AndroidStuff.applicationContext, MainDialogActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
             action = Intent.ACTION_VIEW
         }
-        val className = T::class.simpleName
-        val args = Stuff.myJson.encodeToString(dialogArgs)
+        val routeJson = deepLinkSerializer.encodeToString(route)
 
-        intent.putExtra("className", className)
-            .putExtra("args", args)
+        println(routeJson)
+
+        intent.putExtra(ROUTE, routeJson)
 
         return PendingIntent.getActivity(
             AndroidStuff.applicationContext,
-            dialogArgs.hashCode(),
+            route.hashCode(),
             intent,
             AndroidStuff.updateCurrentOrImmutable
         )!!
@@ -46,72 +60,24 @@ object DeepLinkUtils {
         return intent.putExtra("artist", artist)
             .putExtra("album", album)
             .putExtra("track", track)
-            .putExtra("className", PanoDialog.MusicEntryInfo::class.simpleName)
+            .putExtra("className", PanoRoute.Modal.MusicEntryInfo::class.simpleName)
     }
 
     fun createMainActivityDeepLinkUri(
-        route: PanoRoute
-    ): Uri? {
-        return when (route) {
-            is PanoRoute.MusicEntryInfoPager -> {
-                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfoPager::class.simpleName + "/" +
-                        serializableType<Artist>().serializeAsValue(route.artist) + "/" +
-                        serializableType<UserCached>().serializeAsValue(route.user) + "/" +
-                        route.type
-            }
+        route: PanoRoute.DeepLinkable
+    ): Uri {
+        val routeStr = deepLinkSerializer.encodeToString(route)
+        val uri = Uri.Builder()
+            .scheme(SCHEME)
+            .authority(AUTHORITY)
+            .appendQueryParameter(ROUTE, routeStr)
+            .build()
 
-            is PanoRoute.SimilarTracks -> {
-                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.SimilarTracks::class.simpleName + "/" +
-                        serializableType<Track>().serializeAsValue(route.track) + "/" +
-                        serializableType<UserCached>().serializeAsValue(route.user)
-            }
-
-            is PanoRoute.TrackHistory -> {
-                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.TrackHistory::class.simpleName + "/" +
-                        serializableType<Track>().serializeAsValue(route.track) + "/" +
-                        serializableType<UserCached>().serializeAsValue(route.user)
-            }
-
-            is PanoRoute.Billing -> {
-                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Billing::class.simpleName
-            }
-
-            is PanoRoute.ImageSearch -> {
-                val uri =
-                    Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.ImageSearch::class.simpleName + "?" +
-                            (if (route.artist != null) route::artist.name + "=" + serializableType<Artist>().serializeAsValue(
-                                route.artist
-                            ) + "&" else "") +
-                            (if (route.originalArtist != null) route::originalArtist.name + "=" + serializableType<Artist>().serializeAsValue(
-                                route.originalArtist
-                            ) + "&" else "") +
-                            (if (route.album != null) route::album.name + "=" + serializableType<Album>().serializeAsValue(
-                                route.album
-                            ) + "&" else "") +
-                            (if (route.originalAlbum != null) route::originalAlbum.name + "=" + serializableType<Album>().serializeAsValue(
-                                route.originalAlbum
-                            ) + "&" else "")
-
-                // remove the trailing "&"
-                uri.removeSuffix("&")
-            }
-
-            is PanoRoute.SelfHomePager -> {
-                Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.SelfHomePager::class.simpleName +
-                        if (route.digestTypeStr != null)
-                            ("?" + route::digestTypeStr.name + "=" + route.digestTypeStr)
-                        else
-                            ""
-            }
-
-            else -> null
-        }
-            ?.toUri()
-
+        return uri
     }
 
     fun handleNavigationFromInfoScreen(
-        route: PanoRoute,
+        route: PanoRoute.DeepLinkable,
     ) {
         val intent = Intent(AndroidStuff.applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -124,75 +90,77 @@ object DeepLinkUtils {
 
     fun parseDialogDeepLink(
         intent: Intent,
-    ): PanoDialog? {
+    ): PanoRoute.Modal? {
         val dialogClassName = intent.extras?.getString("className")
-        val dialogArgsSerialized = intent.extras?.getString("args")
+
         // Handle MusicEntryInfo passed via extras (from widgets)
+        if (dialogClassName == PanoRoute.Modal.MusicEntryInfo::class.simpleName) {
+            val currentUser = Scrobblables.current?.userAccount?.user ?: return null
 
-        val dialogArgs = when (dialogClassName) {
-            PanoDialog.CollageGenerator::class.simpleName -> {
-                Stuff.myJson.decodeFromString(
-                    PanoDialog.CollageGenerator.serializer(),
-                    dialogArgsSerialized ?: return null
+            val artist = intent.extras?.getString("artist") ?: return null
+            val album = intent.extras?.getString("album")
+            val track = intent.extras?.getString("track")
+
+            val musicEntry = when {
+                track != null -> Track(
+                    name = track,
+                    album = null,
+                    artist = Artist(name = artist),
+                )
+
+                album != null -> Album(
+                    name = album,
+                    artist = Artist(name = artist),
+                )
+
+                else -> Artist(
+                    name = artist,
                 )
             }
 
-            PanoDialog.BlockedMetadataAdd::class.simpleName -> {
-                Stuff.myJson.decodeFromString(
-                    PanoDialog.BlockedMetadataAdd.serializer(),
-                    dialogArgsSerialized ?: return null
-                )
-            }
-
-            PanoDialog.EditScrobble::class.simpleName -> {
-                Stuff.myJson.decodeFromString(
-                    PanoDialog.EditScrobble.serializer(),
-                    dialogArgsSerialized ?: return null
-                )
-            }
-
-            PanoDialog.MusicEntryInfo::class.simpleName -> {
-                if (dialogArgsSerialized != null) {
-                    Stuff.myJson.decodeFromString(
-                        PanoDialog.MusicEntryInfo.serializer(),
-                        dialogArgsSerialized
-                    )
-                } else {
-                    val currentUser = Scrobblables.current?.userAccount?.user ?: return null
-
-                    val artist = intent.extras?.getString("artist") ?: return null
-                    val album = intent.extras?.getString("album")
-                    val track = intent.extras?.getString("track")
-
-                    val musicEntry = when {
-                        track != null -> Track(
-                            name = track,
-                            album = null,
-                            artist = Artist(name = artist),
-                        )
-
-                        album != null -> Album(
-                            name = album,
-                            artist = Artist(name = artist),
-                        )
-
-                        else -> Artist(
-                            name = artist,
-                        )
-                    }
-
-                    PanoDialog.MusicEntryInfo(
-                        artist = if (musicEntry is Artist) musicEntry else null,
-                        album = if (musicEntry is Album) musicEntry else null,
-                        track = if (musicEntry is Track) musicEntry else null,
-                        user = currentUser,
-                    )
-                }
-            }
-
-            else -> return null
+            return PanoRoute.Modal.MusicEntryInfo(
+                artist = if (musicEntry is Artist) musicEntry else null,
+                album = if (musicEntry is Album) musicEntry else null,
+                track = if (musicEntry is Track) musicEntry else null,
+                user = currentUser,
+            )
         }
 
-        return dialogArgs
+        // normal handling via route extra
+        val routeJson = intent.getStringExtra(ROUTE) ?: return null
+        val dialog = try {
+            deepLinkSerializer.decodeFromString<PanoRoute.DeepLinkable>(routeJson)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+
+        return dialog as? PanoRoute.Modal
+
+        return null
+    }
+
+    fun parseDeepLink(
+        intent: Intent,
+    ): PanoRoute? {
+        if (intent.action == android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES) {
+            return PanoRoute.Prefs
+        }
+
+        val uri = intent.data ?: return null
+
+        if (uri.scheme == SCHEME && uri.authority == AUTHORITY) {
+            val routeStr = uri.getQueryParameter(ROUTE) ?: return null
+            val route = try {
+                deepLinkSerializer.decodeFromString<PanoRoute.DeepLinkable>(routeStr)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+
+            return route
+        }
+
+        return null
     }
 }

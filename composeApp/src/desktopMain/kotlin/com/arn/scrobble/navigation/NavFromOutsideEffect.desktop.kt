@@ -2,9 +2,6 @@ package com.arn.scrobble.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -12,16 +9,11 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
 
 @Composable
-actual fun NavFromTrayEffect(
-    onOpenDialog: (PanoDialog) -> Unit,
-    onNavigate: (PanoRoute) -> Unit
+actual fun NavFromOutsideEffect(
+    onNavigate: (PanoRoute) -> Unit,
+    isAndroidDialogActivity: Boolean,
 ) {
-    val isStarted =
-        LocalLifecycleOwner.current.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
-
-    LaunchedEffect(isStarted) {
-        if (!isStarted) return@LaunchedEffect
-
+    LaunchedEffect(Unit) {
         PanoTrayUtils.onTrayMenuItemClicked.collect { id ->
             // settings
             if (id == PanoTrayUtils.ItemId.Settings.name) {
@@ -43,35 +35,35 @@ actual fun NavFromTrayEffect(
 
             when (itemId) {
                 PanoTrayUtils.ItemId.TrackName -> {
-                    val dialog = PanoDialog.MusicEntryInfo(
+                    val dialog = PanoRoute.Modal.MusicEntryInfo(
                         track = scrobbleData.toTrack(),
                         user = user
                     )
-                    onOpenDialog(dialog)
+                    onNavigate(dialog)
                 }
 
                 PanoTrayUtils.ItemId.ArtistName -> {
-                    val dialog = PanoDialog.MusicEntryInfo(
+                    val dialog = PanoRoute.Modal.MusicEntryInfo(
                         artist = scrobbleData.toTrack().artist,
                         user = user
                     )
-                    onOpenDialog(dialog)
+                    onNavigate(dialog)
                 }
 
                 PanoTrayUtils.ItemId.AlbumName -> {
-                    val dialog = PanoDialog.MusicEntryInfo(
+                    val dialog = PanoRoute.Modal.MusicEntryInfo(
                         album = scrobbleData.toTrack().album,
                         user = user
                     )
-                    onOpenDialog(dialog)
+                    onNavigate(dialog)
                 }
 
                 PanoTrayUtils.ItemId.Edit -> {
-                    val dialog = PanoDialog.EditScrobble(
+                    val dialog = PanoRoute.Modal.EditScrobble(
                         origScrobbleData = scrobblingEvent.origScrobbleData,
                         hash = scrobblingEvent.hash
                     )
-                    onOpenDialog(dialog)
+                    onNavigate(dialog)
                 }
 
                 PanoTrayUtils.ItemId.Block -> {
@@ -82,12 +74,12 @@ actual fun NavFromTrayEffect(
                         albumArtist = scrobbleData.albumArtist.orEmpty(),
                     )
 
-                    val dialog = PanoDialog.BlockedMetadataAdd(
+                    val dialog = PanoRoute.Modal.BlockedMetadataAdd(
                         blockedMetadata = blockedMetadata,
                         hash = scrobblingEvent.hash
                     )
 
-                    onOpenDialog(dialog)
+                    onNavigate(dialog)
                 }
 
                 PanoTrayUtils.ItemId.Error -> {
@@ -98,11 +90,11 @@ actual fun NavFromTrayEffect(
                     val scrobbleError = errorEvent.scrobbleError
 
                     if (scrobbleError.canFixMetadata) {
-                        val dialog = PanoDialog.EditScrobble(
+                        val dialog = PanoRoute.Modal.EditScrobble(
                             origScrobbleData = errorEvent.scrobbleData,
                             hash = scrobblingEvent.hash
                         )
-                        onOpenDialog(dialog)
+                        onNavigate(dialog)
                     }
                 }
 

@@ -36,7 +36,7 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.MusicEntryListItem
@@ -67,7 +67,7 @@ import pano_scrobbler.composeapp.generated.resources.tracks
 
 @Composable
 fun SearchScreen(
-    onOpenDialog: (PanoDialog) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchVM = viewModel { SearchVM() },
 ) {
@@ -96,8 +96,8 @@ fun SearchScreen(
         val userSelf = Scrobblables.currentAccount.value?.user
 
         userSelf?.let { userSelf ->
-            onOpenDialog(
-                PanoDialog.MusicEntryInfo(
+            onNavigate(
+                PanoRoute.Modal.MusicEntryInfo(
                     track = item as? Track,
                     album = item as? Album,
                     artist = item as? Artist,
@@ -213,7 +213,7 @@ fun SearchScreen(
                             icon = Icons.Outlined.Info,
                             menuItemText = stringResource(Res.string.reindex),
                             onMenuItemClick = {
-                                onOpenDialog(PanoDialog.Index)
+                                onNavigate(PanoRoute.Modal.Index)
                             }
                         )
                     }

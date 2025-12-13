@@ -28,7 +28,7 @@ actual fun WebViewScreen(
     initialUrl: String,
     userAccountTemp: UserAccountTemp?,
     pleromaOauthClientCreds: PleromaOauthClientCreds?,
-    onSetTitle: (String?) -> Unit,
+    onSetTitle: (String) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable ColumnScope.() -> Unit,
     viewModel: WebViewVM,
@@ -46,12 +46,8 @@ actual fun WebViewScreen(
         }
     }
 
-    DisposableEffect(webViewState.pageTitle) {
+    LaunchedEffect(webViewState.pageTitle) {
         onSetTitle(webViewState.pageTitle ?: "-")
-
-        onDispose {
-            onSetTitle(null)
-        }
     }
 
     LaunchedEffect(webViewState.errorsForCurrentRequest) {
@@ -97,7 +93,7 @@ actual fun WebViewScreen(
             val lastLoadedUrlObj =
                 webViewState.lastLoadedUrl?.let { Url(it) } ?: return@LaunchedEffect
 
-            if (lastLoadedUrlObj.protocol.name == Stuff.DEEPLINK_PROTOCOL_NAME && lastLoadedUrlObj.segments.isNotEmpty()) {
+            if (lastLoadedUrlObj.protocol.name == Stuff.DEEPLINK_SCHEME && lastLoadedUrlObj.segments.isNotEmpty()) {
                 val callbackHandled =
                     viewModel.handleCallbackUrl(
                         lastLoadedUrlObj,

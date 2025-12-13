@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -16,7 +17,6 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.main.PanoPager
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.ui.EntriesGridOrList
@@ -37,10 +37,10 @@ import pano_scrobbler.composeapp.generated.resources.tracks
 fun ChartsPagerScreen(
     user: UserCached,
     tabIdx: Int,
-    onSetTabData: (String, List<PanoTab>?) -> Unit,
+    tabsList: List<PanoTab>,
     onSetTabIdx: (Int) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
-    onSetTitle: (String?) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
+    onSetTitle: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM() },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
@@ -57,7 +57,6 @@ fun ChartsPagerScreen(
     val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
         .collectAsStateWithLifecycle(false)
 
-    val tabsList = remember { getTabData() }
 
     val type by remember(tabIdx) {
         mutableIntStateOf(
@@ -96,22 +95,8 @@ fun ChartsPagerScreen(
     }
 
 
-    DisposableEffect(title) {
+    LaunchedEffect(title) {
         onSetTitle(title)
-
-        onDispose {
-            onSetTitle(null)
-        }
-    }
-
-    DisposableEffect(user) {
-        val id = PanoRoute.ChartsPager::class.simpleName + " " + user.name
-
-        onSetTabData(id, tabsList)
-
-        onDispose {
-            onSetTabData(id, null)
-        }
     }
 
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, refreshCount: Int) {
@@ -157,8 +142,8 @@ fun ChartsPagerScreen(
                     getMusicEntryPlaceholderItem(type)
                 },
                 onCollageClick = {
-                    onOpenDialog(
-                        PanoDialog.CollageGenerator(
+                    onNavigate(
+                        PanoRoute.Modal.CollageGenerator(
                             user = user,
                             timePeriod = selectedPeriod ?: return@EntriesGridOrList,
                             collageType = type,
@@ -166,11 +151,11 @@ fun ChartsPagerScreen(
                     )
                 },
                 onLegendClick = {
-                    onOpenDialog(PanoDialog.ChartsLegend)
+                    onNavigate(PanoRoute.Modal.ChartsLegend)
                 },
                 onItemClick = {
-                    onOpenDialog(
-                        PanoDialog.MusicEntryInfo(
+                    onNavigate(
+                        PanoRoute.Modal.MusicEntryInfo(
                             track = it as? Track,
                             artist = it as? Artist,
                             album = it as? Album,
@@ -183,10 +168,3 @@ fun ChartsPagerScreen(
         }
     }
 }
-
-private fun getTabData() =
-    listOf(
-        PanoTab.TopArtists,
-        PanoTab.TopAlbums,
-        PanoTab.TopTracks,
-    )

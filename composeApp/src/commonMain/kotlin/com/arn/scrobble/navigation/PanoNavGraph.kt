@@ -3,35 +3,21 @@ package com.arn.scrobble.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
-import androidx.navigation.toRoute
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation3.runtime.entryProvider
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
-import com.arn.scrobble.api.lastfm.Album
-import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.billing.BillingScreen
 import com.arn.scrobble.billing.BillingTroubleshootScreen
 import com.arn.scrobble.charts.ChartsPagerScreen
 import com.arn.scrobble.charts.RandomScreen
-import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.edits.BlockedMetadatasScreen
 import com.arn.scrobble.edits.RegexEditsAddScreen
 import com.arn.scrobble.edits.RegexEditsScreen
@@ -71,7 +57,6 @@ import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -102,92 +87,92 @@ import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.settings
 import pano_scrobbler.composeapp.generated.resources.simple_edits
 import pano_scrobbler.composeapp.generated.resources.spotify
-import kotlin.reflect.typeOf
 
-@OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.panoNavGraph(
-    onSetTitle: (String, String?) -> Unit,
-    onSetOtherUser: (UserCached?) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
-    onSetTabData: (String, List<PanoTab>?) -> Unit,
-    navigate: (PanoRoute) -> Unit,
-    onSetOnboardingFinished: (Boolean) -> Unit,
-    goBack: () -> Unit,
-    goUp: () -> Unit,
-    pullToRefreshState: () -> PullToRefreshState,
-    onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
-    mainViewModel: MainViewModel,
-) {
+object PanoNavGraph {
+    fun panoNavEntryProvider(
+        onSetTitle: (PanoRoute, String) -> Unit,
+        getTabIdx: (PanoRoute.HasTabs, Int) -> Int,
+        onSetTabIdx: (PanoRoute.HasTabs, Int) -> Unit,
+        onSetOtherUser: (UserCached?) -> Unit,
+        navigate: (PanoRoute) -> Unit,
+        onSetOnboardingFinished: (Boolean) -> Unit,
+        goBack: () -> Unit,
+        pullToRefreshState: () -> PullToRefreshState,
+        onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
+        mainViewModel: MainViewModel,
+        mainViewModelStoreOwner: () -> ViewModelStoreOwner,
+    ) = entryProvider<PanoRoute> {
 
-    @Composable
-    fun onSetTitleString(destId: String, title: String) {
-        DisposableEffect(title) {
-            onSetTitle(destId, title)
-
-            onDispose {
-                onSetTitle(destId, null)
-            }
-        }
-    }
-
-    @Composable
-    fun onSetTitleRes(destId: String, resId: StringResource) {
-        onSetTitleString(destId, stringResource(resId))
-    }
-
-    @Composable
-    fun modifier() = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.surface)
-
-    composable<PanoRoute.SelfHomePager>(
-        deepLinks = listOf(
-            navDeepLink<PanoRoute.SelfHomePager>(
-                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.SelfHomePager::class.simpleName
-            )
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.SelfHomePager>()
-
-        val currentUserSelf by PlatformStuff.mainPrefs.data
-            .collectAsStateWithInitialValue { prefs ->
-                prefs.scrobbleAccounts
-                    .firstOrNull { it.type == prefs.currentAccountType }?.user
-            }
-
-        val initialTab by PlatformStuff.mainPrefs.data
-            .collectAsStateWithInitialValue { it.lastHomePagerTab }
-
-        var tabIdx by rememberSaveable {
-            mutableIntStateOf(
-                if (arguments.digestTypeStr != null)
-                    2 // charts tab
-                else
-                    initialTab
-            )
-        }
-
-        LaunchedEffect(Unit) {
-            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
-                if (backStackEntryId == it.id)
-                    tabIdx = tab
+        @Composable
+        fun onSetTitleString(route: PanoRoute, title: String) {
+            LaunchedEffect(title) {
+                onSetTitle(route, title)
             }
         }
 
-        if (currentUserSelf != null) {
+        @Composable
+        fun onSetTitleRes(route: PanoRoute, resId: StringResource) {
+            onSetTitleString(route, stringResource(resId))
+        }
+
+        @Composable
+        fun modifier() = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+
+        entry<PanoRoute.SelfHomePager>(
+        ) { route ->
+            val currentUserSelf by PlatformStuff.mainPrefs.data
+                .collectAsStateWithInitialValue { prefs ->
+                    prefs.scrobbleAccounts
+                        .firstOrNull { it.type == prefs.currentAccountType }?.user
+                }
+
+            val savedTab by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.lastHomePagerTab }
+
+            if (currentUserSelf != null) {
+                HomePagerScreen(
+                    user = currentUserSelf!!,
+                    onSetOtherUser = onSetOtherUser,
+                    onSetTitle = { title -> onSetTitle(route, title) },
+                    tabIdx = getTabIdx(
+                        route,
+                        if (route.digestTypeStr != null)
+                            2 // charts tab
+                        else
+                            savedTab
+                    ),
+                    digestTimePeriod = route.digestTypeStr?.let { LastfmPeriod.valueOf(it) },
+                    onSetTabIdx = { tab ->
+                        onSetTabIdx(route, tab)
+                    },
+                    tabsList = route.getTabsList(),
+                    onNavigate = navigate,
+                    pullToRefreshState = pullToRefreshState(),
+                    onSetRefreshing = onSetRefreshing,
+                    mainViewModel = mainViewModel,
+                    getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
+                    onGoToOnboarding = {
+                        onSetOnboardingFinished(false)
+                    },
+                    modifier = modifier()
+                )
+            }
+        }
+
+        entry<PanoRoute.OthersHomePager>(
+        ) { route ->
             HomePagerScreen(
-                user = currentUserSelf!!,
+                user = route.user,
                 onSetOtherUser = onSetOtherUser,
-                onSetTitle = { title -> onSetTitle(it.id, title) },
-                tabIdx = tabIdx,
-                digestTimePeriod = arguments.digestTypeStr?.let { LastfmPeriod.valueOf(it) },
+                onSetTitle = { title -> onSetTitle(route, title) },
+                tabIdx = getTabIdx(route, 0),
+                digestTimePeriod = null,
                 onSetTabIdx = { tab ->
-                    tabIdx = tab
-                    mainViewModel.setTabIdx(it.id, tab)
+                    onSetTabIdx(route, tab)
                 },
-                onSetTabData = onSetTabData,
+                tabsList = route.getTabsList(),
                 onNavigate = navigate,
-                onOpenDialog = onOpenDialog,
                 pullToRefreshState = pullToRefreshState(),
                 onSetRefreshing = onSetRefreshing,
                 mainViewModel = mainViewModel,
@@ -198,330 +183,260 @@ fun NavGraphBuilder.panoNavGraph(
                 modifier = modifier()
             )
         }
-    }
 
-    composable<PanoRoute.OthersHomePager>(
-        typeMap = mapOf(
-            typeOf<UserCached>() to serializableType<UserCached>()
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.OthersHomePager>()
-        var tabIdx by rememberSaveable { mutableIntStateOf(0) }
+        entry<PanoRoute.Random>(
+        ) { route ->
 
-        LaunchedEffect(Unit) {
-            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
-                if (backStackEntryId == it.id)
-                    tabIdx = tab
-            }
+            onSetTitleRes(route, Res.string.random_text)
+            RandomScreen(
+                user = route.user,
+                onNavigate = navigate,
+                modifier = modifier().padding(panoContentPadding())
+            )
         }
 
-        HomePagerScreen(
-            user = arguments.user,
-            onSetOtherUser = onSetOtherUser,
-            onSetTitle = { title -> onSetTitle(it.id, title) },
-            tabIdx = tabIdx,
-            digestTimePeriod = null,
-            onSetTabIdx = { tab ->
-                tabIdx = tab
-                mainViewModel.setTabIdx(it.id, tab)
-            },
-            onSetTabData = onSetTabData,
-            onNavigate = navigate,
-            onOpenDialog = onOpenDialog,
-            pullToRefreshState = pullToRefreshState(),
-            onSetRefreshing = onSetRefreshing,
-            mainViewModel = mainViewModel,
-            getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
-            onGoToOnboarding = {
-                onSetOnboardingFinished(false)
-            },
-            modifier = modifier()
-        )
-    }
+        entry<PanoRoute.OssCredits>(
+        ) { route ->
 
-    composable<PanoRoute.Random>(
-        typeMap = mapOf(
-            typeOf<UserCached>() to serializableType<UserCached>()
-        )
-    ) {
-        onSetTitleRes(it.id, Res.string.random_text)
-        val arguments = it.toRoute<PanoRoute.Random>()
-
-        RandomScreen(
-            user = arguments.user,
-            onOpenDialog = onOpenDialog,
-            modifier = modifier().padding(panoContentPadding())
-        )
-    }
-
-    composable<PanoRoute.OssCredits> {
-        onSetTitleRes(it.id, Res.string.pref_oss_credits)
-        OssCreditsScreen(
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.AppList>(
-        typeMap = mapOf(
-            typeOf<AppListSaveType>() to serializableType<AppListSaveType>()
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.AppList>()
-        onSetTitleRes(
-            it.id,
-            if (arguments.isSingleSelect)
-                Res.string.choose_an_app
-            else
-                Res.string.choose_apps
-        )
-
-        AppListScreen(
-            isSingleSelect = arguments.isSingleSelect,
-            saveType = arguments.saveType,
-            packagesOverride = arguments.packagesOverride?.toSet(),
-            preSelectedPackages = arguments.preSelectedPackages.toSet(),
-            onSetPackagesSelection = { checked, unchecked ->
-                mainViewModel.onSetPackagesSelection(checked, unchecked)
-            },
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.ThemeChooser> {
-        onSetTitleRes(it.id, Res.string.pref_themes)
-        ThemeChooserScreen(
-            onNavigateToBilling = { navigate(PanoRoute.Billing) },
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.DeleteAccount> {
-        onSetTitleRes(it.id, Res.string.delete_account)
-        DeleteAccountScreen(
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.BillingTroubleshoot> {
-        onSetTitleRes(it.id, Res.string.help)
-        BillingTroubleshootScreen(
-            onBack = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.Billing>(
-        deepLinks = listOf(
-            navDeepLink {
-                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.Billing::class.simpleName
-            }
-        )
-    ) {
-        onSetTitleString(it.id, "")
-        BillingScreen(
-            onBack = goBack,
-            onNavigateToTroubleshoot = { navigate(PanoRoute.BillingTroubleshoot) },
-            viewModel = mainViewModel,
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.Prefs>(
-        deepLinks = listOf(
-            navDeepLink {
-                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/Prefs"
-            },
-            navDeepLink {
-                action = "android.service.quicksettings.action.QS_TILE_PREFERENCES"
-            }
-        )
-    ) {
-        onSetTitleRes(it.id, Res.string.settings)
-        PrefsScreen(
-            onNavigate = navigate,
-            onOpenDialog = onOpenDialog,
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.SimpleEdits> {
-        onSetTitleRes(it.id, Res.string.simple_edits)
-        SimpleEditsScreen(
-            onNavigate = navigate,
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.SimpleEditsAdd>(
-        typeMap = mapOf(typeOf<SimpleEdit?>() to serializableType<SimpleEdit?>())
-    ) {
-        onSetTitleRes(it.id, Res.string.edit)
-
-        val arguments = it.toRoute<PanoRoute.SimpleEditsAdd>()
-
-        SimpleEditsAddScreen(
-            simpleEdit = arguments.simpleEdit,
-            onDone = goBack,
-            onReauthenticate = {},
-            origScrobbleData = null,
-            msid = null,
-            hash = null,
-            key = null,
-            notifyEdit = { _, _ -> },
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.RegexEdits> {
-        onSetTitleRes(it.id, Res.string.regex_rules)
-        RegexEditsScreen(
-            onNavigate = navigate,
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.RegexEditsAdd>(
-        typeMap = mapOf(typeOf<RegexEdit?>() to serializableType<RegexEdit?>())
-    ) {
-        onSetTitleRes(it.id, Res.string.edit_regex)
-
-        val arguments = it.toRoute<PanoRoute.RegexEditsAdd>()
-
-        RegexEditsAddScreen(
-            mainViewModel = mainViewModel,
-            regexEdit = arguments.regexEdit,
-            onNavigate = navigate,
-            onBack = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.RegexEditsTest> {
-        onSetTitleRes(it.id, Res.string.edit_regex_test)
-
-        RegexEditsTestScreen(
-            mainViewModel = mainViewModel,
-            onNavigateToAppList = {
-                navigate(
-                    PanoRoute.AppList(
-                        saveType = AppListSaveType.Callback,
-                        preSelectedPackages = emptyList(),
-                        isSingleSelect = true
-                    )
-                )
-            },
-            onNavigateToRegexEditsAdd = { navigate(PanoRoute.RegexEditsAdd(it)) },
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.BlockedMetadatas> {
-        onSetTitleRes(it.id, Res.string.pref_blocked_metadata)
-
-        BlockedMetadatasScreen(
-            onNavigate = navigate,
-            onOpenDialog = onOpenDialog,
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.ImageSearch>(
-        deepLinks = listOf(
-            navDeepLink<PanoRoute.ImageSearch>(
-                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.ImageSearch::class.simpleName,
-                typeMap = mapOf(
-                    typeOf<Artist?>() to serializableType<Artist?>(),
-                    typeOf<Album?>() to serializableType<Album?>(),
-                )
+            onSetTitleRes(route, Res.string.pref_oss_credits)
+            OssCreditsScreen(
+                modifier = modifier()
             )
-        ),
-        typeMap = mapOf(
-            typeOf<Artist?>() to serializableType<Artist?>(),
-            typeOf<Album?>() to serializableType<Album?>(),
-        )
-    ) {
-        onSetTitleString(
-            it.id,
-            stringResource(Res.string.search) + ": " + stringResource(Res.string.spotify)
-        )
+        }
 
-        val arguments = it.toRoute<PanoRoute.ImageSearch>()
+        entry<PanoRoute.AppList>(
+        ) { route ->
+            onSetTitleRes(
+                route,
+                if (route.isSingleSelect)
+                    Res.string.choose_an_app
+                else
+                    Res.string.choose_apps
+            )
+            AppListScreen(
+                isSingleSelect = route.isSingleSelect,
+                saveType = route.saveType,
+                packagesOverride = route.packagesOverride?.toSet(),
+                preSelectedPackages = route.preSelectedPackages.toSet(),
+                onSetPackagesSelection = { checked, unchecked ->
+                    mainViewModel.onSetPackagesSelection(checked, unchecked)
+                },
+                modifier = modifier()
+            )
+        }
 
-        ImageSearchScreen(
-            onBack = goBack,
-            artist = arguments.artist,
-            originalArtist = arguments.originalArtist,
-            album = arguments.album,
-            originalAlbum = arguments.originalAlbum,
-            modifier = modifier()
-        )
-    }
+        entry<PanoRoute.ThemeChooser>(
+        ) { route ->
 
-    composable<PanoRoute.Translators> {
-        onSetTitleRes(it.id, Res.string.pref_translate_credits)
+            onSetTitleRes(route, Res.string.pref_themes)
+            ThemeChooserScreen(
+                onNavigateToBilling = { navigate(PanoRoute.Billing) },
+                modifier = modifier().addColumnPadding()
+            )
+        }
 
-        TranslatorsScreen(
-            modifier = modifier()
-        )
-    }
+        entry<PanoRoute.DeleteAccount>(
+        ) { route ->
 
-    composable<PanoRoute.Import> {
-        onSetTitleRes(it.id, Res.string.pref_import)
+            onSetTitleRes(route, Res.string.delete_account)
+            DeleteAccountScreen(
+                modifier = modifier().addColumnPadding()
+            )
+        }
 
-        ImportScreen(
-            onBack = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
+        entry<PanoRoute.BillingTroubleshoot>(
+        ) { route ->
 
-    composable<PanoRoute.Export> {
-        onSetTitleRes(it.id, Res.string.pref_export)
+            onSetTitleRes(route, Res.string.help)
+            BillingTroubleshootScreen(
+                onBack = goBack,
+                modifier = modifier().addColumnPadding()
+            )
+        }
 
-        ExportScreen(
-            onBack = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
+        entry<PanoRoute.Billing> {
+            BillingScreen(
+                onBack = goBack,
+                onNavigateToTroubleshoot = { navigate(PanoRoute.BillingTroubleshoot) },
+                viewModel = mainViewModel,
+                modifier = modifier().addColumnPadding()
+            )
+        }
 
-    composable<PanoRoute.LoginFile> {
-        onSetTitleRes(it.id, Res.string.scrobble_to_file)
+        entry<PanoRoute.Prefs>(
+        ) { route ->
 
-        FileLoginScreen(
-            onBack = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
+            onSetTitleRes(route, Res.string.settings)
+            PrefsScreen(
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
 
-    composable<PanoRoute.LoginGnufm> {
-        onSetTitleString(it.id, accountTypeLabel(AccountType.GNUFM))
+        entry<PanoRoute.SimpleEdits>(
+        ) { route ->
 
-        GnufmLoginScreen(
-            onDone = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
+            onSetTitleRes(route, Res.string.simple_edits)
+            SimpleEditsScreen(
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
 
-    composable<PanoRoute.LoginListenBrainz> {
-        onSetTitleRes(it.id, Res.string.listenbrainz)
+        entry<PanoRoute.SimpleEditsAdd>(
+        ) { route ->
 
-        ListenBrainzLoginScreen(
-            onDone = goBack,
-            hasCustomApiRoot = false,
-            modifier = modifier().addColumnPadding()
-        )
-    }
+            onSetTitleRes(route, Res.string.edit)
+            SimpleEditsAddScreen(
+                simpleEdit = route.simpleEdit,
+                onDone = goBack,
+                onReauthenticate = {},
+                origScrobbleData = null,
+                msid = null,
+                hash = null,
+                key = null,
+                notifyEdit = { _, _ -> },
+                modifier = modifier().addColumnPadding()
+            )
+        }
 
-    composable<PanoRoute.LoginCustomListenBrainz> {
-        onSetTitleString(it.id, accountTypeLabel(AccountType.CUSTOM_LISTENBRAINZ))
+        entry<PanoRoute.RegexEdits>(
+        ) { route ->
 
-        ListenBrainzLoginScreen(
-            onDone = goBack,
-            hasCustomApiRoot = true,
-            modifier = modifier().addColumnPadding()
-        )
-    }
+            onSetTitleRes(route, Res.string.regex_rules)
+            RegexEditsScreen(
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
 
-//    composable<PanoRoute.LoginMaloja> {
+        entry<PanoRoute.RegexEditsAdd>(
+        ) { route ->
+
+            onSetTitleRes(route, Res.string.edit_regex)
+            RegexEditsAddScreen(
+                mainViewModel = mainViewModel,
+                regexEdit = route.regexEdit,
+                onNavigate = navigate,
+                onBack = goBack,
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.RegexEditsTest>(
+        ) { route ->
+
+            onSetTitleRes(route, Res.string.edit_regex_test)
+            RegexEditsTestScreen(
+                mainViewModel = mainViewModel,
+                onNavigateToAppList = {
+                    navigate(
+                        PanoRoute.AppList(
+                            saveType = AppListSaveType.Callback,
+                            preSelectedPackages = emptyList(),
+                            isSingleSelect = true
+                        )
+                    )
+                },
+                onNavigateToRegexEditsAdd = { navigate(PanoRoute.RegexEditsAdd(it)) },
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.BlockedMetadatas>(
+        ) { route ->
+
+            onSetTitleRes(route, Res.string.pref_blocked_metadata)
+            BlockedMetadatasScreen(
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+
+        entry<PanoRoute.ImageSearch>(
+        ) { route ->
+            onSetTitleString(
+                route,
+                stringResource(Res.string.search) + ": " + stringResource(Res.string.spotify)
+            )
+
+            ImageSearchScreen(
+                onBack = goBack,
+                artist = route.artist,
+                originalArtist = route.originalArtist,
+                album = route.album,
+                originalAlbum = route.originalAlbum,
+                modifier = modifier()
+            )
+        }
+
+        entry<PanoRoute.Translators>(
+        ) { route ->
+            onSetTitleRes(route, Res.string.pref_translate_credits)
+            TranslatorsScreen(
+                modifier = modifier()
+            )
+        }
+
+        entry<PanoRoute.Import>(
+        ) { route ->
+            onSetTitleRes(route, Res.string.pref_import)
+            ImportScreen(
+                onBack = goBack,
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.Export>(
+        ) { route ->
+            onSetTitleRes(route, Res.string.pref_export)
+            ExportScreen(
+                onBack = goBack,
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.LoginFile>(
+        ) { route ->
+            onSetTitleRes(route, Res.string.scrobble_to_file)
+
+            FileLoginScreen(
+                onBack = goBack,
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.LoginGnufm> { route ->
+
+            onSetTitleString(route, accountTypeLabel(AccountType.GNUFM))
+            GnufmLoginScreen(
+                onDone = goBack,
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.LoginListenBrainz>(
+        ) { route ->
+
+            onSetTitleRes(route, Res.string.listenbrainz)
+            ListenBrainzLoginScreen(
+                onDone = goBack,
+                hasCustomApiRoot = false,
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.LoginCustomListenBrainz> { route ->
+
+            onSetTitleString(route, accountTypeLabel(AccountType.CUSTOM_LISTENBRAINZ))
+            ListenBrainzLoginScreen(
+                onDone = goBack,
+                hasCustomApiRoot = true,
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+//    entry<PanoRoute.LoginMaloja> {
 //        onSetTitleRes(it.id, Res.string.maloja)
 //
 //        MalojaLoginScreen(
@@ -530,302 +445,206 @@ fun NavGraphBuilder.panoNavGraph(
 //        )
 //    }
 
-    composable<PanoRoute.LoginPleroma> {
-        onSetTitleRes(it.id, Res.string.pleroma)
+        entry<PanoRoute.LoginPleroma>(
+        ) { route ->
+            onSetTitleRes(route, Res.string.pleroma)
 
-        PleromaLoginScreen(
-            onBackAndThenNavigate = {
-                goBack()
-                navigate(it)
-            },
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.WebView>(
-        typeMap = mapOf(
-            typeOf<UserAccountTemp?>() to serializableType<UserAccountTemp?>(),
-            typeOf<PleromaOauthClientCreds?>() to serializableType<PleromaOauthClientCreds?>()
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.WebView>()
-
-        WebViewScreen(
-            initialUrl = arguments.url,
-            userAccountTemp = arguments.userAccountTemp,
-            pleromaOauthClientCreds = arguments.creds,
-            onSetTitle = { title -> onSetTitle(it.id, title) },
-            onBack = goBack,
-            modifier = modifier().padding(panoContentPadding())
-            // webview has issues with nested scroll
-        )
-    }
-
-    composable<PanoRoute.OobPleromaAuth>(
-        typeMap = mapOf(
-            typeOf<UserAccountTemp>() to serializableType<UserAccountTemp>(),
-            typeOf<PleromaOauthClientCreds>() to serializableType<PleromaOauthClientCreds>()
-        )
-    ) {
-        onSetTitleRes(it.id, Res.string.pleroma)
-
-        val arguments = it.toRoute<PanoRoute.OobPleromaAuth>()
-
-        OobPleromaLoginScreen(
-            url = arguments.url,
-            userAccountTemp = arguments.userAccountTemp,
-            pleromaCreds = arguments.creds,
-            onBack = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.OobLastfmLibreFmAuth>(
-        typeMap = mapOf(
-            typeOf<UserAccountTemp>() to serializableType<UserAccountTemp>(),
-        )
-    ) {
-        onSetTitleRes(
-            it.id,
-            if (PlatformStuff.isTv)
-                Res.string.scan_qr
-            else
-                Res.string.login_in_browser
-        )
-
-        val arguments = it.toRoute<PanoRoute.OobLastfmLibreFmAuth>()
-
-        OobLastfmLibrefmLoginScreen(
-            userAccountTemp = arguments.userAccountTemp,
-            onBack = goBack,
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.Search>(
-        deepLinks = listOf(
-            navDeepLink {
-                uriPattern = Stuff.DEEPLINK_BASE_PATH + "/Search"
-            },
-//            navDeepLink {
-//                action = "android.intent.action.SEARCH"
-//            }
-        )
-    ) {
-        onSetTitleString(
-            it.id,
-            stringResource(Res.string.search) + ": " + stringResource(Res.string.lastfm)
-        )
-
-        SearchScreen(
-            onOpenDialog = onOpenDialog,
-            modifier = modifier()
-        )
-    }
-
-
-    composable<PanoRoute.Onboarding> {
-        onSetTitleString(it.id, "")
-
-        OnboardingScreen(
-            onNavigate = navigate,
-            onDone = {
-                onSetOnboardingFinished(true)
-            },
-            modifier = modifier().addColumnPadding()
-        )
-    }
-
-    composable<PanoRoute.Help> {
-        onSetTitleRes(it.id, Res.string.help)
-
-        HelpScreen(
-            modifier = modifier().padding(panoContentPadding())
-            // webview has issues with nested scroll
-        )
-    }
-
-    composable<PanoRoute.MusicEntryInfoPager>(
-        deepLinks = listOf(
-            navDeepLink<PanoRoute.MusicEntryInfoPager>(
-                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.MusicEntryInfoPager::class.simpleName,
-                typeMap = mapOf(
-                    typeOf<Artist>() to serializableType<Artist>(),
-                    typeOf<UserCached>() to serializableType<UserCached>()
-                )
-            )
-        ),
-        typeMap = mapOf(
-            typeOf<Artist>() to serializableType<Artist>(),
-            typeOf<UserCached>() to serializableType<UserCached>()
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.MusicEntryInfoPager>()
-        var tabIdx by rememberSaveable {
-            mutableIntStateOf(
-                when (arguments.type) {
-                    Stuff.TYPE_ARTISTS -> 0
-                    Stuff.TYPE_ALBUMS -> 1
-                    Stuff.TYPE_TRACKS -> 2
-                    else -> 0
-                }
+            PleromaLoginScreen(
+                onBackAndThenNavigate = {
+                    goBack()
+                    navigate(it)
+                },
+                modifier = modifier().addColumnPadding()
             )
         }
 
-        LaunchedEffect(Unit) {
-            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
-                if (backStackEntryId == it.id)
-                    tabIdx = tab
-            }
-        }
-
-        onSetTitleString(it.id, arguments.artist.name)
-
-        InfoPagerScreen(
-            musicEntry = arguments.artist,
-            user = arguments.user,
-            appId = arguments.appId,
-            tabIdx = tabIdx,
-            onSetTabIdx = { tab ->
-                tabIdx = tab
-                mainViewModel.setTabIdx(it.id, tab)
-            },
-            onSetTabData = onSetTabData,
-            onOpenDialog = onOpenDialog,
-            modifier = modifier()
-        )
-    }
-
-
-    composable<PanoRoute.ChartsPager>(
-        typeMap = mapOf(
-            typeOf<UserCached>() to serializableType<UserCached>()
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.ChartsPager>()
-        var tabIdx by rememberSaveable {
-            mutableIntStateOf(
-                when (arguments.type) {
-                    Stuff.TYPE_ARTISTS -> 0
-                    Stuff.TYPE_ALBUMS -> 1
-                    Stuff.TYPE_TRACKS -> 2
-                    else -> 0
-                }
+        entry<PanoRoute.WebView>(
+        ) { route ->
+            WebViewScreen(
+                initialUrl = route.url,
+                userAccountTemp = route.userAccountTemp,
+                pleromaOauthClientCreds = route.creds,
+                onSetTitle = { title -> onSetTitle(route, title) },
+                onBack = goBack,
+                modifier = modifier().padding(panoContentPadding())
+                // webview has issues with nested scroll
             )
         }
 
-        LaunchedEffect(Unit) {
-            mainViewModel.tabIdx.collectLatest { (backStackEntryId, tab) ->
-                if (backStackEntryId == it.id)
-                    tabIdx = tab
-            }
+        entry<PanoRoute.OobPleromaAuth>(
+        ) { route ->
+            onSetTitleRes(route, Res.string.pleroma)
+
+            OobPleromaLoginScreen(
+                url = route.url,
+                userAccountTemp = route.userAccountTemp,
+                pleromaCreds = route.creds,
+                onBack = goBack,
+                modifier = modifier().addColumnPadding()
+            )
         }
 
-        ChartsPagerScreen(
-            user = arguments.user,
-            tabIdx = tabIdx,
-            onSetTabIdx = { tab ->
-                tabIdx = tab
-                mainViewModel.setTabIdx(it.id, tab)
-            },
-            onSetTabData = onSetTabData,
-            onSetTitle = { title -> onSetTitle(it.id, title) },
-            onOpenDialog = onOpenDialog,
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.SimilarTracks>(
-        deepLinks = listOf(
-            navDeepLink<PanoRoute.SimilarTracks>(
-                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.SimilarTracks::class.simpleName,
-                typeMap = mapOf(
-                    typeOf<Track>() to serializableType<Track>(),
-                    typeOf<UserCached>() to serializableType<UserCached>()
-                )
+        entry<PanoRoute.OobLastfmLibreFmAuth>(
+        ) { route ->
+            onSetTitleRes(
+                route,
+                if (PlatformStuff.isTv)
+                    Res.string.scan_qr
+                else
+                    Res.string.login_in_browser
             )
-        ),
-        typeMap = mapOf(
-            typeOf<Track>() to serializableType<Track>(),
-            typeOf<UserCached>() to serializableType<UserCached>(),
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.SimilarTracks>()
-        val entry = arguments.track
-        val title = Stuff.formatBigHyphen(
-            entry.artist.name,
-            entry.name
-        )
-
-        onSetTitleString(it.id, title)
-
-        SimilarTracksScreen(
-            musicEntry = arguments.track,
-            user = arguments.user,
-            appId = arguments.appId,
-            onOpenDialog = onOpenDialog,
-            modifier = modifier()
-        )
-    }
-
-    composable<PanoRoute.Help> {
-        onSetTitleRes(it.id, Res.string.help)
-
-        HelpScreen(
-            modifier = modifier().padding(panoContentPadding())
-            // webview has issues with nested scroll
-        )
-    }
-
-    composable<PanoRoute.TrackHistory>(
-        deepLinks = listOf(
-            navDeepLink<PanoRoute.TrackHistory>(
-                basePath = Stuff.DEEPLINK_BASE_PATH + "/" + PanoRoute.TrackHistory::class.simpleName,
-                typeMap = mapOf(
-                    typeOf<Track>() to serializableType<Track>(),
-                    typeOf<UserCached>() to serializableType<UserCached>()
-                )
+            OobLastfmLibrefmLoginScreen(
+                userAccountTemp = route.userAccountTemp,
+                onBack = goBack,
+                modifier = modifier().addColumnPadding()
             )
-        ),
-        typeMap = mapOf(
-            typeOf<Track>() to serializableType<Track>(),
-            typeOf<UserCached>() to serializableType<UserCached>(),
-        )
-    ) {
-        val arguments = it.toRoute<PanoRoute.TrackHistory>()
-        val track = arguments.track
-        val user = arguments.user
+        }
 
-        TrackHistoryScreen(
-            track = track,
-            user = user,
-            onSetTitle = { title -> onSetTitle(it.id, title) },
-            onOpenDialog = onOpenDialog,
-            editDataFlow = mainViewModel.editDataFlow,
-            modifier = modifier()
-        )
-    }
+        entry<PanoRoute.Search>(
+        ) { route ->
+            onSetTitleString(
+                route,
+                stringResource(Res.string.search) + ": " + stringResource(Res.string.lastfm)
+            )
 
-    composable<PanoRoute.AutomationInfo> {
-        onSetTitleString(
-            it.id, stringResource(
+            SearchScreen(
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+
+
+        entry<PanoRoute.Onboarding> {
+            OnboardingScreen(
+                onNavigate = navigate,
+                onDone = {
+                    onSetOnboardingFinished(true)
+                },
+                modifier = modifier().addColumnPadding()
+            )
+        }
+
+        entry<PanoRoute.MusicEntryInfoPager>(
+        ) { route ->
+            onSetTitleString(route, route.artist.name)
+
+            InfoPagerScreen(
+                musicEntry = route.artist,
+                user = route.user,
+                appId = route.appId,
+                tabIdx = getTabIdx(
+                    route,
+                    when (route.entryType) {
+                        Stuff.TYPE_ARTISTS -> 0
+                        Stuff.TYPE_ALBUMS -> 1
+                        Stuff.TYPE_TRACKS -> 2
+                        else -> 0
+                    }
+                ),
+                onSetTabIdx = { tab ->
+                    onSetTabIdx(route, tab)
+                },
+                tabsList = route.getTabsList(),
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+
+
+        entry<PanoRoute.ChartsPager>(
+        ) { route ->
+            ChartsPagerScreen(
+                user = route.user,
+                tabIdx = getTabIdx(
+                    route,
+                    when (route.chartsType) {
+                        Stuff.TYPE_ARTISTS -> 0
+                        Stuff.TYPE_ALBUMS -> 1
+                        Stuff.TYPE_TRACKS -> 2
+                        else -> 0
+                    }
+                ),
+                onSetTabIdx = { tab ->
+                    onSetTabIdx(route, tab)
+                },
+                tabsList = route.getTabsList(),
+                onSetTitle = { title -> onSetTitle(route, title) },
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+
+        entry<PanoRoute.SimilarTracks>(
+        ) { route ->
+            val entry = route.track
+            val title = Stuff.formatBigHyphen(
+                entry.artist.name,
+                entry.name
+            )
+
+            onSetTitleString(route, title)
+
+            SimilarTracksScreen(
+                musicEntry = route.track,
+                user = route.user,
+                appId = route.appId,
+                onNavigate = navigate,
+                modifier = modifier()
+            )
+        }
+
+        entry<PanoRoute.Help>(
+        ) { route ->
+            onSetTitleRes(route, Res.string.help)
+
+            HelpScreen(
+                modifier = modifier().padding(panoContentPadding())
+                // webview has issues with nested scroll
+            )
+        }
+
+        entry<PanoRoute.TrackHistory>(
+        ) { route ->
+            val track = route.track
+            val user = route.user
+
+            TrackHistoryScreen(
+                track = track,
+                user = user,
+                onSetTitle = { title -> onSetTitle(route, title) },
+                onNavigate = navigate,
+                editDataFlow = mainViewModel.editDataFlow,
+                modifier = modifier()
+            )
+        }
+
+        entry<PanoRoute.AutomationInfo> { route ->
+            onSetTitleRes(
+                route,
                 if (PlatformStuff.isDesktop)
                     Res.string.automation_cli
                 else
                     Res.string.automation_cp
             )
+
+            AutomationInfoScreen(
+                onNavigate = navigate,
+                modifier = modifier().padding(panoContentPadding())
+            )
+        }
+
+        panoModalNavGraph(
+            navigate = navigate,
+            goBack = goBack,
+            mainViewModel = mainViewModel,
+            mainViewModelStoreOwner = mainViewModelStoreOwner
         )
 
-        AutomationInfoScreen(
-            onNavigate = navigate,
-            modifier = modifier().padding(panoContentPadding())
+        panoPlatformSpecificNavGraph(
+            onSetTitle = onSetTitle,
+            navigate = navigate,
+            goBack = goBack,
+            mainViewModel = mainViewModel,
         )
     }
-
-    panoPlatformSpecificNavGraph(
-        onSetTitle = onSetTitle,
-        navigate = navigate,
-        goUp = goUp,
-        mainViewModel = mainViewModel,
-    )
 }

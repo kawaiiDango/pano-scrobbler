@@ -28,7 +28,6 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +64,6 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.main.PanoPullToRefresh
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.AvatarOrInitials
@@ -102,6 +100,7 @@ import pano_scrobbler.composeapp.generated.resources.pin
 import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
+import pano_scrobbler.composeapp.generated.resources.since_time
 import pano_scrobbler.composeapp.generated.resources.sort
 import pano_scrobbler.composeapp.generated.resources.track
 import pano_scrobbler.composeapp.generated.resources.unpin
@@ -113,8 +112,7 @@ fun FriendsScreen(
     onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
     pullToRefreshTriggered: Flow<Unit>,
     onNavigate: (PanoRoute) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
-    onTitleChange: (String?) -> Unit,
+    onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FriendsVM = viewModel { FriendsVM() },
 ) {
@@ -277,8 +275,8 @@ fun FriendsScreen(
                             onNavigate(PanoRoute.OthersHomePager(it))
                         },
                         onNavigateToTrackInfo = { track, user ->
-                            onOpenDialog(
-                                PanoDialog.MusicEntryInfo(
+                            onNavigate(
+                                PanoRoute.Modal.MusicEntryInfo(
                                     track = track,
                                     user = user,
                                 )
@@ -321,8 +319,8 @@ fun FriendsScreen(
                                 onNavigate(PanoRoute.OthersHomePager(it))
                             },
                             onNavigateToTrackInfo = { track, user ->
-                                onOpenDialog(
-                                    PanoDialog.MusicEntryInfo(
+                                onNavigate(
+                                    PanoRoute.Modal.MusicEntryInfo(
                                         track = track,
                                         user = user,
                                     )
@@ -367,8 +365,8 @@ fun FriendsScreen(
                                     onNavigate(PanoRoute.OthersHomePager(it))
                                 },
                                 onNavigateToTrackInfo = { track, user ->
-                                    onOpenDialog(
-                                        PanoDialog.MusicEntryInfo(
+                                    onNavigate(
+                                        PanoRoute.Modal.MusicEntryInfo(
                                             track = track,
                                             user = user,
                                         )
@@ -454,7 +452,7 @@ private fun FriendItemShimmer(
         extraData = null,
         canPinUnpin = false,
         onNavigateToScrobbles = {},
-        onNavigateToTrackInfo = { track, user -> },
+        onNavigateToTrackInfo = { _, _ -> },
         modifier = modifier
     )
 }
@@ -601,22 +599,25 @@ private fun FriendItem(
 
                 if (playCount != null) {
                     Text(
-                        text = if (friend.registeredTime > Stuff.TIME_2002)
-                            stringResource(
-                                Res.string.num_scrobbles_since,
-                                playCount,
-                                PanoTimeFormatter.relative(friend.registeredTime)
-                            )
-                        else
-                            pluralStringResource(
-                                Res.plurals.num_scrobbles_noti,
-                                playCount,
-                                playCount.format()
-                            ),
+                        text = pluralStringResource(
+                            Res.plurals.num_scrobbles_noti,
+                            playCount,
+                            playCount.format()
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = textModifier,
                     )
                 }
+
+                if (friend.registeredTime > Stuff.TIME_2002)
+                    Text(
+                        stringResource(
+                            Res.string.since_time,
+                            PanoTimeFormatter.relative(friend.registeredTime)
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = textModifier,
+                    )
 
                 if (pinIndex != null) {
                     PinControls(

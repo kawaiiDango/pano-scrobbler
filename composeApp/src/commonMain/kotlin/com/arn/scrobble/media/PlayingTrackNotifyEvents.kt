@@ -10,6 +10,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -215,4 +216,4 @@ expect fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent)
 
 expect fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>?
 
-expect suspend fun shouldFetchNpArtUrl(): Boolean
+expect fun shouldFetchNpArtUrl(): Flow<Boolean>

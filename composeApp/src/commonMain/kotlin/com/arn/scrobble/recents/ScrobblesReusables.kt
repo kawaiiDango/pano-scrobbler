@@ -64,7 +64,7 @@ import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.media.getNowPlayingFromMainProcess
-import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.ListLoadError
@@ -114,9 +114,9 @@ private enum class TrackMenuLevel {
 private fun TrackDropdownMenu(
     track: Track,
     appId: String?,
-    onOpenDialog: (PanoDialog) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     user: UserCached,
-    editDialogArgs: (() -> PanoDialog?)?,
+    editDialogArgs: (() -> PanoRoute.Modal.EditScrobble?)?,
     onLove: ((Boolean) -> Unit)?,
     onHate: ((Boolean) -> Unit)?,
     onDelete: (() -> Unit)?,
@@ -248,7 +248,7 @@ private fun TrackDropdownMenu(
                         DropdownMenuItem(
                             onClick = {
                                 onDismissRequest()
-                                onOpenDialog(dialogArgs)
+                                onNavigate(dialogArgs)
                             },
                             text = {
                                 Text(stringResource(Res.string.edit))
@@ -442,7 +442,7 @@ private fun TrackDropdownMenu(
                                 album = track.album?.name ?: "",
                                 track = track.name,
                             )
-                            onOpenDialog(PanoDialog.BlockedMetadataAdd(b))
+                            onNavigate(PanoRoute.Modal.BlockedMetadataAdd(b))
                             onDismissRequest()
                         },
                         text = {
@@ -463,7 +463,7 @@ private fun TrackDropdownMenu(
                                 artist = track.artist.name,
                                 album = track.album?.name ?: "",
                             )
-                            onOpenDialog(PanoDialog.BlockedMetadataAdd(b))
+                            onNavigate(PanoRoute.Modal.BlockedMetadataAdd(b))
                             onDismissRequest()
                         },
                         text = {
@@ -482,7 +482,7 @@ private fun TrackDropdownMenu(
                             val b = BlockedMetadata(
                                 artist = track.artist.name,
                             )
-                            onOpenDialog(PanoDialog.BlockedMetadataAdd(b))
+                            onNavigate(PanoRoute.Modal.BlockedMetadataAdd(b))
                         },
                         text = {
                             Text(stringResource(Res.string.artist))
@@ -691,13 +691,13 @@ fun LazyListScope.scrobblesListItems(
     canDelete: Boolean,
     expandedKey: () -> String?,
     onExpand: (String?) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     animateListItemContentSize: State<Boolean>,
     maxHeight: State<Dp>,
     viewModel: ScrobblesVM,
 ) {
     fun onTrackClick(track: Track, appId: String?) {
-        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, appId = appId))
+        onNavigate(PanoRoute.Modal.MusicEntryInfo(user = user, track = track, appId = appId))
     }
 
     for (i in 0 until tracks.itemCount) {
@@ -759,7 +759,7 @@ fun LazyListScope.scrobblesListItems(
                         TrackDropdownMenu(
                             track = track,
                             appId = appItem?.appId,
-                            onOpenDialog = onOpenDialog,
+                            onNavigate = onNavigate,
                             user = user,
                             editDialogArgs = if (canEdit) {
                                 {
@@ -792,7 +792,7 @@ fun LazyListScope.scrobblesListItems(
                                         }
                                     }
 
-                                    PanoDialog.EditScrobble(
+                                    PanoRoute.Modal.EditScrobble(
                                         origScrobbleData = sd,
                                         msid = track.msid,
                                         key = key,

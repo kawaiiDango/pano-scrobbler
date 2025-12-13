@@ -9,7 +9,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.navigation.PanoDialog
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EntriesGridOrList
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.not_found
@@ -20,7 +20,7 @@ fun SimilarTracksScreen(
     musicEntry: Track,
     user: UserCached,
     appId: String?,
-    onOpenDialog: (PanoDialog) -> Unit,
+    onNavigate: (PanoRoute.Modal) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
@@ -47,8 +47,8 @@ fun SimilarTracksScreen(
             )
         },
         onItemClick = {
-            onOpenDialog(
-                PanoDialog.MusicEntryInfo(
+            onNavigate(
+                PanoRoute.Modal.MusicEntryInfo(
                     track = it as Track,
                     appId = appId,
                     user = user

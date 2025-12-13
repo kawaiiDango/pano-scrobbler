@@ -50,7 +50,7 @@ import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 import pano_scrobbler.composeapp.generated.resources.special_app_access
 
 @Composable
-actual fun FixItDialog(
+fun FixItDialog(
     modifier: Modifier,
 ) {
     val context = LocalContext.current

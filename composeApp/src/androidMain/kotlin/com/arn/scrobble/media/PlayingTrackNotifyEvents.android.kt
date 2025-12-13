@@ -6,6 +6,8 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 
 actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
@@ -65,6 +67,6 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
     return null
 }
 
-actual suspend fun shouldFetchNpArtUrl(): Boolean {
-    return false
+actual fun shouldFetchNpArtUrl(): Flow<Boolean> {
+    return flow { false }
 }

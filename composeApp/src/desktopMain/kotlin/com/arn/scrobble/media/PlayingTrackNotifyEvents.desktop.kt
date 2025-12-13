@@ -4,6 +4,8 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -26,8 +28,14 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
     }
 }
 
-actual suspend fun shouldFetchNpArtUrl(): Boolean {
-    return DiscordRpc.wasSuccessFul.value == true &&
-            PlatformStuff.mainPrefs.data.map { it.discordRpc.enabled && it.discordRpc.albumArt && it.discordRpc.albumArtFromNowPlaying }
-                .first()
+actual fun shouldFetchNpArtUrl(): Flow<Boolean> {
+    return combine(
+        DiscordRpc.wasSuccessFul,
+        PlatformStuff.mainPrefs.data.map {
+            it.discordRpc.enabled &&
+                    it.discordRpc.albumArt &&
+                    it.discordRpc.albumArtFromNowPlaying
+        }) { wasSuccessful, settingsEnabled ->
+        wasSuccessful == true && settingsEnabled
+    }
 }

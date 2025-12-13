@@ -63,7 +63,6 @@ import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.charts.getPeriodTypeIcon
 import com.arn.scrobble.charts.getPeriodTypePluralRes
 import com.arn.scrobble.main.PanoPullToRefresh
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.DismissableNotice
@@ -115,8 +114,7 @@ fun ScrobblesScreen(
     pullToRefreshTriggered: Flow<Unit>,
     onGoToOnboarding: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
-    onTitleChange: (String?) -> Unit,
+    onTitleChange: (String) -> Unit,
     editDataFlow: Flow<Pair<String, Track>>,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
@@ -176,7 +174,7 @@ fun ScrobblesScreen(
 
 
     fun onTrackClick(track: Track, appId: String?) {
-        onOpenDialog(PanoDialog.MusicEntryInfo(user = user, track = track, appId = appId))
+        onNavigate(PanoRoute.Modal.MusicEntryInfo(user = user, track = track, appId = appId))
     }
 
     LaunchedEffect(user, selectedType, timeJumpMillis) {
@@ -370,7 +368,7 @@ fun ScrobblesScreen(
                             scrobblerRunning == false -> {
                                 text = stringResource(Res.string.not_running)
                                 icon = Icons.Outlined.Warning
-                                onClick = { onOpenDialog(PanoDialog.FixIt) }
+                                onClick = { onNavigate(PanoRoute.Modal.FixIt) }
                             }
 
                             else -> {
@@ -383,7 +381,7 @@ fun ScrobblesScreen(
                                 )
                                 icon = Icons.Outlined.OpenInBrowser
                                 onClick = {
-                                    onOpenDialog(PanoDialog.ShowLink(Stuff.LINK_HOMEPAGE))
+                                    onNavigate(PanoRoute.Modal.ShowLink(Stuff.LINK_HOMEPAGE))
                                 }
                                 onDismiss = {
                                     scope.launch {
@@ -449,7 +447,7 @@ fun ScrobblesScreen(
 
                         expandedKey = it
                     },
-                    onOpenDialog = onOpenDialog,
+                    onNavigate = onNavigate,
                     animateListItemContentSize = animateListItemContentSize,
                     maxHeight = listViewportHeight,
                     viewModel = viewModel,

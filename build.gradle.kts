@@ -16,7 +16,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.aboutlibraries) apply false
     alias(libs.plugins.baselineprofile) apply false
-    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.buildkonfig) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false

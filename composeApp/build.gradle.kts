@@ -88,16 +88,16 @@ kotlin {
         val desktopMain by getting
 
         androidMain.dependencies {
-            implementation(libs.core)
-            implementation(libs.appcompat)
+//            implementation(libs.core)
 
             implementation(libs.activity.compose)
-            implementation(libs.androidx.work.runtime)
-            implementation(libs.androidx.core.remoteviews)
+            implementation(libs.work.runtime)
+            implementation(libs.core.remoteviews)
             implementation(libs.media)
             implementation(libs.compose.webview)
             implementation(libs.coil.gif)
             implementation(libs.qrcode)
+            implementation(libs.tooling)
         }
 
         commonMain.dependencies {
@@ -109,8 +109,9 @@ kotlin {
             implementation(libs.material.icons.extended)
             implementation(libs.ui)
             implementation(libs.resources)
-//            implementation(libs.tooling)
+            implementation(libs.tooling.preview)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.lifecycle.viewmodel.nav3)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
             implementation(libs.coil.compose)
@@ -128,27 +129,27 @@ kotlin {
             implementation(libs.datastore.core)
             implementation(libs.paging.common)
             implementation(libs.paging.compose)
-            implementation(libs.navigation.compose)
+            implementation(libs.nav3.ui)
             implementation(libs.adaptive)
             implementation(libs.adaptive.layout)
-            implementation(libs.adaptive.navigation)
+            implementation(libs.adaptive.nav3)
             implementation(libs.koalaplot.core)
             implementation(libs.nanohttpd)
-            implementation(libs.androidx.room.runtime)
+            implementation(libs.room.runtime)
             implementation(libs.kotlinx.immutable)
             implementation(libs.cryptohash)
             implementation(projects.extrasCommon)
         }
 
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
+            implementation(kotlin("test"))
         }
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(projects.extrasNonplay)
-            implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.sqlite.bundled)
         }
     }
 
@@ -160,8 +161,8 @@ kotlin {
 
 dependencies {
 //    "baselineProfile"(projects.baselineprofile)
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspDesktop", libs.androidx.room.compiler)
+    add("kspAndroid", libs.room.compiler)
+    add("kspDesktop", libs.room.compiler)
     "androidRuntimeClasspath"(libs.tooling)
 }
 

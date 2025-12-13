@@ -1,6 +1,5 @@
 package com.arn.scrobble.utils
 
-import com.arn.scrobble.PanoNativeComponents
 import java.util.Locale
 
 private var systemDefaultLocale: Locale? = null

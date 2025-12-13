@@ -34,7 +34,6 @@ import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.icons.AlbumArtist
 import com.arn.scrobble.icons.PanoIcons
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -53,7 +52,6 @@ import pano_scrobbler.composeapp.generated.resources.skip
 
 @Composable
 fun BlockedMetadatasScreen(
-    onOpenDialog: (PanoDialog) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BlockedMetadataVM = viewModel { BlockedMetadataVM() },
@@ -122,7 +120,6 @@ fun BlockedMetadatasScreen(
                     BlockedMetadataItem(
                         edit,
                         onEdit = {
-                            onOpenDialog(PanoDialog.BlockedMetadataAdd(it))
                         },
                         onDelete = ::doDelete,
                         modifier = Modifier.animateItem()

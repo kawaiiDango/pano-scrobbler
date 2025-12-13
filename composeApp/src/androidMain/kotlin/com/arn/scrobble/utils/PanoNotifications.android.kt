@@ -21,7 +21,6 @@ import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.media.PlayingTrackEventReceiver
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.navigation.DeepLinkUtils
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.updates.UpdateAction
 import com.arn.scrobble.utils.Stuff.format
@@ -129,7 +128,7 @@ actual object PanoNotifications {
             .apply {
                 val user = Scrobblables.currentAccount.value?.user
                 if (user != null) {
-                    val dialogArgs = PanoDialog.MusicEntryInfo(
+                    val dialogArgs = PanoRoute.Modal.MusicEntryInfo(
                         track = event.scrobbleData.toTrack(),
                         appId = event.origScrobbleData.appId,
                         user = user
@@ -161,7 +160,7 @@ actual object PanoNotifications {
         }
 
         if (event.nowPlaying) {
-            val editDialogArgs = PanoDialog.EditScrobble(
+            val editDialogArgs = PanoRoute.Modal.EditScrobble(
                 origScrobbleData = event.origScrobbleData,
                 hash = event.hash
             )
@@ -208,7 +207,7 @@ actual object PanoNotifications {
                 albumArtist = event.scrobbleData.albumArtist.orEmpty(),
             )
 
-            val dialogArgs = PanoDialog.BlockedMetadataAdd(
+            val dialogArgs = PanoRoute.Modal.BlockedMetadataAdd(
                 blockedMetadata = blockedMetadata,
                 hash = event.hash
             )
@@ -263,7 +262,7 @@ actual object PanoNotifications {
             )
             .also {
                 if (event.scrobbleError.canFixMetadata) {
-                    val editDialogArgs = PanoDialog.EditScrobble(
+                    val editDialogArgs = PanoRoute.Modal.EditScrobble(
                         origScrobbleData = event.scrobbleData,
                         hash = event.hash
                     )
@@ -367,7 +366,7 @@ actual object PanoNotifications {
             albumArtist = scrobbleData.albumArtist.orEmpty(),
         )
 
-        val dialogArgs = PanoDialog.BlockedMetadataAdd(
+        val dialogArgs = PanoRoute.Modal.BlockedMetadataAdd(
             blockedMetadata = blockedMetadata,
             hash = hash
         )
@@ -423,7 +422,7 @@ actual object PanoNotifications {
         else
             Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
-        val dialogArgs = PanoDialog.CollageGenerator(
+        val dialogArgs = PanoRoute.Modal.CollageGenerator(
             collageType = Stuff.TYPE_ALL,
             timePeriod = timePeriod,
             user = Scrobblables.currentAccount.value?.user ?: return

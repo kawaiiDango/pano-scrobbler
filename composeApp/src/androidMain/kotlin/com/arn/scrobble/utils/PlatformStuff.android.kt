@@ -21,8 +21,6 @@ import android.webkit.CookieManager
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.fromHtml
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.datastore.core.MultiProcessDataStoreFactory

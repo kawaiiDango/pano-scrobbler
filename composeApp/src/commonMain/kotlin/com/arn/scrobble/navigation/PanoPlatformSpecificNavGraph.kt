@@ -1,11 +1,11 @@
 package com.arn.scrobble.navigation
 
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.arn.scrobble.main.MainViewModel
 
-expect fun NavGraphBuilder.panoPlatformSpecificNavGraph(
-    onSetTitle: (String, String?) -> Unit,
+expect fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
+    onSetTitle: (PanoRoute, String) -> Unit,
     navigate: (PanoRoute) -> Unit,
-    goUp: () -> Unit,
+    goBack: () -> Unit,
     mainViewModel: MainViewModel,
 )

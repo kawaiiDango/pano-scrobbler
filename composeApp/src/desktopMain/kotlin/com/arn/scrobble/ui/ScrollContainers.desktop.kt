@@ -129,7 +129,9 @@ actual fun PanoLazyRow(
                 onClick = {
                     scope.launch {
                         val lastFullyVisibleIdx =
-                            state.layoutInfo.visibleItemsInfo.findLast { it.offset <= state.layoutInfo.viewportEndOffset }?.index
+                            state.layoutInfo.visibleItemsInfo.findLast {
+                                it.offset + it.size <= state.layoutInfo.viewportEndOffset
+                            }?.index
                                 ?: 0
 
                         val firstFullyVisibleIdx =
@@ -173,7 +175,9 @@ actual fun PanoLazyRow(
                 onClick = {
                     scope.launch {
                         val lastFullyVisibleIdx =
-                            state.layoutInfo.visibleItemsInfo.findLast { it.offset <= state.layoutInfo.viewportEndOffset }?.index
+                            state.layoutInfo.visibleItemsInfo.findLast {
+                                it.offset + it.size <= state.layoutInfo.viewportEndOffset
+                            }?.index
                                 ?: 0
 
                         val targetIdx =

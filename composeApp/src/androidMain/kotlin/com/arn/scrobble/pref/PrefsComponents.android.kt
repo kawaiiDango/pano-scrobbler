@@ -1,7 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.compose.runtime.Composable
-import com.arn.scrobble.themes.AppPreviewTheme
 import com.arn.scrobble.utils.AndroidStuff
 
 actual fun filterAppList(

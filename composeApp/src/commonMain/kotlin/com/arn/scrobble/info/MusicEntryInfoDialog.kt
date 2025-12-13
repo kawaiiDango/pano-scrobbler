@@ -77,7 +77,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.icons.PanoIcons
 import com.arn.scrobble.icons.UserTag
 import com.arn.scrobble.imageloader.MusicEntryImageReq
-import com.arn.scrobble.navigation.PanoDialog
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.IconButtonWithTooltip
@@ -123,7 +122,6 @@ fun MusicEntryInfoDialog(
     appId: String?,
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
-    onOpenDialog: (PanoDialog) -> Unit,
     scrollState: ScrollState,
     modifier: Modifier = Modifier,
     viewModel: InfoVM = viewModel { InfoVM() },
@@ -168,8 +166,8 @@ fun MusicEntryInfoDialog(
     }
 
     val onHorizontalEntryItemClick: (MusicEntry) -> Unit = {
-        onOpenDialog(
-            PanoDialog.MusicEntryInfo(
+        onNavigate(
+            PanoRoute.Modal.MusicEntryInfo(
                 track = it as? Track,
                 album = it as? Album,
                 artist = it as? Artist,
@@ -284,8 +282,8 @@ fun MusicEntryInfoDialog(
                 userTags = userTags[type],
                 userTagsHistory = userTagsHistory,
                 onTagClick = {
-                    onOpenDialog(
-                        PanoDialog.TagInfo(it)
+                    onNavigate(
+                        PanoRoute.Modal.TagInfo(it)
                     )
                 },
                 onUserTagAdd = {
@@ -316,8 +314,8 @@ fun MusicEntryInfoDialog(
                                 InfoTrackList(
                                     tracks = entry.tracks.track,
                                     onTrackClick = {
-                                        onOpenDialog(
-                                            PanoDialog.MusicEntryInfo(
+                                        onNavigate(
+                                            PanoRoute.Modal.MusicEntryInfo(
                                                 track = it,
                                                 appId = appId,
                                                 user = user
@@ -343,7 +341,7 @@ fun MusicEntryInfoDialog(
                                             artist = entry.copy(wiki = null),
                                             appId = appId,
                                             user = user,
-                                            type = Stuff.TYPE_TRACKS
+                                            entryType = Stuff.TYPE_TRACKS
                                         )
                                     )
                                 },
@@ -366,7 +364,7 @@ fun MusicEntryInfoDialog(
                                             artist = entry.copy(wiki = null),
                                             appId = appId,
                                             user = user,
-                                            type = Stuff.TYPE_ALBUMS
+                                            entryType = Stuff.TYPE_ALBUMS
                                         )
                                     )
                                 },
@@ -389,7 +387,7 @@ fun MusicEntryInfoDialog(
                                             artist = entry.copy(wiki = null),
                                             appId = appId,
                                             user = user,
-                                            type = Stuff.TYPE_ARTISTS
+                                            entryType = Stuff.TYPE_ARTISTS
                                         )
                                     )
                                 },

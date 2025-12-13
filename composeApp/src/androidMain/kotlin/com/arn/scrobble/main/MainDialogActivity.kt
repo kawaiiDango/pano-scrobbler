@@ -1,57 +1,26 @@
 package com.arn.scrobble.main
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.core.util.Consumer
-import com.arn.scrobble.navigation.DeepLinkUtils
-import com.arn.scrobble.navigation.PanoDialog
+import androidx.compose.runtime.CompositionLocalProvider
+import com.arn.scrobble.navigation.LocalActivityRestoredFlag
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 
 class MainDialogActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         setContent {
-            var currentDialogArgs by remember { mutableStateOf<PanoDialog?>(null) }
-            DisposableEffect(Unit) {
-                val consumer = Consumer<Intent> {
-                    currentDialogArgs = DeepLinkUtils.parseDialogDeepLink(it)
-
-                    if (currentDialogArgs == null) {
-                        finish()
-                        return@Consumer
-                    }
-                }
-                // Handle the intent that started this activity
-                intent?.let {
-                    if (savedInstanceState == null)
-                        consumer.accept(it)
-                }
-                // Handle new intents
-                addOnNewIntentListener(consumer)
-
-                onDispose {
-                    removeOnNewIntentListener(consumer)
-                }
-            }
-
             AppTheme {
-                currentDialogArgs?.let {
+                CompositionLocalProvider(LocalActivityRestoredFlag provides (savedInstanceState != null)) {
                     PanoMainDialogContent(
-                        dialogArgs = it,
-                        onFinish = ::finish
+                        onClose = { onBackPressedDispatcher.onBackPressed() }
                     )
                 }
             }

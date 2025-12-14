@@ -157,7 +157,6 @@
     <string name="pending_scrobbles">Scrobbles en attente</string>
     <string name="following" comment="accounts you are following on lastfm">Suivis</string>
     <string name="followers" comment="your lastfm followers">Abonnés</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
     <string name="allow_background">Autoriser le scrobbling en arrière-plan</string>
     <string name="grant_notification_access">Autoriser l&apos;accès aux notifications</string>
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n&apos;est lue</string>
@@ -434,7 +433,7 @@
     <string name="edit_example">par exemple pour remplacer Artist1 par Artist2 tout en gardant le reste des métadonnées inchangées, activer seulement le champ artiste, et remplissez les valeurs originales et corrigées de l'artiste, laissant les autres champs désactivés.</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">En utilisant %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">En n'utilisant pas %1$s</string>
-    <string name="as_text" comment="Like copy as text etc">En tant que texte</string>
+    <string name="as_text" comment="Like copy as text, but in short">En tant que texte</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="one_time_purchase">Achat unique</string>

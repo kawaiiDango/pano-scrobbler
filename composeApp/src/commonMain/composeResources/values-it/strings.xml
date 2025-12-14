@@ -157,7 +157,6 @@
     <string name="pending_scrobbles">Scrobbling in attesa</string>
     <string name="following" comment="accounts you are following on lastfm">Seguiti</string>
     <string name="followers" comment="your lastfm followers">Seguaci</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbling eseguiti, dal %2$s</string>
     <string name="allow_background">Consenti lo scrobbling in background</string>
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
     <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>

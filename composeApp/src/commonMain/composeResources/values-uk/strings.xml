@@ -189,7 +189,6 @@
     <string name="pending_scrobbles">Очікуючі Скробли</string>
     <string name="following" comment="accounts you are following on lastfm">Підписки</string>
     <string name="followers" comment="your lastfm followers">Підписники</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скроблів, з %2$s</string>
     <string name="allow_background">Дозволити скробблінг у фоновому режимі</string>
     <string name="grant_notification_access">Надайте доступ до сповіщень</string>
     <string name="grant_notification_access_desc">Потрібний для отримання метаданих. Немузичні сповіщення не зчитуються</string>

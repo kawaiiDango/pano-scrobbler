@@ -173,7 +173,6 @@
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="following" comment="accounts you are following on lastfm">Pratim</string>
     <string name="followers" comment="your lastfm followers">Pratitelji</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobbleano %1$s puta od %2$s</string>
     <string name="allow_background">Dopusti scrobbleanje u pozadini</string>
     <string name="grant_notification_access">Dopusti pristup obavijestima</string>
     <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>
@@ -450,7 +449,7 @@
     <string name="edit_example">npr. za zamjenu izvođača 1 s izvođačem 2 bez da se mijenjaju drugi metapodaci, omogućite samo polje izvođača i popunite samo izvorno i ispravljeno ime izvođača, a ostala polja ostavite onemogućena.</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kada se koristi %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kada se ne koristi %1$s</string>
-    <string name="as_text" comment="Like copy as text etc">Kao tekst</string>
+    <string name="as_text" comment="Like copy as text, but in short">Kao tekst</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>

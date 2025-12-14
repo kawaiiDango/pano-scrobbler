@@ -116,7 +116,6 @@
     <string name="delete">Tanggalin</string>
     <string name="delete_all">Tanggalin lahat</string>
     <string name="followers" comment="your lastfm followers">Mga follower</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, mula %2$s</string>
     <string name="allow_background">I-allow ang pag-iiscrobble sa background</string>
     <string name="grant_notification_access">Payagan ang pag-access sa mga notification</string>
     <string name="grant_notification_access_desc">Kailangan para makuha ang mga impormasyon ng kanta. Walang hindi-kantang notification ang babasahin</string>

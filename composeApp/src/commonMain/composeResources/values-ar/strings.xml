@@ -103,7 +103,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">ازالة الحب</string>
     <string name="pending_scrobbles">أسكروبلس معلق</string>
     <string name="followers" comment="your lastfm followers">المتابعين</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">أغنية ممسوحة %1$s منذ %2$s</string>
     <string name="allow_background">السماح بمسح الأغاني في الخلفية</string>
     <string name="grant_notification_access">منح صلاحية الإشعارات</string>
     <string name="grant_notification_access_desc">تحتاج لاسترداد بيانات التعريف الموسيقية. لا يتم قراءة أي إشعارات غير موسيقية</string>

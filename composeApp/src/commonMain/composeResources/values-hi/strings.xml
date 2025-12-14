@@ -152,7 +152,6 @@
     <string name="pending_scrobbles">बाकी स्क्रौब्ल</string>
     <string name="following" comment="accounts you are following on lastfm">फॉलोइंग</string>
     <string name="followers" comment="your lastfm followers">फ़ॉलोअर्स</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रौब्ल, %2$s से</string>
     <string name="allow_background">बैकग्राउंड में स्क्रॉबल करे</string>
     <string name="grant_notification_access">सूचनाएं के लिए अनुमति प्रदान करें</string>
     <string name="grant_notification_access_desc">गीत का मेटाडेटा प्राप्त करने के लिए आवश्यक है। अन्य कोई सुचनाएं नहीं पढ़ी जाती</string>

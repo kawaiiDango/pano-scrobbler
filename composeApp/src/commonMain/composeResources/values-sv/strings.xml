@@ -132,7 +132,6 @@
     <string name="pending_scrobbles">Väntande scrobbles</string>
     <string name="following" comment="accounts you are following on lastfm">Följer</string>
     <string name="followers" comment="your lastfm followers">Följare</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, sedan %2$s</string>
     <string name="allow_background">Tillåt scrobbling i bakgrunden</string>
     <string name="grant_notification_access">Bevilja åtkomst till aviseringar</string>
     <string name="grant_notification_access_desc">Krävs för att hämta musikrelaterad metadata. Inga icke-musiknotifieringar läses</string>

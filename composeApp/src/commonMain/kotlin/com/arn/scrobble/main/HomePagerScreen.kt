@@ -42,7 +42,6 @@ fun HomePagerScreen(
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
     getPullToRefreshTrigger: (Int) -> Flow<Unit>,
-    onGoToOnboarding: () -> Unit,
     mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -99,7 +98,6 @@ fun HomePagerScreen(
                 onTitleChange = {
                     scrobblesTitle = it
                 },
-                onGoToOnboarding = onGoToOnboarding,
                 modifier = Modifier.fillMaxSize()
             )
 

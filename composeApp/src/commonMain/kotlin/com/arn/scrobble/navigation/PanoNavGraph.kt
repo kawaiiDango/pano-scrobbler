@@ -95,7 +95,7 @@ object PanoNavGraph {
         onSetTabIdx: (PanoRoute.HasTabs, Int) -> Unit,
         onSetOtherUser: (UserCached?) -> Unit,
         navigate: (PanoRoute) -> Unit,
-        onSetOnboardingFinished: (Boolean) -> Unit,
+        onSetOnboardingFinished: () -> Unit,
         goBack: () -> Unit,
         pullToRefreshState: () -> PullToRefreshState,
         onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
@@ -152,9 +152,6 @@ object PanoNavGraph {
                     onSetRefreshing = onSetRefreshing,
                     mainViewModel = mainViewModel,
                     getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
-                    onGoToOnboarding = {
-                        onSetOnboardingFinished(false)
-                    },
                     modifier = modifier()
                 )
             }
@@ -177,9 +174,6 @@ object PanoNavGraph {
                 onSetRefreshing = onSetRefreshing,
                 mainViewModel = mainViewModel,
                 getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
-                onGoToOnboarding = {
-                    onSetOnboardingFinished(false)
-                },
                 modifier = modifier()
             )
         }
@@ -518,7 +512,7 @@ object PanoNavGraph {
             OnboardingScreen(
                 onNavigate = navigate,
                 onDone = {
-                    onSetOnboardingFinished(true)
+                    onSetOnboardingFinished()
                 },
                 modifier = modifier().addColumnPadding()
             )
@@ -644,7 +638,6 @@ object PanoNavGraph {
             onSetTitle = onSetTitle,
             navigate = navigate,
             goBack = goBack,
-            mainViewModel = mainViewModel,
         )
     }
 }

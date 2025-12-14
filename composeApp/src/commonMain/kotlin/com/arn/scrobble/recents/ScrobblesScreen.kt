@@ -112,7 +112,6 @@ fun ScrobblesScreen(
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
     pullToRefreshTriggered: Flow<Unit>,
-    onGoToOnboarding: () -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     onTitleChange: (String) -> Unit,
     editDataFlow: Flow<Pair<String, Track>>,
@@ -354,7 +353,7 @@ fun ScrobblesScreen(
 
                                 onClick = {
                                     viewModel.updateScrobblerServiceStatus()
-                                    onGoToOnboarding()
+                                    onNavigate(PanoRoute.Onboarding)
                                 }
                             }
 

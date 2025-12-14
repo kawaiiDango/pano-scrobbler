@@ -20,7 +20,6 @@ actual fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
     onSetTitle: (PanoRoute, String) -> Unit,
     navigate: (PanoRoute) -> Unit,
     goBack: () -> Unit,
-    mainViewModel: MainViewModel,
 ) {
     @Composable
     fun onSetTitleRes(route: PanoRoute, resId: StringResource) {

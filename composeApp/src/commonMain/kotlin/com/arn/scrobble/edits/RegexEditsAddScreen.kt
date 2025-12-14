@@ -704,7 +704,7 @@ private fun SearchFields(
     val captureGroupsVisualTransformation = remember(highlightCaptureGroups) {
         if (highlightCaptureGroups)
             HighlighterVisualTransformation(
-                stringsToHighlight = RegexEdit.Field.entries.map { "<" + it.name + ">" },
+                stringsToHighlight = RegexEdit.Field.entries.map { "?<" + it.name + ">" },
                 highlightColor = tertiaryColor
             )
         else

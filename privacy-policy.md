@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated on 2025, Aug 11 UTC_
+_Last updated on 2025, Dec 14 UTC_
 
 Applicable to the Pano Scrobbler app version 4.0 and later.
 
@@ -14,22 +14,26 @@ Privacy Policy.
 
 ### Information collected
 
-- Personal Information
+#### Personal Information
 
 User identifiable information such as a username or API token is used for logging in to music
 tracking services of your choice such as Last.fm, Libre.fm, ListenBrainz and self-hosted instances.
 
-- Non-Personal Information
+#### Non-Personal Information
 
-The app sends non-personal information such as titles of music playing on the device and other music
-metadata, to the previously mentioned music tracking services of your choice. To fetch images of
-artists and albums, the name of the artist and album is sent to Spotify. To fetch the missing
-metadata while scrobbling Deezer on Windows, the app uses the Deezer API. If you are
-using the version downloaded from Google Play and automatic error reporting is enabled, an
-anonymous, resettable device identifier is sent to Firebase Crashlytics. If you are using the
-non-Google Play version and have entered the unlock key, a truncated hash of a device identifier as
-well as the unlock key is sent to the backend server to check its validity and to limit the number
-of devices it can be used on.
+- The app sends non-personal information such as titles of music playing on the device and other
+  music metadata, to the previously mentioned music tracking services of your choice, for its core
+  functionality.
+- To fetch images of artists and albums, the name of the artist and album is sent to Spotify. This
+  is functionality disabled by default for fresh installs.
+- To fetch the missing metadata while scrobbling Deezer on Windows, the app uses the Deezer API.
+- If you are using the Google Play version and automatic error reporting is enabled, an anonymous,
+  resettable device identifier is sent to Firebase Crashlytics, along with stack traces of the
+  error.
+- If you are using the non-Google Play version and have entered the unlock key, a truncated hash of
+  a device identifier as well as the unlock key is sent to my backend server to check its validity
+  and to limit the number of devices it can be used on. Since hashing is a one-way function, the
+  real identifier cannot be recovered from the hash.
 
 ### Third Party Services
 
@@ -51,7 +55,8 @@ If automatic error reporting is enabled (for the Google Play version only) and a
 my app or if you choose to send logs for a bug report via email, non-personal information such as
 logs for events that led to the error, stack traces for the error, device information such as model
 name, manufacturer name, OS name and version, amount of RAM used etc are collected and sent to me
-through third party services. This information is used to identify and fix bugs.
+through third party services namely Firebase Crashlytics or your email provider. This information is
+used to identify and fix bugs.
 
 ### Cookies
 
@@ -59,14 +64,15 @@ Cookies are files with a small amount of data that are commonly used as anonymou
 identifiers. These are sent to your browser from the websites that you visit and are stored on your
 device's internal memory.
 
-This app uses a webview for logging in to services such as Last.fm, Libre.fm or custom servers with
-a URL of your choice. These 3rd party websites may use cookies to keep track of logged in sessions
-and to improve their services.
+This app uses a webview for logging in to Last.fm. This 3rd party website may use cookies to keep
+track of logged in sessions and to improve their services.
 
-### Notification Access Permission
+### Notification Read, Reply and Control (Android Permission)
 
-The permission is used to read music metadata and playing state from other apps. The app does not
-access or read actual notifications except from these apps, if they are enabled for scrobbling:
+The permission is used to read music metadata and playing state from other apps using the
+MediaSessionManager API. The app does not access or parse actual notification texts except from
+these apps, if they have been enabled for scrobbling by the user:
+
 - Pixel's Now Playing
 - Ambient Music Mod
 - Shazam

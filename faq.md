@@ -97,8 +97,10 @@ Use the `--data-dir` or `-d` command line argument, followed by the path to the 
 
 ### [desktop] How do I correctly scrobble media playing on a web browser?
 
-Web browsers or browser-like apps (e.g. most Electron and WebView apps on Windows) are not
-supported. Use WebScrobbler for web browsers.
+Browsers on Windows do not report the complete song metadata to the OS media controls. The situation
+is better on Linux, but depends on the website correctly reporting the metadata in their
+MediaSession. The same applies to browser-like apps (e.g. most Electron and WebView apps). Use
+WebScrobbler for web browsers, instead.
 
 ### [desktop] The app does not show notifications on Windows
 

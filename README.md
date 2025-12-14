@@ -2,11 +2,6 @@
 
 [\[repository\]](https://github.com/kawaiiDango/pano-scrobbler)
 
-[play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
-[obtainium-link]: https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/kawaiiDango/pano-scrobbler
-[fdroid-link]: https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA
-[crowdin-link]: https://crowdin.com/project/pscrobbler
-
 <img src="desktop-screenshots/1-scrobbles-desktop.jpg" alt="scrobbles screen" width="250"/> <img src="desktop-screenshots/2-charts-desktop.jpg" alt="charts screen" width="250"/>
 
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-friends-mobile.jpg" alt="friends screen" width="150"/> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4-details-mobile.jpg" alt="details screen" width="150"/>
@@ -15,24 +10,39 @@
 
 **Windows:**
 
-[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe) [![winget](img/winget.svg)](https://winstall.app/apps/kawaiiDango.pano-scrobbler)
+[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe)
+[![winget](img/winget.svg)](https://winstall.app/apps/kawaiiDango.pano-scrobbler)
+
+```
+winget install -e --id kawaiiDango.pano-scrobbler
+```
 
 **Linux:**
 
-[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage) [![github-arm64](img/github-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-liinux-arm64.AppImage) [![aur](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin)
+[![github-x64](img/github-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage)
+[![github-arm64](img/github-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-liinux-arm64.AppImage)
+[![aur](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin)
+
+```
+yay -S pano-scrobbler-bin
+```
 
 The desktop versions do not use any closed source libraries.
 
 **Android (phones, tablets, TVs and Chromebooks):**
 
-[![github](img/github.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases) [![fdroid](img/fdroid.svg)][fdroid-link] [![obtainium](img/obtainium.svg)][obtainium-link] [![IzzyOnDroid](img/izzyondroid.svg)](https://apt.izzysoft.de/fdroid/index/apk/com.arn.scrobble) [![play-store](img/play-store.svg)][play-store-link]
+[![github](img/github.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases)
+[![fdroid](img/fdroid.svg)](https://kawaiidango.github.io/pano-scrobbler/fdroid/repo?fingerprint=9954ECAB27F9FCE8290AC75A33F3DFE9FE5F6F5B8E6F33AD7F98307AC4D487BA)
+[![obtainium](img/obtainium.svg)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/kawaiiDango/pano-scrobbler)
+[![IzzyOnDroid](img/izzyondroid.svg)](https://apt.izzysoft.de/fdroid/index/apk/com.arn.scrobble)
+[![play-store](img/play-store.svg)](https://play.google.com/store/apps/details?id=com.arn.scrobble)
 
 Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
 
 The non-Play variant can optionally display a persistent notification on Android 14+.
 This may or may not help prevent the system from killing the app in the background on devices from certain manufacturers.
 
-Installing the non-Play version from the F-Droid compatible repo or Obtainium will get you automatic updates.
+Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or Obtainium will get you automatic updates.
 
 **APK SHA256 fingerprint for non-Play builds:**
 ```
@@ -41,7 +51,7 @@ Installing the non-Play version from the F-Droid compatible repo or Obtainium wi
 
 ### Translate
 
-[![translate](img/crowdin.svg)][crowdin-link]
+[![translate](img/crowdin.svg)](https://crowdin.com/project/pscrobbler)
 
 ## [FAQ](faq.md) • [Privacy](privacy-policy.md) • [Compiling](instructions.md) • [TV](tv.md)
 
@@ -95,7 +105,7 @@ reported bugs and helped me with this project.
 
 ### Disclaimer
 
-This project is not affiliated with Last.fm, or any other scrobbling service.
+This project is not affiliated with Last.fm, Libre.fm, ListenBrainz or any other scrobbling service.
 
 ### License
 

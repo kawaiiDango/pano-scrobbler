@@ -141,7 +141,6 @@
     <string name="pending_scrobbles">Scrobble sementara</string>
     <string name="following" comment="accounts you are following on lastfm">Mengikuti</string>
     <string name="followers" comment="your lastfm followers">Pengikut</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">scrobble %1$s sejak %2$s</string>
     <string name="allow_background">Membolehkan scrobble di latar belakang</string>
     <string name="grant_notification_access">Berikan akses pemberitahuan</string>
     <string name="grant_notification_access_desc">Diperlukan untuk menjejak metadata muzik. Notifikasi selain ini tidak diakses</string>

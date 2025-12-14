@@ -156,7 +156,6 @@
     <string name="pending_scrobbles">विचाराधीन स्क्रबल</string>
     <string name="following" comment="accounts you are following on lastfm">फलोइङ</string>
     <string name="followers" comment="your lastfm followers">फलोवर्स</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s स्क्रबल, %2$s देखि</string>
     <string name="allow_background">ब्याकग्राउण्डमा स्क्रबल गर्ने अनुमति दिनुहोस्</string>
     <string name="grant_notification_access">सूचना अनुमति प्रदान गर्नुहोस्</string>
     <string name="grant_notification_access_desc">संगीत मेटाडेटा प्राप्त गर्न आवश्यक छ। अन्य कुनै पनि गैर-संगीत सूचनाहरू पढिने छैनन्</string>

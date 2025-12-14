@@ -141,7 +141,6 @@
     <string name="pending_scrobbles">스크로블 보류 중</string>
     <string name="following" comment="accounts you are following on lastfm">팔로잉</string>
     <string name="followers" comment="your lastfm followers">팔로워</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s부터, %1$s 스크로블</string>
     <string name="allow_background">백그라운드 스크로블링 허용</string>
     <string name="grant_notification_access">알림 접근 권한 부여</string>
     <string name="grant_notification_access_desc">음악 메타데이터를 검색하는 데 필요합니다. 음악 알림이 아니면 읽지 않습니다.</string>

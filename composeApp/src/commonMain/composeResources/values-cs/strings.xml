@@ -189,7 +189,6 @@
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string name="following" comment="accounts you are following on lastfm">Sledovaní</string>
     <string name="followers" comment="your lastfm followers">Sledující</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblů od %2$s</string>
     <string name="allow_background">Povolit scrobblování na pozadí</string>
     <string name="grant_notification_access">Udělit přístup k oznámením</string>
     <string name="grant_notification_access_desc">Nutné pro získání metadat skladeb. Nebudou přečtena žádná nehudební oznámení</string>

@@ -137,7 +137,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Ξε-αγάπησε</string>
     <string name="pending_scrobbles">Εκκρεμούν Scrobbles</string>
     <string name="followers" comment="your lastfm followers">Ακόλουθοι</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, από %2$s</string>
     <string name="allow_background">Να επιτρέπεται το scrobbling στο παρασκήνιο</string>
     <string name="grant_notification_access">Πρόσβαση ειδοποιήσεων</string>
     <string name="grant_notification_access_desc">Απαιτείται για την ανάκτηση μεταδεδομένων μουσικής. Δεν διαβάζονται ειδοποιήσεις εκτος της μουσικής</string>
@@ -352,7 +351,7 @@
     <string name="medium" comment="As in high/medium/low">Μέτριο</string>
     <string name="low" comment="As in high/medium/low">Χαμηλό</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Γραμμή %1$s</string>
-    <string name="as_text" comment="Like copy as text etc">Σαν κείμενο</string>
+    <string name="as_text" comment="Like copy as text, but in short">Σαν κείμενο</string>
     <!--  pro  -->
     <string name="get_pro">Υποστήριξη αυτής της εφαρμογής</string>
     <string name="one_time_purchase">Μια φορά</string>

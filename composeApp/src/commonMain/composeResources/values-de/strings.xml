@@ -157,7 +157,6 @@
     <string name="pending_scrobbles">Ausstehende Scrobbles</string>
     <string name="following" comment="accounts you are following on lastfm">Abonniert</string>
     <string name="followers" comment="your lastfm followers">Abonnenten</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, seit %2$s</string>
     <string name="allow_background">Scrobbeln im Hintergrund erlauben</string>
     <string name="grant_notification_access">Zugriff auf die Benachrichtigungen gewähren</string>
     <string name="grant_notification_access_desc">Benötigt, um Musik-Metadaten abzurufen. Keine Nicht-Musik-Benachrichtigungen werden gelesen</string>
@@ -428,7 +427,7 @@
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linie %1$s</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Bei Verwendung von %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Nicht bei Verwendung von %1$s</string>
-    <string name="as_text" comment="Like copy as text etc">Als Text</string>
+    <string name="as_text" comment="Like copy as text, but in short">Als Text</string>
     <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
     <string name="one_time_purchase">Einmalig</string>

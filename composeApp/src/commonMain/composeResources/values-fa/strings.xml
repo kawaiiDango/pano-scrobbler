@@ -151,7 +151,6 @@
     <string name="pending_scrobbles">اسکرابل های منتظر</string>
     <string name="following" comment="accounts you are following on lastfm">دنبال‌شده</string>
     <string name="followers" comment="your lastfm followers">دنبال‌کنندگان</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s تا اسکرابل، پس از %2$s</string>
     <string name="allow_background">اجازه اسکرابل در پس‌زمینه</string>
     <string name="grant_notification_access">دادن اجازه دسترسی به اعلانات</string>
     <string name="grant_notification_access_desc">برای بازیابی فراداده آهنگ لازمه، هیچ اعلان بی آهنگی رو نمی‌خونم</string>

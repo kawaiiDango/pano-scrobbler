@@ -127,7 +127,6 @@
     <string name="love" comment="Love/like a song">Preferit</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Elimina dels preferits</string>
     <string name="pending_scrobbles">Scrobbles pendents</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles des del %2$s</string>
     <string name="allow_background">Permet fer scrobbling en segon pla</string>
     <string name="send_notifications">Permet notificacions</string>
     <string name="will_not_scrobble">Si salteu aquest pas, es desactivarà l'enviament d'scrobbles</string>

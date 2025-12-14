@@ -189,7 +189,6 @@
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string name="following" comment="accounts you are following on lastfm">Sekama</string>
     <string name="followers" comment="your lastfm followers">Sekėjai</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s skroblai (-ų), nuo %2$s</string>
     <string name="allow_background">Leisti skrobuolinimą fone</string>
     <string name="grant_notification_access">Suteikti pranešimo prieigą</string>
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
@@ -385,7 +384,7 @@
     <string name="no_updates">Nėra naujinimų</string>
     <string name="pref_notify_updates">Automatiniai naujinimai</string>
     <string name="update_downloaded">Naujinimas atsisiųstas</string>
-    <string name="pref_search_url_template">Ieškoti URL šablono</string>
+    <string name="pref_search_url_template">Paieškos URL šablonas</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Naudokite $query kaip paieškos termino vietaženklį.</string>
     <string name="pref_native_file_picker">Naudoti vietinį failų parinkiklį</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Yra naujinimas: %1$s</string>
@@ -466,7 +465,7 @@
     <string name="edit_example">pvz., kad pakeistumėte Atlikėją1 su Atlikėju2, paliekant kitus metaduomenis nepakitusius, įjunkite tik atlikėjo lauką ir užpildykite originalią ir pataisytą atlikėjo reikšmę, palikdami kitus laukus išjungtus.</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kai naudojant „%1$s“</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kai nenaudojant „%1$s“</string>
-    <string name="as_text" comment="Like copy as text etc">Kaip tekstas</string>
+    <string name="as_text" comment="Like copy as text, but in short">Kaip tekstas</string>
     <!--  pro  -->
     <string name="get_pro">Paremti šią programą</string>
     <string name="one_time_purchase">Vienkartinis</string>

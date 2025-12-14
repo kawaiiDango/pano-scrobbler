@@ -157,7 +157,6 @@
     <string name="pending_scrobbles">Bekleyen Skroplar</string>
     <string name="following" comment="accounts you are following on lastfm">Takip Edilen</string>
     <string name="followers" comment="your lastfm followers">Takipçiler</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s itibariyle %1$s skrop</string>
     <string name="allow_background">Arkaplanda skroplamaya izin ver</string>
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
     <string name="grant_notification_access_desc">Müzik meta verilerini almak için gerekli. Müzik dışı bildirimler okunmaz</string>
@@ -286,6 +285,8 @@
     <string name="duration">Süre</string>
     <string name="total_listen_time">Toplam dinleme zamanı</string>
     <string name="enable" comment="To enable some feature">Etkinleştir</string>
+    <string name="disable" comment="To disable some feature">Devre dışı bırak</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Kaldır: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Boyut</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Eksik resimleri atla</string>
     <string name="create_collage">Kolaj oluştur</string>
@@ -342,6 +343,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listeler</string>
     <string name="regex_rules">Düzenli ifade kuralları</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Engellenmiş meta veri</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">herhangi bir şey</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">mevcut veri</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
     <string name="pref_translate_credits">Çeviri ekibi</string>
     <string name="pref_oss_credits">Açık kaynak lisansları</string>
@@ -411,6 +414,8 @@
     <string name="low" comment="As in high/medium/low">Düşük</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Bazı uygulamalar eklentilere ihtiyaç duyar</string>
     <string name="reload" comment="Reload or refresh">Yeniden yükle</string>
+    <string name="pref_tray_icon_theme">Tepsi simgesi teması</string>
+    <string name="min_track_duration">Şundan uzun parçaları skropla</string>
     <string name="automation">Pano Scrobbler'ı otomasyon uygulamaları üzerinden kontrol edin</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s üst verileri için ülke</string>
     <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s için eksik üst verileri al</string>
@@ -419,6 +424,16 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Uygulamayı %1$s üzerinden edin</string>
     <string name="first_artist">Sadece ilk sanatçıyı kullan</string>
     <string name="external_metadata">Harici üst veri kaynakları</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Satır %1$s</string>
+    <string name="album_art_now_playing">Gerektiğinde, albüm kapağını Şimdi Oynatılıyor'dan al</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%2$s içerisinde %1$s kapatıldı</string>
+    <string name="discord_compact_view_line">"Şu anda dinliyor": olarak göster</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Mevcut yer tutucular: %1$s</string>
+    <string name="show_paused_for">Şunun için duraklatılmış medyayı göster</string>
+    <string name="edit_example">Örn. Sanatçı1'i Sanatçı2 ile değiştirmek ve meta verilerinin geri kalanını değiştirmemek için yalnızca sanatçı alanını etkinleştirin ve orijinal ve düzeltilmiş sanatçı değerlerini doldurun, diğer alanları devre dışı bırakın.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">%1$s kullanılıyorken</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">%1$s kullanılmıyorken</string>
+    <string name="as_text" comment="Like copy as text, but in short">Metin olarak</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="one_time_purchase">Bir kez</string>

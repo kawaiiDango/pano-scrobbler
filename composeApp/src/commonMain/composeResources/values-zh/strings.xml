@@ -141,7 +141,6 @@
     <string name="pending_scrobbles">待记录的音乐</string>
     <string name="following" comment="accounts you are following on lastfm">关注</string>
     <string name="followers" comment="your lastfm followers">关注者</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s 项记录，始于 %2$s</string>
     <string name="allow_background">允许后台抓取记录</string>
     <string name="grant_notification_access">授予通知访问权限</string>
     <string name="grant_notification_access_desc">借此获取音乐元数据信息，不会读取非音乐类通知</string>

@@ -147,7 +147,6 @@
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
     <string name="following" comment="accounts you are following on lastfm">Seurataan</string>
     <string name="followers" comment="your lastfm followers">Seuraajat</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblausta %2$s lähtien</string>
     <string name="allow_background">Salli scrobblaaminen taustalla</string>
     <string name="grant_notification_access">Myönnä ilmoitusten käyttöoikeus</string>
     <string name="grant_notification_access_desc">Tarvitaan musiikin metadatan hakemiseen. Ei lueta muita kuin musiikkia koskevia ilmoituksia</string>

@@ -139,7 +139,6 @@
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="following" comment="accounts you are following on lastfm">フォロー中</string>
     <string name="followers" comment="your lastfm followers">フォロワー</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s Scrobble — %2$sより</string>
     <string name="allow_background">バックグラウンドでもScrobbleする</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>

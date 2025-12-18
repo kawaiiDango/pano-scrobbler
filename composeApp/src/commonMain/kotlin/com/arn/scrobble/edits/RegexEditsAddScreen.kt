@@ -13,16 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -53,11 +43,21 @@ import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.RegexEditsDao.Companion.countNamedCaptureGroups
 import com.arn.scrobble.db.RegexMode
 import com.arn.scrobble.db.mode
-import com.arn.scrobble.icons.AlbumArtist
-import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.icons.Add
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.ContentCopy
+import com.arn.scrobble.icons.Delete
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.jsonSerializableSaver
+import com.arn.scrobble.panoicons.AlbumArtist
+import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.ButtonWithIcon
@@ -356,7 +356,7 @@ fun RegexEditsAddScreen(
             if (!regexLearnt) {
                 DismissableNotice(
                     title = stringResource(Res.string.edit_regex_warning),
-                    icon = Icons.Outlined.Info,
+                    icon = Icons.Info,
                     onClick = {
                         PlatformStuff.openInBrowser("https://www.google.com/search?q=regex+tutorial")
                     },
@@ -578,7 +578,7 @@ fun RegexEditsAddScreen(
                         },
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Delete,
+                            imageVector = Icons.Delete,
                             contentDescription = stringResource(Res.string.delete),
                             tint = MaterialTheme.colorScheme.error,
                         )
@@ -605,7 +605,7 @@ fun RegexEditsAddScreen(
                             }
                         }
                     },
-                    icon = Icons.Outlined.Check,
+                    icon = Icons.Check,
                     text = stringResource(Res.string.save),
                 )
             }
@@ -814,7 +814,7 @@ private fun CopyFromSelector(
             Text(nullSelectionText)
         } else {
             Icon(
-                imageVector = Icons.Outlined.ContentCopy,
+                imageVector = Icons.ContentCopy,
                 contentDescription = nullSelectionText,
                 modifier = Modifier.padding(end = 4.dp)
             )
@@ -822,7 +822,7 @@ private fun CopyFromSelector(
             Text(itemToTexts[selected]!!)
         }
 
-        Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+        Icon(Icons.ArrowDropDown, contentDescription = null)
 
         DropdownMenu(
             expanded = dropDownShown,
@@ -858,9 +858,9 @@ private fun CopyFromSelector(
 @Composable
 fun getIconForField(field: RegexEdit.Field): ImageVector {
     return when (field) {
-        RegexEdit.Field.track -> Icons.Outlined.MusicNote
-        RegexEdit.Field.album -> Icons.Outlined.Album
-        RegexEdit.Field.artist -> Icons.Outlined.Mic
+        RegexEdit.Field.track -> Icons.MusicNote
+        RegexEdit.Field.album -> Icons.Album
+        RegexEdit.Field.artist -> Icons.Mic
         RegexEdit.Field.albumArtist -> PanoIcons.AlbumArtist
     }
 }
@@ -905,7 +905,7 @@ private fun AppSelector(
             onClick = { onNavigateToAppList(appItems.map { it.appId }) },
         ) {
             Icon(
-                Icons.Outlined.Add,
+                Icons.Add,
                 stringResource(Res.string.add)
             )
         }

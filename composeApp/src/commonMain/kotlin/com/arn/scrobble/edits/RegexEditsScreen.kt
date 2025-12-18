@@ -12,20 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Block
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.DragHandle
-import androidx.compose.material.icons.outlined.FindReplace
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Public
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.SwipeLeftAlt
-import androidx.compose.material.icons.outlined.ToggleOff
-import androidx.compose.material.icons.outlined.ToggleOn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -53,8 +39,21 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.icons.Apps
+import com.arn.scrobble.icons.Block
+import com.arn.scrobble.icons.Delete
+import com.arn.scrobble.icons.DragHandle
+import com.arn.scrobble.icons.FindReplace
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.KeyboardArrowUp
 import com.arn.scrobble.icons.MatchCase
-import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.icons.MoreVert
+import com.arn.scrobble.icons.Public
+import com.arn.scrobble.icons.Settings
+import com.arn.scrobble.icons.SwipeLeftAlt
+import com.arn.scrobble.icons.ToggleOff
+import com.arn.scrobble.icons.ToggleOn
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.DraggableItem
@@ -321,7 +320,7 @@ private fun PresetItem(
                 onClick = onNavigateSettings
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Settings,
+                    imageVector = Icons.Settings,
                     contentDescription = stringResource(Res.string.settings),
                 )
             }
@@ -357,7 +356,7 @@ private fun RegexEditItem(
 
         if (!PlatformStuff.isTv) {
             Icon(
-                imageVector = Icons.Outlined.DragHandle,
+                imageVector = Icons.DragHandle,
                 contentDescription = stringResource(Res.string.edit_drag_handle),
                 modifier = Modifier
                     .size(40.dp)
@@ -374,7 +373,7 @@ private fun RegexEditItem(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.KeyboardArrowUp,
+                            imageVector = Icons.KeyboardArrowUp,
                             contentDescription = stringResource(Res.string.move_up),
                         )
                     }
@@ -388,7 +387,7 @@ private fun RegexEditItem(
                         checked = false,
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.KeyboardArrowDown,
+                            imageVector = Icons.KeyboardArrowDown,
                             contentDescription = stringResource(Res.string.move_down),
                         )
                     }
@@ -432,7 +431,7 @@ private fun RegexEditItem(
             enabled = !forShimmer,
         ) {
             Icon(
-                imageVector = Icons.Outlined.MoreVert,
+                imageVector = Icons.MoreVert,
                 contentDescription = stringResource(Res.string.item_options),
             )
 
@@ -454,9 +453,9 @@ private fun RegexEditItem(
                     leadingIcon = {
                         Icon(
                             imageVector = if (!regexEdit.enabled)
-                                Icons.Outlined.ToggleOff
+                                Icons.ToggleOff
                             else
-                                Icons.Outlined.ToggleOn,
+                                Icons.ToggleOn,
                             contentDescription = null,
                         )
                     },
@@ -475,7 +474,7 @@ private fun RegexEditItem(
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Outlined.Delete,
+                            imageVector = Icons.Delete,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -494,15 +493,15 @@ private fun RegexEditItem(
 private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
     val m = mutableListOf<ImageVector>()
 
-    if (!regexEdit.enabled) m += Icons.Outlined.ToggleOff
+    if (!regexEdit.enabled) m += Icons.ToggleOff
 
-    if (regexEdit.blockPlayerAction != null) m += Icons.Outlined.Block
-    else if (regexEdit.replacement == null) m += Icons.Outlined.SwipeLeftAlt
-    else m += Icons.Outlined.FindReplace
+    if (regexEdit.blockPlayerAction != null) m += Icons.Block
+    else if (regexEdit.replacement == null) m += Icons.SwipeLeftAlt
+    else m += Icons.FindReplace
 
-    if (regexEdit.appIds.isNotEmpty()) m += Icons.Outlined.Apps
-    if (regexEdit.caseSensitive) m += PanoIcons.MatchCase
-    if (regexEdit.replacement?.replaceAll == true) m += Icons.Outlined.Public
+    if (regexEdit.appIds.isNotEmpty()) m += Icons.Apps
+    if (regexEdit.caseSensitive) m += Icons.MatchCase
+    if (regexEdit.replacement?.replaceAll == true) m += Icons.Public
 
     return m
 }

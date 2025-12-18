@@ -4,12 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import com.arn.scrobble.discordrpc.DiscordRpcScreen
-import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.addColumnPadding
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource

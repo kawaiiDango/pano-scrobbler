@@ -23,8 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
@@ -84,6 +82,8 @@ import coil3.compose.setSingletonImageLoaderFactory
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.automirrored.ArrowBack
 import com.arn.scrobble.imageloader.newImageLoader
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy
 import com.arn.scrobble.navigation.LocalNavigationType
@@ -630,7 +630,7 @@ private fun PanoTopAppBar(
                 ) {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            imageVector = Icons.AutoMirrored.ArrowBack,
                             contentDescription = stringResource(Res.string.back)
                         )
                     }

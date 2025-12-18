@@ -3,9 +3,6 @@ package com.arn.scrobble.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +23,9 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import com.arn.scrobble.icons.Close
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.automirrored.ArrowBack
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy.Companion.bottomSheet
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.launch
@@ -113,7 +113,7 @@ private fun BottomSheetDialogParent(
                     .align(Alignment.CenterHorizontally),
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    imageVector = Icons.AutoMirrored.ArrowBack,
                     contentDescription = stringResource(Res.string.back),
                 )
             }
@@ -131,7 +131,7 @@ private fun BottomSheetDialogParent(
                     .align(Alignment.CenterHorizontally),
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Close,
+                    imageVector = Icons.Close,
                     contentDescription = stringResource(Res.string.close),
                 )
             }

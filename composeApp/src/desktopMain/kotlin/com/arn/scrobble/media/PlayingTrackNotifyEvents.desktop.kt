@@ -6,7 +6,6 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {

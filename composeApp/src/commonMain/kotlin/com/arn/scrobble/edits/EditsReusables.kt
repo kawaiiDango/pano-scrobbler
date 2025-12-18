@@ -2,11 +2,6 @@ package com.arn.scrobble.edits
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.DeleteOutline
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -24,6 +19,11 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.arn.scrobble.icons.Apps
+import com.arn.scrobble.icons.Close
+import com.arn.scrobble.icons.Delete
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.placeholderPainter
@@ -45,7 +45,7 @@ fun AppItemChip(
         },
         trailingIcon = {
             Icon(
-                imageVector = Icons.Outlined.Close,
+                imageVector = Icons.Close,
                 contentDescription = stringResource(Res.string.close)
             )
 
@@ -61,7 +61,7 @@ fun AppItemChip(
         avatar = {
             AsyncImage(
                 model = PackageName(appListItem.appId),
-                error = rememberVectorPainter(Icons.Outlined.Apps),
+                error = rememberVectorPainter(Icons.Apps),
                 placeholder = placeholderPainter(),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
@@ -86,7 +86,7 @@ fun EditsDeleteMenu(
         onClick = {
             deleteMenuShown = true
         }) {
-        Icon(Icons.Outlined.MoreVert, contentDescription = stringResource(Res.string.more))
+        Icon(Icons.MoreVert, contentDescription = stringResource(Res.string.more))
         DropdownMenu(
             expanded = deleteMenuShown,
             onDismissRequest = { deleteMenuShown = false }
@@ -100,7 +100,7 @@ fun EditsDeleteMenu(
                 },
                 leadingIcon = {
                     Icon(
-                        Icons.Outlined.DeleteOutline,
+                        Icons.Delete,
                         tint = MaterialTheme.colorScheme.error,
                         contentDescription = null
                     )

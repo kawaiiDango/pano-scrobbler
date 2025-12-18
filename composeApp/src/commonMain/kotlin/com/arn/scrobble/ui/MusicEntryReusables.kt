@@ -31,29 +31,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.ZeroCornerSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowRightAlt
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.AllOut
-import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.FiberManualRecord
-import androidx.compose.material.icons.outlined.GridView
-import androidx.compose.material.icons.outlined.HeartBroken
-import androidx.compose.material.icons.outlined.HourglassEmpty
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.KeyboardDoubleArrowDown
-import androidx.compose.material.icons.outlined.KeyboardDoubleArrowUp
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.Mic
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -107,11 +84,34 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.icons.Nothing
-import com.arn.scrobble.icons.PanoIcons
-import com.arn.scrobble.icons.RectFilledTranslucent
-import com.arn.scrobble.icons.StonksNew
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.AllOut
+import com.arn.scrobble.icons.AutoAwesomeMosaic
+import com.arn.scrobble.icons.Circle
+import com.arn.scrobble.icons.Close
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.GraphicEq
+import com.arn.scrobble.icons.GridView
+import com.arn.scrobble.icons.HeartBroken
+import com.arn.scrobble.icons.HourglassEmpty
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.KeyboardArrowUp
+import com.arn.scrobble.icons.KeyboardDoubleArrowDown
+import com.arn.scrobble.icons.KeyboardDoubleArrowUp
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MoreVert
+import com.arn.scrobble.icons.PlayArrow
+import com.arn.scrobble.icons.automirrored.ArrowRightAlt
+import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
+import com.arn.scrobble.icons.automirrored.List
+import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.imageloader.MusicEntryImageReq
+import com.arn.scrobble.panoicons.Nothing
+import com.arn.scrobble.panoicons.PanoIcons
+import com.arn.scrobble.panoicons.RectFilledTranslucent
+import com.arn.scrobble.panoicons.StonksNew
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.PanoTimeFormatter
@@ -286,7 +286,7 @@ fun MusicEntryListItem(
                         error = if (!isPending)
                             placeholderImageVectorPainter(entry)
                         else
-                            placeholderImageVectorPainter(entry, Icons.Outlined.HourglassEmpty),
+                            placeholderImageVectorPainter(entry, Icons.HourglassEmpty),
                         // this placeholder overrides the one set in model
                         placeholder = if (imageMemoryCacheKey != null)
                             null
@@ -331,14 +331,14 @@ fun MusicEntryListItem(
                             .offset(x = 6.dp, y = (-6).dp)
 
                         Icon(
-                            imageVector = if (entry.userloved == true) Icons.Outlined.Favorite else Icons.Outlined.HeartBroken,
+                            imageVector = if (entry.userloved == true) Icons.Filled.Favorite else Icons.HeartBroken,
                             contentDescription = stringResource(if (entry.userloved == true) Res.string.loved else Res.string.hate),
                             tint = MaterialTheme.colorScheme.secondary,
                             modifier = loveHateModifier
                         )
 
                         Icon(
-                            imageVector = Icons.Outlined.FavoriteBorder,
+                            imageVector = Icons.Favorite,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSecondary,
                             modifier = loveHateModifier
@@ -452,7 +452,7 @@ fun MusicEntryListItem(
                         ) {
                             if (entry is Track && entry.isNowPlaying) {
                                 Icon(
-                                    imageVector = Icons.Rounded.PlayArrow,
+                                    imageVector = Icons.PlayArrow,
                                     contentDescription = stringResource(Res.string.time_just_now),
                                     modifier = Modifier
                                         .size(22.dp)
@@ -478,7 +478,7 @@ fun MusicEntryListItem(
                                 enabled = !forShimmer
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.MoreVert,
+                                    imageVector = Icons.MoreVert,
                                     contentDescription = stringResource(Res.string.item_options)
                                 )
                             }
@@ -743,7 +743,7 @@ fun ExpandableHeaderItem(
     ) {
         if (enabled)
             Icon(
-                imageVector = if (expanded) Icons.Outlined.KeyboardArrowDown else Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                imageVector = if (expanded) Icons.KeyboardArrowDown else Icons.AutoMirrored.KeyboardArrowRight,
                 contentDescription = if (expanded)
                     stringResource(Res.string.collapse)
                 else
@@ -801,7 +801,7 @@ fun GoToDetailsHeaderItem(
             )
 
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowRightAlt,
+                imageVector = Icons.AutoMirrored.ArrowRightAlt,
                 contentDescription = stringResource(Res.string.show_all),
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -880,7 +880,7 @@ fun ExpandableHeaderMenu(
 
         Box {
             Icon(
-                imageVector = Icons.Outlined.MoreVert,
+                imageVector = Icons.MoreVert,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -922,7 +922,7 @@ fun DismissableNotice(
                 modifier = Modifier
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Close,
+                    imageVector = Icons.Close,
                     contentDescription = stringResource(Res.string.close),
                 )
             }
@@ -1130,7 +1130,7 @@ fun GridOrListSelector(
                     shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
                 ) {
                     Icon(
-                        Icons.Outlined.AllOut,
+                        Icons.AllOut,
                         contentDescription = stringResource(Res.string.expand)
                     )
                 }
@@ -1145,7 +1145,7 @@ fun GridOrListSelector(
                 shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
             ) {
                 Icon(
-                    Icons.Outlined.GridView,
+                    Icons.GridView,
                     contentDescription = stringResource(Res.string.grid)
                 )
             }
@@ -1159,7 +1159,7 @@ fun GridOrListSelector(
                 shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
             ) {
                 Icon(
-                    Icons.AutoMirrored.Outlined.List,
+                    Icons.AutoMirrored.List,
                     contentDescription = stringResource(Res.string.list)
                 )
             }
@@ -1185,7 +1185,7 @@ private fun ButtonsBarForCharts(
         if (onLegendClick != null)
             IconButtonWithTooltip(
                 onClick = onLegendClick,
-                icon = Icons.Outlined.Info,
+                icon = Icons.Info,
                 contentDescription = stringResource(Res.string.legend)
             )
 
@@ -1204,7 +1204,7 @@ private fun ButtonsBarForCharts(
         if (onCollageClick != null)
             IconButtonWithTooltip(
                 onClick = onCollageClick,
-                icon = Icons.Outlined.AutoAwesomeMosaic,
+                icon = Icons.AutoAwesomeMosaic,
                 contentDescription = stringResource(Res.string.create_collage)
             )
     }
@@ -1396,11 +1396,11 @@ fun getMusicEntryPlaceholderItem(type: Int, showScrobbleCount: Boolean = true): 
 fun stonksIconForDelta(delta: Int?) = when {
     delta == null -> null
     delta == Int.MAX_VALUE -> PanoIcons.StonksNew to MaterialTheme.colorScheme.primary
-    delta in 1..5 -> Icons.Outlined.KeyboardArrowUp to MaterialTheme.colorScheme.tertiary
-    delta > 5 -> Icons.Outlined.KeyboardDoubleArrowUp to MaterialTheme.colorScheme.tertiary
-    delta in -1 downTo -5 -> Icons.Outlined.KeyboardArrowDown to MaterialTheme.colorScheme.secondary
-    delta < -5 -> Icons.Outlined.KeyboardDoubleArrowDown to MaterialTheme.colorScheme.secondary
-    delta == 0 -> Icons.Outlined.FiberManualRecord to MaterialTheme.colorScheme.outline
+    delta in 1..5 -> Icons.KeyboardArrowUp to MaterialTheme.colorScheme.tertiary
+    delta > 5 -> Icons.KeyboardDoubleArrowUp to MaterialTheme.colorScheme.tertiary
+    delta in -1 downTo -5 -> Icons.KeyboardArrowDown to MaterialTheme.colorScheme.secondary
+    delta < -5 -> Icons.KeyboardDoubleArrowDown to MaterialTheme.colorScheme.secondary
+    delta == 0 -> Icons.Circle to MaterialTheme.colorScheme.outline
     else -> null
 }
 
@@ -1423,12 +1423,12 @@ fun MusicEntry?.colorSeed(): Int {
 fun placeholderImageVectorPainter(
     musicEntry: MusicEntry?,
     imageVector: ImageVector = when (musicEntry) {
-        is Artist -> Icons.Rounded.Mic
-        is Album -> Icons.Outlined.Album
+        is Artist -> Icons.Mic
+        is Album -> Icons.Album
         is Track -> if (musicEntry.album != null)
-            Icons.Outlined.Album
+            Icons.Album
         else
-            Icons.Rounded.GraphicEq
+            Icons.GraphicEq
 
         else -> PanoIcons.Nothing
     },

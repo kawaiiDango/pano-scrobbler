@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -174,7 +174,7 @@ private fun SimpleEditItem(
             }
 
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
+                imageVector = Icons.AutoMirrored.ArrowRight,
                 contentDescription = null,
             )
 

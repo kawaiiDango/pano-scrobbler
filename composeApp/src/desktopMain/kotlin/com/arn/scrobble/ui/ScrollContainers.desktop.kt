@@ -18,9 +18,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -29,6 +26,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
+import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -150,7 +150,7 @@ actual fun PanoLazyRow(
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                    imageVector = Icons.AutoMirrored.KeyboardArrowLeft,
                     contentDescription = stringResource(Res.string.move_left),
                 )
             }
@@ -189,7 +189,7 @@ actual fun PanoLazyRow(
                 modifier = Modifier.align(Alignment.CenterEnd)
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    imageVector = Icons.AutoMirrored.KeyboardArrowRight,
                     contentDescription = stringResource(Res.string.move_right),
                 )
             }

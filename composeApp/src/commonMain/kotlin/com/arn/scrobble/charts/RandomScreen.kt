@@ -10,12 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -40,6 +34,12 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
@@ -208,10 +208,10 @@ private fun RandomTypeSelector(
     var typeSelectorIsShown by remember { mutableStateOf(false) }
 
     fun getIconForType(type: Int) = when (type) {
-        Stuff.TYPE_ARTISTS -> Icons.Outlined.Mic
-        Stuff.TYPE_ALBUMS -> Icons.Outlined.Album
-        Stuff.TYPE_TRACKS -> Icons.Outlined.MusicNote
-        Stuff.TYPE_LOVES -> Icons.Outlined.FavoriteBorder
+        Stuff.TYPE_ARTISTS -> Icons.Mic
+        Stuff.TYPE_ALBUMS -> Icons.Album
+        Stuff.TYPE_TRACKS -> Icons.MusicNote
+        Stuff.TYPE_LOVES -> Icons.Favorite
         else -> error("Unknown type $type")
     }
 
@@ -249,12 +249,12 @@ private fun RandomTypeSelector(
                     checked = typeSelectorIsShown
                 ) {
                     Icon(
-                        Icons.Outlined.ArrowDropDown,
+                        Icons.ArrowDropDown,
                         contentDescription = stringResource(Res.string.item_options)
                     )
                 }
                 Icon(
-                    Icons.Outlined.ArrowDropDown,
+                    Icons.ArrowDropDown,
                     contentDescription = stringResource(Res.string.item_options)
                 )
             },

@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FilterChip
@@ -36,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
@@ -271,7 +271,7 @@ private fun ThemeSwatch(
 
             if (selected) {
                 Icon(
-                    imageVector = Icons.Outlined.Check,
+                    imageVector = Icons.Check,
                     contentDescription = null,
 //                    tint = if (isDark) Color.White else Color.Black,
                     modifier = Modifier.align(Alignment.Center)

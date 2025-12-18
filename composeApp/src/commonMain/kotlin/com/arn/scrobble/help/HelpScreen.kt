@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,6 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.BugReport
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.onboarding.WebViewScreen
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.FilePicker
@@ -131,7 +131,7 @@ private fun BugReportButtons(
         ButtonWithIcon(
             text = stringResource(Res.string.bug_report),
             onClick = onBugReportClick,
-            icon = Icons.Outlined.BugReport,
+            icon = Icons.BugReport,
             modifier = Modifier
                 .padding(horizontal = 24.dp)
         )

@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -33,6 +29,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.CheckCircle
+import com.arn.scrobble.icons.Circle
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
@@ -102,7 +102,7 @@ fun ButtonStepperForLogin(navigate: (PanoRoute) -> Unit) {
             stringResource(Res.string.scrobble_services)
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+        Icon(Icons.ArrowDropDown, contentDescription = null)
 
         DropdownMenu(
             expanded = dropDownShown,
@@ -143,7 +143,7 @@ fun VerticalStepperItem(
     },
 ) {
 
-    val icon = if (isDone) Icons.Outlined.CheckCircle else Icons.Outlined.Circle
+    val icon = if (isDone) Icons.CheckCircle else Icons.Circle
 
     Row(
         modifier = modifier

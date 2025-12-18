@@ -4,9 +4,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.Tag
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.OpenInBrowser
+import com.arn.scrobble.icons.Tag
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.http.encodeURLPathPart
@@ -47,11 +47,11 @@ fun TagInfoDialog(
     ) {
         InfoSimpleHeader(
             text = tag.name,
-            icon = Icons.Outlined.Tag,
+            icon = Icons.Tag,
             trailingContent = {
                 if (!PlatformStuff.isTv) {
                     IconButtonWithTooltip(
-                        icon = Icons.Outlined.OpenInBrowser,
+                        icon = Icons.OpenInBrowser,
                         contentDescription = stringResource(Res.string.more_info),
                         onClick = {
                             val url =

@@ -12,8 +12,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Warning
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.AppListSaveType
@@ -156,7 +156,7 @@ private fun NotificationListenerStep(
     if (warningShown) {
         AlertDialogOk(
             text = stringResource(Res.string.will_not_scrobble),
-            icon = Icons.Outlined.WarningAmber,
+            icon = Icons.Warning,
             onConfirmation = {
                 warningShown = false
                 onDone()

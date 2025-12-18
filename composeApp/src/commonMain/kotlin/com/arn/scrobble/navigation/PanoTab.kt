@@ -1,15 +1,15 @@
 package com.arn.scrobble.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.Group
-import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.InsertChart
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.BarChart4Bars
+import com.arn.scrobble.icons.Group
+import com.arn.scrobble.icons.History
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.Person
 import org.jetbrains.compose.resources.StringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
@@ -25,17 +25,17 @@ sealed class PanoTab(
     val icon: ImageVector,
 ) {
     data class Scrobbles(val showChips: Boolean = true) :
-        PanoTab(titleRes = Res.string.scrobbles, icon = Icons.Outlined.History)
+        PanoTab(titleRes = Res.string.scrobbles, icon = Icons.History)
 
-    data object Following : PanoTab(titleRes = Res.string.following, icon = Icons.Outlined.Group)
-    data object Charts : PanoTab(titleRes = Res.string.charts, icon = Icons.Outlined.InsertChart)
+    data object Following : PanoTab(titleRes = Res.string.following, icon = Icons.Group)
+    data object Charts : PanoTab(titleRes = Res.string.charts, icon = Icons.BarChart4Bars)
     data class Profile(val user: UserCached) :
         PanoTab(
             titleRes = Res.string.pref_user_label,
-            icon = Icons.Outlined.Person,
+            icon = Icons.Person,
         )
 
-    data object TopArtists : PanoTab(titleRes = Res.string.artists, icon = Icons.Outlined.Mic)
-    data object TopAlbums : PanoTab(titleRes = Res.string.albums, icon = Icons.Outlined.Album)
-    data object TopTracks : PanoTab(titleRes = Res.string.tracks, icon = Icons.Outlined.MusicNote)
+    data object TopArtists : PanoTab(titleRes = Res.string.artists, icon = Icons.Mic)
+    data object TopAlbums : PanoTab(titleRes = Res.string.albums, icon = Icons.Album)
+    data object TopTracks : PanoTab(titleRes = Res.string.tracks, icon = Icons.MusicNote)
 }

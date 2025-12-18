@@ -20,20 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddPhotoAlternate
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.ImageNotSupported
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,10 +60,24 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.icons.PanoIcons
-import com.arn.scrobble.icons.UserTag
+import com.arn.scrobble.icons.AddPhotoAlternate
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.BrokenImage
+import com.arn.scrobble.icons.Close
+import com.arn.scrobble.icons.ContentCopy
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.KeyboardArrowUp
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.OpenInBrowser
+import com.arn.scrobble.icons.Search
+import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.panoicons.PanoIcons
+import com.arn.scrobble.panoicons.UserTag
 import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyRow
@@ -229,7 +229,7 @@ fun MusicEntryInfoDialog(
                                 placeholder = placeholderPainter(),
                                 error = placeholderImageVectorPainter(
                                     entry,
-                                    Icons.Outlined.ImageNotSupported
+                                    Icons.BrokenImage
                                 ),
                                 contentDescription = when (entry) {
                                     is Album -> stringResource(Res.string.album_art)
@@ -245,7 +245,7 @@ fun MusicEntryInfoDialog(
                 },
                 trailingContent = {
                     Icon(
-                        imageVector = if (expandedHeaderType == type) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                        imageVector = if (expandedHeaderType == type) Icons.KeyboardArrowUp else Icons.KeyboardArrowDown,
                         contentDescription = stringResource(if (expandedHeaderType == type) Res.string.collapse else Res.string.expand),
                     )
                 },
@@ -330,7 +330,7 @@ fun MusicEntryInfoDialog(
                                 entries = artistTopTracks,
                                 fetchAlbumImageIfMissing = true,
                                 showArtists = false,
-                                headerIcon = Icons.Outlined.MusicNote,
+                                headerIcon = Icons.MusicNote,
                                 emptyStringRes = Res.string.not_found,
                                 placeholderItem = remember(type) {
                                     getMusicEntryPlaceholderItem(type)
@@ -353,7 +353,7 @@ fun MusicEntryInfoDialog(
                                 entries = artistTopAlbums,
                                 fetchAlbumImageIfMissing = false,
                                 showArtists = false,
-                                headerIcon = Icons.Outlined.Album,
+                                headerIcon = Icons.Album,
                                 placeholderItem = remember(type) {
                                     getMusicEntryPlaceholderItem(type)
                                 },
@@ -376,7 +376,7 @@ fun MusicEntryInfoDialog(
                                 entries = similarArtists,
                                 fetchAlbumImageIfMissing = false,
                                 showArtists = true,
-                                headerIcon = Icons.Outlined.Mic,
+                                headerIcon = Icons.Mic,
                                 emptyStringRes = Res.string.not_found,
                                 placeholderItem = remember(type) {
                                     getMusicEntryPlaceholderItem(type, showScrobbleCount = false)
@@ -401,7 +401,7 @@ fun MusicEntryInfoDialog(
                             entries = similarTracks,
                             fetchAlbumImageIfMissing = true,
                             showArtists = true,
-                            headerIcon = Icons.Outlined.MusicNote,
+                            headerIcon = Icons.MusicNote,
                             emptyStringRes = Res.string.not_found,
                             placeholderItem = remember(type) {
                                 getMusicEntryPlaceholderItem(type)
@@ -460,7 +460,7 @@ private fun ColumnScope.InfoBigPicture(
 ) {
     AsyncImage(
         model = imgRequest,
-        error = placeholderImageVectorPainter(entry, Icons.Outlined.ImageNotSupported),
+        error = placeholderImageVectorPainter(entry, Icons.BrokenImage),
         placeholder = placeholderPainter(),
         contentDescription = when (entry) {
             is Album -> stringResource(Res.string.album_art)
@@ -547,7 +547,7 @@ private fun InfoActionsRow(
             IconButtonWithTooltip(
                 enabled = user.isSelf,
                 onClick = onLoveClick,
-                icon = if (isLoved) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
+                icon = if (isLoved) Icons.Filled.Favorite else Icons.Favorite,
                 contentDescription = if (isLoved && user.isSelf)
                     stringResource(Res.string.unlove)
                 else if (isLoved)
@@ -576,7 +576,7 @@ private fun InfoActionsRow(
                         )
                     )
                 },
-                icon = Icons.Outlined.AddPhotoAlternate,
+                icon = Icons.AddPhotoAlternate,
                 contentDescription = stringResource(Res.string.add_photo),
             )
         }
@@ -587,7 +587,7 @@ private fun InfoActionsRow(
                     PlatformStuff.launchSearchIntent(entry, appId)
                 }
             },
-            icon = Icons.Outlined.Search,
+            icon = Icons.Search,
             contentDescription = stringResource(Res.string.search),
         )
 
@@ -601,7 +601,7 @@ private fun InfoActionsRow(
                     }
                     PlatformStuff.copyToClipboard(text)
                 },
-                icon = Icons.Outlined.ContentCopy,
+                icon = Icons.ContentCopy,
                 contentDescription = stringResource(Res.string.copy),
             )
         }
@@ -611,7 +611,7 @@ private fun InfoActionsRow(
                 onClick = {
                     PlatformStuff.openInBrowser(entry.url!!)
                 },
-                icon = Icons.Outlined.OpenInBrowser,
+                icon = Icons.OpenInBrowser,
                 contentDescription = stringResource(Res.string.more_info),
             )
         }
@@ -675,7 +675,7 @@ private fun ColumnScope.InfoTags(
                 },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Close,
+                        imageVector = Icons.Close,
                         contentDescription = stringResource(Res.string.delete),
                     )
                 },

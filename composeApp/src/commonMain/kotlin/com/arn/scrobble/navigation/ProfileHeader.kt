@@ -17,16 +17,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -54,6 +44,16 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.icons.AccountCircle
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.OpenInBrowser
+import com.arn.scrobble.icons.PlayArrow
+import com.arn.scrobble.icons.Today
+import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.accountTypeLabel
@@ -226,7 +226,7 @@ fun ProfileHeader(
 
                 if (drawerData != null && drawerData.scrobblesToday > 0) {
                     TextWithIcon(
-                        icon = Icons.Outlined.Today,
+                        icon = Icons.Today,
                         text = pluralStringResource(
                             Res.plurals.num_scrobbles_today,
                             drawerData.scrobblesToday,
@@ -249,7 +249,7 @@ fun ProfileHeader(
 
                 if (drawerData.scrobblesTotal > 0) {
                     TextWithIcon(
-                        icon = Icons.Outlined.PlayArrow,
+                        icon = Icons.PlayArrow,
                         text = drawerData.scrobblesTotal.format(),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -257,7 +257,7 @@ fun ProfileHeader(
 
                 if (drawerData.artistCount > 0) {
                     TextWithIcon(
-                        icon = Icons.Outlined.Mic,
+                        icon = Icons.Mic,
                         text = drawerData.artistCount.format(),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -265,7 +265,7 @@ fun ProfileHeader(
 
                 if (drawerData.albumCount > 0) {
                     TextWithIcon(
-                        icon = Icons.Outlined.Album,
+                        icon = Icons.Album,
                         text = drawerData.albumCount.format(),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -273,7 +273,7 @@ fun ProfileHeader(
 
                 if (drawerData.trackCount > 0) {
                     TextWithIcon(
-                        icon = Icons.Outlined.MusicNote,
+                        icon = Icons.MusicNote,
                         text = drawerData.trackCount.format(),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -308,7 +308,7 @@ fun ProfileHeaderDropdown(
             onCheckedChange = { dropDownShown = it },
         ) {
             Icon(
-                Icons.Outlined.ArrowDropDown,
+                Icons.ArrowDropDown,
                 contentDescription = stringResource(Res.string.item_options)
             )
         }
@@ -327,7 +327,7 @@ fun ProfileHeaderDropdown(
                         },
                         leadingIcon = {
                             Icon(
-                                Icons.Outlined.AccountCircle,
+                                Icons.AccountCircle,
                                 contentDescription = null
                             )
                         },
@@ -352,7 +352,7 @@ fun ProfileHeaderDropdown(
                     text = { Text(stringResource(Res.string.profile)) },
                     leadingIcon = {
                         Icon(
-                            Icons.Outlined.OpenInBrowser,
+                            Icons.OpenInBrowser,
                             contentDescription = null
                         )
                     },
@@ -375,7 +375,7 @@ fun ProfileHeaderDropdown(
                         },
                         leadingIcon = {
                             Icon(
-                                Icons.Outlined.OpenInBrowser,
+                                Icons.OpenInBrowser,
                                 contentDescription = null
                             )
                         },
@@ -396,7 +396,7 @@ fun ProfileHeaderDropdown(
                     text = { Text(stringResource(Res.string.help)) },
                     leadingIcon = {
                         Icon(
-                            Icons.AutoMirrored.Outlined.HelpOutline,
+                            Icons.AutoMirrored.Help,
                             contentDescription = null
                         )
                     },

@@ -6,23 +6,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Dns
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.HeartBroken
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -63,6 +46,23 @@ import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.ContentCopy
+import com.arn.scrobble.icons.Delete
+import com.arn.scrobble.icons.Dns
+import com.arn.scrobble.icons.Edit
+import com.arn.scrobble.icons.Error
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.HeartBroken
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.Schedule
+import com.arn.scrobble.icons.Search
+import com.arn.scrobble.icons.Share
+import com.arn.scrobble.icons.automirrored.ArrowBack
+import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
+import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.media.getNowPlayingFromMainProcess
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.AppItem
@@ -172,7 +172,7 @@ private fun TrackDropdownMenu(
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Outlined.ContentCopy,
+                            imageVector = Icons.ContentCopy,
                             contentDescription = null
                         )
                     }
@@ -194,7 +194,7 @@ private fun TrackDropdownMenu(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Search,
+                        imageVector = Icons.Search,
                         contentDescription = null
                     )
                 }
@@ -235,7 +235,7 @@ private fun TrackDropdownMenu(
                             leadingIcon = {
                                 Icon(
                                     imageVector = if (track.userloved != true)
-                                        Icons.Outlined.FavoriteBorder
+                                        Icons.Favorite
                                     else
                                         Icons.Filled.Favorite,
                                     contentDescription = null
@@ -255,7 +255,7 @@ private fun TrackDropdownMenu(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Edit,
+                                    imageVector = Icons.Edit,
                                     contentDescription = null
                                 )
                             }
@@ -300,7 +300,7 @@ private fun TrackDropdownMenu(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Delete,
+                                    imageVector = Icons.Delete,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.error
                                 )
@@ -317,7 +317,7 @@ private fun TrackDropdownMenu(
                         },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                imageVector = Icons.AutoMirrored.KeyboardArrowRight,
                                 contentDescription = null
                             )
                         }
@@ -332,7 +332,7 @@ private fun TrackDropdownMenu(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.ArrowBack,
                                     contentDescription = null
                                 )
                             },
@@ -354,7 +354,7 @@ private fun TrackDropdownMenu(
                         },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                imageVector = Icons.AutoMirrored.KeyboardArrowRight,
                                 contentDescription = null
                             )
                         },
@@ -380,7 +380,7 @@ private fun TrackDropdownMenu(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.HeartBroken,
+                                    imageVector = Icons.HeartBroken,
                                     contentDescription = null
                                 )
                             }
@@ -404,7 +404,7 @@ private fun TrackDropdownMenu(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Share,
+                                    imageVector = Icons.Share,
                                     contentDescription = null
                                 )
                             }
@@ -420,7 +420,7 @@ private fun TrackDropdownMenu(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.ArrowBack,
                                     contentDescription = null
                                 )
                             },
@@ -450,7 +450,7 @@ private fun TrackDropdownMenu(
                         },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.MusicNote,
+                                imageVector = Icons.MusicNote,
                                 contentDescription = null
                             )
                         },
@@ -471,7 +471,7 @@ private fun TrackDropdownMenu(
                         },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Album,
+                                imageVector = Icons.Album,
                                 contentDescription = null
                             )
                         }
@@ -489,7 +489,7 @@ private fun TrackDropdownMenu(
                         },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Mic,
+                                imageVector = Icons.Mic,
                                 contentDescription = null
                             )
                         }
@@ -582,7 +582,7 @@ fun PendingDropdownMenu(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.FavoriteBorder,
+                        imageVector = Icons.Favorite,
                         contentDescription = null
                     )
                 }
@@ -606,7 +606,7 @@ fun PendingDropdownMenu(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Outlined.Delete,
+                    imageVector = Icons.Delete,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -632,7 +632,7 @@ private fun PendingScrobbleDesc(
         },
         leadingIcon = {
             Icon(
-                imageVector = Icons.Outlined.Dns,
+                imageVector = Icons.Dns,
                 contentDescription = null
             )
         }
@@ -649,7 +649,7 @@ private fun PendingScrobbleDesc(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Outlined.ErrorOutline,
+                    imageVector = Icons.Error,
                     contentDescription = null
                 )
             }
@@ -668,7 +668,7 @@ private fun PendingScrobbleDesc(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Outlined.Schedule,
+                    imageVector = Icons.Schedule,
                     contentDescription = null
                 )
             }

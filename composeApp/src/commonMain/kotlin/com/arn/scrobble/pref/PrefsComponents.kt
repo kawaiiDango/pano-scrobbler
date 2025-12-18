@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -47,6 +43,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
+import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.ui.AppIcon
@@ -300,7 +300,7 @@ fun <T> DropdownPref(
         }
 
         Icon(
-            imageVector = Icons.Outlined.KeyboardArrowDown,
+            imageVector = Icons.KeyboardArrowDown,
             contentDescription = null,
         )
     }
@@ -416,7 +416,7 @@ fun SliderPref(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                                imageVector = Icons.AutoMirrored.KeyboardArrowLeft,
                                 contentDescription = stringResource(Res.string.move_left),
                             )
                         }
@@ -430,7 +430,7 @@ fun SliderPref(
                             checked = false,
                         ) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                imageVector = Icons.AutoMirrored.KeyboardArrowRight,
                                 contentDescription = stringResource(Res.string.move_right),
                             )
                         }

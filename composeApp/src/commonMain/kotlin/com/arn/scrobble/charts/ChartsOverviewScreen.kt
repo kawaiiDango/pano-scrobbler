@@ -21,14 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
-import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.QuestionMark
-import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,6 +62,14 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.graphics.KumoRect
 import com.arn.scrobble.graphics.toImageBitmap
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.AutoAwesomeMosaic
+import com.arn.scrobble.icons.BarChart4Bars
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.QuestionMark
+import com.arn.scrobble.icons.Tag
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.DismissableNotice
@@ -233,7 +233,7 @@ fun ChartsOverviewScreen(
             if (!spotifyConsentLearnt) {
                 DismissableNotice(
                     title = stringResource(Res.string.spotify_consent),
-                    icon = Icons.Outlined.QuestionMark,
+                    icon = Icons.QuestionMark,
                     onClick = {
                         spotifyConsentLearntDropdownShown = true
                     },
@@ -282,7 +282,7 @@ fun ChartsOverviewScreen(
                 entries = artists,
                 fetchAlbumImageIfMissing = !isTimePeriodContinuous,
                 showArtists = true,
-                headerIcon = Icons.Outlined.Mic,
+                headerIcon = Icons.Mic,
                 emptyStringRes = Res.string.charts_no_data,
                 onHeaderClick = {
                     onNavigate(
@@ -316,7 +316,7 @@ fun ChartsOverviewScreen(
                 entries = albums,
                 fetchAlbumImageIfMissing = !isTimePeriodContinuous,
                 showArtists = true,
-                headerIcon = Icons.Outlined.Album,
+                headerIcon = Icons.Album,
                 emptyStringRes = Res.string.charts_no_data,
                 onHeaderClick = {
                     onNavigate(
@@ -350,7 +350,7 @@ fun ChartsOverviewScreen(
                 entries = tracks,
                 fetchAlbumImageIfMissing = true,
                 showArtists = true,
-                headerIcon = Icons.Outlined.MusicNote,
+                headerIcon = Icons.MusicNote,
                 emptyStringRes = Res.string.charts_no_data,
                 onHeaderClick = {
                     onNavigate(
@@ -393,7 +393,7 @@ fun ChartsOverviewScreen(
                                 )
                             )
                         },
-                        icon = Icons.Outlined.AutoAwesomeMosaic,
+                        icon = Icons.AutoAwesomeMosaic,
                         text = stringResource(Res.string.create_collage),
                     )
                 }
@@ -467,7 +467,7 @@ private fun TagCloudContent(
     ) {
         ExpandableHeaderMenu(
             title = stringResource(Res.string.tag_cloud),
-            icon = Icons.Outlined.Tag,
+            icon = Icons.Tag,
             menuItemText = stringResource(Res.string.hidden_tags),
             onMenuItemClick = onHeaderMenuClick,
             modifier = Modifier
@@ -576,7 +576,7 @@ private fun ListeningActivityContent(
     ) {
         TextHeaderItem(
             title = stringResource(Res.string.listening_activity),
-            icon = Icons.Outlined.BarChart,
+            icon = Icons.BarChart4Bars,
         )
 
         Box(

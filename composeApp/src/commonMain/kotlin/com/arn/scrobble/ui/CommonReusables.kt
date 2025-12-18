@@ -19,16 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ToggleOff
-import androidx.compose.material.icons.outlined.ToggleOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -89,6 +79,16 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.ApiException
+import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.Close
+import com.arn.scrobble.icons.Error
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.Person
+import com.arn.scrobble.icons.Refresh
+import com.arn.scrobble.icons.Search
+import com.arn.scrobble.icons.ToggleOff
+import com.arn.scrobble.icons.ToggleOn
 import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.pref.AppItem
@@ -124,7 +124,7 @@ import kotlin.math.abs
 @Composable
 fun AlertDialogOk(
     text: String,
-    icon: ImageVector = Icons.Outlined.Info,
+    icon: ImageVector = Icons.Info,
     onConfirmation: () -> Unit = {},
     onDismissRequest: () -> Unit = onConfirmation,
     title: String? = null,
@@ -228,7 +228,7 @@ fun ErrorText(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Outlined.ErrorOutline,
+                imageVector = Icons.Error,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(end = 8.dp)
@@ -246,7 +246,7 @@ fun ErrorText(
 fun InfoText(
     text: String,
     modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.Outlined.Info,
+    icon: ImageVector = Icons.Info,
     style: TextStyle = LocalTextStyle.current,
 ) {
     Row(
@@ -307,7 +307,7 @@ fun SearchField(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+        leadingIcon = { Icon(Icons.Search, contentDescription = null) },
         trailingIcon = if (!PlatformStuff.isTv) {
             {
                 if (searchTerm.isNotEmpty()) {
@@ -315,7 +315,7 @@ fun SearchField(
                         onSearchTermChange("")
                     }) {
                         Icon(
-                            Icons.Outlined.Close,
+                            Icons.Close,
                             contentDescription = stringResource(Res.string.delete)
                         )
                     }
@@ -393,7 +393,7 @@ fun <T> ButtonWithSpinner(
             }
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+        Icon(Icons.ArrowDropDown, contentDescription = null)
 
         DropdownMenu(
             expanded = dropDownShown,
@@ -664,7 +664,7 @@ fun AvatarOrInitials(
     if (!avatarUrl.isNullOrEmpty()) {
         AsyncImage(
             model = avatarUrl,
-            error = placeholderImageVectorPainter(null, Icons.Outlined.Person),
+            error = placeholderImageVectorPainter(null, Icons.Person),
             placeholder = placeholderPainter(),
             contentDescription = stringResource(Res.string.profile_pic),
             modifier = modifier,
@@ -716,7 +716,7 @@ fun ListLoadError(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Outlined.ErrorOutline,
+            imageVector = Icons.Error,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.error,
         )
@@ -734,7 +734,7 @@ fun ListLoadError(
             onClick = onRetry,
         ) {
             Icon(
-                imageVector = Icons.Outlined.Refresh,
+                imageVector = Icons.Refresh,
                 contentDescription = stringResource(Res.string.retry)
             )
         }
@@ -810,9 +810,9 @@ fun InlineCheckButton(
     ) {
         Icon(
             imageVector = if (checked)
-                Icons.Outlined.ToggleOn
+                Icons.ToggleOn
             else
-                Icons.Outlined.ToggleOff,
+                Icons.ToggleOff,
             contentDescription = if (checked)
                 stringResource(Res.string.disable)
             else

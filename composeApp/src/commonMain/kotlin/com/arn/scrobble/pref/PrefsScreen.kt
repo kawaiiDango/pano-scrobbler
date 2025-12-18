@@ -2,18 +2,6 @@ package com.arn.scrobble.pref
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Api
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.Dns
-import androidx.compose.material.icons.outlined.EditNote
-import androidx.compose.material.icons.outlined.HourglassEmpty
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.SwapVert
-import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +19,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.icons.Api
+import com.arn.scrobble.icons.BugReport
+import com.arn.scrobble.icons.Dns
+import com.arn.scrobble.icons.EditNote
+import com.arn.scrobble.icons.HourglassEmpty
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.MoreHoriz
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.Person
+import com.arn.scrobble.icons.SwapVert
+import com.arn.scrobble.icons.Translate
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -243,7 +243,7 @@ fun PrefsScreen(
         stickyHeader("scrobbling_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.scrobbles),
-                icon = Icons.Outlined.MusicNote
+                icon = Icons.MusicNote
             )
         }
 
@@ -344,7 +344,7 @@ fun PrefsScreen(
         stickyHeader("pref_delay_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_delay),
-                icon = Icons.Outlined.HourglassEmpty
+                icon = Icons.HourglassEmpty
             )
         }
 
@@ -375,7 +375,7 @@ fun PrefsScreen(
         stickyHeader("personalization_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_personalization),
-                icon = Icons.Outlined.Person
+                icon = Icons.Person
             )
         }
 
@@ -504,7 +504,7 @@ fun PrefsScreen(
         stickyHeader("lists_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_lists),
-                icon = Icons.Outlined.EditNote
+                icon = Icons.EditNote
             )
         }
 
@@ -547,7 +547,7 @@ fun PrefsScreen(
         stickyHeader("languages_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_locale),
-                icon = Icons.Outlined.Translate
+                icon = Icons.Translate
             )
         }
 
@@ -597,7 +597,7 @@ fun PrefsScreen(
         stickyHeader("additional_metatadata_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.external_metadata),
-                icon = Icons.Outlined.Api
+                icon = Icons.Api
             )
         }
 
@@ -664,7 +664,7 @@ fun PrefsScreen(
         stickyHeader("misc_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_misc),
-                icon = Icons.Outlined.MoreHoriz
+                icon = Icons.MoreHoriz
             )
         }
 
@@ -725,7 +725,7 @@ fun PrefsScreen(
         stickyHeader("imexport_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_imexport),
-                icon = Icons.Outlined.SwapVert
+                icon = Icons.SwapVert
             )
         }
 
@@ -751,7 +751,7 @@ fun PrefsScreen(
         stickyHeader("services_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.scrobble_services),
-                icon = Icons.Outlined.Dns
+                icon = Icons.Dns
             )
         }
 
@@ -781,7 +781,7 @@ fun PrefsScreen(
         stickyHeader("about_header") {
             SimpleHeaderItem(
                 text = stringResource(Res.string.pref_about),
-                icon = Icons.Outlined.Info
+                icon = Icons.Info
             )
         }
 
@@ -836,7 +836,7 @@ fun PrefsScreen(
             stickyHeader("debug_header") {
                 SimpleHeaderItem(
                     text = stringResource(Res.string.debug_menu),
-                    icon = Icons.Outlined.BugReport
+                    icon = Icons.BugReport
                 )
             }
 

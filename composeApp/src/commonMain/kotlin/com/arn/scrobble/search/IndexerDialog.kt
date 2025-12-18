@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -27,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.collectLatest
@@ -60,7 +60,7 @@ fun IndexerDialog(
             modifier = Modifier.align(Alignment.End),
         ) {
             IconButton(onClick = { showMenu = true }) {
-                Icon(Icons.Outlined.MoreVert, contentDescription = null)
+                Icon(Icons.MoreVert, contentDescription = null)
             }
             DropdownMenu(
                 expanded = showMenu,

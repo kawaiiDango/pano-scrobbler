@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.OutlinedIconButton
@@ -29,6 +26,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.Add
+import com.arn.scrobble.icons.Close
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
@@ -82,7 +82,7 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
                         },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Close,
+                                imageVector = Icons.Close,
                                 contentDescription = stringResource(Res.string.delete)
                             )
 
@@ -128,7 +128,7 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
                 .align(Alignment.End)
         ) {
             Icon(
-                Icons.Outlined.Add,
+                Icons.Add,
                 stringResource(Res.string.add)
             )
         }

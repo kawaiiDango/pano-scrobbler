@@ -16,15 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.PushPin
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -63,6 +54,15 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.icons.Error
+import com.arn.scrobble.icons.History
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Keep
+import com.arn.scrobble.icons.KeepOff
+import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.KeyboardArrowUp
+import com.arn.scrobble.icons.OpenInBrowser
+import com.arn.scrobble.icons.Search
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
@@ -95,7 +95,6 @@ import pano_scrobbler.composeapp.generated.resources.move_up
 import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.no_friends
 import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
-import pano_scrobbler.composeapp.generated.resources.num_scrobbles_since
 import pano_scrobbler.composeapp.generated.resources.pin
 import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.scrobbles
@@ -520,7 +519,7 @@ private fun FriendItem(
 
                 if (pinIndex != null) {
                     Icon(
-                        imageVector = Icons.Filled.PushPin,
+                        imageVector = Icons.KeepOff,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier
@@ -543,7 +542,7 @@ private fun FriendItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.ErrorOutline,
+                    imageVector = Icons.Error,
                     contentDescription = stringResource(Res.string.network_error),
                 )
 
@@ -641,7 +640,7 @@ private fun FriendItem(
                 DropdownMenuItem(
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Outlined.History,
+                            imageVector = Icons.History,
                             contentDescription = stringResource(Res.string.profile),
                         )
                     },
@@ -658,7 +657,7 @@ private fun FriendItem(
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.PushPin,
+                                imageVector = Icons.Keep,
                                 contentDescription = stringResource(Res.string.pin),
                             )
                         },
@@ -675,7 +674,7 @@ private fun FriendItem(
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Search,
+                                imageVector = Icons.Search,
                                 contentDescription = stringResource(Res.string.search),
                             )
                         },
@@ -699,7 +698,7 @@ private fun FriendItem(
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.OpenInBrowser,
+                                imageVector = Icons.OpenInBrowser,
                                 contentDescription = stringResource(Res.string.profile),
                             )
                         },
@@ -747,7 +746,7 @@ private fun PinControls(
             ) {
                 Icon(
                     imageVector =
-                        Icons.Outlined.KeyboardArrowUp,
+                        Icons.KeyboardArrowUp,
                     contentDescription = stringResource(Res.string.move_up),
                 )
             }
@@ -761,7 +760,7 @@ private fun PinControls(
             shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
         ) {
             Icon(
-                imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                imageVector = if (isPinned) Icons.KeepOff else Icons.Keep,
                 contentDescription = stringResource(
                     if (isPinned) Res.string.unpin else Res.string.pin
                 )
@@ -778,7 +777,7 @@ private fun PinControls(
                 shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
+                    imageVector = Icons.KeyboardArrowDown,
                     contentDescription = stringResource(Res.string.move_down),
                 )
             }

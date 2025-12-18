@@ -3,18 +3,16 @@ targetSdk = "36"
 minSdk = "24"
 minSdkBaselineProfile = "28"
 android-application = "9.0.0-beta05"
-compose-multiplatform = "1.10.0-rc02"
+compose-multiplatform = "1.11.0-alpha01"
 
-kotlin = "2.3.0-RC3"
+kotlin = "2.3.0"
 
 aboutlibraries = "13.1.0"
-activity = "1.12.1"
-adaptive = "1.3.0-alpha02"
+activity = "1.12.2"
+adaptive = "1.3.0-alpha03"
 test-junit = "1.3.0"
-appcompat = "1.7.1"
-baselineprofile = "1.4.1"
-benchmark = "1.4.1"
-billing = "8.2.0"
+benchmark = "1.5.0-alpha01"
+billing = "8.2.1"
 buildkonfig = "0.17.1"
 coil = "3.3.0"
 composeWebview = "0.33.6"
@@ -23,25 +21,23 @@ core-remoteviews = "1.1.0"
 coroutines = "1.10.2"
 crashlytics = "3.0.6"
 cryptohash = "1.0.2"
-datastore = "1.3.0-alpha02"
+datastore = "1.3.0-alpha03"
 espresso-core = "3.7.0"
 firebase-bom = "34.7.0"
-google-services = "4.4.3"
-immutable = "0.4.0"
+google-services = "4.4.4"
 kermit = "2.0.8"
 koalaplot = "0.10.3"
 kotlinCsvJvm = "1.10.0"
-ksp = "2.3.3"
+ksp = "2.3.4"
 ktor = "3.3.3"
-lifecycle = "2.10.0-alpha06"
-material3 = "1.10.0-alpha05"
-material-icons-extended = "1.7.3"
+lifecycle = "2.10.0-alpha07"
+material3 = "1.11.0-alpha01"
 media = "1.7.1"
 nanohttpd = "2.3.1"
-nav3 = "1.0.0-alpha05"
+nav3 = "1.1.0-alpha01"
 okhttp = "5.3.2"
-paging = "3.4.0-alpha04"
-play-publisher = "3.12.1"
+paging = "3.4.0-beta01"
+play-publisher = "3.13.0"
 profileinstaller = "1.4.1"
 qrcode = "4.5.0"
 review = "2.0.2"
@@ -50,14 +46,13 @@ runner = "1.7.0"
 serialization-json = "1.9.0"
 shimmer = "1.3.3"
 sqlite = "2.6.2"
-uiautomator = "2.4.0-alpha06"
+uiautomator = "2.4.0-alpha07"
 work-runtime = "2.11.0"
 
 [libraries]
 runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons-extended" }
 ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
 resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
 tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
@@ -94,7 +89,6 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 core = { module = "androidx.core:core", version.ref = "core" }
-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-json" }
@@ -116,7 +110,6 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 
 test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "test-junit" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
-kotlinx-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }
@@ -126,7 +119,7 @@ crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyti
 test = { id = "com.android.test", version.ref = "android-application" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 play-publisher = { id = "com.github.triplet.play", version.ref = "play-publisher" }
 android-library = { id = "com.android.library", version.ref = "android-application" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

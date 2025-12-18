@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.ResetSettings
 import com.arn.scrobble.pref.DropdownPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.SliderPref
@@ -162,7 +162,7 @@ fun DiscordRpcScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Undo,
+                        imageVector = Icons.ResetSettings,
                         contentDescription = stringResource(Res.string.reset)
                     )
                 }
@@ -187,7 +187,7 @@ fun DiscordRpcScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Undo,
+                        imageVector = Icons.ResetSettings,
                         contentDescription = stringResource(Res.string.reset)
                     )
                 }
@@ -211,7 +211,7 @@ fun DiscordRpcScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Undo,
+                        imageVector = Icons.ResetSettings,
                         contentDescription = stringResource(Res.string.reset)
                     )
                 }

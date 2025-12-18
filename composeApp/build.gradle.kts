@@ -5,26 +5,17 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.google.gson.Gson
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
-import org.gradle.kotlin.dsl.get
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.gradle.ComposeHotRun
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.file.Files
-import java.nio.file.Path
 import java.security.MessageDigest
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.io.encoding.Base64
 import kotlin.io.path.name
 import kotlin.io.use
-import kotlin.io.walk
-import kotlin.sequences.filter
-import kotlin.sequences.forEach
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -36,7 +27,6 @@ plugins {
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.buildkonfig)
-    id("kotlin-parcelize")
 }
 
 val os = org.gradle.internal.os.OperatingSystem.current()!!
@@ -100,45 +90,45 @@ kotlin {
             implementation(libs.tooling)
         }
 
-        commonMain.dependencies {
-            implementation(libs.kotlin.stdlib)
-            implementation(libs.kotlin.coroutines.core)
-            implementation(libs.runtime)
-            implementation(libs.foundation)
-            implementation(libs.material3)
-            implementation(libs.material.icons.extended)
-            implementation(libs.ui)
-            implementation(libs.resources)
-            implementation(libs.tooling.preview)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.lifecycle.viewmodel.nav3)
-            implementation(libs.lifecycle.viewmodel)
-            implementation(libs.lifecycle.runtime)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.okhttp)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.client.auth)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.okhttp)
-            implementation(libs.aboutlibraries.core)
-            implementation(libs.kotlin.csv.jvm)
-            implementation(libs.kermit)
-            implementation(libs.compose.shimmer)
-            implementation(libs.datastore.core)
-            implementation(libs.paging.common)
-            implementation(libs.paging.compose)
-            implementation(libs.nav3.ui)
-            implementation(libs.adaptive)
-            implementation(libs.adaptive.layout)
-            implementation(libs.adaptive.nav3)
-            implementation(libs.koalaplot.core)
-            implementation(libs.nanohttpd)
-            implementation(libs.room.runtime)
-            implementation(libs.kotlinx.immutable)
-            implementation(libs.cryptohash)
-            implementation(projects.extrasCommon)
+        commonMain {
+            dependencies {
+                implementation(libs.kotlin.stdlib)
+                implementation(libs.kotlin.coroutines.core)
+                implementation(libs.runtime)
+                implementation(libs.foundation)
+                implementation(libs.material3)
+                implementation(libs.ui)
+                implementation(libs.resources)
+                implementation(libs.tooling.preview)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.lifecycle.viewmodel.nav3)
+                implementation(libs.lifecycle.viewmodel)
+                implementation(libs.lifecycle.runtime)
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.okhttp)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.auth)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.okhttp)
+                implementation(libs.okhttp)
+                implementation(libs.aboutlibraries.core)
+                implementation(libs.kotlin.csv.jvm)
+                implementation(libs.kermit)
+                implementation(libs.compose.shimmer)
+                implementation(libs.datastore.core)
+                implementation(libs.paging.common)
+                implementation(libs.paging.compose)
+                implementation(libs.nav3.ui)
+                implementation(libs.adaptive)
+                implementation(libs.adaptive.layout)
+                implementation(libs.adaptive.nav3)
+                implementation(libs.koalaplot.core)
+                implementation(libs.nanohttpd)
+                implementation(libs.room.runtime)
+                implementation(libs.cryptohash)
+                implementation(projects.extrasCommon)
+            }
         }
 
         commonTest.dependencies {
@@ -648,7 +638,142 @@ afterEvaluate {
         // Optional ordering guard
         mustRunAfter(":androidApp:exportLibraryDefinitions")
     }
+
+    tasks.named("updateMaterialSymbols") {
+        finalizedBy(tasks.named("convertMaterialSymbols"))
+    }
 }
+
+tasks.register("updateMaterialSymbols") {
+    val symbolsDir = layout.buildDirectory.dir("material-symbols-svgs").get().asFile
+    outputs.dir(symbolsDir)
+
+    val unfilledNamesFile = file("material-symbols-unfilled.txt")
+    val filledNamesFile = file("material-symbols-filled.txt")
+    val automirroredNamesFile = file("material-symbols-automirrored.txt")
+
+    inputs.files(
+        unfilledNamesFile,
+        filledNamesFile,
+        automirroredNamesFile
+    )
+
+    doLast {
+        fun buildUrl(iconName: String, filled: Boolean): String {
+            val fillName = if (filled) "fill1" else "default"
+            val variantName = "rounded"
+            // Google Fonts official CDN
+            return "https://fonts.gstatic.com/s/i/short-term/release/materialsymbols$variantName/$iconName/$fillName/24px.svg"
+        }
+
+        fun downloadBatch(
+            iconNames: List<String>,
+            filled: Boolean,
+            outputDir: File
+        ) {
+            iconNames.forEach { iconName ->
+                val url = buildUrl(iconName, filled)
+                val iconFile = File(outputDir, "$iconName.svg")
+                URL(url).openStream().use { input ->
+                    iconFile.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                println("Downloaded: $iconName")
+            }
+        }
+
+        downloadBatch(
+            unfilledNamesFile
+                .readLines().distinct(),
+            filled = false,
+            symbolsDir
+        )
+
+        downloadBatch(
+            filledNamesFile.readLines().distinct(),
+            filled = true,
+            File(symbolsDir, "filled").also { it.mkdir() }
+        )
+
+        downloadBatch(
+            automirroredNamesFile.readLines().distinct(),
+            filled = false,
+            File(symbolsDir, "automirrored").also { it.mkdir() }
+        )
+
+        println("Material Symbols download completed.")
+    }
+}
+
+tasks.register<Exec>("convertMaterialSymbols") {
+    val inputDir = layout.buildDirectory.dir("material-symbols-svgs").get().asFile
+    val outputDir = file("src/commonMain/kotlin/com/arn/scrobble/icons")
+    val cliPath = file(
+        "valkyrie-cli/bin/valkyrie" +
+                (if (os.isWindows) ".bat" else "")
+    )
+
+    val pkgName = APP_ID + ".icons"
+
+    val shellCmd = if (os.isWindows)
+        listOf(
+            "cmd.exe",
+            "/c",
+        )
+    else
+        listOf(
+            "bash",
+            "-c",
+        )
+
+    val iconPack = listOf(
+        cliPath.absolutePath,
+        "iconpack",
+        "--output-path=" + outputDir.absolutePath,
+        "--package-name=" + pkgName,
+        "--iconpack=" + "Icons.Filled,Icons.AutoMirrored",
+    )
+
+    val mainIcons = listOf(
+        cliPath.absolutePath,
+        "svgxml2imagevector",
+        "--input-path=" + inputDir.absolutePath,
+        "--output-path=" + outputDir.absolutePath,
+        "--package-name=" + pkgName,
+        "--iconpack-name=" + "Icons",
+    )
+
+    val filledIcons = listOf(
+        cliPath.absolutePath,
+        "svgxml2imagevector",
+        "--input-path=" + File(inputDir, "filled").absolutePath,
+        "--output-path=" + outputDir.absolutePath,
+        "--package-name=" + pkgName,
+        "--iconpack-name=" + "Icons",
+        "--nested-pack-name=" + "Filled",
+    )
+
+    val autoMirroredIcons = listOf(
+        cliPath.absolutePath,
+        "svgxml2imagevector",
+        "--input-path=" + File(inputDir, "automirrored").absolutePath,
+        "--output-path=" + outputDir.absolutePath,
+        "--package-name=" + pkgName,
+        "--iconpack-name=" + "Icons",
+        "--nested-pack-name=" + "AutoMirrored",
+        "--auto-mirror=" + "true",
+    )
+
+    // run all of them in a single command to avoid multiple exec tasks
+    commandLine(
+        shellCmd + listOf(
+            (iconPack + "&&" + mainIcons + "&&" + filledIcons + "&&" + autoMirroredIcons)
+                .joinToString(" ")
+        )
+    )
+}
+
 
 data class CrowdinMember(val username: String)
 data class CrowdinMemberData(val data: CrowdinMember)

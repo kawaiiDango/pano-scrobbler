@@ -11,13 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.ExpandLess
-import androidx.compose.material.icons.outlined.ExpandMore
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,10 +42,17 @@ import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.SimpleEdit
-import com.arn.scrobble.icons.ContentSaveOffOutline
-import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Delete
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.KeyboardArrowUp
+import com.arn.scrobble.icons.Save
+import com.arn.scrobble.icons.SwapVert
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
+import com.arn.scrobble.panoicons.ContentSaveOffOutline
+import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
@@ -279,7 +279,7 @@ fun SimpleEditsAddScreen(
             if (networkEditMode) {
                 ButtonWithIcon(
                     onClick = { isExpanded = !isExpanded },
-                    icon = if (!isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                    icon = if (!isExpanded) Icons.KeyboardArrowUp else Icons.KeyboardArrowDown,
                     text = if (!isExpanded) stringResource(Res.string.expand)
                     else stringResource(Res.string.collapse),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -464,7 +464,7 @@ fun SimpleEditsAddScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Delete,
+                        imageVector = Icons.Delete,
                         contentDescription = stringResource(Res.string.delete),
                         tint = MaterialTheme.colorScheme.error,
                     )
@@ -507,7 +507,7 @@ fun SimpleEditsAddScreen(
                         ) {
                             Icon(
                                 imageVector = if (save)
-                                    Icons.Outlined.Save
+                                    Icons.Save
                                 else
                                     PanoIcons.ContentSaveOffOutline,
                                 contentDescription = stringResource(Res.string.save),
@@ -522,7 +522,7 @@ fun SimpleEditsAddScreen(
                             track = artist
                             artist = temp
                         },
-                        icon = Icons.Outlined.SwapVert,
+                        icon = Icons.SwapVert,
                         contentDescription = stringResource(Res.string.swap),
                         modifier = Modifier.align(Alignment.CenterVertically),
                     )
@@ -531,7 +531,7 @@ fun SimpleEditsAddScreen(
 
             ButtonWithIcon(
                 onClick = ::doEdit,
-                icon = Icons.Outlined.Check,
+                icon = Icons.Check,
                 enabled = !verifying,
                 text = stringResource(
                     if (networkEditMode)

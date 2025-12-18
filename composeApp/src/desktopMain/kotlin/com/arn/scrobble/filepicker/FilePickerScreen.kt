@@ -7,14 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowUpward
-import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
@@ -37,6 +29,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.ArrowUpward
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Description
+import com.arn.scrobble.icons.Folder
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Menu
+import com.arn.scrobble.icons.Visibility
+import com.arn.scrobble.icons.VisibilityOff
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -155,7 +155,7 @@ fun FilePickerScreen(
                         ButtonGroup(
                             overflowIndicator = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Menu,
+                                    imageVector = Icons.Menu,
                                     contentDescription = stringResource(Res.string.show_all),
                                 )
                             },
@@ -188,7 +188,7 @@ fun FilePickerScreen(
                                 },
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.ArrowUpward,
+                                    imageVector = Icons.ArrowUpward,
                                     contentDescription = stringResource(Res.string.back),
                                 )
                             }
@@ -204,9 +204,9 @@ fun FilePickerScreen(
                                 showHiddenFiles = !showHiddenFiles
                             },
                             icon = if (showHiddenFiles)
-                                Icons.Outlined.Visibility
+                                Icons.Visibility
                             else
-                                Icons.Outlined.VisibilityOff,
+                                Icons.VisibilityOff,
                             contentDescription = stringResource(Res.string.show_all),
                         )
                     }
@@ -250,7 +250,7 @@ fun FilePickerScreen(
                                 modifier = Modifier.padding(start = 8.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Done,
+                                    imageVector = Icons.Check,
                                     contentDescription = stringResource(Res.string.done)
                                 )
                             }
@@ -328,9 +328,9 @@ private fun FileItem(
     ) {
         Icon(
             imageVector = if (file.isDirectory) {
-                Icons.Outlined.Folder
+                Icons.Folder
             } else {
-                Icons.Outlined.Description
+                Icons.Description
             },
             contentDescription = null,
             modifier = Modifier.padding(end = 8.dp)

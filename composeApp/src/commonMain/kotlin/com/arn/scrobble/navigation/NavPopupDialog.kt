@@ -6,11 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -31,6 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Search
+import com.arn.scrobble.icons.Settings
+import com.arn.scrobble.icons.WorkspacePremium
+import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.VariantStuff
@@ -82,7 +82,7 @@ fun NavPopupDialog(
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                 ) {
                     Icon(
-                        Icons.Outlined.WorkspacePremium,
+                        Icons.WorkspacePremium,
                         contentDescription = null,
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
@@ -98,7 +98,7 @@ fun NavPopupDialog(
         ) {
             ButtonWithIcon(
                 text = stringResource(Res.string.settings),
-                icon = Icons.Outlined.Settings,
+                icon = Icons.Settings,
                 onClick = {
                     onNavigate(PanoRoute.Prefs)
                 },
@@ -119,7 +119,7 @@ fun NavPopupDialog(
                         border = ButtonDefaults.outlinedButtonBorder(true),
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Search,
+                            imageVector = Icons.Search,
                             contentDescription = stringResource(Res.string.search),
                         )
                     }
@@ -127,7 +127,7 @@ fun NavPopupDialog(
 
                 ButtonWithIcon(
                     text = stringResource(Res.string.help),
-                    icon = Icons.AutoMirrored.Outlined.HelpOutline,
+                    icon = Icons.AutoMirrored.Help,
                     onClick = {
                         onNavigate(PanoRoute.Help)
                     },
@@ -135,7 +135,7 @@ fun NavPopupDialog(
             } else {
                 ButtonWithIcon(
                     text = stringResource(Res.string.search),
-                    icon = Icons.Outlined.Search,
+                    icon = Icons.Search,
                     onClick = {
                         onNavigate(PanoRoute.Search)
                     },

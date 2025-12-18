@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,6 +28,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
@@ -116,7 +116,7 @@ fun ExportScreen(
                             IconButtonWithTooltip(
                                 onClick = {
                                     viewModel.exportToServer(codeText)
-                                }, icon = Icons.Outlined.Done,
+                                }, icon = Icons.Check,
                                 contentDescription = stringResource(Res.string.done)
                             )
                         }

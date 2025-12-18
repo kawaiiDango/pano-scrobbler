@@ -8,17 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.automirrored.outlined.Rule
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Block
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.PushPin
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.SwipeLeftAlt
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -40,6 +29,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.arn.scrobble.icons.Apps
+import com.arn.scrobble.icons.Automation
+import com.arn.scrobble.icons.Block
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Keep
+import com.arn.scrobble.icons.Palette
+import com.arn.scrobble.icons.Share
+import com.arn.scrobble.icons.SwipeLeftAlt
+import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
@@ -87,19 +87,19 @@ fun BillingScreen(
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
 
     val bulletStrings = listOfNotNull(
-        Icons.Outlined.Palette to stringResource(Res.string.pref_themes),
-        Icons.Outlined.Apps to stringResource(Res.string.billing_scrobble_source),
-        Icons.Outlined.Block to stringResource(Res.string.billing_block),
-        Icons.Outlined.PushPin to stringResource(Res.string.billing_pin_friends, 10),
+        Icons.Palette to stringResource(Res.string.pref_themes),
+        Icons.Apps to stringResource(Res.string.billing_scrobble_source),
+        Icons.Block to stringResource(Res.string.billing_block),
+        Icons.Keep to stringResource(Res.string.billing_pin_friends, 10),
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)
-            Icons.Outlined.FavoriteBorder to stringResource(Res.string.pref_link_heart_button_rating)
+            Icons.Favorite to stringResource(Res.string.pref_link_heart_button_rating)
         else null,
         if (!PlatformStuff.isTv)
-            Icons.AutoMirrored.Outlined.Rule to stringResource(Res.string.automation)
+            Icons.Automation to stringResource(Res.string.automation)
         else null,
-        Icons.Outlined.SwipeLeftAlt to stringResource(Res.string.billing_regex_extract),
+        Icons.SwipeLeftAlt to stringResource(Res.string.billing_regex_extract),
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop)
-            Icons.Outlined.Share to stringResource(Res.string.billing_sharing)
+            Icons.Share to stringResource(Res.string.billing_sharing)
         else null,
     )
 
@@ -118,7 +118,7 @@ fun BillingScreen(
         modifier = modifier
     ) {
         Icon(
-            imageVector = Icons.Outlined.FavoriteBorder,
+            imageVector = Icons.Favorite,
             contentDescription = stringResource(Res.string.love),
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
@@ -196,7 +196,7 @@ fun BillingScreen(
                 },
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.FavoriteBorder,
+                        imageVector = Icons.Favorite,
                         contentDescription = null
                     )
                 },
@@ -243,7 +243,7 @@ fun BillingScreen(
                     {
                         IconButtonWithTooltip(
                             onClick = ::verifyLicenseOnline,
-                            icon = Icons.Outlined.Done,
+                            icon = Icons.Check,
                             contentDescription = stringResource(Res.string.done)
                         )
                     }
@@ -269,7 +269,7 @@ fun BillingScreen(
 
         ButtonWithIcon(
             onClick = onNavigateToTroubleshoot,
-            icon = Icons.AutoMirrored.Outlined.HelpOutline,
+            icon = Icons.AutoMirrored.Help,
             text = stringResource(Res.string.help),
             modifier = Modifier
                 .padding(top = 16.dp)

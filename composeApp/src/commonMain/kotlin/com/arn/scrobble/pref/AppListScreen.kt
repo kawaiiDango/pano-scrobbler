@@ -13,12 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -41,6 +35,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
+import com.arn.scrobble.icons.Apps
+import com.arn.scrobble.icons.Delete
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.OpenInBrowser
+import com.arn.scrobble.icons.PlayCircle
 import com.arn.scrobble.ui.AppIcon
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -253,7 +253,7 @@ fun AppListScreen(
                 stickyHeader("header_music_players") {
                     SimpleHeaderItem(
                         text = stringResource(Res.string.music_players),
-                        icon = Icons.Outlined.PlayCircle
+                        icon = Icons.PlayCircle
                     )
                 }
             }
@@ -267,7 +267,7 @@ fun AppListScreen(
                     stickyHeader("header_other_apps") {
                         SimpleHeaderItem(
                             text = stringResource(Res.string.other_apps),
-                            icon = Icons.Outlined.Apps
+                            icon = Icons.Apps
                         )
                     }
 
@@ -279,7 +279,7 @@ fun AppListScreen(
                         stickyHeader("header_plugins_needed") {
                             ExpandableHeaderItem(
                                 title = stringResource(Res.string.needs_plugin),
-                                icon = Icons.Outlined.Info,
+                                icon = Icons.Info,
                                 expanded = pluginsNeededExpanded,
                                 onToggle = { pluginsNeededExpanded = it },
                             )
@@ -310,7 +310,7 @@ fun AppListScreen(
                                     )
 
                                     Icon(
-                                        imageVector = Icons.Outlined.OpenInBrowser,
+                                        imageVector = Icons.OpenInBrowser,
                                         contentDescription = null,
                                         modifier = Modifier
                                     )
@@ -328,7 +328,7 @@ fun AppListScreen(
                                 .align(Alignment.CenterHorizontally)
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Delete,
+                                imageVector = Icons.Delete,
                                 contentDescription = null,
                             )
 

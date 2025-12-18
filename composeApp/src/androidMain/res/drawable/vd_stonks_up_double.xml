@@ -2,14 +2,9 @@
     android:width="24dp"
     android:height="24dp"
     android:tint="@color/stonks_up"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <group
-        android:pivotX="12"
-        android:pivotY="12"
-        android:rotation="-90">
-        <path
-            android:fillColor="@android:color/white"
-            android:pathData="M5.58,16.89l5.77,-4.07c0.56,-0.4 0.56,-1.24 0,-1.63L5.58,7.11C4.91,6.65 4,7.12 4,7.93v8.14c0,0.81 0.91,1.28 1.58,0.82zM13,7.93v8.14c0,0.81 0.91,1.28 1.58,0.82l5.77,-4.07c0.56,-0.4 0.56,-1.24 0,-1.63l-5.77,-4.07c-0.67,-0.47 -1.58,0 -1.58,0.81z" />
-    </group>
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M480,553L324,708Q313,719 296.5,719.5Q280,720 268,708Q257,697 257,680Q257,663 268,652L452,468Q458,462 465,459.5Q472,457 480,457Q488,457 495,459.5Q502,462 508,468L692,652Q703,663 703.5,679.5Q704,696 692,708Q681,719 664,719Q647,719 636,708L480,553ZM480,313L324,468Q313,479 296.5,479.5Q280,480 268,468Q257,457 257,440Q257,423 268,412L452,228Q458,222 465,219.5Q472,217 480,217Q488,217 495,219.5Q502,222 508,228L692,412Q703,423 703.5,439.5Q704,456 692,468Q681,479 664,479Q647,479 636,468L480,313Z" />
 </vector>

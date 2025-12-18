@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.arn.scrobble.icons
+package com.arn.scrobble.panoicons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor

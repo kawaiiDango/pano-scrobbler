@@ -7,12 +7,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Block
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -35,10 +29,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.icons.AlbumArtist
-import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.Apps
+import com.arn.scrobble.icons.Block
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.jsonSerializableSaver
+import com.arn.scrobble.panoicons.AlbumArtist
+import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.InfoText
 import kotlinx.coroutines.flow.collectLatest
@@ -102,7 +102,7 @@ fun RegexEditsTestScreen(
             },
             isError = track.isEmpty(),
             label = { Text(stringResource(Res.string.track)) },
-            leadingIcon = { Icon(Icons.Outlined.MusicNote, contentDescription = null) },
+            leadingIcon = { Icon(Icons.MusicNote, contentDescription = null) },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
@@ -113,7 +113,7 @@ fun RegexEditsTestScreen(
             },
             isError = artist.isEmpty(),
             label = { Text(stringResource(Res.string.artist)) },
-            leadingIcon = { Icon(Icons.Outlined.Mic, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Mic, contentDescription = null) },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
@@ -123,7 +123,7 @@ fun RegexEditsTestScreen(
                 album = it
             },
             label = { Text(stringResource(Res.string.album)) },
-            leadingIcon = { Icon(Icons.Outlined.Album, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Album, contentDescription = null) },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
@@ -164,7 +164,7 @@ fun RegexEditsTestScreen(
                 },
                 avatar = {
                     Icon(
-                        imageVector = Icons.Outlined.Apps,
+                        imageVector = Icons.Apps,
                         contentDescription = null
                     )
                 },
@@ -191,7 +191,7 @@ fun RegexEditsTestScreen(
                 if (regexMatches?.blockPlayerAction != null) {
                     val blockPlayerAction = regexMatches!!.blockPlayerAction!!
                     InfoText(
-                        icon = Icons.Outlined.Block,
+                        icon = Icons.Block,
                         text = stringResource(Res.string.block) +
                                 " (${blockPlayerAction.name})",
                         style = MaterialTheme.typography.bodyLargeEmphasized
@@ -201,17 +201,17 @@ fun RegexEditsTestScreen(
 
                     InfoText(
                         text = scrobbleData.artist,
-                        icon = Icons.Outlined.Mic
+                        icon = Icons.Mic
                     )
 
                     InfoText(
                         text = scrobbleData.track,
-                        icon = Icons.Outlined.MusicNote
+                        icon = Icons.MusicNote
                     )
 
                     InfoText(
                         text = scrobbleData.album ?: "",
-                        icon = Icons.Outlined.Album
+                        icon = Icons.Album
                     )
 
                     InfoText(

@@ -1,8 +1,5 @@
 package com.arn.scrobble.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Check
 import androidx.navigation3.runtime.NavKey
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
@@ -18,6 +15,9 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.icons.Add
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.updates.UpdateAction
 import kotlinx.serialization.Serializable
@@ -110,7 +110,7 @@ sealed interface PanoRoute : NavKey {
     ) : PanoRoute, HasFab {
         override fun getFabData() = PanoFabData(
             Res.string.done,
-            Icons.Outlined.Check,
+            Icons.Check,
             true,
             null
         )
@@ -123,7 +123,7 @@ sealed interface PanoRoute : NavKey {
     data object SimpleEdits : PanoRoute, HasFab {
         override fun getFabData() = PanoFabData(
             Res.string.add,
-            Icons.Outlined.Add,
+            Icons.Add,
             false,
             PanoRoute.SimpleEditsAdd(null)
         )
@@ -136,7 +136,7 @@ sealed interface PanoRoute : NavKey {
     data object RegexEdits : PanoRoute, HasFab {
         override fun getFabData() = PanoFabData(
             Res.string.add,
-            Icons.Outlined.Add,
+            Icons.Add,
             false,
             PanoRoute.RegexEditsAdd(null)
         )
@@ -149,7 +149,7 @@ sealed interface PanoRoute : NavKey {
     data object BlockedMetadatas : PanoRoute, HasFab {
         override fun getFabData() = PanoFabData(
             Res.string.add,
-            Icons.Outlined.Add,
+            Icons.Add,
             false,
             route = Modal.BlockedMetadataAdd(
                 blockedMetadata = null,
@@ -163,7 +163,7 @@ sealed interface PanoRoute : NavKey {
     data object ThemeChooser : PanoRoute, HasFab {
         override fun getFabData() = PanoFabData(
             Res.string.done,
-            Icons.Outlined.Check,
+            Icons.Check,
             true,
             null
         )

@@ -14,13 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,8 +40,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.arn.scrobble.icons.AlbumArtist
-import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.KeyboardArrowUp
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.panoicons.AlbumArtist
+import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.MinimalHtmlParser
 import com.arn.scrobble.ui.backgroundForShimmer
@@ -171,7 +171,7 @@ fun InfoWikiText(
 
             if (overflows) {
                 Icon(
-                    imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                    imageVector = if (expanded) Icons.KeyboardArrowUp else Icons.KeyboardArrowDown,
                     contentDescription = stringResource(
                         if (expanded)
                             Res.string.collapse
@@ -310,11 +310,11 @@ fun InfoSimpleHeader(
 
 @Composable
 fun getMusicEntryIcon(type: Int) = when (type) {
-    Stuff.TYPE_TRACKS -> Icons.Outlined.MusicNote
-    Stuff.TYPE_ALBUMS -> Icons.Outlined.Album
-    Stuff.TYPE_ARTISTS -> Icons.Outlined.Mic
+    Stuff.TYPE_TRACKS -> Icons.MusicNote
+    Stuff.TYPE_ALBUMS -> Icons.Album
+    Stuff.TYPE_ARTISTS -> Icons.Mic
     Stuff.TYPE_ALBUM_ARTISTS -> PanoIcons.AlbumArtist
-    Stuff.TYPE_LOVES -> Icons.Outlined.FavoriteBorder
+    Stuff.TYPE_LOVES -> Icons.Favorite
     else -> throw IllegalArgumentException("Unknown type: $type")
 }
 

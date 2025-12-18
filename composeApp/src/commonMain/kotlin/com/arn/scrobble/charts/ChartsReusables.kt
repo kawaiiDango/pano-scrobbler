@@ -14,17 +14,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowLeft
-import androidx.compose.material.icons.automirrored.outlined.ArrowRight
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.ArrowDropDownCircle
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.CalendarViewMonth
-import androidx.compose.material.icons.outlined.CalendarViewWeek
-import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
@@ -70,6 +59,17 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.ArrowDropDownCircle
+import com.arn.scrobble.icons.CalendarToday
+import com.arn.scrobble.icons.CalendarViewMonth
+import com.arn.scrobble.icons.CalendarViewWeek
+import com.arn.scrobble.icons.Circle
+import com.arn.scrobble.icons.DateRange
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Refresh
+import com.arn.scrobble.icons.automirrored.ArrowLeft
+import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.combineImageVectors
@@ -120,16 +120,16 @@ private val TimePeriodType.stringRes
 
 private val periodTypeMenuItems by lazy {
     mapOf(
-        TimePeriodType.WEEK to Icons.Outlined.CalendarViewWeek,
-        TimePeriodType.MONTH to Icons.Outlined.CalendarViewMonth,
-        TimePeriodType.YEAR to Icons.Outlined.CalendarToday,
-        TimePeriodType.CONTINUOUS to Icons.Outlined.Circle,
-        TimePeriodType.CUSTOM to Icons.Outlined.DateRange,
+        TimePeriodType.WEEK to Icons.CalendarViewWeek,
+        TimePeriodType.MONTH to Icons.CalendarViewMonth,
+        TimePeriodType.YEAR to Icons.CalendarToday,
+        TimePeriodType.CONTINUOUS to Icons.Circle,
+        TimePeriodType.CUSTOM to Icons.DateRange,
     )
 }
 
 fun getPeriodTypeIcon(periodType: TimePeriodType): ImageVector {
-    return periodTypeMenuItems[periodType] ?: Icons.Outlined.Circle
+    return periodTypeMenuItems[periodType] ?: Icons.Circle
 }
 
 fun getPeriodTypePluralRes(periodType: TimePeriodType): PluralStringResource {
@@ -296,7 +296,7 @@ fun TimePeriodSelector(
                         Icon(
                             combineImageVectors(
                                 getPeriodTypeIcon(it),
-                                Icons.Outlined.ArrowDropDown
+                                Icons.ArrowDropDown
                             ),
                             contentDescription = stringResource(Res.string.item_options)
                         )
@@ -337,13 +337,13 @@ fun TimePeriodSelector(
                     trailingIcon = {
                         if (timePeriod == selectedPeriod) {
                             Icon(
-                                imageVector = Icons.Outlined.ArrowDropDownCircle,
+                                imageVector = Icons.ArrowDropDownCircle,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowLeft,
+                                imageVector = Icons.AutoMirrored.ArrowLeft,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.secondary
                             )
@@ -352,7 +352,7 @@ fun TimePeriodSelector(
                     leadingIcon = {
                         if (timePeriodsList.getOrNull(idx - 1) == selectedPeriod) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
+                                imageVector = Icons.AutoMirrored.ArrowRight,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.secondary
                             )
@@ -490,7 +490,7 @@ private fun PeriodTypeSelector(
                 },
                 text = { Text(text = stringResource(Res.string.reload)) },
                 leadingIcon = {
-                    Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
+                    Icon(imageVector = Icons.Refresh, contentDescription = null)
                 }
             )
         }

@@ -8,16 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Casino
-import androidx.compose.material.icons.outlined.HourglassEmpty
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -62,6 +52,16 @@ import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.charts.getPeriodTypeIcon
 import com.arn.scrobble.charts.getPeriodTypePluralRes
+import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.Casino
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.History
+import com.arn.scrobble.icons.HourglassEmpty
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.OpenInBrowser
+import com.arn.scrobble.icons.Refresh
+import com.arn.scrobble.icons.Warning
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
@@ -349,7 +349,7 @@ fun ScrobblesScreen(
                         when {
                             !nlsEnabled -> {
                                 text = stringResource(Res.string.scrobbler_off)
-                                icon = Icons.Outlined.Info
+                                icon = Icons.Info
 
                                 onClick = {
                                     viewModel.updateScrobblerServiceStatus()
@@ -359,14 +359,14 @@ fun ScrobblesScreen(
 
                             !scrobblerEnabled -> {
                                 text = stringResource(Res.string.scrobbler_off)
-                                icon = Icons.Outlined.Info
+                                icon = Icons.Info
 
                                 onClick = { onNavigate(PanoRoute.Prefs) }
                             }
 
                             scrobblerRunning == false -> {
                                 text = stringResource(Res.string.not_running)
-                                icon = Icons.Outlined.Warning
+                                icon = Icons.Warning
                                 onClick = { onNavigate(PanoRoute.Modal.FixIt) }
                             }
 
@@ -378,7 +378,7 @@ fun ScrobblesScreen(
                                     else
                                         stringResource(Res.string.desktop)
                                 )
-                                icon = Icons.Outlined.OpenInBrowser
+                                icon = Icons.OpenInBrowser
                                 onClick = {
                                     onNavigate(PanoRoute.Modal.ShowLink(Stuff.LINK_HOMEPAGE))
                                 }
@@ -405,7 +405,7 @@ fun ScrobblesScreen(
                 if (selectedType == ScrobblesType.RECENTS && user.isSelf) {
                     pendingScrobblesListItems(
                         headerText = pendingScrobblesheader,
-                        headerIcon = Icons.Outlined.HourglassEmpty,
+                        headerIcon = Icons.HourglassEmpty,
                         items = pendingScrobbles,
                         seenApps = seenApps,
                         expanded = pendingScrobblesExpanded,
@@ -527,7 +527,7 @@ private fun ScrobblesTypeSelector(
                 type = null,
                 checked = false,
                 text = stringResource(Res.string.reload),
-                imageVector = Icons.Rounded.Refresh,
+                imageVector = Icons.Refresh,
                 onTypeSelected = {
                     onRefresh()
                 },
@@ -539,7 +539,7 @@ private fun ScrobblesTypeSelector(
             type = ScrobblesType.RECENTS,
             checked = selectedType == ScrobblesType.RECENTS,
             text = stringResource(Res.string.recents),
-            imageVector = Icons.Rounded.History,
+            imageVector = Icons.History,
             onTypeSelected = {
                 if (it != null)
                     onTypeSelected(it, null)
@@ -550,7 +550,7 @@ private fun ScrobblesTypeSelector(
             type = ScrobblesType.LOVED,
             checked = selectedType == ScrobblesType.LOVED,
             text = stringResource(Res.string.loved),
-            imageVector = Icons.Rounded.FavoriteBorder,
+            imageVector = Icons.Favorite,
             onTypeSelected = {
                 if (it != null)
                     onTypeSelected(it, null)
@@ -574,7 +574,7 @@ private fun ScrobblesTypeSelector(
             ) {
                 val painter = combineImageVectors(
                     getPeriodTypeIcon(TimePeriodType.CUSTOM),
-                    Icons.Outlined.ArrowDropDown
+                    Icons.ArrowDropDown
                 )
 
                 if (selectedType == ScrobblesType.TIME_JUMP) {
@@ -642,7 +642,7 @@ private fun ScrobblesTypeSelector(
             type = null,
             checked = false,
             text = stringResource(Res.string.random_text),
-            imageVector = Icons.Outlined.Casino,
+            imageVector = Icons.Casino,
             onTypeSelected = {
                 onNavigateToRandom()
             },

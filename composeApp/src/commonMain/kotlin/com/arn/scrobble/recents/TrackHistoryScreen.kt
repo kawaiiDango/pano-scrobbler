@@ -5,13 +5,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -28,6 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.icons.Cake
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.utils.PanoTimeFormatter
@@ -117,7 +116,7 @@ fun TrackHistoryScreen(
                         .padding(vertical = 8.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Cake,
+                        imageVector = Icons.Cake,
                         contentDescription = null,
                     )
                     Text(

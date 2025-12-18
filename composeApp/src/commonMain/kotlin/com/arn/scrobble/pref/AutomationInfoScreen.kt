@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +22,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.automation.Automation
+import com.arn.scrobble.icons.ContentCopy
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -161,7 +161,7 @@ fun AutomationInfoScreen(
                 }
 
                 Icon(
-                    imageVector = Icons.Outlined.ContentCopy,
+                    imageVector = Icons.ContentCopy,
                     contentDescription = null,
                 )
             }

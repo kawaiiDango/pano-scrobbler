@@ -9,12 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.VolumeOff
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,9 +26,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.icons.AlbumArtist
-import com.arn.scrobble.icons.PanoIcons
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.SkipNext
+import com.arn.scrobble.icons.automirrored.VolumeOff
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.panoicons.AlbumArtist
+import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
@@ -156,7 +156,7 @@ private fun BlockedMetadataItem(
         ) {
             TextWithIcon(
                 text = blockedMetadata.track.ifEmpty { "*" },
-                icon = Icons.Outlined.MusicNote,
+                icon = Icons.MusicNote,
                 style = MaterialTheme.typography.titleMediumEmphasized,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,7 +165,7 @@ private fun BlockedMetadataItem(
 
             TextWithIcon(
                 text = blockedMetadata.artist.ifEmpty { "*" },
-                icon = Icons.Outlined.Mic,
+                icon = Icons.Mic,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -173,7 +173,7 @@ private fun BlockedMetadataItem(
 
             TextWithIcon(
                 text = blockedMetadata.album.ifEmpty { "*" },
-                icon = Icons.Outlined.Album,
+                icon = Icons.Album,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -190,13 +190,13 @@ private fun BlockedMetadataItem(
 
         if (blockedMetadata.blockPlayerAction == BlockPlayerAction.skip) {
             Icon(
-                imageVector = Icons.Outlined.SkipNext,
+                imageVector = Icons.SkipNext,
                 contentDescription = stringResource(Res.string.skip),
                 tint = MaterialTheme.colorScheme.secondary,
             )
         } else if (blockedMetadata.blockPlayerAction == BlockPlayerAction.mute) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.VolumeOff,
+                imageVector = Icons.AutoMirrored.VolumeOff,
                 contentDescription = stringResource(Res.string.mute),
                 tint = MaterialTheme.colorScheme.secondary,
             )

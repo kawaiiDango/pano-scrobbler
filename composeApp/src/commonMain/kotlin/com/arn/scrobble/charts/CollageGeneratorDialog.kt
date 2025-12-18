@@ -6,14 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -41,6 +33,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.LocalPlatformContext
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.ContentCopy
+import com.arn.scrobble.icons.Download
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.Person
+import com.arn.scrobble.icons.Share
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.ErrorText
@@ -112,10 +112,10 @@ fun CollageGeneratorDialog(
     var shareTextToCopy by remember { mutableStateOf<String?>(null) }
     val iconPainters = IconPaintersForCollage(
         app = painterResource(Res.drawable.vd_launcher_fg_for_collage),
-        user = placeholderImageVectorPainter(null, Icons.Outlined.Person),
-        artist = placeholderImageVectorPainter(null, Icons.Outlined.Mic),
-        album = placeholderImageVectorPainter(null, Icons.Outlined.Album),
-        track = placeholderImageVectorPainter(null, Icons.Outlined.MusicNote),
+        user = placeholderImageVectorPainter(null, Icons.Person),
+        artist = placeholderImageVectorPainter(null, Icons.Mic),
+        album = placeholderImageVectorPainter(null, Icons.Album),
+        track = placeholderImageVectorPainter(null, Icons.MusicNote),
         colors = LocalThemeAttributes.current.allSecondaryContainerColors
     )
     val context = LocalPlatformContext.current
@@ -213,7 +213,7 @@ fun CollageGeneratorDialog(
                     },
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
+                        imageVector = Icons.ContentCopy, contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(stringResource(Res.string.as_text))
@@ -322,7 +322,7 @@ fun CollageGeneratorDialog(
                     modifier = if (showSavedMessage) Modifier.alpha(0.5f) else Modifier,
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Download, contentDescription = null,
+                        imageVector = Icons.Download, contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(
@@ -343,7 +343,7 @@ fun CollageGeneratorDialog(
                         },
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Share, contentDescription = null,
+                            imageVector = Icons.Share, contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Text(stringResource(Res.string.share))

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,6 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.OpenInBrowser
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.VerifyButton
@@ -87,7 +87,7 @@ fun ListenBrainzLoginScreen(
                     Res.string.listenbrainz_info,
                     "https://listenbrainz.org/profile"
                 ),
-                icon = Icons.Outlined.OpenInBrowser,
+                icon = Icons.OpenInBrowser,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(MaterialTheme.shapes.medium)

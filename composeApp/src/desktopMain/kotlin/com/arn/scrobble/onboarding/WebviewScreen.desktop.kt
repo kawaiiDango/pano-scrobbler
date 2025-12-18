@@ -3,8 +3,6 @@ package com.arn.scrobble.onboarding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,6 +16,8 @@ import androidx.compose.ui.Modifier
 import com.arn.scrobble.DesktopWebView
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.Stuff
@@ -110,7 +110,7 @@ actual fun WebViewScreen(
                     helpButtonShown = false
                     statusText = webViewNotLoadedMessage
                 },
-                icon = Icons.AutoMirrored.Outlined.HelpOutline,
+                icon = Icons.AutoMirrored.Help,
                 text = stringResource(Res.string.help),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

@@ -6,12 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +30,12 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ExpandableHeaderMenu
@@ -167,7 +167,7 @@ fun SearchScreen(
             if (hasLoaded) {
                 expandableSublist(
                     headerText = artistsText,
-                    headerIcon = Icons.Outlined.Mic,
+                    headerIcon = Icons.Mic,
                     items = searchResults?.artists ?: emptyList(),
                     expanded = artistsExpanded,
                     onToggle = { artistsExpanded = it },
@@ -176,7 +176,7 @@ fun SearchScreen(
 
                 expandableSublist(
                     headerText = albumsText,
-                    headerIcon = Icons.Outlined.Album,
+                    headerIcon = Icons.Album,
                     items = searchResults?.albums ?: emptyList(),
                     expanded = albumsExpanded,
                     onToggle = { albumsExpanded = it },
@@ -185,7 +185,7 @@ fun SearchScreen(
 
                 expandableSublist(
                     headerText = tracksText,
-                    headerIcon = Icons.Outlined.MusicNote,
+                    headerIcon = Icons.MusicNote,
                     items = searchResults?.tracks ?: emptyList(),
                     expanded = tracksExpanded,
                     onToggle = { tracksExpanded = it },
@@ -195,7 +195,7 @@ fun SearchScreen(
 
                 expandableSublist(
                     headerText = lovedText,
-                    headerIcon = Icons.Outlined.FavoriteBorder,
+                    headerIcon = Icons.Favorite,
                     items = searchResults?.lovedTracks ?: emptyList(),
                     expanded = lovedExpanded,
                     onToggle = { lovedExpanded = it },
@@ -210,7 +210,7 @@ fun SearchScreen(
                                 Res.string.searched_n_items,
                                 Stuff.MAX_INDEXED_ITEMS.format()
                             ),
-                            icon = Icons.Outlined.Info,
+                            icon = Icons.Info,
                             menuItemText = stringResource(Res.string.reindex),
                             onMenuItemClick = {
                                 onNavigate(PanoRoute.Modal.Index)

@@ -1,12 +1,13 @@
 # Privacy Policy
 
-_Last updated on 2025, Dec 14 UTC_
+_Last updated on 2025, Dec 22 UTC_
 
 Applicable to the Pano Scrobbler app version 4.0 and later.
 
-kawaiiDango built the Pano Scrobbler app as an Open Source, Freemium app. This app is provided by
-kawaiiDango at no cost and is intended for use as is. One may obtain its source code
-here: [github.com/kawaiiDango/pano-scrobbler](https://github.com/kawaiiDango/pano-scrobbler)
+kawaiiDango built the Pano Scrobbler app as a Free and Open Source app licensed under GPLv3 or
+later. This app is provided by kawaiiDango at no cost and is intended for use as is, without any
+warranty or fitness for a particular purpose. One may freely obtain its complete source code at:
+[github.com/kawaiiDango/pano-scrobbler](https://github.com/kawaiiDango/pano-scrobbler)
 
 If you choose to use my app, then you agree to the collection and use of information in relation to
 this policy. I will not use or share your information with anyone except as described in this
@@ -25,7 +26,7 @@ tracking services of your choice such as Last.fm, Libre.fm, ListenBrainz and sel
   music metadata, to the previously mentioned music tracking services of your choice, for its core
   functionality.
 - To fetch images of artists and albums, the name of the artist and album is sent to Spotify. This
-  is functionality disabled by default for fresh installs.
+  is functionality disabled by default for fresh installations.
 - To fetch the missing metadata while scrobbling Deezer on Windows, the app uses the Deezer API.
 - If you are using the Google Play version and automatic error reporting is enabled, an anonymous,
   resettable device identifier is sent to Firebase Crashlytics, along with stack traces of the
@@ -54,7 +55,7 @@ Link to privacy policies of third party service providers used by the app
 If automatic error reporting is enabled (for the Google Play version only) and an error occurs in
 my app or if you choose to send logs for a bug report via email, non-personal information such as
 logs for events that led to the error, stack traces for the error, device information such as model
-name, manufacturer name, OS name and version, amount of RAM used etc are collected and sent to me
+name, manufacturer name, OS name and version, amount of RAM used etc. are collected and sent to me
 through third party services namely Firebase Crashlytics or your email provider. This information is
 used to identify and fix bugs.
 
@@ -65,7 +66,7 @@ identifiers. These are sent to your browser from the websites that you visit and
 device's internal memory.
 
 This app uses a webview for logging in to Last.fm. This 3rd party website may use cookies to keep
-track of logged in sessions and to improve their services.
+track of logged-in sessions and to improve their services.
 
 ### Notification Read, Reply and Control (Android Permission)
 
@@ -100,4 +101,4 @@ this page. These changes are effective immediately after they are posted on this
 ### Contact Us
 
 If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at
-kawaiiDango@pm.me.
+kawaiiDango (at) pm.me.

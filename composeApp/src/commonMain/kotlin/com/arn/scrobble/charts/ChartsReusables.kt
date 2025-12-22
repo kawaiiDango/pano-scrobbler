@@ -40,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -183,7 +182,7 @@ private fun monthPickerMonths(
     return months
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TimePeriodSelector(
     user: UserCached,
@@ -212,8 +211,8 @@ fun TimePeriodSelector(
     }
 
     LaunchedEffect(accountType, digestTimePeriod) {
-        when {
-            accountType == AccountType.LISTENBRAINZ -> {
+        when (accountType) {
+            AccountType.LISTENBRAINZ -> {
                 viewModel.setPeriodType(TimePeriodType.LISTENBRAINZ)
                 if (digestTimePeriod == null) {
                     val selected = PlatformStuff.mainPrefs.data.mapLatest {
@@ -223,7 +222,7 @@ fun TimePeriodSelector(
                 }
             }
 
-            accountType == AccountType.LASTFM && digestTimePeriod == null -> {
+            AccountType.LASTFM if digestTimePeriod == null -> {
                 val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
                     Triple(
                         it.lastChartsPeriodType,
@@ -362,7 +361,8 @@ fun TimePeriodSelector(
                     modifier = Modifier
                         .onGloballyPositioned { coordinates ->
                             if (timePeriod == selectedPeriod) {
-                                selectedPeriodOffsetX = coordinates.positionInParent().round().x
+                                selectedPeriodOffsetX = coordinates.positionInParent().round().x +
+                                        coordinates.size.width / 2
                             }
                         }
                 )
@@ -565,10 +565,8 @@ private fun DateRangePickerModal(
     }
 }
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalComposeUiApi::class
-)
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun MonthPickerPopup(
     offset: IntOffset,

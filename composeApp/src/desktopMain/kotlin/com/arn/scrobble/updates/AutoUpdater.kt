@@ -65,11 +65,13 @@ object AutoUpdater {
         val backupFile = File(parentDir, appImageFile.name + ".bak")
         appImageFile.copyTo(backupFile, overwrite = true)
         try {
-            Files.move(
-                tempFile.toPath(),
-                appImageFile.toPath(),
-                StandardCopyOption.REPLACE_EXISTING
-            )
+            withContext(Dispatchers.IO) {
+                Files.move(
+                    tempFile.toPath(),
+                    appImageFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+                )
+            }
             Logger.i("Update applied!")
         } catch (e: Exception) {
             Logger.e("Error replacing AppImage: ${e.message}")

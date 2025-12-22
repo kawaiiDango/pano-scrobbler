@@ -132,7 +132,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
             (limit == -1 || page * limit < (0.7 * prevChartsMap.size)) && (prevChartsMap.isNotEmpty())
 
         currentCharts
-            .map { pr ->
+            .onSuccess { pr ->
                 pr.entries.forEach {
                     val hashableEntry = toHashableEntry(it)
                     val prevRank = prevChartsMap[hashableEntry]

@@ -7,7 +7,7 @@ import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.emptyFlow
 
 
 actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
@@ -35,10 +35,7 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
     if (!AndroidStuff.isMainProcess)
         return null
 
-    val cr = AndroidStuff.applicationContext.contentResolver
-
-    if (cr == null)
-        return null
+    val cr = AndroidStuff.applicationContext.contentResolver ?: return null
 
     val cursor = cr.query(
         "content://${Automation.PREFIX}/${Automation.ANDROID_NOW_PLAYING}".toUri(),
@@ -68,5 +65,5 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
 }
 
 actual fun shouldFetchNpArtUrl(): Flow<Boolean> {
-    return flow { false }
+    return emptyFlow()
 }

@@ -101,7 +101,7 @@ object PanoNavGraph {
         onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
         mainViewModel: MainViewModel,
         mainViewModelStoreOwner: () -> ViewModelStoreOwner,
-    ) = entryProvider<PanoRoute> {
+    ) = entryProvider {
 
         @Composable
         fun onSetTitleString(route: PanoRoute, title: String) {

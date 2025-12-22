@@ -32,7 +32,7 @@ Android Go.
     cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.media.NLService
 ```
 
-- If the above command didn't work or you are on Android 8.0 and below:
+- If the above command didn't work, or you are on Android 8.0 and below:
 
 ```
     n=$(settings get secure enabled_notification_listeners)

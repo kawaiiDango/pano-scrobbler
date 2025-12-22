@@ -71,8 +71,8 @@ object ChartsListUtils {
                 if (item.subtitle != null) {
                     DeepLinkUtils.fillInIntentForMusicEntryInfo(
                         fillInIntent,
-                        artist = item.title,
-                        album = item.subtitle,
+                        artist = item.subtitle,
+                        album = item.title,
                         track = null,
                     )
                 }

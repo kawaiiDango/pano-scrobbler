@@ -40,7 +40,7 @@ Currently, the FOSS builds skip this step.
 
 - or `./gradlew androidApp:assembleReleaseGithub` for the FOSS build
 
-- Info: the build variant "release" includes Google Play billing, Crashlytics (has opt out) and
+- Info: the build variant "release" includes Google Play billing, Crashlytics (has opt-out) and
   Google Play Review API as its non-free dependencies, while the build variant "releaseGithub"
   includes no non-free dependencies.
 
@@ -50,7 +50,7 @@ Currently, the FOSS builds skip this step.
 
 - If you intend to package a build for desktop,
   use [Bellsoft's GraalVM based on OpenJDK 25](https://bell-sw.com/pages/downloads/native-image-kit/)
-  as your gradle JDK and run gradle packageUberJarForCurrentOS. Also
+  as your Gradle JDK and run Gradle packageUberJarForCurrentOS. Also
   have [NSIS](https://nsis.sourceforge.io/Main_Page) installed in Program Files on Windows.
 
 - Run `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop`

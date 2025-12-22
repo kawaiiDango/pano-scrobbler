@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 object PanoNativeComponents {
     var desktopMediaListener: DesktopMediaListener? = null
     val onFilePickedFlow = MutableSharedFlow<Pair<Int, String>>(extraBufferCapacity = 1)
-    val onDarkModeChangeFlow = MutableStateFlow<Boolean>(true)
+    val onDarkModeChangeFlow = MutableStateFlow(true)
 
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
@@ -116,7 +116,7 @@ object PanoNativeComponents {
     fun onReceiveIpcCommand(command: String, arg: String) {
         if (command == Automation.DESKTOP_FOCUS_EXISTING) {
             PanoTrayUtils.onTrayMenuItemClickedFn(PanoTrayUtils.ItemId.Open.name)
-            PanoNativeComponents.notify(
+            notify(
                 "Already running",
                 "Please close the existing instance before starting a new one."
             )

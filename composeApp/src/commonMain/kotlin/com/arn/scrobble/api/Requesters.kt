@@ -171,7 +171,6 @@ object Requesters {
                 }
 
                 val body = resp.parseJsonBody<T>()
-                Result.success(body)
                 val pageEntries = transform(body)
                 val customPageAttr = pageAttrTransform(body)
                 val pr = PageResult(

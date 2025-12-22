@@ -111,25 +111,6 @@ android {
         includeInBundle = true
     }
 
-    dependencies {
-        implementation(projects.composeApp)
-        implementation(libs.work.runtime)
-        implementation(projects.extrasCommon)
-
-
-//        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
-
-        releaseImplementation(projects.extrasPlay)
-//        debugImplementation(projects.extrasPlay)
-        debugImplementation(projects.extrasNonplay)
-        "releaseGithubImplementation"(projects.extrasNonplay)
-
-        androidTestImplementation(libs.test.uiautomator)
-        androidTestImplementation(libs.test.runner)
-        androidTestImplementation(libs.test.espresso.core)
-        androidTestImplementation(libs.test.junit)
-    }
-
     signingConfigs {
         if (
             localProperties["release.keystore"] != null &&
@@ -173,6 +154,25 @@ android {
             signingConfig = signingConfigs.findByName("releaseGithub")
         }
     }
+}
+
+dependencies {
+    implementation(projects.composeApp)
+    implementation(libs.work.runtime)
+    implementation(projects.extrasCommon)
+
+
+//        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
+
+    releaseImplementation(projects.extrasPlay)
+//        debugImplementation(projects.extrasPlay)
+    debugImplementation(projects.extrasNonplay)
+    "releaseGithubImplementation"(projects.extrasNonplay)
+
+    androidTestImplementation(libs.test.uiautomator)
+    androidTestImplementation(libs.test.runner)
+    androidTestImplementation(libs.test.espresso.core)
+    androidTestImplementation(libs.test.junit)
 }
 
 aboutLibraries {

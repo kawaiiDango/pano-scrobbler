@@ -921,10 +921,9 @@ private suspend fun areExtractionRulesValid(regexEdit: RegexEdit): Result<Unit> 
         extractionPatterns.searchAlbum,
         extractionPatterns.searchArtist,
         extractionPatterns.searchAlbumArtist,
-    ).all {
+    ).forEach {
         try {
             Pattern.compile(it)
-            true
         } catch (e: PatternSyntaxException) {
             return Result.failure(
                 IllegalArgumentException(

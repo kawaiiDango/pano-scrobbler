@@ -7,13 +7,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class ChartsWidgetConfigActivity : ComponentActivity() {
@@ -36,11 +37,12 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
+                val widgetPrefs by
+                AndroidStuff.widgetPrefs.data.collectAsStateWithLifecycle(null)
+
                 ChartsWidgetConfigScreen(
                     isPinned = isPinned,
-                    specificWidgetPrefs = AndroidStuff.widgetPrefs.data.map {
-                        it.widgets[appWidgetId] ?: SpecificWidgetPrefs()
-                    },
+                    prefs = widgetPrefs?.widgets[appWidgetId] ?: SpecificWidgetPrefs(),
                     onSave = ::savePrefs,
                     onCancel = ::cancel
                 )

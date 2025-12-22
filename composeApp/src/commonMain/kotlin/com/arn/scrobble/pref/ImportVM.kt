@@ -133,7 +133,7 @@ class ImportVM : ViewModel() {
             } else if (BuildKonfig.DEBUG && session.method == Method.GET && session.uri == "/test") {
                 newFixedLengthResponse("Ok")
             } else {
-                return super.serve(session)
+                super.serve(session)
             }
 
         }

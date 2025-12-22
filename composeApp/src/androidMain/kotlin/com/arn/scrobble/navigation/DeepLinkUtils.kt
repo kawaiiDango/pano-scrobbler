@@ -119,9 +119,9 @@ object DeepLinkUtils {
             }
 
             return PanoRoute.Modal.MusicEntryInfo(
-                artist = if (musicEntry is Artist) musicEntry else null,
-                album = if (musicEntry is Album) musicEntry else null,
-                track = if (musicEntry is Track) musicEntry else null,
+                artist = musicEntry as? Artist,
+                album = musicEntry as? Album,
+                track = musicEntry as? Track,
                 user = currentUser,
             )
         }
@@ -136,8 +136,6 @@ object DeepLinkUtils {
         }
 
         return dialog as? PanoRoute.Modal
-
-        return null
     }
 
     fun parseDeepLink(

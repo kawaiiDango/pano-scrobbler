@@ -36,14 +36,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.R
 import com.arn.scrobble.charts.AllPeriods
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.ui.LabeledSwitch
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
@@ -57,132 +55,129 @@ import kotlin.time.Duration.Companion.hours
 @Composable
 fun ChartsWidgetConfigScreen(
     isPinned: Boolean,
-    specificWidgetPrefs: Flow<SpecificWidgetPrefs>,
+    prefs: SpecificWidgetPrefs,
     onSave: (prefs: SpecificWidgetPrefs, reFetch: Boolean) -> Unit,
     onCancel: () -> Unit,
 ) {
-    val prefs by specificWidgetPrefs.collectAsStateWithLifecycle(null)
 
-    prefs?.let { prefs ->
-        var period by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(prefs.period) }
-        var bgAlpha by rememberSaveable { mutableFloatStateOf(prefs.bgAlpha) }
-        var shadow by rememberSaveable { mutableStateOf(prefs.shadow) }
-        val scrollState = rememberScrollState()
-        val allPeriods = remember {
-            val wtp = WidgetTimePeriods()
-            AllPeriods.entries.associateWith {
-                wtp.toTimePeriod(it)
+    var period by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(prefs.period) }
+    var bgAlpha by rememberSaveable { mutableFloatStateOf(prefs.bgAlpha) }
+    var shadow by rememberSaveable { mutableStateOf(prefs.shadow) }
+    val scrollState = rememberScrollState()
+    val allPeriods = remember {
+        val wtp = WidgetTimePeriods()
+        AllPeriods.entries.associateWith {
+            wtp.toTimePeriod(it)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeContentPadding()
+    ) {
+
+        if (shadow) {
+            WidgetPreviewWithShadow(
+                bgAlpha = bgAlpha,
+                modifier = Modifier
+                    .size(300.dp, 270.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+        } else {
+            WidgetPreviewWithoutShadow(
+                bgAlpha = bgAlpha,
+                modifier = Modifier
+                    .size(300.dp, 270.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+
+        Surface(
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+            ) {
+                Text(
+                    text = stringResource(Res.string.appwidget_period),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    allPeriods.forEach { (thisPeriod, thisTimePeriod) ->
+                        FilterChip(
+                            label = { Text(thisTimePeriod.name) },
+                            selected = period == thisPeriod,
+                            onClick = { period = thisPeriod }
+                        )
+                    }
+                }
+
+                Text(
+                    text = stringResource(Res.string.appwidget_alpha),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Slider(
+                    value = bgAlpha,
+                    onValueChange = { bgAlpha = it },
+                    valueRange = 0f..1f,
+                    steps = 100,
+                )
+
+                LabeledSwitch(
+                    text = stringResource(Res.string.appwidget_shadow),
+                    checked = shadow,
+                    onCheckedChange = { shadow = it },
+                    textStyle = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Text(
+                    text = stringResource(
+                        Res.string.appwidget_refresh_every,
+                        Stuff.humanReadableDuration(2.hours.inWholeMilliseconds)
+                    ),
+                )
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeContentPadding()
+        Surface(
+            tonalElevation = 4.dp
         ) {
-
-            if (shadow) {
-                WidgetPreviewWithShadow(
-                    bgAlpha = bgAlpha,
-                    modifier = Modifier
-                        .size(300.dp, 270.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            } else {
-                WidgetPreviewWithoutShadow(
-                    bgAlpha = bgAlpha,
-                    modifier = Modifier
-                        .size(300.dp, 270.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            }
-
-            Surface(
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                modifier = Modifier
-                    .weight(1f)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.appwidget_period),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        allPeriods.forEach { (thisPeriod, thisTimePeriod) ->
-                            FilterChip(
-                                label = { Text(thisTimePeriod.name) },
-                                selected = period == thisPeriod,
-                                onClick = { period = thisPeriod }
-                            )
-                        }
+                if (!isPinned) {
+                    TextButton(onClick = onCancel) {
+                        Text(text = stringResource(Res.string.cancel))
                     }
-
-                    Text(
-                        text = stringResource(Res.string.appwidget_alpha),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    Slider(
-                        value = bgAlpha,
-                        onValueChange = { bgAlpha = it },
-                        valueRange = 0f..1f,
-                        steps = 100,
-                    )
-
-                    LabeledSwitch(
-                        text = stringResource(Res.string.appwidget_shadow),
-                        checked = shadow,
-                        onCheckedChange = { shadow = it },
-                        textStyle = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-
-                    Text(
-                        text = stringResource(
-                            Res.string.appwidget_refresh_every,
-                            Stuff.humanReadableDuration(2.hours.inWholeMilliseconds)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextButton(onClick = {
+                    onSave(
+                        prefs.copy(
+                            period = period,
+                            bgAlpha = bgAlpha,
+                            shadow = shadow
                         ),
+                        prefs.period != period
                     )
+                }) {
+                    Text(text = stringResource(Res.string.ok))
                 }
             }
 
-            Surface(
-                tonalElevation = 4.dp
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    if (!isPinned) {
-                        TextButton(onClick = onCancel) {
-                            Text(text = stringResource(Res.string.cancel))
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    TextButton(onClick = {
-                        onSave(
-                            prefs.copy(
-                                period = period,
-                                bgAlpha = bgAlpha,
-                                shadow = shadow
-                            ),
-                            prefs.period != period
-                        )
-                    }) {
-                        Text(text = stringResource(Res.string.ok))
-                    }
-                }
-
-            }
         }
     }
 }

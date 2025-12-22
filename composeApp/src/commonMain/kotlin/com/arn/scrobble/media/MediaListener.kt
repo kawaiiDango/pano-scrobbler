@@ -39,7 +39,7 @@ abstract class MediaListener(
                         Stuff.mainPrefsInitialValue.scrobbleAccounts.isNotEmpty()
             )
 
-    abstract protected val notifyTimelineUpdates: Boolean
+    protected abstract val notifyTimelineUpdates: Boolean
 
     private val scrobbleTimingPrefs =
         PlatformStuff.mainPrefs.data.map {

@@ -17,22 +17,22 @@ class InfoMiscPagingSource(
         val requester = Requesters.lastfmUnauthedRequester
         val page = params.key ?: 1
 
-        val result = when {
-            entry is Artist && type == Stuff.TYPE_ARTISTS -> {
+        val result = when (entry) {
+            is Artist if type == Stuff.TYPE_ARTISTS -> {
                 requester.artistGetSimilar(entry, limit = params.loadSize)
             }
 
-            entry is Artist && type == Stuff.TYPE_ALBUMS -> {
+            is Artist if type == Stuff.TYPE_ALBUMS -> {
                 requester.artistGetTopAlbums(entry, page = page, limit = params.loadSize)
                     .map { it.entries }
             }
 
-            entry is Artist && type == Stuff.TYPE_TRACKS -> {
+            is Artist if type == Stuff.TYPE_TRACKS -> {
                 requester.artistGetTopTracks(entry, page = page, limit = params.loadSize)
                     .map { it.entries }
             }
 
-            entry is Track && type == Stuff.TYPE_TRACKS -> {
+            is Track if type == Stuff.TYPE_TRACKS -> {
                 requester.trackGetSimilar(entry, limit = params.loadSize)
             }
 

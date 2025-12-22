@@ -8,7 +8,9 @@ import com.arn.scrobble.db.RegexEditsDao.Companion.import
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.utils.PlatformStuff
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -51,7 +53,9 @@ class ImExporter {
             e.printStackTrace()
             false
         } finally {
-            writer.close()
+            withContext(Dispatchers.IO) {
+                writer.close()
+            }
         }
 
 
@@ -75,7 +79,9 @@ class ImExporter {
             e.printStackTrace()
             false
         } finally {
-            writer.close()
+            withContext(Dispatchers.IO) {
+                writer.close()
+            }
         }
     }
 

@@ -4,10 +4,12 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -355,7 +357,7 @@ fun PanoAppContent(
                         bottomBar = {
                             if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null) {
                                 PanoBottomNavigationBar(
-                                    tabs = tabData.getTabsList().orEmpty(),
+                                    tabs = tabData.getTabsList(),
                                     selectedTabIdx = tabIdxMap.getOrDefault(currentPanoRoute, 0),
                                     onTabClicked = { pos, tab ->
                                         currentPanoRoute.let {
@@ -427,7 +429,7 @@ fun PanoAppContent(
                                     rememberViewModelStoreNavEntryDecorator()
                                 ),
                                 sceneStrategy = bottomSheetStrategy then
-                                        SinglePaneSceneStrategy<PanoRoute>(),
+                                        SinglePaneSceneStrategy(),
                                 transitionSpec = {
                                     ContentTransform(
                                         fadeIn() +
@@ -625,10 +627,13 @@ private fun PanoTopAppBar(
             navigationIcon = {
                 AnimatedVisibility(
                     visible = showBack,
-                    enter = fadeIn(),
-                    exit = fadeOut()
+                    enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
+                    exit = shrinkOut(shrinkTowards = Alignment.Center) + fadeOut(),
                 ) {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        enabled = showBack
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.ArrowBack,
                             contentDescription = stringResource(Res.string.back)
@@ -641,7 +646,6 @@ private fun PanoTopAppBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PanoNavigationRail(
     tabs: List<PanoTab>,
@@ -766,7 +770,6 @@ private fun PanoNavigationRail(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PanoBottomNavigationBar(
     tabs: List<PanoTab>,

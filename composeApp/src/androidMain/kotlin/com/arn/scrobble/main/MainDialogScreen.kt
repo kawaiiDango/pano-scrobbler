@@ -80,21 +80,23 @@ fun PanoMainDialogContent(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
-        sceneStrategy = remember { BottomSheetSceneStrategy<PanoRoute>(::removeAllModals) },
-        entryProvider = entryProvider<PanoRoute> {
+        sceneStrategy = remember { BottomSheetSceneStrategy(::removeAllModals) },
+        entryProvider = entryProvider {
             entry(PanoRoute.Blank) { }
 
             panoModalNavGraph(
                 navigate = {
-                    if (it !is PanoRoute.Modal && it is PanoRoute.DeepLinkable)
-                        DeepLinkUtils.handleNavigationFromInfoScreen(it)
-                    else if (it is PanoRoute.Modal)
-                        navigate(it)
-                    else
-                        Logger.e(
+                    when (it) {
+                        !is PanoRoute.Modal if it is PanoRoute.DeepLinkable ->
+                            DeepLinkUtils.handleNavigationFromInfoScreen(it)
+
+                        is PanoRoute.Modal -> navigate(it)
+
+                        else -> Logger.e(
                             "Cannot navigate to non-deeplinkable route",
                             IllegalArgumentException("Called ${it::class.simpleName} from dialog")
                         )
+                    }
                 },
                 goBack = ::goBack,
                 mainViewModel = viewModel,

@@ -1,7 +1,7 @@
 4.19:
 - Updates Discord Rich Presence only after applying the edits to the metadata
-- Parses last.fm wiki html with clickable links while preserving line breaks
-- No longer accepts newlines in some textfields
+- Parses last.fm wiki HTML with clickable links while preserving line breaks
+- No longer accepts newlines in some text fields
 - Uses the Material Symbols icons
 - Bug fixes
 - Translation updates by the translators on Crowdin

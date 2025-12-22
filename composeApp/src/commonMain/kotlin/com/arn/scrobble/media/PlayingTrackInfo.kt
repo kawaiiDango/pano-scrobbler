@@ -209,10 +209,10 @@ class PlayingTrackInfo(
         artist = sd.artist
         albumArtist = sd.albumArtist.orEmpty()
 
-        if (additionalMetadataFetched)
-            scrobbledState = ScrobbledState.ADDITIONAL_METADATA_FETCHED
+        scrobbledState = if (additionalMetadataFetched)
+            ScrobbledState.ADDITIONAL_METADATA_FETCHED
         else
-            scrobbledState = ScrobbledState.PREPROCESSED
+            ScrobbledState.PREPROCESSED
     }
 
     fun scrobbled() {

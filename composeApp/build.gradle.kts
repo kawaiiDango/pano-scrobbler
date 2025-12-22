@@ -9,13 +9,12 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 import java.nio.file.Files
 import java.security.MessageDigest
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.io.encoding.Base64
 import kotlin.io.path.name
-import kotlin.io.use
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -62,6 +61,10 @@ val localProperties = gradleLocalProperties(rootDir, project.providers)
     .toMap()
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xreturn-value-checker=check")
+    }
+
     android {
         compileSdk = libs.versions.targetSdk.get().toInt()
         namespace = APP_ID
@@ -361,7 +364,7 @@ tasks.withType<ComposeHotRun>().configureEach {
 
     isAutoReloadEnabled = true
     mainClass = "com.arn.scrobble.main.MainKt"
-    jvmArgs = (jvmArgs ?: emptyList()) + listOfNotNull(
+    jvmArgs = (jvmArgs.orEmpty()) + listOfNotNull(
         "-Dpano.native.components.path=$libraryPath",
         "-Dcompose.application.configure.swing.globals=true",
         "--enable-native-access=ALL-UNNAMED",
@@ -674,7 +677,7 @@ tasks.register("updateMaterialSymbols") {
             iconNames.forEach { iconName ->
                 val url = buildUrl(iconName, filled)
                 val iconFile = File(outputDir, "$iconName.svg")
-                URL(url).openStream().use { input ->
+                URI(url).toURL().openStream().use { input ->
                     iconFile.outputStream().use { output ->
                         input.copyTo(output)
                     }
@@ -790,7 +793,7 @@ tasks.register("fetchCrowdinMembers") {
         val token = tokenProvider.get()
 
         val url =
-            URL("https://api.crowdin.com/api/v2/projects/$projectId/members?limit=500&orderBy=username&role=translator")
+            URI("https://api.crowdin.com/api/v2/projects/$projectId/members?limit=500&orderBy=username&role=translator").toURL()
         val conn = url.openConnection() as HttpURLConnection
         conn.requestMethod = "GET"
         conn.setRequestProperty("Authorization", "Bearer $token")
@@ -844,7 +847,7 @@ tasks.register("fetchCrowdinLanguages") {
         )
 
         val url =
-            URL("https://api.crowdin.com/api/v2/projects/$projectId/languages/progress?limit=500")
+            URI("https://api.crowdin.com/api/v2/projects/$projectId/languages/progress?limit=500").toURL()
         val conn = url.openConnection() as HttpURLConnection
         conn.requestMethod = "GET"
         conn.setRequestProperty("Authorization", "Bearer $token")
@@ -984,7 +987,7 @@ tasks.register("copyStringsToAndroid") {
                 val config = serializer.domConfig
                 config.setParameter("format-pretty-print", true)
 
-                serializer.setNewLine("\n")
+                serializer.newLine = "\n"
                 val lsOutput = domImplLS.createLSOutput()
                 targetFile.outputStream().use { fos ->
                     lsOutput.byteStream = fos

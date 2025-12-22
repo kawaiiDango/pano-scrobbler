@@ -431,7 +431,7 @@ actual object PanoNotifications {
         val collagePi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
 
         val chartsDeepLinkUri =
-            DeepLinkUtils.createMainActivityDeepLinkUri(PanoRoute.SelfHomePager(timePeriod.lastfmPeriod.name))!!
+            DeepLinkUtils.createMainActivityDeepLinkUri(PanoRoute.SelfHomePager(timePeriod.lastfmPeriod.name))
         val chartsPi =
             PendingIntent.getActivity(
                 context,

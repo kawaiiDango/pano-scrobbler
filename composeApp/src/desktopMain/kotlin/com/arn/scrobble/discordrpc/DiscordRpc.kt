@@ -33,8 +33,8 @@ private sealed interface DiscordActivity {
         val durationMillis: Long?,
         val artUrl: String,
         val statusLine: Int,
-        val buttonsTexts: Array<String>,
-        val buttonUrls: Array<String>,
+        val buttonsTexts: List<String>,
+        val buttonUrls: List<String>,
     ) : DiscordActivity
 
     data object Clear : DiscordActivity
@@ -92,12 +92,15 @@ object DiscordRpc {
                                 activity.startTimeMillis
                             else
                                 now - activity.durationMillis
-                            val endTimeMillis =
+
+                            val startTimeSecs = startTimeMillis / 1000
+
+                            val endTimeSecs =
                                 if (activity.durationMillis != null && activity.durationMillis > 0) {
                                     if (isPlaying)
-                                        startTimeMillis + activity.durationMillis
+                                        startTimeSecs + (activity.durationMillis / 1000)
                                     else
-                                        now
+                                        now / 1000
                                 } else {
                                     0
                                 }
@@ -107,13 +110,13 @@ object DiscordRpc {
                                 state = activity.state,
                                 details = activity.details,
                                 largeText = activity.largeText,
-                                startTime = startTimeMillis / 1000,
-                                endTime = endTimeMillis / 1000,
+                                startTime = startTimeSecs,
+                                endTime = endTimeSecs,
                                 artUrl = activity.artUrl,
                                 isPlaying = isPlaying,
                                 statusLine = activity.statusLine,
-                                buttonTexts = activity.buttonsTexts,
-                                buttonUrls = activity.buttonUrls,
+                                buttonTexts = activity.buttonsTexts.toTypedArray(),
+                                buttonUrls = activity.buttonUrls.toTypedArray(),
                             )
 
                             _wasSuccessful.value = success
@@ -198,8 +201,8 @@ object DiscordRpc {
             durationMillis = durationMillis,
             artUrl = artUrl,
             statusLine = statusLine,
-            buttonsTexts = buttonTexts.toTypedArray(),
-            buttonUrls = buttonUrls.toTypedArray(),
+            buttonsTexts = buttonTexts,
+            buttonUrls = buttonUrls,
         )
     }
 

@@ -26,9 +26,9 @@ object Initializer {
     @OptIn(ExperimentalResourceApi::class)
     fun init(application: Application) {
         fun isMainProcess(): Boolean {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 // For API 28+ we can use Application.getProcessName()
-                return getProcessName() == application.packageName
+                getProcessName() == application.packageName
             } else {
                 val currentProcessName = Class
                     .forName("android.app.ActivityThread")
@@ -36,9 +36,8 @@ object Initializer {
                     .apply { isAccessible = true }
                     .invoke(null) as String
 
-                return currentProcessName == application.packageName
+                currentProcessName == application.packageName
             }
-            return false
         }
 
         AndroidStuff.applicationContext = application.applicationContext
@@ -93,7 +92,6 @@ object Initializer {
                     Stuff.CHANNEL_NOTI_NEW_APP,
                     getString(
                         R.string.new_player,
-                        Stuff.CHANNEL_NOTI_NEW_APP,
                         getString(R.string.new_app)
                     ),
                     NotificationManager.IMPORTANCE_LOW

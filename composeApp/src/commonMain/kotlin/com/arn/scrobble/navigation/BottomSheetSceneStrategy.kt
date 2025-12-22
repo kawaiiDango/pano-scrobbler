@@ -1,7 +1,13 @@
 package com.arn.scrobble.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,11 +42,10 @@ import pano_scrobbler.composeapp.generated.resources.close
 
 // THANKS I HATE IT
 
-/** An [OverlayScene] that renders an [entry] within a [ModalBottomSheet]. */
 
 private const val BOTTOM_SHEET_KEY = "bottomsheet"
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** An [OverlayScene] that renders an [entry] within a [ModalBottomSheet]. */
 internal class BottomSheetScene<T : Any>(
     override val key: T,
     override val previousEntries: List<NavEntry<T>>,
@@ -105,6 +110,12 @@ private fun BottomSheetDialogParent(
         dragHandle = null,
         sheetGesturesEnabled = sheetGesturesEnabled,
         sheetState = sheetState,
+        modifier = Modifier
+            .windowInsetsPadding(
+                WindowInsets.statusBars
+                    .only(WindowInsetsSides.Top)
+                    .add(WindowInsets(top = 42.dp))
+            )
     ) {
         if (onBack != null) {
             IconButton(
@@ -119,7 +130,7 @@ private fun BottomSheetDialogParent(
             }
 
         } else if (!sheetGesturesEnabled && !PlatformStuff.isTv) {
-            // there isn't much vertical space on a tv
+            // there isn't much vertical space on a TV
             IconButton(
                 onClick = {
                     scope.launch {
@@ -161,7 +172,6 @@ private fun BottomSheetDialogParent(
  *
  * This strategy should always be added before any non-overlay scene strategies.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 class BottomSheetSceneStrategy<T : Any>(
     private val onDismiss: () -> Unit
 ) : SceneStrategy<T> {
@@ -190,7 +200,7 @@ class BottomSheetSceneStrategy<T : Any>(
          * Function to be called on the [NavEntry.metadata] to mark this entry as something that
          * should be displayed within a [ModalBottomSheet].
          *
-         * @param modalBottomSheetProperties properties that should be passed to the containing
+         * @param properties properties that should be passed to the containing
          * [ModalBottomSheet].
          */
         @OptIn(ExperimentalMaterial3Api::class)

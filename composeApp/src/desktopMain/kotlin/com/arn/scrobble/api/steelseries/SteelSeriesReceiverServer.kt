@@ -92,8 +92,8 @@ actual object SteelSeriesReceiverServer {
         "CORAÇAO (20th Anniversary Mix)" becomes "CORAÇAO"
          */
 
-        if (!SteelSeriesReceiverServer.serverStartAttempted) {
-            SteelSeriesReceiverServer.startServer()
+        if (!serverStartAttempted) {
+            startServer()
 
             // wait for data to be available
             delay(2000)
@@ -160,7 +160,7 @@ actual object SteelSeriesReceiverServer {
             } else if (BuildKonfig.DEBUG && session.method == Method.GET && session.uri == "/test") {
                 newFixedLengthResponse("Ok")
             } else {
-                return super.serve(session)
+                super.serve(session)
             }
 
         }

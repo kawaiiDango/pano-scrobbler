@@ -1,23 +1,22 @@
 package com.arn.scrobble.utils
 
-import kotlinx.coroutines.runBlocking
 import pano_scrobbler.composeapp.generated.resources.Res
 
 object AcceptableTags {
 
-    private val tagFragments by lazy {
-        runBlocking {
-            Res.readBytes("files/everynoise_genres.txt")
-                .decodeToString()
-                .lines()
-                .toSet()
-        }
-    }
+    private var tagFragments: Set<String>? = null
+    suspend fun isAcceptable(lastfmTag: String, hiddenTags: Set<String>): Boolean {
+        val _tagFragments = tagFragments ?: Res.readBytes("files/everynoise_genres.txt")
+            .decodeToString()
+            .lineSequence()
+            .toSet()
+            .also {
+                tagFragments = it
+            }
 
-    fun isAcceptable(lastfmTag: String, hiddenTags: Set<String>): Boolean {
         val lastfmTagLower = lastfmTag.lowercase()
         return lastfmTagLower.isNotEmpty() &&
-                lastfmTagLower.split(" ", "-").any { it in tagFragments } &&
+                lastfmTagLower.split(" ", "-").any { it in _tagFragments } &&
                 lastfmTagLower !in hiddenTags
     }
 }

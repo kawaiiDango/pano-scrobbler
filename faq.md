@@ -2,17 +2,19 @@
 
 ### [android] The app skips scrobbles when it is in the background / The app says that it has been killed
 
-1. Some manufacturers such as Xiaomi, Huawei, OnePlus and others do not allow 3rd party apps to run
-   in the background by default. Check [dontkillmyapp.com](https://dontkillmyapp.com) and follow all
-   the steps in there, for your device. The non-Play version of this app can optionally display
-   a persistent notification at all times, which may help. It may be impossible to use this app on a
-   stock ROM from certain manufacturers, due to the said restrictions.
+Some manufacturers such as Xiaomi, Huawei, OnePlus and others do not allow 3rd party apps to run in
+the background by default. Check [dontkillmyapp.com](https://dontkillmyapp.com) and follow all the
+steps in there, for your device. The non-Play version of this app can optionally display a
+persistent notification at all times, which may help. It may be impossible to use this app on a
+stock ROM from certain manufacturers, due to the said restrictions.
 
-2. Check if Pano Scrobbler has the permission to read notifications from other apps.
-   Go to Settings > Apps > Special app access > Notification read, reply and control > Pano
-   Scrobbler. The exact location and name of the setting will depend on your Android version and
-   manufacturer. Note that this is different from the standard "notifications" permission, which has
-   nothing to do with reading notifications from other apps.
+### [android] The app says that scrobbling is disabled
+
+Check if Pano Scrobbler has the permission to read notifications from other apps. Go to Settings >
+Apps > Special app access > Notification read, reply and control > Pano Scrobbler. The exact
+location and name of the setting will depend on your Android version and manufacturer. Note that
+this is different from the standard "notifications" permission, which has nothing to do with reading
+notifications from other apps.
 
 ### All of my scrobbles from Spotify are duplicated
 
@@ -31,8 +33,8 @@ from settings.
 
 ### I cannot edit scrobbles older than 14 days
 
-It is not possible to edit scrobbles older than 14 days using this app, whether or not you have a
-last.fm pro subscription due to the method used for editing.
+It is not possible to edit scrobbles older than 14 days using this app, regardless of whether you
+have a last.fm pro subscription, due to the method used for editing.
 
 ### Pictures of some artists are missing even though they have a picture on last.fm
 
@@ -79,7 +81,7 @@ music player's app info and tap on "Clear defaults".
 
 ### [android] Where is the scrobble from mic feature?
 
-In-app scrobble from mic has been removed, in favour of scrobbling from Shazam/AutoShazam, Audile,
+In-app scrobble from mic has been removed, in favor of scrobbling from Shazam/AutoShazam, Audile,
 Pixel's Now Playing or Ambient Music Mod.
 
 ### [android] Where are the Tasker intents?
@@ -110,7 +112,7 @@ are using it portable mode or have removed the start menu shortcut.
 
 ### How do I get a refund for a 'Support this app' payment?
 
-For Google Play purchases, you can request a refund within a 48 hour window, from the Google Play
-website. For voluntary donations of arbritrary amounts made through Ko-Fi or BuyMeACoffee, there are
-no refunds, as these are donations for supporting the development of this free and open source
-project, and not purchases.
+For Google Play purchases, you can request a refund within a 48-hour window, from the Google Play
+website (https://support.google.com/googleplay/answer/15574897). For voluntary donations of
+arbritrary amounts made through Ko-Fi or BuyMeACoffee, there are no refunds, as these are donations
+for supporting the development of this free and open source project, and not purchases.

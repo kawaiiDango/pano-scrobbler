@@ -495,10 +495,10 @@ fun SimpleEditsAddScreen(
                             onCheckedChange = {
                                 save = it
 
-                                if (!save) {
-                                    errorText = editNoSaveText
+                                errorText = if (!save) {
+                                    editNoSaveText
                                 } else {
-                                    errorText = null
+                                    null
                                 }
                             },
                             modifier = Modifier.alpha(

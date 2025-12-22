@@ -292,7 +292,7 @@ object ScrobbleEverywhere {
             }
         } catch (e: ScrobbleQueue.NetworkRequestNeededException) {
             Logger.d { "Network request needed to fetch additional metadata" }
-            AdditionalMetadataResult.Empty.copy(shouldFetchAgain = true)
+            return AdditionalMetadataResult.Empty.copy(shouldFetchAgain = true)
         }
 
         return AdditionalMetadataResult.Empty

@@ -109,9 +109,8 @@ class RandomVM : ViewModel() {
         suspend fun getOne(page: Int): Pair<MusicEntry?, Int> {
             val _entry: MusicEntry?
             val _total: Int
-            when {
-                input.type == Stuff.TYPE_TRACKS &&
-                        currentScrobblable.userAccount.type == AccountType.LASTFM -> {
+            when (input.type) {
+                Stuff.TYPE_TRACKS if currentScrobblable.userAccount.type == AccountType.LASTFM -> {
                     isCharts = false
                     var to = -1L
                     var from = -1L
@@ -137,7 +136,7 @@ class RandomVM : ViewModel() {
                     }
                 }
 
-                input.type == Stuff.TYPE_LOVES -> {
+                Stuff.TYPE_LOVES -> {
                     isCharts = false
                     currentScrobblable.getLoves(
                         page,

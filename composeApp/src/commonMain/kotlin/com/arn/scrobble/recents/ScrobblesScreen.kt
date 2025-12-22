@@ -104,7 +104,6 @@ private enum class ScrobblesType {
     TIME_JUMP,
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScrobblesScreen(
     user: UserCached,

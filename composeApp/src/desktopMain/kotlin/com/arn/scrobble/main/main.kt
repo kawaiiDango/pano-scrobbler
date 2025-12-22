@@ -323,6 +323,8 @@ fun main(args: Array<String>) {
                     trayItems += PanoTrayUtils.ItemId.Separator.name to ""
                 }
 
+                if (!windowShown)
+                    trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
                 discordRpcSuccessful?.let { discordRpcSuccessful ->
                     val rpcStatus = if (discordRpcSuccessful)
                         "✔️ "
@@ -333,15 +335,11 @@ fun main(args: Array<String>) {
                         Res.string.discord_rich_presence
                     )
                 }
-
                 updateAction?.let {
                     trayItems += PanoTrayUtils.ItemId.Update.name to "🔄️ " + getString(
                         Res.string.update_downloaded
                     ) + ": " + it.version
                 }
-
-                if (!windowShown)
-                    trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
 
                 // always show these
                 trayItems += PanoTrayUtils.ItemId.Settings.name to getString(Res.string.settings)
@@ -470,10 +468,10 @@ fun main(args: Array<String>) {
                 trayClickedEventFlow
                     .debounce(100)
                     .collectLatest { event ->
-                        if (event != null) {
-                            trayMenuPos = Pair(event.x, event.y)
+                        trayMenuPos = if (event != null) {
+                            Pair(event.x, event.y)
                         } else {
-                            trayMenuPos = null
+                            null
                         }
                     }
             }

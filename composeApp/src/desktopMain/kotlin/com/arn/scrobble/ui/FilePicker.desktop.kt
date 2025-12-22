@@ -1,6 +1,5 @@
 package com.arn.scrobble.ui
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +21,6 @@ import java.io.FilenameFilter
 import java.nio.file.Path
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun FilePicker(
     show: Boolean,

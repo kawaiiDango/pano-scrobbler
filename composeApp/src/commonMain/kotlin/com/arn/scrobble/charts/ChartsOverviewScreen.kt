@@ -21,7 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -101,7 +100,6 @@ import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
@@ -168,9 +166,9 @@ fun ChartsOverviewScreen(
     var listeningActivityVisible by rememberSaveable { mutableStateOf(false) }
     val density = LocalDensity.current
 
-    val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
-        .collectAsStateWithLifecycle(false)
-
+    val selectedPeriod by chartsPeriodViewModel.selectedPeriod
+        .collectAsStateWithLifecycle()
+    val isTimePeriodContinuous = selectedPeriod?.lastfmPeriod != null
 
     LaunchedEffect(Unit) {
         onTitleChange(getString(Res.string.charts))
@@ -434,6 +432,8 @@ private fun TagCloudContent(
     enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val hiddenTags by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.hiddenTags }
+
     var kumoBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     val color1 = MaterialTheme.colorScheme.inverseSurface
     val color2 = MaterialTheme.colorScheme.secondary
@@ -445,12 +445,12 @@ private fun TagCloudContent(
 
     val density = LocalDensity.current
 
-    LaunchedEffect(tagCloud) {
+    LaunchedEffect(tagCloud, hiddenTags) {
         withContext(Dispatchers.Default) {
             tagCloud?.let {
                 if (tagCloudSizePx > 0 && tagCloud.isNotEmpty()) {
                     kumoBitmap = generateTagCloud(
-                        tagCloud,
+                        tagCloud.filterKeys { it !in hiddenTags },
                         tagCloudSizePx,
                         density.density * density.fontScale,
                         color1 = color1,
@@ -534,7 +534,7 @@ private fun TagCloudContent(
     }
 }
 
-@OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 private fun ListeningActivityContent(
     listeningActivity: ListeningActivity?,

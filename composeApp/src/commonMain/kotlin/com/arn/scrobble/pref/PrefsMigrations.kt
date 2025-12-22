@@ -9,13 +9,13 @@ class MainPrefsMigration6 : DataMigration<MainPrefs> {
         currentData.version < 6
 
     override suspend fun migrate(currentData: MainPrefs): MainPrefs {
-        if (currentData.changelogSeenHashcode == null) // first install
-            return currentData.copy(
+        return if (currentData.changelogSeenHashcode == null) // first install
+            currentData.copy(
                 version = 6,
             )
         // keep spotifyApi = true for existing installations, but show prompt
         else
-            return currentData.copy(
+            currentData.copy(
                 spotifyApi = true,
                 version = 6,
             )

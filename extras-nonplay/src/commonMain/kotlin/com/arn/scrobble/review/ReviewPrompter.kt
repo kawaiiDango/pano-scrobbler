@@ -1,6 +1,4 @@
 package com.arn.scrobble.review
 
 
-object ReviewPrompter : BaseReviewPrompter() {
-
-}
+object ReviewPrompter : BaseReviewPrompter()

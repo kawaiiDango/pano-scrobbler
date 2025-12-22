@@ -149,7 +149,7 @@ private fun savePictureQ(
 
             } ?: throw IOException("Failed to create new MediaStore record.")
         }
-    }.getOrElse {
+    }.onFailure {
         uri?.let { orphanUri ->
             // Don't leave an orphan entry in the MediaStore
             applicationContext.contentResolver.delete(orphanUri, null, null)

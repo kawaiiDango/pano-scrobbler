@@ -34,6 +34,14 @@ class DesktopMediaListener(
                 Stuff.mainPrefsInitialValue.seenApps
             )
 
+    private val notiNewApp =
+        PlatformStuff.mainPrefs.data.mapLatest { it.notiNewApp }
+            .stateIn(
+                scope,
+                SharingStarted.Eagerly,
+                Stuff.mainPrefsInitialValue.notiNewApp
+            )
+
     fun start() {
         PanoNativeComponents.startListeningMediaInThread()
 
@@ -74,8 +82,10 @@ class DesktopMediaListener(
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(seenApps = it.seenApps + unseenAppItems) }
 
-                unseenAppItems.forEach { (appId, friendlyLabel) ->
-                    PanoNotifications.notifyAppDetected(appId, friendlyLabel)
+                if (notiNewApp.value) {
+                    unseenAppItems.forEach { (appId, friendlyLabel) ->
+                        PanoNotifications.notifyAppDetected(appId, friendlyLabel)
+                    }
                 }
             }
         }

@@ -532,6 +532,7 @@
         >Scrobble from</string>
     <string name="pref_enabled_apps_summary">Supports apps that reveal music metadata. To avoid double scrobbles from Spotify, enable it only in one place.</string>
     <string name="pref_auto_detect">Automatically scrobble from new apps</string>
+    <string name="pref_notify_new_apps">Notify when new apps are detected</string>
     <string name="pref_spotify_remote">Scrobble Spotify playing on other devices</string>
     <string name="pref_spotify_artist_search_approximate"
         comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is"

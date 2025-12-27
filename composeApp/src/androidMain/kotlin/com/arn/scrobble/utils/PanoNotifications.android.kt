@@ -415,7 +415,10 @@ actual object PanoNotifications {
         }
 
 
-        val notificationText = Html.fromHtml(notificationTextList.joinToString("<br>\n"))
+        val notificationText = Html.fromHtml(
+            notificationTextList.joinToString("\n"),
+            Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV
+        )
 
         val channelId = if (timePeriod.lastfmPeriod == LastfmPeriod.WEEK)
             Stuff.CHANNEL_NOTI_DIGEST_WEEKLY

@@ -117,6 +117,7 @@ actual object PlatformStuff {
         val nlsService = try {
             manager.getRunningServices(Integer.MAX_VALUE)?.find { it.service == serviceComponent }
         } catch (e: SecurityException) {
+            Logger.e(e) { "isScrobblerRunning: no permission to get running services" }
             return true // just assume true to suppress the error message, if we don't have permission
         }
 

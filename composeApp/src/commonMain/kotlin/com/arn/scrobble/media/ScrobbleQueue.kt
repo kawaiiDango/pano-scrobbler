@@ -154,19 +154,25 @@ class ScrobbleQueue(
 
             // discord rpc album art
             val npArtFetchJob =
-                if (lastfmNpSucc && trackInfo.artUrl == null && shouldFetchNpArtUrl().firstOrNull { it } == true) {
+                if (PlatformStuff.isDesktop &&
+                    PlatformStuff.mainPrefs.data.map { it.discordRpc.enabled }.first() &&
+                    lastfmNpSucc &&
+                    trackInfo.artUrl == null
+                ) {
                     launch(Dispatchers.IO) {
-                        val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
-                            scrobbleData,
-                            null,
-                            ::canFetchAdditionalMetadata,
-                            true,
-                        )
+                        if (shouldFetchNpArtUrl().firstOrNull { it } == true) {
+                            val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
+                                scrobbleData,
+                                null,
+                                ::canFetchAdditionalMetadata,
+                                true,
+                            )
 
-                        if (additionalMetadata.artUrl != null) {
-                            Logger.d { "fetched artUrl for now playing: ${additionalMetadata.artUrl}" }
-                            trackInfo.setArtUrl(additionalMetadata.artUrl)
-                            notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
+                            if (additionalMetadata.artUrl != null) {
+                                Logger.d { "fetched artUrl for now playing: ${additionalMetadata.artUrl}" }
+                                trackInfo.setArtUrl(additionalMetadata.artUrl)
+                                notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
+                            }
                         }
                     }
                 } else

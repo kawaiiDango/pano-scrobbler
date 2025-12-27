@@ -370,8 +370,6 @@ class TimePeriodsGenerator(
                 TimePeriodType.DAY -> {
                     { SimpleDateFormat("EEE", Locale.getDefault()).format(it.start) }
                 }
-
-                else -> throw IllegalArgumentException("Invalid time period type")
             }
 
             timePeriods.forEach { it.name = formatter(it) }

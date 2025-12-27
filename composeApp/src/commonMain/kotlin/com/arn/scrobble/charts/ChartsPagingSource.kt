@@ -6,6 +6,8 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.MusicEntry
 
 class ChartsPagingSource(
+    private val username: String,
+    private val firstPageOnly: Boolean,
     private val input: ChartsLoaderInput,
     private val type: Int,
     private val networkOnly: Boolean,
@@ -20,14 +22,14 @@ class ChartsPagingSource(
                 prevTimePeriod = input.prevPeriod,
                 page = params.key ?: 1,
                 networkOnly = networkOnly,
-                username = input.username,
+                username = username,
             )
 
         return if (result.isSuccess) {
             val pr = result.getOrNull()!!
             val prevKey = if (pr.attr.page <= 1) null else pr.attr.page - 1
             val nextKey =
-                if (input.firstPageOnly || pr.attr.totalPages <= pr.attr.page) null else pr.attr.page + 1
+                if (firstPageOnly || pr.attr.totalPages <= pr.attr.page) null else pr.attr.page + 1
             val total = pr.attr.total ?: 0
             setTotal(total)
 

@@ -24,7 +24,7 @@ import pano_scrobbler.composeapp.generated.resources.not_found
 
 @Composable
 fun InfoPagerScreen(
-    musicEntry: Artist,
+    artist: Artist,
     user: UserCached,
     appId: String?,
     tabsList: List<PanoTab>,
@@ -38,8 +38,8 @@ fun InfoPagerScreen(
     val artistTopAlbums = viewModel.topAlbums.collectAsLazyPagingItems()
     val similarArtists = viewModel.similarArtists.collectAsLazyPagingItems()
 
-    LaunchedEffect(musicEntry) {
-        viewModel.setArtist(musicEntry)
+    LaunchedEffect(artist) {
+        viewModel.setArtist(artist)
     }
 
     PanoPager(

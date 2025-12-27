@@ -1,8 +1,10 @@
 package com.arn.scrobble.info
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.utils.Stuff
@@ -28,28 +30,28 @@ class InfoMiscVM : ViewModel() {
             config = pagingConfig,
             pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_ARTISTS) }
         ).flow
-    }
+    }.cachedIn(viewModelScope)
 
     val topAlbums = artist.filterNotNull().flatMapLatest {
         Pager(
             config = pagingConfig,
             pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_ALBUMS) }
         ).flow
-    }
+    }.cachedIn(viewModelScope)
 
     val topTracks = artist.filterNotNull().flatMapLatest {
         Pager(
             config = pagingConfig,
             pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_TRACKS) }
         ).flow
-    }
+    }.cachedIn(viewModelScope)
 
     val similarTracks = track.filterNotNull().flatMapLatest {
         Pager(
             config = pagingConfig,
             pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_TRACKS) }
         ).flow
-    }
+    }.cachedIn(viewModelScope)
 
     fun setArtist(artistp: Artist) {
         artist.value = artistp

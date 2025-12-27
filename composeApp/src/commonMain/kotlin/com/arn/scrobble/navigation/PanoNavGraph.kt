@@ -523,7 +523,7 @@ object PanoNavGraph {
             onSetTitleString(route, route.artist.name)
 
             InfoPagerScreen(
-                musicEntry = route.artist,
+                artist = route.artist,
                 user = route.user,
                 appId = route.appId,
                 tabIdx = getTabIdx(
@@ -579,7 +579,7 @@ object PanoNavGraph {
             onSetTitleString(route, title)
 
             SimilarTracksScreen(
-                musicEntry = route.track,
+                track = route.track,
                 user = route.user,
                 appId = route.appId,
                 onNavigate = navigate,

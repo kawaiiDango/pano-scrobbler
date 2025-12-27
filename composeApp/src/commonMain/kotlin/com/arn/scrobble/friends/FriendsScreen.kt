@@ -113,7 +113,7 @@ fun FriendsScreen(
     onNavigate: (PanoRoute) -> Unit,
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: FriendsVM = viewModel { FriendsVM() },
+    viewModel: FriendsVM = viewModel(key = user.key<FriendsVM>()) { FriendsVM(user) },
 ) {
     val scope = rememberCoroutineScope()
     val friends = viewModel.friends.collectAsLazyPagingItems()
@@ -168,10 +168,6 @@ fun FriendsScreen(
         if (VariantStuff.billingRepository.isLicenseValid) {
             pinnedFriendsReordered = pinnedFriends
         }
-    }
-
-    LaunchedEffect(user) {
-        viewModel.setUser(user)
     }
 
     LaunchedEffect(friendsExtraDataMap) {

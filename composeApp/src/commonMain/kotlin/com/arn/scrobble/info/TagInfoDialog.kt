@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,14 +31,10 @@ fun TagInfoDialog(
     tag: Tag,
     scrollState: ScrollState,
     modifier: Modifier = Modifier,
-    viewModel: TagInfoVM = viewModel { TagInfoVM() },
+    viewModel: TagInfoVM = viewModel { TagInfoVM(tag) },
 ) {
     val info by viewModel.info.collectAsStateWithLifecycle()
     var wikiExpanded by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(tag) {
-        viewModel.loadInfoIfNeeded(tag)
-    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),

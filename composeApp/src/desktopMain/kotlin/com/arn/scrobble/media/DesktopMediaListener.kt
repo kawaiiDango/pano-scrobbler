@@ -101,8 +101,7 @@ class DesktopMediaListener(
             sessionTrackersMap[session.appId] = SessionTracker(playingTrackInfo)
         }
 //            }
-//        }
-        // Now remove old sessions that are not longer active.
+        // Now remove old sessions that are no longer active.
         removeSessions(
             sessions.map { it.appId }.toSet(),
         )
@@ -128,14 +127,8 @@ class DesktopMediaListener(
     override fun isMediaPlaying() =
         sessionTrackersMap.values.any { it.isMediaPlaying() }
 
-    fun findSessionInfoByAppId(appId: String) =
-        sessionTrackersMap.keys.find { it.startsWith("$appId|") }
-
     private fun findSessionTrackerByHash(hash: Int) =
         sessionTrackersMap.values.firstOrNull { it.trackInfo.hash == hash }
-
-    fun findControllersByHash(hash: Int) =
-        sessionTrackersMap.values.filter { it.trackInfo.hash == hash }
 
     override fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later

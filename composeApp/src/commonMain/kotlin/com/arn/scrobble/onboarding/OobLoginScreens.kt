@@ -35,8 +35,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
@@ -52,14 +50,13 @@ fun OobLastfmLibrefmLoginScreen(
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
 ) {
     var exception by remember { mutableStateOf<Throwable?>(null) }
-    val token by viewModel.tokenResult
-        .filterNotNull()
-        .map {
-            it.getOrElse {
-                exception = it
-                null
-            }
-        }.collectAsStateWithLifecycle(null)
+    val tokenResult by viewModel.tokenResult.collectAsStateWithLifecycle(null)
+    val token = remember(tokenResult) {
+        tokenResult?.getOrElse {
+            exception = it
+            null
+        }
+    }
     val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
         Requesters.lastfmUnauthedRequester.apiKey
     else
@@ -105,7 +102,7 @@ fun OobLastfmLibrefmLoginScreen(
             if (token != null) {
                 viewModel.lastfmOobLogin(
                     userAccountTemp,
-                    token!!,
+                    token,
                 )
             }
         }
@@ -132,7 +129,7 @@ fun OobLastfmLibrefmLoginScreen(
                     onClick = {
                         viewModel.lastfmOobLogin(
                             userAccountTemp,
-                            token!!,
+                            token,
                         )
                     }
                 ) {

@@ -124,7 +124,7 @@ fun MusicEntryInfoDialog(
     onNavigate: (PanoRoute) -> Unit,
     scrollState: ScrollState,
     modifier: Modifier = Modifier,
-    viewModel: InfoVM = viewModel { InfoVM() },
+    viewModel: InfoVM = viewModel { InfoVM(musicEntry, user.name) },
     miscVM: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
     // the arguments can change for this screen
@@ -175,10 +175,6 @@ fun MusicEntryInfoDialog(
                 user = user
             )
         )
-    }
-
-    LaunchedEffect(musicEntry) {
-        viewModel.setMusicEntryIfNeeded(musicEntry, user.name)
     }
 
     LaunchedEffect(infoMap) {
@@ -234,7 +230,6 @@ fun MusicEntryInfoDialog(
                                 contentDescription = when (entry) {
                                     is Album -> stringResource(Res.string.album_art)
                                     is Artist -> stringResource(Res.string.artist_image)
-                                    else -> null
                                 },
                                 modifier = Modifier
                                     .size(48.dp)

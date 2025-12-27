@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.utils.PlatformFile
-import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
@@ -30,8 +29,6 @@ class ExportVM : ViewModel() {
     val result = _result.asStateFlow()
     private val imExporter by lazy { ImExporter() }
     private val ktorClient by lazy { buildKtorClient() }
-
-    private val keyFileExtension = if (PlatformStuff.isDesktop) "jks" else "bks"
 
     fun exportToFile(platformFile: PlatformFile, privateData: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {

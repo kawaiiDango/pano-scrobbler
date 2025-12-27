@@ -206,10 +206,6 @@ fun TimePeriodSelector(
     var selectedPeriodOffsetX by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
 
-    LaunchedEffect(user) {
-        viewModel.setUser(user)
-    }
-
     LaunchedEffect(accountType, digestTimePeriod) {
         when (accountType) {
             AccountType.LISTENBRAINZ -> {

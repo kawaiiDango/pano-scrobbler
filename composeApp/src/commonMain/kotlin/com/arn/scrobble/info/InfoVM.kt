@@ -26,8 +26,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -36,13 +34,15 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 
 
-class InfoVM : ViewModel() {
+class InfoVM(
+    initialEntry: MusicEntry,
+    username: String,
+) : ViewModel() {
 
     private val _infoMap = MutableStateFlow<Map<Int, MusicEntry>?>(null)
     val infoMap = _infoMap.asStateFlow()
     private val _infoLoaded = MutableStateFlow(false)
     val infoLoaded = _infoLoaded.asStateFlow()
-    private val initialEntryAndUsername = MutableStateFlow<Pair<MusicEntry, String>?>(null)
     lateinit var originalEntriesMap: Map<Int, MusicEntry>
 
     private val _userTags = MutableStateFlow<Map<Int, Set<String>>>(emptyMap())
@@ -55,35 +55,25 @@ class InfoVM : ViewModel() {
 
     init {
         viewModelScope.launch {
-            initialEntryAndUsername
-                .filterNotNull()
-                .collectLatest { (entry, username) ->
-                    val _username =
-                        if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM)
-                            username
-                        else
-                            null
+            val _username =
+                if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM)
+                    username
+                else
+                    null
 
-                    val infos = createInitialData(entry)
+            val infos = createInitialData(initialEntry)
 
-                    _userTags.emit(emptyMap())
-                    _infoMap.emit(infos)
+            _userTags.emit(emptyMap())
+            _infoMap.emit(infos)
 
-                    if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM ||
-                        PlatformStuff.mainPrefs.data.map { it.lastfmApiAlways }.first()
-                    ) {
-                        _infoMap.value = withContext(Dispatchers.IO) {
-                            getInfos(infos, _username)
-                        }
-                    }
-                    _infoLoaded.emit(true)
+            if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM ||
+                PlatformStuff.mainPrefs.data.map { it.lastfmApiAlways }.first()
+            ) {
+                _infoMap.value = withContext(Dispatchers.IO) {
+                    getInfos(infos, _username)
                 }
-        }
-    }
-
-    fun setMusicEntryIfNeeded(entry: MusicEntry, username: String) {
-        viewModelScope.launch {
-            initialEntryAndUsername.emit(entry to username)
+            }
+            _infoLoaded.emit(true)
         }
     }
 

@@ -115,7 +115,7 @@ fun ScrobblesScreen(
     onTitleChange: (String) -> Unit,
     editDataFlow: Flow<Pair<String, Track>>,
     modifier: Modifier = Modifier,
-    viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
+    viewModel: ScrobblesVM = viewModel(key = user.key<ScrobblesVM>()) { ScrobblesVM(user, null) },
 ) {
     val listState = rememberLazyListState()
     var selectedType by rememberSaveable { mutableStateOf(ScrobblesType.RECENTS) }
@@ -180,7 +180,6 @@ fun ScrobblesScreen(
             ScrobblesType.LOVED -> {
                 viewModel.setScrobblesInput(
                     ScrobblesInput(
-                        user = user,
                         loadLoved = true,
                     )
                 )
@@ -193,7 +192,6 @@ fun ScrobblesScreen(
                 if (timeJumpMillis != null)
                     viewModel.setScrobblesInput(
                         ScrobblesInput(
-                            user = user,
                             timeJumpMillis = timeJumpMillis
                         )
                     )
@@ -204,9 +202,7 @@ fun ScrobblesScreen(
 
             ScrobblesType.RECENTS -> {
                 viewModel.setScrobblesInput(
-                    ScrobblesInput(
-                        user = user,
-                    )
+                    ScrobblesInput()
                 )
 
                 onTitleChange(getString(Res.string.scrobbles))

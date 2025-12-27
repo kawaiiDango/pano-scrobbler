@@ -384,7 +384,6 @@ fun ProfileHeaderDropdown(
                                 AccountType.LASTFM -> "https://www.last.fm/user/${currentUser.name}/listening-report/week"
                                 AccountType.LIBREFM -> "https://libre.fm/user/${currentUser.name}/stats"
                                 AccountType.LISTENBRAINZ -> "https://listenbrainz.org/user/${currentUser.name}/reports"
-                                else -> null
                             }
                             dropDownShown = false
                             PlatformStuff.openInBrowser(url ?: return@DropdownMenuItem)

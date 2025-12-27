@@ -25,7 +25,10 @@ import kotlinx.coroutines.launch
 import kotlin.math.log10
 import kotlin.math.pow
 
-class ChartsVM : ViewModel() {
+class ChartsVM(
+    username: String,
+    firstPageOnly: Boolean
+) : ViewModel() {
 
     private val _input = MutableStateFlow<ChartsLoaderInput?>(null)
     private val _inputDebounced = _input.debounce(500)
@@ -48,6 +51,8 @@ class ChartsVM : ViewModel() {
             config = pagingConfig,
             pagingSourceFactory = {
                 ChartsPagingSource(
+                    username,
+                    firstPageOnly,
                     input,
                     Stuff.TYPE_ARTISTS,
                     networkOnly = input.refreshCount > 0,
@@ -64,6 +69,8 @@ class ChartsVM : ViewModel() {
             config = pagingConfig,
             pagingSourceFactory = {
                 ChartsPagingSource(
+                    username,
+                    firstPageOnly,
                     input,
                     Stuff.TYPE_ALBUMS,
                     networkOnly = input.refreshCount > 0,
@@ -80,6 +87,8 @@ class ChartsVM : ViewModel() {
             config = pagingConfig,
             pagingSourceFactory = {
                 ChartsPagingSource(
+                    username,
+                    firstPageOnly,
                     input,
                     Stuff.TYPE_TRACKS,
                     networkOnly = input.refreshCount > 0,

@@ -43,7 +43,7 @@ class App : Application(), Configuration.Provider {
         VariantStuff.reviewPrompter = ReviewPrompter
         VariantStuff.extrasProps = ExtrasProps
 
-        // the built in content provider initializer only runs in the main process
+        // the built-in content provider initializer only runs in the main process
         val crashlyticsEnabled = AndroidStuff.isMainProcess &&
                 Stuff.mainPrefsInitialValue.crashReporterEnabled
 

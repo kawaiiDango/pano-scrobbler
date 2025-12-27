@@ -5,6 +5,10 @@
 
     <application>
 
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+
         <!--  do not use FOREGROUND_SERVICE_SPECIAL_USE on play store builds due to play store restrictions  -->
         <service
             android:name="com.arn.scrobble.media.PersistentNotificationService"

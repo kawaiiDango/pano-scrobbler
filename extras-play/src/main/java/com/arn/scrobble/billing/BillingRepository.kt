@@ -5,7 +5,6 @@ import android.content.Context
 import co.touchlab.kermit.Logger
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
@@ -154,7 +153,7 @@ class BillingRepository(
 
         val queryPurchasesParams = QueryPurchasesParams
             .newBuilder()
-            .setProductType(ProductType.INAPP)
+            .setProductType(BillingClient.ProductType.INAPP)
             .build()
 
         playStoreBillingClient.queryPurchasesAsync(queryPurchasesParams) { billingResult, purchases ->
@@ -273,7 +272,7 @@ class BillingRepository(
                 listOf(
                     QueryProductDetailsParams.Product.newBuilder()
                         .setProductId(productId)
-                        .setProductType(ProductType.INAPP)
+                        .setProductType(BillingClient.ProductType.INAPP)
                         .build()
                 )
             )

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 tag_fragments = set()
 
 
-response = httpx.get("https://everynoise.com/everynoise1d.cgi?scope=all")
+response = httpx.get("https://everynoise.com/everynoise1d.html")
 
 soup = BeautifulSoup(response.text, "html.parser")
 
@@ -22,4 +22,4 @@ for genreNode in genres:
         if len(g) > 1:
             tag_fragments.add(g)
 
-print("\n".join(tag_fragments), end='')
+print("\n".join(sorted(tag_fragments)), end='')

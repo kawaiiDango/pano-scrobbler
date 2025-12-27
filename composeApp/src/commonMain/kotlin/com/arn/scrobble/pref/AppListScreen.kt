@@ -71,7 +71,7 @@ fun AppListScreen(
     preSelectedPackages: Set<String>,
     onSetPackagesSelection: (List<AppItem>, List<AppItem>) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AppListVM = viewModel { AppListVM() },
+    viewModel: AppListVM = viewModel { AppListVM(packagesOverride) },
 ) {
     val appList by viewModel.appList.collectAsStateWithLifecycle()
     val appListFiltered by viewModel.appListFiltered.collectAsStateWithLifecycle()
@@ -79,12 +79,6 @@ fun AppListScreen(
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     var pluginsNeededExpanded by rememberSaveable { mutableStateOf(false) }
     var searchTerm by rememberSaveable { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        if (!hasLoaded) {
-            viewModel.load(packagesOverride)
-        }
-    }
 
     LaunchedEffect(searchTerm) {
         viewModel.setFilter(searchTerm)

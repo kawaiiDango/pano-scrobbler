@@ -532,7 +532,6 @@ object ScrobbleEverywhere {
                         it.album?.name?.equals(scrobbleData.album, ignoreCase = true) == true
                     }
                     if (npTrack != null) {
-                        Logger.d { "fetched artUrl for now playing" }
                         return extractAlbum(
                             npTrack,
                             scrobbleData,

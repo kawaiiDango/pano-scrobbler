@@ -44,7 +44,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -84,17 +83,7 @@ fun ImageSearchScreen(
         musicEntry.name
     }
 
-    val searchResults by viewModel.searchResults
-        .mapLatest {
-            it ?: return@mapLatest null
-
-            (it.artists?.items ?: it.albums?.items ?: emptyList())
-                .filter { item ->
-                    (item is AlbumItem && !item.images.isNullOrEmpty()) ||
-                            (item is ArtistItem && !item.images.isNullOrEmpty())
-                }
-        }
-        .collectAsStateWithLifecycle(null)
+    val searchResults by viewModel.searchResultsWithImages.collectAsStateWithLifecycle(null)
 
     val searchError by viewModel.searchError.collectAsStateWithLifecycle()
 

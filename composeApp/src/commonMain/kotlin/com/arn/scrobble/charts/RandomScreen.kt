@@ -48,6 +48,7 @@ import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -66,26 +67,24 @@ fun RandomScreen(
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RandomVM = viewModel { RandomVM() },
-    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
+    viewModel: RandomVM = viewModel { RandomVM(user.name) },
+    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM(user) },
 ) {
     val musicEntry by viewModel.musicEntry.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
-    val type by PlatformStuff.mainPrefs.data.map { it.randomType }
-        .collectAsStateWithLifecycle(Stuff.TYPE_TRACKS)
+    val type by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.randomType }
     var timePeriod by rememberSaveable(saver = jsonSerializableSaver<TimePeriod?>()) {
         mutableStateOf(null)
     }
 
-    val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
-        .collectAsStateWithLifecycle(false)
+    val isTimePeriodContinuous = timePeriod?.lastfmPeriod != null
 
     fun load(type: Int, refresh: Boolean = false) {
         if (type != -1 && timePeriod != null) {
             viewModel.setRandomInput(
                 RandomLoaderInput(
-                    username = user.name,
                     timePeriod = timePeriod!!,
                     type = type
                 ),

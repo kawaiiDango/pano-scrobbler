@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class AppListVM : ViewModel() {
+class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
     private val _appList = MutableStateFlow(AppList())
     val appList = _appList.asStateFlow()
     private val _searchTerm = MutableStateFlow("")
@@ -42,10 +42,11 @@ class AppListVM : ViewModel() {
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
 
-    fun load(packagesOverride: Set<String>? = null) {
-        if (hasLoaded.value)
-            return
+    init {
+        load(packagesOverride)
+    }
 
+    private fun load(packagesOverride: Set<String>? = null) {
         viewModelScope.launch {
             val appListWasRun = PlatformStuff.mainPrefs.data.map { it.appListWasRun }.first()
 
@@ -71,7 +72,7 @@ class AppListVM : ViewModel() {
         }
     }
 
-    fun filterFn(term: String, appsList: List<AppItem>): List<AppItem> {
+    private fun filterFn(term: String, appsList: List<AppItem>): List<AppItem> {
         return appsList.filter {
             it.friendlyLabel.split(" ").any {
                 it.startsWith(term, ignoreCase = true)
@@ -86,7 +87,6 @@ class AppListVM : ViewModel() {
     fun forgetUncheckedApps() {
         viewModelScope.launch {
             val selectedPackages = selectedPackages.value
-            val seenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }.first()
 
             PlatformStuff.mainPrefs.updateData { prefs ->
                 prefs.copy(

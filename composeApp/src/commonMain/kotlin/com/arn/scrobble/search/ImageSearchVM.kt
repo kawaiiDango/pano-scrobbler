@@ -6,6 +6,8 @@ import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.api.spotify.AlbumItem
+import com.arn.scrobble.api.spotify.ArtistItem
 import com.arn.scrobble.api.spotify.SpotifyMusicItem
 import com.arn.scrobble.api.spotify.SpotifySearchResponse
 import com.arn.scrobble.api.spotify.SpotifySearchType
@@ -17,13 +19,13 @@ import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -31,7 +33,15 @@ class ImageSearchVM : ViewModel() {
     private val _searchTerm =
         MutableSharedFlow<Pair<String, Int>>(replay = 1, extraBufferCapacity = 1)
     private val _searchResults = MutableStateFlow<SpotifySearchResponse?>(null)
-    val searchResults = _searchResults.asSharedFlow()
+    val searchResultsWithImages = _searchResults.mapLatest {
+        it ?: return@mapLatest null
+
+        (it.artists?.items ?: it.albums?.items ?: emptyList())
+            .filter { item ->
+                (item is AlbumItem && !item.images.isNullOrEmpty()) ||
+                        (item is ArtistItem && !item.images.isNullOrEmpty())
+            }
+    }
     private val _searchError = MutableStateFlow<Throwable?>(null)
     val searchError = _searchError.asStateFlow()
     private val _hasRedirect = MutableStateFlow(false)

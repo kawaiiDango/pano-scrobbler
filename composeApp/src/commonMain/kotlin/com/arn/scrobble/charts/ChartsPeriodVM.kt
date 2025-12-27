@@ -17,13 +17,12 @@ import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
 import kotlin.math.max
 
 
-open class ChartsPeriodVM : ViewModel() {
-
+class ChartsPeriodVM(
+    user: UserCached,
+) : ViewModel() {
     private var digestPeriod: LastfmPeriod? = null
     private val _periodType = MutableStateFlow<TimePeriodType?>(null)
 
@@ -34,17 +33,11 @@ open class ChartsPeriodVM : ViewModel() {
     private val _customPeriodInput =
         MutableStateFlow(TimePeriod(1577836800000L, 1609459200000L)) // 2020
 
-    private val _user = MutableStateFlow<UserCached?>(null)
     val timePeriods: StateFlow<Map<TimePeriod, Int>> = periodType
         .filterNotNull()
         .combine(
             _customPeriodInput
         ) { periodType, customPeriod ->
-            periodType to customPeriod
-        }
-        .combine(
-            _user.filterNotNull().take(1)
-        ) { (periodType, customPeriod), user ->
 
             val timePeriodsGenerator =
                 TimePeriodsGenerator(
@@ -136,14 +129,8 @@ open class ChartsPeriodVM : ViewModel() {
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    fun setUser(user: UserCached) {
-        _user.value = user
-    }
-
     fun setPeriodType(type: TimePeriodType) {
-        viewModelScope.launch {
-            _periodType.emit(type)
-        }
+        _periodType.value = type
     }
 
     fun setSelectedPeriod(period: TimePeriod) {

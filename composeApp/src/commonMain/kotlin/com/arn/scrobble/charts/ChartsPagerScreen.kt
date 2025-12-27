@@ -21,7 +21,6 @@ import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.ui.EntriesGridOrList
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.map
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
@@ -41,8 +40,8 @@ fun ChartsPagerScreen(
     onNavigate: (PanoRoute) -> Unit,
     onSetTitle: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChartsVM = viewModel { ChartsVM() },
-    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
+    viewModel: ChartsVM = viewModel { ChartsVM(user.name, false) },
+    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM(user) },
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
@@ -53,9 +52,7 @@ fun ChartsPagerScreen(
     val tracksCount by viewModel.trackCount.collectAsStateWithLifecycle()
 
     val selectedPeriod by chartsPeriodViewModel.selectedPeriod.collectAsStateWithLifecycle()
-    val isTimePeriodContinuous by chartsPeriodViewModel.selectedPeriod.map { it?.lastfmPeriod != null }
-        .collectAsStateWithLifecycle(false)
-
+    val isTimePeriodContinuous = selectedPeriod?.lastfmPeriod != null
 
     val type by remember(tabIdx) {
         mutableIntStateOf(
@@ -101,10 +98,8 @@ fun ChartsPagerScreen(
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, refreshCount: Int) {
         viewModel.setChartsInput(
             ChartsLoaderInput(
-                username = user.name,
                 timePeriod = timePeriod,
                 prevPeriod = prevTimePeriod,
-                firstPageOnly = false,
                 refreshCount = refreshCount,
             )
         )

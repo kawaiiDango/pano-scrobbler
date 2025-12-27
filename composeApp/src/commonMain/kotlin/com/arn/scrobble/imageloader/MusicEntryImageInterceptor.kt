@@ -101,13 +101,11 @@ class MusicEntryImageInterceptor : Interceptor {
                         val album = when (entry) {
                             is Album -> entry
                             is Track -> entry.album
-                            else -> null
                         }
 
                         val artist = when (entry) {
                             is Track -> entry.album?.artist ?: entry.artist
                             is Album -> entry.artist
-                            else -> null
                         }
 
                         val customMapping = if (album != null && artist != null) {

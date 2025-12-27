@@ -136,7 +136,7 @@ class SessListener(
         }
 //            }
 //        }
-        // Now remove old sessions that are not longer active.
+        // Now remove old sessions that are no longer active.
 //        removeSessions(tokens)
     }
 

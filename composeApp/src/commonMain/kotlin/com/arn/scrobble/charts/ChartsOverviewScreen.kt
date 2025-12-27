@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -99,7 +100,6 @@ import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
@@ -137,8 +137,10 @@ fun ChartsOverviewScreen(
     onNavigate: (PanoRoute) -> Unit,
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChartsVM = viewModel { ChartsVM() },
-    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
+    viewModel: ChartsVM = viewModel(key = user.key<ChartsVM>()) { ChartsVM(user.name, true) },
+    chartsPeriodViewModel: ChartsPeriodVM = viewModel(key = user.key<ChartsPeriodVM>()) {
+        ChartsPeriodVM(user)
+    },
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
@@ -157,41 +159,39 @@ fun ChartsOverviewScreen(
         it.spotifyConsentLearnt
     }
     var spotifyConsentLearntDropdownShown by remember { mutableStateOf(false) }
+    var isTimePeriodContinuous by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     val scrollState = rememberScrollState()
-    var tagCloudOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
-    var tagCloudVisible by rememberSaveable { mutableStateOf(false) }
-    var listeningActivityOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
-    var listeningActivityVisible by rememberSaveable { mutableStateOf(false) }
     val density = LocalDensity.current
+    val minAdditionalScrollOffset = with(density) { 96.dp.toPx() }
 
-    val selectedPeriod by chartsPeriodViewModel.selectedPeriod
-        .collectAsStateWithLifecycle()
-    val isTimePeriodContinuous = selectedPeriod?.lastfmPeriod != null
+    var tagCloudOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
+    val tagCloudVisible by rememberSaveable {
+        derivedStateOf {
+            scrollState.value + scrollState.viewportSize >=
+                    tagCloudOffsetY + minAdditionalScrollOffset
+        }
+    }
+    var listeningActivityOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
+    val listeningActivityVisible by rememberSaveable {
+        derivedStateOf {
+            scrollState.value + scrollState.viewportSize >=
+                    listeningActivityOffsetY + minAdditionalScrollOffset
+        }
+    }
 
     LaunchedEffect(Unit) {
         onTitleChange(getString(Res.string.charts))
     }
 
-    LaunchedEffect(scrollState.value) {
-        delay(100)
-
-        val scrollBottomOffset = scrollState.value + scrollState.viewportSize
-        val minAdditionalOffset = 96.dp.value * density.density
-
-        tagCloudVisible = scrollBottomOffset >= tagCloudOffsetY + minAdditionalOffset
-        listeningActivityVisible =
-            scrollBottomOffset >= listeningActivityOffsetY + minAdditionalOffset
-    }
-
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, refreshCount: Int) {
+        isTimePeriodContinuous = timePeriod.lastfmPeriod != null
+
         viewModel.setChartsInput(
             ChartsLoaderInput(
-                username = user.name,
                 timePeriod = timePeriod,
                 prevPeriod = prevTimePeriod,
-                firstPageOnly = true,
                 refreshCount = refreshCount
             )
         )

@@ -1,6 +1,7 @@
 package com.arn.scrobble.utils
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Canvas
@@ -306,9 +307,11 @@ object Stuff {
     @Composable
     fun <T> Flow<MainPrefs>.collectAsStateWithInitialValue(
         mapBlock: (MainPrefs) -> T,
-    ) = mapLatest {
-        mainPrefsInitialValue = it
-        mapBlock(it)
+    ) = remember {
+        mapLatest {
+            mainPrefsInitialValue = it
+            mapBlock(it)
+        }
     }.collectAsStateWithLifecycle(mapBlock(mainPrefsInitialValue))
 
 

@@ -21,8 +21,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -35,14 +33,12 @@ import pano_scrobbler.composeapp.generated.resources.no_scrobbles
 import pano_scrobbler.composeapp.generated.resources.pin_limit_reached
 
 
-class FriendsVM : ViewModel() {
+class FriendsVM(user: UserCached) : ViewModel() {
     private val mainPrefs = PlatformStuff.mainPrefs
     private val _friendsExtraDataMap = MutableStateFlow<Map<String, FriendExtraData>>(emptyMap())
     val friendsExtraDataMap = _friendsExtraDataMap.asStateFlow()
     private val _totalCount = MutableStateFlow(0)
     val totalFriends = _totalCount.asStateFlow()
-
-    private val user = MutableStateFlow<UserCached?>(null)
 
     val pinnedFriends = mainPrefs.data.map {
         it.pinnedFriends[it.currentAccountType]
@@ -57,33 +53,31 @@ class FriendsVM : ViewModel() {
     private val _lastFriendsRefreshTime = MutableStateFlow(System.currentTimeMillis())
     val lastFriendsRefreshTime = _lastFriendsRefreshTime.asStateFlow()
 
-    val friends = user.filterNotNull().flatMapLatest { user ->
-        Pager(
-            config = PagingConfig(
-                pageSize = Stuff.DEFAULT_PAGE_SIZE,
-                initialLoadSize = Stuff.DEFAULT_PAGE_SIZE,
-                prefetchDistance = 4,
-                enablePlaceholders = true
-            ),
-            pagingSourceFactory = {
-                FriendsPagingSource(
-                    user.name,
-                    onSetLastFriendsRefreshTime = { _lastFriendsRefreshTime.value = it },
-                    setTotal = { _totalCount.value = it }
-                )
-            }
-        ).flow
-            .map { pagingData ->
-                val keysTillNow = mutableSetOf<String>()
+    val friends = Pager(
+        config = PagingConfig(
+            pageSize = Stuff.DEFAULT_PAGE_SIZE,
+            initialLoadSize = Stuff.DEFAULT_PAGE_SIZE,
+            prefetchDistance = 4,
+            enablePlaceholders = true
+        ),
+        pagingSourceFactory = {
+            FriendsPagingSource(
+                user.name,
+                onSetLastFriendsRefreshTime = { _lastFriendsRefreshTime.value = it },
+                setTotal = { _totalCount.value = it }
+            )
+        }
+    ).flow
+        .map { pagingData ->
+            val keysTillNow = mutableSetOf<String>()
 
-                pagingData.filter {
-                    val key = it.name
-                    val keep = key !in keysTillNow
-                    keysTillNow += key
-                    keep
-                }
+            pagingData.filter {
+                val key = it.name
+                val keep = key !in keysTillNow
+                keysTillNow += key
+                keep
             }
-    }
+        }
         .cachedIn(viewModelScope)
 
     private var loadedInitialCachedVersion = false
@@ -94,10 +88,6 @@ class FriendsVM : ViewModel() {
         viewModelScope.launch {
             refreshPins()
         }
-    }
-
-    fun setUser(userp: UserCached) {
-        user.value = userp
     }
 
     suspend fun loadFriendsRecents(username: String) {

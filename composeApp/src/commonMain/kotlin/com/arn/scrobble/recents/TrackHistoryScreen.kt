@@ -48,7 +48,7 @@ fun TrackHistoryScreen(
     onNavigate: (PanoRoute) -> Unit,
     editDataFlow: Flow<Pair<String, Track>>,
     modifier: Modifier = Modifier,
-    viewModel: ScrobblesVM = viewModel { ScrobblesVM() },
+    viewModel: ScrobblesVM = viewModel { ScrobblesVM(user, track) },
 ) {
     val listState = rememberLazyListState()
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
@@ -85,15 +85,6 @@ fun TrackHistoryScreen(
             "${user.name}: $formattedCount"
         }
         onSetTitle(title)
-    }
-
-    LaunchedEffect(user, track) {
-        viewModel.setScrobblesInput(
-            ScrobblesInput(
-                user = user,
-                track = track
-            ),
-        )
     }
 
     OnEditEffect(

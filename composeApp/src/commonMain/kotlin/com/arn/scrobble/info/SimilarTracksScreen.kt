@@ -1,7 +1,6 @@
 package com.arn.scrobble.info
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,7 +16,7 @@ import pano_scrobbler.composeapp.generated.resources.not_found
 
 @Composable
 fun SimilarTracksScreen(
-    musicEntry: Track,
+    track: Track,
     user: UserCached,
     appId: String?,
     onNavigate: (PanoRoute.Modal) -> Unit,
@@ -26,10 +25,6 @@ fun SimilarTracksScreen(
 ) {
 
     val similarTracks = viewModel.similarTracks.collectAsLazyPagingItems()
-
-    LaunchedEffect(musicEntry) {
-        viewModel.setTrack(musicEntry)
-    }
 
     EntriesGridOrList(
         entries = similarTracks,

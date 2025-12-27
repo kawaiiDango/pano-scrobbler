@@ -6,6 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.filter
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -28,7 +29,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-class ScrobblesVM : ViewModel() {
+class ScrobblesVM(
+    user: UserCached,
+    track: Track?, // for track-specific scrobbles view
+) : ViewModel() {
     val pendingScrobbles = PanoDb.db.getPendingScrobblesDao().allFlow(10000)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     private val _nlsEnabled = MutableStateFlow(PlatformStuff.isNotificationListenerEnabled())
@@ -44,8 +48,7 @@ class ScrobblesVM : ViewModel() {
     private val _pkgMap = MutableStateFlow<Map<Long, String>>(emptyMap())
     val pkgMap = _pkgMap.asStateFlow()
     val lastScrobbleOfTheDaySet = mutableSetOf<Long>() // set of play times
-    private val _input = MutableStateFlow<ScrobblesInput?>(null)
-    val input = _input.asStateFlow()
+    private val _input = MutableStateFlow(ScrobblesInput())
     private val _firstScrobbleTime = MutableStateFlow<Long?>(null)
     val firstScrobbleTime = _firstScrobbleTime.asStateFlow()
     private val _total = MutableStateFlow<Int?>(null)
@@ -65,10 +68,13 @@ class ScrobblesVM : ViewModel() {
         prefetchDistance = 4
     )
 
-    val tracks = _input.filterNotNull()
+    val tracks = _input
         .combine(_loadedCachedVersion) { input, loadedCachedVersion ->
             val loadedCachedVersion =
-                if (input.user.isSelf && input.track == null) loadedCachedVersion else true
+                if (user.isSelf && track == null)
+                    loadedCachedVersion
+                else
+                    true
             input to loadedCachedVersion
         }
         .flatMapLatest { (input, loadedCachedVersion) ->
@@ -76,10 +82,10 @@ class ScrobblesVM : ViewModel() {
                 config = pagingConfig,
                 pagingSourceFactory = {
                     ScrobblesPagingSource(
-                        username = input.user.name,
+                        username = user.name,
                         loadLovedTracks = input.loadLoved,
                         timeJumpMillis = input.timeJumpMillis,
-                        track = input.track,
+                        track = track,
                         cachedOnly = !loadedCachedVersion,
                         addLastScrobbleOfTheDay = { lastScrobbleOfTheDaySet += it },
                         addToPkgMap = { time, pkg -> _pkgMap.value += time to pkg },
@@ -133,20 +139,19 @@ class ScrobblesVM : ViewModel() {
                 }
         }
 
-        updateScrobblerServiceStatus()
+        if (user.isSelf)
+            updateScrobblerServiceStatus()
     }
 
     fun updateScrobblerServiceStatus() {
         viewModelScope.launch {
-            if (input.value?.user?.isSelf == true) {
-                _nlsEnabled.value = PlatformStuff.isNotificationListenerEnabled()
+            _nlsEnabled.value = PlatformStuff.isNotificationListenerEnabled()
 
-                if (_nlsEnabled.value &&
-                    PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }.first() &&
-                    scrobblerServiceRunning.value == null
-                ) // do only once
-                    _scrobblerServiceRunning.value = PlatformStuff.isScrobblerRunning()
-            }
+            if (_nlsEnabled.value &&
+                PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }.first() &&
+                scrobblerServiceRunning.value == null
+            ) // do only once
+                _scrobblerServiceRunning.value = PlatformStuff.isScrobblerRunning()
         }
     }
 

@@ -27,7 +27,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.charts_no_data
 
 
-class RandomVM : ViewModel() {
+class RandomVM(private val username: String) : ViewModel() {
     private val _musicEntry = MutableStateFlow<MusicEntry?>(null)
     private val _input = MutableStateFlow<RandomLoaderInput?>(null)
     private val _refreshTrigger = MutableSharedFlow<Unit>()
@@ -126,7 +126,7 @@ class RandomVM : ViewModel() {
 
                     currentScrobblable.getRecents(
                         page,
-                        input.username,
+                        username,
                         from = from,
                         to = to,
                         limit = 1,
@@ -140,7 +140,7 @@ class RandomVM : ViewModel() {
                     isCharts = false
                     currentScrobblable.getLoves(
                         page,
-                        input.username,
+                        username,
                         limit = 1,
                     ).getOrThrow().let {
                         _entry = it.entries.firstOrNull()
@@ -154,7 +154,7 @@ class RandomVM : ViewModel() {
                         input.type,
                         input.timePeriod,
                         page,
-                        input.username,
+                        username,
                         limit = if (input.timePeriod.lastfmPeriod == null && currentScrobblable.userAccount.type == AccountType.LASTFM)
                             -1
                         else
@@ -203,7 +203,7 @@ class RandomVM : ViewModel() {
                 val track = result.first as Track
 
                 Requesters.lastfmUnauthedRequester
-                    .getInfo(track, username = input.username)
+                    .getInfo(track, username = username)
                     .onSuccess {
                         val t = track.copy(
                             userplaycount = it.userplaycount,

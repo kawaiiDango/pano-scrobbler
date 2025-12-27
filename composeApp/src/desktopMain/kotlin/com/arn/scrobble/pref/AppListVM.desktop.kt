@@ -2,6 +2,7 @@ package com.arn.scrobble.pref
 
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.isAppIgnored
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -15,13 +16,13 @@ actual suspend fun AppListVM.load(
     val seenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }.first()
 
     if (checkDefaultApps)
-        onSetSelectedPackages(seenApps.keys)
+        onSetSelectedPackages(seenApps.keys.filter { !isAppIgnored(it) })
 
     val musicPlayers = seenApps.toList()
-        .filter { (appId, friendlyLabel) ->
-            packagesOverride?.contains(appId) ?: true
+        .filter { (appId, _) ->
+            !isAppIgnored(appId) && (packagesOverride?.contains(appId) ?: true)
         }
-        .sortedBy { (appId, friendlyLabel) ->
+        .sortedBy { (_, friendlyLabel) ->
             friendlyLabel.lowercase()
         }
         .map { (appId, friendlyLabel) ->

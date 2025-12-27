@@ -6,6 +6,7 @@ import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.isAppIgnored
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,10 +23,6 @@ class DesktopMediaListener(
 ) : MediaListener(scope, scrobbleQueue) {
 
     override val notifyTimelineUpdates = true
-
-    private val ignoredPlayerPrefixes = listOf("org.mpris.MediaPlayer2.kdeconnect")
-
-    private fun isAppIgnored(appId: String) = ignoredPlayerPrefixes.any { appId.startsWith(it) }
 
     private val sessionTrackersMap = mutableMapOf<String, SessionTracker>()
     private var sessionInfos: List<SessionInfo> = emptyList()

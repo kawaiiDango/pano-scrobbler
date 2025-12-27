@@ -6,6 +6,7 @@ import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.isAppIgnored
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,6 +33,14 @@ class DesktopMediaListener(
                 scope,
                 SharingStarted.Eagerly,
                 Stuff.mainPrefsInitialValue.seenApps
+            )
+
+    private val notiNewApp =
+        PlatformStuff.mainPrefs.data.mapLatest { it.notiNewApp }
+            .stateIn(
+                scope,
+                SharingStarted.Eagerly,
+                Stuff.mainPrefsInitialValue.notiNewApp
             )
 
     fun start() {
@@ -67,22 +76,24 @@ class DesktopMediaListener(
             return
 
         val unseenAppItems = sessions
-            .filter { it.appId !in seenApps.value }
+            .filter { it.appId !in seenApps.value && !isAppIgnored(it.appId) }
             .map { it.appId to it.appName }
 
         if (unseenAppItems.isNotEmpty()) {
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(seenApps = it.seenApps + unseenAppItems) }
 
-                unseenAppItems.forEach { (appId, friendlyLabel) ->
-                    PanoNotifications.notifyAppDetected(appId, friendlyLabel)
+                if (notiNewApp.value) {
+                    unseenAppItems.forEach { (appId, friendlyLabel) ->
+                        PanoNotifications.notifyAppDetected(appId, friendlyLabel)
+                    }
                 }
             }
         }
 
 
         val sessionsFiltered = sessions.filter {
-            shouldScrobble(it.appId) && it.appId !in sessionTrackersMap
+            !isAppIgnored(it.appId) && shouldScrobble(it.appId) && it.appId !in sessionTrackersMap
         }
 
 //        val tokens = mutableSetOf<MediaSession.Token>()

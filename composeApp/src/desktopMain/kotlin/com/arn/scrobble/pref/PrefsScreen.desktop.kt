@@ -1,13 +1,19 @@
 package com.arn.scrobble.pref
 
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.DesktopStuff
+import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
+import pano_scrobbler.composeapp.generated.resources.pref_notify_new_apps
 import pano_scrobbler.composeapp.generated.resources.run_on_start
 import pano_scrobbler.composeapp.generated.resources.tidal
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
@@ -26,7 +32,17 @@ actual fun prefChartsWidget(listScope: LazyListScope) {
 }
 
 actual fun prefNotifications(listScope: LazyListScope) {
-    // no-op
+    listScope.item(MainPrefs::notiNewApp.name) {
+        val mainPrefs = remember { PlatformStuff.mainPrefs }
+        val mainPrefsData by mainPrefs.data.collectAsStateWithInitialValue { it }
+        val notiNewApp by remember { derivedStateOf { mainPrefsData.notiNewApp } }
+
+        SwitchPref(
+            text = stringResource(Res.string.pref_notify_new_apps),
+            value = notiNewApp,
+            copyToSave = { copy(notiNewApp = it) }
+        )
+    }
 }
 
 actual fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean) {

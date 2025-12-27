@@ -23,6 +23,10 @@ class DesktopMediaListener(
 
     override val notifyTimelineUpdates = true
 
+    private val ignoredPlayerPrefixes = listOf("org.mpris.MediaPlayer2.kdeconnect")
+
+    private fun isAppIgnored(appId: String) = ignoredPlayerPrefixes.any { appId.startsWith(it) }
+
     private val sessionTrackersMap = mutableMapOf<String, SessionTracker>()
     private var sessionInfos: List<SessionInfo> = emptyList()
 
@@ -75,7 +79,7 @@ class DesktopMediaListener(
             return
 
         val unseenAppItems = sessions
-            .filter { it.appId !in seenApps.value }
+            .filter { it.appId !in seenApps.value && !isAppIgnored(it.appId) }
             .map { it.appId to it.appName }
 
         if (unseenAppItems.isNotEmpty()) {
@@ -92,7 +96,7 @@ class DesktopMediaListener(
 
 
         val sessionsFiltered = sessions.filter {
-            shouldScrobble(it.appId) && it.appId !in sessionTrackersMap
+            !isAppIgnored(it.appId) && shouldScrobble(it.appId) && it.appId !in sessionTrackersMap
         }
 
 //        val tokens = mutableSetOf<MediaSession.Token>()

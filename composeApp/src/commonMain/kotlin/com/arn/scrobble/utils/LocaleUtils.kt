@@ -68,7 +68,7 @@ object LocaleUtils {
     }
 }
 
-expect fun setAppLocale(lang: String?, force: Boolean)
+expect fun setAppLocale(lang: String?, activityContext: Any?)
 
 expect fun getCurrentLocale(localePref: String?): String?
 

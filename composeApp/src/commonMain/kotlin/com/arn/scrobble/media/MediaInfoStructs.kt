@@ -2,12 +2,11 @@ package com.arn.scrobble.media
 
 
 data class SessionInfo(
-    val appId: String,
+    val rawAppId: String,
     val appName: String,
 )
 
 data class MetadataInfo(
-    val appId: String,
     val trackId: String,
     val title: String,
     val artist: String,
@@ -19,7 +18,6 @@ data class MetadataInfo(
 )
 
 data class PlaybackInfo(
-    val appId: String,
     val state: CommonPlaybackState,
     val position: Long,
     val canSkip: Boolean,

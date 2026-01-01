@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 @Keep
 object PanoNativeComponents {
-    var desktopMediaListener: DesktopMediaListener? = null
+    private var desktopMediaListener: DesktopMediaListener? = null
     val onFilePickedFlow = MutableSharedFlow<Pair<Int, String>>(extraBufferCapacity = 1)
     val onDarkModeChangeFlow = MutableStateFlow(true)
 
@@ -57,20 +57,22 @@ object PanoNativeComponents {
 
 
     @JvmStatic
-    fun onActiveSessionsChanged(appIds: Array<String>, appNames: Array<String>) {
-        val sessionInfos = appIds.zip(appNames).map { (appId, appName) ->
-            SessionInfo(
-                appId = appId,
-                appName = appName,
-            )
-        }
+    fun onActiveSessionsChanged(uniqueAppIds: Array<String>, appNames: Array<String>) {
+        val sessionInfos = uniqueAppIds
+            .zip(appNames)
+            .map { (uniqueAppId, appName) ->
+                SessionInfo(
+                    rawAppId = uniqueAppId,
+                    appName = appName,
+                )
+            }
 
         desktopMediaListener?.platformActiveSessionsChanged(sessionInfos)
     }
 
     @JvmStatic
     fun onMetadataChanged(
-        appId: String,
+        uniqueAppId: String,
         trackId: String,
         title: String,
         artist: String,
@@ -79,10 +81,8 @@ object PanoNativeComponents {
         trackNumber: Int,
         duration: Long,
         artUrl: String,
-        artBytes: ByteArray,
     ) {
         val metadataInfo = MetadataInfo(
-            appId = appId,
             trackId = trackId, // always empty for windows
             title = title,
             artist = artist,
@@ -93,18 +93,22 @@ object PanoNativeComponents {
             artUrl = artUrl.takeIf { it.startsWith("https://") }.orEmpty(),
         )
 
-        desktopMediaListener?.platformMetadataChanged(metadataInfo)
+        desktopMediaListener?.platformMetadataChanged(uniqueAppId, metadataInfo)
     }
 
     @JvmStatic
-    fun onPlaybackStateChanged(appId: String, state: String, position: Long, canSkip: Boolean) {
+    fun onPlaybackStateChanged(
+        uniqueAppId: String,
+        state: String,
+        position: Long,
+        canSkip: Boolean
+    ) {
         val playbackInfo = PlaybackInfo(
-            appId = appId,
             state = CommonPlaybackState.valueOf(state),
             position = position,
             canSkip = canSkip
         )
-        desktopMediaListener?.platformPlaybackStateChanged(playbackInfo)
+        desktopMediaListener?.platformPlaybackStateChanged(uniqueAppId, playbackInfo)
     }
 
     @JvmStatic
@@ -138,13 +142,18 @@ object PanoNativeComponents {
         onDarkModeChangeFlow.value = isDarkMode
     }
 
+    @JvmStatic
+    fun isAppIdAllowed(appId: String): Boolean {
+        return desktopMediaListener?.shouldScrobble(appId) == true
+    }
+
     // external
 
     @JvmStatic
     external fun stopListeningMedia()
 
     @JvmStatic
-    external fun setAllowedAppIds(appIds: Array<String>)
+    external fun refreshSessions()
 
     @JvmStatic
     private external fun startListeningMedia()

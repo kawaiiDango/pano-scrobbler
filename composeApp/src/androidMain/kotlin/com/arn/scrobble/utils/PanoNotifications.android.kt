@@ -70,10 +70,10 @@ actual object PanoNotifications {
 
     actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
         if (event.nowPlaying)
-            nowPlayingScrobbleDataToHash[event.scrobbleData.appId!!] =
+            nowPlayingScrobbleDataToHash[event.notiKey] =
                 event.origScrobbleData to event.hash
         else
-            nowPlayingScrobbleDataToHash.remove(event.scrobbleData.appId!!)
+            nowPlayingScrobbleDataToHash.remove(event.notiKey)
 
         if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
             return
@@ -225,12 +225,12 @@ actual object PanoNotifications {
         }
 
         try {
-            notificationManager.notify(event.origScrobbleData.appId, 0, nb.build())
+            notificationManager.notify(event.notiKey, 0, nb.build())
         } catch (e: RuntimeException) {
             val nExpandable = nb.setLargeIcon(null as Bitmap?)
                 .setStyle(null)
                 .build()
-            notificationManager.notify(event.origScrobbleData.appId, 0, nExpandable)
+            notificationManager.notify(event.notiKey, 0, nExpandable)
         }
     }
 
@@ -277,7 +277,7 @@ actual object PanoNotifications {
                 }
             }
 
-        notificationManager.notify(event.scrobbleData.appId, 0, nb.build())
+        notificationManager.notify(event.notiKey, 0, nb.build())
     }
 
     actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
@@ -356,7 +356,7 @@ actual object PanoNotifications {
     }
 
 
-    actual suspend fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
+    actual suspend fun notifyUnscrobbled(notiKey: String, scrobbleData: ScrobbleData, hash: Int) {
         val delayTime = 4000L
 
         val blockedMetadata = BlockedMetadata(
@@ -383,11 +383,11 @@ actual object PanoNotifications {
             )
             .setContentIntent(blockPi)
             .setTimeoutAfter(delayTime)
-        notificationManager.notify(scrobbleData.appId, 0, nb.build())
+        notificationManager.notify(notiKey, 0, nb.build())
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             GlobalScope.launch {
                 delay(delayTime)
-                notificationManager.cancel(scrobbleData.appId, 0)
+                notificationManager.cancel(notiKey, 0)
             }
     }
 
@@ -523,10 +523,10 @@ actual object PanoNotifications {
         notificationManager.notify(Stuff.CHANNEL_NOTI_UPDATER, 0, nb.build())
     }
 
-    actual fun removeNotificationByTag(tag: String) {
-        nowPlayingScrobbleDataToHash.remove(tag)
+    actual fun removeNotificationByKey(key: String) {
+        nowPlayingScrobbleDataToHash.remove(key)
 
-        notificationManager.cancel(tag, 0)
+        notificationManager.cancel(key, 0)
     }
 
     fun getNowPlayingFromBackgroundProcess(): Pair<ScrobbleData, Int>? {

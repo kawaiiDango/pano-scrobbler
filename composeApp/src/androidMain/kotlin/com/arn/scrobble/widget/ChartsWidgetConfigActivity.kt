@@ -92,7 +92,6 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
     }
 
     override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(newBase ?: return)
-        applyAndroidLocaleLegacy()
+        super.attachBaseContext(newBase?.applyAndroidLocaleLegacy() ?: return)
     }
 }

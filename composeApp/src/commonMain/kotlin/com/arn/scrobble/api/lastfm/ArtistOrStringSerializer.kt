@@ -11,17 +11,22 @@ import kotlinx.serialization.json.JsonPrimitive
 object ArtistOrStringSerializer : KSerializer<Artist> {
 
     override val descriptor = Artist.serializer().descriptor
+    private val delegate = Artist.serializer()
 
     override fun serialize(encoder: Encoder, value: Artist) {
-        encoder.encodeSerializableValue(Artist.serializer(), value)
+        encoder.encodeSerializableValue(delegate, value)
     }
 
     override fun deserialize(decoder: Decoder): Artist {
-        decoder as? JsonDecoder ?: throw SerializationException("Expected JsonDecoder")
-        return when (val element = decoder.decodeJsonElement()) {
-            is JsonObject -> decoder.json.decodeFromJsonElement(Artist.serializer(), element)
-            is JsonPrimitive -> Artist(element.content)
-            else -> throw SerializationException("Expected JsonObject or JsonPrimitive")
+        return if (decoder is JsonDecoder) {
+            when (val element = decoder.decodeJsonElement()) {
+                is JsonObject -> decoder.json.decodeFromJsonElement(Artist.serializer(), element)
+                is JsonPrimitive -> Artist(element.content)
+                else -> throw SerializationException("Expected JsonObject or JsonPrimitive")
+            }
+        } else {
+            // Non-JSON: try normal decoding
+            decoder.decodeSerializableValue(delegate)
         }
     }
 }

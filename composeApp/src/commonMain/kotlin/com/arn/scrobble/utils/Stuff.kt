@@ -226,11 +226,11 @@ object Stuff {
         "com.bbc.sounds",
     )
 
-    val BLOCKED_MEDIA_SESSION_TAGS = mapOf(
-        "*" to listOf("CastMediaSession"),
-        PACKAGE_YAMAHA_MUSIC_CAST to listOf("NotificationService"),
+    val BLOCKED_MEDIA_SESSION_TAGS = setOf(
+        "*|CastMediaSession",
+        "$PACKAGE_YAMAHA_MUSIC_CAST|NotificationService",
         // my test app
-        "com.example.myapplication.sessiontest" to listOf("androidx.media3.session.id.demo_session_id 124"),
+        "com.example.myapplication.sessiontest|androidx.media3.session.id.demo_session_id 124",
     )
 
     val PACKAGES_PIXEL_NP = setOf(

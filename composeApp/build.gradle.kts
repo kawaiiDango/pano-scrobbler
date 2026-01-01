@@ -558,8 +558,6 @@ tasks.register<Exec>("buildNativeImage") {
         "-H:+ReportExceptionStackTraces",
 //        "-g",
 //        "--enable-monitoring=nmt",
-        "--enable-native-access=ALL-UNNAMED",
-        "-H:+ForeignAPISupport",
         "--include-locales",
         if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
         if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,

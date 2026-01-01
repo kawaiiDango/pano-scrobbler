@@ -11,6 +11,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -42,33 +44,30 @@ class DesktopMediaListener(
 
             combine(scrobblerEnabled, allowedPackages) { scrobblerEnabled, allowedPackages ->
                 if (!scrobblerEnabled) {
-                    emptySet()
+                    hashSetOf()
                 } else
-                    allowedPackages
-            }.collectLatest { allowed ->
-                val keysToKeep = sessionTrackersMap.keys
-                    .filter { shouldScrobble(it.substringBefore('|')) }
-                    .toSet()
-
-                val allowedApps = allowed.filter { shouldScrobble(it) }
-
-                PanoNativeComponents.setAllowedAppIds(allowedApps.toTypedArray())
-                removeSessions(keysToKeep)
-                platformActiveSessionsChanged(sessionInfos)
+                    allowedPackages.toHashSet()
             }
+                .distinctUntilChanged()
+                .drop(1) // drop initial value
+                .collectLatest {
+                    PanoNativeComponents.refreshSessions()
+                }
         }
     }
 
     fun platformActiveSessionsChanged(sessions: List<SessionInfo>) {
         this.sessionInfos = sessions
-        Logger.d { "controllers: " + sessions.joinToString { it.appId } }
+        Logger.d { "controllers: " + sessions.joinToString { it.rawAppId } }
+
+        val normalizedAppIdsToNames = sessions
+            .associate { PlatformStuff.normalizeAppId(it.rawAppId) to it.appName }
 
         if (!scrobblerEnabled.value)
             return
 
-        val unseenAppItems = sessions
-            .filter { it.appId !in seenApps.value }
-            .map { it.appId to it.appName }
+        val unseenAppItems = normalizedAppIdsToNames
+            .filter { (appId, name) -> appId !in seenApps.value }
 
         if (unseenAppItems.isNotEmpty()) {
             scope.launch {
@@ -82,7 +81,7 @@ class DesktopMediaListener(
 
 
         val sessionsFiltered = sessions.filter {
-            shouldScrobble(it.appId) && it.appId !in sessionTrackersMap
+            shouldScrobble(it.rawAppId) && it.rawAppId !in sessionTrackersMap
         }
 
 //        val tokens = mutableSetOf<MediaSession.Token>()
@@ -91,19 +90,20 @@ class DesktopMediaListener(
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
 //                if (controller.sessionToken !in controllersMap) {
 
+            val normalizedAppId = PlatformStuff.normalizeAppId(session.rawAppId)
             val playingTrackInfo =
-                findTrackInfoByKey(session.appId)
+                findTrackInfoByKey(session.rawAppId)
                 // there is no concept of session tag on desktop platforms
-                    ?: PlayingTrackInfo(session.appId, "").also {
-                        putTrackInfo(session.appId, it)
+                    ?: PlayingTrackInfo(normalizedAppId, session.rawAppId).also {
+                        putTrackInfo(session.rawAppId, it)
                     }
 
-            sessionTrackersMap[session.appId] = SessionTracker(playingTrackInfo)
+            sessionTrackersMap[playingTrackInfo.uniqueId] = SessionTracker(playingTrackInfo)
         }
 //            }
         // Now remove old sessions that are no longer active.
         removeSessions(
-            sessions.map { it.appId }.toSet(),
+            sessions.map { it.rawAppId }.toSet(),
         )
 
     }
@@ -111,12 +111,11 @@ class DesktopMediaListener(
     @Synchronized
     override fun removeSessions(
         tokensToKeep: Set<*>,
-        appIdsToKeep: Set<String>?,
     ) {
         val it = sessionTrackersMap.iterator()
         while (it.hasNext()) {
             val (sessionKey, sessionTracker) = it.next()
-            if (sessionKey !in tokensToKeep || appIdsToKeep?.contains(sessionKey.substringBefore('|')) == false) {
+            if (sessionKey !in tokensToKeep) {
                 sessionTracker.pause()
                 it.remove()
                 DiscordRpc.clearDiscordActivity(sessionTracker.trackInfo.appId)
@@ -137,7 +136,7 @@ class DesktopMediaListener(
 
         val callback = findSessionTrackerByHash(hash)
         if (callback != null) {
-            PanoNativeComponents.mute(callback.trackInfo.appId)
+            PanoNativeComponents.mute(callback.trackInfo.uniqueId)
             Logger.i { "mute: done" }
 
             mutedHash = hash
@@ -150,7 +149,7 @@ class DesktopMediaListener(
             Logger.i { "unmute: done" }
 
             val callback = findSessionTrackerByHash(mutedHash!!)
-            callback?.trackInfo?.appId?.let { PanoNativeComponents.unmute(it) }
+            callback?.trackInfo?.uniqueId?.let { PanoNativeComponents.unmute(it) }
 
             callback?.isMuted = false
 
@@ -161,8 +160,9 @@ class DesktopMediaListener(
     }
 
     override fun skip(hash: Int) {
-        val appId = findTrackInfoByHash(hash)?.appId ?: return
-        PanoNativeComponents.skip(appId)
+        findTrackInfoByHash(hash)?.uniqueId?.let {
+            PanoNativeComponents.skip(it)
+        }
     }
 
     override fun love(hash: Int) {}
@@ -173,18 +173,16 @@ class DesktopMediaListener(
         trackInfo.isPlaying && trackInfo.title.isNotBlank() && trackInfo.artist.isNotBlank()
 
 
-    override fun hasOtherPlayingControllers(appId: String, sessionId: String): Boolean {
-        return sessionTrackersMap.entries.any { (sessionKey, sessionTracker) ->
-            sessionKey.startsWith("$appId|") &&
-                    sessionKey != "$appId|$sessionId" &&
-                    sessionTracker.isMediaPlaying()
-        }
+    override fun hasOtherPlayingControllers(appId: String): Boolean {
+        return sessionTrackersMap.entries.count { (sessionKey, sessionTracker) ->
+            sessionKey.startsWith("$appId|") && sessionTracker.isMediaPlaying()
+        } > 1
     }
 
-    fun platformMetadataChanged(metadata: MetadataInfo) {
+    fun platformMetadataChanged(uniqueAppId: String, metadata: MetadataInfo) {
 
         val sessionTracker =
-            sessionTrackersMap[metadata.appId] ?: return
+            sessionTrackersMap[uniqueAppId] ?: return
 
 //        Info: (scrobbler) metadata: MetadataInfo(app_id=Spotify.exe, title=Advertisement, artist=Spotify, album=, album_artist=Spotify, track_number=0, duration=25417)
         if (metadata.artist == "Spotify" && metadata.albumArtist == "Spotify" && metadata.title == "Advertisement" && metadata.album.isEmpty()) {
@@ -200,9 +198,8 @@ class DesktopMediaListener(
         sessionTracker.metadataChanged(metadata, extras)
     }
 
-    fun platformPlaybackStateChanged(playbackInfo: PlaybackInfo) {
-        val sessionTracker =
-            sessionTrackersMap[playbackInfo.appId] ?: return
+    fun platformPlaybackStateChanged(uniqueAppId: String, playbackInfo: PlaybackInfo) {
+        val sessionTracker = sessionTrackersMap[uniqueAppId] ?: return
 
         val options = TransformMetadataOptions()
         val (commonPlaybackInfo, ignoreScrobble) =

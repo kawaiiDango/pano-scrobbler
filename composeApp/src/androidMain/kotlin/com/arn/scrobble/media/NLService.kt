@@ -308,7 +308,7 @@ class NLService : NotificationListenerService() {
 
         scrobbleQueue.remove(trackInfo.hash)
 
-        PanoNotifications.removeNotificationByTag(trackInfo.appId)
+        PanoNotifications.removeNotificationByKey("$pkgName|$TAG_NOTI")
 
     }
 
@@ -327,7 +327,7 @@ class NLService : NotificationListenerService() {
 
         val updatedTrackInfo = trackInfo ?: PlayingTrackInfo(
             appId = pkgName,
-            sessionId = TAG_NOTI
+            uniqueId = "$pkgName|$TAG_NOTI"
         )
 
         if (metadataChanged) {

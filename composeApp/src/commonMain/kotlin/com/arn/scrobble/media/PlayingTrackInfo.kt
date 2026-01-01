@@ -7,8 +7,8 @@ import java.util.Objects
 import kotlin.math.abs
 
 class PlayingTrackInfo(
-    val appId: String,
-    val sessionId: String,
+    val appId: String, // normalized app id
+    val uniqueId: String, // "appId|sessionId" on android, actual mpris name on linux
 ) {
     enum class ScrobbledState {
         NONE,
@@ -77,9 +77,8 @@ class PlayingTrackInfo(
     val extras = mutableMapOf<String, String>()
 
     val hasBlockedTag: Boolean =
-        (Stuff.BLOCKED_MEDIA_SESSION_TAGS["*"]?.contains(sessionId) == true ||
-                Stuff.BLOCKED_MEDIA_SESSION_TAGS[appId]
-                    ?.contains(sessionId) == true)
+        ("*|" + uniqueId.substringAfter('|')) in Stuff.BLOCKED_MEDIA_SESSION_TAGS ||
+                uniqueId in Stuff.BLOCKED_MEDIA_SESSION_TAGS
 
     fun resetMeta() =
         putOriginals("", "", "", "", 0, null, null, emptyMap())
@@ -104,7 +103,7 @@ class PlayingTrackInfo(
         this.albumArtist = albumArtist
 
         this.durationMillis = durationMillis
-        hash = Objects.hash(albumArtist, artist, album, title, appId, sessionId)
+        hash = Objects.hash(albumArtist, artist, album, title, appId, uniqueId)
         this.trackId = trackId
 
         this.artUrl = artUrl
@@ -192,6 +191,7 @@ class PlayingTrackInfo(
     )
 
     fun toTrackPlayingEvent() = PlayingTrackNotifyEvent.TrackPlaying(
+        notiKey = uniqueId,
         scrobbleData = toScrobbleData(false),
         origScrobbleData = toScrobbleData(true),
         hash = hash,

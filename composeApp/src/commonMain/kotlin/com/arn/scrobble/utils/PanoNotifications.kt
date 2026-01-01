@@ -12,11 +12,11 @@ expect object PanoNotifications {
 
     suspend fun notifyAppDetected(appId: String, appLabel: String)
 
-    suspend fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int)
+    suspend fun notifyUnscrobbled(notiKey: String, scrobbleData: ScrobbleData, hash: Int)
 
     suspend fun notifyDigest(timePeriod: TimePeriod, resultsList: List<Pair<Int, String>>)
 
     suspend fun notifyUpdater(updateAction: UpdateAction)
 
-    fun removeNotificationByTag(tag: String)
+    fun removeNotificationByKey(key: String)
 }

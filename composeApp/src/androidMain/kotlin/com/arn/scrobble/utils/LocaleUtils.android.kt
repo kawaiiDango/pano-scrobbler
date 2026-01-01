@@ -2,46 +2,40 @@ package com.arn.scrobble.utils
 
 import android.app.LocaleManager
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
 import androidx.annotation.StringRes
-import androidx.core.os.ConfigurationCompat
 import com.arn.scrobble.utils.LocaleUtils.localesSet
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.util.Locale
 
 
 private var deviceLocaleContext: WeakReference<Context> = WeakReference(null)
 
-fun Context.applyAndroidLocaleLegacy(
-    langp: String? = runBlocking { PlatformStuff.mainPrefs.data.map { it.locale }.first() },
-): Context {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        val configuration = Configuration(resources.configuration)
 
-        val lang = if (langp != null && langp !in localesSet) {
+private val deviceLocaleLocaleList
+    get() = Resources.getSystem().configuration.locales
+
+fun Context.applyAndroidLocaleLegacy(): Context {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        val langPref = Stuff.mainPrefsInitialValue.locale
+
+        val lang = if (langPref != null && langPref !in localesSet) {
             null
         } else
-            langp
+            langPref
 
-        val locale = if (lang != null)
-            Locale.forLanguageTag(lang)
+        val locales = if (lang != null)
+            LocaleList(Locale.forLanguageTag(lang))
         else
-            deviceLocaleLocaleList.get(0)!!
+            deviceLocaleLocaleList
 
-        val localeList = LocaleList(locale)
-        configuration.setLocales(localeList)
-        LocaleList.setDefault(localeList)
-
-        // for services
-        return ContextWrapper(createConfigurationContext(configuration))
+        LocaleList.setDefault(locales)
+        resources.configuration.setLocales(locales)
     }
+
     return this
 }
 
@@ -49,7 +43,7 @@ fun Context.applyAndroidLocaleLegacy(
 fun Context.getStringInDeviceLocale(@StringRes res: Int): String {
     if (deviceLocaleContext.get() == null) {
         val config = Configuration(resources.configuration)
-        config.setLocales(deviceLocaleLocaleList.unwrap() as LocaleList)
+        config.setLocales(deviceLocaleLocaleList)
         deviceLocaleContext = WeakReference(createConfigurationContext(config))
     }
     val resources = deviceLocaleContext.get()!!.resources
@@ -57,10 +51,7 @@ fun Context.getStringInDeviceLocale(@StringRes res: Int): String {
     return resources.getString(res)
 }
 
-private val deviceLocaleLocaleList
-    get() = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
-
-actual fun setAppLocale(lang: String?, force: Boolean) {
+actual fun setAppLocale(lang: String?, activityContext: Any?) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val localeManager =
             AndroidStuff.applicationContext.getSystemService(LocaleManager::class.java)
@@ -79,8 +70,21 @@ actual fun setAppLocale(lang: String?, force: Boolean) {
 
             localeManager.applicationLocales = localeList
         }
-    } else
-        AndroidStuff.applicationContext.applyAndroidLocaleLegacy(lang)
+    } else if (activityContext is Context) {
+        val locales = if (lang != null)
+            LocaleList(Locale.forLanguageTag(lang))
+        else
+            deviceLocaleLocaleList
+        LocaleList.setDefault(locales)
+
+        val configuration = Configuration(activityContext.resources.configuration)
+        configuration.setLocales(locales)
+
+        activityContext.resources.updateConfiguration(
+            configuration,
+            activityContext.resources.displayMetrics
+        )
+    }
 }
 
 actual fun getCurrentLocale(localePref: String?): String? {

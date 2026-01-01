@@ -24,6 +24,7 @@ import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -67,18 +68,14 @@ class SessListener(
                 autoDetectApps,
                 scrobblerEnabled,
             ) { allowed, blocked, autoDetect, scrobbleEnabled ->
-                arrayOf(allowed, blocked, autoDetect, scrobbleEnabled)
-            }
-                .collectLatest { (allowed, blocked, autoDetect, scrobbleEnabled) ->
-
-                    onActiveSessionsChanged(platformControllers)
-                    val pkgsToKeep = controllersMap.values
-                        .map { it.first }
-                        .filter { shouldScrobble(it.packageName) }
-                        .map { it.packageName }
-                        .toSet()
-                    removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
-                }
+                onActiveSessionsChanged(platformControllers)
+                val tokensToKeep = controllersMap.values
+                    .map { it.first }
+                    .filter { shouldScrobble(it.packageName) }
+                    .map { it.sessionToken }
+                    .toSet()
+                removeSessions(tokensToKeep)
+            }.collect()
         }
 
         scope.launch {
@@ -118,9 +115,11 @@ class SessListener(
                 else
                     controller.tagCompat
 
-            val playingTrackInfo = findTrackInfoByKey(controller.packageName + "|" + sessionId)
-                ?: PlayingTrackInfo(controller.packageName, sessionId).also {
-                    putTrackInfo(controller.packageName + "|" + sessionId, it)
+            val uniqueId = controller.packageName + "|" + sessionId
+
+            val playingTrackInfo = findTrackInfoByKey(uniqueId)
+                ?: PlayingTrackInfo(controller.packageName, uniqueId).also {
+                    putTrackInfo(uniqueId, it)
                 }
 
             val cb = ControllerCallback(playingTrackInfo, controller.sessionToken)
@@ -134,8 +133,7 @@ class SessListener(
 
             controllersMap[controller.sessionToken] = controller to cb
         }
-//            }
-//        }
+
         // Now remove old sessions that are no longer active.
 //        removeSessions(tokens)
     }
@@ -143,13 +141,12 @@ class SessListener(
     @Synchronized
     override fun removeSessions(
         tokensToKeep: Set<*>,
-        appIdsToKeep: Set<String>?,
     ) {
         val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
             val (controller, callback) = pair
-            if (token !in tokensToKeep || appIdsToKeep?.contains(pair.first.packageName) == false) {
+            if (token !in tokensToKeep) {
                 callback.pause()
                 controller.unregisterCallback(callback)
                 it.remove()
@@ -159,9 +156,6 @@ class SessListener(
 
     override fun isMediaPlaying() =
         platformControllers?.any { it.isMediaPlaying() } == true
-
-    fun findControllersByAppId(appId: String) =
-        controllersMap.values.filter { it.first.packageName == appId }.map { it.first }
 
     private fun findCallbackByHash(hash: Int) =
         controllersMap.values.firstOrNull { it.second.trackInfo.hash == hash }?.second
@@ -247,7 +241,7 @@ class SessListener(
         ) && !metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
 
 
-    override fun hasOtherPlayingControllers(appId: String, sessionId: String): Boolean {
+    override fun hasOtherPlayingControllers(appId: String): Boolean {
         return controllersMap.values.count { (controller, cb) ->
             controller.packageName == appId && controller.isMediaPlaying()
 //                        && !cb.trackInfo.hasBlockedTag
@@ -280,11 +274,7 @@ class SessListener(
 
         @Synchronized
         override fun onPlaybackStateChanged(state: PlaybackState?) {
-
             state ?: return
-
-            val playingState = state.state
-            val pos = state.position // can be -1
 
             val options = TransformMetadataOptions(
                 scrobbleSpotifyRemote = scrobbleSpotifyRemote.value

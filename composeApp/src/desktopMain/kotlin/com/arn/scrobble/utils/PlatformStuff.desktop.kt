@@ -18,6 +18,8 @@ import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.utils.DesktopStuff.Os
+import com.arn.scrobble.utils.DesktopStuff.os
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -151,7 +153,27 @@ actual object PlatformStuff {
 
     }
 
-    actual fun loadApplicationLabel(appId: String): String = appId
+    actual suspend fun loadApplicationLabel(appId: String): String =
+        mainPrefs.data.map { it.seenApps }
+            .first()[normalizeAppId(appId)]
+            .orEmpty()
+
+    actual fun normalizeAppId(appId: String): String {
+        return when {
+            os != Os.Linux ->
+                appId
+
+            // KDE Connect
+            appId.startsWith("org.mpris.MediaPlayer2.kdeconnect") ->
+                "org.mpris.MediaPlayer2.kdeconnect"
+
+            // Chromium
+            appId.split('.').last().startsWith("instance") ->
+                appId.substringBeforeLast('.')
+
+            else -> appId
+        }
+    }
 
     actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
         val maybeCookies = withTimeoutOrNull(1_000) {

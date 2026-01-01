@@ -6,7 +6,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +34,7 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PlatformStuff
@@ -136,67 +136,52 @@ fun PrefsScreen(
     val mainPrefs = remember { PlatformStuff.mainPrefs }
     val nlsEnabled = remember { PlatformStuff.isNotificationListenerEnabled() }
 
-    // visible prefs
-    val mainPrefsData by mainPrefs.data.collectAsStateWithInitialValue { it }
-
-    val scrobblerEnabled by
-    remember { derivedStateOf { mainPrefsData.scrobblerEnabled } }
-    val allowedPackages by
-    remember { derivedStateOf { mainPrefsData.allowedPackages } }
-    val seenApps by
-    remember { derivedStateOf { mainPrefsData.seenApps } }
-    val scrobbleSpotifyRemoteP by
-    remember { derivedStateOf { mainPrefsData.scrobbleSpotifyRemoteP } }
-    val autoDetectApps by
-    remember { derivedStateOf { mainPrefsData.autoDetectAppsP } }
-    val delayPercent by remember { derivedStateOf { mainPrefsData.delayPercentP } }
-    val delaySecs by remember { derivedStateOf { mainPrefsData.delaySecsP } }
-    val minDurationSecs by remember { derivedStateOf { mainPrefsData.minDurationSecsP } }
-    val showScrobbleSources by
-    remember { derivedStateOf { mainPrefsData.showScrobbleSources } }
-    val searchInSource by remember { derivedStateOf { mainPrefsData.searchInSource } }
-    val searchUrlTemplate by remember { derivedStateOf { mainPrefsData.searchUrlTemplate } }
-    val linkHeartButtonToRating by
-    remember { derivedStateOf { mainPrefsData.linkHeartButtonToRating } }
-    val firstDayOfWeek by remember { derivedStateOf { mainPrefsData.firstDayOfWeek } }
-    val locale by remember { derivedStateOf { mainPrefsData.locale } }
-    val lastfmApiAlways by remember { derivedStateOf { mainPrefsData.lastfmApiAlways } }
-    val fetchAlbum by remember { derivedStateOf { mainPrefsData.fetchAlbum } }
-    val tidalSteelSeries by remember { derivedStateOf { mainPrefsData.tidalSteelSeriesApi } }
+    val scrobblerEnabled by mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
+    val allowedPackages by mainPrefs.data.collectAsStateWithInitialValue { it.allowedPackages }
+    val seenApps by mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
+    val scrobbleSpotifyRemoteP by mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleSpotifyRemoteP }
+    val autoDetectApps by mainPrefs.data.collectAsStateWithInitialValue { it.autoDetectAppsP }
+    val delayPercent by mainPrefs.data.collectAsStateWithInitialValue { it.delayPercentP }
+    val delaySecs by mainPrefs.data.collectAsStateWithInitialValue { it.delaySecsP }
+    val minDurationSecs by mainPrefs.data.collectAsStateWithInitialValue { it.minDurationSecsP }
+    val showScrobbleSources by mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
+    val searchInSource by mainPrefs.data.collectAsStateWithInitialValue { it.searchInSource }
+    val searchUrlTemplate by mainPrefs.data.collectAsStateWithInitialValue { it.searchUrlTemplate }
+    val linkHeartButtonToRating by mainPrefs.data.collectAsStateWithInitialValue { it.linkHeartButtonToRating }
+    val firstDayOfWeek by mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
+    val locale by mainPrefs.data.collectAsStateWithInitialValue { it.locale }
+    val lastfmApiAlways by mainPrefs.data.collectAsStateWithInitialValue { it.lastfmApiAlways }
+    val fetchAlbum by mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
+    val tidalSteelSeries by mainPrefs.data.collectAsStateWithInitialValue { it.tidalSteelSeriesApi }
     val spotifyArtistSearchApproximate by
-    remember { derivedStateOf { mainPrefsData.spotifyArtistSearchApproximate } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.spotifyArtistSearchApproximate }
     val preventDuplicateAmbientScrobbles by
-    remember { derivedStateOf { mainPrefsData.preventDuplicateAmbientScrobbles } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.preventDuplicateAmbientScrobbles }
     val submitNowPlaying by
-    remember { derivedStateOf { mainPrefsData.submitNowPlaying } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.submitNowPlaying }
     val trayIconTheme by
-    remember { derivedStateOf { mainPrefsData.trayIconTheme } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.trayIconTheme }
     val notiPersistent by
-    remember { derivedStateOf { mainPrefsData.notiPersistent } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.notiPersistent }
     val checkForUpdates by
-    remember { derivedStateOf { mainPrefsData.autoUpdates } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.autoUpdates }
     val crashReporterEnabled by
-    remember { derivedStateOf { mainPrefsData.crashReporterEnabled } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.crashReporterEnabled }
     val useSpotify by
-    remember { derivedStateOf { mainPrefsData.spotifyApi } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.spotifyApi }
     val spotifyCountryP by
-    remember { derivedStateOf { mainPrefsData.spotifyCountryP } }
-    val itunesCountryP by
-    remember { derivedStateOf { mainPrefsData.itunesCountryP } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.spotifyCountryP }
     val deezerApi by
-    remember { derivedStateOf { mainPrefsData.deezerApi } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.deezerApi }
     val extractFirstArtistPackages by
-    remember { derivedStateOf { mainPrefsData.extractFirstArtistPackages } }
-    val demoMode by remember { derivedStateOf { mainPrefsData.demoModeP } }
+    mainPrefs.data.collectAsStateWithInitialValue { it.extractFirstArtistPackages }
+    val demoMode by mainPrefs.data.collectAsStateWithInitialValue { it.demoModeP }
     var isAddedToStartup by remember { mutableStateOf(false) }
-    val scrobblableLabels by remember {
-        derivedStateOf {
-            mainPrefsData.scrobbleAccounts.associate { it.type to it.user.name }
-        }
-    }
-    val updateProgress by UpdaterWork.getProgress()
-        .filter { it.state == CommonWorkState.RUNNING }
-        .collectAsStateWithLifecycle(null)
+    val scrobblableLabels by
+    mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.associate { it.type to it.user.name } }
+    val updateProgress by remember {
+        UpdaterWork.getProgress().filter { it.state == CommonWorkState.RUNNING }
+    }.collectAsStateWithLifecycle(null)
 
     val numSimpleEdits by if (Stuff.isInDemoMode) {
         remember { mutableIntStateOf(1000) }
@@ -214,6 +199,8 @@ fun PrefsScreen(
         PanoDb.db.getBlockedMetadataDao().count().collectAsStateWithLifecycle(0)
     }
     val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
+
+    val maybeActivity = getActivityOrNull()
 
     val scope = rememberCoroutineScope()
 
@@ -569,7 +556,7 @@ fun PrefsScreen(
                 toLabel = { localesMap[it] ?: autoString },
                 copyToSave = {
                     val l = it.takeIf { it != "auto" }
-                    setAppLocale(lang = l, force = true)
+                    setAppLocale(lang = l, maybeActivity)
                     copy(locale = l)
                 }
             )

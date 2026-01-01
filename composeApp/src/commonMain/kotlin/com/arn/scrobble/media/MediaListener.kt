@@ -90,13 +90,13 @@ abstract class MediaListener(
 
     abstract fun removeSessions(
         tokensToKeep: Set<*>,
-        appIdsToKeep: Set<String>? = null,
     )
 
-    abstract fun hasOtherPlayingControllers(appId: String, sessionId: String): Boolean
+    abstract fun hasOtherPlayingControllers(appId: String): Boolean
 
-    protected fun shouldScrobble(appId: String): Boolean {
-        val should = scrobblerEnabled.value && (appId in allowedPackages.value)
+    fun shouldScrobble(uniqueAppId: String): Boolean {
+        val should = scrobblerEnabled.value &&
+                (PlatformStuff.normalizeAppId(uniqueAppId) in allowedPackages.value)
         return should
     }
 
@@ -109,10 +109,10 @@ abstract class MediaListener(
         var isMuted = false
 
         private fun scrobble() {
-            if (hasOtherPlayingControllers(trackInfo.appId, trackInfo.sessionId) &&
+            if (hasOtherPlayingControllers(trackInfo.appId) &&
                 trackInfo.hasBlockedTag
             ) {
-                Logger.d { "multiple scrobblable controllers for ${trackInfo.appId}, ignoring ${trackInfo.sessionId}" }
+                Logger.d { "multiple scrobblable controllers for ${trackInfo.appId}, ignoring ${trackInfo.uniqueId}" }
                 pause()
                 return
             }
@@ -159,7 +159,7 @@ abstract class MediaListener(
             val onlyDurationUpdated = sameAsOld && metadata.duration != trackInfo.durationMillis
 
             if (BuildKonfig.DEBUG || (!sameAsOld || onlyDurationUpdated))
-                Logger.i { "${metadata.copy(appId = "")} $lastPlaybackState ${hashCode().toHexString()}" }
+                Logger.i { "$metadata $lastPlaybackState ${hashCode().toHexString()}" }
 
             if (!sameAsOld || onlyDurationUpdated) {
                 trackInfo.putOriginals(
@@ -192,7 +192,7 @@ abstract class MediaListener(
         private fun ignoreScrobble() {
             // scrobbling may have already started from onMetadataChanged
             scrobbleQueue.remove(lastScrobbleHash)
-            PanoNotifications.removeNotificationByTag(trackInfo.appId)
+            PanoNotifications.removeNotificationByKey(trackInfo.uniqueId)
             trackInfo.cancelled()
             // do not scrobble again
             lastPlaybackState = CommonPlaybackState.None
@@ -203,7 +203,7 @@ abstract class MediaListener(
             ignoreScrobble: Boolean,
         ) {
             if (BuildKonfig.DEBUG || (lastPlaybackState != playbackInfo.state))
-                Logger.i { "${playbackInfo.copy(appId = "")} lastPlaybackState: $lastPlaybackState ${hashCode().toHexString()}" }
+                Logger.i { "$playbackInfo lastPlaybackState: $lastPlaybackState ${hashCode().toHexString()}" }
 
             if (ignoreScrobble) {
                 ignoreScrobble()
@@ -287,8 +287,8 @@ abstract class MediaListener(
             }
 
             scrobbleQueue.remove(lastScrobbleHash)
-            if (!hasOtherPlayingControllers(trackInfo.appId, trackInfo.sessionId))
-                PanoNotifications.removeNotificationByTag(trackInfo.appId)
+            if (!hasOtherPlayingControllers(trackInfo.appId))
+                PanoNotifications.removeNotificationByKey(trackInfo.uniqueId)
             if (isMuted)
                 unmute(clearMutedHash = false)
         }

@@ -12,12 +12,11 @@ import io.ktor.http.encodeURLPathPart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -51,13 +50,6 @@ object DiscordRpc {
                 transform = { it.name })
             .toRegex()
     }
-    private val seenApps =
-        PlatformStuff.mainPrefs.data.mapLatest { it.seenApps }
-            .stateIn(
-                GlobalScope,
-                SharingStarted.Eagerly,
-                Stuff.mainPrefsInitialValue.seenApps
-            )
 
     private val discordActivity = MutableStateFlow<DiscordActivity>(DiscordActivity.Stop)
 
@@ -149,21 +141,21 @@ object DiscordRpc {
             }.launchIn(GlobalScope)
 
         combine(
-            PanoNotifications.playingTrackTrayInfo.mapLatest { it.entries.firstOrNull()?.toPair() },
+            PanoNotifications.playingTrackTrayInfo.mapLatest { it.values.firstOrNull() },
             PlatformStuff.mainPrefs.data.mapLatest { it.discordRpc }
-        ) { appIdToEvent, settings ->
+        ) { event, settings ->
 
             if (!settings.enabled) {
                 discordActivity.value = DiscordActivity.Stop
-            } else if (appIdToEvent == null) {
+            } else if (event == null) {
                 discordActivityKeepTill.value =
                     System.currentTimeMillis() + settings.showPausedForSecs * 1000L
             } else {
                 discordActivityKeepTill.value = null
-                val (appId, event) = appIdToEvent
 
                 if (event is PlayingTrackNotifyEvent.TrackPlaying && event.preprocessed)
-                    discordActivity.value = transform(appId, event, settings)
+                    discordActivity.value =
+                        transform(event.scrobbleData.appId.orEmpty(), event, settings)
             }
         }.launchIn(GlobalScope)
     }
@@ -236,7 +228,7 @@ object DiscordRpc {
                     trackPlaying.scrobbleData.appId?.let {
                         AppItem(
                             it,
-                            seenApps.value[it].orEmpty()
+                            runBlocking { PlatformStuff.loadApplicationLabel(it) }
                         ).friendlyLabel
                     }.orEmpty()
                 }

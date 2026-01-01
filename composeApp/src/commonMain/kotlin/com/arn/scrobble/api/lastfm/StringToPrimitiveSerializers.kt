@@ -1,7 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -18,12 +17,15 @@ class StringOrIntSerializer : KSerializer<Int> {
     }
 
     override fun deserialize(decoder: Decoder): Int {
-        decoder as? JsonDecoder ?: throw SerializationException("Expected JsonDecoder")
-
-        return when (val element = decoder.decodeJsonElement()) {
-            is JsonPrimitive -> element.contentOrNull?.toIntOrNull() ?: 0
-            else -> 0
+        if (decoder is JsonDecoder) {
+            return when (val element = decoder.decodeJsonElement()) {
+                is JsonPrimitive -> element.contentOrNull?.toIntOrNull() ?: 0
+                else -> 0
+            }
         }
+
+        // Non-JSON
+        return decoder.decodeInt()
     }
 }
 
@@ -35,12 +37,15 @@ class StringOrLongSerializer : KSerializer<Long> {
     }
 
     override fun deserialize(decoder: Decoder): Long {
-        decoder as? JsonDecoder ?: throw SerializationException("Expected JsonDecoder")
-
-        return when (val element = decoder.decodeJsonElement()) {
-            is JsonPrimitive -> element.contentOrNull?.toLongOrNull() ?: 0L
-            else -> 0L
+        if (decoder is JsonDecoder) {
+            return when (val element = decoder.decodeJsonElement()) {
+                is JsonPrimitive -> element.contentOrNull?.toLongOrNull() ?: 0L
+                else -> 0L
+            }
         }
+
+        // Non-JSON
+        return decoder.decodeLong()
     }
 }
 
@@ -52,12 +57,15 @@ class StringSecsToMsSerializer : KSerializer<Long> {
     }
 
     override fun deserialize(decoder: Decoder): Long {
-        decoder as? JsonDecoder ?: throw SerializationException("Expected JsonDecoder")
-
-        return when (val element = decoder.decodeJsonElement()) {
-            is JsonPrimitive -> element.contentOrNull?.toLongOrNull()?.times(1000) ?: 0
-            else -> 0
+        if (decoder is JsonDecoder) {
+            return when (val element = decoder.decodeJsonElement()) {
+                is JsonPrimitive -> element.contentOrNull?.toLongOrNull()?.times(1000) ?: 0
+                else -> 0
+            }
         }
+
+        // Non-JSON
+        return decoder.decodeLong() * 1000
     }
 }
 
@@ -69,16 +77,19 @@ class StringOrBoolSerializer : KSerializer<Boolean> {
     }
 
     override fun deserialize(decoder: Decoder): Boolean {
-        decoder as? JsonDecoder ?: throw SerializationException("Expected JsonDecoder")
+        if (decoder is JsonDecoder) {
+            return when (val element = decoder.decodeJsonElement()) {
+                is JsonPrimitive -> {
+                    val str = element.contentOrNull
+                    str == "1" || str == "true"
+                }
 
-        return when (val element = decoder.decodeJsonElement()) {
-            is JsonPrimitive -> {
-                val str = element.contentOrNull
-                str == "1" || str == "true"
+                else -> false
             }
-
-            else -> false
         }
+
+        // Non-JSON
+        return decoder.decodeBoolean()
     }
 }
 
@@ -90,11 +101,16 @@ class StringOrFloatSerializer : KSerializer<Float> {
     }
 
     override fun deserialize(decoder: Decoder): Float {
-        decoder as? JsonDecoder ?: throw SerializationException("Expected JsonDecoder")
-
-        return when (val element = decoder.decodeJsonElement()) {
-            is JsonPrimitive -> element.contentOrNull?.toFloatOrNull() ?: 0f
-            else -> 0f
+        if (decoder is JsonDecoder) {
+            val element = decoder.decodeJsonElement()
+            if (element is JsonPrimitive) {
+                // contentOrNull works for both numeric primitives and quoted strings.
+                return element.contentOrNull?.toFloatOrNull() ?: 0f
+            }
+            return 0f
         }
+
+        // Non-JSON
+        return decoder.decodeFloat()
     }
 }

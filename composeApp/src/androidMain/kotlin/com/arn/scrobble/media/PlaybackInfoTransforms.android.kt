@@ -23,7 +23,6 @@ actual fun transformPlaybackState(
     val position = playbackInfo.position
 
     val commonPlaybackInfo = PlaybackInfo(
-        appId = trackInfo.appId,
         state = commonPlaybackState,
         position = position,
         canSkip = playbackInfo.actions and PlaybackState.ACTION_SKIP_TO_NEXT != 0L
@@ -41,7 +40,7 @@ actual fun transformPlaybackState(
         ignoreScrobble = true
     }
 
-    // do not scrobble youtube music ads (they are not seekable)
+    // do not scrobble YouTube music ads (they are not seekable)
     // no longer works with latest YTM versions
     if (trackInfo.appId in arrayOf(
             Stuff.PACKAGE_YOUTUBE_MUSIC,

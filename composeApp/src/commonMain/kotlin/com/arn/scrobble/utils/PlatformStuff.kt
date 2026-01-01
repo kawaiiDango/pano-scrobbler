@@ -44,7 +44,9 @@ expect object PlatformStuff {
 
     fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb>
 
-    fun loadApplicationLabel(appId: String): String
+    suspend fun loadApplicationLabel(appId: String): String
+
+    fun normalizeAppId(appId: String): String
 
     suspend fun getWebviewCookies(uri: String): Map<String, String>
 

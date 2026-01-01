@@ -42,42 +42,61 @@ object ApiErrorDeserializer : KSerializer<ApiErrorResponse> {
 //    val variant5 =  "{\"error\":{\"message\":\"Stuff\",\"status\": 404}}" // Spotify
 
     override fun deserialize(decoder: Decoder): ApiErrorResponse {
-        val input = decoder as? JsonDecoder
-            ?: error("Can be deserialized only by JSON")
-        val apiErrorResponse = when (val jsonElement = input.decodeJsonElement()) {
-            is JsonObject -> {
-                when (val errorObject = jsonElement["error"]) {
-                    is JsonObject -> {
-                        val code =
-                            (errorObject["code"] ?: errorObject["status"])?.jsonPrimitive?.int ?: 0
-                        val message =
-                            (errorObject["message"] ?: errorObject["#text"])?.jsonPrimitive?.content
-                                ?: ""
+        val apiErrorResponse: ApiErrorResponse = if (decoder is JsonDecoder) {
+            when (val jsonElement = decoder.decodeJsonElement()) {
+                is JsonObject -> {
+                    when (val errorObject = jsonElement["error"]) {
+                        is JsonObject -> {
+                            val code =
+                                (errorObject["code"] ?: errorObject["status"])?.jsonPrimitive?.int
+                                    ?: 0
+                            val message =
+                                (errorObject["message"]
+                                    ?: errorObject["#text"])?.jsonPrimitive?.content
+                                    ?: ""
 
-                        ApiErrorResponse(
-                            code = code,
-                            message = message
-                        )
-                    }
-
-                    is JsonPrimitive -> {
-                        if (errorObject.jsonPrimitive.isString)
                             ApiErrorResponse(
-                                code = jsonElement["code"]?.jsonPrimitive?.int ?: 0,
-                                message = errorObject.jsonPrimitive.content
+                                code = code,
+                                message = message
                             )
-                        else
-                            ApiErrorResponse(
-                                code = errorObject.jsonPrimitive.int,
-                                message = jsonElement["message"]?.jsonPrimitive?.content ?: ""
-                            )
-                    }
+                        }
 
-                    else -> throw SerializationException("Unknown JSON structure")
+                        is JsonPrimitive -> {
+                            if (errorObject.jsonPrimitive.isString)
+                                ApiErrorResponse(
+                                    code = jsonElement["code"]?.jsonPrimitive?.int ?: 0,
+                                    message = errorObject.jsonPrimitive.content
+                                )
+                            else
+                                ApiErrorResponse(
+                                    code = errorObject.jsonPrimitive.int,
+                                    message = jsonElement["message"]?.jsonPrimitive?.content ?: ""
+                                )
+                        }
+
+                        else -> throw SerializationException("Unknown JSON structure")
+                    }
+                }
+
+                else -> throw SerializationException("Unknown JSON structure")
+            }
+        } else {
+            // Non-JSON: try normal decoding
+            val composite = decoder.beginStructure(descriptor)
+            var code = 0
+            var message = ""
+            loop@ while (true) {
+                when (val index = composite.decodeElementIndex(descriptor)) {
+                    0 -> code = composite.decodeIntElement(descriptor, 0)
+                    1 -> message = composite.decodeStringElement(descriptor, 1)
+                    else -> break@loop
                 }
             }
 
-            else -> throw SerializationException("Unknown JSON structure")
+            ApiErrorResponse(
+                code = code,
+                message = message
+            )
         }
 
         if (apiErrorResponse.code == 17) // lastfm error

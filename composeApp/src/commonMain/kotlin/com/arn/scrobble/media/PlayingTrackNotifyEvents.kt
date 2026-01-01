@@ -28,18 +28,21 @@ data class ScrobbleError(
 @Serializable
 sealed interface PlayingTrackNotifyEvent {
     interface PlayingTrackState {
+        val notiKey: String
         val scrobbleData: ScrobbleData
     }
 
     @Serializable
     data class Error(
         val hash: Int,
+        override val notiKey: String,
         override val scrobbleData: ScrobbleData,
         val scrobbleError: ScrobbleError,
     ) : PlayingTrackNotifyEvent, PlayingTrackState
 
     @Serializable
     data class TrackPlaying(
+        override val notiKey: String,
         override val scrobbleData: ScrobbleData,
         val origScrobbleData: ScrobbleData,
         val hash: Int,
@@ -147,11 +150,12 @@ suspend fun listenForPlayingTrackEvents(
 
                 if (event.showUnscrobbledNotification && event.hash != null) {
                     PanoNotifications.notifyUnscrobbled(
+                        trackInfo.uniqueId,
                         trackInfo.toScrobbleData(true),
                         event.hash
                     )
                 } else {
-                    PanoNotifications.removeNotificationByTag(trackInfo.appId)
+                    PanoNotifications.removeNotificationByKey(trackInfo.uniqueId)
                 }
             }
 
@@ -205,7 +209,7 @@ suspend fun listenForPlayingTrackEvents(
                     it.allowOrBlockAppCopied(event.appId, event.allowed)
                 }
 
-                PanoNotifications.removeNotificationByTag(Stuff.CHANNEL_NOTI_NEW_APP)
+                PanoNotifications.removeNotificationByKey(Stuff.CHANNEL_NOTI_NEW_APP)
             }
         }
     }

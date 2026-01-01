@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlin.time.Duration.Companion.days
 
 private const val PUBLIC_KEY_BASE64 =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
@@ -33,7 +34,7 @@ class BillingRepository(
     )
 
     override val needsActivationCode = true
-    private val CHECK_EVERY = 1000L * 60 * 60 * 24 // 1 day
+    private val CHECK_EVERY_DAYS = 7
     private val LICENSE_CHECKING_SERVER = "https://license-sever.kawaiidango.workers.dev"
 
     override fun initBillingClient() {
@@ -63,7 +64,9 @@ class BillingRepository(
 
     override suspend fun checkAndStoreLicense(receipt: String) {
         if (verifyPurchase(receipt, null)) {
-            if (_licenseState.value != LicenseState.VALID || System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY) {
+            if (_licenseState.value != LicenseState.VALID ||
+                System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY_DAYS.days.inWholeMilliseconds
+            ) {
                 LicenseChecker.checkLicenseOnline(
                     client = clientData.httpClient,
                     url = LICENSE_CHECKING_SERVER + "/license/verify",

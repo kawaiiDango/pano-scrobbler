@@ -100,7 +100,6 @@ import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.awt.event.WindowEvent
 import java.awt.event.WindowListener
-import java.nio.charset.Charset
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -125,7 +124,7 @@ private fun init() {
         if (BuildKonfig.DEBUG) Severity.Debug else Severity.Info
     )
 
-    setAppLocale(Stuff.mainPrefsInitialValue.locale, force = false)
+    setAppLocale(Stuff.mainPrefsInitialValue.locale, activityContext = null)
 
     PanoNativeComponents.init()
 
@@ -140,7 +139,8 @@ private fun init() {
     VariantStuff.extrasProps = ExtrasProps
 
     DiscordRpc.start()
-//    test()
+
+//    TestStuff.test()
 }
 
 private fun preventMultipleInstances() {
@@ -199,9 +199,6 @@ fun main(args: Array<String>) {
         val trayIconNotPlaying = painterResource(Res.drawable.vd_noti_persistent)
         val trayIconPlaying = painterResource(Res.drawable.vd_noti)
         val trayIconError = painterResource(Res.drawable.vd_noti_err)
-        val appIdToNames by PlatformStuff.mainPrefs.data
-            .map { it.seenApps }
-            .collectAsState(Stuff.mainPrefsInitialValue.seenApps)
         val windowOpenTrigger = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
         val trayState = rememberTrayState()
 
@@ -242,26 +239,33 @@ fun main(args: Array<String>) {
                     else -> trayIconPlaying
                 }
 
-                val tooltip = playingTrackInfo.entries.firstOrNull()
-                    ?.let { (appId, it) ->
-                        val playingState =
+                var tooltipText = BuildKonfig.APP_NAME
+
+                playingTrackInfo.values.firstOrNull()
+                    ?.let {
+                        val appId = it.scrobbleData.appId
+
+                        tooltipText =
                             if ((it as? PlayingTrackNotifyEvent.TrackPlaying)?.nowPlaying == false)
                                 "✔️ "
                             else
                                 ""
 
-                        playingState + it.scrobbleData.track + "\n" +
-                                it.scrobbleData.artist + "\n" +
-                                (AppItem(appId, appIdToNames[appId].orEmpty()).friendlyLabel)
-                    }
-                    ?: BuildKonfig.APP_NAME
+                        tooltipText += it.scrobbleData.track
+                        tooltipText += "\n" + it.scrobbleData.artist
 
+                        if (appId != null)
+                            tooltipText += "\n" + AppItem(
+                                appId,
+                                PlatformStuff.loadApplicationLabel(appId)
+                            ).friendlyLabel
+                    }
 
                 val trayItems = mutableListOf<Pair<String, String>>()
 
                 // tracks
 
-                playingTrackInfo.forEach { (appId, playingTrackState) ->
+                playingTrackInfo.forEach { (notiKey, playingTrackState) ->
                     when (playingTrackState) {
                         is PlayingTrackNotifyEvent.TrackPlaying -> {
                             val scrobbleData = playingTrackState.scrobbleData
@@ -279,35 +283,35 @@ fun main(args: Array<String>) {
                                 else
                                     "🤍 " + getString(Res.string.love)
 
-                            trayItems += PanoTrayUtils.ItemId.TrackName.withSuffix(appId) to
+                            trayItems += PanoTrayUtils.ItemId.TrackName.withSuffix(notiKey) to
                                     playingState + scrobbleData.track
 
-                            trayItems += PanoTrayUtils.ItemId.ArtistName.withSuffix(appId) to
+                            trayItems += PanoTrayUtils.ItemId.ArtistName.withSuffix(notiKey) to
                                     "🎙️ " + scrobbleData.artist
 
                             if (!scrobbleData.album.isNullOrEmpty()) {
-                                trayItems += PanoTrayUtils.ItemId.AlbumName.withSuffix(appId) to
+                                trayItems += PanoTrayUtils.ItemId.AlbumName.withSuffix(notiKey) to
                                         "💿 " + scrobbleData.album
                             }
 
                             trayItems += PanoTrayUtils.ItemId.Separator.name to ""
 
-                            trayItems += PanoTrayUtils.ItemId.Love.withSuffix(appId) to
+                            trayItems += PanoTrayUtils.ItemId.Love.withSuffix(notiKey) to
                                     lovedString
-                            trayItems += PanoTrayUtils.ItemId.Edit.withSuffix(appId) to
+                            trayItems += PanoTrayUtils.ItemId.Edit.withSuffix(notiKey) to
                                     "✏️ " +
                                     getString(Res.string.edit)
 
                             if (playingTrackState.nowPlaying) {
-                                trayItems += PanoTrayUtils.ItemId.Cancel.withSuffix(appId) to
+                                trayItems += PanoTrayUtils.ItemId.Cancel.withSuffix(notiKey) to
                                         "❌ " +
                                         getString(Res.string.cancel)
                             }
 
-                            trayItems += PanoTrayUtils.ItemId.Block.withSuffix(appId) to
+                            trayItems += PanoTrayUtils.ItemId.Block.withSuffix(notiKey) to
                                     "⛔ " +
                                     getString(Res.string.block)
-                            trayItems += PanoTrayUtils.ItemId.Copy.withSuffix(appId) to
+                            trayItems += PanoTrayUtils.ItemId.Copy.withSuffix(notiKey) to
                                     "📋 " +
                                     getString(Res.string.copy)
                         }
@@ -315,7 +319,7 @@ fun main(args: Array<String>) {
                         is PlayingTrackNotifyEvent.Error -> {
                             val scrobbleError = playingTrackState.scrobbleError
 
-                            trayItems += PanoTrayUtils.ItemId.Error.withSuffix(appId) to
+                            trayItems += PanoTrayUtils.ItemId.Error.withSuffix(notiKey) to
                                     scrobbleError.title
                         }
                     }
@@ -323,18 +327,12 @@ fun main(args: Array<String>) {
                     trayItems += PanoTrayUtils.ItemId.Separator.name to ""
                 }
 
-                if (!windowShown)
-                    trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
-                discordRpcSuccessful?.let { discordRpcSuccessful ->
-                    val rpcStatus = if (discordRpcSuccessful)
-                        "✔️ "
-                    else
-                        "❌ "
-
-                    trayItems += PanoTrayUtils.ItemId.DiscordRpcDisabled.name to rpcStatus + getString(
+                if (discordRpcSuccessful == true) {
+                    trayItems += PanoTrayUtils.ItemId.DiscordRpcDisabled.name to "✔️ " + getString(
                         Res.string.discord_rich_presence
                     )
                 }
+
                 updateAction?.let {
                     trayItems += PanoTrayUtils.ItemId.Update.name to "🔄️ " + getString(
                         Res.string.update_downloaded
@@ -342,11 +340,14 @@ fun main(args: Array<String>) {
                 }
 
                 // always show these
+                if (!windowShown)
+                    trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
+
                 trayItems += PanoTrayUtils.ItemId.Settings.name to getString(Res.string.settings)
 
                 trayItems += PanoTrayUtils.ItemId.Exit.name to getString(Res.string.quit)
 
-                Triple(tooltip, trayIconPainter, trayItems)
+                Triple(tooltipText, trayIconPainter, trayItems)
             }
                 .distinctUntilChanged()
                 .collectLatest { (tooltip, trayIconPainter, trayItems) ->
@@ -764,25 +765,4 @@ private fun TrayWindow(
             }
         }
     }
-}
-
-
-private fun test() {
-    // test stuff
-    val properties = System.getProperties()
-    Logger.i("\n\nSystem properties:")
-    properties.forEach { (key, value) -> Logger.i("$key: $value") }
-
-    // supported charsets
-
-    val charsets = Charset.availableCharsets()
-    Logger.i("\n\nAvailable charsets:")
-    charsets.forEach { (name, charset) ->
-        Logger.i("$name: ${charset.displayName()}")
-    }
-
-//    GlobalScope.launch {
-//        delay(5000)
-//        PanoNotifications.notifyAppDetected("com.arn.scrobble", "Scrobble")
-//    }
 }

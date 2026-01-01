@@ -26,13 +26,11 @@ actual object PanoNotifications {
         MutableStateFlow<Map<String, PlayingTrackNotifyEvent.PlayingTrackState>>(emptyMap())
     val playingTrackTrayInfo = _playingTrackTrayInfo.asStateFlow()
     actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
-        if (event.scrobbleData.appId != null)
-            _playingTrackTrayInfo.value += event.scrobbleData.appId to event
+        _playingTrackTrayInfo.value += event.notiKey to event
     }
 
     actual suspend fun notifyError(event: PlayingTrackNotifyEvent.Error) {
-        if (event.scrobbleData.appId != null)
-            _playingTrackTrayInfo.value += event.scrobbleData.appId to event
+        _playingTrackTrayInfo.value += event.notiKey to event
     }
 
     actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
@@ -42,9 +40,8 @@ actual object PanoNotifications {
         )
     }
 
-    actual suspend fun notifyUnscrobbled(scrobbleData: ScrobbleData, hash: Int) {
-        if (scrobbleData.appId != null)
-            removeNotificationByTag(scrobbleData.appId)
+    actual suspend fun notifyUnscrobbled(notiKey: String, scrobbleData: ScrobbleData, hash: Int) {
+        removeNotificationByKey(notiKey)
     }
 
     actual suspend fun notifyDigest(timePeriod: TimePeriod, resultsList: List<Pair<Int, String>>) {
@@ -92,7 +89,7 @@ actual object PanoNotifications {
     }
 
 
-    actual fun removeNotificationByTag(tag: String) {
-        _playingTrackTrayInfo.value -= tag
+    actual fun removeNotificationByKey(key: String) {
+        _playingTrackTrayInfo.value -= key
     }
 }

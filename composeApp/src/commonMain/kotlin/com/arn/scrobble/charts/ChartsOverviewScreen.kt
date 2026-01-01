@@ -167,14 +167,14 @@ fun ChartsOverviewScreen(
     val minAdditionalScrollOffset = with(density) { 96.dp.toPx() }
 
     var tagCloudOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
-    val tagCloudVisible by rememberSaveable {
+    val tagCloudVisible by remember {
         derivedStateOf {
             scrollState.value + scrollState.viewportSize >=
                     tagCloudOffsetY + minAdditionalScrollOffset
         }
     }
     var listeningActivityOffsetY by rememberSaveable { mutableFloatStateOf(0f) }
-    val listeningActivityVisible by rememberSaveable {
+    val listeningActivityVisible by remember {
         derivedStateOf {
             scrollState.value + scrollState.viewportSize >=
                     listeningActivityOffsetY + minAdditionalScrollOffset
@@ -566,7 +566,7 @@ private fun ListeningActivityContent(
 
     val tintColor = MaterialTheme.colorScheme.secondary
 
-    val scrollstate = rememberScrollState()
+    val scrollState = rememberScrollState()
     var boxWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -595,7 +595,7 @@ private fun ListeningActivityContent(
                         it.width.toDp()
                     }
                 }
-                .horizontalScroll(scrollstate)
+                .horizontalScroll(scrollState)
                 .clip(MaterialTheme.shapes.medium)
                 .indication(
                     interactionSource = interactionSource,
@@ -665,7 +665,7 @@ private fun ListeningActivityContent(
                 }
             }
         }
-        OptionalHorizontalScrollbar(scrollstate)
+        OptionalHorizontalScrollbar(scrollState)
     }
 }
 

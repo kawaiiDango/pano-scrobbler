@@ -256,7 +256,7 @@ actual object PlatformStuff {
             .setAutoCloseTimeout(7, TimeUnit.MINUTES)
     }
 
-    actual fun loadApplicationLabel(appId: String): String {
+    actual suspend fun loadApplicationLabel(appId: String): String {
         return try {
             applicationContext.packageManager.getApplicationLabel(
                 applicationContext.packageManager.getApplicationInfo(appId, 0)
@@ -265,6 +265,8 @@ actual object PlatformStuff {
             appId
         }
     }
+
+    actual fun normalizeAppId(appId: String) = appId
 
     actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
         CookieManager.getInstance().getCookie(uri)?.let {

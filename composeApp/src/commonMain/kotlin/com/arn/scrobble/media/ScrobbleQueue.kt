@@ -33,10 +33,8 @@ import kotlin.math.min
 class ScrobbleQueue(
     private val scope: CoroutineScope,
 ) {
-    class NetworkRequestNeededException(
-        message: String = "Network request needed",
-        cause: Throwable? = null
-    ) : IllegalStateException(message, cause)
+    class NetworkRequestNeededException(cause: Throwable? = null) :
+        IllegalStateException("Network request needed", cause)
 
     // delays scrobbling this hash until it becomes null again
     private var lockedHash: Int? = null
@@ -142,9 +140,10 @@ class ScrobbleQueue(
 
                 if (npResults != null && npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
-                        npResults,
-                        sd,
-                        hash
+                        notiKey = trackInfo.uniqueId,
+                        scrobbleResults = npResults,
+                        scrobbleData = sd,
+                        hash = hash
                     )
                 }
 
@@ -266,6 +265,7 @@ class ScrobbleQueue(
                 preprocessResult.titleParseFailed -> {
                     notifyPlayingTrackEvent(
                         PlayingTrackNotifyEvent.Error(
+                            notiKey = trackInfo.uniqueId,
                             hash = hash,
                             scrobbleError = ScrobbleError(
                                 getString(Res.string.parse_error),
@@ -307,6 +307,7 @@ class ScrobbleQueue(
 
 
     private suspend fun notifyScrobbleError(
+        notiKey: String,
         scrobbleResults: Map<Scrobblable, Result<ScrobbleIgnored>>,
         scrobbleData: ScrobbleData,
         hash: Int
@@ -332,6 +333,7 @@ class ScrobbleQueue(
             if (ignored && scrobbleData.appId != null) {
                 notifyPlayingTrackEvent(
                     PlayingTrackNotifyEvent.Error(
+                        notiKey = notiKey,
                         hash = hash,
                         scrobbleData = scrobbleData,
                         scrobbleError = ScrobbleError(

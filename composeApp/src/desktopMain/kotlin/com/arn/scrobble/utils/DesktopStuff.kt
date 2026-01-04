@@ -1,11 +1,15 @@
 package com.arn.scrobble.utils
 
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.work.DesktopWorkManager
 import java.io.File
+import java.net.URI
+import java.net.URISyntaxException
+
 
 object DesktopStuff {
     enum class Os {
@@ -218,7 +222,8 @@ object DesktopStuff {
         }
     }
 
-    fun setSystemPropertiesForGraalvm() {
+    fun setSystemProperties() {
+        // for graalvm native image
         var prop = "java.home"
         if (System.getProperty(prop) == null) {
             System.setProperty(prop, execDirPath)
@@ -232,6 +237,23 @@ object DesktopStuff {
                 System.setProperty(prop, "true")
         }
 
+        // proxies
+        prop = "java.net.useSystemProxies"
+        if (System.getProperty(prop) == null)
+            System.setProperty(prop, "true")
+
+        // http_proxy and https_proxy are picked up by java.net.useSystemProxies on Linux
+        val socksProxy = System.getenv("SOCKS_PROXY") ?: System.getenv("socks_proxy")
+
+        try {
+            if (!socksProxy.isNullOrEmpty()) {
+                val uri = URI(socksProxy)
+                System.setProperty("socksProxyHost", uri.host)
+                System.setProperty("socksProxyPort", uri.port.toString())
+            }
+        } catch (e: URISyntaxException) {
+            Logger.e(e) { "Error while setting up socks proxy from environment" }
+        }
     }
 
     fun getLibraryPath(name: String): String {

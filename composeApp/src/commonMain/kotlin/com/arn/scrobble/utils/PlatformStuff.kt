@@ -59,4 +59,6 @@ expect object PlatformStuff {
     fun getLocalIpAddress(): String?
 
     fun monotonicTimeMs(): Long
+
+    fun getSystemSocksProxy(): Pair<String, Int>?
 }

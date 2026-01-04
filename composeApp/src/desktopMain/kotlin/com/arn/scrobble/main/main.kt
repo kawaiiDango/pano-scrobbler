@@ -156,7 +156,7 @@ private fun preventMultipleInstances() {
 
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
-    DesktopStuff.setSystemPropertiesForGraalvm()
+    DesktopStuff.setSystemProperties()
     PanoNativeComponents.load()
 
     if (cmdlineArgs.automationCommand != null) {

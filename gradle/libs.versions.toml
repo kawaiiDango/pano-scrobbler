@@ -87,7 +87,7 @@ billing = { module = "com.android.billingclient:billing", version.ref = "billing
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "work-runtime" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 core = { module = "androidx.core:core", version.ref = "core" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 crashlytics = { module = "com.google.firebase:firebase-crashlytics" }

@@ -332,4 +332,6 @@ actual object PlatformStuff {
     }
 
     actual fun monotonicTimeMs() = SystemClock.elapsedRealtime()
+
+    actual fun getSystemSocksProxy(): Pair<String, Int>? = null
 }

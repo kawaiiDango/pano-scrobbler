@@ -36,7 +36,10 @@ import java.io.OutputStream
 import java.net.CookieHandler
 import java.net.CookieManager
 import java.net.Inet4Address
+import java.net.InetSocketAddress
 import java.net.NetworkInterface
+import java.net.Proxy
+import java.net.ProxySelector
 import java.net.URI
 
 
@@ -244,4 +247,25 @@ actual object PlatformStuff {
     }
 
     actual fun monotonicTimeMs(): Long = System.nanoTime() / 1_000_000L
+
+    actual fun getSystemSocksProxy(): Pair<String, Int>? {
+        val socksUrl = "socket://www.example.com"
+        val proxySelector = ProxySelector.getDefault()
+        val proxies = proxySelector.select(URI(socksUrl))
+
+        if (proxies.isNotEmpty()) {
+            val firstProxy = proxies[0]
+            if (firstProxy.type() == Proxy.Type.SOCKS &&
+                firstProxy.address() != null
+//                        firstProxy.protocolVersion() == 5
+            ) {
+                val addr = firstProxy?.address()
+                if (addr is InetSocketAddress) {
+                    return addr.hostName to addr.port
+                }
+            }
+        }
+
+        return null
+    }
 }

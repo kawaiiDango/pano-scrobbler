@@ -108,7 +108,7 @@ kotlin {
                 implementation(libs.lifecycle.viewmodel)
                 implementation(libs.lifecycle.runtime)
                 implementation(libs.coil.compose)
-                implementation(libs.coil.network.okhttp)
+                implementation(libs.coil.network.ktor)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.ktor.client.auth)

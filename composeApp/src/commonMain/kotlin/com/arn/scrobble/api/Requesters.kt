@@ -1,5 +1,6 @@
 package com.arn.scrobble.api
 
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.cache.HttpMemoryCache
 import com.arn.scrobble.api.cache.HybridCacheStorage
@@ -15,6 +16,7 @@ import com.arn.scrobble.api.spotify.SpotifyRequester
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpTimeout
@@ -49,17 +51,27 @@ object Requesters {
 
     val lastfmUnauthedRequester by lazy { LastFmUnauthedRequester() }
 
-    val genericKtorClient by lazy {
+    val baseKtorClient by lazy {
         HttpClient(OkHttp) {
 
             engine {
                 dispatcher = Dispatchers.IO
+
+                // fix to tunnel dns through socks5 proxy if set at system level
+                PlatformStuff.getSystemSocksProxy()?.let { (host, port) ->
+                    Logger.i { "SOCKS proxy detected at $host:$port, applying fix" }
+                    proxy = ProxyBuilder.socks(host, port)
+                }
             }
 
             install(HttpTimeout) {
                 requestTimeoutMillis = 40 * 1000L
             }
+        }
+    }
 
+    val genericKtorClient by lazy {
+        baseKtorClient.config {
             install(ContentNegotiation) {
                 json(Stuff.myJson)
             }

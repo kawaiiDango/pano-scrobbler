@@ -386,7 +386,7 @@ fun ProfileHeaderDropdown(
                                 AccountType.LISTENBRAINZ -> "https://listenbrainz.org/user/${currentUser.name}/reports"
                             }
                             dropDownShown = false
-                            PlatformStuff.openInBrowser(url ?: return@DropdownMenuItem)
+                            PlatformStuff.openInBrowser(url)
                         }
                     )
                 }

@@ -158,25 +158,8 @@ actual object PlatformStuff {
 
     actual suspend fun loadApplicationLabel(appId: String): String =
         mainPrefs.data.map { it.seenApps }
-            .first()[normalizeAppId(appId)]
+            .first()[DesktopStuff.normalizeAppId(appId)]
             .orEmpty()
-
-    actual fun normalizeAppId(appId: String): String {
-        return when {
-            os != Os.Linux ->
-                appId
-
-            // KDE Connect
-            appId.startsWith("org.mpris.MediaPlayer2.kdeconnect") ->
-                "org.mpris.MediaPlayer2.kdeconnect"
-
-            // Chromium
-            appId.split('.').last().startsWith("instance") ->
-                appId.substringBeforeLast('.')
-
-            else -> appId
-        }
-    }
 
     actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
         val maybeCookies = withTimeoutOrNull(1_000) {

@@ -220,7 +220,6 @@ object RegexPresets {
                     appIds = setOf(
                         Stuff.PACKAGE_APPLE_MUSIC,
                         Stuff.PACKAGE_CIDER_LINUX,
-                        Stuff.PACKAGE_CIDER_VARIANT_LINUX,
                         Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE,
                         Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
                             .let { (first, second) -> first + "!" + second.uppercase() },

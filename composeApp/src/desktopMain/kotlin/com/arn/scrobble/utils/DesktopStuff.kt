@@ -269,6 +269,23 @@ object DesktopStuff {
         }
     }
 
+    fun normalizeAppId(appId: String): String {
+        return when {
+            os != Os.Linux ->
+                appId
+
+            // KDE Connect
+            appId.startsWith(Stuff.PACKAGE_KDE_CONNECT_LINUX) ->
+                Stuff.PACKAGE_KDE_CONNECT_LINUX
+
+            // Chromium
+            appId.split('.').last().startsWith("instance") ->
+                appId.substringBeforeLast('.')
+
+            else -> appId
+        }
+    }
+
     fun prepareToExit() {
         PanoNativeComponents.stopListeningMedia()
         DesktopWorkManager.clearAll()

@@ -16,6 +16,7 @@ data class AppItem(
 
             Stuff.PACKAGE_FIREFOX_WIN -> "Mozilla Firefox"
 
+            Stuff.PACKAGE_KDE_CONNECT_LINUX -> "KDE Connect"
 
             else -> label
                 .ifEmpty {

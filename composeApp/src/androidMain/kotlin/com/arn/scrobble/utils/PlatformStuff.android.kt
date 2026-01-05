@@ -266,8 +266,6 @@ actual object PlatformStuff {
         }
     }
 
-    actual fun normalizeAppId(appId: String) = appId
-
     actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
         CookieManager.getInstance().getCookie(uri)?.let {
             val map = mutableMapOf<String, String>()

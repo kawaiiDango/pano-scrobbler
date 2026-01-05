@@ -88,6 +88,11 @@ class SessListener(
         }
     }
 
+    override fun shouldScrobble(rawAppId: String): Boolean {
+        val should = scrobblerEnabled.value && rawAppId in allowedPackages.value
+        return should
+    }
+
     @Synchronized
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         this.platformControllers = controllers

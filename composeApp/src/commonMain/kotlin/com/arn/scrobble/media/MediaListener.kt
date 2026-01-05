@@ -94,11 +94,7 @@ abstract class MediaListener(
 
     abstract fun hasOtherPlayingControllers(appId: String): Boolean
 
-    fun shouldScrobble(uniqueAppId: String): Boolean {
-        val should = scrobblerEnabled.value &&
-                (PlatformStuff.normalizeAppId(uniqueAppId) in allowedPackages.value)
-        return should
-    }
+    abstract fun shouldScrobble(rawAppId: String): Boolean
 
     open inner class SessionTracker(
         val trackInfo: PlayingTrackInfo,

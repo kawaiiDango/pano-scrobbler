@@ -3,6 +3,7 @@ package com.arn.scrobble.media
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.discordrpc.DiscordRpc
+import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -56,12 +57,19 @@ class DesktopMediaListener(
         }
     }
 
+    override fun shouldScrobble(rawAppId: String): Boolean {
+        val should = scrobblerEnabled.value &&
+                (DesktopStuff.normalizeAppId(rawAppId) in allowedPackages.value)
+        return should
+    }
+
+
     fun platformActiveSessionsChanged(sessions: List<SessionInfo>) {
         this.sessionInfos = sessions
         Logger.d { "controllers: " + sessions.joinToString { it.rawAppId } }
 
         val normalizedAppIdsToNames = sessions
-            .associate { PlatformStuff.normalizeAppId(it.rawAppId) to it.appName }
+            .associate { DesktopStuff.normalizeAppId(it.rawAppId) to it.appName }
 
         if (!scrobblerEnabled.value)
             return
@@ -90,7 +98,7 @@ class DesktopMediaListener(
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
 //                if (controller.sessionToken !in controllersMap) {
 
-            val normalizedAppId = PlatformStuff.normalizeAppId(session.rawAppId)
+            val normalizedAppId = DesktopStuff.normalizeAppId(session.rawAppId)
             val playingTrackInfo =
                 findTrackInfoByKey(session.rawAppId)
                 // there is no concept of session tag on desktop platforms

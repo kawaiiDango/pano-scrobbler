@@ -159,7 +159,7 @@ object Stuff {
     const val PACKAGE_APPLE_MUSIC_WIN_EXE = "AppleMusic.exe"
     const val PACKAGE_APPLE_MUSIC_WIN_STORE = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"
     const val PACKAGE_CIDER_LINUX = "org.mpris.MediaPlayer2.cider"
-    const val PACKAGE_CIDER_VARIANT_LINUX = "org.mpris.MediaPlayer2.cider.instancen"
+    const val PACKAGE_KDE_CONNECT_LINUX = "org.mpris.MediaPlayer2.kdeconnect"
     const val PACKAGE_FIREFOX_WIN = "308046B0AF4A39CB"
     const val PACKAGE_DEEZER_WIN = "com.deezer.deezer-desktop"
     const val PACKAGE_DEEZER_WIN_EXE = "Deezer.exe"

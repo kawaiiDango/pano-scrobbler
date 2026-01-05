@@ -46,8 +46,6 @@ expect object PlatformStuff {
 
     suspend fun loadApplicationLabel(appId: String): String
 
-    fun normalizeAppId(appId: String): String
-
     suspend fun getWebviewCookies(uri: String): Map<String, String>
 
     fun clearWebviewCookies()

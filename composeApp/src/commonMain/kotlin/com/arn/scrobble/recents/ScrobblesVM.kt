@@ -121,8 +121,9 @@ class ScrobblesVM(
     init {
         viewModelScope.launch {
             val hasPending = PanoDb.db.getPendingScrobblesDao().count() > 0
+            val isRunning = PendingScrobblesWork.state().first() == CommonWorkState.RUNNING
 
-            if (hasPending)
+            if (hasPending && !isRunning)
                 PendingScrobblesWork.checkAndSchedule(force = true)
         }
 

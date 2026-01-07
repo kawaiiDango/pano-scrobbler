@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
-import android.text.Html
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -34,10 +33,7 @@ import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.blocked_metadata_noti
 import pano_scrobbler.composeapp.generated.resources.charts
 import pano_scrobbler.composeapp.generated.resources.create_collage
-import pano_scrobbler.composeapp.generated.resources.digest_monthly
-import pano_scrobbler.composeapp.generated.resources.digest_weekly
 import pano_scrobbler.composeapp.generated.resources.edit
-import pano_scrobbler.composeapp.generated.resources.graph_yearly
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.new_player
 import pano_scrobbler.composeapp.generated.resources.new_player_prompt
@@ -45,9 +41,6 @@ import pano_scrobbler.composeapp.generated.resources.no
 import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
 import pano_scrobbler.composeapp.generated.resources.state_unscrobbled
 import pano_scrobbler.composeapp.generated.resources.tap_to_edit
-import pano_scrobbler.composeapp.generated.resources.top_albums
-import pano_scrobbler.composeapp.generated.resources.top_artists
-import pano_scrobbler.composeapp.generated.resources.top_tracks
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.update_available
 import pano_scrobbler.composeapp.generated.resources.yes
@@ -391,50 +384,26 @@ actual object PanoNotifications {
             }
     }
 
-    actual suspend fun notifyDigest(timePeriod: TimePeriod, resultsList: List<Pair<Int, String>>) {
-        if (resultsList.isEmpty()) {
+    actual suspend fun notifyDigest(lastfmPeriod: LastfmPeriod, title: String, text: String) {
+        if (text.isEmpty()) {
             return
         }
 
-        val notificationTextList = mutableListOf<String>()
-        resultsList.forEach { (type, text) ->
-            val title = when (type) {
-                Stuff.TYPE_ARTISTS -> getString(Res.string.top_artists)
-                Stuff.TYPE_ALBUMS -> getString(Res.string.top_albums)
-                Stuff.TYPE_TRACKS -> getString(Res.string.top_tracks)
-                else -> throw IllegalArgumentException("Invalid musicEntry type")
-            }
-            notificationTextList += "<b>$title:</b>\n$text"
-        }
-
-        val notificationTitle = when (timePeriod.lastfmPeriod) {
-            LastfmPeriod.WEEK -> getString(Res.string.digest_weekly)
-            LastfmPeriod.MONTH -> getString(Res.string.digest_monthly)
-            LastfmPeriod.YEAR -> getString(Res.string.graph_yearly)
-            else -> throw IllegalArgumentException("Invalid period")
-        }
-
-
-        val notificationText = Html.fromHtml(
-            notificationTextList.joinToString("\n"),
-            Html.FROM_HTML_SEPARATOR_LINE_BREAK_DIV
-        )
-
-        val channelId = if (timePeriod.lastfmPeriod == LastfmPeriod.WEEK)
+        val channelId = if (lastfmPeriod == LastfmPeriod.WEEK)
             Stuff.CHANNEL_NOTI_DIGEST_WEEKLY
         else
             Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
         val dialogArgs = PanoRoute.Modal.CollageGenerator(
             collageType = Stuff.TYPE_ALL,
-            timePeriod = timePeriod,
+            timePeriod = TimePeriod(lastfmPeriod),
             user = Scrobblables.currentAccount.value?.user ?: return
         )
 
         val collagePi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
 
         val chartsDeepLinkUri =
-            DeepLinkUtils.createMainActivityDeepLinkUri(PanoRoute.SelfHomePager(timePeriod.lastfmPeriod.name))
+            DeepLinkUtils.createMainActivityDeepLinkUri(PanoRoute.SelfHomePager(lastfmPeriod.name))
         val chartsPi =
             PendingIntent.getActivity(
                 context,
@@ -450,7 +419,7 @@ actual object PanoNotifications {
         val nb = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.vd_charts)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentTitle(notificationTitle)
+            .setContentTitle(title)
             .setContentIntent(chartsPi)
             .apply { color = context.getColor(R.color.pinkNoti) }
             .addAction(
@@ -469,15 +438,15 @@ actual object PanoNotifications {
                     chartsPi
                 )
             )
-            .setContentText(notificationText)
+            .setContentText(text)
             .setShowWhen(true)
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .setBigContentTitle(notificationTitle)
-                    .bigText(notificationText)
+                    .setBigContentTitle(title)
+                    .bigText(text)
             )
 
-        notificationManager.notify(channelId, timePeriod.lastfmPeriod.ordinal, nb.build())
+        notificationManager.notify(channelId, lastfmPeriod.ordinal, nb.build())
     }
 
     actual suspend fun notifyUpdater(updateAction: UpdateAction) {

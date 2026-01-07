@@ -1,8 +1,9 @@
 4.19:
-- Updates Discord Rich Presence only after applying the edits to the metadata
+- Updates Discord Rich Presence on desktop only after applying the edits to the metadata
+- Uses the Material Symbols icons
 - Parses last.fm wiki HTML with clickable links while preserving line breaks
 - No longer accepts newlines in some text fields
+- Hidden tags list is now scrollable
 - Uses the system proxy, if set, on desktop
-- Uses the Material Symbols icons
 - Bug fixes
 - Translation updates by the translators on Crowdin

@@ -16,6 +16,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.digest_monthly
+import pano_scrobbler.composeapp.generated.resources.digest_weekly
+import pano_scrobbler.composeapp.generated.resources.graph_yearly
+import pano_scrobbler.composeapp.generated.resources.top_albums
+import pano_scrobbler.composeapp.generated.resources.top_artists
+import pano_scrobbler.composeapp.generated.resources.top_tracks
 import java.util.Calendar
 
 enum class DigestType {
@@ -34,17 +42,23 @@ class DigestWorker(
         var error: Throwable? = null
         cal.setUserFirstDayOfWeek()
 
-        if (PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY)) {
+        val lastfmPeriod = when (digestType) {
+            DigestType.DIGEST_DAILY,
+            DigestType.DIGEST_WEEKLY,
+                -> LastfmPeriod.WEEK
+
+            DigestType.DIGEST_MONTHLY -> LastfmPeriod.MONTH
+        }
+
+        val channelId = if (lastfmPeriod == LastfmPeriod.WEEK)
+            Stuff.CHANNEL_NOTI_DIGEST_WEEKLY
+        else
+            Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
+
+        if (PlatformStuff.isNotiChannelEnabled(channelId)) {
             val coExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
                 throwable.printStackTrace()
                 error = throwable
-            }
-            val lastfmPeriod = when (digestType) {
-                DigestType.DIGEST_DAILY,
-                DigestType.DIGEST_WEEKLY,
-                    -> LastfmPeriod.WEEK
-
-                DigestType.DIGEST_MONTHLY -> LastfmPeriod.MONTH
             }
 
             withContext(coExceptionHandler) {
@@ -59,9 +73,10 @@ class DigestWorker(
             }
 
         } else {
-            return CommonWorkerResult.Failure("Notifications disabled")
+            error = IllegalStateException("Digest notifications are disabled")
         }
 
+        // self-schedule next digest
         DigestWork.checkAndSchedule()
 
         return if (error != null)
@@ -99,14 +114,45 @@ class DigestWorker(
                 Stuff.TYPE_ARTISTS to artists,
                 Stuff.TYPE_ALBUMS to albums,
                 Stuff.TYPE_TRACKS to tracks
-            ).mapNotNull { (type, defered) ->
-                val kResult = defered.await()
+            ).mapNotNull { (type, deferred) ->
+                val kResult = deferred.await()
                 val result = kResult.getOrNull() ?: return@mapNotNull null
                 if (result.entries.isEmpty()) return@mapNotNull null
                 type to result.entries.joinToString { it.name }
             }
 
-            PanoNotifications.notifyDigest(timeLastfmPeriod, textsList)
+            // formatted SpannedString no longer works on my version of Android 16
+            val notificationText = StringBuilder()
+            textsList.forEachIndexed { index, (type, text) ->
+                val title = when (type) {
+                    Stuff.TYPE_ARTISTS -> getString(Res.string.top_artists)
+                    Stuff.TYPE_ALBUMS -> getString(Res.string.top_albums)
+                    Stuff.TYPE_TRACKS -> getString(Res.string.top_tracks)
+                    else -> throw IllegalArgumentException("Invalid musicEntry type")
+                }
+
+                notificationText.apply {
+                    if (index > 0) {
+                        append('\n') // newline between sections
+                    }
+                    append("[$title]")
+                    append("\n")
+                    append(text)
+                }
+            }
+
+            val notificationTitle = when (lastfmPeriod) {
+                LastfmPeriod.WEEK -> getString(Res.string.digest_weekly)
+                LastfmPeriod.MONTH -> getString(Res.string.digest_monthly)
+                LastfmPeriod.YEAR -> getString(Res.string.graph_yearly)
+                else -> throw IllegalArgumentException("Invalid period")
+            }
+
+            PanoNotifications.notifyDigest(
+                lastfmPeriod,
+                notificationTitle,
+                notificationText.toString()
+            )
         }
     }
 

@@ -17,6 +17,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
+import com.arn.scrobble.work.DigestWork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -72,7 +74,7 @@ class MainViewModel : ViewModel() {
         val cal = Calendar.getInstance()
         BuildKonfig.DEBUG ||
                 (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 24) ||
-                (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
+                (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 5)
     }
 
     // A flow to represent trigger signals for refreshing
@@ -155,6 +157,13 @@ class MainViewModel : ViewModel() {
         repository.startDataSourceConnections()
 
         queryPurchasesAsync()
+
+        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv)
+            viewModelScope.launch {
+                if (DigestWork.state().first() == null) {
+                    DigestWork.checkAndSchedule()
+                }
+            }
     }
 
     fun checkAndStoreLicense(receipt: String) {

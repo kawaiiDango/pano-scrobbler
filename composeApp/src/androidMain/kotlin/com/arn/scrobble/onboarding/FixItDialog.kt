@@ -30,8 +30,6 @@ import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -60,7 +58,7 @@ fun FixItDialog(
         !it.notiPersistent && AndroidStuff.canShowPersistentNotiIfEnabled
     }
 
-    var exitReason: String? by remember { mutableStateOf(null) }
+    var exitReason by remember { mutableStateOf<String?>(null) }
 
     val batteryIntent = remember {
         if (PlatformStuff.isTv) {
@@ -73,18 +71,10 @@ fun FixItDialog(
     }
 
     LaunchedEffect(Unit) {
-        val mainPrefs = PlatformStuff.mainPrefs
-        val lastKillCheckTime = mainPrefs.data.map { it.lastKillCheckTime }.first()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            AndroidStuff.getScrobblerExitReasons(lastKillCheckTime)
+            exitReason = AndroidStuff.getScrobblerExitReasons()
                 .firstOrNull()
-                ?.let {
-                    exitReason = it.description
-                }
-
-            mainPrefs.updateData { it.copy(lastKillCheckTime = System.currentTimeMillis()) }
-            // todo: this is technically wrong
+                ?.description
         }
     }
 

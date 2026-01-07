@@ -2,6 +2,7 @@ package com.arn.scrobble.work
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 
 
 abstract class CommonWorkImpl(protected val uniqueName: String) : CommonWork {
@@ -10,8 +11,10 @@ abstract class CommonWorkImpl(protected val uniqueName: String) : CommonWork {
             .filterNotNull()
     }
 
-    final override fun state(): CommonWorkState? {
-        return DesktopWorkManager.state(uniqueName)
+    final override fun state(): Flow<CommonWorkState?> {
+        return flow {
+            emit(DesktopWorkManager.state(uniqueName))
+        }
     }
 
     final override fun cancel() {

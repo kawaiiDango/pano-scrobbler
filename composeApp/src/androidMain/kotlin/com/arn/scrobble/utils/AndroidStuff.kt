@@ -32,7 +32,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import java.io.File
-import java.util.Locale
 import kotlin.properties.Delegates
 
 object AndroidStuff {
@@ -92,6 +91,7 @@ object AndroidStuff {
         val manufacturer = Build.MANUFACTURER.lowercase()
 
         return manufacturer in arrayOf(
+            Stuff.MANUFACTURER_HUAWEI,
             Stuff.MANUFACTURER_XIAOMI,
             Stuff.MANUFACTURER_SAMSUNG,
             Stuff.MANUFACTURER_ONEPLUS,
@@ -127,15 +127,15 @@ object AndroidStuff {
     }
 
 
-    val forcePersistentNoti by lazy {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
-                Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(
-            Stuff.MANUFACTURER_HUAWEI,
-            Stuff.MANUFACTURER_XIAOMI,
-            Stuff.MANUFACTURER_SAMSUNG,
-        )
-    }
+//    val forcePersistentNoti by lazy {
+//        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+//                Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
+//                Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(
+//            Stuff.MANUFACTURER_HUAWEI,
+//            Stuff.MANUFACTURER_XIAOMI,
+//            Stuff.MANUFACTURER_SAMSUNG,
+//        )
+//    }
 
 
     val notificationManager by lazy {

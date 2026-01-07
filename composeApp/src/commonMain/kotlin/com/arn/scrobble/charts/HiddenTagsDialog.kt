@@ -3,11 +3,14 @@ package com.arn.scrobble.charts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.OutlinedIconButton
@@ -44,6 +47,7 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
     val hiddenTags by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.hiddenTags }
     var tagInput by rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     fun addTag(tag: String) {
         if (tagInput.isNotBlank()) {
@@ -73,7 +77,10 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .heightIn(max = (48 * 4).dp)
+                    .verticalScroll(scrollState)
             ) {
                 hiddenTags.forEach { tag ->
                     InputChip(

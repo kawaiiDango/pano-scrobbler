@@ -1,7 +1,7 @@
 package com.arn.scrobble.utils
 
+import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.updates.UpdateAction
 
@@ -14,7 +14,7 @@ expect object PanoNotifications {
 
     suspend fun notifyUnscrobbled(notiKey: String, scrobbleData: ScrobbleData, hash: Int)
 
-    suspend fun notifyDigest(timePeriod: TimePeriod, resultsList: List<Pair<Int, String>>)
+    suspend fun notifyDigest(lastfmPeriod: LastfmPeriod, title: String, text: String)
 
     suspend fun notifyUpdater(updateAction: UpdateAction)
 

@@ -764,7 +764,6 @@ fun LazyListScope.scrobblesListItems(
                             editDialogArgs = if (canEdit) {
                                 {
                                     val sd: ScrobbleData
-                                    val msid: String?
                                     val hash: Int?
 
                                     if (!track.isNowPlaying && track.date != null) {
@@ -778,14 +777,12 @@ fun LazyListScope.scrobblesListItems(
                                             duration = null,
                                             appId = null
                                         )
-                                        msid = track.msid
                                         hash = null
                                     } else {
                                         val sdToHash = getNowPlayingFromMainProcess()
                                         if (sdToHash != null) {
                                             sd = sdToHash.first
                                             hash = sdToHash.second
-                                            msid = null
                                         } else {
 
                                             return@TrackDropdownMenu null

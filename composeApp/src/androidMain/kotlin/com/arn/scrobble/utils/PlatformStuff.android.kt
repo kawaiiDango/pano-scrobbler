@@ -80,6 +80,8 @@ actual object PlatformStuff {
 
     actual val isJava8OrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
+    actual val recomposeOnLocaleChange = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+
     actual fun isNotificationListenerEnabled(): Boolean {
         // adapted from NotificationManagerCompat.java
 

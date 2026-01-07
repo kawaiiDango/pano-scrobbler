@@ -47,12 +47,13 @@ abstract class CommonWorkImpl(protected val name: String) : CommonWork {
             }
     }
 
-    final override fun state(): CommonWorkState? {
+    final override fun state(): Flow<CommonWorkState?> {
         return WorkManager.getInstance(AndroidStuff.applicationContext)
-            .getWorkInfosForUniqueWork(name)
-            .get()
-            .firstOrNull()
-            ?.let { mapWorkState(it.state) }
+            .getWorkInfosForUniqueWorkFlow(name)
+            .map {
+                it.firstOrNull()
+                    ?.let { mapWorkState(it.state) }
+            }
     }
 
     final override fun cancel() {

@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.navigation.jsonSerializableSaver
+import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
@@ -61,7 +61,7 @@ fun ImportScreen(
     var toggleButtonSelectedIndex by rememberSaveable { mutableIntStateOf(-1) }
     val networkMode =
         rememberSaveable(toggleButtonSelectedIndex) { toggleButtonSelectedIndex == 1 }
-    var selectedEditsMode by rememberSaveable(saver = jsonSerializableSaver()) {
+    var selectedEditsMode by rememberSaveable(saver = enumSaver()) {
         mutableStateOf(
             EditsMode.EDITS_NOPE
         )

@@ -90,7 +90,6 @@ kotlin {
             implementation(libs.compose.webview)
             implementation(libs.coil.gif)
             implementation(libs.qrcode)
-            implementation(libs.tooling)
         }
 
         commonMain {

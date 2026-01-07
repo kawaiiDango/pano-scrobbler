@@ -1,13 +1,18 @@
 package com.arn.scrobble.media
 
 import android.content.Intent
+import android.os.CancellationSignal
+import android.os.OperationCanceledException
 import androidx.core.net.toUri
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 
 
 actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
@@ -36,14 +41,28 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
         return null
 
     val cr = AndroidStuff.applicationContext.contentResolver ?: return null
+    val cancellationSignal = CancellationSignal()
 
-    val cursor = cr.query(
-        "content://${Automation.PREFIX}/${Automation.ANDROID_NOW_PLAYING}".toUri(),
-        null,
-        null,
-        null,
+    // wait for 500ms max to prevent ANR
+    val cancelJob = GlobalScope.launch {
+        delay(500)
+        cancellationSignal.cancel()
+    }
+
+    val cursor = try {
+        cr.query(
+            "content://${Automation.PREFIX}/${Automation.ANDROID_NOW_PLAYING}".toUri(),
+            null,
+            null,
+            null,
+            null,
+            cancellationSignal
+        ).also {
+            cancelJob.cancel()
+        }
+    } catch (e: OperationCanceledException) {
         null
-    ) ?: return null
+    } ?: return null
 
     while (cursor.moveToNext()) {
         val sdColIdx =

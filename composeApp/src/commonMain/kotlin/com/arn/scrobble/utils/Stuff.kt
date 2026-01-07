@@ -209,6 +209,7 @@ object Stuff {
         "com.liskovsoft.smarttubetv",
         "app.revanced.android.youtube",
         "app.rvx.android.youtube",
+        "app.morphe.android.youtube",
     )
 
     val DEFAULT_IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
@@ -219,6 +220,7 @@ object Stuff {
         PACKAGE_YOUTUBE_MUSIC,
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
+        "app.morphe.android.apps.youtube.music",
     )
 
     val IGNORE_DURATION = setOf(

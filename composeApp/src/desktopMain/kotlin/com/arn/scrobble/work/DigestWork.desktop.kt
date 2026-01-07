@@ -3,6 +3,7 @@ package com.arn.scrobble.work
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 
 
@@ -35,8 +36,14 @@ actual object DigestWork : CommonWork {
         throw NotImplementedError("Not implemented")
     }
 
-    override fun state(): CommonWorkState? {
-        throw NotImplementedError("Not implemented")
+    override fun state(): Flow<CommonWorkState?> {
+        return flow {
+            emit(
+                DesktopWorkManager
+                    .state(DigestType.DIGEST_WEEKLY.name) ?: DesktopWorkManager
+                    .state(DigestType.DIGEST_MONTHLY.name)
+            )
+        }
     }
 
     override fun cancel() {

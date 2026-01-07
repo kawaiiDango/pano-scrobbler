@@ -8,7 +8,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import co.touchlab.kermit.Logger
 import com.arn.scrobble.utils.AndroidStuff
 import java.util.concurrent.TimeUnit
 
@@ -19,11 +18,6 @@ actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
-
-        if (force && state() == CommonWorkState.RUNNING) {
-            Logger.w { "Not rescheduling $name" }
-            return
-        }
 
         val workRequest = OneTimeWorkRequestBuilder<PlatformWorker>()
             .setInputData(

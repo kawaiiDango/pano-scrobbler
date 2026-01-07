@@ -32,7 +32,7 @@ sealed interface CommonWorkerResult {
 interface CommonWork {
     fun checkAndSchedule(force: Boolean = false)
     fun getProgress(): Flow<CommonWorkProgress>
-    fun state(): CommonWorkState?
+    fun state(): Flow<CommonWorkState?>
     fun cancel()
 }
 

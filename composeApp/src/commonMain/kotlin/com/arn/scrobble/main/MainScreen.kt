@@ -140,7 +140,10 @@ fun PanoAppContent(
     }
 
     val mainViewModelStoreOwner = LocalViewModelStoreOwner.current
-    val locale by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.locale }
+    val locale by if (PlatformStuff.recomposeOnLocaleChange)
+        PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.locale }
+    else
+        remember { mutableStateOf(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -615,7 +618,7 @@ private fun PanoTopAppBar(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 8.dp) // for tv overscan
+                    modifier = Modifier.padding(top = 8.dp) // for TV overscan
                 )
             },
             scrollBehavior = scrollBehavior

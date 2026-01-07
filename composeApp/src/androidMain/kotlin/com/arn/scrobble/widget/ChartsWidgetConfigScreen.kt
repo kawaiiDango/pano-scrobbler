@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arn.scrobble.R
 import com.arn.scrobble.charts.AllPeriods
-import com.arn.scrobble.navigation.jsonSerializableSaver
+import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.ui.LabeledSwitch
 import com.arn.scrobble.utils.Stuff
@@ -60,7 +60,7 @@ fun ChartsWidgetConfigScreen(
     onCancel: () -> Unit,
 ) {
 
-    var period by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(prefs.period) }
+    var period by rememberSaveable(saver = enumSaver()) { mutableStateOf(prefs.period) }
     var bgAlpha by rememberSaveable { mutableFloatStateOf(prefs.bgAlpha) }
     var shadow by rememberSaveable { mutableStateOf(prefs.shadow) }
     val scrollState = rememberScrollState()

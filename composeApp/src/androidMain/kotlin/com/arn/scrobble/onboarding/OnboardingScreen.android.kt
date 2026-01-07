@@ -33,7 +33,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Warning
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.navigation.jsonSerializableSaver
+import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.testTagsAsResId
@@ -200,7 +200,7 @@ actual fun OnboardingScreen(
         doneStatus[steps.indexOf(step)] = true
     }
 
-    var currentStep by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(steps.first()) }
+    var currentStep by rememberSaveable(saver = enumSaver()) { mutableStateOf(steps.first()) }
 
     val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }
     val appListWasRun by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.appListWasRun }
@@ -217,7 +217,6 @@ actual fun OnboardingScreen(
         }
     }
 
-    // change sometimes does not trigger this unless using .toList(), compose bug?
     LaunchedEffect(doneStatus.toList()) {
         if (doneStatus.all { it }) {
             onDone()

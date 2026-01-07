@@ -18,8 +18,6 @@ import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
-import com.arn.scrobble.utils.DesktopStuff.Os
-import com.arn.scrobble.utils.DesktopStuff.os
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -58,6 +56,8 @@ actual object PlatformStuff {
     actual val noUpdateCheck
         get() =
             DesktopStuff.noUpdateCheck
+
+    actual const val recomposeOnLocaleChange = true
 
     actual val filesDir by lazy {
         File(DesktopStuff.appDataRoot, "data")

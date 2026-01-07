@@ -31,6 +31,8 @@ expect object PlatformStuff {
 
     val noUpdateCheck: Boolean
 
+    val recomposeOnLocaleChange: Boolean
+
     fun isScrobblerRunning(): Boolean
 
     fun openInBrowser(url: String)

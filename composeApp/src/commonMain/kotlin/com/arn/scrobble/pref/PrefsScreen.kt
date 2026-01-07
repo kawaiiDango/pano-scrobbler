@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,8 +46,10 @@ import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.getCurrentLocale
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.CommonWorkState
+import com.arn.scrobble.work.DigestWork
 import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -207,6 +210,14 @@ fun PrefsScreen(
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             isAddedToStartup = isAddedToStartup()
+        }
+
+        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+            snapshotFlow { firstDayOfWeek }
+                .drop(1) // only for changes
+                .collect {
+                    DigestWork.checkAndSchedule()
+                }
         }
     }
 

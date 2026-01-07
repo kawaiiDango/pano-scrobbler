@@ -26,7 +26,7 @@ import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
-import com.arn.scrobble.navigation.jsonSerializableSaver
+import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -76,7 +76,7 @@ private fun BlockedMetadataAddContent(
     var hasTrack by rememberSaveable(blockedMetadata) {
         mutableStateOf(blockedMetadata?.track?.isNotEmpty() ?: true)
     }
-    var blockPlayerAction by rememberSaveable(blockedMetadata, saver = jsonSerializableSaver()) {
+    var blockPlayerAction by rememberSaveable(blockedMetadata, saver = enumSaver()) {
         mutableStateOf(
             blockedMetadata?.blockPlayerAction ?: BlockPlayerAction.ignore
         )

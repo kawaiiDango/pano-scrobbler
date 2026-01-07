@@ -62,7 +62,6 @@ data class MainPrefs(
     val lastInteractiveTime: Long? = null,
     private val demoMode: Boolean = false,
     val locale: String? = null,
-    val showAlbumsInRecents: Boolean = false,
     val showScrobbleSources: Boolean = true,
     val themeName: String = ThemeUtils.defaultTheme.name,
     val themeContrast: ContrastMode = ContrastMode.LOW,
@@ -74,12 +73,11 @@ data class MainPrefs(
     val lastChartsLastfmPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.MONTH),
     val lastChartsListenBrainzPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.OVERALL)
         .apply { tag = ListenbrainzRanges.all_time.name },
-    val lastChartsCustomPeriod: TimePeriod = TimePeriod(1577836800000L, 1609459200000L), // 2020
+    val lastChartsCustomPeriod: TimePeriod = TimePeriod(1767225600000, 1798761600000), // 2026
     val currentAccountType: AccountType = AccountType.LASTFM,
     val scrobbleAccounts: List<UserAccountSerializable> = emptyList(),
     val drawerData: Map<AccountType, DrawerData> = emptyMap(),
     val randomType: Int = Stuff.TYPE_TRACKS,
-    val lastKillCheckTime: Long = -1,
     val userTopTagsFetched: Boolean = false,
     val collageSkipMissing: Boolean = false,
     val collageUsername: Boolean = true,
@@ -99,13 +97,8 @@ data class MainPrefs(
     val changelogSeenHashcode: Int? = null,
     val searchHistory: List<String> = emptyList(),
     val tagHistory: List<String> = emptyList(),
-    val notificationsOnLockscreen: Boolean = false,
-    val notiScrobbling: Boolean = true,
-    val notiError: Boolean = true,
     val notiWeeklyDigests: Boolean = true,
     val notiMonthlyDigests: Boolean = true,
-    val notiPendingScrobbles: Boolean = true,
-    val notiNewApp: Boolean = true,
     val notiPersistent: Boolean = false,
     val digestSeconds: Int? = null,
     val lastReviewPromptTime: Long? = null,
@@ -123,7 +116,7 @@ data class MainPrefs(
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
     val trayIconTheme: DayNightMode = DayNightMode.SYSTEM,
     val cookies: Map<String, CookieSerializable> = emptyMap(),
-    // keep this as a string and not as an enum, in case i delete presets later
+    // keep this as a string and not as an enum, in case I delete presets later
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
     val windowState: SerializableWindowState? = null,
     private val itunesCountry: String? = null,
@@ -209,10 +202,8 @@ data class MainPrefs(
         submitNowPlaying = prefs.submitNowPlaying,
         fetchAlbum = prefs.fetchAlbum,
         autoDetectApps = prefs.autoDetectApps,
-        showAlbumsInRecents = prefs.showAlbumsInRecents,
         showScrobbleSources = prefs.showScrobbleSources,
         linkHeartButtonToRating = prefs.linkHeartButtonToRating,
-        notificationsOnLockscreen = prefs.notificationsOnLockscreen,
         themeName = prefs.themeName,
         themeContrast = prefs.themeContrast,
         themeDayNight = prefs.themeDayNight,
@@ -236,10 +227,8 @@ data class MainPrefs(
         submitNowPlaying = this.submitNowPlaying,
         fetchAlbum = this.fetchAlbum,
         autoDetectApps = this.autoDetectAppsP,
-        showAlbumsInRecents = this.showAlbumsInRecents,
         showScrobbleSources = this.showScrobbleSources,
         linkHeartButtonToRating = this.linkHeartButtonToRating,
-        notificationsOnLockscreen = this.notificationsOnLockscreen,
         themeName = this.themeName,
         themeContrast = this.themeContrast,
         themeDayNight = this.themeDayNight,
@@ -306,14 +295,10 @@ data class MainPrefsPublic(
     val fetchAlbum: Boolean,
     @JsonNames("auto_detect")
     val autoDetectApps: Boolean,
-    @JsonNames("show_album")
-    val showAlbumsInRecents: Boolean,
     @JsonNames("show_scrobble_sources")
     val showScrobbleSources: Boolean,
     @JsonNames("link_heart_button_to_rating")
     val linkHeartButtonToRating: Boolean,
-    @JsonNames("lockscreen_noti")
-    val notificationsOnLockscreen: Boolean,
     val themeName: String = ThemeUtils.defaultTheme.name,
     val themeContrast: ContrastMode = ContrastMode.LOW,
     val themeDayNight: DayNightMode = DayNightMode.DARK,

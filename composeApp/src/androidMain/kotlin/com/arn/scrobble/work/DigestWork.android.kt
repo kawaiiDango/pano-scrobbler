@@ -10,10 +10,14 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.AndroidStuff
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
 actual object DigestWork : CommonWork {
+    const val DIGEST_TAG = "DIGEST"
+    const val DAILY_TEST_DIGESTS = false
+
     override fun checkAndSchedule(force: Boolean) {
         val workManager = try {
             WorkManager.getInstance(AndroidStuff.applicationContext)
@@ -25,9 +29,8 @@ actual object DigestWork : CommonWork {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val scheduleTimes = runBlocking { DigestWorker.getScheduleTimes() }
 
-        fun enqueue(digestType: DigestType) {
+        fun enqueue(digestType: DigestType, scheduleAt: Long) {
             val inputData = workDataOf(
                 PlatformWorker.WORK_NAME_KEY to digestType.name
             )
@@ -36,8 +39,9 @@ actual object DigestWork : CommonWork {
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .addTag(digestType.name)
+                .addTag(DIGEST_TAG)
                 .setInitialDelay(
-                    scheduleTimes[digestType]!! - System.currentTimeMillis(),
+                    scheduleAt - System.currentTimeMillis(),
                     TimeUnit.MILLISECONDS
                 )
                 .build()
@@ -45,11 +49,11 @@ actual object DigestWork : CommonWork {
             workManager.enqueueUniqueWork(digestType.name, ExistingWorkPolicy.REPLACE, work)
         }
 
-        val dailyTestDigests = false
-        if (BuildKonfig.DEBUG && dailyTestDigests)
-            enqueue(DigestType.DIGEST_DAILY)
-        enqueue(DigestType.DIGEST_WEEKLY)
-        enqueue(DigestType.DIGEST_MONTHLY)
+        val scheduleTimes = runBlocking { DigestWorker.getScheduleTimes() }
+        if (BuildKonfig.DEBUG && DAILY_TEST_DIGESTS)
+            enqueue(DigestType.DIGEST_DAILY, System.currentTimeMillis() + 15_000L)
+        enqueue(DigestType.DIGEST_WEEKLY, scheduleTimes[DigestType.DIGEST_WEEKLY]!!)
+        enqueue(DigestType.DIGEST_MONTHLY, scheduleTimes[DigestType.DIGEST_MONTHLY]!!)
 
         Logger.i { "scheduling ${DigestWorker::class.java.simpleName}" }
     }
@@ -58,8 +62,18 @@ actual object DigestWork : CommonWork {
         throw NotImplementedError("Not implemented")
     }
 
-    override fun state(): CommonWorkState? {
-        throw NotImplementedError("Not implemented")
+    override fun state(): Flow<CommonWorkState?> {
+        return WorkManager.getInstance(AndroidStuff.applicationContext)
+            .getWorkInfosByTagFlow(DIGEST_TAG)
+            .map {
+                val expectedSize = if (BuildKonfig.DEBUG && DAILY_TEST_DIGESTS) 3 else 2
+                if (it.size < expectedSize) {
+                    null
+                } else
+                    it.minOfOrNull {
+                        mapWorkState(it.state)
+                    }
+            }
     }
 
     override fun cancel() {

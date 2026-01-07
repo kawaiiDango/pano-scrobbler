@@ -67,6 +67,10 @@ object Requesters {
             install(HttpTimeout) {
                 requestTimeoutMillis = 40 * 1000L
             }
+
+            install(UserAgent) {
+                agent = BuildKonfig.APP_NAME + " " + BuildKonfig.VER_NAME
+            }
         }
     }
 
@@ -77,11 +81,6 @@ object Requesters {
             }
 
             if (!Stuff.isRunningInTest) {
-
-                install(UserAgent) {
-                    agent = BuildKonfig.APP_NAME + " " + BuildKonfig.VER_NAME
-                }
-
                 install(HttpCache) {
                     val cacheFile = File(PlatformStuff.cacheDir, "ktor")
                     cacheFile.mkdirs()

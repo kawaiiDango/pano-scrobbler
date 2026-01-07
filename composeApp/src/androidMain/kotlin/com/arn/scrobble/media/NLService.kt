@@ -51,7 +51,7 @@ class NLService : NotificationListenerService() {
     private val deviceInteractiveReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_SCREEN_ON) {
-                coroutineScope.launch {
+                coroutineScope.launch(Dispatchers.IO) {
                     mainPrefs.updateData { it.copy(lastInteractiveTime = System.currentTimeMillis()) }
                 }
             }

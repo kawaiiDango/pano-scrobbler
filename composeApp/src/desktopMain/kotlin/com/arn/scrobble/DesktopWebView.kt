@@ -1,11 +1,13 @@
 package com.arn.scrobble
 
-import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.utils.DesktopStuff
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 object DesktopWebView {
 
-    private var inited = false
+    var inited = false
+        private set
+    private var callbackUrlAndCookies: MutableSharedFlow<Pair<String, Map<String, String>>>? = null
 
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
@@ -24,28 +26,37 @@ object DesktopWebView {
             .start()
     }
 
+    fun setCallbackFlow(flow: MutableSharedFlow<Pair<String, Map<String, String>>>) {
+        callbackUrlAndCookies = flow
+    }
+
+    fun deleteAndQuitP() {
+        callbackUrlAndCookies = null
+        deleteAndQuit()
+    }
+
     // jni callbacks
 
     @JvmStatic
-    fun onWebViewCookies(url: String, cookies: Array<String>) {
-        WebViewEventFlows.cookies.tryEmit(url to cookies)
+    fun onCallback(url: String, cookies: Array<String>) {
+        val cookiesMap = cookies.associate {
+            val (name, value) = it.split("=", limit = 2)
+            name to value
+        }
+        callbackUrlAndCookies?.tryEmit(url to cookiesMap)
     }
-
-    @JvmStatic
-    fun onWebViewUrlLoaded(url: String) {
-        WebViewEventFlows.pageLoaded.tryEmit(url)
-    }
-
 
     @JvmStatic
     private external fun startEventLoop()
 
     @JvmStatic
-    external fun launchWebView(url: String, callbackPrefix: String, dataDir: String)
+    external fun launchWebView(
+        url: String,
+        callbackPrefix: String,
+        cookiesUrl: String,
+        dataDir: String
+    )
 
     @JvmStatic
-    external fun getWebViewCookiesFor(url: String)
-
-    @JvmStatic
-    external fun quitWebView()
+    private external fun deleteAndQuit()
 }

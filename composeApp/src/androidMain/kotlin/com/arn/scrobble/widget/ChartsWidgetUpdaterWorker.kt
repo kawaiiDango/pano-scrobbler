@@ -137,11 +137,17 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                             }
                         }
 
+                    var noData = false
+
                     val (artists, albums, tracks) = listOf(
                         Stuff.TYPE_ARTISTS,
                         Stuff.TYPE_ALBUMS,
                         Stuff.TYPE_TRACKS
-                    ).mapConcurrently(3) { type ->
+                    ).map { type ->
+                        if (noData) {
+                            return@map kotlin.Result.success(emptyList())
+                        }
+
                         scrobblable.getChartsWithStonks(
                             type,
                             timePeriod,
@@ -149,6 +155,13 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                             1,
                             limit = 50
                         )
+                            .onSuccess {
+                                if (type != Stuff.TYPE_ALBUMS && it.entries.isEmpty()) {
+                                    noData = true
+                                }
+                            }.onFailure {
+                                throw it
+                            }
                             .map { pr ->
                                 pr.entries.map {
                                     val subtitle = when (it) {

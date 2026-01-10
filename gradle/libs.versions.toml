@@ -2,7 +2,7 @@
 targetSdk = "36"
 minSdk = "24"
 minSdkBaselineProfile = "28"
-android-application = "9.1.0-alpha03"
+android-application = "9.1.0-alpha04"
 compose-multiplatform = "1.11.0-alpha01"
 
 kotlin = "2.3.0"
@@ -15,7 +15,6 @@ benchmark = "1.5.0-alpha01"
 billing = "8.3.0"
 buildkonfig = "0.17.1"
 coil = "3.3.0"
-composeWebview = "0.33.6"
 core = "1.17.0"
 core-remoteviews = "1.1.0"
 coroutines = "1.10.2"
@@ -61,7 +60,6 @@ adaptive = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptiv
 adaptive-layout = { group = "org.jetbrains.compose.material3.adaptive", name = "adaptive-layout", version.ref = "adaptive" }
 adaptive-nav3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "adaptive" }
 
-compose-webview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
 cryptohash = { module = "com.appmattus.crypto:cryptohash", version.ref = "cryptohash" }
 koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koalaplot" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "shimmer" }

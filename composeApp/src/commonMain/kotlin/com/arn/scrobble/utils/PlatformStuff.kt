@@ -48,10 +48,6 @@ expect object PlatformStuff {
 
     suspend fun loadApplicationLabel(appId: String): String
 
-    suspend fun getWebviewCookies(uri: String): Map<String, String>
-
-    fun clearWebviewCookies()
-
     fun copyToClipboard(text: String)
 
     fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream)

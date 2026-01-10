@@ -7,22 +7,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.DesktopWebView
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.onboarding.WebViewEventFlows
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.io.IOException
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
@@ -31,8 +27,6 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
 import java.io.OutputStream
-import java.net.CookieHandler
-import java.net.CookieManager
 import java.net.Inet4Address
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
@@ -160,33 +154,6 @@ actual object PlatformStuff {
         mainPrefs.data.map { it.seenApps }
             .first()[DesktopStuff.normalizeAppId(appId)]
             .orEmpty()
-
-    actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
-        val maybeCookies = withTimeoutOrNull(1_000) {
-            WebViewEventFlows.cookies.onStart {
-                DesktopWebView.getWebViewCookiesFor(uri)
-            }.first()
-        }
-
-        if (maybeCookies != null) {
-            val (incomingUri, cookies) = maybeCookies
-
-            if (incomingUri.startsWith(uri))
-                return cookies.associate {
-                    val (name, value) = it.split("=", limit = 2)
-                    name to value
-                }
-        } else {
-            Logger.e("WebViewEvent timed out")
-        }
-
-        return emptyMap()
-    }
-
-    actual fun clearWebviewCookies() {
-        val cookieManager = CookieHandler.getDefault() as? CookieManager
-        cookieManager?.cookieStore?.removeAll()
-    }
 
     actual fun copyToClipboard(text: String) {
         val stringSelection = StringSelection(text)

@@ -99,6 +99,7 @@ object Stuff {
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
     const val LISTENBRAINZ_API_ROOT = "https://api.listenbrainz.org/"
+    const val LASTFM_URL = "https://www.last.fm/"
 
     const val MANUFACTURER_HUAWEI = "huawei"
     const val MANUFACTURER_XIAOMI = "xiaomi"
@@ -196,6 +197,7 @@ object Stuff {
     const val LINK_CROWDIN = "https://crowdin.com/project/pscrobbler"
     const val LINK_PRIVACY_POLICY = "https://kawaiidango.github.io/pano-scrobbler/privacy-policy"
     const val LINK_FAQ = "https://kawaiidango.github.io/pano-scrobbler/faq"
+
     const val DISCORD_CLIENT_ID = "1299386213114970172"
     const val EMBEDDED_SERVER_KS = "Jjs5awQQB0YjN10vKCsWPC8AXW0"
 

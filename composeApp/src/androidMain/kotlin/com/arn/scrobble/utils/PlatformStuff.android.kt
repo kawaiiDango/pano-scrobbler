@@ -17,7 +17,6 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.provider.Settings
-import android.webkit.CookieManager
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -266,24 +265,6 @@ actual object PlatformStuff {
         } catch (e: PackageManager.NameNotFoundException) {
             appId
         }
-    }
-
-    actual suspend fun getWebviewCookies(uri: String): Map<String, String> {
-        CookieManager.getInstance().getCookie(uri)?.let {
-            val map = mutableMapOf<String, String>()
-            it.split(";").forEach { cookie ->
-                val pair = cookie.trim().split("=", limit = 2)
-                if (pair.size == 2 && pair.all { it.isNotEmpty() }) {
-                    map[pair[0]] = pair[1]
-                }
-            }
-            return map
-        }
-        return emptyMap()
-    }
-
-    actual fun clearWebviewCookies() {
-        CookieManager.getInstance().removeAllCookies(null)
     }
 
     actual fun copyToClipboard(text: String) {

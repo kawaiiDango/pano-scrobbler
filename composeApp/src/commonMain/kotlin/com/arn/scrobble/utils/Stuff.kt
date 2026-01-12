@@ -82,7 +82,14 @@ object Stuff {
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
     const val TIME_2002 = 1009823400000L // Jan 1 2002
-    const val DEFAULT_SEARCH_URL = "spotify://search/\$query"
+    const val SPOTIFY_SEARCH_URL = "spotify://search/\$query"
+    const val APPLE_MUSIC_SEARCH_URL = "https://music.apple.com/in/search?term=\$query"
+    const val DEEZER_SEARCH_URL = "https://deezer.com/search/\$query"
+    const val TIDAL_SEARCH_URL = "https://tidal.com/search?q=\$query"
+    const val YT_MUSIC_SEARCH_URL = "https://music.youtube.com/search?q=\$query"
+    const val BANDCAMP_SEARCH_URL = "https://bandcamp.com/search?q=\$query"
+    const val GENIUS_SEARCH_URL = "https://genius.com/search?q=\$query"
+    const val DEFAULT_SEARCH_URL = SPOTIFY_SEARCH_URL
 
     const val EXTRA_PINNED = "pinned"
 

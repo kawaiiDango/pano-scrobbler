@@ -70,7 +70,6 @@ import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.combineImageVectors
-import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -127,8 +126,6 @@ fun ScrobblesScreen(
         viewModel.pendingScrobbles.collectAsStateWithLifecycle()
     else
         remember { mutableStateOf(emptyList()) }
-    val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
-    val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
@@ -233,8 +230,10 @@ fun ScrobblesScreen(
 
         // expand now playing
         if (tracks.loadState.refresh is LoadState.NotLoading) {
-            if (canExpandNowPlaying && tracks.itemCount > 0 && tracks.peek(0)?.isNowPlaying == true) {
-                val newKey = tracks.peek(0)?.generateKey()
+            if (canExpandNowPlaying && tracks.itemCount > 0 &&
+                (tracks.peek(0) as? TrackWrapper.TrackItem)?.track?.isNowPlaying == true
+            ) {
+                val newKey = tracks.peek(0)?.key
 
                 val newExpandedItemIsVisible = listState.layoutInfo.visibleItemsInfo.find {
                     it.key == newKey
@@ -312,6 +311,10 @@ fun ScrobblesScreen(
                                 timeJumpMillis = timeJumpMillisp
                                 selectedType = type
                             }
+                        }
+
+                        scope.launch {
+                            listState.animateScrollToItem(0)
                         }
                     },
                     onRefresh = {
@@ -425,8 +428,6 @@ fun ScrobblesScreen(
                 scrobblesListItems(
                     tracks = tracks,
                     user = user,
-                    deletedTracksSet = deletedTracksSet,
-                    editedTracksMap = editedTracksMap,
                     pkgMap = pkgMap,
                     seenApps = seenApps,
                     fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,

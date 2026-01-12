@@ -108,6 +108,7 @@ fun ExportScreen(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
+                            errorText = null
                             viewModel.exportToServer(codeText)
                         }
                     ),
@@ -116,7 +117,8 @@ fun ExportScreen(
                             IconButtonWithTooltip(
                                 onClick = {
                                     viewModel.exportToServer(codeText)
-                                }, icon = Icons.Check,
+                                },
+                                icon = Icons.Check,
                                 contentDescription = stringResource(Res.string.done)
                             )
                         }

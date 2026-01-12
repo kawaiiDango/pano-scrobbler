@@ -53,7 +53,7 @@ class ExportVM : ViewModel() {
             if (exported) {
                 val jsonBody = outputStream.toString()
                 _result.value = runCatching {
-                    val (ip, port) = Base26Utils.decodeIpPort(base26Address)
+                    val (ip, port) = IpPortCode.decode(base26Address)
 
                     val req = ktorClient.post("https://$ip:$port/$base26Address") {
                         setBody(jsonBody)

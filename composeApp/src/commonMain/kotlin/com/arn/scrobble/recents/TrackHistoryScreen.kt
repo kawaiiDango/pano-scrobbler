@@ -54,8 +54,7 @@ fun TrackHistoryScreen(
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstScrobbleTime by viewModel.firstScrobbleTime.collectAsStateWithLifecycle()
     val total by viewModel.total.collectAsStateWithLifecycle(track.userplaycount)
-    val deletedTracksSet by viewModel.deletedTracksSet.collectAsStateWithLifecycle()
-    val editedTracksMap by viewModel.editedTracksMap.collectAsStateWithLifecycle()
+    val deletedTracksCount by viewModel.deletedTracksCount.collectAsStateWithLifecycle(0)
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
@@ -75,8 +74,8 @@ fun TrackHistoryScreen(
         }
     }
 
-    LaunchedEffect(total, deletedTracksSet) {
-        val formattedCount = ((total ?: 0) - deletedTracksSet.size)
+    LaunchedEffect(total, deletedTracksCount) {
+        val formattedCount = ((total ?: 0) - deletedTracksCount)
             .coerceAtLeast(0)
             .format()
         val title = if (user.isSelf) {
@@ -124,8 +123,6 @@ fun TrackHistoryScreen(
         scrobblesListItems(
             tracks = tracks,
             user = user,
-            deletedTracksSet = deletedTracksSet,
-            editedTracksMap = editedTracksMap,
             pkgMap = pkgMap,
             seenApps = seenApps,
             fetchAlbumImageIfMissing = false,

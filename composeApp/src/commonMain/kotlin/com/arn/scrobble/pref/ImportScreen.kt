@@ -3,6 +3,8 @@ package com.arn.scrobble.pref
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -21,8 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.navigation.enumSaver
+import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
@@ -35,6 +39,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.cancel
@@ -46,6 +51,7 @@ import pano_scrobbler.composeapp.generated.resources.import_lists_replace_existi
 import pano_scrobbler.composeapp.generated.resources.import_options
 import pano_scrobbler.composeapp.generated.resources.import_settings
 import pano_scrobbler.composeapp.generated.resources.imported
+import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_network_notice
@@ -95,7 +101,7 @@ fun ImportScreen(
                 }
 
                 1 -> {
-                    viewModel.startServer()
+                    filePickerShown = false
                 }
             }
             toggleButtonSelectedIndex = index
@@ -111,17 +117,49 @@ fun ImportScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                val serverAddress by viewModel.serverAddress.collectAsStateWithLifecycle()
+
+                LaunchedEffect(Unit) {
+                    if (serverAddress == null) {
+                        val firstIp = viewModel.localIps.firstOrNull()
+
+                        if (firstIp != null) {
+                            viewModel.setServerAddress(firstIp)
+                        } else {
+                            errorText = getString(Res.string.network_error)
+                        }
+                    }
+                }
+
                 Text(
                     text = stringResource(Res.string.pref_imexport_code),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
                 )
+                
                 Text(
                     text = codeText ?: "",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.displaySmall,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                if (serverAddress != null) {
+                    ButtonWithSpinner(
+                        prefixText = "IP",
+                        itemToTexts = remember {
+                            viewModel.localIps.associateWith { it }
+                        },
+                        selected = serverAddress!!,
+                        onItemSelected = {
+                            viewModel.setServerAddress(it)
+                        },
+                    )
+                }
 
                 Text(
                     text = stringResource(Res.string.pref_imexport_network_notice),
@@ -147,9 +185,9 @@ fun ImportScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.serverAddress.filterNotNull().collectLatest { result ->
+        viewModel.serverResult.filterNotNull().collectLatest { result ->
             result.onSuccess {
-                codeText = it
+                codeText = it.chunkedSequence(4).joinToString(" ")
                 errorText = null
             }.onFailure {
                 errorText = it.redactedMessage

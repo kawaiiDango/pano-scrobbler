@@ -114,6 +114,7 @@ data class MainPrefs(
     val receiptSignature: String? = null,
     val lastLicenseCheckTime: Long = -1,
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
+    private val usePlayFromSearch: Boolean = true,
     val trayIconTheme: DayNightMode = DayNightMode.SYSTEM,
     val cookies: Map<String, CookieSerializable> = emptyMap(),
     // keep this as a string and not as an enum, in case I delete presets later
@@ -174,6 +175,9 @@ data class MainPrefs(
 
     val scrobbleSpotifyRemoteP
         get() = !PlatformStuff.isTv && scrobbleSpotifyRemote
+
+    val usePlayFromSearchP
+        get() = PlatformStuff.isTv || !PlatformStuff.isDesktop && usePlayFromSearch
 
     fun allowOrBlockAppCopied(appId: String, allow: Boolean): MainPrefs {
         //create copies
@@ -313,6 +317,7 @@ data class MainPrefsPublic(
     @JsonNames("first_day_of_week")
     val firstDayOfWeek: Int,
     val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
+    val usePlayFromSearch: Boolean = true,
     val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
     val extractFirstArtistPackages: Set<String> = emptySet(),
     @JsonNames("app_whitelist")

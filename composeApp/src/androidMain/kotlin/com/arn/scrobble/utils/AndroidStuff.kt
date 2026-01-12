@@ -2,28 +2,19 @@ package com.arn.scrobble.utils
 
 import android.app.ActivityManager
 import android.app.ApplicationExitInfo
-import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ServiceInfo
 import android.media.MediaMetadata
-import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.MultiProcessDataStoreFactory
-import androidx.work.ForegroundInfo
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.R
-import com.arn.scrobble.main.MainActivity
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetPrefsSerializer
 import com.arn.scrobble.utils.Stuff.SCROBBLER_PROCESS_NAME
@@ -101,31 +92,6 @@ object AndroidStuff {
         )
     }
 
-    fun createForegroundInfoNotification(title: String): ForegroundInfo {
-        val context = applicationContext
-        val intent = Intent(context, MainActivity::class.java)
-        val launchIntent = PendingIntent.getActivity(
-            context, 8, intent,
-            updateCurrentOrImmutable
-        )
-        val notification = NotificationCompat.Builder(context, Stuff.CHANNEL_NOTI_PENDING)
-            .setSmallIcon(R.drawable.vd_noti_persistent)
-            .setPriority(Notification.PRIORITY_MIN)
-            .setContentIntent(launchIntent)
-            .apply { color = context.getColor(R.color.pinkNoti) }
-            .setContentTitle(title)
-            .build()
-
-        return ForegroundInfo(
-            title.hashCode(),
-            notification,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-            else
-                0
-        )
-    }
-
 
 //    val forcePersistentNoti by lazy {
 //        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
@@ -168,76 +134,6 @@ object AndroidStuff {
         return s
     }
 
-    fun actionsToString(actions: Long): String {
-        var s = "[\n"
-        if (actions and PlaybackState.ACTION_PREPARE != 0L) {
-            s += "\tACTION_PREPARE\n"
-        }
-        if (actions and PlaybackState.ACTION_PREPARE_FROM_MEDIA_ID != 0L) {
-            s += "\tACTION_PREPARE_FROM_MEDIA_ID\n"
-        }
-        if (actions and PlaybackState.ACTION_PREPARE_FROM_SEARCH != 0L) {
-            s += "\tACTION_PREPARE_FROM_SEARCH\n"
-        }
-        if (actions and PlaybackState.ACTION_PREPARE_FROM_URI != 0L) {
-            s += "\tACTION_PREPARE_FROM_URI\n"
-        }
-        if (actions and PlaybackState.ACTION_PLAY != 0L) {
-            s += "\tACTION_PLAY\n"
-        }
-        if (actions and PlaybackState.ACTION_PLAY_FROM_MEDIA_ID != 0L) {
-            s += "\tACTION_PLAY_FROM_MEDIA_ID\n"
-        }
-        if (actions and PlaybackState.ACTION_PLAY_FROM_SEARCH != 0L) {
-            s += "\tACTION_PLAY_FROM_SEARCH\n"
-        }
-        if (actions and PlaybackState.ACTION_PLAY_FROM_URI != 0L) {
-            s += "\tACTION_PLAY_FROM_URI\n"
-        }
-        if (actions and PlaybackState.ACTION_PLAY_PAUSE != 0L) {
-            s += "\tACTION_PLAY_PAUSE\n"
-        }
-        if (actions and PlaybackState.ACTION_PAUSE != 0L) {
-            s += "\tACTION_PAUSE\n"
-        }
-        if (actions and PlaybackState.ACTION_STOP != 0L) {
-            s += "\tACTION_STOP\n"
-        }
-        if (actions and PlaybackState.ACTION_SEEK_TO != 0L) {
-            s += "\tACTION_SEEK_TO\n"
-        }
-        if (actions and PlaybackState.ACTION_SKIP_TO_NEXT != 0L) {
-            s += "\tACTION_SKIP_TO_NEXT\n"
-        }
-        if (actions and PlaybackState.ACTION_SKIP_TO_PREVIOUS != 0L) {
-            s += "\tACTION_SKIP_TO_PREVIOUS\n"
-        }
-        if (actions and PlaybackState.ACTION_SKIP_TO_QUEUE_ITEM != 0L) {
-            s += "\tACTION_SKIP_TO_QUEUE_ITEM\n"
-        }
-        if (actions and PlaybackState.ACTION_FAST_FORWARD != 0L) {
-            s += "\tACTION_FAST_FORWARD\n"
-        }
-        if (actions and PlaybackState.ACTION_REWIND != 0L) {
-            s += "\tACTION_REWIND\n"
-        }
-        if (actions and PlaybackState.ACTION_SET_RATING != 0L) {
-            s += "\tACTION_SET_RATING\n"
-        }
-        if (actions and PlaybackStateCompat.ACTION_SET_REPEAT_MODE != 0L) {
-            s += "\tACTION_SET_REPEAT_MODE\n"
-        }
-        if (actions and PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE != 0L) {
-            s += "\tACTION_SET_SHUFFLE_MODE\n"
-        }
-        if (actions and PlaybackStateCompat.ACTION_SET_CAPTIONING_ENABLED != 0L) {
-            s += "\tACTION_SET_CAPTIONING_ENABLED\n"
-        }
-        s += "]"
-        return s
-    }
-
-
     @RequiresApi(Build.VERSION_CODES.R)
     fun getScrobblerExitReasons(afterTime: Long = -1): List<ApplicationExitInfo> {
         return try {
@@ -256,16 +152,6 @@ object AndroidStuff {
         // Caused by java.lang.IllegalArgumentException at getHistoricalProcessExitReasons
         // Comparison method violates its general contract!
         // probably a samsung bug
-    }
-
-
-    fun getNotificationAction(
-        icon: Int,
-        emoji: String,
-        text: String,
-        pIntent: PendingIntent,
-    ): NotificationCompat.Action {
-        return NotificationCompat.Action(icon, text, pIntent)
     }
 
     fun isPackageInstalled(packageName: String): Boolean {

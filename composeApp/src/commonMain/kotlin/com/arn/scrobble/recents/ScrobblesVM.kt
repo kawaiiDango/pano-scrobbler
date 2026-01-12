@@ -6,6 +6,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.filter
+import androidx.paging.insertSeparators
+import androidx.paging.map
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 class ScrobblesVM(
@@ -40,14 +43,11 @@ class ScrobblesVM(
     private val _scrobblerServiceRunning = MutableStateFlow<Boolean?>(null)
     val scrobblerServiceRunning = _scrobblerServiceRunning.asStateFlow()
 
-    private val _editedTracksMap = MutableStateFlow<Map<String, Track>>(emptyMap())
-    val editedTracksMap = _editedTracksMap.asStateFlow()
+    private val editedTracksMap = MutableStateFlow<Map<String, Track>>(emptyMap())
     private val _deletedTracksSet = MutableStateFlow<Set<Track>>(emptySet())
-    val deletedTracksSet = _deletedTracksSet.asStateFlow()
-
+    val deletedTracksCount = _deletedTracksSet.map { it.size }
     private val _pkgMap = MutableStateFlow<Map<Long, String>>(emptyMap())
     val pkgMap = _pkgMap.asStateFlow()
-    val lastScrobbleOfTheDaySet = mutableSetOf<Long>() // set of play times
     private val _input = MutableStateFlow(ScrobblesInput())
     private val _firstScrobbleTime = MutableStateFlow<Long?>(null)
     val firstScrobbleTime = _firstScrobbleTime.asStateFlow()
@@ -60,6 +60,8 @@ class ScrobblesVM(
     private val _loadedCachedVersion = MutableStateFlow(false)
     private val _lastRecentsRefreshTime = MutableStateFlow(System.currentTimeMillis())
     val lastRecentsRefreshTime = _lastRecentsRefreshTime.asStateFlow()
+
+    private val cal = Calendar.getInstance()!!
 
     private val pagingConfig = PagingConfig(
         pageSize = Stuff.DEFAULT_PAGE_SIZE,
@@ -87,7 +89,6 @@ class ScrobblesVM(
                         timeJumpMillis = input.timeJumpMillis,
                         track = track,
                         cachedOnly = !loadedCachedVersion,
-                        addLastScrobbleOfTheDay = { lastScrobbleOfTheDaySet += it },
                         addToPkgMap = { time, pkg -> _pkgMap.value += time to pkg },
                         onSetFirstScrobbleTime = { _firstScrobbleTime.value = it },
                         onSetLastRecentsRefreshTime = {
@@ -99,7 +100,17 @@ class ScrobblesVM(
                 }
             )
                 .flow
-                .map { pagingData ->
+                .cachedIn(viewModelScope)
+                .combine(editedTracksMap) { pagingData, editedMap ->
+                    // to update when edits happen
+                    pagingData.map { track ->
+                        val key = track.generateKey()
+                        val editedTrack = editedMap[key]
+                        TrackWrapper.TrackItem(editedTrack ?: track, key)
+                    }
+
+                }
+                .combine(_deletedTracksSet) { pagingData, deletedSet ->
                     if (!_loadedCachedVersion.value) {
                         viewModelScope.launch {
                             delay(50)
@@ -108,15 +119,36 @@ class ScrobblesVM(
                     }
 
                     val keysTillNow = mutableSetOf<String>()
-                    pagingData.filter {
-                        val key = it.generateKey()
-                        val keep = key !in keysTillNow
-                        keysTillNow += key
-                        keep
-                    }
+
+                    // filter duplicates to prevent a crash in LazyColumn
+                    pagingData
+                        .filter {
+                            val keep = it.key !in keysTillNow && it.track !in deletedSet
+                            keysTillNow += it.key
+                            keep
+                        }
+                        .insertSeparators { before, after ->
+                            if (input.loadLoved ||
+                                before?.track?.date == null ||
+                                after?.track?.date == null
+                            )
+                                return@insertSeparators null
+
+                            cal.timeInMillis = before.track.date
+                            val beforeDay = cal[Calendar.DAY_OF_YEAR]
+                            cal.timeInMillis = after.track.date
+                            val afterDay = cal[Calendar.DAY_OF_YEAR]
+
+                            if (beforeDay != afterDay)
+                                TrackWrapper.SeparatorItem(
+                                    after.track.date,
+                                    "sep_${after.track.date}"
+                                )
+                            else
+                                null
+                        }
                 }
         }
-        .cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {
@@ -243,9 +275,8 @@ class ScrobblesVM(
 
     private fun clearOverrides() {
         _deletedTracksSet.value = emptySet()
-        _editedTracksMap.value = emptyMap()
+        editedTracksMap.value = emptyMap()
         _pkgMap.value = emptyMap()
-        lastScrobbleOfTheDaySet.clear()
     }
 
     fun removeTrack(track: Track) {
@@ -253,7 +284,7 @@ class ScrobblesVM(
     }
 
     fun editTrack(key: String, editedTrack: Track) {
-        _editedTracksMap.value += key to editedTrack
+        editedTracksMap.value += key to editedTrack
     }
 
 }

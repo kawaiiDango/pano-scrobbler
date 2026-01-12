@@ -116,7 +116,7 @@ private fun init() {
     Logger.setLogWriters(
         JvmLogger(
             logToFile = true,
-            redirectStderr = true
+            redirectStderr = !BuildKonfig.DEBUG
         )
     )
     Logger.setTag("scrobbler")
@@ -387,7 +387,15 @@ fun main(args: Array<String>) {
                 height = windowState.size.height.value,
                 isMaximized = windowState.placement == WindowPlacement.Maximized,
             )
-            PlatformStuff.mainPrefs.updateData { it.copy(windowState = ws) }
+
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(
+                    windowState = if (ws.isMaximized)
+                        it.windowState?.copy(isMaximized = true) ?: ws
+                    else
+                        ws
+                )
+            }
         }
 
         if (DesktopStuff.os != DesktopStuff.Os.Linux) {
@@ -668,24 +676,38 @@ private fun TrayWindow(
             window.addWindowListener(
                 object : WindowListener {
 
-                    override fun windowOpened(p0: WindowEvent?) {
-                        // Get screen size
-                        val screenSize = Toolkit.getDefaultToolkit().screenSize
+                    override fun windowOpened(event: WindowEvent?) {
+                        val window = event?.window ?: return
+
+                        // Get screen configuration for the window
+                        val graphicsConfig = window.graphicsConfiguration
+                        val screenBounds = graphicsConfig.bounds
+                        val screenInsets =
+                            Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfig)
+
+                        // Calculate usable screen area
+                        val usableX = screenBounds.x + screenInsets.left
+                        val usableY = screenBounds.y + screenInsets.top
+                        val usableWidth =
+                            screenBounds.width - screenInsets.left - screenInsets.right
+                        val usableHeight =
+                            screenBounds.height - screenInsets.top - screenInsets.bottom
+
                         val winSize = window.size
                         var newX = window.location.x
                         var newY = window.location.y
 
                         // Adjust X if out of bounds
-                        if (newX + winSize.width > screenSize.width) {
-                            newX = screenSize.width - winSize.width
+                        if (newX + winSize.width > usableX + usableWidth) {
+                            newX = usableX + usableWidth - winSize.width
                         }
-                        if (newX < 0) newX = 0
+                        if (newX < usableX) newX = usableX
 
                         // Adjust Y if out of bounds
-                        if (newY + winSize.height > screenSize.height) {
-                            newY = screenSize.height - winSize.height
+                        if (newY + winSize.height > usableY + usableHeight) {
+                            newY = usableY + usableHeight - winSize.height
                         }
-                        if (newY < 0) newY = 0
+                        if (newY < usableY) newY = usableY
 
                         window.setLocation(newX, newY)
                     }
@@ -716,7 +738,6 @@ private fun TrayWindow(
         AppTheme {
             Surface(
                 shape = MaterialTheme.shapes.large,
-                modifier = Modifier.padding(8.dp)
             ) {
                 var actualWidth by remember { mutableStateOf(0) }
 

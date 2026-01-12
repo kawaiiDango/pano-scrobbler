@@ -68,6 +68,7 @@ class FriendsVM(user: UserCached) : ViewModel() {
             )
         }
     ).flow
+        .cachedIn(viewModelScope)
         .map { pagingData ->
             val keysTillNow = mutableSetOf<String>()
 
@@ -78,7 +79,6 @@ class FriendsVM(user: UserCached) : ViewModel() {
                 keep
             }
         }
-        .cachedIn(viewModelScope)
 
     private var loadedInitialCachedVersion = false
     private val _sortedFriends = MutableStateFlow<List<UserCached>?>(null)

@@ -319,6 +319,9 @@ sealed interface PanoRoute : NavKey {
             val hash: Int? = null, // from notification
             val key: String? = null, // from main ui
         ) : Modal, DeepLinkable
+
+        @Serializable
+        data object MediaSearchPref : Modal
     }
 
     fun homePagerTabData(user: UserCached, accountType: AccountType): List<PanoTab> {

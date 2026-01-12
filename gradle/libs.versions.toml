@@ -31,7 +31,6 @@ ksp = "2.3.4"
 ktor = "3.3.3"
 lifecycle = "2.10.0-alpha07"
 material3 = "1.11.0-alpha01"
-media = "1.7.1"
 nanohttpd = "2.3.1"
 nav3 = "1.1.0-alpha01"
 okhttp = "5.3.2"
@@ -94,7 +93,6 @@ lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-vie
 lifecycle-viewmodel-nav3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
 nav3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "nav3" }
 lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
-media = { module = "androidx.media:media", version.ref = "media" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }

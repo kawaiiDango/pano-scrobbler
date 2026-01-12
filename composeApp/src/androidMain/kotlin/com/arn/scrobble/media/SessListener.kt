@@ -10,7 +10,6 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.service.quicksettings.TileService
-import android.support.v4.media.MediaMetadataCompat
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.media.PlayerActions.love
@@ -35,9 +34,6 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.mute
 import pano_scrobbler.composeapp.generated.resources.skip
 
-/**
- * Created by arn on 04/07/2017.
- */
 class SessListener(
     scope: CoroutineScope,
     scrobbleQueue: ScrobbleQueue,
@@ -264,7 +260,7 @@ class SessListener(
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             metadata ?: return
 
-            if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_ADVERTISEMENT) != 0L) {
+            if (metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L) {
                 trackInfo.resetMeta()
                 return
             }
@@ -321,5 +317,9 @@ class SessListener(
         fun pause() {
             sessionTracker.pause()
         }
+    }
+
+    companion object {
+        private const val METADATA_KEY_ADVERTISEMENT = "android.media.metadata.ADVERTISEMENT"
     }
 }

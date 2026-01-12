@@ -16,6 +16,9 @@
     <string name="deezer" translatable="false">Deezer</string>
     <string name="tidal_steelseries" translatable="false">Tidal's SteelSeries Engine API</string>
     <string name="tidal" translatable="false">Tidal</string>
+    <string name="yt_music" translatable="false">YouTube Music</string>
+    <string name="bandcamp" translatable="false">Bandcamp</string>
+    <string name="genius" translatable="false">Genius</string>
 
     <string name="preset_remastered" translatable="false">Remastered</string>
     <string name="preset_explicit" translatable="false">Explicit / Clean</string>
@@ -48,7 +51,7 @@ WebView2 provided by Microsoft Edge Chromium
     </string>
 
     <!--  strings for unfinalized stuff  -->
-
+    <string name="search_in_media_player">Search in media player directly</string>
     <string name="forget_unchecked_apps"
         comment="Shown in the 'Scrobble From' apps list on desktop"
         >Forget unchecked apps</string>>

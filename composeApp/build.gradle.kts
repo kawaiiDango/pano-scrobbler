@@ -86,7 +86,6 @@ kotlin {
             implementation(libs.activity.compose)
             implementation(libs.work.runtime)
             implementation(libs.core.remoteviews)
-            implementation(libs.media)
             implementation(libs.coil.gif)
             implementation(libs.qrcode)
         }

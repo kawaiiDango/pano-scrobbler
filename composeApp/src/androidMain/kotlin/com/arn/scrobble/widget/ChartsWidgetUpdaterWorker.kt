@@ -27,6 +27,7 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
@@ -50,7 +51,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
     val workName = inputData.getString(WORK_NAME_KEY)!!
     val isOneTimeWork = workName == NAME_ONE_TIME
 
-    override suspend fun getForegroundInfo() = AndroidStuff.createForegroundInfoNotification(
+    override suspend fun getForegroundInfo() = PanoNotifications.createForegroundInfo(
         applicationContext.getString(R.string.charts)
     )
 

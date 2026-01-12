@@ -52,7 +52,7 @@ expect object PlatformStuff {
 
     fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream)
 
-    fun getLocalIpAddress(): String?
+    fun getLocalIpAddresses(): List<String>
 
     fun monotonicTimeMs(): Long
 

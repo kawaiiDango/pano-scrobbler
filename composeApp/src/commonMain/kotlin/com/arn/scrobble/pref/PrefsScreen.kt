@@ -110,7 +110,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
 import pano_scrobbler.composeapp.generated.resources.pref_search_in_source
 import pano_scrobbler.composeapp.generated.resources.pref_search_in_source_desc
 import pano_scrobbler.composeapp.generated.resources.pref_search_url_template
-import pano_scrobbler.composeapp.generated.resources.pref_search_url_template_desc
 import pano_scrobbler.composeapp.generated.resources.pref_show_scrobble_sources
 import pano_scrobbler.composeapp.generated.resources.pref_show_scrobble_sources_desc
 import pano_scrobbler.composeapp.generated.resources.pref_spotify_artist_search_approximate
@@ -149,7 +148,9 @@ fun PrefsScreen(
     val minDurationSecs by mainPrefs.data.collectAsStateWithInitialValue { it.minDurationSecsP }
     val showScrobbleSources by mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
     val searchInSource by mainPrefs.data.collectAsStateWithInitialValue { it.searchInSource }
-    val searchUrlTemplate by mainPrefs.data.collectAsStateWithInitialValue { it.searchUrlTemplate }
+    val searchUrlTemplate by mainPrefs.data.collectAsStateWithInitialValue { p ->
+        p.searchUrlTemplate.takeIf { !p.usePlayFromSearchP }
+    }
     val linkHeartButtonToRating by mainPrefs.data.collectAsStateWithInitialValue { it.linkHeartButtonToRating }
     val firstDayOfWeek by mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
     val locale by mainPrefs.data.collectAsStateWithInitialValue { it.locale }
@@ -441,14 +442,14 @@ fun PrefsScreen(
             }
         }
 
-        if (PlatformStuff.isDesktop) {
+        if (!PlatformStuff.isTv) {
             item(MainPrefs::searchUrlTemplate.name) {
-                TextFieldDialogPref(
+                TextPref(
                     text = stringResource(Res.string.pref_search_url_template),
-                    hint = stringResource(Res.string.pref_search_url_template_desc),
-                    value = searchUrlTemplate,
-                    validate = { it.contains("\$query") },
-                    copyToSave = { copy(searchUrlTemplate = it) }
+                    summary = searchUrlTemplate,
+                    onClick = {
+                        onNavigate(PanoRoute.Modal.MediaSearchPref)
+                    }
                 )
             }
         }

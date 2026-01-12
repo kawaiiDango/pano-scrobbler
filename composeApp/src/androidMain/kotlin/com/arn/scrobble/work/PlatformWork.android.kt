@@ -8,6 +8,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.PanoNotifications
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -69,8 +70,8 @@ class PlatformWorker(
     val workName = workerParameters.inputData.getString(WORK_NAME_KEY)!!
     val worker = getWorker(workName, ::setProgress)
 
-    override suspend fun getForegroundInfo() = AndroidStuff
-        .createForegroundInfoNotification(workName)
+    override suspend fun getForegroundInfo() = PanoNotifications
+        .createForegroundInfo(workName)
 
     override suspend fun doWork(): Result {
         val result = worker.doWork()

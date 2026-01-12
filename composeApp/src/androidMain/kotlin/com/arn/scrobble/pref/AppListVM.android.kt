@@ -3,7 +3,7 @@ package com.arn.scrobble.pref
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import androidx.media.MediaBrowserServiceCompat
+import android.service.media.MediaBrowserService
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.AndroidStuff
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +70,7 @@ actual suspend fun AppListVM.load(
         val otherApps = mutableMapOf<String, ApplicationInfo>()
 
         // this matches music players including shazam
-        var intent = Intent(MediaBrowserServiceCompat.SERVICE_INTERFACE)
+        var intent = Intent(MediaBrowserService.SERVICE_INTERFACE)
 
         musicPlayers += packageManager.queryIntentServices(
             intent,

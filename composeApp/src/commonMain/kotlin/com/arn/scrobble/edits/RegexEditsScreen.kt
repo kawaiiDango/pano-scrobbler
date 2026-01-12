@@ -289,7 +289,7 @@ private fun RegexEditsList(
                     },
                     onItemDelete = onItemDelete,
                     onItemToggle = onItemToggle,
-                    modifier = Modifier.alpha(if (isDragging) 0.5f else 1f)
+                    modifier = Modifier.alpha(if (isDragging) 0.25f else 1f)
                 )
             }
         }
@@ -349,7 +349,7 @@ private fun RegexEditItem(
         modifier = modifier
             .fillMaxWidth()
             .alpha(
-                if (regexEdit.enabled) 1f else 0.75f
+                if (regexEdit.enabled) 1f else 0.5f
             )
             .padding(vertical = 4.dp)
     ) {

@@ -71,7 +71,6 @@ import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.accountTypeLabel
-import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
@@ -504,7 +503,7 @@ private fun TrackDropdownMenu(
 }
 
 fun LazyListScope.scrobblesPlaceholdersAndErrors(
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackWrapper>,
 ) {
     when {
         tracks.loadState.refresh is LoadState.Loading -> {
@@ -677,10 +676,8 @@ private fun PendingScrobbleDesc(
 }
 
 fun LazyListScope.scrobblesListItems(
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackWrapper>,
     user: UserCached,
-    deletedTracksSet: Set<Track>,
-    editedTracksMap: Map<String, Track>,
     pkgMap: Map<Long, String>,
     seenApps: Map<String, String>,
     fetchAlbumImageIfMissing: Boolean,
@@ -701,33 +698,28 @@ fun LazyListScope.scrobblesListItems(
     }
 
     for (i in 0 until tracks.itemCount) {
-        val trackPeek = tracks.peek(i)?.let {
-            editedTracksMap[it.generateKey()] ?: it
-        }
+        val trackWrapperPeek = tracks.peek(i)
 
-        if (trackPeek == null || trackPeek !in deletedTracksSet) {
-            val key = tracks.peek(i)?.generateKey() ?: "placeholder_$i"
+        val key = trackWrapperPeek?.key ?: "placeholder_$i"
 
-            if (trackPeek?.date in viewModel.lastScrobbleOfTheDaySet) {
-                item(
-                    key = "date_separator\n$key"
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .animateItem()
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp, horizontal = 16.dp)
-
-                    )
-                }
-            }
-
+        if (trackWrapperPeek is TrackWrapper.SeparatorItem) {
             item(
                 key = key
             ) {
-                val track = tracks[i]?.let {
-                    editedTracksMap[it.generateKey()] ?: it
-                } ?: getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS) as Track
+                HorizontalDivider(
+                    modifier = Modifier
+                        .animateItem()
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+
+                )
+            }
+        } else if (trackWrapperPeek is TrackWrapper.TrackItem || trackWrapperPeek == null) {
+            item(
+                key = key
+            ) {
+                val track = trackWrapperPeek?.track
+                    ?: getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS) as Track
 
                 var menuVisible by remember { mutableStateOf(false) }
 
@@ -753,7 +745,7 @@ fun LazyListScope.scrobblesListItems(
                             onExpand(key)
                         }
                     },
-                    forShimmer = trackPeek == null,
+                    forShimmer = trackWrapperPeek == null,
                     fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
                     menuContent = {
                         TrackDropdownMenu(
@@ -815,7 +807,7 @@ fun LazyListScope.scrobblesListItems(
                             } else null,
                             onDelete = if (canDelete) {
                                 {
-                                    viewModel.removeTrack(trackPeek!!)
+                                    viewModel.removeTrack(trackWrapperPeek!!.track)
                                 }
                             } else null,
                             expanded = menuVisible,
@@ -841,13 +833,12 @@ fun LazyListScope.scrobblesListItems(
                                 Modifier
                         )
                         .then(
-                            if (trackPeek == null)
+                            if (trackWrapperPeek == null)
                                 Modifier.shimmerWindowBounds()
                             else
                                 Modifier
                         )
                 )
-
             }
         }
     }

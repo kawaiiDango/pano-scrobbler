@@ -16,7 +16,6 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import java.util.Calendar
 import java.util.TreeMap
 import kotlin.math.abs
 
@@ -26,7 +25,6 @@ class ScrobblesPagingSource(
     private val timeJumpMillis: Long?,
     private val track: Track?,
     private val cachedOnly: Boolean,
-    private val addLastScrobbleOfTheDay: (Long) -> Unit,
     private val addToPkgMap: (Long, String) -> Unit,
     private val onSetFirstScrobbleTime: (Long) -> Unit,
     private val onSetLastRecentsRefreshTime: (Long) -> Unit,
@@ -35,7 +33,6 @@ class ScrobblesPagingSource(
 ) : PagingSource<ScrobblesLoaderPage, Track>() {
 
     private val limit = Stuff.DEFAULT_PAGE_SIZE
-    private val cal = Calendar.getInstance()
     private val scrobbleSourcesDao = PanoDb.db.getScrobbleSourcesDao()
 
     override suspend fun load(params: LoadParams<ScrobblesLoaderPage>): LoadResult<ScrobblesLoaderPage, Track> {
@@ -43,7 +40,6 @@ class ScrobblesPagingSource(
         val lastScrobbleTimestamp = params.key?.lastScrobbleTimestamp
 
         val includeNowPlaying = timeJumpMillis == null && page == 1
-        val shouldMarkFirstScrobbleOfTheDays = page == 1 && track == null && !loadLovedTracks
         val currentScrobblable = Scrobblables.current
 
         val result = when {
@@ -95,10 +91,7 @@ class ScrobblesPagingSource(
                 onClearOverrides()
 
             onSetTotal(total)
-
-            if (shouldMarkFirstScrobbleOfTheDays)
-                markFirstScrobbleOfTheDays(entries)
-
+            
             if (
                 currentScrobblable !is FileScrobblable &&
                 VariantStuff.billingRepository.isLicenseValid &&
@@ -198,25 +191,6 @@ class ScrobblesPagingSource(
             closestEntry.value
         } else {
             null
-        }
-    }
-
-    private fun markFirstScrobbleOfTheDays(tracks: List<Track>) {
-        var prevDate = -1
-        // dont mark the first scrobble
-        val minIdx = if (tracks.firstOrNull()?.isNowPlaying == true) 1 else 0
-
-        tracks.forEachIndexed { idx, track ->
-            if (track.date == null)
-                return@forEachIndexed
-
-            cal.timeInMillis = track.date
-            val currentDate = cal[Calendar.DAY_OF_YEAR]
-
-
-            if (prevDate != currentDate && idx > minIdx)
-                addLastScrobbleOfTheDay(track.date)
-            prevDate = currentDate
         }
     }
 }

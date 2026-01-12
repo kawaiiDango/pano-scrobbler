@@ -40,6 +40,7 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
+import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -168,16 +169,33 @@ actual object PlatformStuff {
         musicEntry: MusicEntry,
         appId: String?,
     ) {
-        val searchInSource = mainPrefs.data.map { it.searchInSource }.first()
+        val searchUrlTemplate = mainPrefs.data.map { p ->
+            p.searchUrlTemplate.takeIf { !p.usePlayFromSearchP }
+        }.first()
+
+        val searchQuery = when (musicEntry) {
+            is Artist -> musicEntry.name
+            is Album -> musicEntry.artist!!.name + " " + musicEntry.name
+            is Track -> musicEntry.artist.name + " " + musicEntry.name
+        }
+
+        if (searchQuery.isBlank())
+            return
+
+        if (searchUrlTemplate != null) {
+            val searchUrl = searchUrlTemplate.replace(
+                "\$query",
+                searchQuery.encodeURLPath()
+            )
+            openInBrowser(searchUrl)
+            return
+        }
 
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            val searchQuery: String
-
             when (musicEntry) {
                 is Artist -> {
-                    searchQuery = musicEntry.name
                     putExtra(
                         MediaStore.EXTRA_MEDIA_FOCUS,
                         MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE
@@ -186,17 +204,15 @@ actual object PlatformStuff {
                 }
 
                 is Album -> {
-                    searchQuery = musicEntry.artist!!.name + " " + musicEntry.name
                     putExtra(
                         MediaStore.EXTRA_MEDIA_FOCUS,
                         MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE
                     )
-                    putExtra(MediaStore.EXTRA_MEDIA_ARTIST, musicEntry.artist.name)
+                    putExtra(MediaStore.EXTRA_MEDIA_ARTIST, musicEntry.artist!!.name)
                     putExtra(MediaStore.EXTRA_MEDIA_ALBUM, musicEntry.name)
                 }
 
                 is Track -> {
-                    searchQuery = musicEntry.artist.name + " " + musicEntry.name
                     putExtra(
                         MediaStore.EXTRA_MEDIA_FOCUS,
                         MediaStore.Audio.Media.ENTRY_CONTENT_TYPE
@@ -209,12 +225,11 @@ actual object PlatformStuff {
                 }
             }
 
-            if (searchQuery.isBlank())
-                return
-
             putExtra(SearchManager.QUERY, searchQuery)
 
-            if (appId != null && VariantStuff.billingRepository.isLicenseValid && searchInSource)
+            if (appId != null && VariantStuff.billingRepository.isLicenseValid &&
+                mainPrefs.data.map { it.searchInSource }.first()
+            )
                 `package` = appId
         }
         try {
@@ -293,7 +308,7 @@ actual object PlatformStuff {
         }
     }
 
-    actual fun getLocalIpAddress(): String? {
+    actual fun getLocalIpAddresses(): List<String> {
         val connectivityManager =
             ContextCompat.getSystemService(
                 applicationContext,
@@ -302,14 +317,13 @@ actual object PlatformStuff {
         val activeNetwork = connectivityManager.activeNetwork
         val linkProperties = connectivityManager.getLinkProperties(activeNetwork)
 
-        linkProperties?.linkAddresses?.forEach { linkAddress ->
-            val inetAddress = linkAddress.address
-            if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
-                return inetAddress.hostAddress
+        return linkProperties?.linkAddresses
+            ?.filter {
+                val inetAddress = it.address
+                !inetAddress.isLoopbackAddress && inetAddress is Inet4Address
             }
-        }
-
-        return null
+            ?.mapNotNull { it.address.hostAddress }
+            .orEmpty()
     }
 
     actual fun monotonicTimeMs() = SystemClock.elapsedRealtime()

@@ -182,17 +182,21 @@ actual object PlatformStuff {
         }
     }
 
-    actual fun getLocalIpAddress(): String? {
+    actual fun getLocalIpAddresses(): List<String> {
         return try {
             NetworkInterface.getNetworkInterfaces().asSequence()
                 .filter { it.isUp && !it.isLoopback && !it.isVirtual }
                 .flatMap { it.inetAddresses.asSequence() }
-                .firstOrNull {
+                .filter {
                     !it.isLoopbackAddress && it is Inet4Address
-                }?.hostAddress
+                }
+                .mapNotNull {
+                    it.hostAddress
+                }
+                .toList()
         } catch (e: Exception) {
             Logger.e(e) { "Failed to get local IP address" }
-            null
+            emptyList()
         }
     }
 

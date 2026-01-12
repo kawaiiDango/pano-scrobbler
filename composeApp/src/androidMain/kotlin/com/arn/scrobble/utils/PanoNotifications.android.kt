@@ -1,15 +1,18 @@
 package com.arn.scrobble.utils
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.media.app.NotificationCompat.MediaStyle
+import androidx.work.ForegroundInfo
 import com.arn.scrobble.R
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
@@ -22,6 +25,7 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.updates.UpdateAction
+import com.arn.scrobble.utils.AndroidStuff.updateCurrentOrImmutable
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -53,13 +57,29 @@ actual object PanoNotifications {
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
     private val nowPlayingScrobbleDataToHash = mutableMapOf<String, Pair<ScrobbleData, Int>>()
 
-    private fun buildNotification(): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context)
-            .setShowWhen(false)
-            .setColor(notiColor)
-            .setCustomBigContentView(null)
+    private fun buildNotificationAction(
+        icon: Int,
+        emoji: String,
+        text: String,
+        pIntent: PendingIntent,
+    ): Notification.Action {
+        val icon = Icon.createWithResource(context, icon)
+        return Notification.Action.Builder(icon, text, pIntent).build()
     }
 
+    private fun Notification.Builder.setChannelIdCompat(channelId: String): Notification.Builder {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setChannelId(channelId)
+        }
+        return this
+    }
+
+    private fun Notification.Builder.setTimeoutAfterCompat(ms: Long): Notification.Builder {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setTimeoutAfter(ms)
+        }
+        return this
+    }
 
     actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
         if (event.nowPlaying)
@@ -94,7 +114,7 @@ actual object PanoNotifications {
             AndroidStuff.updateCurrentOrImmutable
         )
 
-        val loveAction = AndroidStuff.getNotificationAction(
+        val loveAction = buildNotificationAction(
             if (event.userLoved) R.drawable.vd_heart_filled else R.drawable.vd_heart,
             if (event.userLoved) "❤️" else "🤍",
             getString(
@@ -112,9 +132,12 @@ actual object PanoNotifications {
             else
                 "✓ "
 
-        val style = MediaStyle()
-        val nb = buildNotification()
-            .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
+        val style = Notification.MediaStyle()
+        val nb = Notification.Builder(context)
+            .setChannelIdCompat(Stuff.CHANNEL_NOTI_SCROBBLING)
+            .setShowWhen(false)
+            .setColor(notiColor)
+            .setCustomBigContentView(null)
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setStyle(style)
@@ -161,7 +184,7 @@ actual object PanoNotifications {
             val editPi =
                 DeepLinkUtils.buildDialogPendingIntent(editDialogArgs)
 
-            val editAction = AndroidStuff.getNotificationAction(
+            val editAction = buildNotificationAction(
                 R.drawable.vd_edit,
                 "✏️",
                 getString(Res.string.edit),
@@ -181,7 +204,7 @@ actual object PanoNotifications {
                 AndroidStuff.updateCurrentOrImmutable
             )
 
-            val cancelAction = AndroidStuff.getNotificationAction(
+            val cancelAction = buildNotificationAction(
                 R.drawable.vd_remove,
                 "⛔️",
                 context.getString(android.R.string.cancel),
@@ -206,7 +229,7 @@ actual object PanoNotifications {
             )
 
             val blockPi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
-            val blockAction = AndroidStuff.getNotificationAction(
+            val blockAction = buildNotificationAction(
                 R.drawable.vd_ban,
                 "🚫",
                 getString(Res.string.block),
@@ -243,13 +266,15 @@ actual object PanoNotifications {
         else
             event.scrobbleError.title
 
-        val nb = buildNotification()
+        val nb = Notification.Builder(context)
+            .setShowWhen(false)
+            .setColor(notiColor)
             .setSmallIcon(R.drawable.vd_noti_err)
             .setContentTitle(title)
             .setContentText(subtitle)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setStyle(
-                NotificationCompat.BigTextStyle()
+                Notification.BigTextStyle()
                     .setBigContentTitle(event.scrobbleError.title)
                     .bigText(subtitle)
             )
@@ -264,9 +289,9 @@ actual object PanoNotifications {
                         DeepLinkUtils.buildDialogPendingIntent(editDialogArgs)
 
                     it.setContentIntent(editPi)
-                    it.setChannelId(Stuff.CHANNEL_NOTI_SCR_ERR)
+                    it.setChannelIdCompat(Stuff.CHANNEL_NOTI_SCR_ERR)
                 } else {
-                    it.setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
+                    it.setChannelIdCompat(Stuff.CHANNEL_NOTI_SCROBBLING)
                 }
             }
 
@@ -312,7 +337,10 @@ actual object PanoNotifications {
             AndroidStuff.updateCurrentOrImmutable
         )
 
-        val n = buildNotification()
+        val n = Notification.Builder(context)
+            .setShowWhen(false)
+            .setColor(notiColor)
+            .setCustomBigContentView(null)
             .setContentTitle(
                 getString(
                     Res.string.new_player,
@@ -322,10 +350,10 @@ actual object PanoNotifications {
             .setContentText(
                 getString(Res.string.new_player_prompt)
             )
-            .setChannelId(Stuff.CHANNEL_NOTI_NEW_APP)
+            .setChannelIdCompat(Stuff.CHANNEL_NOTI_NEW_APP)
             .setSmallIcon(R.drawable.vd_appquestion_noti)
             .addAction(
-                AndroidStuff.getNotificationAction(
+                buildNotificationAction(
                     R.drawable.vd_ban,
                     "\uD83D\uDEAB",
                     getString(Res.string.no),
@@ -333,7 +361,7 @@ actual object PanoNotifications {
                 )
             )
             .addAction(
-                AndroidStuff.getNotificationAction(
+                buildNotificationAction(
                     R.drawable.vd_check,
                     "✔",
                     getString(Res.string.yes),
@@ -341,7 +369,7 @@ actual object PanoNotifications {
                 )
             )
             .setStyle(
-                MediaStyle().setShowActionsInCompactView(0, 1)
+                Notification.MediaStyle().setShowActionsInCompactView(0, 1)
             )
             .setAutoCancel(true)
             .build()
@@ -366,8 +394,10 @@ actual object PanoNotifications {
 
         val blockPi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
 
-        val nb = buildNotification()
-            .setChannelId(Stuff.CHANNEL_NOTI_SCROBBLING)
+        val nb = Notification.Builder(context)
+            .setShowWhen(false)
+            .setColor(notiColor)
+            .setChannelIdCompat(Stuff.CHANNEL_NOTI_SCROBBLING)
             .setSmallIcon(R.drawable.vd_noti_err)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentTitle(
@@ -375,7 +405,7 @@ actual object PanoNotifications {
                         getString(Res.string.blocked_metadata_noti)
             )
             .setContentIntent(blockPi)
-            .setTimeoutAfter(delayTime)
+            .setTimeoutAfterCompat(delayTime)
         notificationManager.notify(notiKey, 0, nb.build())
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             GlobalScope.launch {
@@ -416,14 +446,15 @@ actual object PanoNotifications {
                 AndroidStuff.updateCurrentOrImmutable
             )!!
 
-        val nb = NotificationCompat.Builder(context, channelId)
+        val nb = Notification.Builder(context)
+            .setChannelIdCompat(channelId)
+            .setColor(notiColor)
             .setSmallIcon(R.drawable.vd_charts)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentTitle(title)
             .setContentIntent(chartsPi)
-            .apply { color = context.getColor(R.color.pinkNoti) }
             .addAction(
-                AndroidStuff.getNotificationAction(
+                buildNotificationAction(
                     R.drawable.vd_mosaic,
                     "🖼️",
                     getString(Res.string.create_collage),
@@ -431,7 +462,7 @@ actual object PanoNotifications {
                 )
             )
             .addAction(
-                AndroidStuff.getNotificationAction(
+                buildNotificationAction(
                     R.drawable.vd_charts,
                     "📊",
                     getString(Res.string.charts),
@@ -441,7 +472,7 @@ actual object PanoNotifications {
             .setContentText(text)
             .setShowWhen(true)
             .setStyle(
-                NotificationCompat.BigTextStyle()
+                Notification.BigTextStyle()
                     .setBigContentTitle(title)
                     .bigText(text)
             )
@@ -481,15 +512,44 @@ actual object PanoNotifications {
             AndroidStuff.updateCurrentOrImmutable
         )
 
-        val nb = buildNotification()
+        val nb = Notification.Builder(context)
+            .setShowWhen(false)
+            .setColor(notiColor)
             .setSmallIcon(R.drawable.vd_noti)
             .setContentTitle(getString(Res.string.update_available, updateAction.version))
-            .setChannelId(Stuff.CHANNEL_NOTI_UPDATER)
+            .setChannelIdCompat(Stuff.CHANNEL_NOTI_UPDATER)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(contentPi)
             .setAutoCancel(true)
 
         notificationManager.notify(Stuff.CHANNEL_NOTI_UPDATER, 0, nb.build())
+    }
+
+
+    fun createForegroundInfo(title: String): ForegroundInfo {
+        val intent = Intent(context, MainActivity::class.java)
+        val launchIntent = PendingIntent.getActivity(
+            context, 8, intent,
+            updateCurrentOrImmutable
+        )
+        val notification = Notification.Builder(context)
+            .setChannelIdCompat(Stuff.CHANNEL_NOTI_PERSISTENT)
+            .setShowWhen(false)
+            .setColor(notiColor)
+            .setSmallIcon(R.drawable.vd_noti_persistent)
+            .setPriority(Notification.PRIORITY_MIN)
+            .setContentIntent(launchIntent)
+            .setContentTitle(title)
+            .build()
+
+        return ForegroundInfo(
+            title.hashCode(),
+            notification,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            else
+                0
+        )
     }
 
     actual fun removeNotificationByKey(key: String) {

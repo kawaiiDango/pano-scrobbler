@@ -19,22 +19,58 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import pano_scrobbler.composeapp.generated.resources.Res
-import java.io.IOException
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 
 
 class ImportVM : ViewModel() {
 
-    private val _serverAddress = MutableStateFlow<Result<String>?>(null)
+    private val _serverAddress = MutableStateFlow<String?>(null)
     val serverAddress = _serverAddress.asStateFlow()
+    private val _serverResult = MutableStateFlow<Result<String>?>(null)
+    val serverResult = _serverResult.asStateFlow()
     private val _jsonText = MutableStateFlow<String?>(null)
     val jsonText = _jsonText.filterNotNull()
     private val _importResult = MutableSharedFlow<Boolean>()
     val importResult = _importResult.asSharedFlow()
     private val imExporter by lazy { ImExporter() }
-
+    val localIps by lazy { PlatformStuff.getLocalIpAddresses() }
     private var server: ImportServer? = null
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            serverAddress
+                .collect { localIp ->
+                    server?.stop()
+
+                    if (localIp == null) {
+                        _serverResult.value = null
+                        return@collect
+                    }
+
+                    val randomPort = (IpPortCode.PORT_BASE..IpPortCode.PORT_MAX).random()
+
+                    Logger.d { "Server running on: https://$localIp:$randomPort" }
+
+                    try {
+                        val base26Address = IpPortCode.encode(localIp, randomPort)
+                        server = ImportServer(localIp, randomPort, base26Address) { postData ->
+                            _jsonText.tryEmit(postData)
+                        }
+                        server?.start()
+
+                        _serverResult.value = Result.success(base26Address)
+                    } catch (e: Exception) {
+                        Logger.e(e) { "Failed to start import server" }
+                        _serverResult.value = Result.failure(e)
+                    }
+                }
+        }
+    }
+
+    fun setServerAddress(address: String?) {
+        _serverAddress.value = address
+    }
 
     fun import(
         editsMode: EditsMode,
@@ -55,38 +91,6 @@ class ImportVM : ViewModel() {
                 val fileText = it.bufferedReader().readText()
                 _jsonText.emit(fileText)
             }
-        }
-    }
-
-    fun startServer() {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (serverAddress.value != null) {
-                return@launch
-            }
-
-            val localIp = PlatformStuff.getLocalIpAddress()
-            if (localIp == null) {
-                _serverAddress.value = Result.failure(IOException("No connection"))
-                return@launch
-            }
-
-            val randomPort = (Base26Utils.PORT_START..Base26Utils.PORT_END).random()
-
-            Logger.d { "Server running on: https://$localIp:$randomPort" }
-
-            try {
-                val base26Address = Base26Utils.encodeIpPort(localIp, randomPort)
-                val server = ImportServer(localIp, randomPort, base26Address) { postData ->
-                    _jsonText.tryEmit(postData)
-                }
-                server.start()
-
-                _serverAddress.value = Result.success(base26Address)
-            } catch (e: Exception) {
-                Logger.e(e) { "Failed to start import server" }
-                _serverAddress.value = Result.failure(e)
-            }
-
         }
     }
 

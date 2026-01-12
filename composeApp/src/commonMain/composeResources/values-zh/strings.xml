@@ -141,6 +141,7 @@
     <string name="pending_scrobbles">待记录的音乐</string>
     <string name="following" comment="accounts you are following on lastfm">关注</string>
     <string name="followers" comment="your lastfm followers">关注者</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">自%1$s起</string>
     <string name="allow_background">允许后台抓取记录</string>
     <string name="grant_notification_access">授予通知访问权限</string>
     <string name="grant_notification_access_desc">借此获取音乐元数据信息，不会读取非音乐类通知</string>
@@ -408,6 +409,16 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">在 %1$s 上获取此应用</string>
     <string name="first_artist">仅使用第一个艺人</string>
     <string name="external_metadata">外部元数据源</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">第%1$s行</string>
+    <string name="album_art_now_playing">如果需要，从现在播放获取专辑封面</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s 在 %2$s 中被关闭</string>
+    <string name="discord_compact_view_line">显示为“正在监听”：</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">可用占位符： %1$s</string>
+    <string name="show_paused_for">显示已暂停的媒体为</string>
+    <string name="edit_example">例如，要将“Artist1”替换为“Artist2”同时保持其他元数据不变，只需启用艺术家字段，并填写原始和更正后的艺术家名称，其他字段保持禁用状态。</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">当使用 %1$s 时</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">当没有使用 %1$s 时</string>
+    <string name="as_text" comment="Like copy as text, but in short">作为文本</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="one_time_purchase">1次</string>

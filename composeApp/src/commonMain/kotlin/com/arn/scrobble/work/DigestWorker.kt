@@ -77,7 +77,12 @@ class DigestWorker(
         }
 
         // self-schedule next digest
-        DigestWork.checkAndSchedule()
+        val (nextWeek, nextMonth) = nextWeekAndMonth()
+
+        DigestWork.schedule(
+            nextWeek,
+            nextMonth,
+        )
 
         return if (error != null)
             CommonWorkerResult.Failure(error.redactedMessage)
@@ -157,7 +162,7 @@ class DigestWorker(
     }
 
     companion object {
-        suspend fun getScheduleTimes(): Map<DigestType, Long> {
+        suspend fun nextWeekAndMonth(): Pair<Long, Long> {
             val storedDigestSeconds = PlatformStuff.mainPrefs.data
                 .map { it.digestSeconds }.first()
 
@@ -167,8 +172,6 @@ class DigestWorker(
                 PlatformStuff.mainPrefs.updateData { it.copy(digestSeconds = digestSeconds) }
 
             val secondsToAdd = -digestSeconds
-
-            val timesMap = mutableMapOf<DigestType, Long>()
 
             val now = System.currentTimeMillis()
 
@@ -183,7 +186,7 @@ class DigestWorker(
             if (cal.timeInMillis < now)
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
 
-            timesMap[DigestType.DIGEST_WEEKLY] = cal.timeInMillis
+            val nextWeek = cal.timeInMillis
 
             cal.timeInMillis = now
             cal.setMidnight()
@@ -194,19 +197,19 @@ class DigestWorker(
             if (cal.timeInMillis < now)
                 cal.add(Calendar.MONTH, 1)
 
-            timesMap[DigestType.DIGEST_MONTHLY] = cal.timeInMillis
+            val nextMonth = cal.timeInMillis
 
-            cal.timeInMillis = now
-            cal.setMidnight()
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            cal.add(Calendar.SECOND, secondsToAdd)
-//            cal.add(Calendar.MINUTE, 1)
-            if (cal.timeInMillis < now)
-                cal.add(Calendar.DAY_OF_YEAR, 1)
-            timesMap[DigestType.DIGEST_DAILY] = cal.timeInMillis
+//            cal.timeInMillis = now
+//            cal.setMidnight()
+//            cal.add(Calendar.DAY_OF_YEAR, 1)
+//            cal.add(Calendar.SECOND, secondsToAdd)
+////            cal.add(Calendar.MINUTE, 1)
+//            if (cal.timeInMillis < now)
+//                cal.add(Calendar.DAY_OF_YEAR, 1)
+//            timesMap[DigestType.DIGEST_DAILY] = cal.timeInMillis
 
 
-            return timesMap
+            return nextWeek to nextMonth
         }
 
     }

@@ -10,12 +10,12 @@ import androidx.work.workDataOf
 import com.arn.scrobble.utils.AndroidStuff
 
 actual object IndexerWork : CommonWorkImpl(IndexerWorker.NAME) {
-    override fun checkAndSchedule(force: Boolean) {
+    actual fun schedule(full: Boolean) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val inputName = if (force) IndexerWorker.NAME_FULL_INDEX else IndexerWorker.NAME_DELTA_INDEX
+        val inputName = if (full) IndexerWorker.NAME_FULL_INDEX else IndexerWorker.NAME_DELTA_INDEX
 
         val oneTimeWork = OneTimeWorkRequestBuilder<PlatformWorker>()
             .setConstraints(constraints)

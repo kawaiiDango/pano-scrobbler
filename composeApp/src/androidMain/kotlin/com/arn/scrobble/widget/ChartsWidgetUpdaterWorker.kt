@@ -233,7 +233,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
         const val NAME_PERIODIC = "charts_widget_updater_periodic"
         private const val WORK_NAME_KEY = "uniqueWorkName"
 
-        fun checkAndSchedule(context: Context, runImmediately: Boolean) {
+        fun schedule(context: Context, runImmediately: Boolean) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()

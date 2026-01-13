@@ -47,6 +47,7 @@ import com.arn.scrobble.utils.getCurrentLocale
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.DigestWork
+import com.arn.scrobble.work.DigestWorker
 import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
@@ -217,7 +218,12 @@ fun PrefsScreen(
             snapshotFlow { firstDayOfWeek }
                 .drop(1) // only for changes
                 .collect {
-                    DigestWork.checkAndSchedule()
+                    val (nextWeek, nextMonth) = DigestWorker.nextWeekAndMonth()
+
+                    DigestWork.schedule(
+                        nextWeek,
+                        nextMonth,
+                    )
                 }
         }
     }
@@ -686,7 +692,7 @@ fun PrefsScreen(
                         if (!it)
                             UpdaterWork.cancel()
                         else
-                            UpdaterWork.checkAndSchedule(true)
+                            UpdaterWork.schedule(true)
 
                         copy(autoUpdates = it)
                     }
@@ -699,7 +705,7 @@ fun PrefsScreen(
                     enabled = updateProgress == null,
                     onClick = {
                         if (updateProgress == null)
-                            UpdaterWork.checkAndSchedule(true)
+                            UpdaterWork.schedule(true)
                     }
                 )
             }

@@ -518,7 +518,7 @@ fun main(args: Array<String>) {
             if (!DesktopStuff.noUpdateCheck && Stuff.mainPrefsInitialValue.autoUpdates) {
                 // this app runs at startup, so wait for an internet connection
                 delay(1.minutes)
-                UpdaterWork.checkAndSchedule(true)
+                UpdaterWork.schedule(true)
             }
         }
 

@@ -1,3 +1,5 @@
 package com.arn.scrobble.work
 
-expect object UpdaterWork : CommonWork
+expect object UpdaterWork : CommonWork {
+    fun schedule(force: Boolean)
+}

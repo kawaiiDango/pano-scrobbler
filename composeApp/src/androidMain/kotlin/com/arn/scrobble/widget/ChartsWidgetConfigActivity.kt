@@ -62,7 +62,7 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
             ChartsListUtils.updateWidgets(intArrayOf(appWidgetId))
 
             if (!exists || reFetch)
-                ChartsWidgetUpdaterWorker.checkAndSchedule(
+                ChartsWidgetUpdaterWorker.schedule(
                     this@ChartsWidgetConfigActivity.applicationContext,
                     true
                 )

@@ -88,7 +88,7 @@ class UpdaterWorker(
 
         // do not schedule another update if already updated, but not restarted yet
         if (Stuff.globalUpdateAction.value == null)
-            UpdaterWork.checkAndSchedule(false)
+            UpdaterWork.schedule(false)
 
         return if (latestRelease.isSuccess)
             CommonWorkerResult.Success

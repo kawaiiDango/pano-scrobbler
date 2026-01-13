@@ -23,10 +23,7 @@ class ReschedulerReceiver : BroadcastReceiver() {
         if (PlatformStuff.isTv)
             return
 
-        DigestWork.checkAndSchedule()
-
-//            if (!PlatformStuff.noUpdateCheck && Stuff.mainPrefsInitialValue.autoUpdates) {
-//                UpdaterWork.checkAndSchedule(true)
-//            }
+        // todo reschedule digest work here
+//        DigestWork.checkAndSchedule()
     }
 }

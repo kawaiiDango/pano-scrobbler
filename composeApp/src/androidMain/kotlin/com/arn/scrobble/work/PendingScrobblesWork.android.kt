@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME) {
     const val RETRY_DELAY_HOURS = 1L
 
-    override fun checkAndSchedule(force: Boolean) {
+    actual fun schedule(force: Boolean) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()

@@ -78,7 +78,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Error
@@ -109,7 +108,6 @@ import pano_scrobbler.composeapp.generated.resources.librefm
 import pano_scrobbler.composeapp.generated.resources.like_instance
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.login_submit
-import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.no
 import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.pleroma
@@ -703,12 +701,8 @@ fun ListLoadError(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val genericErrorText = stringResource(Res.string.network_error)
     val errorText = remember(throwable) {
-        if (throwable is ApiException)
-            genericErrorText + ": " + throwable.code
-        else
-            throwable.redactedMessage
+        throwable.redactedMessage
     }
 
     Row(

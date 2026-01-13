@@ -11,14 +11,16 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.AndroidStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
 actual object DigestWork : CommonWork {
     const val DIGEST_TAG = "DIGEST"
     const val DAILY_TEST_DIGESTS = false
 
-    override fun checkAndSchedule(force: Boolean) {
+    actual fun schedule(
+        weeklyDigestTime: Long,
+        monthlyDigestTime: Long,
+    ) {
         val workManager = try {
             WorkManager.getInstance(AndroidStuff.applicationContext)
         } catch (e: IllegalStateException) {
@@ -49,11 +51,10 @@ actual object DigestWork : CommonWork {
             workManager.enqueueUniqueWork(digestType.name, ExistingWorkPolicy.REPLACE, work)
         }
 
-        val scheduleTimes = runBlocking { DigestWorker.getScheduleTimes() }
         if (BuildKonfig.DEBUG && DAILY_TEST_DIGESTS)
             enqueue(DigestType.DIGEST_DAILY, System.currentTimeMillis() + 15_000L)
-        enqueue(DigestType.DIGEST_WEEKLY, scheduleTimes[DigestType.DIGEST_WEEKLY]!!)
-        enqueue(DigestType.DIGEST_MONTHLY, scheduleTimes[DigestType.DIGEST_MONTHLY]!!)
+        enqueue(DigestType.DIGEST_WEEKLY, weeklyDigestTime)
+        enqueue(DigestType.DIGEST_MONTHLY, monthlyDigestTime)
 
         Logger.i { "scheduling ${DigestWorker::class.java.simpleName}" }
     }

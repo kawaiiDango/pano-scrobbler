@@ -346,7 +346,7 @@ object ScrobbleEverywhere {
             )
 
             dao.insert(entry)
-            PendingScrobblesWork.checkAndSchedule()
+            PendingScrobblesWork.schedule(false)
         } else {
             // successful
 
@@ -421,7 +421,7 @@ object ScrobbleEverywhere {
 
                 if (entry.services.isNotEmpty()) {
                     dao.insert(entry)
-                    PendingScrobblesWork.checkAndSchedule()
+                    PendingScrobblesWork.schedule(false)
                 }
             }
         }

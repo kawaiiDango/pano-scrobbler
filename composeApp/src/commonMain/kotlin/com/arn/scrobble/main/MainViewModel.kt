@@ -18,6 +18,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.DigestWork
+import com.arn.scrobble.work.DigestWorker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -161,7 +162,12 @@ class MainViewModel : ViewModel() {
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv)
             viewModelScope.launch {
                 if (DigestWork.state().first() == null) {
-                    DigestWork.checkAndSchedule()
+                    val (nextWeek, nextMonth) = DigestWorker.nextWeekAndMonth()
+
+                    DigestWork.schedule(
+                        nextWeek,
+                        nextMonth,
+                    )
                 }
             }
     }

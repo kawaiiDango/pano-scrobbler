@@ -156,7 +156,7 @@ class ScrobblesVM(
             val isRunning = PendingScrobblesWork.state().first() == CommonWorkState.RUNNING
 
             if (hasPending && !isRunning)
-                PendingScrobblesWork.checkAndSchedule(force = true)
+                PendingScrobblesWork.schedule(force = true)
         }
 
         viewModelScope.launch {

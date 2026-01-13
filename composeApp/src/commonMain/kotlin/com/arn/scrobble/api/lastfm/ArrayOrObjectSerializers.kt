@@ -1,59 +1,43 @@
 package com.arn.scrobble.api.lastfm
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonTransformingSerializer
-import kotlinx.serialization.serializer
 
 
-object ArrayOrObjectTagSerializer : JsonTransformingSerializer<List<Tag>>(serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        return when (element) {
-            is JsonArray -> element
-            is JsonObject -> JsonArray(listOf(element))
-            else -> JsonArray(emptyList())
+sealed class ArrayOrObjectSerializer<T>(elementSerializer: KSerializer<T>) :
+    KSerializer<List<T>> {
+    private val listSerializer = ListSerializer(elementSerializer)
+
+    override val descriptor: SerialDescriptor = listSerializer.descriptor
+
+    override fun deserialize(decoder: Decoder): List<T> {
+        return if (decoder is JsonDecoder) {
+            val element = decoder.decodeJsonElement()
+            val transformedElement = when (element) {
+                is JsonArray -> element
+                is JsonObject -> JsonArray(listOf(element))
+                else -> JsonArray(emptyList())
+            }
+            decoder.json.decodeFromJsonElement(listSerializer, transformedElement)
+        } else {
+            listSerializer.deserialize(decoder)
         }
+    }
+
+    override fun serialize(encoder: Encoder, value: List<T>) {
+        listSerializer.serialize(encoder, value)
     }
 }
 
-object ArrayOrObjectArtistSerializer : JsonTransformingSerializer<List<Artist>>(serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        return when (element) {
-            is JsonArray -> element
-            is JsonObject -> JsonArray(listOf(element))
-            else -> JsonArray(emptyList())
-        }
-    }
-}
-
-object ArrayOrObjectTrackSerializer : JsonTransformingSerializer<List<Track>>(serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        return when (element) {
-            is JsonArray -> element
-            is JsonObject -> JsonArray(listOf(element))
-            else -> JsonArray(emptyList())
-        }
-    }
-}
-
-object ArrayOrObjectAlbumSerializer : JsonTransformingSerializer<List<Album>>(serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        return when (element) {
-            is JsonArray -> element
-            is JsonObject -> JsonArray(listOf(element))
-            else -> JsonArray(emptyList())
-        }
-    }
-}
-
+object ArrayOrObjectTagSerializer : ArrayOrObjectSerializer<Tag>(Tag.serializer())
+object ArrayOrObjectArtistSerializer : ArrayOrObjectSerializer<Artist>(Artist.serializer())
+object ArrayOrObjectTrackSerializer : ArrayOrObjectSerializer<Track>(Track.serializer())
+object ArrayOrObjectAlbumSerializer : ArrayOrObjectSerializer<Album>(Album.serializer())
 object ArrayOrObjectScrobbleDetailsSerializer :
-    JsonTransformingSerializer<List<ScrobbleDetails>>(serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        return when (element) {
-            is JsonArray -> element
-            is JsonObject -> JsonArray(listOf(element))
-            else -> JsonArray(emptyList())
-        }
-    }
-}
+    ArrayOrObjectSerializer<ScrobbleDetails>(ScrobbleDetails.serializer())

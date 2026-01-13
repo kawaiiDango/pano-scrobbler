@@ -83,7 +83,7 @@ object Stuff {
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
     const val TIME_2002 = 1009823400000L // Jan 1 2002
     const val SPOTIFY_SEARCH_URL = "spotify://search/\$query"
-    const val APPLE_MUSIC_SEARCH_URL = "https://music.apple.com/in/search?term=\$query"
+    const val APPLE_MUSIC_SEARCH_URL = "https://music.apple.com/search?term=\$query"
     const val DEEZER_SEARCH_URL = "https://deezer.com/search/\$query"
     const val TIDAL_SEARCH_URL = "https://tidal.com/search?q=\$query"
     const val YT_MUSIC_SEARCH_URL = "https://music.youtube.com/search?q=\$query"

@@ -13,10 +13,10 @@ class IndexerVM : ViewModel() {
     }
 
     fun fullIndex() {
-        IndexerWork.checkAndSchedule(force = true)
+        IndexerWork.schedule(full = true)
     }
 
     private fun preferDeltaIndex() {
-        IndexerWork.checkAndSchedule(force = false)
+        IndexerWork.schedule(full = false)
     }
 }

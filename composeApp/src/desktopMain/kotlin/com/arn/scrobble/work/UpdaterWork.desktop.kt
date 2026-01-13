@@ -4,7 +4,7 @@ import kotlin.time.Duration.Companion.hours
 
 actual object UpdaterWork : CommonWorkImpl(UpdaterWorker.NAME) {
 
-    override fun checkAndSchedule(force: Boolean) {
+    actual fun schedule(force: Boolean) {
 
         if (force)
             DesktopWorkManager.cancelWork(uniqueName)

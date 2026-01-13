@@ -10,7 +10,7 @@ import com.arn.scrobble.utils.AndroidStuff
 import java.util.concurrent.TimeUnit
 
 actual object UpdaterWork : CommonWorkImpl(UpdaterWorker.NAME) {
-    override fun checkAndSchedule(force: Boolean) {
+    actual fun schedule(force: Boolean) {
         val workManager = WorkManager.getInstance(AndroidStuff.applicationContext)
 
         val constraints = Constraints.Builder()

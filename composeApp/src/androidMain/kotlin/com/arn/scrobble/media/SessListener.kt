@@ -76,10 +76,14 @@ class SessListener(
 
         scope.launch {
             scrobblerEnabled.collectLatest {
-                TileService.requestListeningState(
-                    AndroidStuff.applicationContext,
-                    ComponentName(AndroidStuff.applicationContext, MasterSwitchQS::class.java)
-                )
+                try {
+                    TileService.requestListeningState(
+                        AndroidStuff.applicationContext,
+                        ComponentName(AndroidStuff.applicationContext, MasterSwitchQS::class.java)
+                    )
+                } catch (e: Exception) {
+                    Logger.e(e) { "Failed to update QS tile state" }
+                }
             }
         }
     }

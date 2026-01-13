@@ -4,20 +4,20 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
 
 
 actual object DigestWork : CommonWork {
-    override fun checkAndSchedule(force: Boolean) {
-        val scheduleTimes = runBlocking { DigestWorker.getScheduleTimes() }
-
-        fun enqueue(digestType: DigestType) {
+    actual fun schedule(
+        weeklyDigestTime: Long,
+        monthlyDigestTime: Long,
+    ) {
+        fun enqueue(digestType: DigestType, scheduleAt: Long) {
             val retryPolicy = RetryPolicy(
                 maxAttempts = 1,
             )
             DesktopWorkManager.scheduleWork(
                 digestType.name,
-                scheduleTimes[digestType]!! - System.currentTimeMillis(),
+                scheduleAt - System.currentTimeMillis(),
                 { DigestWorker(digestType, it) },
                 retryPolicy,
             )
@@ -25,9 +25,9 @@ actual object DigestWork : CommonWork {
 
         val dailyTestDigests = false
         if (BuildKonfig.DEBUG && dailyTestDigests)
-            enqueue(DigestType.DIGEST_DAILY)
-        enqueue(DigestType.DIGEST_WEEKLY)
-        enqueue(DigestType.DIGEST_MONTHLY)
+            enqueue(DigestType.DIGEST_DAILY, System.currentTimeMillis() + 15_000L)
+        enqueue(DigestType.DIGEST_WEEKLY, weeklyDigestTime)
+        enqueue(DigestType.DIGEST_MONTHLY, monthlyDigestTime)
 
         Logger.i { "scheduling ${DigestWorker::class.java.simpleName}" }
     }

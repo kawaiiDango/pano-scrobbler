@@ -10,6 +10,7 @@
     <string name="new_app">नया एप्लिकेशन</string>
     <string name="pending_scrobbles">बाकी स्क्रौब्ल</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">चार्ट</string>
+    <string name="scrobbles">स्क्रौब्ल</string>
     <string name="weekly">साप्ताहिक</string>
     <string name="monthly">मासिक</string>
     <string name="charts_overall">सम्पूर्ण काल</string>

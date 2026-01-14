@@ -10,6 +10,7 @@
     <string name="new_app">Yeni uygulama</string>
     <string name="pending_scrobbles">Bekleyen Skroplar</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listeler</string>
+    <string name="scrobbles">Skroplar</string>
     <string name="weekly">Haftalık</string>
     <string name="monthly">Aylık</string>
     <string name="charts_overall">Genel</string>

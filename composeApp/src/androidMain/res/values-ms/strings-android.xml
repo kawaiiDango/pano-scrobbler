@@ -10,6 +10,7 @@
     <string name="new_app">Aplikasi baru</string>
     <string name="pending_scrobbles">Scrobble sementara</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Carta</string>
+    <string name="scrobbles">Scrobble</string>
     <string name="weekly">Mingguan</string>
     <string name="monthly">Bulanan</string>
     <string name="charts_overall">Kesemua</string>

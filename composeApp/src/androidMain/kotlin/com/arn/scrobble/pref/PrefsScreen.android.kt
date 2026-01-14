@@ -13,7 +13,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.R
 import com.arn.scrobble.media.PersistentNotificationService
@@ -30,10 +29,13 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.fix_it_desc
+import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
+import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
 import pano_scrobbler.composeapp.generated.resources.pref_noti
+import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.pref_widget_charts
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import pano_scrobbler.composeapp.generated.resources.scrobbler_on
@@ -50,10 +52,7 @@ actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean
                 text = stringResource(Res.string.pref_master_qs_add),
                 onClick = {
                     val statusBarManager =
-                        ContextCompat.getSystemService(
-                            context,
-                            StatusBarManager::class.java
-                        )
+                        context.getSystemService(StatusBarManager::class.java)
                             ?: return@TextPref
                     statusBarManager.requestAddTileService(
                         ComponentName(context, MasterSwitchQS::class.java),
@@ -151,15 +150,17 @@ actual fun prefNotifications(listScope: LazyListScope) {
 actual fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean) {
     if (AndroidStuff.canShowPersistentNotiIfEnabled) {
         listScope.item(MainPrefs::notiPersistent.name) {
+            val context = LocalContext.current
+
             SwitchPref(
                 text = stringResource(Res.string.show_persistent_noti),
                 summary = stringResource(Res.string.fix_it_desc),
                 value = notiEnabled,
                 copyToSave = {
                     if (it) {
-                        PersistentNotificationService.start()
+                        PersistentNotificationService.start(context)
                     } else {
-                        PersistentNotificationService.stop()
+                        PersistentNotificationService.stop(context)
                     }
                     copy(notiPersistent = it)
                 }
@@ -186,4 +187,29 @@ actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
 }
 
 actual fun deezerApi(listScope: LazyListScope, enabled: Boolean) {
+}
+
+actual fun prefScrobbler(
+    listScope: LazyListScope,
+    scrobblerEnabled: Boolean,
+    nlsEnabled: Boolean,
+    onNavigate: (PanoRoute) -> Unit,
+) {
+    listScope.item(MainPrefs::scrobblerEnabled.name) {
+        SwitchPref(
+            text = stringResource(Res.string.pref_master),
+            summary = if (!nlsEnabled)
+                stringResource(Res.string.grant_notification_access)
+            else
+                stringResource(Res.string.pref_offline_info),
+            value = scrobblerEnabled && nlsEnabled,
+            copyToSave = {
+                if (!nlsEnabled) {
+                    onNavigate(PanoRoute.Onboarding)
+                    this
+                } else
+                    copy(scrobblerEnabled = it)
+            }
+        )
+    }
 }

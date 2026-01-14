@@ -171,7 +171,7 @@ fun FixItDialog(
                             PlatformStuff.mainPrefs.updateData { it.copy(notiPersistent = true) }
                         }
 
-                        PersistentNotificationService.start()
+                        PersistentNotificationService.start(context)
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {

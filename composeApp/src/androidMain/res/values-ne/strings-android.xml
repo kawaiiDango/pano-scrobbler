@@ -10,6 +10,7 @@
     <string name="new_app">नयाँ एप</string>
     <string name="pending_scrobbles">विचाराधीन स्क्रबल</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">चार्ट्स</string>
+    <string name="scrobbles">स्क्रबल</string>
     <string name="weekly">साप्ताहिक</string>
     <string name="monthly">मासिक</string>
     <string name="charts_overall">समग्र</string>

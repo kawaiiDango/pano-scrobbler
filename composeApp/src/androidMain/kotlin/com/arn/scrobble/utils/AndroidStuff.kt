@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.datastore.core.MultiProcessDataStoreFactory
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.pref.WidgetPrefs
@@ -105,7 +104,7 @@ object AndroidStuff {
 
 
     val notificationManager by lazy {
-        ContextCompat.getSystemService(applicationContext, NotificationManager::class.java)!!
+        applicationContext.getSystemService(NotificationManager::class.java)!!
     }
 
 
@@ -138,7 +137,7 @@ object AndroidStuff {
     fun getScrobblerExitReasons(afterTime: Long = -1): List<ApplicationExitInfo> {
         return try {
             val activityManager =
-                ContextCompat.getSystemService(applicationContext, ActivityManager::class.java)!!
+                applicationContext.getSystemService(ActivityManager::class.java)!!
             val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 30)
 
             exitReasons.filter {

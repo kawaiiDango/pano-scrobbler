@@ -3,7 +3,6 @@ package com.arn.scrobble.utils
 import android.app.ActivityManager
 import android.content.Intent
 import android.os.Build
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
@@ -20,10 +19,7 @@ actual object BugReportUtils {
     actual suspend fun mail() {
         var bgRam = -1
         val manager =
-            ContextCompat.getSystemService(
-                AndroidStuff.applicationContext,
-                ActivityManager::class.java
-            )!!
+            AndroidStuff.applicationContext.getSystemService(ActivityManager::class.java)!!
         for (proc in manager.runningAppProcesses) {
             if (proc?.processName?.contains(Stuff.SCROBBLER_PROCESS_NAME) == true) {
                 // https://stackoverflow.com/questions/2298208/how-do-i-discover-memory-usage-of-my-application-in-android

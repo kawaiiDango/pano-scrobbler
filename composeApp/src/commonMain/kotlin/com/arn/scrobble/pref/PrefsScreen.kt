@@ -75,7 +75,6 @@ import pano_scrobbler.composeapp.generated.resources.demo_mode
 import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
-import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
@@ -98,11 +97,9 @@ import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
 import pano_scrobbler.composeapp.generated.resources.pref_lists
 import pano_scrobbler.composeapp.generated.resources.pref_locale
-import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
 import pano_scrobbler.composeapp.generated.resources.pref_notify_updates
 import pano_scrobbler.composeapp.generated.resources.pref_now_playing
-import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
 import pano_scrobbler.composeapp.generated.resources.pref_personalization
 import pano_scrobbler.composeapp.generated.resources.pref_prevent_duplicate_ambient_scrobbles
@@ -229,15 +226,7 @@ fun PrefsScreen(
     }
 
     PanoLazyColumn(modifier = modifier) {
-        item(MainPrefs::scrobblerEnabled.name) {
-            SwitchPref(
-                text = stringResource(Res.string.pref_master),
-                summary = stringResource(if (nlsEnabled) Res.string.pref_offline_info else Res.string.grant_notification_access),
-                value = scrobblerEnabled,
-                enabled = nlsEnabled,
-                copyToSave = { copy(scrobblerEnabled = it) }
-            )
-        }
+        prefScrobbler(this, scrobblerEnabled, nlsEnabled, onNavigate)
 
         prefQuickSettings(this, scrobblerEnabled)
 
@@ -889,6 +878,13 @@ fun PrefsScreen(
 }
 
 expect fun prefNotifications(listScope: LazyListScope)
+
+expect fun prefScrobbler(
+    listScope: LazyListScope,
+    scrobblerEnabled: Boolean,
+    nlsEnabled: Boolean,
+    onNavigate: (PanoRoute) -> Unit
+)
 
 expect fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boolean)
 

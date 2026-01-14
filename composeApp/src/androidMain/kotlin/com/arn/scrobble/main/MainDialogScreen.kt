@@ -50,8 +50,11 @@ fun PanoMainDialogContent(
         }
     }
 
-    fun goBack() =
-        backStack.removeLastOrNull()
+    fun goBack(): PanoRoute? {
+        if (backStack.size > 1)
+            return backStack.removeLastOrNull()
+        return null
+    }
 
     fun navigate(route: PanoRoute) {
         backStack.add(route)

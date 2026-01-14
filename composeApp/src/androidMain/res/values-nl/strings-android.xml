@@ -10,6 +10,7 @@
     <string name="new_app">Nieuwe App</string>
     <string name="pending_scrobbles">Wachtende scrobbles</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Hitlijsten</string>
+    <string name="scrobbles">Scrobbles</string>
     <string name="weekly">Wekelijks</string>
     <string name="monthly">Maandelijks</string>
     <string name="charts_overall">In totaal</string>

@@ -10,6 +10,7 @@
     <string name="new_app">برنامه جدید</string>
     <string name="pending_scrobbles">اسکرابل های منتظر</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">نمودارها</string>
+    <string name="scrobbles">اسکرابل‌شده</string>
     <string name="weekly">هفتگی</string>
     <string name="monthly">ماهانه</string>
     <string name="charts_overall">درمجموع</string>

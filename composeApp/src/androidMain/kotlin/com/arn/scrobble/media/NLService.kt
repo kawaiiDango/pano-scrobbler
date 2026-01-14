@@ -42,10 +42,7 @@ class NLService : NotificationListenerService() {
     private lateinit var scrobbleQueue: ScrobbleQueue
     private var job: Job? = null
     private val audioManager by lazy {
-        ContextCompat.getSystemService(
-            this,
-            AudioManager::class.java
-        )!!
+        getSystemService(AudioManager::class.java)!!
     }
 
     private val deviceInteractiveReceiver = object : BroadcastReceiver() {
@@ -92,7 +89,7 @@ class NLService : NotificationListenerService() {
             ContextCompat.RECEIVER_EXPORTED
         )
 
-        val sessManager = ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
+        val sessManager = getSystemService(MediaSessionManager::class.java)!!
         scrobbleQueue = ScrobbleQueue(coroutineScope)
 
         sessListener = SessListener(
@@ -130,7 +127,7 @@ class NLService : NotificationListenerService() {
         val persistentNoti = Stuff.mainPrefsInitialValue.notiPersistent
         if (persistentNoti && AndroidStuff.canShowPersistentNotiIfEnabled) {
             try {
-                PersistentNotificationService.start()
+                PersistentNotificationService.start(this)
 //                ForegroundServiceStartNotAllowedException extends IllegalStateException
             } catch (e: IllegalStateException) {
                 Logger.e(e) { "Foreground service start not allowed" }
@@ -164,7 +161,7 @@ class NLService : NotificationListenerService() {
 
         if (sessListener != null) {
             sessListener?.removeSessions(setOf<MediaSession.Token>())
-            ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
+            getSystemService(MediaSessionManager::class.java)!!
                 .removeOnActiveSessionsChangedListener(sessListener!!)
             sessListener = null
             scrobbleQueue.shutdown()

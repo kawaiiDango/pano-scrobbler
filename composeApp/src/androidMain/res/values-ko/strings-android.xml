@@ -10,6 +10,7 @@
     <string name="new_app">새로운 앱</string>
     <string name="pending_scrobbles">스크로블 보류 중</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">차트</string>
+    <string name="scrobbles">스크로블</string>
     <string name="weekly">주간</string>
     <string name="monthly">월간</string>
     <string name="charts_overall">전체</string>

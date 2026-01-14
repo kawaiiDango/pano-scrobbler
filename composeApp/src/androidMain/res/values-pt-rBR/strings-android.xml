@@ -10,6 +10,7 @@
     <string name="new_app">Novo app</string>
     <string name="pending_scrobbles">Scrobbles pendentes</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Dados</string>
+    <string name="scrobbles">Scrobbles</string>
     <string name="weekly">Semanal</string>
     <string name="monthly">Mensal</string>
     <string name="charts_overall">Geral</string>

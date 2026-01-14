@@ -10,6 +10,7 @@
     <string name="new_app">Nová aplikace</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Hitparády</string>
+    <string name="scrobbles">Scrobbly</string>
     <string name="weekly">Týdenní</string>
     <string name="monthly">Měsíční</string>
     <string name="charts_overall">Celkově</string>

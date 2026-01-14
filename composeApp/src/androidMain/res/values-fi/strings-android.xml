@@ -10,6 +10,7 @@
     <string name="new_app">Uusi sovellus</string>
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listat</string>
+    <string name="scrobbles">Scrobblaukset</string>
     <string name="weekly">Viikottainen</string>
     <string name="monthly">Kuukausittainen</string>
     <string name="charts_overall">Kaikki</string>

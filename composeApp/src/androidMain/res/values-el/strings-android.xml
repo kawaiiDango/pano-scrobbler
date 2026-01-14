@@ -10,6 +10,7 @@
     <string name="new_app">Νέα εφαρμογή</string>
     <string name="pending_scrobbles">Εκκρεμούν Scrobbles</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Charts</string>
+    <string name="scrobbles">Scrobbles</string>
     <string name="weekly">Εβδομαδιαία</string>
     <string name="monthly">Μηνιαία</string>
     <string name="charts_overall">Συνολικά</string>

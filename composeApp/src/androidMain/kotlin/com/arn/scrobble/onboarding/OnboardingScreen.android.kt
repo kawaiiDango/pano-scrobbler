@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.icons.Icons
@@ -65,8 +64,7 @@ private fun NotificationPermissionStep(
     onDone: () -> Unit,
 ) {
     fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(
-                AndroidStuff.applicationContext,
+        if (AndroidStuff.applicationContext.checkSelfPermission(
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         ) {

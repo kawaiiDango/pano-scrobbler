@@ -10,6 +10,7 @@
     <string name="new_app">Nauja programa</string>
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Diagramos</string>
+    <string name="scrobbles">Skroblai (-ų)</string>
     <string name="weekly">Savaitinis</string>
     <string name="monthly">Mėnesinis</string>
     <string name="charts_overall">Iš viso</string>

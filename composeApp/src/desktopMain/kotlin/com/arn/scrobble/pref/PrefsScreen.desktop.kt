@@ -8,6 +8,8 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
+import pano_scrobbler.composeapp.generated.resources.pref_master
+import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.run_on_start
 import pano_scrobbler.composeapp.generated.resources.tidal
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
@@ -98,5 +100,21 @@ actual fun deezerApi(listScope: LazyListScope, enabled: Boolean) {
                 copyToSave = { copy(deezerApi = it) }
             )
         }
+    }
+}
+
+actual fun prefScrobbler(
+    listScope: LazyListScope,
+    scrobblerEnabled: Boolean,
+    nlsEnabled: Boolean,
+    onNavigate: (PanoRoute) -> Unit,
+) {
+    listScope.item(MainPrefs::scrobblerEnabled.name) {
+        SwitchPref(
+            text = stringResource(Res.string.pref_master),
+            summary = stringResource(Res.string.pref_offline_info),
+            value = scrobblerEnabled,
+            copyToSave = { copy(scrobblerEnabled = it) }
+        )
     }
 }

@@ -20,7 +20,6 @@ import android.provider.Settings
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.datastore.core.MultiProcessDataStoreFactory
 import androidx.room.ExperimentalRoomApi
@@ -101,7 +100,7 @@ actual object PlatformStuff {
 
     actual val isTv by lazy {
         val uiModeManager =
-            ContextCompat.getSystemService(applicationContext, UiModeManager::class.java)!!
+            applicationContext.getSystemService(UiModeManager::class.java)!!
         uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 
@@ -115,7 +114,7 @@ actual object PlatformStuff {
     actual fun isScrobblerRunning(): Boolean {
         val serviceComponent = ComponentName(applicationContext, NLService::class.java)
         val manager =
-            ContextCompat.getSystemService(applicationContext, ActivityManager::class.java)!!
+            applicationContext.getSystemService(ActivityManager::class.java)!!
         val nlsService = try {
             manager.getRunningServices(Integer.MAX_VALUE)?.find { it.service == serviceComponent }
         } catch (e: SecurityException) {
@@ -284,7 +283,7 @@ actual object PlatformStuff {
 
     actual fun copyToClipboard(text: String) {
         val clipboard =
-            ContextCompat.getSystemService(applicationContext, ClipboardManager::class.java)!!
+            applicationContext.getSystemService(ClipboardManager::class.java)!!
         val clip = ClipData.newPlainText(BuildKonfig.APP_NAME, text)
         clipboard.setPrimaryClip(clip)
 
@@ -310,10 +309,7 @@ actual object PlatformStuff {
 
     actual fun getLocalIpAddresses(): List<String> {
         val connectivityManager =
-            ContextCompat.getSystemService(
-                applicationContext,
-                ConnectivityManager::class.java
-            )!!
+            applicationContext.getSystemService(ConnectivityManager::class.java)!!
         val activeNetwork = connectivityManager.activeNetwork
         val linkProperties = connectivityManager.getLinkProperties(activeNetwork)
 

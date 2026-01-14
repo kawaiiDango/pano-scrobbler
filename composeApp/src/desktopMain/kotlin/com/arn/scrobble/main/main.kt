@@ -93,6 +93,7 @@ import pano_scrobbler.composeapp.generated.resources.vd_noti_err
 import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
+import java.awt.Point
 import java.awt.SystemTray
 import java.awt.Toolkit
 import java.awt.Window
@@ -447,8 +448,8 @@ fun main(args: Array<String>) {
                                     } else {
                                         trayClickedEventFlow.tryEmit(
                                             PanoTrayUtils.TrayClickEvent(
-                                                x = e?.x ?: 0,
-                                                y = e?.y ?: 0,
+                                                x = e?.xOnScreen ?: 0,
+                                                y = e?.yOnScreen ?: 0,
                                                 button = e?.button ?: 0
                                             )
                                         )
@@ -647,17 +648,20 @@ private fun TrayWindow(
     menuItemTexts: List<String>,
     onDismiss: () -> Unit,
 ) {
-    val densityFactor = remember {
+    val graphicsConfig = remember(x, y) {
         // defaultScreenDevice changes on a multi-monitor setup, LocalDensity.current does not seem to update
-        GraphicsEnvironment.getLocalGraphicsEnvironment()
-            .defaultScreenDevice
-            .defaultConfiguration
-            .defaultTransform.scaleX.toFloat()
+
+        // Get the screen device that contains the mouse pointer
+        val genv = GraphicsEnvironment.getLocalGraphicsEnvironment()
+        val screenDevice = genv.screenDevices.firstOrNull { device ->
+            device.defaultConfiguration.bounds.contains(Point(x, y))
+        } ?: genv.defaultScreenDevice
+
+        screenDevice.defaultConfiguration
     }
 
-    // convert x, y to dp
-    val xDp = (x / densityFactor).dp
-    val yDp = (y / densityFactor).dp
+    val xScaled = x / graphicsConfig.defaultTransform.scaleX.toFloat()
+    val yScaled = y / graphicsConfig.defaultTransform.scaleY.toFloat()
 
     SwingWindow(
         onCloseRequest = onDismiss,
@@ -666,7 +670,7 @@ private fun TrayWindow(
         resizable = false,
         alwaysOnTop = true,
         state = rememberWindowState(
-            position = WindowPosition(xDp, yDp),
+            position = WindowPosition(xScaled.dp, yScaled.dp),
             size = DpSize.Unspecified,
             placement = WindowPlacement.Floating
         ),
@@ -679,13 +683,11 @@ private fun TrayWindow(
                     override fun windowOpened(event: WindowEvent?) {
                         val window = event?.window ?: return
 
-                        // Get screen configuration for the window
-                        val graphicsConfig = window.graphicsConfiguration
                         val screenBounds = graphicsConfig.bounds
                         val screenInsets =
                             Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfig)
 
-                        // Calculate usable screen area
+                        // Calculate usable screen area (absolute coordinates)
                         val usableX = screenBounds.x + screenInsets.left
                         val usableY = screenBounds.y + screenInsets.top
                         val usableWidth =
@@ -694,8 +696,8 @@ private fun TrayWindow(
                             screenBounds.height - screenInsets.top - screenInsets.bottom
 
                         val winSize = window.size
-                        var newX = window.location.x
-                        var newY = window.location.y
+                        var newX = xScaled.toInt()
+                        var newY = yScaled.toInt()
 
                         // Adjust X if out of bounds
                         if (newX + winSize.width > usableX + usableWidth) {

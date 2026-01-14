@@ -186,11 +186,14 @@ object Stuff {
     const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
     const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"
     const val CHANNEL_NOTI_NEW_APP = "noti_new_app"
-    const val CHANNEL_NOTI_PENDING = "noti_pending_scrobbles"
     const val CHANNEL_NOTI_DIGEST_WEEKLY = "noti_digest_weekly"
     const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
-    const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
+    const val CHANNEL_NOTI_FG_SERVICE = "noti_fg_service"
     const val CHANNEL_NOTI_UPDATER = "noti_updater"
+    const val GROUP_NOTI_SCROBBLES = "group_scrobbles"
+    const val GROUP_NOTI_DIGESTS = "group_digests"
+    const val GROUP_NOTI_UPDATER = "group_updater"
+    const val GROUP_NOTI_FG_SERVICE = "group_fg_service"
     const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
     val CHANNELS_AUDILE = setOf(

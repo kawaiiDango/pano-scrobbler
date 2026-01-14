@@ -10,6 +10,7 @@
     <string name="new_app">Nova aplikacija</string>
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Ljestvice</string>
+    <string name="scrobbles">Scrobbleovi</string>
     <string name="weekly">Tjedni</string>
     <string name="monthly">Mjesečni</string>
     <string name="charts_overall">Sveukupno</string>

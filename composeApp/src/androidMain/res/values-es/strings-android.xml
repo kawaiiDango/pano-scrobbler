@@ -10,6 +10,7 @@
     <string name="new_app">Nueva aplicación</string>
     <string name="pending_scrobbles">Scrobbles pendientes</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listas</string>
+    <string name="scrobbles">Scrobbles</string>
     <string name="weekly">Semana</string>
     <string name="monthly">Mensual</string>
     <string name="charts_overall">Total</string>

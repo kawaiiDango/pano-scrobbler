@@ -13,12 +13,6 @@ object PanoTrayUtils {
         val menuItemTexts: List<String>,
     )
 
-    data class TrayClickEvent(
-        val x: Int,
-        val y: Int,
-        val button: Int,
-    )
-
     private val _onTrayMenuItemClicked =
         MutableSharedFlow<String>(replay = 1, extraBufferCapacity = 1)
     val onTrayMenuItemClicked = _onTrayMenuItemClicked.asSharedFlow()

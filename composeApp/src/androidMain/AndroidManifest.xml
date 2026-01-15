@@ -189,20 +189,6 @@
 
         </service>
 
-        <service
-            android:name="com.google.android.gms.metadata.ModuleDependencies"
-            android:enabled="false"
-            android:exported="false"
-            tools:ignore="MissingClass">
-            <intent-filter>
-                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
-            </intent-filter>
-
-            <meta-data
-                android:name="photopicker_activity:0:required"
-                android:value="" />
-        </service>
-
         <!--
         fixes java.lang.IllegalArgumentException: foregroundServiceType 0x00000001 is not a subset of foregroundServiceType attribute 0x00000000 in service element of manifest file
         -->

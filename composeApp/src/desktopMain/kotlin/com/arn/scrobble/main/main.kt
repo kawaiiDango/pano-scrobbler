@@ -64,14 +64,16 @@ import com.arn.scrobble.utils.Stuff.toImageBitmap
 import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.UpdaterWork
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -430,29 +432,37 @@ fun main(args: Array<String>) {
             }
 
             var trayMouseListenerSet by remember { mutableStateOf(false) }
-            val trayClickedEventFlow =
-                remember { MutableSharedFlow<PanoTrayUtils.TrayClickEvent?>(extraBufferCapacity = 3) }
-            var trayMenuPos by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+            var trayMenuPos by remember { mutableStateOf<Point?>(null) }
 
             LaunchedEffect(trayData) {
+                var delayJob: Job? = null
+                
                 if (!trayMouseListenerSet && trayData != null) {
                     val trayIcon = SystemTray.getSystemTray().trayIcons?.firstOrNull()
+
                     if (trayIcon != null) {
                         trayIcon.addMouseListener(
                             object : MouseListener {
                                 override fun mouseClicked(e: MouseEvent?) {
                                     // open main window on left double click
-                                    if (e?.button == MouseEvent.BUTTON1 && e.clickCount == 2) {
-                                        openIfNeeded()
-                                        trayClickedEventFlow.tryEmit(null)
-                                    } else {
-                                        trayClickedEventFlow.tryEmit(
-                                            PanoTrayUtils.TrayClickEvent(
-                                                x = e?.xOnScreen ?: 0,
-                                                y = e?.yOnScreen ?: 0,
-                                                button = e?.button ?: 0
-                                            )
-                                        )
+                                    when (e?.button) {
+                                        MouseEvent.BUTTON1 if e.clickCount == 2 -> {
+                                            openIfNeeded()
+                                            trayMenuPos = null
+                                            delayJob?.cancel()
+                                        }
+
+                                        MouseEvent.BUTTON1 if e.clickCount == 1 -> {
+                                            delayJob = GlobalScope.launch {
+                                                delay(100)
+                                                trayMenuPos = e.locationOnScreen
+                                            }
+                                        }
+
+                                        MouseEvent.BUTTON3 -> {
+                                            delayJob?.cancel()
+                                            trayMenuPos = e.locationOnScreen
+                                        }
                                     }
                                 }
 
@@ -474,23 +484,9 @@ fun main(args: Array<String>) {
                 }
             }
 
-            LaunchedEffect(Unit) {
-                trayClickedEventFlow
-                    .debounce(100)
-                    .collectLatest { event ->
-                        trayMenuPos = if (event != null) {
-                            Pair(event.x, event.y)
-                        } else {
-                            null
-                        }
-                    }
-            }
-
             if (trayMenuPos != null && trayData != null) {
-                val (x, y) = trayMenuPos!!
                 TrayWindow(
-                    x = x,
-                    y = y,
+                    location = trayMenuPos!!,
                     menuItemIds = trayData!!.menuItemIds,
                     menuItemTexts = trayData!!.menuItemTexts,
                 ) {
@@ -642,26 +638,25 @@ private suspend fun trayMenuClickListener(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun TrayWindow(
-    x: Int,
-    y: Int,
+    location: Point,
     menuItemIds: List<String>,
     menuItemTexts: List<String>,
     onDismiss: () -> Unit,
 ) {
-    val graphicsConfig = remember(x, y) {
+    val graphicsConfig = remember(location) {
         // defaultScreenDevice changes on a multi-monitor setup, LocalDensity.current does not seem to update
 
         // Get the screen device that contains the mouse pointer
         val genv = GraphicsEnvironment.getLocalGraphicsEnvironment()
         val screenDevice = genv.screenDevices.firstOrNull { device ->
-            device.defaultConfiguration.bounds.contains(Point(x, y))
+            device.defaultConfiguration.bounds.contains(location)
         } ?: genv.defaultScreenDevice
 
         screenDevice.defaultConfiguration
     }
 
-    val xScaled = x / graphicsConfig.defaultTransform.scaleX.toFloat()
-    val yScaled = y / graphicsConfig.defaultTransform.scaleY.toFloat()
+    val xScaled = location.x / graphicsConfig.defaultTransform.scaleX.toFloat()
+    val yScaled = location.y / graphicsConfig.defaultTransform.scaleY.toFloat()
 
     SwingWindow(
         onCloseRequest = onDismiss,

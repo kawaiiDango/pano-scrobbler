@@ -538,6 +538,7 @@ actual object PanoNotifications {
         )
         val notification = Notification.Builder(context)
             .setChannelIdCompat(Stuff.CHANNEL_NOTI_FG_SERVICE)
+            .setGroup(Stuff.GROUP_NOTI_FG_SERVICE)
             .setShowWhen(false)
             .setColor(notiColor)
             .setSmallIcon(R.drawable.vd_noti_persistent)

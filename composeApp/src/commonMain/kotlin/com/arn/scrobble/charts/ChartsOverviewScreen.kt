@@ -54,7 +54,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -153,7 +152,7 @@ fun ChartsOverviewScreen(
     val tagCloud by viewModel.tagCloud.collectAsStateWithLifecycle()
     val listeningActivity by viewModel.listeningActivity.collectAsStateWithLifecycle()
     val useLastfm by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
-        it.lastfmApiAlways || Scrobblables.currentAccount.value?.type == AccountType.LASTFM
+        it.lastfmApiAlways || it.currentAccountType == AccountType.LASTFM
     }
     val spotifyConsentLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
         it.spotifyConsentLearnt

@@ -8,7 +8,6 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.api.spotify.SpotifySearchType
@@ -193,8 +192,8 @@ class MusicEntryImageInterceptor : Interceptor {
         return chain.withRequest(request).proceed()
     }
 
-    fun clearCacheForEntry(entry: MusicEntry) {
-        musicEntryCache.remove(MusicEntryReqKeyer.genKey(MusicEntryImageReq(entry)))
+    fun clearCacheForEntry(req: MusicEntryImageReq) {
+        musicEntryCache.remove(MusicEntryReqKeyer.genKey(req))
     }
 
     private data class FetchedImageUrls(val mediumImage: String?, val largeImage: String? = null)

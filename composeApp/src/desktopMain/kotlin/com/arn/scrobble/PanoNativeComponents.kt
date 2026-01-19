@@ -22,6 +22,8 @@ object PanoNativeComponents {
     private var desktopMediaListener: DesktopMediaListener? = null
     val onFilePickedFlow = MutableSharedFlow<Pair<Int, String>>(extraBufferCapacity = 1)
     val onDarkModeChangeFlow = MutableStateFlow(true)
+    var isMediaListenerRunning = false
+        private set
 
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
@@ -44,7 +46,9 @@ object PanoNativeComponents {
 
     fun startListeningMediaInThread() {
         Thread {
+            isMediaListenerRunning = true
             startListeningMedia()
+            isMediaListenerRunning = false
             Logger.i("startListeningMediaInThread finished")
         }.apply {
             name = "MediaListenerThread"

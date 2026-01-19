@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
@@ -69,7 +70,6 @@ import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -167,7 +167,7 @@ fun RegexEditsAddScreen(
     }
 
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
-    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
+    val isLicenseValid = LocalLicenseValidState.current
 
     var trackCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }
     var artistCopyFrom by rememberSaveable { mutableStateOf<RegexEdit.Field?>(null) }

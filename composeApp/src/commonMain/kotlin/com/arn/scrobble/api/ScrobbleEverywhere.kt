@@ -28,7 +28,6 @@ import com.arn.scrobble.utils.FirstArtistExtractor
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.PendingScrobblesWork
 import kotlinx.coroutines.delay
@@ -71,17 +70,16 @@ object ScrobbleEverywhere {
         runPresets: Boolean
     ): PreprocessResult {
         var scrobbleData = scrobbleData
-        if (VariantStuff.billingRepository.isLicenseValid) {
-            val blockedMetadata = PanoDb.db
-                .getBlockedMetadataDao()
-                .getBlockedEntry(scrobbleData)
+        val blockedMetadata = PanoDb.db
+            .getBlockedMetadataDao()
+            .getBlockedEntry(scrobbleData)
 
-            if (blockedMetadata != null)
-                return PreprocessResult(
-                    scrobbleData,
-                    blockPlayerAction = blockedMetadata.blockPlayerAction
-                )
-        }
+        if (blockedMetadata != null)
+            return PreprocessResult(
+                scrobbleData,
+                blockPlayerAction = blockedMetadata.blockPlayerAction
+            )
+
 
         var simpleEditsApplied = false
         var regexEditsApplied = false

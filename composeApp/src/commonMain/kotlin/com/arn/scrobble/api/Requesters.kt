@@ -83,7 +83,6 @@ object Requesters {
             if (!Stuff.isRunningInTest) {
                 install(HttpCache) {
                     val cacheFile = File(PlatformStuff.cacheDir, "ktor")
-                    cacheFile.mkdirs()
                     val fileCache = FileStorage(cacheFile)
                     val memoryCache = HttpMemoryCache(25)
                     val hybridCache = HybridCacheStorage(

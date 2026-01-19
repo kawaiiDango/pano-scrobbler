@@ -84,9 +84,7 @@ fun ProfileHeader(
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val currentAccount by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { prefs ->
-        prefs.scrobbleAccounts.firstOrNull { it.type == prefs.currentAccountType }
-    }
+    val currentAccount by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccount }
 
     val displayText = when {
         otherUser != null -> otherUser.name

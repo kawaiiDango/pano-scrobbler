@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Cake
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.PanoRoute
@@ -33,12 +34,12 @@ import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.first_scrobbled_on
 import pano_scrobbler.composeapp.generated.resources.my_scrobbles
+import pano_scrobbler.composeapp.generated.resources.time_just_now
 
 @Composable
 fun TrackHistoryScreen(
@@ -58,7 +59,10 @@ fun TrackHistoryScreen(
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
-    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && VariantStuff.billingRepository.isLicenseValid }
+    val showScrobbleSources by if (LocalLicenseValidState.current)
+        PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
+    else
+        remember { mutableStateOf(false) }
     val myScrobblesStr = stringResource(Res.string.my_scrobbles)
     val density = LocalDensity.current
     val listViewportHeight = remember {
@@ -84,6 +88,12 @@ fun TrackHistoryScreen(
             "${user.name}: $formattedCount"
         }
         onSetTitle(title)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.setScrobblesInput(
+            ScrobblesInput(showScrobbleSources = showScrobbleSources)
+        )
     }
 
     OnEditEffect(
@@ -112,7 +122,10 @@ fun TrackHistoryScreen(
                     Text(
                         text = stringResource(
                             Res.string.first_scrobbled_on,
-                            PanoTimeFormatter.relative(firstScrobbleTime!!)
+                            PanoTimeFormatter.relative(
+                                firstScrobbleTime!!,
+                                stringResource(Res.string.time_just_now)
+                            )
                         ),
                         style = MaterialTheme.typography.titleSmall,
                     )

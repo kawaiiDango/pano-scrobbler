@@ -278,38 +278,37 @@ fun BillingScreen(
     }
 
     LaunchedEffect(Unit) {
-        VariantStuff.billingRepository.licenseState.collect { licenseState ->
-            when (licenseState) {
-                LicenseState.VALID -> {
-                    val thankYouSnackbarData = PanoSnackbarVisuals(
-                        message = getString(Res.string.thank_you),
-                        isError = false,
-                    )
-                    Stuff.globalSnackbarFlow.emit(thankYouSnackbarData)
-                    onBack()
-                }
-
-                LicenseState.PENDING -> {
-                    errorText = getString(Res.string.purchase_pending)
-                }
-
-                LicenseState.REJECTED -> {
-                    errorText = getString(Res.string.not_found)
-                }
-
-                LicenseState.MAX_DEVICES_REACHED -> {
-                    errorText = getString(Res.string.billing_max_devices_reached, 8)
-                }
-
-                LicenseState.NO_LICENSE -> {}
+        VariantStuff.billingRepository.licenseState.collect {
+            if (it == LicenseState.VALID) {
+                val thankYouSnackbarData = PanoSnackbarVisuals(
+                    message = getString(Res.string.thank_you),
+                    isError = false,
+                )
+                Stuff.globalSnackbarFlow.emit(thankYouSnackbarData)
+                onBack()
             }
         }
-
     }
 
     LaunchedEffect(Unit) {
-        VariantStuff.billingRepository.networkError.collect {
-            errorText = getString(Res.string.network_error)
+        VariantStuff.billingRepository.licenseError.collect {
+            when (it) {
+                LicenseError.PENDING -> {
+                    errorText = getString(Res.string.purchase_pending)
+                }
+
+                LicenseError.REJECTED -> {
+                    errorText = getString(Res.string.not_found)
+                }
+
+                LicenseError.MAX_DEVICES_REACHED -> {
+                    errorText = getString(Res.string.billing_max_devices_reached, 8)
+                }
+
+                LicenseError.NETWORK_ERROR -> {
+                    errorText = getString(Res.string.network_error)
+                }
+            }
         }
     }
 }

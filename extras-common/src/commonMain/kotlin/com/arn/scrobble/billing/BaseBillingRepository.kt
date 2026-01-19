@@ -3,11 +3,11 @@ package com.arn.scrobble.billing
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 
 
 abstract class BaseBillingRepository(
@@ -19,38 +19,21 @@ abstract class BaseBillingRepository(
 
     protected abstract val _proProductDetails: MutableStateFlow<MyProductDetails?>
     abstract val proProductDetails: StateFlow<MyProductDetails?>
-    protected val _networkError = MutableSharedFlow<Unit>()
-    val networkError = _networkError.asSharedFlow()
+    protected val _licenseError = MutableSharedFlow<LicenseError>()
+    val licenseError = _licenseError.asSharedFlow()
     abstract val purchaseMethods: List<PurchaseMethod>
     abstract val needsActivationCode: Boolean
-    protected val _licenseState = MutableStateFlow(
-        clientData.receipt.value.let { (r, s) ->
-            getLicenseState(r, s)
+    val licenseState = clientData.receipt
+        .mapLatest { (receipt, signature) ->
+            if (receipt == null) {
+                LicenseState.NO_LICENSE
+            } else if (verifyPurchase(receipt, signature)) {
+                LicenseState.VALID
+            } else {
+                LicenseState.NO_LICENSE
+            }
         }
-    )
-    val licenseState = _licenseState.asStateFlow()
-
-    inline val isLicenseValid: Boolean
-        get() = licenseState.value == LicenseState.VALID
-
-    init {
-        scope.launch {
-            clientData.receipt
-                .collectLatest { (r, s) ->
-                    _licenseState.value = getLicenseState(r, s)
-                }
-        }
-    }
-
-    private fun getLicenseState(receipt: String?, signature: String?): LicenseState {
-        return if (receipt == null) {
-            LicenseState.NO_LICENSE
-        } else if (verifyPurchase(receipt, signature)) {
-            LicenseState.VALID
-        } else {
-            LicenseState.NO_LICENSE
-        }
-    }
+        .stateIn(scope, SharingStarted.Eagerly, LicenseState.UNKNOWN)
 
     abstract fun initBillingClient()
 

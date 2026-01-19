@@ -177,7 +177,7 @@ class BillingRepository(
                 if (clientData.proProductId in purchase.products) {
                     // This doesn't go away after the slow card gets declined. So, only notify recent purchases
                     if (System.currentTimeMillis() - purchase.purchaseTime < PENDING_PURCHASE_NOTIFY_THRESHOLD)
-                        _licenseState.value = LicenseState.PENDING
+                        _licenseError.emit(LicenseError.PENDING)
                 }
             }
         }
@@ -212,8 +212,7 @@ class BillingRepository(
      */
     private suspend fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
         if (nonConsumables.isEmpty() || !nonConsumables.any { clientData.proProductId in it.products }) {
-            if (_licenseState.value == LicenseState.VALID) {
-                _licenseState.value = LicenseState.NO_LICENSE
+            if (licenseState.value == LicenseState.VALID) {
                 clientData.setReceipt(null, null)
             }
             return
@@ -227,14 +226,13 @@ class BillingRepository(
             playStoreBillingClient.acknowledgePurchase(params) { billingResult ->
                 when (billingResult.responseCode) {
                     BillingClient.BillingResponseCode.OK -> {
-                        if (clientData.proProductId in purchase.products) {
-                            _licenseState.value = LicenseState.VALID
-                        }
+//                        if (clientData.proProductId in purchase.products) {
+//                            licenseState.value = LicenseState.VALID
+//                        }
                     }
 
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
                         if (clientData.proProductId in purchase.products) {
-                            _licenseState.value = LicenseState.NO_LICENSE
                             scope.launch {
                                 clientData.setReceipt(null, null)
                             }
@@ -257,8 +255,9 @@ class BillingRepository(
             productDetails
         else if (productDetails != null) {
             _proProductDetails.value = null
-            _licenseState.value = LicenseState.NO_LICENSE
-//            clientData.setReceipt(null, null)
+            scope.launch {
+                clientData.setReceipt(null, null)
+            }
             null
         } else null
     }

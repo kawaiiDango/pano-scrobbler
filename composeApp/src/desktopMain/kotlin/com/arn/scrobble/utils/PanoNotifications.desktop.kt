@@ -58,6 +58,11 @@ actual object PanoNotifications {
         )
     }
 
+    actual fun isNotiChannelEnabled(channelId: String): Boolean {
+        // todo implement
+        return false
+    }
+
 
     actual fun removeNotificationByKey(key: String) {
         _playingTrackTrayInfo.value -= key

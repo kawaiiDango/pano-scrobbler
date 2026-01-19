@@ -1,4 +1,6 @@
 package com.arn.scrobble.crashreporter
 
+import java.io.File
 
-object CrashReporter : BaseCrashReporter()
+
+class CrashReporter(fileToCheck: File?) : BaseCrashReporter(null)

@@ -6,16 +6,13 @@ import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
@@ -30,12 +27,7 @@ class DesktopMediaListener(
     private var sessionInfos: List<SessionInfo> = emptyList()
 
     private val seenApps =
-        PlatformStuff.mainPrefs.data.mapLatest { it.seenApps }
-            .stateIn(
-                scope,
-                SharingStarted.Eagerly,
-                Stuff.mainPrefsInitialValue.seenApps
-            )
+        PlatformStuff.mainPrefs.data.stateInWithCache(scope) { it.seenApps }
 
     fun start() {
         PanoNativeComponents.startListeningMediaInThread()
@@ -53,6 +45,9 @@ class DesktopMediaListener(
                 .drop(1) // drop initial value
                 .collectLatest {
                     PanoNativeComponents.refreshSessions()
+
+                    // refresh with the same data to check for shouldScrobble again
+                    platformActiveSessionsChanged(sessionInfos)
                 }
         }
     }
@@ -71,13 +66,10 @@ class DesktopMediaListener(
         val normalizedAppIdsToNames = sessions
             .associate { DesktopStuff.normalizeAppId(it.rawAppId) to it.appName }
 
-        if (!scrobblerEnabled.value)
-            return
-
         val unseenAppItems = normalizedAppIdsToNames
             .filter { (appId, name) -> appId !in seenApps.value }
 
-        if (unseenAppItems.isNotEmpty()) {
+        if (unseenAppItems.isNotEmpty() && scrobblerEnabled.value) {
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(seenApps = it.seenApps + unseenAppItems) }
 
@@ -88,12 +80,11 @@ class DesktopMediaListener(
         }
 
 
-        val sessionsFiltered = sessions.filter {
-            shouldScrobble(it.rawAppId) && it.rawAppId !in sessionTrackersMap
-        }
+        val shouldScrobbleSessions = sessions.filter { shouldScrobble(it.rawAppId) }
+        val newSessions = shouldScrobbleSessions.filter { it.rawAppId !in sessionTrackersMap }
 
 //        val tokens = mutableSetOf<MediaSession.Token>()
-        for (session in sessionsFiltered) {
+        for (session in newSessions) {
 //            if (shouldScrobble(controller.packageName)) {
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
 //                if (controller.sessionToken !in controllersMap) {
@@ -111,7 +102,7 @@ class DesktopMediaListener(
 //            }
         // Now remove old sessions that are no longer active.
         removeSessions(
-            sessions.map { it.rawAppId }.toSet(),
+            shouldScrobbleSessions.map { it.rawAppId }.toSet(),
         )
 
     }

@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.LocalPlatformContext
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.ContentCopy
 import com.arn.scrobble.icons.Download
@@ -49,12 +50,9 @@ import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.placeholderImageVectorPainter
-import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.showCollageShareSheet
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -93,7 +91,8 @@ fun CollageGeneratorDialog(
     user: UserCached,
     onAskForReview: suspend () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CollageGeneratorVM = viewModel { CollageGeneratorVM() },
+    isLicenseValid: Boolean = LocalLicenseValidState.current,
+    viewModel: CollageGeneratorVM = viewModel { CollageGeneratorVM(isLicenseValid) },
 ) {
     var collageType by rememberSaveable(collageType) { mutableIntStateOf(collageType) }
     val collageSize by PlatformStuff.mainPrefs.data
@@ -176,7 +175,7 @@ fun CollageGeneratorDialog(
             shareTextToCopy = text.ifBlank { null }
 
             if (shareCollageClicked) {
-                showCollageShareSheet(image, shareTextToCopy)
+                viewModel.shareCollage(image, shareTextToCopy)
                 shareCollageClicked = false
             }
             if (saveCollageClicked) {
@@ -362,15 +361,7 @@ fun CollageGeneratorDialog(
         onDismiss = { fileName = null },
     ) { platformFile ->
         collageBitmap?.let {
-            writeImage(it, platformFile)
-        }
-    }
-}
-
-private fun writeImage(imageBitmap: ImageBitmap, platformFile: PlatformFile) {
-    GlobalScope.launch {
-        platformFile.overwrite { stream ->
-            PlatformStuff.writeBitmapToStream(imageBitmap, stream)
+            viewModel.writeImage(it, platformFile)
         }
     }
 }

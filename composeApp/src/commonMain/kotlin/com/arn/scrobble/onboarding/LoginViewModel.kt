@@ -186,7 +186,7 @@ class LoginViewModel : ViewModel() {
 
             while (tryAgainTimeout > System.currentTimeMillis()) {
                 val result = LastFm.authAndGetSession(
-                    userAccountTemp.copy(authKey = token)
+                    userAccountTemp.copy(authKey = token),
                 )
 
                 // 14 - This token has not been authorized

@@ -6,7 +6,7 @@ import java.io.OutputStream
 expect class PlatformFile(fileUri: String) {
     val uri: String
 
-    fun isFileOk(): Boolean
+    suspend fun isFileOk(): Boolean
 
     fun getFileName(): String
 

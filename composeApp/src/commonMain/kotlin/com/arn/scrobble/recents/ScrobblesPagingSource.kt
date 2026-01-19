@@ -11,11 +11,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.ScrobbleSource
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.VariantStuff
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import java.util.TreeMap
 import kotlin.math.abs
 
@@ -25,6 +21,7 @@ class ScrobblesPagingSource(
     private val timeJumpMillis: Long?,
     private val track: Track?,
     private val cachedOnly: Boolean,
+    private val scrobbleSources: Boolean,
     private val addToPkgMap: (Long, String) -> Unit,
     private val onSetFirstScrobbleTime: (Long) -> Unit,
     private val onSetLastRecentsRefreshTime: (Long) -> Unit,
@@ -91,12 +88,8 @@ class ScrobblesPagingSource(
                 onClearOverrides()
 
             onSetTotal(total)
-            
-            if (
-                currentScrobblable !is FileScrobblable &&
-                VariantStuff.billingRepository.isLicenseValid &&
-                PlatformStuff.mainPrefs.data.map { it.showScrobbleSources }.first()
-            ) {
+
+            if (scrobbleSources && currentScrobblable !is FileScrobblable) {
                 val earliest = entries.lastOrNull()?.date
                 val latest = entries.find { it.date != null }?.date
                 if (earliest != null && latest != null) {

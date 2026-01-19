@@ -17,8 +17,10 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import io.ktor.http.encodeURLPath
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
@@ -51,7 +53,7 @@ actual object PlatformStuff {
         get() =
             DesktopStuff.noUpdateCheck
 
-    actual const val recomposeOnLocaleChange = true
+    actual const val hasSystemLocaleStore = false
 
     actual val filesDir by lazy {
         File(DesktopStuff.appDataRoot, "data")
@@ -101,7 +103,7 @@ actual object PlatformStuff {
     }
 
     actual fun isScrobblerRunning(): Boolean {
-        return true
+        return PanoNativeComponents.isMediaListenerRunning
     }
 
     actual fun getDeviceIdentifier(): String {
@@ -136,11 +138,6 @@ actual object PlatformStuff {
         openInBrowser(searchUrl)
     }
 
-    actual fun isNotiChannelEnabled(channelId: String): Boolean {
-        // todo implement
-        return false
-    }
-
     actual fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb> {
         val dbFile = File(filesDir, "panodb.db")
         return Room.databaseBuilder<PanoDb>(
@@ -167,20 +164,21 @@ actual object PlatformStuff {
         )
     }
 
-    actual fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream) {
-        val image = imageBitmap.asSkiaBitmap().let { Image.makeFromBitmap(it) }
-        stream.use {
-            try {
-                val data = image.encodeToData(
-                    EncodedImageFormat.JPEG,
-                    95
-                )!!
-                it.write(data.bytes)
-            } catch (e: Exception) {
-                e.printStackTrace()
+    actual suspend fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream) =
+        withContext(Dispatchers.IO) {
+            val image = imageBitmap.asSkiaBitmap().let { Image.makeFromBitmap(it) }
+            stream.use {
+                try {
+                    val data = image.encodeToData(
+                        EncodedImageFormat.JPEG,
+                        95
+                    )!!
+                    it.write(data.bytes)
+                } catch (e: Exception) {
+                    Logger.e(e) { "Failed to write bitmap to stream" }
+                }
             }
         }
-    }
 
     actual fun getLocalIpAddresses(): List<String> {
         return try {

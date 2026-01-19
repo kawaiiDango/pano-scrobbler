@@ -34,13 +34,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -60,7 +59,7 @@ fun ThemeChooserScreen(
     onNavigateToBilling: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
+    val isLicenseValid = LocalLicenseValidState.current
     var themeName: String? by rememberSaveable { mutableStateOf(null) }
     var dynamic: Boolean? by rememberSaveable { mutableStateOf(null) }
     var dayNightMode: DayNightMode? by rememberSaveable { mutableStateOf(null) }
@@ -79,8 +78,6 @@ fun ThemeChooserScreen(
                                 themeDayNight = dayNightMode!!,
                                 themeContrast = contrastMode!!
                             )
-                        }.also {
-                            Stuff.mainPrefsInitialValue = it
                         }
                     }
                 } else

@@ -521,7 +521,7 @@ tasks.register<Exec>("buildNativeImage") {
     val winAppResFile = file("app-icons/exe-res.res")
 
     val nativeLibsDir = file("resources/$resourcesDirName/")
-    val iconFile = file("src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg")
+    val iconFile = file("src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg")
     val desktopFile = file("$APP_NAME_NO_SPACES.desktop")
     val licenseFile = file("../LICENSE")
     val distDir = file("../dist")
@@ -607,38 +607,6 @@ tasks.register<Exec>("buildNativeImage") {
             iconFile.copyTo(File(outputDir, "pano-scrobbler.svg"), overwrite = true)
             desktopFile.copyTo(File(outputDir, desktopFile.name), overwrite = true)
         }
-    }
-}
-
-afterEvaluate {
-    if (os.isMacOsX)
-        tasks.named("packageReleaseDmg") {
-            finalizedBy(tasks.named("copyReleaseDmg"))
-        }
-
-    tasks.named("packageUberJarForCurrentOS") {
-        finalizedBy(tasks.named("buildNativeImage"))
-    }
-
-    if (os.isLinux)
-        tasks.named("buildNativeImage") {
-            finalizedBy(tasks.named("packageLinuxAppImageAndTarball"))
-        }
-
-    if (os.isWindows)
-        tasks.named("buildNativeImage") {
-            finalizedBy(tasks.named("packageWindowsNsis"))
-        }
-
-    tasks.named("copyNonXmlValueResourcesForAndroidMain") {
-        // Ensure AboutLibraries export runs first
-        dependsOn(":androidApp:exportLibraryDefinitions")
-        // Optional ordering guard
-        mustRunAfter(":androidApp:exportLibraryDefinitions")
-    }
-
-    tasks.named("updateMaterialSymbols") {
-        finalizedBy(tasks.named("convertMaterialSymbols"))
     }
 }
 
@@ -990,6 +958,47 @@ tasks.register("copyStringsToAndroid") {
                     serializer.write(targetDoc, lsOutput)
                 }
             }
+        }
+    }
+}
+
+tasks.configureEach {
+    when (name) {
+        "packageReleaseDmg" -> {
+            if (os.isMacOsX) finalizedBy("copyReleaseDmg")
+        }
+
+        "packageUberJarForCurrentOS" -> {
+            if (os.isLinux) {
+                finalizedBy("packageLinuxAppImageAndTarball")
+            } else if (os.isWindows) {
+                finalizedBy("packageWindowsNsis")
+            }
+        }
+
+        "buildNativeImage" -> {
+            // Explicitly declare dependency to fix the "implicit dependency" error
+            mustRunAfter("packageUberJarForCurrentOS")
+            dependsOn("packageUberJarForCurrentOS")
+        }
+
+        "packageLinuxAppImageAndTarball" -> {
+            dependsOn("buildNativeImage")
+        }
+
+        "packageWindowsNsis" -> {
+            dependsOn("buildNativeImage")
+        }
+
+        "copyNonXmlValueResourcesForAndroidMain" -> {
+            // Ensure AboutLibraries export runs first
+            dependsOn(":androidApp:exportLibraryDefinitions")
+            // Optional ordering guard
+            mustRunAfter(":androidApp:exportLibraryDefinitions")
+        }
+
+        "updateMaterialSymbols" -> {
+            finalizedBy("convertMaterialSymbols")
         }
     }
 }

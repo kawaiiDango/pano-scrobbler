@@ -5,7 +5,7 @@ import java.util.Locale
 private var systemDefaultLocale: Locale? = null
 
 // lang = null indicates that the system locale should be set
-actual fun setAppLocale(lang: String?, activityContext: Any?) {
+actual fun LocaleUtils.setAppLocale(lang: String?, activityContext: Any?) {
     if (systemDefaultLocale == null) {
         systemDefaultLocale = Locale.getDefault()
     }
@@ -17,13 +17,15 @@ actual fun setAppLocale(lang: String?, activityContext: Any?) {
     }
 
     Locale.setDefault(locale)
+
+    setLocaleFlow.tryEmit(lang)
 }
 
-actual fun getCurrentLocale(localePref: String?): String? {
-    return localePref
+actual fun LocaleUtils.getCurrentLocale(): String? {
+    return locale.value
 }
 
-actual fun getSystemCountryCode(): String {
+actual fun LocaleUtils.getSystemCountryCode(): String {
     return systemDefaultLocale?.country?.ifEmpty {
         // Fallback to the system default locale
         Locale.getDefault().country.ifEmpty { null }

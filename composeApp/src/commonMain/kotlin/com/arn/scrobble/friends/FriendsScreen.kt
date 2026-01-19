@@ -51,9 +51,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Error
 import com.arn.scrobble.icons.History
 import com.arn.scrobble.icons.Icons
@@ -81,7 +83,6 @@ import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -113,18 +114,15 @@ fun FriendsScreen(
     onNavigate: (PanoRoute) -> Unit,
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: FriendsVM = viewModel(key = user.key<FriendsVM>()) { FriendsVM(user) },
+    showPinned: Boolean = LocalLicenseValidState.current && user.isSelf,
+    viewModel: FriendsVM = viewModel(key = user.key<FriendsVM>()) { FriendsVM(user, showPinned) },
 ) {
     val scope = rememberCoroutineScope()
     val friends = viewModel.friends.collectAsLazyPagingItems()
     val totalFriends by viewModel.totalFriends.collectAsStateWithLifecycle()
     val friendsExtraDataMap by viewModel.friendsExtraDataMap.collectAsStateWithLifecycle()
     val friendsExtraDataMapState = remember { mutableStateMapOf<String, FriendExtraData>() }
-    val pinnedFriends by if (VariantStuff.billingRepository.isLicenseValid && user.isSelf) {
-        viewModel.pinnedFriends.collectAsStateWithLifecycle()
-    } else {
-        remember { mutableStateOf(emptyList()) }
-    }
+    val pinnedFriends by viewModel.pinnedFriends.collectAsStateWithLifecycle()
     var pinnedFriendsReordered by remember { mutableStateOf(pinnedFriends) }
 
     val pinnedUsernamesSet by remember(pinnedFriendsReordered) {
@@ -165,7 +163,7 @@ fun FriendsScreen(
     val followingText = stringResource(Res.string.following)
 
     LaunchedEffect(pinnedFriends) {
-        if (VariantStuff.billingRepository.isLicenseValid) {
+        if (showPinned) {
             pinnedFriendsReordered = pinnedFriends
         }
     }
@@ -283,94 +281,88 @@ fun FriendsScreen(
                 return@PanoLazyColumn // return early
             }
 
-            if (user.isSelf && VariantStuff.billingRepository.isLicenseValid) {
-                itemsIndexed(
-                    pinnedFriendsReordered,
-                    key = { idx, friend -> friend.name }
-                ) { idx, friend ->
+            itemsIndexed(
+                pinnedFriendsReordered,
+                key = { idx, friend -> friend.name }
+            ) { idx, friend ->
 
-                    DraggableItem(dragDropState, idx) { isDragging ->
-                        FriendItem(
-                            friend,
-                            extraData = friendsExtraDataMapState[friend.name],
-                            pinIndex = idx,
-                            canPinUnpin = user.isSelf,
-                            onPinUnpin = { pin ->
-                                if (VariantStuff.billingRepository.isLicenseValid) {
-                                    if (pin && friend.name !in pinnedUsernamesSet)
-                                        viewModel.addPinAndSave(friend)
-                                    else if (!pin && friend.name in pinnedUsernamesSet)
-                                        viewModel.removePinAndSave(friend)
-                                } else {
-                                    onNavigate(PanoRoute.Billing)
-                                }
-                            },
-                            isLastPin = idx == pinnedFriendsReordered.size - 1,
-                            onMove = { f, t ->
-                                pinnedFriendsReordered =
-                                    viewModel.movePin(pinnedFriendsReordered, f, t)
-                            },
-                            onNavigateToScrobbles = {
-                                onNavigate(PanoRoute.OthersHomePager(it))
-                            },
-                            onNavigateToTrackInfo = { track, user ->
-                                onNavigate(
-                                    PanoRoute.Modal.MusicEntryInfo(
-                                        track = track,
-                                        user = user,
-                                    )
+                DraggableItem(dragDropState, idx) { isDragging ->
+                    FriendItem(
+                        friend,
+                        extraData = friendsExtraDataMapState[friend.name],
+                        pinIndex = idx,
+                        canPinUnpin = user.isSelf,
+                        onPinUnpin = { pin ->
+                            if (showPinned) {
+                                if (pin && friend.name !in pinnedUsernamesSet)
+                                    viewModel.addPinAndSave(friend)
+                                else if (!pin && friend.name in pinnedUsernamesSet)
+                                    viewModel.removePinAndSave(friend)
+                            } else {
+                                onNavigate(PanoRoute.Billing)
+                            }
+                        },
+                        isLastPin = idx == pinnedFriendsReordered.size - 1,
+                        onMove = { f, t ->
+                            pinnedFriendsReordered =
+                                viewModel.movePin(pinnedFriendsReordered, f, t)
+                        },
+                        onNavigateToScrobbles = {
+                            onNavigate(PanoRoute.OthersHomePager(it))
+                        },
+                        onNavigateToTrackInfo = { track, user ->
+                            onNavigate(
+                                PanoRoute.Modal.MusicEntryInfo(
+                                    track = track,
+                                    user = user,
                                 )
-                            },
-                            modifier = Modifier
-                                .alpha(if (isDragging) 0.5f else 1f)
-                                .animateItem()
-                        )
-                    }
+                            )
+                        },
+                        modifier = Modifier
+                            .alpha(if (isDragging) 0.5f else 1f)
+                            .animateItem()
+                    )
                 }
             }
 
-            for (i in 0 until friends.itemCount) {
-                val friendPeek = friends.peek(i)
-                if (friendPeek == null || friendPeek.name !in pinnedUsernamesSet) {
-                    item(
-                        key = friendPeek?.name
-                    ) {
-                        val friend = friends[i]
+            items(
+                friends.itemCount,
+                key = friends.itemKey { it.name }
+            ) { idx ->
+                val friend = friends[idx]
 
-                        if (friend == null) {
-                            FriendItemShimmer(
-                                modifier = Modifier.animateItem()
+                if (friend == null) {
+                    FriendItemShimmer(
+                        modifier = Modifier.animateItem()
+                    )
+                } else {
+                    FriendItem(
+                        friend,
+                        extraData = friendsExtraDataMapState[friend.name],
+                        canPinUnpin = user.isSelf,
+                        onPinUnpin = { pin ->
+                            if (showPinned) {
+                                if (pin && friend.name !in pinnedUsernamesSet)
+                                    viewModel.addPinAndSave(friend)
+                                else if (!pin && friend.name in pinnedUsernamesSet)
+                                    viewModel.removePinAndSave(friend)
+                            } else {
+                                onNavigate(PanoRoute.Billing)
+                            }
+                        },
+                        onNavigateToScrobbles = {
+                            onNavigate(PanoRoute.OthersHomePager(it))
+                        },
+                        onNavigateToTrackInfo = { track, user ->
+                            onNavigate(
+                                PanoRoute.Modal.MusicEntryInfo(
+                                    track = track,
+                                    user = user,
+                                )
                             )
-                        } else {
-                            FriendItem(
-                                friend,
-                                extraData = friendsExtraDataMapState[friend.name],
-                                canPinUnpin = user.isSelf,
-                                onPinUnpin = { pin ->
-                                    if (VariantStuff.billingRepository.isLicenseValid) {
-                                        if (pin && friend.name !in pinnedUsernamesSet)
-                                            viewModel.addPinAndSave(friend)
-                                        else if (!pin && friend.name in pinnedUsernamesSet)
-                                            viewModel.removePinAndSave(friend)
-                                    } else {
-                                        onNavigate(PanoRoute.Billing)
-                                    }
-                                },
-                                onNavigateToScrobbles = {
-                                    onNavigate(PanoRoute.OthersHomePager(it))
-                                },
-                                onNavigateToTrackInfo = { track, user ->
-                                    onNavigate(
-                                        PanoRoute.Modal.MusicEntryInfo(
-                                            track = track,
-                                            user = user,
-                                        )
-                                    )
-                                },
-                                modifier = Modifier.animateItem()
-                            )
-                        }
-                    }
+                        },
+                        modifier = Modifier.animateItem()
+                    )
                 }
             }
 
@@ -608,7 +600,7 @@ private fun FriendItem(
                     Text(
                         stringResource(
                             Res.string.since_time,
-                            PanoTimeFormatter.relative(friend.registeredTime)
+                            PanoTimeFormatter.relative(friend.registeredTime, null)
                         ),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = textModifier,

@@ -1,4 +1,4 @@
-## <img src="composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg" alt="app icon" width="32"/> Pano Scrobbler
+## <img src="composeApp/src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg" alt="app icon" width="32"/> Pano Scrobbler
 
 [\[repository\]](https://github.com/kawaiiDango/pano-scrobbler)
 

@@ -38,7 +38,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.SimpleEdit
@@ -241,7 +241,7 @@ fun SimpleEditsAddScreen(
                     verifying = false
                     errorText = it.redactedMessage
 
-                    if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
+                    if (it is LastFm.CookiesInvalidatedException) {
                         reauthenticateButtonShown = true
                     }
                 }

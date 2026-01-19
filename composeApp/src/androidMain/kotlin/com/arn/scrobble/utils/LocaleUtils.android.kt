@@ -19,8 +19,9 @@ private val deviceLocaleLocaleList
     get() = Resources.getSystem().configuration.locales
 
 fun Context.applyAndroidLocaleLegacy(): Context {
+
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        val langPref = Stuff.mainPrefsInitialValue.locale
+        val langPref = LocaleUtils.locale.value
 
         val lang = if (langPref != null && langPref !in localesSet) {
             null
@@ -51,7 +52,7 @@ fun Context.getStringInDeviceLocale(@StringRes res: Int): String {
     return resources.getString(res)
 }
 
-actual fun setAppLocale(lang: String?, activityContext: Any?) {
+actual fun LocaleUtils.setAppLocale(lang: String?, activityContext: Any?) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val localeManager =
             AndroidStuff.applicationContext.getSystemService(LocaleManager::class.java)
@@ -85,11 +86,13 @@ actual fun setAppLocale(lang: String?, activityContext: Any?) {
             activityContext.resources.displayMetrics
         )
     }
+
+    setLocaleFlow.tryEmit(lang)
 }
 
-actual fun getCurrentLocale(localePref: String?): String? {
+actual fun LocaleUtils.getCurrentLocale(): String? {
     return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        localePref
+        null
     } else {
         AndroidStuff.applicationContext.getSystemService(LocaleManager::class.java)
             .applicationLocales
@@ -106,7 +109,7 @@ actual fun getCurrentLocale(localePref: String?): String? {
     }
 }
 
-actual fun getSystemCountryCode(): String {
+actual fun LocaleUtils.getSystemCountryCode(): String {
     return deviceLocaleLocaleList.get(0)?.let { locale ->
         locale.country.ifEmpty {
             // Fallback to the system default locale

@@ -7,7 +7,6 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastFm
-import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageResult
@@ -19,11 +18,8 @@ import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.Serializable
 
 
@@ -172,32 +168,10 @@ object Scrobblables {
     private val scrobblablesCache = mutableMapOf<UserAccountSerializable, Scrobblable>()
 
     private val accounts = PlatformStuff.mainPrefs.data
-        .mapLatest { it.scrobbleAccounts.distinctBy { it.type }.toSet() }
-        .stateIn(
-            GlobalScope,
-            SharingStarted.Eagerly,
-            Stuff.mainPrefsInitialValue.scrobbleAccounts.distinctBy { it.type }.toSet()
-        )
+        .stateInWithCache(GlobalScope) { it.scrobbleAccounts.distinctBy { it.type }.toSet() }
 
-    val currentAccount = PlatformStuff.mainPrefs.data
-        .mapLatest { prefs ->
-            val type =
-                if (prefs.scrobbleAccounts.find { it.type == prefs.currentAccountType } == null) {
-                    // if current account type is not in the list, set it to the first one
-                    prefs.scrobbleAccounts.firstOrNull()?.type ?: AccountType.LASTFM
-                } else {
-                    prefs.currentAccountType
-                }
-
-            prefs.scrobbleAccounts.firstOrNull { it.type == type }
-        }
-        .stateIn(
-            GlobalScope,
-            SharingStarted.Eagerly,
-            Stuff.mainPrefsInitialValue.let { prefs ->
-                prefs.scrobbleAccounts.firstOrNull { it.type == prefs.currentAccountType }
-            }
-        )
+    private val currentAccountType = PlatformStuff.mainPrefs.data
+        .stateInWithCache(GlobalScope) { it.currentAccountType }
 
     val all: Collection<Scrobblable>
         @Synchronized
@@ -220,8 +194,7 @@ object Scrobblables {
 
     val current
         @Synchronized
-        get() = scrobblablesCache[currentAccount.value]
-            ?: all.firstOrNull { it.userAccount == currentAccount.value }
+        get() = all.firstOrNull { it.userAccount.type == currentAccountType.value }
 
     suspend fun deleteAllByType(type: AccountType) {
         PlatformStuff.mainPrefs.updateData {
@@ -233,12 +206,12 @@ object Scrobblables {
             }
             it.copy(
                 scrobbleAccounts = remainingAccounts,
-                currentAccountType = currentAccountType
+                currentAccountType = currentAccountType,
+                cookies = if (type == AccountType.LASTFM)
+                    emptyMap()
+                else
+                    it.cookies
             )
-        }
-
-        if (type == AccountType.LASTFM) {
-            LastfmUnscrobbler.cookieStorage.clear()
         }
     }
 
@@ -264,8 +237,6 @@ object Scrobblables {
             AccountType.LISTENBRAINZ,
             AccountType.CUSTOM_LISTENBRAINZ,
                 -> ListenBrainz(userAccount)
-
-//            AccountType.MALOJA -> Maloja(userAccount)
 
             AccountType.PLEROMA -> Pleroma(userAccount)
 

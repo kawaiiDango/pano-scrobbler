@@ -2,6 +2,7 @@ package com.arn.scrobble.media
 
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao
@@ -12,6 +13,7 @@ import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -186,7 +188,10 @@ suspend fun listenForPlayingTrackEvents(
                 val linkHeartButtonToRating =
                     PlatformStuff.mainPrefs.data.map { it.linkHeartButtonToRating }.first()
 
-                if (linkHeartButtonToRating && VariantStuff.billingRepository.isLicenseValid) {
+                if (linkHeartButtonToRating &&
+                    VariantStuff.billingRepository.licenseState.filterNot { it == LicenseState.UNKNOWN }
+                        .first() == LicenseState.VALID
+                ) {
                     if (event.loved)
                         mediaListener.love(trackInfo.hash)
                     else

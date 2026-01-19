@@ -44,9 +44,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.charts.DatePickerModal
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator
@@ -75,7 +75,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.timeToLocal
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -131,19 +130,18 @@ fun ScrobblesScreen(
     val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
     val scrobblerEnabled by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
-    val showScrobbleSources by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources && VariantStuff.billingRepository.isLicenseValid }
-    val account by Scrobblables.currentAccount.collectAsStateWithLifecycle()
+    val showScrobbleSources by if (LocalLicenseValidState.current)
+        PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
+    else
+        remember { mutableStateOf(false) }
+    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val otherPlatformsLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.otherPlatformsLearnt }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
     val pendingScrobblesheader =
         pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
-    val canLove by remember(account) {
-        mutableStateOf(
-            account?.type != AccountType.PLEROMA,
-        )
-    }
+    val canLove = accountType != AccountType.PLEROMA
     val density = LocalDensity.current
     val listViewportHeight = remember {
         derivedStateOf {
@@ -159,11 +157,11 @@ fun ScrobblesScreen(
     }
     val scope = rememberCoroutineScope()
 
-    val canEditOrDelete by remember(selectedType, account) {
+    val canEditOrDelete by remember(selectedType, accountType) {
         mutableStateOf(
             !PlatformStuff.isTv &&
                     selectedType != ScrobblesType.LOVED &&
-                    account?.type !in arrayOf(AccountType.FILE, AccountType.PLEROMA)
+                    accountType !in arrayOf(AccountType.FILE, AccountType.PLEROMA)
         )
     }
 
@@ -177,6 +175,7 @@ fun ScrobblesScreen(
             ScrobblesType.LOVED -> {
                 viewModel.setScrobblesInput(
                     ScrobblesInput(
+                        showScrobbleSources = showScrobbleSources,
                         loadLoved = true,
                     )
                 )
@@ -189,6 +188,7 @@ fun ScrobblesScreen(
                 if (timeJumpMillis != null)
                     viewModel.setScrobblesInput(
                         ScrobblesInput(
+                            showScrobbleSources = showScrobbleSources,
                             timeJumpMillis = timeJumpMillis
                         )
                     )
@@ -199,7 +199,7 @@ fun ScrobblesScreen(
 
             ScrobblesType.RECENTS -> {
                 viewModel.setScrobblesInput(
-                    ScrobblesInput()
+                    ScrobblesInput(showScrobbleSources = showScrobbleSources)
                 )
 
                 onTitleChange(getString(Res.string.scrobbles))
@@ -414,6 +414,7 @@ fun ScrobblesScreen(
                         onItemClick = {
                             onTrackClick(it as Track, null)
                         },
+                        viewModel = viewModel,
                     )
 
                     if (pendingScrobbles.isNotEmpty()) {
@@ -435,7 +436,7 @@ fun ScrobblesScreen(
                     canLove = canLove,
                     canEdit = canEditOrDelete,
                     canDelete = canEditOrDelete,
-                    canHate = account?.type == AccountType.LISTENBRAINZ,
+                    canHate = accountType == AccountType.LISTENBRAINZ,
                     expandedKey = { expandedKey },
                     onExpand = {
                         canExpandNowPlaying = !(expandedKey != null && it == null)
@@ -581,7 +582,7 @@ private fun ScrobblesTypeSelector(
                         if (timeJumpMillis == null)
                             stringResource(Res.string.time_jump)
                         else
-                            PanoTimeFormatter.relative(timeJumpMillis),
+                            PanoTimeFormatter.relative(timeJumpMillis, null),
                         maxLines = 1
                     )
                 } else {

@@ -28,22 +28,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.arn.scrobble.api.Scrobblables
+import androidx.paging.compose.itemKey
 import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.listenbrainz.ListenBrainz
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.db.CachedTracksDao
-import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.icons.Album
@@ -69,20 +67,16 @@ import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
-import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.showTrackShareSheet
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album
@@ -92,13 +86,14 @@ import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.hate
-import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.more
 import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.share
+import pano_scrobbler.composeapp.generated.resources.share_sig
+import pano_scrobbler.composeapp.generated.resources.time_just_now
 import pano_scrobbler.composeapp.generated.resources.track
 import pano_scrobbler.composeapp.generated.resources.unlove
 
@@ -119,6 +114,7 @@ private fun TrackDropdownMenu(
     onLove: ((Boolean) -> Unit)?,
     onHate: ((Boolean) -> Unit)?,
     onDelete: (() -> Unit)?,
+    onShare: ((Track, String?) -> Unit)?,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -136,6 +132,7 @@ private fun TrackDropdownMenu(
     val moreFocusRequester = remember { FocusRequester() }
     val blockFocusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
+    val isLicenseValid = LocalLicenseValidState.current
 
     LaunchedEffect(menuLevel) {
         when (menuLevel) {
@@ -181,10 +178,13 @@ private fun TrackDropdownMenu(
 
         @Composable
         fun searchItem() {
+            val searchInSource by
+            PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.searchInSource && isLicenseValid }
+
             DropdownMenuItem(
                 onClick = {
                     scope.launch {
-                        PlatformStuff.launchSearchIntent(track, appId)
+                        PlatformStuff.launchSearchIntent(track, appId.takeIf { searchInSource })
                     }
                     onDismissRequest()
                 },
@@ -208,16 +208,6 @@ private fun TrackDropdownMenu(
                         DropdownMenuItem(
                             onClick = {
                                 val loved = track.userloved
-
-                                GlobalScope.launch {
-                                    withContext(Dispatchers.IO) {
-                                        ScrobbleEverywhere.loveOrUnlove(
-                                            track,
-                                            loved != true
-                                        )
-                                    }
-                                }
-
                                 onLove(loved != true)
                                 onDismissRequest()
                             },
@@ -264,30 +254,6 @@ private fun TrackDropdownMenu(
                     if (onDelete != null && track.date != null && track.date > 0 && !track.isNowPlaying) {
                         DropdownMenuItem(
                             onClick = {
-                                GlobalScope.launch {
-                                    withContext(Dispatchers.IO) {
-                                        Scrobblables.current?.delete(track)
-                                            ?.onFailure {
-                                                it.printStackTrace()
-                                                if (it is LastfmUnscrobbler.CookiesInvalidatedException) {
-                                                    Stuff.globalSnackbarFlow.emit(
-                                                        PanoSnackbarVisuals(
-                                                            getString(Res.string.lastfm_reauth),
-                                                            isError = true
-                                                        )
-                                                    )
-                                                } else
-                                                    Stuff.globalExceptionFlow.emit(it)
-                                            }
-                                            ?.onSuccess {
-                                                CachedTracksDao.deltaUpdateAll(
-                                                    track,
-                                                    -1,
-                                                    DirtyUpdate.BOTH
-                                                )
-                                            }
-                                    }
-                                }
                                 onDelete()
                                 onDismissRequest()
                             },
@@ -365,12 +331,6 @@ private fun TrackDropdownMenu(
                         DropdownMenuItem(
                             onClick = {
                                 val newHated = track.userHated != true
-                                GlobalScope.launch(Dispatchers.IO) {
-                                    if (newHated)
-                                        (Scrobblables.current as? ListenBrainz)?.hate(track)
-                                    else
-                                        ScrobbleEverywhere.loveOrUnlove(track, false)
-                                }
                                 onHate(newHated)
                                 onDismissRequest()
                             },
@@ -389,12 +349,13 @@ private fun TrackDropdownMenu(
                     searchItem()
                     copyItem()
 
-                    if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+                    if (onShare != null) {
+                        val shareSig =
+                            stringResource(Res.string.share_sig).takeIf { !isLicenseValid }
+
                         DropdownMenuItem(
                             onClick = {
-                                scope.launch {
-                                    showTrackShareSheet(track, user)
-                                }
+                                onShare(track, shareSig)
 
                                 onDismissRequest()
                             },
@@ -544,6 +505,8 @@ fun PendingDropdownMenu(
     pendingScrobble: PendingScrobble,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
+    onLove: ((Boolean) -> Unit),
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     DropdownMenu(
@@ -556,22 +519,7 @@ fun PendingDropdownMenu(
         if (pendingScrobble.event == ScrobbleEvent.scrobble) {
             DropdownMenuItem(
                 onClick = {
-                    GlobalScope.launch {
-                        withContext(Dispatchers.IO) {
-                            val track = Track(
-                                pendingScrobble.scrobbleData.track,
-                                pendingScrobble.scrobbleData.album?.let {
-                                    Album(
-                                        it,
-                                        pendingScrobble.scrobbleData.albumArtist
-                                            ?.let { Artist(it) })
-                                },
-                                Artist(pendingScrobble.scrobbleData.artist)
-                            )
-
-                            ScrobbleEverywhere.loveOrUnlove(track, true)
-                        }
-                    }
+                    onLove(true)
                     onDismissRequest()
                 },
                 text = {
@@ -590,11 +538,7 @@ fun PendingDropdownMenu(
 
         DropdownMenuItem(
             onClick = {
-                GlobalScope.launch {
-                    withContext(Dispatchers.IO) {
-                        PanoDb.db.getPendingScrobblesDao().delete(pendingScrobble)
-                    }
-                }
+                onDelete()
                 onDismissRequest()
             },
             text = {
@@ -661,7 +605,8 @@ private fun PendingScrobbleDesc(
                 Text(
                     PanoTimeFormatter.relative(
                         pendingScrobble.lastFailedTimestamp,
-                        withPreposition = true
+                        justNowString = stringResource(Res.string.time_just_now),
+                        withPreposition = true,
                     )
                 )
             },
@@ -697,149 +642,147 @@ fun LazyListScope.scrobblesListItems(
         onNavigate(PanoRoute.Modal.MusicEntryInfo(user = user, track = track, appId = appId))
     }
 
-    for (i in 0 until tracks.itemCount) {
-        val trackWrapperPeek = tracks.peek(i)
+    items(
+        tracks.itemCount,
+        key = tracks.itemKey { it.key }
+    ) { idx ->
+        val item = tracks[idx]
 
-        val key = trackWrapperPeek?.key ?: "placeholder_$i"
+        if (item is TrackWrapper.SeparatorItem) {
+            HorizontalDivider(
+                modifier = Modifier
+                    .animateItem()
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
 
-        if (trackWrapperPeek is TrackWrapper.SeparatorItem) {
-            item(
-                key = key
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier
-                        .animateItem()
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
+            )
+        } else if (item is TrackWrapper.TrackItem || item == null) {
+            val track = item?.track
+                ?: getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS) as Track
+            val isPlaceholder = item == null
+            val isExpanded = !isPlaceholder && expandedKey() == item.key
 
-                )
+            var menuVisible by remember { mutableStateOf(false) }
+
+            val appItem = remember(track) {
+                if (showScrobbleSources) {
+                    track.date
+                        ?.let { track.appId ?: pkgMap[it] }
+                        ?.let { AppItem(it, seenApps[it] ?: "") }
+                } else
+                    null
             }
-        } else if (trackWrapperPeek is TrackWrapper.TrackItem || trackWrapperPeek == null) {
-            item(
-                key = key
-            ) {
-                val track = trackWrapperPeek?.track
-                    ?: getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS) as Track
 
-                var menuVisible by remember { mutableStateOf(false) }
-
-                val appItem = remember(track) {
-                    if (showScrobbleSources) {
-                        track.date
-                            ?.let { track.appId ?: pkgMap[it] }
-                            ?.let { AppItem(it, seenApps[it] ?: "") }
-                    } else
-                        null
-                }
-
-                MusicEntryListItem(
-                    entry = track,
-                    appItem = appItem,
-                    onEntryClick = { onTrackClick(track, appItem?.appId) },
-                    isColumn = expandedKey() == key,
-                    fixedImageHeight = expandedKey() != key,
-                    onImageClick = {
-                        if (expandedKey() == key)
+            MusicEntryListItem(
+                entry = track,
+                appItem = appItem,
+                onEntryClick = { onTrackClick(track, appItem?.appId) },
+                isColumn = isExpanded,
+                fixedImageHeight = !isExpanded,
+                onImageClick = if (!isPlaceholder) {
+                    {
+                        if (isExpanded)
                             onExpand(null)
                         else {
-                            onExpand(key)
+                            onExpand(item.key)
                         }
-                    },
-                    forShimmer = trackWrapperPeek == null,
-                    fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
-                    menuContent = {
-                        TrackDropdownMenu(
-                            track = track,
-                            appId = appItem?.appId,
-                            onNavigate = onNavigate,
-                            user = user,
-                            editDialogArgs = if (canEdit) {
-                                {
-                                    val sd: ScrobbleData
-                                    val hash: Int?
+                    }
+                } else null,
+                forShimmer = item == null,
+                fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
+                menuContent = {
+                    val key = item?.key ?: return@MusicEntryListItem
 
-                                    if (!track.isNowPlaying && track.date != null) {
-                                        // no editing of now playing from here
-                                        sd = ScrobbleData(
-                                            track = track.name,
-                                            artist = track.artist.name,
-                                            album = track.album?.name,
-                                            timestamp = track.date,
-                                            albumArtist = null,
-                                            duration = null,
-                                            appId = null
-                                        )
-                                        hash = null
+                    TrackDropdownMenu(
+                        track = track,
+                        appId = appItem?.appId,
+                        onNavigate = onNavigate,
+                        user = user,
+                        editDialogArgs = if (canEdit) {
+                            {
+                                val sd: ScrobbleData
+                                val hash: Int?
+
+                                if (!track.isNowPlaying && track.date != null) {
+                                    // no editing of now playing from here
+                                    sd = ScrobbleData(
+                                        track = track.name,
+                                        artist = track.artist.name,
+                                        album = track.album?.name,
+                                        timestamp = track.date,
+                                        albumArtist = null,
+                                        duration = null,
+                                        appId = null
+                                    )
+                                    hash = null
+                                } else {
+                                    val sdToHash = getNowPlayingFromMainProcess()
+                                    if (sdToHash != null) {
+                                        sd = sdToHash.first
+                                        hash = sdToHash.second
                                     } else {
-                                        val sdToHash = getNowPlayingFromMainProcess()
-                                        if (sdToHash != null) {
-                                            sd = sdToHash.first
-                                            hash = sdToHash.second
-                                        } else {
 
-                                            return@TrackDropdownMenu null
-                                        }
+                                        return@TrackDropdownMenu null
                                     }
+                                }
 
-                                    PanoRoute.Modal.EditScrobble(
-                                        origScrobbleData = sd,
-                                        msid = track.msid,
-                                        key = key,
-                                        hash = hash
-                                    )
-                                }
-                            } else null,
-                            onLove = if (canLove) {
-                                {
-                                    viewModel.editTrack(
-                                        key,
-                                        track.copy(userloved = it)
-                                    )
-                                }
-                            } else null,
-                            onHate = if (canHate) {
-                                {
-                                    viewModel.editTrack(
-                                        key,
-                                        track.copy(userHated = it)
-                                    )
-                                }
-                            } else null,
-                            onDelete = if (canDelete) {
-                                {
-                                    viewModel.removeTrack(trackWrapperPeek!!.track)
-                                }
-                            } else null,
-                            expanded = menuVisible,
-                            onDismissRequest = { menuVisible = false }
-                        )
-                    },
-                    onMenuClick = { menuVisible = true },
-                    modifier = Modifier
-                        .animateItem()
-                        .then(
-                            if (animateListItemContentSize.value)
-                                Modifier.animateContentSize()
-                            else
-                                Modifier
-                        )
-                        .then(
-                            if (expandedKey() == key)
-                                Modifier.heightIn(
-                                    max = maxHeight.value
-                                        .coerceAtLeast(100.dp)
+                                PanoRoute.Modal.EditScrobble(
+                                    origScrobbleData = sd,
+                                    msid = track.msid,
+                                    key = key,
+                                    hash = hash
                                 )
-                            else
-                                Modifier
-                        )
-                        .then(
-                            if (trackWrapperPeek == null)
-                                Modifier.shimmerWindowBounds()
-                            else
-                                Modifier
-                        )
-                )
-            }
+                            }
+                        } else null,
+                        onLove = if (canLove) {
+                            {
+                                viewModel.loveOrUnlove(item, it)
+                            }
+                        } else null,
+                        onHate = if (canHate) {
+                            {
+                                viewModel.hateOrUnhate(item, it)
+                            }
+                        } else null,
+                        onDelete = if (canDelete) {
+                            {
+                                viewModel.removeTrack(item)
+                            }
+                        } else null,
+                        onShare = if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+                            { t, shareSig ->
+                                viewModel.shareTrack(t, shareSig)
+                            }
+                        } else null,
+                        expanded = menuVisible,
+                        onDismissRequest = { menuVisible = false }
+                    )
+                },
+                onMenuClick = { menuVisible = true },
+                modifier = Modifier
+                    .animateItem()
+                    .then(
+                        if (animateListItemContentSize.value)
+                            Modifier.animateContentSize()
+                        else
+                            Modifier
+                    )
+                    .then(
+                        if (isExpanded)
+                            Modifier.heightIn(
+                                max = maxHeight.value
+                                    .coerceAtLeast(100.dp)
+                            )
+                        else
+                            Modifier
+                    )
+                    .then(
+                        if (item == null)
+                            Modifier.shimmerWindowBounds()
+                        else
+                            Modifier
+                    )
+            )
         }
     }
 }
@@ -865,6 +808,7 @@ fun LazyListScope.pendingScrobblesListItems(
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
     onItemClick: (MusicEntry) -> Unit,
+    viewModel: ScrobblesVM,
     fetchAlbumImageIfMissing: Boolean = false,
     minItems: Int = 3,
 ) {
@@ -913,7 +857,28 @@ fun LazyListScope.pendingScrobblesListItems(
                 PendingDropdownMenu(
                     pendingScrobble = item,
                     expanded = menuVisible,
-                    onDismissRequest = { menuVisible = false }
+                    onDismissRequest = { menuVisible = false },
+                    onLove = {
+                        viewModel.viewModelScope.launch(Dispatchers.IO) {
+                            val track = Track(
+                                item.scrobbleData.track,
+                                item.scrobbleData.album?.let {
+                                    Album(
+                                        it,
+                                        item.scrobbleData.albumArtist
+                                            ?.let { Artist(it) })
+                                },
+                                Artist(item.scrobbleData.artist)
+                            )
+
+                            ScrobbleEverywhere.loveOrUnlove(track, it)
+                        }
+                    },
+                    onDelete = {
+                        viewModel.viewModelScope.launch(Dispatchers.IO) {
+                            PanoDb.db.getPendingScrobblesDao().delete(item)
+                        }
+                    }
                 )
             },
             fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,

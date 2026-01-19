@@ -2,10 +2,6 @@ package com.arn.scrobble.utils
 
 import android.text.format.DateUtils
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.getString
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.time_just_now
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -13,16 +9,15 @@ actual object PanoTimeFormatter {
 
     actual fun relative(
         millis: Long,
+        justNowString: String?,
         withPreposition: Boolean,
     ): String {
         val context = applicationContext
         val millis = millis
         val diff = System.currentTimeMillis() - millis
         return when {
-            millis == 0L || diff <= DateUtils.MINUTE_IN_MILLIS -> {
-                runBlocking { // todo remove runBlocking
-                    getString(Res.string.time_just_now)
-                }
+            justNowString != null && (millis == 0L || diff <= DateUtils.MINUTE_IN_MILLIS) -> {
+                justNowString
             }
 
             withPreposition -> {

@@ -76,7 +76,22 @@ class NLService : NotificationListenerService() {
 
             if (BuildKonfig.DEBUG)
                 toast(R.string.scrobbler_on)
-            init()
+
+            // run Stuff.initializeMainPrefsCache() in a coroutine and then call init() when that finishes
+            coroutineScope.launch {
+                val prefs = Stuff.initializeMainPrefsCache()
+
+                if (prefs.notiPersistent && AndroidStuff.canShowPersistentNotiIfEnabled) {
+                    try {
+                        PersistentNotificationService.start(this@NLService)
+//                ForegroundServiceStartNotAllowedException extends IllegalStateException
+                    } catch (e: IllegalStateException) {
+                        Logger.e(e) { "Foreground service start not allowed" }
+                    }
+                }
+            }.invokeOnCompletion {
+                init()
+            }
         }
     }
 
@@ -124,15 +139,6 @@ class NLService : NotificationListenerService() {
         }
 
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
-        val persistentNoti = Stuff.mainPrefsInitialValue.notiPersistent
-        if (persistentNoti && AndroidStuff.canShowPersistentNotiIfEnabled) {
-            try {
-                PersistentNotificationService.start(this)
-//                ForegroundServiceStartNotAllowedException extends IllegalStateException
-            } catch (e: IllegalStateException) {
-                Logger.e(e) { "Foreground service start not allowed" }
-            }
-        }
 
         if (BuildKonfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             AndroidStuff.getScrobblerExitReasons().let {

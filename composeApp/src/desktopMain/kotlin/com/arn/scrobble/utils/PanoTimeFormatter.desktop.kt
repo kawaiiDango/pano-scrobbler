@@ -1,9 +1,5 @@
 package com.arn.scrobble.utils
 
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.getString
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.time_just_now
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -17,17 +13,15 @@ actual object PanoTimeFormatter {
 
     actual fun relative(
         millis: Long,
+        justNowString: String?,
         withPreposition: Boolean,
     ): String {
         val millis = millis
         val diff = System.currentTimeMillis() - millis
         val seconds = diff / 1000
 
-        if (millis == 0L || seconds <= 60) {
-            // todo remove runBlocking
-            return runBlocking {
-                getString(Res.string.time_just_now)
-            }
+        if (justNowString != null && (millis == 0L || seconds <= 60)) {
+            return justNowString
         }
 
         val currentDay = LocalDateTime.now().dayOfYear

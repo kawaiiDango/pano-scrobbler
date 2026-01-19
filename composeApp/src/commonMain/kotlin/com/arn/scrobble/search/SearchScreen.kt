@@ -24,7 +24,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -86,16 +85,17 @@ fun SearchScreen(
     val albumsText = stringResource(Res.string.albums)
     val tracksText = stringResource(Res.string.tracks)
     val lovedText = stringResource(Res.string.loved)
+    val currentAccount by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.currentAccount
+    }
     val useLastfm by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
-        it.lastfmApiAlways || Scrobblables.currentAccount.value?.type == AccountType.LASTFM
+        it.lastfmApiAlways || it.currentAccountType == AccountType.LASTFM
     }
 
     val focusRequester = remember { FocusRequester() }
 
     fun onItemClick(item: MusicEntry) {
-        val userSelf = Scrobblables.currentAccount.value?.user
-
-        userSelf?.let { userSelf ->
+        currentAccount?.user?.let { userSelf ->
             onNavigate(
                 PanoRoute.Modal.MusicEntryInfo(
                     track = item as? Track,

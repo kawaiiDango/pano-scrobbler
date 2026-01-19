@@ -123,10 +123,7 @@ object PanoNavGraph {
         entry<PanoRoute.SelfHomePager>(
         ) { route ->
             val currentUserSelf by PlatformStuff.mainPrefs.data
-                .collectAsStateWithInitialValue { prefs ->
-                    prefs.scrobbleAccounts
-                        .firstOrNull { it.type == prefs.currentAccountType }?.user
-                }
+                .collectAsStateWithInitialValue { it.currentAccount?.user }
 
             val savedTab by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.lastHomePagerTab }
 

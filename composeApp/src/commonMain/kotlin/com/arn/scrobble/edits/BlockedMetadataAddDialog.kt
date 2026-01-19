@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
@@ -32,7 +33,6 @@ import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -85,7 +85,8 @@ private fun BlockedMetadataAddContent(
     var errorText by rememberSaveable(blockedMetadata) { mutableStateOf<String?>(null) }
     val emptyText = stringResource(Res.string.required_fields_empty)
     val anythingText = "< " + stringResource(Res.string.any_value) + " >"
-    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
+
+    val isLicenseValid = LocalLicenseValidState.current
 
     LaunchedEffect(useChannel) {
         if (ignoredArtist != null) {

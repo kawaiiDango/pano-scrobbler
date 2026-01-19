@@ -15,8 +15,9 @@ actual class PlatformFile actual constructor(private val fileUri: String) {
 
     actual val uri = fileUri
 
-    actual fun isFileOk() =
+    actual suspend fun isFileOk() = withContext(Dispatchers.IO) {
         file.exists() && file.canWrite() && file.canRead()
+    }
 
     actual fun getFileName(): String = file.name
 

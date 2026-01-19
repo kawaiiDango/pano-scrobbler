@@ -18,5 +18,7 @@ expect object PanoNotifications {
 
     suspend fun notifyUpdater(updateAction: UpdateAction)
 
+    fun isNotiChannelEnabled(channelId: String): Boolean
+
     fun removeNotificationByKey(key: String)
 }

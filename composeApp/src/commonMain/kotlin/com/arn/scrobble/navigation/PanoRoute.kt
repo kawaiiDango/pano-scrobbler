@@ -1,8 +1,9 @@
 package com.arn.scrobble.navigation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.navigation3.runtime.NavKey
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
@@ -20,6 +21,8 @@ import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.updates.UpdateAction
+import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.serialization.Serializable
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add
@@ -32,6 +35,7 @@ sealed interface PanoRoute : NavKey {
     sealed interface DeepLinkable : PanoRoute
 
     sealed interface HasTabs : PanoRoute {
+        @Composable
         fun getTabsList(): List<PanoTab>
     }
 
@@ -41,22 +45,29 @@ sealed interface PanoRoute : NavKey {
 
     @Serializable
     data class SelfHomePager(val digestTypeStr: String? = null) : PanoRoute, DeepLinkable, HasTabs {
+        @Composable
         override fun getTabsList(): List<PanoTab> {
-            val selfAccount = Scrobblables.currentAccount.value ?: return emptyList()
+            val selfAccount by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccount }
+            val account = selfAccount ?: return emptyList()
 
             return homePagerTabData(
-                user = selfAccount.user,
-                accountType = selfAccount.type,
+                user = account.user,
+                accountType = account.type,
             )
         }
     }
 
     @Serializable
     data class OthersHomePager(val user: UserCached) : PanoRoute, HasTabs {
-        override fun getTabsList() = homePagerTabData(
-            user = user,
-            accountType = Scrobblables.currentAccount.value?.type ?: AccountType.LASTFM,
-        )
+        @Composable
+        override fun getTabsList(): List<PanoTab> {
+            val currentAccountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
+
+            return homePagerTabData(
+                user = user,
+                accountType = currentAccountType,
+            )
+        }
     }
 
     @Serializable
@@ -209,6 +220,8 @@ sealed interface PanoRoute : NavKey {
         val entryType: Int,
         val appId: String? = null,
     ) : PanoRoute, DeepLinkable, HasTabs {
+
+        @Composable
         override fun getTabsList() = listOf(
             PanoTab.TopArtists,
             PanoTab.TopAlbums,
@@ -221,6 +234,8 @@ sealed interface PanoRoute : NavKey {
         val user: UserCached,
         val chartsType: Int,
     ) : PanoRoute, HasTabs {
+        
+        @Composable
         override fun getTabsList() = listOf(
             PanoTab.TopArtists,
             PanoTab.TopAlbums,

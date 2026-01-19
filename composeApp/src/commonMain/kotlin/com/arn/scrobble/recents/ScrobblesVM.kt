@@ -8,8 +8,14 @@ import androidx.paging.cachedIn
 import androidx.paging.filter
 import androidx.paging.insertSeparators
 import androidx.paging.map
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.listenbrainz.ListenBrainz
+import com.arn.scrobble.db.CachedTracksDao
+import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.generateKey
@@ -17,6 +23,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.PendingScrobblesWork
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,13 +34,18 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import java.util.Calendar
 
 
 class ScrobblesVM(
-    user: UserCached,
+    val user: UserCached,
     track: Track?, // for track-specific scrobbles view
 ) : ViewModel() {
     val pendingScrobbles = PanoDb.db.getPendingScrobblesDao().allFlow(10000)
@@ -43,12 +55,11 @@ class ScrobblesVM(
     private val _scrobblerServiceRunning = MutableStateFlow<Boolean?>(null)
     val scrobblerServiceRunning = _scrobblerServiceRunning.asStateFlow()
 
-    private val editedTracksMap = MutableStateFlow<Map<String, Track>>(emptyMap())
-    private val _deletedTracksSet = MutableStateFlow<Set<Track>>(emptySet())
-    val deletedTracksCount = _deletedTracksSet.map { it.size }
+    private val editsAndDeletes = MutableStateFlow<Map<String, Track?>>(emptyMap())
+    val deletedTracksCount = editsAndDeletes.mapLatest { it.count { (k, v) -> v == null } }
     private val _pkgMap = MutableStateFlow<Map<Long, String>>(emptyMap())
     val pkgMap = _pkgMap.asStateFlow()
-    private val _input = MutableStateFlow(ScrobblesInput())
+    private val _input = MutableStateFlow<ScrobblesInput?>(null)
     private val _firstScrobbleTime = MutableStateFlow<Long?>(null)
     val firstScrobbleTime = _firstScrobbleTime.asStateFlow()
     private val _total = MutableStateFlow<Int?>(null)
@@ -61,8 +72,6 @@ class ScrobblesVM(
     private val _lastRecentsRefreshTime = MutableStateFlow(System.currentTimeMillis())
     val lastRecentsRefreshTime = _lastRecentsRefreshTime.asStateFlow()
 
-    private val cal = Calendar.getInstance()!!
-
     private val pagingConfig = PagingConfig(
         pageSize = Stuff.DEFAULT_PAGE_SIZE,
         enablePlaceholders = true,
@@ -71,6 +80,7 @@ class ScrobblesVM(
     )
 
     val tracks = _input
+        .filterNotNull()
         .combine(_loadedCachedVersion) { input, loadedCachedVersion ->
             val loadedCachedVersion =
                 if (user.isSelf && track == null)
@@ -89,6 +99,7 @@ class ScrobblesVM(
                         timeJumpMillis = input.timeJumpMillis,
                         track = track,
                         cachedOnly = !loadedCachedVersion,
+                        scrobbleSources = input.showScrobbleSources,
                         addToPkgMap = { time, pkg -> _pkgMap.value += time to pkg },
                         onSetFirstScrobbleTime = { _firstScrobbleTime.value = it },
                         onSetLastRecentsRefreshTime = {
@@ -101,16 +112,7 @@ class ScrobblesVM(
             )
                 .flow
                 .cachedIn(viewModelScope)
-                .combine(editedTracksMap) { pagingData, editedMap ->
-                    // to update when edits happen
-                    pagingData.map { track ->
-                        val key = track.generateKey()
-                        val editedTrack = editedMap[key]
-                        TrackWrapper.TrackItem(editedTrack ?: track, key)
-                    }
-
-                }
-                .combine(_deletedTracksSet) { pagingData, deletedSet ->
+                .combine(editsAndDeletes) { pagingData, editsAndDeletesMap ->
                     if (!_loadedCachedVersion.value) {
                         viewModelScope.launch {
                             delay(50)
@@ -119,11 +121,18 @@ class ScrobblesVM(
                     }
 
                     val keysTillNow = mutableSetOf<String>()
+                    val cal = Calendar.getInstance()!!
 
                     // filter duplicates to prevent a crash in LazyColumn
-                    pagingData
+                    pagingData.map { track ->
+                        val key = track.generateKey()
+                        val editedTrack = editsAndDeletesMap[key]
+                        TrackWrapper.TrackItem(editedTrack ?: track, key)
+                    }
                         .filter {
-                            val keep = it.key !in keysTillNow && it.track !in deletedSet
+                            val keep =
+                                it.key !in keysTillNow &&
+                                        (editsAndDeletesMap[it.key] != null || it.key !in editsAndDeletesMap)
                             keysTillNow += it.key
                             keep
                         }
@@ -148,7 +157,7 @@ class ScrobblesVM(
                                 null
                         }
                 }
-        }
+        }.cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {
@@ -274,17 +283,69 @@ class ScrobblesVM(
 */
 
     private fun clearOverrides() {
-        _deletedTracksSet.value = emptySet()
-        editedTracksMap.value = emptyMap()
+        editsAndDeletes.value = emptyMap()
         _pkgMap.value = emptyMap()
     }
 
-    fun removeTrack(track: Track) {
-        _deletedTracksSet.value += track
+    fun removeTrack(item: TrackWrapper.TrackItem) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                Scrobblables.current?.delete(item.track)
+                    ?.onFailure {
+                        it.printStackTrace()
+                        if (it is LastFm.CookiesInvalidatedException) {
+                            Stuff.globalSnackbarFlow.emit(
+                                PanoSnackbarVisuals(
+                                    getString(Res.string.lastfm_reauth),
+                                    isError = true
+                                )
+                            )
+                        } else
+                            Stuff.globalExceptionFlow.emit(it)
+                    }
+                    ?.onSuccess {
+                        CachedTracksDao.deltaUpdateAll(
+                            item.track,
+                            -1,
+                            DirtyUpdate.BOTH
+                        )
+                    }
+            }
+        }
+        editsAndDeletes.value += item.key to null
+    }
+
+    fun loveOrUnlove(item: TrackWrapper.TrackItem, love: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            ScrobbleEverywhere.loveOrUnlove(
+                item.track,
+                love
+            )
+        }
+
+        editTrack(
+            item.key,
+            item.track.copy(userloved = love)
+        )
+    }
+
+    fun hateOrUnhate(item: TrackWrapper.TrackItem, hate: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (hate)
+                (Scrobblables.current as? ListenBrainz)?.hate(item.track)
+            else
+                ScrobbleEverywhere.loveOrUnlove(item.track, false)
+        }
+        editTrack(
+            item.key,
+            item.track.copy(userHated = hate)
+        )
     }
 
     fun editTrack(key: String, editedTrack: Track) {
-        editedTracksMap.value += key to editedTrack
+        editsAndDeletes.value += key to editedTrack
     }
 
 }
+
+expect fun ScrobblesVM.shareTrack(track: Track, shareSig: String?)

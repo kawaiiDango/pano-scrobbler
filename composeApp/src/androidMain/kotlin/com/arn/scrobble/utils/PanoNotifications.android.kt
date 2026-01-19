@@ -2,6 +2,7 @@ package com.arn.scrobble.utils
 
 import android.app.Notification
 import android.app.NotificationChannel
+import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
@@ -9,11 +10,13 @@ import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.os.Build
+import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.work.ForegroundInfo
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.R
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.charts.TimePeriod
@@ -24,10 +27,11 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.updates.UpdateAction
-import com.arn.scrobble.utils.AndroidStuff.updateCurrentOrImmutable
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
@@ -51,10 +55,12 @@ import pano_scrobbler.composeapp.generated.resources.yes
 actual object PanoNotifications {
     private val context
         get() = AndroidStuff.applicationContext
-    private val notificationManager
-        get() = AndroidStuff.notificationManager
+    private val notificationManager by lazy {
+        AndroidStuff.applicationContext.getSystemService(NotificationManager::class.java)!!
+    }
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
     private val nowPlayingScrobbleDataToHash = mutableMapOf<String, Pair<ScrobbleData, Int>>()
+    private var channelsCreated = false
 
     private fun buildNotificationAction(
         icon: Int,
@@ -68,6 +74,11 @@ actual object PanoNotifications {
 
     private fun Notification.Builder.setChannelIdCompat(channelId: String): Notification.Builder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!channelsCreated) {
+                channelsCreated = true
+                createChannels()
+            }
+
             setChannelId(channelId)
         }
         return this
@@ -87,7 +98,7 @@ actual object PanoNotifications {
         else
             nowPlayingScrobbleDataToHash.remove(event.notiKey)
 
-        if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
+        if (!isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
             return
 
         val cancelEvent = PlayingTrackNotifyEvent.TrackCancelled(
@@ -110,7 +121,7 @@ actual object PanoNotifications {
 
         val lovePi = PendingIntent.getBroadcast(
             context, 4, loveIntent,
-            updateCurrentOrImmutable
+            AndroidStuff.updateCurrentOrImmutable
         )
 
         val loveAction = buildNotificationAction(
@@ -142,7 +153,8 @@ actual object PanoNotifications {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setStyle(style)
             .apply {
-                val user = Scrobblables.currentAccount.value?.user
+                val user =
+                    PlatformStuff.mainPrefs.data.map { it.currentAccount?.user }.first()
                 if (user != null) {
                     val dialogArgs = PanoRoute.Modal.MusicEntryInfo(
                         track = event.scrobbleData.toTrack(),
@@ -251,7 +263,7 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyError(event: PlayingTrackNotifyEvent.Error) {
-        if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCR_ERR))
+        if (!isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCR_ERR))
             return
 
         val subtitle = event.scrobbleError.description
@@ -300,7 +312,7 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
-        if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
+        if (!isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
             return
 
         val allowEvent = PlayingTrackNotifyEvent.AppAllowedBlocked(
@@ -427,10 +439,12 @@ actual object PanoNotifications {
         else
             Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
+        val user =
+            PlatformStuff.mainPrefs.data.map { it.currentAccount?.user }.first() ?: return
         val dialogArgs = PanoRoute.Modal.CollageGenerator(
             collageType = Stuff.TYPE_ALL,
             timePeriod = TimePeriod(lastfmPeriod),
-            user = Scrobblables.currentAccount.value?.user ?: return
+            user = user
         )
 
         val collagePi = DeepLinkUtils.buildDialogPendingIntent(dialogArgs)
@@ -489,11 +503,7 @@ actual object PanoNotifications {
 
         // create channel if not exists
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nm = AndroidStuff.applicationContext.getSystemService(
-                NotificationManager::class.java
-            )!!
-
-            nm.createNotificationChannel(
+            notificationManager.createNotificationChannel(
                 NotificationChannel(
                     Stuff.CHANNEL_NOTI_UPDATER,
                     getString(Res.string.update_available, ""),
@@ -502,7 +512,7 @@ actual object PanoNotifications {
             )
         }
 
-        if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_UPDATER))
+        if (!isNotiChannelEnabled(Stuff.CHANNEL_NOTI_UPDATER))
             return
 
         val contentIntent = Intent(Intent.ACTION_VIEW).apply {
@@ -512,7 +522,7 @@ actual object PanoNotifications {
 
         val contentPi = PendingIntent.getActivity(
             context, 32, contentIntent,
-            updateCurrentOrImmutable
+            AndroidStuff.updateCurrentOrImmutable
         )
 
         val nb = Notification.Builder(context)
@@ -530,11 +540,34 @@ actual object PanoNotifications {
     }
 
 
+    actual fun isNotiChannelEnabled(channelId: String): Boolean {
+        return when {
+            PlatformStuff.isTv -> false
+
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                notificationManager.areNotificationsEnabled() &&
+                        notificationManager.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
+            }
+
+            else -> true
+        }
+    }
+
+    actual fun removeNotificationByKey(key: String) {
+        nowPlayingScrobbleDataToHash.remove(key)
+
+        notificationManager.cancel(key, 0)
+    }
+
+    fun getNowPlayingFromBackgroundProcess(): Pair<ScrobbleData, Int>? {
+        return nowPlayingScrobbleDataToHash.values.firstOrNull()
+    }
+
     fun createForegroundInfo(title: String): ForegroundInfo {
         val intent = Intent(context, MainActivity::class.java)
         val launchIntent = PendingIntent.getActivity(
             context, 8, intent,
-            updateCurrentOrImmutable
+            AndroidStuff.updateCurrentOrImmutable
         )
         val notification = Notification.Builder(context)
             .setChannelIdCompat(Stuff.CHANNEL_NOTI_FG_SERVICE)
@@ -557,13 +590,122 @@ actual object PanoNotifications {
         )
     }
 
-    actual fun removeNotificationByKey(key: String) {
-        nowPlayingScrobbleDataToHash.remove(key)
+    fun persistentNotification(): Notification {
+        val nb =
+            Notification.Builder(context)
+                .setChannelIdCompat(Stuff.CHANNEL_NOTI_FG_SERVICE)
+                .setSmallIcon(R.drawable.vd_noti_persistent)
+                .setVisibility(Notification.VISIBILITY_SECRET)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .setOngoing(true)
+                .setShowWhen(false)
+                .setColor(notiColor)
+                .setGroup(Stuff.GROUP_NOTI_FG_SERVICE)
 
-        notificationManager.cancel(key, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                putExtra(Settings.EXTRA_CHANNEL_ID, Stuff.CHANNEL_NOTI_FG_SERVICE)
+            }
+            val pendingIntent =
+                PendingIntent.getActivity(
+                    context,
+                    100,
+                    intent,
+                    AndroidStuff.updateCurrentOrImmutable
+                )
+            nb.setContentIntent(pendingIntent)
+            nb.setContentTitle(context.getString(R.string.persistent_noti_text))
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                nb.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+            }
+        } else {
+            nb.setContentTitle(BuildKonfig.APP_NAME)
+            nb.setPriority(Notification.PRIORITY_MIN)
+        }
+
+        return nb.build()
     }
 
-    fun getNowPlayingFromBackgroundProcess(): Pair<ScrobbleData, Int>? {
-        return nowPlayingScrobbleDataToHash.values.firstOrNull()
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createChannels() {
+        // Create channel groups first
+        val groups = mutableListOf<NotificationChannelGroup>()
+
+        groups += NotificationChannelGroup(
+            Stuff.GROUP_NOTI_SCROBBLES,
+            context.getString(R.string.scrobbles)
+        )
+        groups += NotificationChannelGroup(
+            Stuff.GROUP_NOTI_DIGESTS,
+            context.getString(R.string.charts)
+        )
+        groups += NotificationChannelGroup(
+            Stuff.GROUP_NOTI_FG_SERVICE,
+            context.getString(R.string.show_persistent_noti)
+        )
+
+        notificationManager.createNotificationChannelGroups(groups)
+
+        // Now create channels
+        val channels = mutableListOf<NotificationChannel>()
+
+        channels += NotificationChannel(
+            Stuff.CHANNEL_NOTI_SCROBBLING,
+            context.getString(R.string.state_scrobbling),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            group = Stuff.GROUP_NOTI_SCROBBLES
+        }
+        channels += NotificationChannel(
+            Stuff.CHANNEL_NOTI_SCR_ERR,
+            context.getString(R.string.channel_err),
+            NotificationManager.IMPORTANCE_MIN
+        ).apply {
+            group = Stuff.GROUP_NOTI_SCROBBLES
+        }
+        channels += NotificationChannel(
+            Stuff.CHANNEL_NOTI_NEW_APP,
+            context.getString(
+                R.string.new_player,
+                context.getString(R.string.new_app)
+            ),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            group = Stuff.GROUP_NOTI_SCROBBLES
+        }
+        channels += NotificationChannel(
+            Stuff.CHANNEL_NOTI_DIGEST_WEEKLY,
+            context.getString(
+                R.string.s_top_scrobbles,
+                context.getString(R.string.weekly)
+            ),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            group = Stuff.GROUP_NOTI_DIGESTS
+        }
+        channels += NotificationChannel(
+            Stuff.CHANNEL_NOTI_DIGEST_MONTHLY,
+            context.getString(
+                R.string.s_top_scrobbles,
+                context.getString(R.string.monthly)
+            ),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            group = Stuff.GROUP_NOTI_DIGESTS
+        }
+        channels += NotificationChannel(
+            Stuff.CHANNEL_NOTI_FG_SERVICE,
+            context.getString(R.string.show_persistent_noti),
+            // foreground service noti cannot be IMPORTANCE_MIN
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            group = Stuff.GROUP_NOTI_FG_SERVICE
+        }
+
+        notificationManager.createNotificationChannels(channels)
+        notificationManager.deleteNotificationChannel("noti_persistent")
+        notificationManager.deleteNotificationChannel("noti_pending_scrobbles")
     }
 }

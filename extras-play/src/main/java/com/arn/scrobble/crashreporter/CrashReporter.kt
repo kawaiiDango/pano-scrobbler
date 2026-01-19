@@ -3,10 +3,9 @@ package com.arn.scrobble.crashreporter
 import co.touchlab.kermit.Logger
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
+import java.io.File
 
-object CrashReporter : BaseCrashReporter() {
-    override val isAvailable = true
-
+class CrashReporter(fileToCheck: File) : BaseCrashReporter(fileToCheck) {
     override fun config(
         keysMap: Map<String, String>,
     ) {

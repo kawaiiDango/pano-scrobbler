@@ -1,9 +1,14 @@
 package com.arn.scrobble.billing
 
 enum class LicenseState {
-    PENDING,
-    VALID,
-    REJECTED,
+    UNKNOWN,
     NO_LICENSE,
+    VALID,
+}
+
+enum class LicenseError {
+    PENDING,
+    REJECTED,
     MAX_DEVICES_REACHED,
+    NETWORK_ERROR,
 }

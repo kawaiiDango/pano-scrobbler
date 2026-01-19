@@ -15,12 +15,12 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,20 +33,24 @@ import pano_scrobbler.composeapp.generated.resources.no_scrobbles
 import pano_scrobbler.composeapp.generated.resources.pin_limit_reached
 
 
-class FriendsVM(user: UserCached) : ViewModel() {
+class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel() {
     private val mainPrefs = PlatformStuff.mainPrefs
     private val _friendsExtraDataMap = MutableStateFlow<Map<String, FriendExtraData>>(emptyMap())
     val friendsExtraDataMap = _friendsExtraDataMap.asStateFlow()
     private val _totalCount = MutableStateFlow(0)
     val totalFriends = _totalCount.asStateFlow()
 
-    val pinnedFriends = mainPrefs.data.map {
-        it.pinnedFriends[it.currentAccountType]
-            ?.distinctBy { it.name } // hotfix for crash
-            ?.sortedBy { it.order }
-            ?: emptyList()
-    }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val pinnedFriends =
+        if (showPinned)
+            mainPrefs.data.map {
+                it.pinnedFriends[it.currentAccountType]
+                    ?.distinctBy { it.name } // hotfix for crash
+                    ?.sortedBy { it.order }
+                    ?: emptyList()
+            }
+                .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        else
+            MutableStateFlow<List<UserCached>>(emptyList()).asStateFlow()
 
     private val friendsRecentsMutex = Mutex()
 
@@ -69,16 +73,18 @@ class FriendsVM(user: UserCached) : ViewModel() {
         }
     ).flow
         .cachedIn(viewModelScope)
-        .map { pagingData ->
+        .combine(pinnedFriends) { pagingData, pinnedFriends ->
+            val pinnedNames = pinnedFriends.map { it.name }.toSet()
             val keysTillNow = mutableSetOf<String>()
 
             pagingData.filter {
                 val key = it.name
-                val keep = key !in keysTillNow
+                val keep = key !in keysTillNow && key !in pinnedNames
                 keysTillNow += key
                 keep
             }
         }
+        .cachedIn(viewModelScope)
 
     private var loadedInitialCachedVersion = false
     private val _sortedFriends = MutableStateFlow<List<UserCached>?>(null)
@@ -122,7 +128,7 @@ class FriendsVM(user: UserCached) : ViewModel() {
     }
 
     fun addPinAndSave(user: UserCached) {
-        if (!VariantStuff.billingRepository.isLicenseValid) return
+        if (!showPinned) return
 
         val newUser = user.copy(order = pinnedFriends.value.size)
 

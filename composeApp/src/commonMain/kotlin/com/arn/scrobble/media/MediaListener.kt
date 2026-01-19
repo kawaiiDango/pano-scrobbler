@@ -5,11 +5,9 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlin.math.min
 
 abstract class MediaListener(
@@ -26,39 +24,22 @@ abstract class MediaListener(
 
     protected val blockedPackages =
         mainPrefs.data.map { it.blockedPackages }
-            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.blockedPackages)
 
-    protected val allowedPackages =
-        mainPrefs.data.map { it.allowedPackages }
-            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.allowedPackages)
+    protected val allowedPackages = mainPrefs.data.stateInWithCache(scope) { it.allowedPackages }
 
     protected val scrobblerEnabled =
-        mainPrefs.data.map { it.scrobblerEnabled && it.scrobbleAccounts.isNotEmpty() }
-            .stateIn(
-                scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.scrobblerEnabled &&
-                        Stuff.mainPrefsInitialValue.scrobbleAccounts.isNotEmpty()
-            )
+        mainPrefs.data.stateInWithCache(scope) { it.scrobblerEnabled && it.scrobbleAccounts.isNotEmpty() }
 
     protected abstract val notifyTimelineUpdates: Boolean
 
     private val scrobbleTimingPrefs =
-        PlatformStuff.mainPrefs.data.map {
+        PlatformStuff.mainPrefs.data.stateInWithCache(scope) {
             ScrobbleTimingPrefs(
                 delayPercent = it.delayPercentP,
                 delaySecs = it.delaySecsP,
                 minDurationSecs = it.minDurationSecsP
             )
         }
-            .stateIn(
-                scope,
-                SharingStarted.Eagerly,
-                Stuff.mainPrefsInitialValue.let {
-                    ScrobbleTimingPrefs(
-                        delayPercent = it.delayPercentP,
-                        delaySecs = it.delaySecsP,
-                        minDurationSecs = it.minDurationSecsP
-                    )
-                })
 
     private val packageTagTrackMap = mutableMapOf<String, PlayingTrackInfo>()
     protected var mutedHash: Int? = null

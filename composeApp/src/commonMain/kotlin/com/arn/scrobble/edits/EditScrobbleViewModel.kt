@@ -8,7 +8,7 @@ import com.arn.scrobble.api.ScrobbleIgnored
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.lastfm.Track
@@ -193,7 +193,7 @@ class EditScrobbleViewModel : ViewModel() {
                     val deleteResult = scrobblable.delete(origTrackObj)
                     if (deleteResult.isSuccess)
                         CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
-                    else if (deleteResult.exceptionOrNull() is LastfmUnscrobbler.CookiesInvalidatedException) {
+                    else if (deleteResult.exceptionOrNull() is LastFm.CookiesInvalidatedException) {
                         return Result.failure(deleteResult.exceptionOrNull()!!)
                     }
                 } else {

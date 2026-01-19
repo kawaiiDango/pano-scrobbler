@@ -53,13 +53,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Tag
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.AddPhotoAlternate
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.BrokenImage
@@ -144,15 +144,17 @@ fun MusicEntryInfoDialog(
     var expandedWikiType by rememberSaveable(musicEntry) { mutableIntStateOf(-1) }
     val userTags by viewModel.userTags.collectAsStateWithLifecycle()
     val userTagsHistory by viewModel.userTagsHistory.collectAsStateWithLifecycle()
-    val account by Scrobblables.currentAccount.collectAsStateWithLifecycle()
 
     val similarTracks = miscVM.similarTracks.collectAsLazyPagingItems()
 
     val artistTopTracks = miscVM.topTracks.collectAsLazyPagingItems()
     val artistTopAlbums = miscVM.topAlbums.collectAsLazyPagingItems()
     val similarArtists = miscVM.similarArtists.collectAsLazyPagingItems()
+    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.currentAccountType
+    }
     val useLastfm by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
-        it.lastfmApiAlways || Scrobblables.currentAccount.value?.type == AccountType.LASTFM
+        it.lastfmApiAlways || it.currentAccountType == AccountType.LASTFM
     }
     val entries = remember(infoMap) {
         allTypes.mapNotNull { type ->
@@ -220,7 +222,7 @@ fun MusicEntryInfoDialog(
                         if (entry is Album || entry is Artist) {
                             AsyncImage(
                                 model = remember(entry) {
-                                    MusicEntryImageReq(entry)
+                                    MusicEntryImageReq(entry, accountType)
                                 },
                                 placeholder = placeholderPainter(),
                                 error = placeholderImageVectorPainter(
@@ -253,7 +255,7 @@ fun MusicEntryInfoDialog(
                 appId = appId,
                 user = user,
                 userTagsButtonSelected = userTags[type] != null,
-                onUserTagsClick = if (account?.type == AccountType.LASTFM && !PlatformStuff.isTv) {
+                onUserTagsClick = if (accountType == AccountType.LASTFM && !PlatformStuff.isTv) {
                     {
                         if (userTags[type] == null)
                             viewModel.loadUserTagsIfNeeded(type)
@@ -299,7 +301,7 @@ fun MusicEntryInfoDialog(
                         InfoBigPicture(
                             entry = entry,
                             imgRequest = remember(entry) {
-                                MusicEntryImageReq(entry, isHeroImage = true)
+                                MusicEntryImageReq(entry, accountType, isHeroImage = true)
                             },
                             modifier = Modifier.padding(horizontal = 24.dp)
                         )
@@ -527,6 +529,9 @@ private fun InfoActionsRow(
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
+    val isLicenseValid = LocalLicenseValidState.current
+    val searchInSource by
+    PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.searchInSource && isLicenseValid }
 
     Row(modifier = modifier.fillMaxWidth()) {
         if (onUserTagsClick != null) {
@@ -579,7 +584,7 @@ private fun InfoActionsRow(
         IconButtonWithTooltip(
             onClick = {
                 scope.launch {
-                    PlatformStuff.launchSearchIntent(entry, appId)
+                    PlatformStuff.launchSearchIntent(entry, appId.takeIf { searchInSource })
                 }
             },
             icon = Icons.Search,

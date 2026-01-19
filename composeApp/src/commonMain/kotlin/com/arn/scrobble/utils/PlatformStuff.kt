@@ -31,7 +31,7 @@ expect object PlatformStuff {
 
     val noUpdateCheck: Boolean
 
-    val recomposeOnLocaleChange: Boolean
+    val hasSystemLocaleStore: Boolean
 
     fun isScrobblerRunning(): Boolean
 
@@ -42,15 +42,13 @@ expect object PlatformStuff {
         appId: String?,
     )
 
-    fun isNotiChannelEnabled(channelId: String): Boolean
-
     fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb>
 
     suspend fun loadApplicationLabel(appId: String): String
 
     fun copyToClipboard(text: String)
 
-    fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream)
+    suspend fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream)
 
     fun getLocalIpAddresses(): List<String>
 

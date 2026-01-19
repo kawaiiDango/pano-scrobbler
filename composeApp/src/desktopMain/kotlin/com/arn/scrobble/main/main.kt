@@ -56,6 +56,7 @@ import com.arn.scrobble.themes.isSystemInDarkThemeNative
 import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
+import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
 import com.arn.scrobble.utils.PlatformStuff
@@ -111,11 +112,6 @@ import kotlin.time.Duration.Companion.seconds
 private fun init() {
     // init: run once
 
-    if (!BuildKonfig.DEBUG)
-        preventMultipleInstances()
-
-    Stuff.mainPrefsInitialValue = runBlocking { PlatformStuff.mainPrefs.data.first() }
-
     Logger.setLogWriters(
         JvmLogger(
             logToFile = true,
@@ -127,7 +123,7 @@ private fun init() {
         if (BuildKonfig.DEBUG) Severity.Debug else Severity.Info
     )
 
-    setAppLocale(Stuff.mainPrefsInitialValue.locale, activityContext = null)
+    LocaleUtils.setAppLocale(LocaleUtils.locale.value, activityContext = null)
 
     PanoNativeComponents.init()
 
@@ -137,7 +133,7 @@ private fun init() {
         PlatformStuff::openInBrowser
     )
 
-    VariantStuff.crashReporter = CrashReporter
+    VariantStuff.crashReporter = CrashReporter(null)
     VariantStuff.reviewPrompter = ReviewPrompter
     VariantStuff.extrasProps = ExtrasProps
 
@@ -169,10 +165,12 @@ fun main(args: Array<String>) {
             cmdlineArgs.automationArg ?: "",
         )
         return
-    }
+    } else if (!BuildKonfig.DEBUG)
+        preventMultipleInstances()
 
     var wmClassNameSet = false
 
+    val initialPrefs = runBlocking { Stuff.initializeMainPrefsCache() }
     init()
 
     return application {
@@ -195,9 +193,10 @@ fun main(args: Array<String>) {
         var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
         var windowCreated by remember { mutableStateOf(windowShown) }
         val isSystemInDarkTheme by isSystemInDarkThemeNative()
-        val trayIconTheme by PlatformStuff.mainPrefs.data
-            .map { it.trayIconTheme }
-            .collectAsState(Stuff.mainPrefsInitialValue.trayIconTheme)
+        val trayIconTheme by remember {
+            PlatformStuff.mainPrefs.data.map { it.trayIconTheme }
+        }
+            .collectAsState(initialPrefs.trayIconTheme)
         var trayData by remember { mutableStateOf<PanoTrayUtils.TrayData?>(null) }
         val trayIconNotPlaying = painterResource(Res.drawable.vd_noti_persistent)
         val trayIconPlaying = painterResource(Res.drawable.vd_noti)
@@ -206,13 +205,12 @@ fun main(args: Array<String>) {
         val trayState = rememberTrayState()
 
         // restore window state
-        val storedWindowState = Stuff.mainPrefsInitialValue.windowState
         val windowState = rememberWindowState(
-            size = storedWindowState?.let {
+            size = initialPrefs.windowState?.let {
                 DpSize(it.width.dp, it.height.dp)
             }
                 ?: DpSize(800.dp, 600.dp),
-            placement = if (storedWindowState?.isMaximized == true)
+            placement = if (initialPrefs.windowState?.isMaximized == true)
                 WindowPlacement.Maximized
             else
                 WindowPlacement.Floating
@@ -436,7 +434,7 @@ fun main(args: Array<String>) {
 
             LaunchedEffect(trayData) {
                 var delayJob: Job? = null
-                
+
                 if (!trayMouseListenerSet && trayData != null) {
                     val trayIcon = SystemTray.getSystemTray().trayIcons?.firstOrNull()
 
@@ -512,7 +510,10 @@ fun main(args: Array<String>) {
         }
 
         LaunchedEffect(Unit) {
-            if (!DesktopStuff.noUpdateCheck && Stuff.mainPrefsInitialValue.autoUpdates) {
+            if (!DesktopStuff.noUpdateCheck &&
+                PlatformStuff.mainPrefs.data.map { it.autoUpdates }
+                    .first()
+            ) {
                 // this app runs at startup, so wait for an internet connection
                 delay(1.minutes)
                 UpdaterWork.schedule(true)

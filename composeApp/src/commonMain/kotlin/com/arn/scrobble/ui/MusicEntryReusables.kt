@@ -171,9 +171,10 @@ fun MusicEntryListItem(
     val artInteractionSource = remember { MutableInteractionSource() }
     val isArtFocused by artInteractionSource.collectIsFocusedAsState()
     val isNowPlaying = (entry as? Track)?.isNowPlaying == true
+    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
 
     val topText = if (entry is Track && entry.date != null)
-        PanoTimeFormatter.relative(entry.date)
+        PanoTimeFormatter.relative(entry.date, stringResource(Res.string.time_just_now))
     else
         null
 
@@ -269,6 +270,7 @@ fun MusicEntryListItem(
                                         imageUrlOverride
                                             ?: MusicEntryImageReq(
                                                 entry,
+                                                accountType = accountType,
                                                 isHeroImage = !fixedImageHeight,
                                                 fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                                             )
@@ -570,6 +572,7 @@ fun MusicEntryGridItem(
     progress: Float? = null,
     forShimmer: Boolean = false,
 ) {
+    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -583,6 +586,7 @@ fun MusicEntryGridItem(
             else imageUrlOverride
                 ?: MusicEntryImageReq(
                     entry,
+                    accountType = accountType,
                     isHeroImage = isHero,
                     fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                 ),
@@ -630,7 +634,10 @@ fun MusicEntryGridItem(
 
             val playCount = entry.userplaycount ?: entry.playcount
             val scrobbleDateText = if (entry is Track && entry.date != null)
-                " | " + PanoTimeFormatter.relative(entry.date)
+                " | " + PanoTimeFormatter.relative(
+                    entry.date,
+                    stringResource(Res.string.time_just_now)
+                )
             else
                 ""
             val thirdText = if (playCount != null) {

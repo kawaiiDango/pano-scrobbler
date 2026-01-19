@@ -21,7 +21,6 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.widget.ChartsWidgetConfigActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import kotlinx.coroutines.launch
@@ -30,7 +29,6 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.fix_it_desc
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
-import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
@@ -71,20 +69,6 @@ actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean
                             }
                         }
                     }
-                }
-            )
-        }
-    }
-}
-
-actual fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boolean) {
-    if (VariantStuff.crashReporter.isAvailable) {
-        listScope.item(MainPrefs::crashReporterEnabled.name) {
-            SwitchPref(
-                text = stringResource(Res.string.pref_crashlytics_enabled),
-                value = crashReporterEnabled,
-                copyToSave = {
-                    copy(crashReporterEnabled = it)
                 }
             )
         }

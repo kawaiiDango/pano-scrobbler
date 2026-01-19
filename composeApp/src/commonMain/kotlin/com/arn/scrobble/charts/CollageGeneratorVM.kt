@@ -49,10 +49,10 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.ui.colorSeed
+import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -73,7 +73,7 @@ import pano_scrobbler.composeapp.generated.resources.top_tracks
 import kotlin.math.abs
 import kotlin.math.max
 
-class CollageGeneratorVM : ViewModel() {
+class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
 
     private val _sharableCollage = MutableSharedFlow<Pair<ImageBitmap, String>>()
     val sharableCollage = _sharableCollage.asSharedFlow()
@@ -85,7 +85,6 @@ class CollageGeneratorVM : ViewModel() {
     private lateinit var context: PlatformContext
 
     private val paddingPx = 16
-    private val isPro = VariantStuff.billingRepository.isLicenseValid
 
     fun generateCollage(
         context: PlatformContext,
@@ -212,7 +211,7 @@ class CollageGeneratorVM : ViewModel() {
 
         shareTitle += "\n\n"
 
-        val shareSig = if (!isPro) "\n\n" + getString(Res.string.share_sig) else ""
+        val shareSig = if (!isLicenseValid) "\n\n" + getString(Res.string.share_sig) else ""
 
         val shareBody = if (type == Stuff.TYPE_ALL)
             createDigestShareText(collagesAndTexts.map { it.second })
@@ -225,7 +224,7 @@ class CollageGeneratorVM : ViewModel() {
     private suspend fun fetchProfilePic(user: UserCached, sizePx: Int): ImageBitmap? {
         // load profile pic
         val profilePicUrl = if (user.isSelf)
-            PlatformStuff.mainPrefs.data.map { it.drawerData[Scrobblables.currentAccount.value?.type]?.profilePicUrl?.ifEmpty { null } }
+            PlatformStuff.mainPrefs.data.map { it.drawerData[it.currentAccountType]?.profilePicUrl?.ifEmpty { null } }
                 .first()
         else
             user.largeImage
@@ -298,6 +297,7 @@ class CollageGeneratorVM : ViewModel() {
         val canvas = Canvas(bitmap)
         val drawScope = CanvasDrawScope()
         val entriesPlaced = mutableListOf<MusicEntry>()
+        val accountType = PlatformStuff.mainPrefs.data.map { it.currentAccountType }.first()
 
         drawScope.draw(
             density = Density(1f),
@@ -313,7 +313,8 @@ class CollageGeneratorVM : ViewModel() {
                     data(
                         MusicEntryImageReq(
                             entry,
-                            fetchAlbumInfoIfMissing = (entry is Album && entry.webp300 == null) || (entry is Track && entry.album == null)
+                            fetchAlbumInfoIfMissing = (entry is Album && entry.webp300 == null) || (entry is Track && entry.album == null),
+                            accountType = accountType
                         )
                     )
 
@@ -555,7 +556,7 @@ class CollageGeneratorVM : ViewModel() {
         val brandTextPadding = 32
 
 
-        var brandTextWidth = if (isPro) 0 else measureText(
+        var brandTextWidth = if (isLicenseValid) 0 else measureText(
             textMeasurer,
             brandText,
             TextStyle.Default.copy(fontSize = 21.sp),
@@ -583,7 +584,7 @@ class CollageGeneratorVM : ViewModel() {
             maxLines = 2
         )
 
-        brandTextWidth = if (isPro) 0 else brandTlr.size.width
+        brandTextWidth = if (isLicenseValid) 0 else brandTlr.size.width
 
         val extraHeights =
             headerTexts.map {
@@ -653,7 +654,7 @@ class CollageGeneratorVM : ViewModel() {
                 size = Size(totalWidth.toFloat() - 2 * paddingPx - brandTextWidth, 100f)
             )
 
-            if (!isPro || BuildKonfig.DEBUG) {
+            if (!isLicenseValid || BuildKonfig.DEBUG) {
 
                 val appIconScaledSize = brandTlr.size.height
 
@@ -747,4 +748,16 @@ class CollageGeneratorVM : ViewModel() {
         return shareTextList.joinToString("\n\n")
     }
 
+    fun writeImage(image: ImageBitmap, file: PlatformFile) {
+        viewModelScope.launch(Dispatchers.IO) {
+            file.overwrite { stream ->
+                PlatformStuff.writeBitmapToStream(image, stream)
+            }
+        }
+    }
 }
+
+expect fun CollageGeneratorVM.shareCollage(
+    image: ImageBitmap,
+    text: String?,
+)

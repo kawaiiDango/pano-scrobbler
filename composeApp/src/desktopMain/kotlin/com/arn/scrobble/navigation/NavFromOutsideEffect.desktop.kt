@@ -2,11 +2,13 @@ package com.arn.scrobble.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
+import com.arn.scrobble.utils.PlatformStuff
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 @Composable
 actual fun NavFromOutsideEffect(
@@ -26,7 +28,8 @@ actual fun NavFromOutsideEffect(
             val suffix = splits.getOrNull(1)
             val playingTrackTrayInfo = PanoNotifications.playingTrackTrayInfo.value
 
-            val user = Scrobblables.currentAccount.value?.user ?: return@collect
+            val user = PlatformStuff.mainPrefs.data.map { it.currentAccount?.user }.first()
+                ?: return@collect
             val scrobblingEvent =
                 (playingTrackTrayInfo[suffix] as? PlayingTrackNotifyEvent.TrackPlaying)
                     ?: return@collect

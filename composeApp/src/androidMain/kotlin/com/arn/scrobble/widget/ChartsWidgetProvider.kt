@@ -8,8 +8,6 @@ import android.content.Intent
 import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
 import com.arn.scrobble.R
-import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.main.MainDialogActivity
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
@@ -29,8 +27,6 @@ class ChartsWidgetProvider : AppWidgetProvider() {
             AndroidStuff.widgetPrefs.data.first()
         }
 
-        val user = Scrobblables.currentAccount.value?.user ?: return
-
         // There may be multiple widgets active, so update all of them
         appWidgetIds.forEach { appWidgetId ->
             val specificWidgetPrefs = prefs.widgets[appWidgetId] ?: return
@@ -43,7 +39,6 @@ class ChartsWidgetProvider : AppWidgetProvider() {
                 appWidgetId,
                 specificWidgetPrefs,
                 chartsData,
-                user
             )
         }
     }
@@ -98,7 +93,6 @@ internal fun updateAppWidget(
     appWidgetId: Int,
     prefs: SpecificWidgetPrefs,
     chartsData: List<ChartsWidgetListItem>?,
-    user: UserCached,
     scrollToTop: Boolean = false,
 ) {
 
@@ -124,7 +118,7 @@ internal fun updateAppWidget(
             .forEachIndexed { i, item ->
                 addItem(
                     item.hashCode().toLong(),
-                    ChartsListUtils.createMusicItem(tab, i, item, user)
+                    ChartsListUtils.createMusicItem(tab, i, item)
                 )
             }
     }.build()
@@ -145,9 +139,9 @@ internal fun updateAppWidget(
     }
 
 
-    // Here we setup the a pending intent template. Individuals items of a collection
-    // cannot setup their own pending intents, instead, the collection as a whole can
-    // setup a pending intent template, and the individual items can set a fillInIntent
+    // Here we set up the pending intent template. Individuals items of a collection
+    // cannot set up their own pending intents, instead, the collection as a whole can
+    // set up a pending intent template, and the individual items can set a fillInIntent
     // to create unique before on an item to item basis.
     val infoIntent = Intent(context, MainDialogActivity::class.java).apply {
         flags = Intent.FLAG_ACTIVITY_SINGLE_TOP

@@ -55,7 +55,7 @@ class DigestWorker(
         else
             Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
 
-        if (PlatformStuff.isNotiChannelEnabled(channelId)) {
+        if (PanoNotifications.isNotiChannelEnabled(channelId)) {
             val coExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
                 throwable.printStackTrace()
                 error = throwable

@@ -104,6 +104,7 @@ import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.updates.runUpdateAction
+import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -140,8 +141,8 @@ fun PanoAppContent(
     }
 
     val mainViewModelStoreOwner = LocalViewModelStoreOwner.current
-    val locale by if (PlatformStuff.recomposeOnLocaleChange)
-        PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.locale }
+    val locale by if (!PlatformStuff.hasSystemLocaleStore)
+        LocaleUtils.locale.collectAsStateWithLifecycle()
     else
         remember { mutableStateOf(null) }
 
@@ -152,9 +153,7 @@ fun PanoAppContent(
 
     val drawerData by viewModel.drawerDataFlow.collectAsStateWithLifecycle()
     val currentUserSelf by PlatformStuff.mainPrefs.data
-        .collectAsStateWithInitialValue { pref ->
-            pref.scrobbleAccounts.firstOrNull { it.type == pref.currentAccountType }?.user
-        }
+        .collectAsStateWithInitialValue { it.currentAccount?.user }
     var currentUserOther by rememberSaveable(saver = jsonSerializableSaver()) {
         mutableStateOf<UserCached?>(null)
     }
@@ -187,6 +186,9 @@ fun PanoAppContent(
     val tabData = currentPanoRoute as? PanoRoute.HasTabs
 
     fun goBack(): PanoRoute? {
+        if (backStack.size <= 1)
+            return null
+
         val route = backStack.removeLastOrNull()
 
         if (route is PanoRoute.HasTabs)

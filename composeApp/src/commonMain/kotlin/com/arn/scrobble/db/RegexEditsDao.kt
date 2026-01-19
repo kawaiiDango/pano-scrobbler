@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
@@ -79,9 +80,10 @@ interface RegexEditsDao {
 
         fun performRegexReplace(
             scrobbleData: ScrobbleData,
-            regexEdits: List<RegexEdit>
+            regexEdits: List<RegexEdit>,
         ): RegexResults {
-            val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
+            val isLicenseValid =
+                VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
             var scrobbleData = scrobbleData
             val cumulativeMatches = mutableSetOf<RegexEdit>()
 

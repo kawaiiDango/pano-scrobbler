@@ -20,8 +20,10 @@ import com.arn.scrobble.utils.AndroidStuff.dump
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -46,15 +48,11 @@ class SessListener(
         mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
     private var platformControllers: List<MediaController>? = null
 
-    private val scrobbleSpotifyRemote = mainPrefs.data.map { it.scrobbleSpotifyRemoteP }
-        .stateIn(
-            scope, SharingStarted.Eagerly,
-            Stuff.mainPrefsInitialValue.scrobbleSpotifyRemoteP
-        )
+    private val scrobbleSpotifyRemote =
+        mainPrefs.data.stateInWithCache(GlobalScope) { it.scrobbleSpotifyRemoteP }
 
     private val autoDetectApps =
         mainPrefs.data.map { it.autoDetectAppsP }
-            .stateIn(scope, SharingStarted.Eagerly, Stuff.mainPrefsInitialValue.autoDetectAppsP)
 
     init {
         scope.launch {

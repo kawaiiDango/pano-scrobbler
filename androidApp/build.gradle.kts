@@ -5,7 +5,7 @@ import com.mikepenz.aboutlibraries.plugin.StrictMode
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.aboutlibraries)
-//    alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.baselineprofile)
 //    alias(libs.plugins.play.publisher)
 }
 
@@ -43,6 +43,7 @@ android {
         versionCode = VER_CODE
         versionName = VER_NAME
         base.archivesName = APP_NAME_NO_SPACES
+//        ndkVersion = "29.0.14206865"
     }
 
     buildFeatures {
@@ -102,9 +103,7 @@ android {
         }
     }
 
-//    baselineProfile {
-//        dexLayoutOptimization = true
-//    }
+
 
     dependenciesInfo {
         includeInApk = false
@@ -175,6 +174,10 @@ dependencies {
     androidTestImplementation(libs.test.junit)
 }
 
+baselineProfile {
+    dexLayoutOptimization = true
+}
+
 aboutLibraries {
     offlineMode = true
 
@@ -223,9 +226,9 @@ tasks.register<Copy>("copyGithubReleaseApk") {
     )
 }
 
-afterEvaluate {
-    tasks.named("packageReleaseGithub") {
-        finalizedBy(tasks.named("copyGithubReleaseApk"))
+tasks.configureEach {
+    if (name == "packageReleaseGithub") {
+        finalizedBy("copyGithubReleaseApk")
     }
 }
 

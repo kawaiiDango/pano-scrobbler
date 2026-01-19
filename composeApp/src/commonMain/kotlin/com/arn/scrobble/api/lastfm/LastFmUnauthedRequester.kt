@@ -26,7 +26,7 @@ class LastFmUnauthedRequester {
         BuildKonfig.LASTFM_SECRET.decodeBase64Bytes(),
         BuildKonfig.APP_ID.toByteArray()
     ).decodeToString()
-    private val client by lazy { Requesters.genericKtorClient }
+    private val client get() = Requesters.genericKtorClient
 
     // search
     suspend fun search(

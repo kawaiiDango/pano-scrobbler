@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.icons.Api
 import com.arn.scrobble.icons.BugReport
@@ -38,12 +39,12 @@ import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.LocaleUtils
+import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.VariantStuff
-import com.arn.scrobble.utils.getCurrentLocale
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.DigestWork
@@ -84,6 +85,7 @@ import pano_scrobbler.composeapp.generated.resources.num_simple_edits
 import pano_scrobbler.composeapp.generated.resources.pref_about
 import pano_scrobbler.composeapp.generated.resources.pref_auto_detect
 import pano_scrobbler.composeapp.generated.resources.pref_check_updates
+import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_delay
 import pano_scrobbler.composeapp.generated.resources.pref_delay_mins
 import pano_scrobbler.composeapp.generated.resources.pref_delay_per
@@ -151,7 +153,7 @@ fun PrefsScreen(
     }
     val linkHeartButtonToRating by mainPrefs.data.collectAsStateWithInitialValue { it.linkHeartButtonToRating }
     val firstDayOfWeek by mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
-    val locale by mainPrefs.data.collectAsStateWithInitialValue { it.locale }
+    val locale by LocaleUtils.locale.collectAsStateWithLifecycle()
     val lastfmApiAlways by mainPrefs.data.collectAsStateWithInitialValue { it.lastfmApiAlways }
     val fetchAlbum by mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
     val tidalSteelSeries by mainPrefs.data.collectAsStateWithInitialValue { it.tidalSteelSeriesApi }
@@ -167,8 +169,6 @@ fun PrefsScreen(
     mainPrefs.data.collectAsStateWithInitialValue { it.notiPersistent }
     val checkForUpdates by
     mainPrefs.data.collectAsStateWithInitialValue { it.autoUpdates }
-    val crashReporterEnabled by
-    mainPrefs.data.collectAsStateWithInitialValue { it.crashReporterEnabled }
     val useSpotify by
     mainPrefs.data.collectAsStateWithInitialValue { it.spotifyApi }
     val spotifyCountryP by
@@ -200,7 +200,12 @@ fun PrefsScreen(
     } else {
         PanoDb.db.getBlockedMetadataDao().count().collectAsStateWithLifecycle(0)
     }
-    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
+    var crashReporterEnabled by remember {
+        mutableStateOf(
+            VariantStuff.crashReporter.isEnabled
+        )
+    }
+    val isLicenseValid = LocalLicenseValidState.current
 
     val maybeActivity = getActivityOrNull()
 
@@ -272,7 +277,7 @@ fun PrefsScreen(
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
             item(MainPrefs::autoDetectAppsP.name) {
                 val notiEnabled =
-                    remember { PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
+                    remember { PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
 
                 SwitchPref(
                     text = stringResource(Res.string.pref_auto_detect),
@@ -419,7 +424,7 @@ fun PrefsScreen(
                 text = stringResource(Res.string.pref_show_scrobble_sources),
                 summary = stringResource(Res.string.pref_show_scrobble_sources_desc),
                 value = showScrobbleSources,
-                onNavigateToBilling = onNavigateToBilling,
+                onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
                 copyToSave = { copy(showScrobbleSources = it) }
             )
         }
@@ -430,7 +435,7 @@ fun PrefsScreen(
                     text = stringResource(Res.string.pref_search_in_source),
                     summary = stringResource(Res.string.pref_search_in_source_desc),
                     value = searchInSource,
-                    onNavigateToBilling = onNavigateToBilling,
+                    onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
                     enabled = showScrobbleSources,
                     copyToSave = { copy(searchInSource = it) }
                 )
@@ -455,7 +460,7 @@ fun PrefsScreen(
                     text = stringResource(Res.string.pref_link_heart_button_rating),
                     summary = stringResource(Res.string.pref_search_in_source_desc),
                     value = linkHeartButtonToRating,
-                    onNavigateToBilling = onNavigateToBilling,
+                    onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
                     copyToSave = { copy(linkHeartButtonToRating = it) }
                 )
             }
@@ -545,9 +550,8 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::locale.name) {
+        item(LocaleUtils::locale.name) {
             val autoString = stringResource(Res.string.auto)
-            val currentLocale = remember(locale) { getCurrentLocale(locale) }
 
             val localesMap = remember(locale) {
                 val autoEntry = mapOf("auto" to autoString)
@@ -558,13 +562,13 @@ fun PrefsScreen(
 
             DropdownPref(
                 text = stringResource(Res.string.pref_locale),
-                selectedValue = currentLocale,
+                selectedValue = locale,
                 values = localesMap.keys,
                 toLabel = { localesMap[it] ?: autoString },
                 copyToSave = {
                     val l = it.takeIf { it != "auto" }
-                    setAppLocale(lang = l, maybeActivity)
-                    copy(locale = l)
+                    LocaleUtils.setAppLocale(lang = l, maybeActivity)
+                    this
                 }
             )
         }
@@ -714,7 +718,19 @@ fun PrefsScreen(
             }
         }
 
-        prefCrashReporter(this, crashReporterEnabled)
+        if (VariantStuff.crashReporter.isAvailable) {
+            item(VariantStuff::crashReporter.name) {
+                SwitchPref(
+                    text = stringResource(Res.string.pref_crashlytics_enabled),
+                    value = crashReporterEnabled,
+                    copyToSave = {
+                        crashReporterEnabled = it
+                        VariantStuff.crashReporter.isEnabled = it
+                        this
+                    }
+                )
+            }
+        }
 
         stickyHeader("imexport_header") {
             SimpleHeaderItem(
@@ -885,8 +901,6 @@ expect fun prefScrobbler(
     nlsEnabled: Boolean,
     onNavigate: (PanoRoute) -> Unit
 )
-
-expect fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boolean)
 
 expect fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean)
 

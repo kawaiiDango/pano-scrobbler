@@ -2,7 +2,6 @@ package com.arn.scrobble.utils
 
 import android.app.ActivityManager
 import android.app.ApplicationExitInfo
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
@@ -101,11 +100,6 @@ object AndroidStuff {
 //            Stuff.MANUFACTURER_SAMSUNG,
 //        )
 //    }
-
-
-    val notificationManager by lazy {
-        applicationContext.getSystemService(NotificationManager::class.java)!!
-    }
 
 
     val widgetPrefs by lazy {

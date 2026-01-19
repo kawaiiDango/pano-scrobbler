@@ -136,7 +136,7 @@ fun ImportScreen(
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                
+
                 Text(
                     text = codeText ?: "",
                     textAlign = TextAlign.Center,
@@ -203,7 +203,7 @@ fun ImportScreen(
 
     LaunchedEffect(Unit) {
         viewModel.importResult.collectLatest {
-            if (it) {
+            it.onSuccess {
                 errorText = null
                 Stuff.globalSnackbarFlow.emit(
                     PanoSnackbarVisuals(
@@ -212,8 +212,8 @@ fun ImportScreen(
                     )
                 )
                 onBack()
-            } else {
-                errorText = importErrorText
+            }.onFailure {
+                errorText = it.redactedMessage
             }
         }
     }

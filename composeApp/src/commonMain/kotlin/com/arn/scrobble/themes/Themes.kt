@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.billing.LicenseState
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -22,12 +23,17 @@ import com.arn.scrobble.utils.VariantStuff
 fun AppTheme(
     content: @Composable () -> Unit,
 ) {
+    val prefsVersion by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.version }
     val licenseState by VariantStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
     val themeName by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeName }
     val dynamic by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDynamic }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
     val isSystemInDarkTheme by isSystemInDarkThemeNative()
+
+    // todo handle uninitialized state better
+    if (licenseState == LicenseState.UNKNOWN || prefsVersion == 0)
+        return
 
     LaunchedEffect(licenseState) {
         if (licenseState != LicenseState.VALID) {
@@ -86,7 +92,10 @@ fun AppTheme(
     MaterialExpressiveTheme(
         colorScheme = colorScheme,
     ) {
-        CompositionLocalProvider(LocalThemeAttributes provides themeAttributes) {
+        CompositionLocalProvider(
+            LocalThemeAttributes provides themeAttributes,
+            LocalLicenseValidState provides (licenseState == LicenseState.VALID),
+        ) {
             AddAdditionalProviders {
                 content()
             }

@@ -13,14 +13,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, ubuntu-24.04-arm]
+        os: [ windows-latest, ubuntu-latest, ubuntu-24.04-arm ]
         include:
-        - os: windows-latest
-          resources-dir: windows-x64
-        - os: ubuntu-latest
-          resources-dir: linux-x64
-        - os: ubuntu-24.04-arm
-          resources-dir: linux-arm64
+          - os: windows-latest
+            resources-dir: windows-x64
+          - os: ubuntu-latest
+            resources-dir: linux-x64
+          - os: ubuntu-24.04-arm
+            resources-dir: linux-arm64
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -61,9 +61,9 @@ jobs:
       - name: Install Liberica NIK (GraalVM)
         uses: graalvm/setup-graalvm@v1
         with:
-         java-version: '25'
-         distribution: 'liberica'
-         github-token: ${{ github.token }}
+          java-version: '25'
+          distribution: 'liberica'
+          github-token: ${{ github.token }}
 
       - name: Download native libraries
         shell: bash
@@ -85,13 +85,13 @@ jobs:
 
           # Download artifacts from that run (filter by name if provided)
           gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}
-      
+
       - name: Build desktop jar and native image
         shell: bash
         run: |
           ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
           ./gradlew composeApp:packageUberJarForCurrentOS
-      
+
       - name: Upload desktop binary
         uses: actions/upload-artifact@v4
         with:
@@ -106,21 +106,21 @@ jobs:
           path: dist/pano-scrobbler-android-universal*
   
   upload-release:
-    needs: [build]
+    needs: [ build ]
     runs-on: windows-latest
     if: ${{ inputs.upload-release == true }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
       - name: Read version
         id: get_version
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          verCode=$(cat "version.txt")
+          verCode="$(gh api -H "Accept: application/vnd.github.raw" "/repos/${GITHUB_REPOSITORY}/contents/version.txt?ref=${GITHUB_SHA}")"
+          verCode="$(echo "$verCode" | tr -d '\r\n' | xargs)"
           verName="$((verCode / 100)).$((verCode % 100))"
-          echo "verCode=$verCode" >> $GITHUB_OUTPUT
-          echo "verName=$verName" >> $GITHUB_OUTPUT
+          echo "verCode=$verCode" >> "$GITHUB_OUTPUT"
+          echo "verName=$verName" >> "$GITHUB_OUTPUT"
 
       - name: Download all build artifacts
         uses: actions/download-artifact@v5
@@ -136,22 +136,26 @@ jobs:
           body_path: changelog.txt
           files: dist/**
 
-      - name: Submit to winget-pkgs
-        env:
-          WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          sleep 7
-          winget install --id Microsoft.WingetCreate --accept-package-agreements --accept-source-agreements --disable-interactivity
-          wingetcreate update kawaiiDango.pano-scrobbler \
-            --version ${{ steps.get_version.outputs.verName }} \
-            --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.get_version.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
-            --submit
-      
       - name: Dispatch static site build
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
+          sleep 7
           gh api repos/${{ github.repository }}/dispatches \
             -F event_type='static_site'
+
+      - name: Install WingetCreate
+        shell: bash
+        run: |
+          winget install --id Microsoft.WingetCreate --accept-package-agreements --accept-source-agreements --disable-interactivity
+
+      - name: Submit to winget-pkgs
+        env:
+          WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          wingetcreate update kawaiiDango.pano-scrobbler \
+            --version ${{ steps.get_version.outputs.verName }} \
+            --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.get_version.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
+            --submit

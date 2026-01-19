@@ -1,6 +1,7 @@
 package com.arn.scrobble.main
 
 import android.app.Application
+import android.os.Build
 import android.os.StrictMode
 import android.util.Log
 import androidx.work.Configuration
@@ -13,6 +14,7 @@ import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
+import java.io.File
 
 
 class App : Application(), Configuration.Provider {
@@ -39,20 +41,21 @@ class App : Application(), Configuration.Provider {
             PlatformStuff::openInBrowser
         )
 
-        VariantStuff.crashReporter = CrashReporter
+        val crashReportEnabledFile = File(filesDir, "crash_reporter_disabled.txt")
+        val crashReporter = CrashReporter(crashReportEnabledFile)
+        VariantStuff.crashReporter = crashReporter
         VariantStuff.reviewPrompter = ReviewPrompter
         VariantStuff.extrasProps = ExtrasProps
 
         // the built-in content provider initializer only runs in the main process
-        val crashlyticsEnabled = AndroidStuff.isMainProcess &&
-                Stuff.mainPrefsInitialValue.crashReporterEnabled
+        val crashlyticsEnabled = AndroidStuff.isMainProcess && crashReporter.isEnabled
 
         if (crashlyticsEnabled) {
             val crashlyticsKeys = mapOf(
                 "isDebug" to BuildConfig.DEBUG.toString(),
             )
 
-            CrashReporter.config(crashlyticsKeys)
+            crashReporter.config(crashlyticsKeys)
         }
     }
 
@@ -60,11 +63,14 @@ class App : Application(), Configuration.Provider {
         StrictMode.setThreadPolicy(
             StrictMode.ThreadPolicy.Builder()
 //                     .detectDiskReads()
-//                    .detectDiskWrites()
+                .detectDiskWrites()
                 .detectNetwork()   // or .detectAll() for all detectable problems
                 .detectCustomSlowCalls()
+                .apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                        detectUnbufferedIo()
+                }
                 .penaltyLog()
-                .penaltyFlashScreen()
                 .build()
         )
         StrictMode.setVmPolicy(
@@ -74,6 +80,10 @@ class App : Application(), Configuration.Provider {
                 .detectLeakedClosableObjects()
                 .detectLeakedRegistrationObjects()
                 .detectLeakedSqlLiteObjects()
+                .apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                        detectIncorrectContextUse()
+                }
                 .penaltyLog()
                 .build()
         )

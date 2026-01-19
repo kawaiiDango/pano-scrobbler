@@ -51,21 +51,10 @@ WebView2 provided by Microsoft Edge Chromium
     </string>
 
     <!--  strings for unfinalized stuff  -->
-    <string name="search_in_media_player">Search in media player directly</string>
-    <string name="forget_unchecked_apps"
-        comment="Shown in the 'Scrobble From' apps list on desktop"
-        >Forget unchecked apps</string>>
-    <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>>
-    <string name="album_art_now_playing_desc">Needs a last.fm login</string>
-    <string name="spotify_consent">Fetch artist images from Spotify?</string>
-    <string name="show_track_url">Track URL</string>
-    <string name="edit_extract_track_example"
-        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
-        >e.g. To extract metadata from the track field, if the track contains "Artist - Track", set the track regex to (?&lt;artist&gt;.*) - (?&lt;track&gt;.*)</string>
+    <string name="not_running_desktop">The scrobbler has stopped. Check logs.</string>
+    <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
     <string name="desktop">PC</string>
     <string name="android">Android</string>
-    <string name="automation_cli">Command-line arguments</string>
-    <string name="automation_cli_info">Run the pano-scrobbler executable with one of these command line arguments, while an instance is already running.</string>
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true"
         comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop"

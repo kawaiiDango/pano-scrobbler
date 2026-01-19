@@ -32,7 +32,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLParserException
 import io.ktor.http.maxAge
 import io.ktor.util.encodeBase64
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -42,7 +42,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -262,7 +261,7 @@ object Stuff {
 
     var isRunningInTest = false
 
-    val isInDemoMode get() = mainPrefsInitialValue.demoModeP
+    val isInDemoMode get() = mainPrefsCachedValue.demoModeP
 
     val countryCodesMap by lazy {
         val countries = hashMapOf<String, String>()
@@ -285,24 +284,19 @@ object Stuff {
         NumberFormat.getInstance()
     }
 
-    var mainPrefsInitialValue = MainPrefs()
+    private var mainPrefsCachedValue = MainPrefs()
 
     val billingClientData by lazy {
         BillingClientData(
             proProductId = PRO_PRODUCT_ID,
             appName = BuildKonfig.APP_NAME,
-            httpClient = Requesters.genericKtorClient,
+            httpClient = { Requesters.genericKtorClient },
             lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
             deviceIdentifier = { PlatformStuff.getDeviceIdentifier() },
             setLastcheckTime = { time ->
                 PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
             },
-            receipt = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }
-                .stateIn(
-                    GlobalScope,
-                    SharingStarted.Lazily,
-                    mainPrefsInitialValue.receipt to mainPrefsInitialValue.receiptSignature
-                ),
+            receipt = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature },
             setReceipt = { r, s ->
                 PlatformStuff.mainPrefs.updateData { it.copy(receipt = r, receiptSignature = s) }
             }
@@ -318,16 +312,37 @@ object Stuff {
 
     fun Number.format() = numberFormat.format(this)!!
 
+    suspend fun initializeMainPrefsCache(): MainPrefs {
+        return if (mainPrefsCachedValue.version == 0)
+            PlatformStuff.mainPrefs.data.first().also { mainPrefsCachedValue = it }
+        else
+            mainPrefsCachedValue
+    }
+
+    private fun <T> Flow<MainPrefs>.mapWithCache(
+        mapBlock: (MainPrefs) -> T,
+    ) = map {
+        mainPrefsCachedValue = it
+        mapBlock(it)
+    }
+
+    fun <T> Flow<MainPrefs>.stateInWithCache(
+        scope: CoroutineScope,
+        mapBlock: (MainPrefs) -> T,
+    ) = mapWithCache(mapBlock)
+        .stateIn(
+            scope,
+            started = SharingStarted.Eagerly,
+            initialValue = mapBlock(mainPrefsCachedValue)
+        )
+
+
     @Composable
     fun <T> Flow<MainPrefs>.collectAsStateWithInitialValue(
         mapBlock: (MainPrefs) -> T,
     ) = remember {
-        mapLatest {
-            mainPrefsInitialValue = it
-            mapBlock(it)
-        }
-    }.collectAsStateWithLifecycle(mapBlock(mainPrefsInitialValue))
-
+        mapWithCache(mapBlock)
+    }.collectAsStateWithLifecycle(mapBlock(mainPrefsCachedValue))
 
     fun humanReadableNum(n: Int): String {
         val k = 1000

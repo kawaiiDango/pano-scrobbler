@@ -64,11 +64,11 @@ class BillingRepository(
 
     override suspend fun checkAndStoreLicense(receipt: String) {
         if (verifyPurchase(receipt, null)) {
-            if (_licenseState.value != LicenseState.VALID ||
+            if (licenseState.value != LicenseState.VALID ||
                 System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY_DAYS.days.inWholeMilliseconds
             ) {
                 LicenseChecker.checkLicenseOnline(
-                    client = clientData.httpClient,
+                    client = clientData.httpClient(),
                     url = LICENSE_CHECKING_SERVER + "/license/verify",
                     did = clientData.deviceIdentifier(),
                     token = receipt
@@ -76,21 +76,20 @@ class BillingRepository(
                     when (it.code) {
                         0 -> {
                             if (it.message == "valid") {
-                                _licenseState.emit(LicenseState.VALID)
                                 clientData.setReceipt(receipt, null)
                             } else {
-                                _licenseState.emit(LicenseState.REJECTED)
+                                _licenseError.emit(LicenseError.REJECTED)
                                 clientData.setReceipt(null, null)
                             }
                         }
 
                         1 -> {
-                            _licenseState.emit(LicenseState.REJECTED)
+                            _licenseError.emit(LicenseError.REJECTED)
                             clientData.setReceipt(null, null)
                         }
 
                         2 -> {
-                            _licenseState.emit(LicenseState.MAX_DEVICES_REACHED)
+                            _licenseError.emit(LicenseError.MAX_DEVICES_REACHED)
                             clientData.setReceipt(null, null)
                         }
                     }
@@ -98,12 +97,12 @@ class BillingRepository(
                     clientData.setLastcheckTime(System.currentTimeMillis())
                 }.onFailure { e ->
                     e.printStackTrace()
-                    _networkError.emit(Unit)
+                    _licenseError.emit(LicenseError.NETWORK_ERROR)
                 }
             }
         } else {
             delay(2000)
-            _licenseState.emit(LicenseState.REJECTED)
+            _licenseError.emit(LicenseError.REJECTED)
             clientData.setReceipt(null, null)
         }
     }

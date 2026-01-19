@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import pano_scrobbler.composeapp.generated.resources.Res
+import java.io.IOException
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 
@@ -31,7 +31,7 @@ class ImportVM : ViewModel() {
     val serverResult = _serverResult.asStateFlow()
     private val _jsonText = MutableStateFlow<String?>(null)
     val jsonText = _jsonText.filterNotNull()
-    private val _importResult = MutableSharedFlow<Boolean>()
+    private val _importResult = MutableSharedFlow<Result<Unit>>()
     val importResult = _importResult.asSharedFlow()
     private val imExporter by lazy { ImExporter() }
     val localIps by lazy { PlatformStuff.getLocalIpAddresses() }
@@ -54,7 +54,12 @@ class ImportVM : ViewModel() {
 
                     try {
                         val base26Address = IpPortCode.encode(localIp, randomPort)
-                        server = ImportServer(localIp, randomPort, base26Address) { postData ->
+                        server = ImportServer(
+                            localIp,
+                            randomPort,
+                            base26Address,
+                            readKeystore()
+                        ) { postData ->
                             _jsonText.tryEmit(postData)
                         }
                         server?.start()
@@ -79,7 +84,11 @@ class ImportVM : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _jsonText.value?.let {
                 val imported = imExporter.import(it, editsMode, settings)
-                _importResult.emit(imported)
+
+                if (!imported)
+                    _importResult.emit(Result.failure(IOException("Import failed")))
+                else
+                    _importResult.emit(Result.success(Unit))
                 _jsonText.value = null
             }
         }
@@ -87,9 +96,13 @@ class ImportVM : ViewModel() {
 
     fun setPlatformFile(platformFile: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
-            platformFile.read {
-                val fileText = it.bufferedReader().readText()
-                _jsonText.emit(fileText)
+            if (platformFile.isFileOk()) {
+                platformFile.read {
+                    val fileText = it.bufferedReader().readText()
+                    _jsonText.emit(fileText)
+                }
+            } else {
+                _importResult.emit(Result.failure(IOException("File is not readable")))
             }
         }
     }
@@ -104,11 +117,11 @@ class ImportVM : ViewModel() {
         hostname: String,
         port: Int,
         private val path: String,
+        ks: KeyStore,
         private val onImport: (String) -> Unit,
     ) : NanoHTTPD(hostname, port) {
 
         init {
-            val ks = readKeystore()
             val kmf =
                 KeyManagerFactory.getInstance(
                     KeyManagerFactory.getDefaultAlgorithm()
@@ -144,9 +157,9 @@ class ImportVM : ViewModel() {
     }
 
     companion object {
-        fun readKeystore(): KeyStore {
+        suspend fun readKeystore(): KeyStore {
             val ks = KeyStore.getInstance("PKCS12")
-            runBlocking { Res.readBytes("files/pano-embedded-server-ks.bin") }
+            Res.readBytes("files/pano-embedded-server-ks.bin")
                 .let {
                     Stuff.xorWithKeyBytes(
                         it,

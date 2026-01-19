@@ -46,7 +46,6 @@ fun HomePagerScreen(
     var scrobblesTitle by rememberSaveable { mutableStateOf("") }
     var followingTitle by rememberSaveable { mutableStateOf("") }
     var chartsTitle by rememberSaveable { mutableStateOf("") }
-    val account by Scrobblables.currentAccount.collectAsStateWithLifecycle()
     var lastTabIdx by remember { mutableIntStateOf(tabIdx) }
 
     LaunchedEffect(tabIdx, scrobblesTitle, followingTitle, chartsTitle) {

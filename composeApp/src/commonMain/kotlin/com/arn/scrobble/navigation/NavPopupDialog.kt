@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Search
 import com.arn.scrobble.icons.Settings
@@ -33,7 +34,6 @@ import com.arn.scrobble.icons.WorkspacePremium
 import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -53,6 +53,7 @@ fun NavPopupDialog(
     modifier: Modifier = Modifier,
 ) {
     val drawerData by drawerDataFlow.collectAsStateWithLifecycle()
+    val isLicenseValid = LocalLicenseValidState.current
 
     LaunchedEffect(otherUser) {
         loadOtherUserDrawerData(otherUser)
@@ -70,7 +71,7 @@ fun NavPopupDialog(
             drawSnowfall = drawSnowfall,
         )
 
-        if (!VariantStuff.billingRepository.isLicenseValid) {
+        if (!isLicenseValid) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth(1f)

@@ -1,7 +1,6 @@
 package com.arn.scrobble.utils
 
 import android.app.ActivityManager
-import android.app.NotificationManager
 import android.app.SearchManager
 import android.app.UiModeManager
 import android.content.ActivityNotFoundException
@@ -40,10 +39,12 @@ import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
 import io.ktor.http.encodeURLPath
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.copied
@@ -79,7 +80,7 @@ actual object PlatformStuff {
 
     actual val isJava8OrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
-    actual val recomposeOnLocaleChange = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+    actual val hasSystemLocaleStore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
     actual fun isNotificationListenerEnabled(): Boolean {
         // adapted from NotificationManagerCompat.java
@@ -226,9 +227,7 @@ actual object PlatformStuff {
 
             putExtra(SearchManager.QUERY, searchQuery)
 
-            if (appId != null && VariantStuff.billingRepository.isLicenseValid &&
-                mainPrefs.data.map { it.searchInSource }.first()
-            )
+            if (appId != null)
                 `package` = appId
         }
         try {
@@ -243,19 +242,6 @@ actual object PlatformStuff {
                 }
             } else
                 applicationContext.toast(Res.string.no_player)
-        }
-    }
-
-    actual fun isNotiChannelEnabled(channelId: String): Boolean {
-        return when {
-            isTv -> false
-
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
-                AndroidStuff.notificationManager.areNotificationsEnabled() &&
-                        AndroidStuff.notificationManager.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
-            }
-
-            else -> true
         }
     }
 
@@ -301,9 +287,11 @@ actual object PlatformStuff {
         }
     }
 
-    actual fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream) {
-        stream.use {
-            imageBitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG, 95, it)
+    actual suspend fun writeBitmapToStream(imageBitmap: ImageBitmap, stream: OutputStream) {
+        withContext(Dispatchers.IO) {
+            stream.use {
+                imageBitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG, 95, it)
+            }
         }
     }
 

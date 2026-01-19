@@ -47,7 +47,6 @@ import com.arn.scrobble.ui.AppIcon
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -74,9 +73,7 @@ fun SwitchPref(
     onNavigateToBilling: (() -> Unit)? = null,
 ) {
     val scope = rememberCoroutineScope()
-    val enabled =
-        if (onNavigateToBilling != null) VariantStuff.billingRepository.isLicenseValid else enabled
-    val locked = onNavigateToBilling != null && !VariantStuff.billingRepository.isLicenseValid
+    val locked = onNavigateToBilling != null
 
     Row(
         modifier = modifier
@@ -299,6 +296,7 @@ fun SliderPref(
     increments: Int,
     stringRepresentation: (Int) -> String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val scope = rememberCoroutineScope()
     var internalValue by remember(value) { mutableFloatStateOf(value) }
@@ -326,7 +324,7 @@ fun SliderPref(
                 },
                 valueRange = min.toFloat()..max.toFloat(),
                 steps = ((max - min) / increments) - 1,
-                enabled = !PlatformStuff.isTv,
+                enabled = enabled && !PlatformStuff.isTv,
                 modifier = Modifier
                     .weight(1f)
             )

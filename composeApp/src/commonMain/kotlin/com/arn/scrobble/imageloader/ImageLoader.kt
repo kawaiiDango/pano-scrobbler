@@ -10,15 +10,14 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.size.Precision
 import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import java.io.File
 
 private val musicEntryImageInterceptor = MusicEntryImageInterceptor()
 
-fun clearMusicEntryImageCache(entry: MusicEntry) {
-    musicEntryImageInterceptor.clearCacheForEntry(entry)
+fun clearMusicEntryImageCache(req: MusicEntryImageReq) {
+    musicEntryImageInterceptor.clearCacheForEntry(req)
 }
 
 fun newImageLoader(
@@ -32,7 +31,7 @@ fun newImageLoader(
                 .build()
         }
         .components {
-            add(MusicEntryMapper())
+//            add(MusicEntryMapper())
             add(MusicEntryReqKeyer())
             add(musicEntryImageInterceptor)
             add(StarMapper())

@@ -22,12 +22,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.automation.Automation
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.ContentCopy
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.VariantStuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.automation_cli_info
@@ -56,7 +56,7 @@ fun AutomationInfoScreen(
         )
     }
 
-    val isLicenseValid = VariantStuff.billingRepository.isLicenseValid
+    val isLicenseValid = LocalLicenseValidState.current
 
     val appIdPlaceholder = if (PlatformStuff.isDesktop)
         "<APP_ID/MPRIS_ID>"

@@ -28,7 +28,6 @@ object ChartsListUtils {
         tab: Int,
         idx: Int,
         item: ChartsWidgetListItem,
-        user: UserCached,
     ): RemoteViews {
         val rv =
             RemoteViews(AndroidStuff.applicationContext.packageName, R.layout.appwidget_charts_item)

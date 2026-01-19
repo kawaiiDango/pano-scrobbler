@@ -1,6 +1,7 @@
 package com.arn.scrobble.utils
 
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.billing.LicenseState
 import io.ktor.http.encodeURLPathPart
 import io.ktor.http.encodeURLQueryComponent
 import org.jetbrains.compose.resources.getString
@@ -26,10 +27,10 @@ actual object BugReportUtils {
         text += "$osName $osVersion\n"
         text += "Arch: $arch\n"
 
-        // todo the values don't correspond to that shown in task manager (are too low)
+        // the ram values don't correspond to that shown in task manager (are too low)
 //        text += "RAM usage: $freeMemory M / $totalMemory M\n"
 
-        text += if (VariantStuff.billingRepository.isLicenseValid)
+        text += if (VariantStuff.billingRepository.licenseState.value == LicenseState.VALID)
             "~~~~~~~~~~~~~~~~~~~~~~~~"
         else
             "------------------------"

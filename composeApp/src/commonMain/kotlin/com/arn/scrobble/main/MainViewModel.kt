@@ -54,7 +54,7 @@ class MainViewModel : ViewModel() {
         }
         .filterNotNull()
         .map {
-            BuildKonfig.DEBUG && Scrobblables.currentAccount.value?.type == AccountType.LASTFM &&
+            BuildKonfig.DEBUG &&
                     System.currentTimeMillis() - it > TimeUnit.HOURS.toMillis(12)
         }
 
@@ -82,10 +82,11 @@ class MainViewModel : ViewModel() {
     private val otherUserTrigger = MutableSharedFlow<UserCached?>(extraBufferCapacity = 1)
 
     // The main flow that handles caching, network calls, and emits values
+    // todo do it in a backstack aware way
     val drawerDataFlow: StateFlow<DrawerData> =
         combine(
             PlatformStuff.mainPrefs.data.map { prefs ->
-                prefs.scrobbleAccounts.firstOrNull { it.type == prefs.currentAccountType }?.user
+                prefs.currentAccount?.user
             },
             otherUserTrigger.distinctUntilChanged()
         )
@@ -110,10 +111,10 @@ class MainViewModel : ViewModel() {
                             }
                         }
                     } else if (user.isSelf) {
-                        PlatformStuff.mainPrefs.data.map { it.drawerData }
-                            .map {
-                                it[Scrobblables.currentAccount.value?.type] ?: DrawerData(0)
-                            }
+                        PlatformStuff.mainPrefs.data.map {
+                            it.drawerData[it.currentAccountType]
+                                ?: DrawerData(0)
+                        }
                     } else {
                         flowOf(lastDrawerDataOthersCached ?: DrawerData(0))
                     }
@@ -131,8 +132,7 @@ class MainViewModel : ViewModel() {
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
-                initialValue = Stuff.mainPrefsInitialValue.let { it.drawerData[it.currentAccountType] }
-                    ?: DrawerData(0)
+                initialValue = DrawerData(0)
             )
 
     init {

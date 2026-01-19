@@ -18,7 +18,7 @@ actual class PlatformFile actual constructor(fileUri: String) {
 
     private val contentResolver by lazy { AndroidStuff.applicationContext.contentResolver }
 
-    actual fun isFileOk(): Boolean {
+    actual suspend fun isFileOk() = withContext(Dispatchers.IO) {
         val cursor = contentResolver.query(
             parsedUri,
             arrayOf(
@@ -34,10 +34,11 @@ actual class PlatformFile actual constructor(fileUri: String) {
                 val flags =
                     it.getInt(it.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_FLAGS))
                 val canWrite = (flags and DocumentsContract.Document.FLAG_SUPPORTS_WRITE) != 0
-                return canWrite
+                canWrite
+            } else {
+                false
             }
-        }
-        return false
+        } ?: false
     }
 
     actual fun getFileName(): String {

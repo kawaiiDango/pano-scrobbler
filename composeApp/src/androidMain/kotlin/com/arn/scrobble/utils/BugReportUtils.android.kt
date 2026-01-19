@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -51,7 +52,7 @@ actual object BugReportUtils {
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"
 
-        text += if (VariantStuff.billingRepository.isLicenseValid)
+        text += if (VariantStuff.billingRepository.licenseState.value == LicenseState.VALID)
             "~~~~~~~~~~~~~~~~~~~~~~~~"
         else
             "------------------------"

@@ -22,6 +22,8 @@ import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.themes.ThemeUtils
 import com.arn.scrobble.ui.GridMode
 import com.arn.scrobble.ui.SerializableWindowState
+import com.arn.scrobble.utils.LocaleUtils
+import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.getSystemCountryCode
@@ -56,14 +58,12 @@ data class MainPrefs(
     val submitNowPlaying: Boolean = true,
     val fetchAlbum: Boolean = false,
     val searchInSource: Boolean = false,
-    val crashReporterEnabled: Boolean = true,
     val lastSearchType: SearchType = SearchType.GLOBAL,
     val firstDayOfWeek: Int = -1,
     val lastInteractiveTime: Long? = null,
     private val demoMode: Boolean = false,
-    val locale: String? = null,
     val showScrobbleSources: Boolean = true,
-    val themeName: String = ThemeUtils.defaultTheme.name,
+    val themeName: String = ThemeUtils.defaultThemeName,
     val themeContrast: ContrastMode = ContrastMode.LOW,
     val themeDynamic: Boolean = false,
     val themeDayNight: DayNightMode = DayNightMode.DARK,
@@ -144,7 +144,7 @@ data class MainPrefs(
     )
 
     val autoDetectAppsP
-        get() = if (!PlatformStuff.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
+        get() = if (!PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
             false
         else
             autoDetectApps
@@ -168,16 +168,19 @@ data class MainPrefs(
         get() = lastDeltaIndexTime ?: lastFullIndexTime
 
     val spotifyCountryP
-        get() = spotifyCountry ?: getSystemCountryCode()
+        get() = spotifyCountry ?: LocaleUtils.getSystemCountryCode()
 
     val itunesCountryP
-        get() = itunesCountry ?: getSystemCountryCode()
+        get() = itunesCountry ?: LocaleUtils.getSystemCountryCode()
 
     val scrobbleSpotifyRemoteP
         get() = !PlatformStuff.isTv && scrobbleSpotifyRemote
 
     val usePlayFromSearchP
         get() = PlatformStuff.isTv || !PlatformStuff.isDesktop && usePlayFromSearch
+
+    val currentAccount
+        get() = scrobbleAccounts.firstOrNull { it.type == currentAccountType }
 
     fun allowOrBlockAppCopied(appId: String, allow: Boolean): MainPrefs {
         //create copies
@@ -303,7 +306,7 @@ data class MainPrefsPublic(
     val showScrobbleSources: Boolean,
     @JsonNames("link_heart_button_to_rating")
     val linkHeartButtonToRating: Boolean,
-    val themeName: String = ThemeUtils.defaultTheme.name,
+    val themeName: String = ThemeUtils.defaultThemeName,
     val themeContrast: ContrastMode = ContrastMode.LOW,
     val themeDayNight: DayNightMode = DayNightMode.DARK,
     @JsonNames("search_in_source")

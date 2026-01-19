@@ -5,6 +5,7 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
+import com.arn.scrobble.api.Requesters.parseJsonBody
 import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
@@ -22,20 +23,34 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import com.arn.scrobble.utils.Stuff.setMidnight
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
+import io.ktor.http.Cookie
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
+import io.ktor.http.Url
 import io.ktor.http.parametersOf
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Calendar
 import java.util.TreeMap
 
 open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
+    class CookiesInvalidatedException :
+        IllegalStateException("cookies invalidated, please re-login")
+
     protected open val apiKey = Requesters.lastfmUnauthedRequester.apiKey
     protected open val apiSecret = Requesters.lastfmUnauthedRequester.apiSecret
 
@@ -521,6 +536,75 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     }
 
 
+    private object LastfmUnscrobbler {
+        suspend fun unscrobble(track: Track, username: String): Unit =
+            lock.withLock { // does this fix the csrf invalidation problem?
+                val csrfToken =
+                    cookieStorage.get(Url(URL_USER)).find { it.name == COOKIE_CSRFTOKEN }?.value
+
+                val parameters = Parameters.build {
+                    append(
+                        FIELD_CSRFTOKEN,
+                        csrfToken ?: throw CookiesInvalidatedException()
+                    )
+                    append(FIELD_ARTIST, track.artist.name)
+                    append(FIELD_TRACK, track.name)
+                    append(
+                        FIELD_TIMESTAMP,
+                        track.date?.div(1000)?.toString() ?: throw IllegalStateException("no date")
+                    )
+                    append(FIELD_AJAX, "1")
+                }
+
+                val url = "$URL_USER$username/library/delete"
+
+                val response = unscrobbleClient.submitForm(url, parameters) {
+                    header(HttpHeaders.Referrer, URL_USER + username)
+                }
+
+                if (response.status == HttpStatusCode.OK) {
+                    val success = response.parseJsonBody<DeleteScrobbleResponse>().result
+
+                    if (!success)
+                        throw IllegalStateException("LastfmUnscrobbler: error unscrobbling")
+                } else if (response.status == HttpStatusCode.Forbidden) {
+                    cookieStorage.clear()
+                    throw CookiesInvalidatedException()
+                } else {
+                    throw ResponseException(
+                        response,
+                        "LastfmUnscrobbler: error unscrobbling: " + response.status.value
+                    )
+                }
+
+                // add a random delay to prevent 406 error
+                delay((1000L..10000L).random())
+            }
+
+        private const val COOKIE_CSRFTOKEN = "csrftoken"
+        private const val COOKIE_SESSIONID = "sessionid"
+
+        private const val URL_USER = "https://www.last.fm/user/"
+
+        private const val FIELD_CSRFTOKEN = "csrfmiddlewaretoken"
+
+        private const val FIELD_ARTIST = "artist_name"
+        private const val FIELD_TRACK = "track_name"
+        private const val FIELD_TIMESTAMP = "timestamp"
+        private const val FIELD_AJAX = "ajax"
+
+        private val lock by lazy { Mutex() }
+
+        val cookieStorage by lazy { CookiesDatastore() }
+        private val unscrobbleClient by lazy {
+            Requesters.genericKtorClient.config {
+                install(HttpCookies) {
+                    storage = cookieStorage
+                }
+            }
+        }
+    }
+
     companion object {
 
         private fun String.md5(): String {
@@ -547,7 +631,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             return parametersOf(paramsOrdered.mapValues { (k, v) -> listOf(v) })
         }
 
-        suspend fun authAndGetSession(userAccountTemp: UserAccountTemp): Result<Session> {
+        suspend fun authAndGetSession(
+            userAccountTemp: UserAccountTemp,
+            cookies: List<Cookie> = emptyList()
+        ): Result<Session> {
             val apiKey = if (userAccountTemp.type == AccountType.LASTFM)
                 Requesters.lastfmUnauthedRequester.apiKey
             else
@@ -566,6 +653,14 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 apiSecret,
                 userAccountTemp.authKey
             ).onSuccess {
+                // store cookies
+
+                val lastfmUrl = Url(Stuff.LASTFM_URL)
+
+                cookies.forEach { cookie ->
+                    LastfmUnscrobbler.cookieStorage.addCookie(lastfmUrl, cookie)
+                }
+
                 // get user info
                 Requesters.genericKtorClient.getResult<UserGetInfoResponse> {
                     url(userAccountTemp.apiRoot ?: Stuff.LASTFM_API_ROOT)

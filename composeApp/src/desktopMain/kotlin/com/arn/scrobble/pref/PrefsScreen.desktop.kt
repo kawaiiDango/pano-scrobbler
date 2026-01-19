@@ -8,6 +8,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
+import pano_scrobbler.composeapp.generated.resources.not_running_desktop
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.run_on_start
@@ -16,10 +17,6 @@ import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
 import pano_scrobbler.composeapp.generated.resources.when_using
 
 actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
-    // no-op
-}
-
-actual fun prefCrashReporter(listScope: LazyListScope, crashReporterEnabled: Boolean) {
     // no-op
 }
 
@@ -112,8 +109,12 @@ actual fun prefScrobbler(
     listScope.item(MainPrefs::scrobblerEnabled.name) {
         SwitchPref(
             text = stringResource(Res.string.pref_master),
-            summary = stringResource(Res.string.pref_offline_info),
-            value = scrobblerEnabled,
+            summary = if (!nlsEnabled)
+                stringResource(Res.string.not_running_desktop)
+            else
+                stringResource(Res.string.pref_offline_info),
+            value = scrobblerEnabled && nlsEnabled,
+            enabled = nlsEnabled,
             copyToSave = { copy(scrobblerEnabled = it) }
         )
     }

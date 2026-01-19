@@ -69,7 +69,7 @@ jobs:
           cp -r fastlane static-site/
           cp -r desktop-screenshots static-site/
           mkdir -p static-site/composeApp/src/commonMain/composeResources/drawable/
-          cp -r composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg static-site/composeApp/src/commonMain/composeResources/drawable/ic_launcher_with_bg.svg
+          cp -r composeApp/src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg static-site/composeApp/src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg
           mkdir -p static-site/composeApp/src/commonMain/composeResources/files/
           cp composeApp/src/commonMain/composeResources/files/crowdin_members.txt static-site/composeApp/src/commonMain/composeResources/files/crowdin_members.txt
 

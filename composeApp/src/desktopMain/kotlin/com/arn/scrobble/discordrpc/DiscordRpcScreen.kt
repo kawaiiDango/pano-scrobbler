@@ -108,6 +108,7 @@ fun DiscordRpcScreen(
         SwitchPref(
             text = stringResource(Res.string.album_art),
             value = settings.albumArt,
+            enabled = settings.enabled,
             copyToSave = {
                 copy(
                     discordRpc = settings.copy(albumArt = it)
@@ -119,7 +120,7 @@ fun DiscordRpcScreen(
             text = stringResource(Res.string.album_art_now_playing),
             summary = stringResource(Res.string.album_art_now_playing_desc),
             value = settings.albumArtFromNowPlaying,
-            enabled = settings.albumArt,
+            enabled = settings.enabled && settings.albumArt,
             copyToSave = {
                 copy(
                     discordRpc = settings.copy(albumArtFromNowPlaying = it)
@@ -130,6 +131,7 @@ fun DiscordRpcScreen(
         SwitchPref(
             text = stringResource(Res.string.show_track_url),
             value = settings.showUrlButton,
+            enabled = settings.enabled,
             copyToSave = {
                 copy(
                     discordRpc = settings.copy(showUrlButton = it)
@@ -167,6 +169,7 @@ fun DiscordRpcScreen(
                     )
                 }
             },
+            enabled = settings.enabled,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = horizontalOverscanPadding())
@@ -192,6 +195,7 @@ fun DiscordRpcScreen(
                     )
                 }
             },
+            enabled = settings.enabled,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = horizontalOverscanPadding())
@@ -216,6 +220,7 @@ fun DiscordRpcScreen(
                     )
                 }
             },
+            enabled = settings.enabled,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = horizontalOverscanPadding())
@@ -247,11 +252,13 @@ fun DiscordRpcScreen(
                     )
                 )
             },
+            enabled = settings.enabled,
         )
 
         SliderPref(
             text = stringResource(Res.string.show_paused_for),
             value = settings.showPausedForSecs.toFloat(),
+            enabled = settings.enabled,
             min = 0,
             max = 600,
             increments = 10,

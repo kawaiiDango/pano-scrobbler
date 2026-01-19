@@ -31,31 +31,35 @@ enum class ContrastMode {
 }
 
 object ThemeUtils {
-    val themesMap = arrayOf(
-        Theme4385f6,
-        Theme03a9f5,
-        Theme01bdd6,
-        Theme3f51b5,
-        Theme683ab7,
-        Theme9e28b2,
-        Themeb19bdb,
-        Theme009788,
-        Theme109d58,
-        Theme8cc24a,
-        Themecddc39,
-        Themeffeb3c,
-        Themef6b300,
-        Themefbbc6f,
-        Themeff9803,
-        Themefe5722,
-        Themedd4337,
-        Themeea1e63,
-        Themeff748f,
-        Themefdc5c6,
-        Themee8d1a8
-    ).associateBy { it.name }
+    val themesMap by lazy {
+        arrayOf(
+            Theme4385f6,
+            Theme03a9f5,
+            Theme01bdd6,
+            Theme3f51b5,
+            Theme683ab7,
+            Theme9e28b2,
+            Themeb19bdb,
+            Theme009788,
+            Theme109d58,
+            Theme8cc24a,
+            Themecddc39,
+            Themeffeb3c,
+            Themef6b300,
+            Themefbbc6f,
+            Themeff9803,
+            Themefe5722,
+            Themedd4337,
+            Themeea1e63,
+            Themeff748f,
+            Themefdc5c6,
+            Themee8d1a8
+        ).associateBy { it.name }
+    }
 
-    val defaultTheme = Themeea1e63
+    val defaultTheme
+        get() = Themeea1e63
+    val defaultThemeName = Themeea1e63::class.simpleName!!
 
-    fun themeNameToObject(name: String) = themesMap[name] ?: defaultTheme
+    fun themeNameToObject(name: String) = themesMap.getOrDefault(name, defaultTheme)
 }

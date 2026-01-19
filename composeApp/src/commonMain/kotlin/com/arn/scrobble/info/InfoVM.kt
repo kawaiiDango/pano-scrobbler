@@ -56,7 +56,8 @@ class InfoVM(
     init {
         viewModelScope.launch {
             val _username =
-                if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM)
+                if (PlatformStuff.mainPrefs.data.map { it.currentAccountType }
+                        .first() == AccountType.LASTFM)
                     username
                 else
                     null
@@ -66,8 +67,9 @@ class InfoVM(
             _userTags.emit(emptyMap())
             _infoMap.emit(infos)
 
-            if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM ||
-                PlatformStuff.mainPrefs.data.map { it.lastfmApiAlways }.first()
+            if (PlatformStuff.mainPrefs.data
+                    .map { it.lastfmApiAlways || it.currentAccountType == AccountType.LASTFM }
+                    .first()
             ) {
                 _infoMap.value = withContext(Dispatchers.IO) {
                     getInfos(infos, _username)
@@ -217,7 +219,9 @@ class InfoVM(
         }
 
         // dirty delta updates only for lastfm and self
-        if (Scrobblables.currentAccount.value?.type == AccountType.LASTFM) {
+        val accountType =
+            PlatformStuff.mainPrefs.data.map { it.currentAccountType }.first()
+        if (accountType == AccountType.LASTFM) {
             doDirtyDeltaUpdates(
                 artistDef.await(),
                 albumDef.await(),

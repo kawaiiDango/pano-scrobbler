@@ -28,6 +28,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
 import com.arn.scrobble.api.spotify.TrackItem
+import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.imageloader.clearMusicEntryImageCache
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.EmptyText
@@ -68,11 +69,17 @@ fun ImageSearchScreen(
 ) {
     val musicEntry = artist ?: album!!
     val originalMusicEntry = originalArtist ?: originalAlbum
+    val accountType by
+    PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
 
     fun onDone() {
-        clearMusicEntryImageCache(entry = musicEntry)
+        clearMusicEntryImageCache(
+            MusicEntryImageReq(musicEntry, accountType)
+        )
         originalMusicEntry?.let {
-            clearMusicEntryImageCache(entry = it)
+            clearMusicEntryImageCache(
+                MusicEntryImageReq(it, accountType)
+            )
         }
         onBack()
     }

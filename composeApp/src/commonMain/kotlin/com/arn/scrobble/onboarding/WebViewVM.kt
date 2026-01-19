@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.lastfm.LastFm
-import com.arn.scrobble.api.lastfm.LastfmUnscrobbler
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.utils.Stuff
@@ -40,9 +39,9 @@ class WebViewVM(
                         "lastfm" -> {
                             val token = url.parameters["token"] ?: return@collect
                             val httpUrl = Url(Stuff.LASTFM_URL)
-                            cookies.forEach { (name, value) ->
+                            val cookieObjs = cookies.mapNotNull { (name, value) ->
                                 if (name.isNotBlank() && value.isNotBlank()) {
-                                    val cookie = Cookie(
+                                    Cookie(
                                         name,
                                         value,
                                         CookieEncoding.RAW,
@@ -51,13 +50,13 @@ class WebViewVM(
                                         expires = GMTDate(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 11),
                                         secure = true,
                                     )
-                                    LastfmUnscrobbler.cookieStorage.addCookie(httpUrl, cookie)
-                                }
+                                } else null
                             }
 
                             launch {
                                 LastFm.authAndGetSession(
-                                    userAccountTemp.copy(authKey = token)
+                                    userAccountTemp.copy(authKey = token),
+                                    cookieObjs
                                 ).let {
                                     loginFinished(it)
                                 }
@@ -69,7 +68,7 @@ class WebViewVM(
 
                             launch {
                                 LastFm.authAndGetSession(
-                                    userAccountTemp.copy(authKey = token)
+                                    userAccountTemp.copy(authKey = token),
                                 ).let { loginFinished(it) }
                             }
                         }

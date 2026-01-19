@@ -39,10 +39,9 @@ actual fun AddAdditionalProviders(content: @Composable () -> Unit) {
         LocalScrollbarStyle provides defaultScrollbarStyle.copy(
             unhoverColor = scrollbarColor.copy(alpha = defaultScrollbarStyle.unhoverColor.alpha),
             hoverColor = scrollbarColor.copy(alpha = defaultScrollbarStyle.hoverColor.alpha),
-        )
+        ),
+        LocalContextMenuRepresentation provides contextMenuRepresentation
     ) {
-        CompositionLocalProvider(LocalContextMenuRepresentation provides contextMenuRepresentation) {
-            content()
-        }
+        content()
     }
 }

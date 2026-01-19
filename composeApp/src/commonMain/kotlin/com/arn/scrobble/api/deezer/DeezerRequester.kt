@@ -5,7 +5,7 @@ import com.arn.scrobble.api.Requesters.getResult
 import io.ktor.client.request.parameter
 
 class DeezerRequester {
-    private val client = Requesters.genericKtorClient
+    private val client get() = Requesters.genericKtorClient
 
     suspend fun searchTrack(
         artist: String,

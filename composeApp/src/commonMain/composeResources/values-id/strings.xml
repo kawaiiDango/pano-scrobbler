@@ -95,10 +95,13 @@
     <string name="share_sig">(melalui Pano Scrobbler)</string>
     <string name="share">Bagikan</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legendaris</string>
+    <string name="grid" comment="Grid view">Kisi (Grid)</string>
+    <string name="list" comment="Single column list view">Daftar (List)</string>
     <string name="more_info">Info lainnya</string>
     <string name="more" comment="More options menu in short">Selengkapnya</string>
     <string name="learn" comment="(Learn java regex syntax)">Pelajari</string>
     <string name="hide">Sembunyikan</string>
+    <string name="rank_change" comment="%1= delta change">Perubahan peringkat: %1$s</string>
     <string name="rank_change_no_change">Tidak ada perubahan</string>
     <string name="rank_change_new">Tidak di-scrobble pada periode sebelumnya</string>
     <string name="search">Cari</string>
@@ -118,6 +121,9 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opsi untuk item ini</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s terdeteksi</string>
     <string name="new_player_prompt">Terus scrobbling aplikasi ini?</string>
+    <string name="new_player_prompt_desktop">Buka pengaturan untuk menscrobble aplikasi ini</string>
+    <string name="cannot_access" comment="%1$s= the file or folder name">Tidak dapat mengakses %1$s</string>
+    <string name="file_exists_confirm_overwrite">File sudah ada. Klik lagi untuk menimpa.</string>
     <string name="no_scrobbles">Belum ada lagu di sini…</string>
     <string name="no_friends">Belum mengikuti siapa pun…</string>
     <string name="channel_err" comment="Its a noun">Kesalahan scrobble</string>
@@ -135,6 +141,7 @@
     <string name="pending_scrobbles">Scrobble yang Tertunda</string>
     <string name="following" comment="accounts you are following on lastfm">Mengikuti</string>
     <string name="followers" comment="your lastfm followers">Pengikut</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Sejak %1$s</string>
     <string name="allow_background">Izinkan scrobbling di latar belakang</string>
     <string name="grant_notification_access">Berikan akses notifikasi</string>
     <string name="grant_notification_access_desc">Diperlukan untuk mengambil metadata musik. Tidak ada notifikasi non-musik yang dibaca</string>
@@ -151,6 +158,7 @@
     <string name="rate_msg">Menikmati aplikasi ini?</string>
     <string name="time_just_now">baru saja</string>
     <string name="no_mail_apps">Tidak ada klien email yang diinstal</string>
+    <string name="add">Tambahkan item baru</string>
     <string name="loved" comment="Its a noun">Disukai</string>
     <string name="unloved" comment="Its a noun">Tak di sukai</string>
     <string name="simple_edits">Penyuntingan</string>
@@ -176,6 +184,7 @@
     <string name="weeks">Pekan</string>
     <string name="monthly">Bulanan</string>
     <string name="months">Bulan</string>
+    <string name="days">Hari</string>
     <string name="years" comment="For the charts menu which displays year by year">Tahun</string>
     <string name="charts_overall">Keseluruhan</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktivitas mendengarkan</string>
@@ -202,6 +211,7 @@
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s scrobble atas</string>
     <string name="my_tags" comment="Tags, the user has added">Tag saya</string>
     <string name="close" comment="To close a dialog or something">Tutup</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Keluar</string>
     <string name="user_tags_hint" comment="To add a new tag">Tag baru</string>
     <string name="user_tags_empty">Anda belum menambahkan tag apa pun</string>
     <string name="appwidget_loading">Memuat…</string>
@@ -242,7 +252,9 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Tindakan pemain</string>
     <string name="skip" comment="skip to next track">Lewati</string>
     <string name="mute" comment="mute the sound">Bisukan</string>
+    <string name="do_nothing" comment="do nothing on the media player">Jangan lakukan apa-apa</string>
     <string name="block" comment="block the track from scrobbling">Blokir</string>
+    <string name="copy" comment="copy to clipboard">Salin</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tag tersembunyi</string>
     <string name="pin" comment="pin a friend to the top">Sematkan</string>
     <string name="unpin" comment="unpin a friend to the top">Lepas Sematan</string>
@@ -252,11 +264,14 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Apakah Anda ingin mengaktifkan aturan edit pola: %1$s?</string>
     <string name="show_persistent_noti">Tampilkan pemberitahuan terus-menerus</string>
     <string name="fix_it_desc">Ini dapat membantu scrobbler tetap berjalan di latar belakang pada beberapa perangkat</string>
+    <string name="persistent_noti_text">Ketuk untuk menyembunyikan ini</string>
     <string name="scrobbler_off">Scrobbler dinonaktifkan</string>
     <string name="scrobbler_on">Scrobbler aktif</string>
     <string name="duration">Durasi</string>
     <string name="total_listen_time">Total waktu mendengarkan</string>
     <string name="enable" comment="To enable some feature">Aktifkan</string>
+    <string name="disable" comment="To disable some feature">Nonaktifkan</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Hapus: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Ukuran</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Lewati gambar yang hilang</string>
     <string name="create_collage">Buat kolase</string>
@@ -311,12 +326,19 @@
     <string name="pref_search_in_source">Cari &amp; mainkan di aplikasi yang Anda gunakan untuk scrobble</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Untuk aplikasi yang didukung</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Daftar</string>
+    <string name="regex_rules">Aturan regex</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadata yang blokir</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">apa saja</string>
     <string name="pref_translate">Terjemahkan aplikasi ini</string>
     <string name="pref_translate_credits">Kredit penerjemah</string>
     <string name="pref_oss_credits">Kredit sumber terbuka</string>
     <string name="pref_check_updates">Periksa untuk pembaruan</string>
+    <string name="no_updates">Tidak ada pembaruan tersedia</string>
+    <string name="pref_notify_updates">Pembaruan otomatis</string>
+    <string name="update_downloaded">Pembaruan terunduh</string>
+    <string name="pref_native_file_picker">Gunakan pemilih file bawaan</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Pembaruan tersedia: %1$s</string>
+    <string name="downloading">Mengunduh</string>
     <string name="download" comment="Its a verb">Unduh</string>
     <string name="changelog">Catatan Perubahan Versi</string>
     <string name="import_hey_wtf">Itu mungkin bukan file ekspor Pano Scrobbler</string>
@@ -330,11 +352,13 @@
     <string name="import_settings">Impor Pengaturan</string>
     <string name="copied">Tersalin!</string>
     <string name="lastfm_reauth">Anda perlu mengautentikasi ulang untuk mengedit atau menghapus scrobble</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Instansi seperti %1$s</string>
     <string name="failed_encode_url">Gagal menyandikan URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Cek %1$s</string>
     <string name="no_browser">Tidak ada browser yang diinstal</string>
     <string name="no_player">Tidak ada pemutar musik yang dipasang</string>
     <string name="not_running">⚠ Scrobbler dimatikan oleh sistem Anda</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Alasan: %1$s</string>
     <string name="not_running_fix_action">Perbaiki</string>
     <string name="login_submit" comment="Verifies the login details">Verifikasi</string>
     <string name="submitting_loves" formatted="true">Mengirimkan suka, %1$d tersisa</string>
@@ -354,6 +378,28 @@
     <string name="password">Kata sandi</string>
     <string name="open_existing" comment="Append to an existing file">Tambahkan ke yang sudah ada</string>
     <string name="create" comment="Create a new file">Buat</string>
+    <string name="scan_qr">Pindai ini untuk masuk</string>
+    <string name="copy_from">Salin dari</string>
+    <string name="nothing" comment="nothing/none">Tidak ada</string>
+    <string name="borders" comment="Borders between images in the generated collage">Batas (Border)</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Batal</string>
+    <string name="back">Kembali</string>
+    <string name="done">Selesai</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">Coba Lagi</string>
+    <string name="run_on_start">Jalankan saat komputer dinyalakan</string>
+    <string name="use_browser">Mohon gunakan browser pada perangkat yang didukung untuk ini.</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">Simpan log</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">Kontras</string>
+    <string name="high" comment="As in high/medium/low">Tinggi</string>
+    <string name="medium" comment="As in high/medium/low">Sedang</string>
+    <string name="low" comment="As in high/medium/low">Rendah</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Beberapa aplikasi membutuhkan plugin</string>
+    <string name="reload" comment="Reload or refresh">Muat ulang</string>
+    <string name="pref_tray_icon_theme">Tema ikon tray</string>
+    <string name="min_track_duration">Scrobble lagu yang lebih panjang dari</string>
+    <string name="automation">Kontrol Pano Scrobbler dari aplikasi otomatisasi</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Ambil metadata yang hilang dari %1$s</string>
     <!--  pro  -->
     <string name="get_pro">Dukung aplikasi ini</string>
     <string name="help">Bantuan</string>

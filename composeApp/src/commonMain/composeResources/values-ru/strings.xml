@@ -189,6 +189,7 @@
     <string name="pending_scrobbles">Отложенные скробблы</string>
     <string name="following" comment="accounts you are following on lastfm">Подписки</string>
     <string name="followers" comment="your lastfm followers">Подписчики</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Длится с: %1$s</string>
     <string name="allow_background">Разрешить скробблинг в фоновом режиме</string>
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
@@ -456,6 +457,16 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Скачать это приложение в %1$s</string>
     <string name="first_artist">Использовать только первого исполнителя</string>
     <string name="external_metadata">Внешние источники метаданных</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Строка %1$s</string>
+    <string name="album_art_now_playing">Получать обложки из режима "Играет" при необходимости</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s Отключён в %2$s</string>
+    <string name="discord_compact_view_line">Показывать как "Слушает":</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Доступные плейсхолдеры: %1$s</string>
+    <string name="show_paused_for">Показать приостановленные файлы для</string>
+    <string name="edit_example">Например, чтобы заменить исполнителя 1 на исполнителя 2 оставляя метаданные без изменения, включите только строку исполнителя и заполните исходные и исправленные данные исполнителя, оставив остальные поля отключенными</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">При использовании</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">При неиспользовании</string>
+    <string name="as_text" comment="Like copy as text, but in short">Как текст</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>

@@ -205,6 +205,7 @@
     <string name="rate_msg">Líbí se vám aplikace?</string>
     <string name="time_just_now">právě teď</string>
     <string name="no_mail_apps">Není nainstalovaný žádný e-mailový klient</string>
+    <string name="add">Přidat novou položku</string>
     <string name="loved" comment="Its a noun">Oblíbené</string>
     <string name="unloved" comment="Its a noun">Odebráno z oblíbených</string>
     <string name="simple_edits">Úpravy</string>
@@ -315,6 +316,8 @@
     <string name="duration">Délka</string>
     <string name="total_listen_time">Celkový čas poslechu</string>
     <string name="enable" comment="To enable some feature">Povolit</string>
+    <string name="disable" comment="To disable some feature">Zakázat</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Odstranit: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Velikost</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Přeskočit chybějící obrázky</string>
     <string name="create_collage">Vytvořit koláž</string>
@@ -369,15 +372,22 @@
     <string name="pref_search_in_source">Hledat a přehrávat v aplikaci, ze které se skladba scrobblovala</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">U podporovaných aplikací</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Seznamy</string>
+    <string name="regex_rules">Regexová pravidla</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Zablokovaná metadata</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">cokoliv</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">existující data</string>
     <string name="pref_translate">Přeložit tuto aplikaci</string>
     <string name="pref_translate_credits">Poděkování Překladatelům</string>
     <string name="pref_oss_credits">Licence open source</string>
     <string name="pref_check_updates">Kontrolovat aktualizace</string>
+    <string name="no_updates">Nejsou dostupné žádné aktualizace</string>
+    <string name="pref_notify_updates">Automatické aktualizace</string>
+    <string name="update_downloaded">Aktualizace stažena</string>
     <string name="pref_search_url_template">Šablon URL adresy vyhledávání</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Na místo $query se vloží vyhledávaný pojem</string>
     <string name="pref_native_file_picker">Použít nativní výběr souborů</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostupná aktualizace: %1$s</string>
+    <string name="downloading">Stahuji</string>
     <string name="download" comment="Its a verb">Stáhnout</string>
     <string name="changelog">Seznam změn</string>
     <string name="import_hey_wtf">To nejspíš není exportovaný soubor Pano Scrobbler</string>
@@ -417,6 +427,9 @@
     <string name="password">Heslo</string>
     <string name="open_existing" comment="Append to an existing file">Přidat k existujícímu</string>
     <string name="create" comment="Create a new file">Vytvořit</string>
+    <string name="copy_from">Zkopírovat z</string>
+    <string name="nothing" comment="nothing/none">Nic</string>
+    <string name="borders" comment="Borders between images in the generated collage">Okraje</string>
     <string name="ok">OK</string>
     <string name="cancel">Zrušit</string>
     <string name="back">Zpět</string>
@@ -429,8 +442,29 @@
     <string name="high" comment="As in high/medium/low">Vysoký</string>
     <string name="medium" comment="As in high/medium/low">Střední</string>
     <string name="low" comment="As in high/medium/low">Nízký</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">Některé aplikace vyžadují pluginy</string>
+    <string name="reload" comment="Reload or refresh">Obnovit</string>
+    <string name="pref_tray_icon_theme">Motiv ikony v systémové liště</string>
+    <string name="min_track_duration">Scrobblovat skladby delší než</string>
+    <string name="automation">Ovládat Pano Scrobbler pomocí aplikací pro automatizaci</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Země pro metadata z %1$s</string>
+    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Načíst chybějící metadata pro %1$s</string>
+    <string name="login_in_browser">Dokončete přihlášení v okně prohlížeče</string>
+    <string name="edit_no_save">Toto nastavení nebude uloženo pro budoucí scrobbly</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Získejte tuto aplikaci na %1$s</string>
+    <string name="first_artist">Použít pouze prvního interpreta</string>
+    <string name="external_metadata">Externí zdroje metadat</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">%1$s. řádek</string>
+    <string name="album_art_now_playing">Pokud bude potřeba, načíst obrázek alba z Práve Přehrávaného</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s je vypnutý v %2$s</string>
+    <string name="discord_compact_view_line">Ukazovat jako "Poslouchá":</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Dostupné zástupné znaky: %1$s</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Při použití %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Pokud nepoužívám %1$s</string>
+    <string name="as_text" comment="Like copy as text, but in short">Jako text</string>
     <!--  pro  -->
     <string name="get_pro">Podpořit aplikaci</string>
+    <string name="one_time_purchase">Jednorázově</string>
     <string name="help">Pomoc</string>
     <string name="pro_support">Tohle je jednoduchý a rychly způsob jak úžasní uživatelé, jako vy, mohou ukázat svou podporu, uznávajíc hodnotu, kterou tato aplikace má.</string>
     <string name="pro_also_get">Také získáte následující funkce:</string>

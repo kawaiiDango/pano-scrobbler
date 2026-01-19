@@ -173,6 +173,7 @@
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="following" comment="accounts you are following on lastfm">Pratim</string>
     <string name="followers" comment="your lastfm followers">Pratitelji</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Od %1$s</string>
     <string name="allow_background">Dopusti scrobbleanje u pozadini</string>
     <string name="grant_notification_access">Dopusti pristup obavijestima</string>
     <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>

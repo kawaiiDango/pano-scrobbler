@@ -120,6 +120,7 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">この項目のオプション</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$sの検出</string>
     <string name="new_player_prompt">このアプリをScrobbleしますか？</string>
+    <string name="new_player_prompt_desktop">設定に進んでこのアプリをscrobblingを開始します</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">%1$sにアクセスできません</string>
     <string name="file_exists_confirm_overwrite">ファイルが存在します。もう一度クリックすると上書きします。</string>
     <string name="no_scrobbles">曲はまだありません…</string>
@@ -326,7 +327,10 @@
     <string name="pref_translate_credits">翻訳協力者</string>
     <string name="pref_oss_credits">オープンソースクレジット</string>
     <string name="pref_check_updates">アップデートを確認</string>
+    <string name="pref_notify_updates">自動更新</string>
+    <string name="update_downloaded">更新のダウンロードが完了しました</string>
     <string name="update_available" formatted="true" comment="%1= the version number">アップデートがあります: %1$s</string>
+    <string name="downloading">ダウンロード中</string>
     <string name="download" comment="Its a verb">ダウンロード</string>
     <string name="changelog">変更履歴</string>
     <string name="import_hey_wtf">選択したファイルは、おそらくPano Scrobblerのエクスポートファイルではありません</string>
@@ -366,6 +370,8 @@
     <string name="open_existing" comment="Append to an existing file">既存に追加</string>
     <string name="create" comment="Create a new file">作成</string>
     <string name="scan_qr">スキャンしてログイン</string>
+    <string name="nothing" comment="nothing/none">なし</string>
+    <string name="borders" comment="Borders between images in the generated collage">境界</string>
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
     <string name="back">戻る</string>
@@ -375,6 +381,7 @@
     <string name="save_logs" comment="Debug logs to be saved to a text file">ログを保存</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">コントラスト</string>
     <string name="needs_plugin" comment="Used for some desktop media players">一部のアプリにプラグインが必要です</string>
+    <string name="reload" comment="Reload or refresh">リロード</string>
     <string name="min_track_duration">この長さより短いトラックはScrobbleしない</string>
     <string name="automation">自動化アプリからPano Scrobblerを制御する</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s メタデータの国</string>

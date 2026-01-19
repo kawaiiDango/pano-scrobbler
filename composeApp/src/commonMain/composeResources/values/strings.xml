@@ -768,9 +768,9 @@
     <string name="album_art_now_playing_desc">Needs a last.fm login</string>
     <string name="spotify_consent">Fetch artist images from Spotify?</string>
     <string name="show_track_url">Track URL</string>
-    <string name="edit_extract_track_example"
-        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
-        >e.g. To extract metadata from the track field, if the track contains "Artist - Track", set the track regex to (?&lt;artist&gt;.*) - (?&lt;track&gt;.*)</string>
+    <string name="edit_extract_track_example" formatted="true"
+        comment="%1$s is the regex pattern"
+        >e.g. To extract metadata from the track field, if the track contains "Artist - Track", set the track regex to %1$s</string>
     <string name="search_in_media_player"
         comment="This launches and searches in the media player app directly instead of opening a browser"
         >Search in the media player directly</string>

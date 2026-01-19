@@ -789,7 +789,10 @@ private fun ExtractOptions(
         )
 
         Text(
-            text = stringResource(Res.string.edit_extract_track_example),
+            text = stringResource(
+                Res.string.edit_extract_track_example,
+                "(?<artist>.*) - (?<track>.*)"
+            ),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth()
         )

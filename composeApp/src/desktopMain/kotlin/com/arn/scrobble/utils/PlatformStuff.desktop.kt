@@ -107,7 +107,7 @@ actual object PlatformStuff {
     }
 
     actual fun getDeviceIdentifier(): String {
-        return PanoNativeComponents.getMachineId().sha256Truncated()
+        return Stuff.sha256Truncated(PanoNativeComponents.getMachineId())
     }
 
     actual suspend fun launchSearchIntent(

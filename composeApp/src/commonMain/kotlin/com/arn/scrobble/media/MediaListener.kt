@@ -7,7 +7,6 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.map
 import kotlin.math.min
 
 abstract class MediaListener(
@@ -21,9 +20,6 @@ abstract class MediaListener(
     )
 
     private val mainPrefs = PlatformStuff.mainPrefs
-
-    protected val blockedPackages =
-        mainPrefs.data.map { it.blockedPackages }
 
     protected val allowedPackages = mainPrefs.data.stateInWithCache(scope) { it.allowedPackages }
 

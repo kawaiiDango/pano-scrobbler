@@ -52,7 +52,10 @@ class SessListener(
         mainPrefs.data.stateInWithCache(GlobalScope) { it.scrobbleSpotifyRemoteP }
 
     private val autoDetectApps =
-        mainPrefs.data.map { it.autoDetectAppsP }
+        mainPrefs.data.stateInWithCache(GlobalScope) { it.autoDetectAppsP }
+
+    private val blockedPackages =
+        mainPrefs.data.stateInWithCache(GlobalScope) { it.blockedPackages }
 
     init {
         scope.launch {
@@ -87,7 +90,9 @@ class SessListener(
     }
 
     override fun shouldScrobble(rawAppId: String): Boolean {
-        val should = scrobblerEnabled.value && rawAppId in allowedPackages.value
+        val should = scrobblerEnabled.value &&
+                (rawAppId in allowedPackages.value ||
+                        (autoDetectApps.value && rawAppId !in blockedPackages.value))
         return should
     }
 

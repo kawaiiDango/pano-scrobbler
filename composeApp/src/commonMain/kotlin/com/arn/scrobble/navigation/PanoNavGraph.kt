@@ -8,11 +8,11 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation3.runtime.entryProvider
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.billing.BillingScreen
 import com.arn.scrobble.billing.BillingTroubleshootScreen
@@ -93,14 +93,13 @@ object PanoNavGraph {
         onSetTitle: (PanoRoute, String) -> Unit,
         getTabIdx: (PanoRoute.HasTabs, Int) -> Int,
         onSetTabIdx: (PanoRoute.HasTabs, Int) -> Unit,
-        onSetOtherUser: (UserCached?) -> Unit,
         navigate: (PanoRoute) -> Unit,
         onSetOnboardingFinished: () -> Unit,
         goBack: () -> Unit,
         pullToRefreshState: () -> PullToRefreshState,
         onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
+        onSetDrawerData: (DrawerData) -> Unit,
         mainViewModel: MainViewModel,
-        mainViewModelStoreOwner: () -> ViewModelStoreOwner,
     ) = entryProvider {
 
         @Composable
@@ -120,6 +119,17 @@ object PanoNavGraph {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
 
+        @Composable
+        fun getTabData(route: PanoRoute.HasTabs): List<PanoTab> {
+            val currentAccountType by PlatformStuff.mainPrefs.data
+                .collectAsStateWithInitialValue { it.currentAccountType }
+
+            return remember(currentAccountType) { route.getTabsList(currentAccountType) }
+        }
+
+        entry<PanoRoute.Blank> {
+        }
+
         entry<PanoRoute.SelfHomePager>(
         ) { route ->
             val currentUserSelf by PlatformStuff.mainPrefs.data
@@ -130,7 +140,6 @@ object PanoNavGraph {
             if (currentUserSelf != null) {
                 HomePagerScreen(
                     user = currentUserSelf!!,
-                    onSetOtherUser = onSetOtherUser,
                     onSetTitle = { title -> onSetTitle(route, title) },
                     tabIdx = getTabIdx(
                         route,
@@ -143,7 +152,7 @@ object PanoNavGraph {
                     onSetTabIdx = { tab ->
                         onSetTabIdx(route, tab)
                     },
-                    tabsList = route.getTabsList(),
+                    tabsList = getTabData(route),
                     onNavigate = navigate,
                     pullToRefreshState = pullToRefreshState(),
                     onSetRefreshing = onSetRefreshing,
@@ -158,14 +167,13 @@ object PanoNavGraph {
         ) { route ->
             HomePagerScreen(
                 user = route.user,
-                onSetOtherUser = onSetOtherUser,
                 onSetTitle = { title -> onSetTitle(route, title) },
                 tabIdx = getTabIdx(route, 0),
                 digestTimePeriod = null,
                 onSetTabIdx = { tab ->
                     onSetTabIdx(route, tab)
                 },
-                tabsList = route.getTabsList(),
+                tabsList = getTabData(route),
                 onNavigate = navigate,
                 pullToRefreshState = pullToRefreshState(),
                 onSetRefreshing = onSetRefreshing,
@@ -286,7 +294,7 @@ object PanoNavGraph {
                 msid = null,
                 hash = null,
                 key = null,
-                notifyEdit = { _, _ -> },
+                viewModel = mainViewModel,
                 modifier = modifier().addColumnPadding()
             )
         }
@@ -535,7 +543,7 @@ object PanoNavGraph {
                 onSetTabIdx = { tab ->
                     onSetTabIdx(route, tab)
                 },
-                tabsList = route.getTabsList(),
+                tabsList = getTabData(route),
                 onNavigate = navigate,
                 modifier = modifier()
             )
@@ -558,7 +566,7 @@ object PanoNavGraph {
                 onSetTabIdx = { tab ->
                     onSetTabIdx(route, tab)
                 },
-                tabsList = route.getTabsList(),
+                tabsList = getTabData(route),
                 onSetTitle = { title -> onSetTitle(route, title) },
                 onNavigate = navigate,
                 modifier = modifier()
@@ -604,7 +612,7 @@ object PanoNavGraph {
                 user = user,
                 onSetTitle = { title -> onSetTitle(route, title) },
                 onNavigate = navigate,
-                editDataFlow = mainViewModel.editDataFlow,
+                editDataFlow = mainViewModel.editScrobbleUtils.editDataFlow,
                 modifier = modifier()
             )
         }
@@ -627,8 +635,8 @@ object PanoNavGraph {
         panoModalNavGraph(
             navigate = navigate,
             goBack = goBack,
+            onSetDrawerData = onSetDrawerData,
             mainViewModel = mainViewModel,
-            mainViewModelStoreOwner = mainViewModelStoreOwner
         )
 
         panoPlatformSpecificNavGraph(

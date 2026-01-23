@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.core)
 
     implementation(libs.billing)

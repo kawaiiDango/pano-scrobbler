@@ -32,7 +32,7 @@ class JvmLogger(
                 val fileHandler = FileHandler(
                     logsDir.absolutePath + "/pano-scrobbler-%u-%g.log",
                     100 * 1024,
-                    3,
+                    2,
                     true
                 )
 

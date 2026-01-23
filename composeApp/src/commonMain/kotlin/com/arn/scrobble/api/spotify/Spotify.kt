@@ -17,15 +17,14 @@ import io.ktor.client.request.parameter
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.parameters
-import io.ktor.util.decodeBase64Bytes
 import java.util.concurrent.TimeUnit
 
 class SpotifyRequester {
     private val client: HttpClient by lazy {
-        val refreshToken = Stuff.xorWithKeyBytes(
-            BuildKonfig.SPOTIFY_REFRESH_TOKEN.decodeBase64Bytes(),
-            BuildKonfig.APP_ID.toByteArray()
-        ).decodeToString()
+        val refreshToken = Stuff.xorWithKey(
+            BuildKonfig.SPOTIFY_REFRESH_TOKEN,
+            BuildKonfig.APP_ID
+        )
 
         Requesters.genericKtorClient.config {
             install(CustomCachePlugin) {

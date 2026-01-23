@@ -28,6 +28,9 @@ object PanoNativeComponents {
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
         System.load(DesktopStuff.getLibraryPath("pano_native_components"))
+
+        val logFilePath = DesktopStuff.logsDir.resolve("pano-native-components.log").absolutePath
+        setLogFilePath(logFilePath)
     }
 
     fun init() {
@@ -154,6 +157,9 @@ object PanoNativeComponents {
     // external
 
     @JvmStatic
+    private external fun setLogFilePath(path: String)
+
+    @JvmStatic
     external fun stopListeningMedia()
 
     @JvmStatic
@@ -161,9 +167,6 @@ object PanoNativeComponents {
 
     @JvmStatic
     private external fun startListeningMedia()
-
-    @JvmStatic
-    external fun ping(input: String): String
 
     @JvmStatic
     external fun skip(appId: String)

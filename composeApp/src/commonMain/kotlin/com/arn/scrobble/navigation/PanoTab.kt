@@ -1,7 +1,6 @@
 package com.arn.scrobble.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.BarChart4Bars
 import com.arn.scrobble.icons.Group
@@ -29,12 +28,7 @@ sealed class PanoTab(
 
     data object Following : PanoTab(titleRes = Res.string.following, icon = Icons.Group)
     data object Charts : PanoTab(titleRes = Res.string.charts, icon = Icons.BarChart4Bars)
-    data class Profile(val user: UserCached) :
-        PanoTab(
-            titleRes = Res.string.pref_user_label,
-            icon = Icons.Person,
-        )
-
+    data object Profile : PanoTab(titleRes = Res.string.pref_user_label, icon = Icons.Person)
     data object TopArtists : PanoTab(titleRes = Res.string.artists, icon = Icons.Mic)
     data object TopAlbums : PanoTab(titleRes = Res.string.albums, icon = Icons.Album)
     data object TopTracks : PanoTab(titleRes = Res.string.tracks, icon = Icons.MusicNote)

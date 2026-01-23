@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -131,7 +130,7 @@ fun FriendsScreen(
     val sortedFriends by viewModel.sortedFriends.collectAsStateWithLifecycle()
     val lastFriendsRefreshTime by viewModel.lastFriendsRefreshTime.collectAsStateWithLifecycle()
     var lastFriendsRecentsRefreshTime by rememberSaveable(lastFriendsRefreshTime) {
-        mutableLongStateOf(lastFriendsRefreshTime)
+        mutableStateOf(lastFriendsRefreshTime)
     }
     val sortable by remember(
         friends.loadState.append,
@@ -223,7 +222,7 @@ fun FriendsScreen(
 
 
     AutoRefreshEffect(
-        lastRefreshTime = lastFriendsRecentsRefreshTime,
+        firstPageLoadedTime = lastFriendsRecentsRefreshTime,
         interval = Stuff.FRIENDS_REFRESH_INTERVAL,
         doRefresh = {
             if (sortedFriends == null && listState.firstVisibleItemIndex < 4) {

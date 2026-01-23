@@ -1,7 +1,5 @@
 package com.arn.scrobble.edits
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleIgnored
@@ -23,6 +21,7 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -34,7 +33,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.rank_change_no_change
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 
-class EditScrobbleViewModel : ViewModel() {
+class EditScrobbleUtils(private val viewModelScope: CoroutineScope) {
     private val _result = MutableSharedFlow<Pair<ScrobbleData?, Result<Unit>>>()
     val result = _result.asSharedFlow()
 
@@ -44,13 +43,15 @@ class EditScrobbleViewModel : ViewModel() {
     private val _updatedAlbumArtist = MutableSharedFlow<Pair<ScrobbleData, String>>()
     val updatedAlbumArtist = _updatedAlbumArtist.asSharedFlow()
 
+    private val _editData = MutableSharedFlow<Pair<String, Track>>(extraBufferCapacity = 1)
+    val editDataFlow = _editData.asSharedFlow()
+
     fun doEdit(
         simpleEdit: SimpleEdit,
         origScrobbleData: ScrobbleData?,
         msid: String?,
         hash: Int?,
         key: String?,
-        notifyEdit: (String, Track) -> Unit,
         save: Boolean,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -84,7 +85,7 @@ class EditScrobbleViewModel : ViewModel() {
                         }
 
                         if (key != null) { // from scrobble history
-                            notifyEdit(key, editedSd.toTrack())
+                            _editData.emit(key to editedSd.toTrack())
                         }
                     }
                     .recoverCatching {

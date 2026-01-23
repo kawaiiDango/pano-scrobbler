@@ -5,7 +5,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AutoRefreshEffect(
-    lastRefreshTime: Long,
+    firstPageLoadedTime: Long?,
     interval: Long,
     doRefresh: () -> Boolean,
     lazyPagingItems: LazyPagingItems<*>,
@@ -21,11 +20,11 @@ fun AutoRefreshEffect(
     val autoRefreshScope = rememberCoroutineScope()
 
     // auto refresh every n seconds
-    LifecycleResumeEffect(lastRefreshTime) {
+    LifecycleResumeEffect(firstPageLoadedTime) {
         val job = autoRefreshScope.launch {
             var tryAgain = true
-            while (isActive && tryAgain) {
-                val delayMs = if (System.currentTimeMillis() - lastRefreshTime > interval)
+            while (isActive && tryAgain && firstPageLoadedTime != null) {
+                val delayMs = if (System.currentTimeMillis() - firstPageLoadedTime > interval)
                     1000L
                 else
                     interval
@@ -33,9 +32,7 @@ fun AutoRefreshEffect(
                 delay(delayMs)
 
                 if (lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
-                    !lazyPagingItems.loadState.hasError &&
-                    lazyPagingItems.itemCount <= (Stuff.DEFAULT_PAGE_SIZE + 4)// some of them are placeholders
-
+                    !lazyPagingItems.loadState.hasError
                 ) {
                     if (doRefresh())
                         tryAgain = false

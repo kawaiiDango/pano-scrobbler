@@ -3,7 +3,6 @@ package com.arn.scrobble.api.pleroma
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.CustomCachePlugin
-import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
@@ -27,7 +26,6 @@ import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.ui.MinimalHtmlParser.decodeHtmlEntities
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
@@ -157,18 +155,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         return Result.success(createEmptyPageResult())
     }
 
-    override suspend fun loadDrawerData(username: String): DrawerData {
-        val isSelf = username == userAccount.user.name
-
-        val dd = DrawerData(0)
-        if (isSelf) {
-            PlatformStuff.mainPrefs.updateData {
-                it.copy(drawerData = it.drawerData + (userAccount.type to dd))
-            }
-        }
-
-        return dd
-    }
+    override suspend fun loadDrawerData(username: String) = null
 
     override suspend fun getCharts(
         type: Int,

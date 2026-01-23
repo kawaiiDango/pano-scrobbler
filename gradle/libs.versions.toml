@@ -29,7 +29,7 @@ kermit = "2.0.8"
 koalaplot = "0.10.4"
 kotlinCsvJvm = "1.10.0"
 ksp = "2.3.4"
-ktor = "3.3.3"
+ktor = "3.4.0"
 lifecycle = "2.10.0-alpha07"
 material3 = "1.11.0-alpha01"
 nanohttpd = "2.3.1"
@@ -42,7 +42,7 @@ qrcode = "4.5.0"
 review = "2.0.2"
 room = "2.8.4"
 runner = "1.7.0"
-serialization-json = "1.10.0-RC"
+serialization-json = "1.10.0"
 shimmer = "1.3.3"
 sqlite = "2.6.2"
 uiautomator = "2.4.0-alpha07"
@@ -65,7 +65,9 @@ koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = 
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "shimmer" }
 kotlin-csv-jvm = { module = "com.jsoizo:kotlin-csv-jvm", version.ref = "kotlinCsvJvm" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
@@ -106,7 +108,6 @@ paging-common = { module = "androidx.paging:paging-common", version.ref = "pagin
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 
 test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "test-junit" }
-kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }

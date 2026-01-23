@@ -65,10 +65,10 @@ class BillingRepository(
     override suspend fun checkAndStoreLicense(receipt: String) {
         if (verifyPurchase(receipt, null)) {
             if (licenseState.value != LicenseState.VALID ||
-                System.currentTimeMillis() - clientData.lastcheckTime.first() > CHECK_EVERY_DAYS.days.inWholeMilliseconds
+                System.currentTimeMillis() - clientData.lastCheckTime.first() > CHECK_EVERY_DAYS.days.inWholeMilliseconds
             ) {
                 LicenseChecker.checkLicenseOnline(
-                    client = clientData.httpClient(),
+                    httpPost = clientData.httpPost,
                     url = LICENSE_CHECKING_SERVER + "/license/verify",
                     did = clientData.deviceIdentifier(),
                     token = receipt

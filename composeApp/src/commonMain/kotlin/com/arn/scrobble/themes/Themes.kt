@@ -21,6 +21,7 @@ import com.arn.scrobble.utils.VariantStuff
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppTheme(
+    onInitDone: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val prefsVersion by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.version }
@@ -31,9 +32,12 @@ fun AppTheme(
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
     val isSystemInDarkTheme by isSystemInDarkThemeNative()
 
-    // todo handle uninitialized state better
     if (licenseState == LicenseState.UNKNOWN || prefsVersion == 0)
         return
+
+    LaunchedEffect(Unit) {
+        onInitDone()
+    }
 
     LaunchedEffect(licenseState) {
         if (licenseState != LicenseState.VALID) {

@@ -3,9 +3,9 @@ package com.arn.scrobble.main
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,7 +23,6 @@ import androidx.compose.ui.awt.SwingWindow
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
@@ -737,15 +736,10 @@ private fun TrayWindow(
             Surface(
                 shape = MaterialTheme.shapes.large,
             ) {
-                var actualWidth by remember { mutableStateOf(0) }
-
                 Column(
                     modifier = Modifier
-                        .widthIn(max = 300.dp)
+                        .widthIn(max = 240.dp)
                         .padding(vertical = 8.dp)
-                        .onSizeChanged {
-                            actualWidth = it.width
-                        },
                 ) {
                     menuItemIds.zip(menuItemTexts).forEach { (id, text) ->
                         val isClickable = !id.endsWith("Disabled")
@@ -761,12 +755,7 @@ private fun TrayWindow(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
-                                    .then(
-                                        if (actualWidth > 0)
-                                            Modifier.width(actualWidth.dp)
-                                        else
-                                            Modifier
-                                    )
+                                    .fillMaxWidth()
                                     .then(
                                         if (isClickable)
                                             Modifier.clickable {

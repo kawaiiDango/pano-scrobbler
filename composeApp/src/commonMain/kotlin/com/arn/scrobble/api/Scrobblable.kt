@@ -59,7 +59,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         limit: Int = 50,
     ): Result<PageResult<User>>
 
-    abstract suspend fun loadDrawerData(username: String): DrawerData?
+    abstract suspend fun loadDrawerData(username: String): Result<DrawerData>?
 
     abstract suspend fun getCharts(
         type: Int,

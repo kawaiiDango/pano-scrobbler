@@ -76,7 +76,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.setMidnight
-import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import com.arn.scrobble.utils.Stuff.timeToUTC
 import kotlinx.coroutines.flow.first
@@ -255,7 +254,6 @@ fun TimePeriodSelector(
             } else {
                 if (selectedPeriod.lastfmPeriod != null && selectedPeriod.lastfmPeriod != LastfmPeriod.OVERALL) {
                     val cal = Calendar.getInstance()
-                    cal.setUserFirstDayOfWeek()
                     cal.setMidnight()
                     val duration =
                         selectedPeriod.lastfmPeriod.toDuration(endTime = cal.timeInMillis)

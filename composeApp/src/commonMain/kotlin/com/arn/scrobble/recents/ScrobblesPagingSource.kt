@@ -24,7 +24,7 @@ class ScrobblesPagingSource(
     private val scrobbleSources: Boolean,
     private val addToPkgMap: (Long, String) -> Unit,
     private val onSetFirstScrobbleTime: (Long) -> Unit,
-    private val onSetLastRecentsRefreshTime: (Long) -> Unit,
+    private val onSetFirstPageLoadedTime: (Long?) -> Unit,
     private val onSetTotal: (Int) -> Unit,
     private val onClearOverrides: () -> Unit,
 ) : PagingSource<ScrobblesLoaderPage, Track>() {
@@ -38,6 +38,7 @@ class ScrobblesPagingSource(
 
         val includeNowPlaying = timeJumpMillis == null && page == 1
         val currentScrobblable = Scrobblables.current
+        var firstRecentsPageLoadedTime: Long? = null
 
         val result = when {
             track != null -> {
@@ -50,9 +51,6 @@ class ScrobblesPagingSource(
             }
 
             else -> {
-                if (page == 1)
-                    onSetLastRecentsRefreshTime(System.currentTimeMillis())
-
                 val isListenBrainz = currentScrobblable is ListenBrainz
 
                 Logger.d { "load page $page cached: $cachedOnly" }
@@ -66,9 +64,14 @@ class ScrobblesPagingSource(
                         (timeJumpMillis ?: -1),
                     includeNowPlaying = includeNowPlaying,
                     limit = limit
-                )
+                ).also {
+                    if (page == 1)
+                        firstRecentsPageLoadedTime = System.currentTimeMillis()
+                }
             }
         }
+
+        onSetFirstPageLoadedTime(firstRecentsPageLoadedTime)
 
         return if (result?.isSuccess == true) {
             val pr = result.getOrThrow()

@@ -18,7 +18,6 @@ import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import com.arn.scrobble.utils.Stuff.setMidnight
@@ -246,38 +245,31 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
     }
 
-    override suspend fun loadDrawerData(username: String): DrawerData? {
-        val user = userGetInfo(username).getOrNull()
-        val isSelf = username == userAccount.user.name
+    override suspend fun loadDrawerData(username: String): Result<DrawerData>? {
+        return userGetInfo(username).map { user ->
+            val cal = Calendar.getInstance()
+            cal.setMidnight()
 
-        val cal = Calendar.getInstance()
-        cal.setMidnight()
-
-        val scrobblesToday = getRecents(
-            username = username,
-            page = 1,
-            limit = 1,
-            cached = false,
-            from = cal.timeInMillis,
-            to = System.currentTimeMillis()
-        ).getOrNull()?.attr?.total
-
-        val drawerData = DrawerData(
-            scrobblesToday = scrobblesToday ?: 0,
-            scrobblesTotal = user?.playcount ?: 0,
-            artistCount = user?.artist_count ?: 0,
-            albumCount = user?.album_count ?: 0,
-            trackCount = user?.track_count ?: 0,
-            profilePicUrl = user?.webp300
-        ).also { dd ->
-            if (isSelf) {
-                PlatformStuff.mainPrefs.updateData {
-                    it.copy(drawerData = it.drawerData + (userAccount.type to dd))
-                }
+            val scrobblesToday = getRecents(
+                username = username,
+                page = 1,
+                limit = 1,
+                cached = false,
+                from = cal.timeInMillis,
+                to = System.currentTimeMillis()
+            ).map {
+                it.attr.total ?: 0
             }
-        }
 
-        return drawerData
+            DrawerData(
+                scrobblesToday = scrobblesToday.getOrDefault(0),
+                scrobblesTotal = user.playcount ?: 0,
+                artistCount = user.artist_count ?: 0,
+                albumCount = user.album_count ?: 0,
+                trackCount = user.track_count ?: 0,
+                profilePicUrl = user.webp300
+            )
+        }
     }
 
     override suspend fun getCharts(

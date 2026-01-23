@@ -119,7 +119,7 @@ fun ScrobblesScreen(
     var selectedType by rememberSaveable { mutableStateOf(ScrobblesType.RECENTS) }
     var timeJumpMillis by rememberSaveable { mutableStateOf<Long?>(null) }
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
-    val lastRecentsRefreshTime by viewModel.lastRecentsRefreshTime.collectAsStateWithLifecycle()
+    val firstPageLoadedTime by viewModel.firstPageLoadedTime.collectAsStateWithLifecycle()
     val pendingScrobbles by
     if (user.isSelf)
         viewModel.pendingScrobbles.collectAsStateWithLifecycle()
@@ -260,7 +260,7 @@ fun ScrobblesScreen(
     }
 
     AutoRefreshEffect(
-        lastRefreshTime = lastRecentsRefreshTime,
+        firstPageLoadedTime = firstPageLoadedTime,
         interval = Stuff.RECENTS_REFRESH_INTERVAL,
         doRefresh = {
             if (selectedType == ScrobblesType.RECENTS && listState.firstVisibleItemIndex < 4) {

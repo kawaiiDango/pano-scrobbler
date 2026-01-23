@@ -205,6 +205,19 @@ object Requesters {
         Result.failure(e)
     }
 
+    suspend fun HttpClient.postString(
+        url: String,
+        body: String,
+    ): String {
+        return withContext(Dispatchers.IO) {
+            post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }
+                .bodyAsText()
+        }
+    }
+
     // doing it like this avoids reflection according to graalvm
     suspend inline fun <reified T> HttpResponse.parseJsonBody(): T {
         return bodyAsChannel().toInputStream().use {

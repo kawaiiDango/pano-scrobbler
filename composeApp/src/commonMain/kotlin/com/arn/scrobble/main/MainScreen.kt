@@ -61,8 +61,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,7 +69,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -96,7 +93,6 @@ import com.arn.scrobble.navigation.PanoNavGraph
 import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTab
-import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.navigation.rememberPanoNavBackStack
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.LocalInnerPadding
@@ -140,7 +136,6 @@ fun PanoAppContent(
         else -> PanoNavigationType.BOTTOM_NAVIGATION
     }
 
-    val mainViewModelStoreOwner = LocalViewModelStoreOwner.current
     val locale by if (!PlatformStuff.hasSystemLocaleStore)
         LocaleUtils.locale.collectAsStateWithLifecycle()
     else
@@ -150,14 +145,7 @@ fun PanoAppContent(
 
     val titlesMap = remember { mutableStateMapOf<PanoRoute, String>() }
     val tabIdxMap = remember { mutableStateMapOf<PanoRoute.HasTabs, Int>() }
-
-    val drawerData by viewModel.drawerDataFlow.collectAsStateWithLifecycle()
-    val currentUserSelf by PlatformStuff.mainPrefs.data
-        .collectAsStateWithInitialValue { it.currentAccount?.user }
-    var currentUserOther by rememberSaveable(saver = jsonSerializableSaver()) {
-        mutableStateOf<UserCached?>(null)
-    }
-    val currentUser = currentUserOther ?: currentUserSelf
+    val drawerDataMap = remember { viewModel.drawerDataMap }
 
     val topBarScrollBehavior = if (PlatformStuff.isTv)
         TopAppBarDefaults.pinnedScrollBehavior()
@@ -167,6 +155,12 @@ fun PanoAppContent(
     val pullToRefreshStateForSelfHomePager =
         remember { mutableStateMapOf<Int, PanoPullToRefreshStateForTab>() }
 
+    val currentAccountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
+    val userSelf by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.currentAccount?.user }
+    val profilePicUrlOverride by PlatformStuff.mainPrefs.data
+        .collectAsStateWithInitialValue { it.drawerData[it.currentAccountType]?.profilePicUrl }
+
     val backStack = rememberPanoNavBackStack(
         SavedStateConfiguration {
             serializersModule = SerializersModule {
@@ -174,16 +168,30 @@ fun PanoAppContent(
             }
         },
         when {
-            currentUserSelf == null -> PanoRoute.Onboarding
+            userSelf == null -> PanoRoute.Onboarding
             else -> PanoRoute.SelfHomePager()
         }
     )
 
-    val currentPanoRoute = backStack.lastOrNull { it !is PanoRoute.Modal }
+    val currentUser = remember(backStack.lastOrNull()) {
+        val withUser = backStack.lastOrNull { it is PanoRoute.HasUser } as? PanoRoute.HasUser
+        if (withUser != null)
+            withUser.user ?: userSelf
+        else
+            null
+    }
 
-    val fabData = currentPanoRoute as? PanoRoute.HasFab
+    val currentPanoRoute = remember(backStack.lastOrNull()) {
+        backStack.lastOrNull { it !is PanoRoute.Modal }
+    }
 
-    val tabData = currentPanoRoute as? PanoRoute.HasTabs
+    val fabData = remember(currentPanoRoute) {
+        (currentPanoRoute as? PanoRoute.HasFab)?.getFabData()
+    }
+
+    val tabData = remember(currentPanoRoute, currentAccountType) {
+        (currentPanoRoute as? PanoRoute.HasTabs)?.getTabsList(currentAccountType)
+    }
 
     fun goBack(): PanoRoute? {
         if (backStack.size <= 1)
@@ -311,23 +319,30 @@ fun PanoAppContent(
         Surface {
             key(locale) {
                 Row(Modifier.fillMaxSize()) {
-                    if (currentNavType != PanoNavigationType.BOTTOM_NAVIGATION) {
+                    if (currentNavType != PanoNavigationType.BOTTOM_NAVIGATION && currentUser != null) {
                         PanoNavigationRail(
-                            tabs = tabData?.getTabsList().orEmpty(),
+                            tabs = tabData.orEmpty(),
                             selectedTabIdx = tabIdxMap.getOrDefault(currentPanoRoute, 0),
-                            fabData = fabData?.getFabData(),
+                            fabData = fabData,
                             onNavigate = ::navigate,
                             onBack = ::goBack,
                             onTabClicked = { pos ->
-                                tabData?.let {
+                                (currentPanoRoute as? PanoRoute.HasTabs)?.let {
                                     tabIdxMap[it] = pos
                                 }
                             },
                             onProfileClicked = {
-                                navigate(PanoRoute.Modal.NavPopup(otherUser = currentUserOther))
+                                navigate(
+                                    PanoRoute.Modal.NavPopup(
+                                        otherUser = currentUser.takeIf { currentUser != userSelf },
+                                        initialDrawerData = drawerDataMap.getOrElse(currentUser) {
+                                            DrawerData(0)
+                                        }
+                                    )
+                                )
                             },
-                            userp = currentUser,
-                            drawerData = drawerData,
+                            user = currentUser,
+                            profilePicUrlOverride = profilePicUrlOverride.takeIf { currentUser == userSelf }
                         )
                     }
 
@@ -364,26 +379,32 @@ fun PanoAppContent(
                                 )
                             },
                             bottomBar = {
-                                if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null) {
+                                if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null) {
                                     PanoBottomNavigationBar(
-                                        tabs = tabData.getTabsList(),
+                                        tabs = tabData,
                                         selectedTabIdx = tabIdxMap.getOrDefault(
                                             currentPanoRoute,
                                             0
                                         ),
                                         onTabClicked = { pos ->
-                                            currentPanoRoute.let {
+                                            (currentPanoRoute as? PanoRoute.HasTabs)?.let {
                                                 tabIdxMap[it] = pos
                                             }
                                         },
+                                        user = currentUser,
                                         onProfileClicked = {
                                             navigate(
                                                 PanoRoute.Modal.NavPopup(
-                                                    otherUser = if (!it.isSelf) it else null,
+                                                    otherUser = currentUser.takeIf { currentUser != userSelf },
+                                                    initialDrawerData = drawerDataMap.getOrElse(
+                                                        currentUser
+                                                    ) {
+                                                        DrawerData(0)
+                                                    }
                                                 )
                                             )
                                         },
-                                        drawerData = drawerData,
+                                        profilePicUrlOverride = profilePicUrlOverride.takeIf { currentUser == userSelf }
                                     )
                                 }
                             },
@@ -391,7 +412,7 @@ fun PanoAppContent(
                                 if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION) {
                                     fabData?.let { fabData ->
                                         PanoFab(
-                                            fabData.getFabData(),
+                                            fabData,
                                             onBack = ::goBack,
                                             onNavigate = ::navigate,
                                         )
@@ -523,13 +544,16 @@ fun PanoAppContent(
                                         onSetOnboardingFinished = {
                                             replaceRoutes(listOf(PanoRoute.SelfHomePager()))
                                         },
-                                        onSetOtherUser = { currentUserOther = it },
                                         pullToRefreshState = { pullToRefreshState },
                                         onSetRefreshing = { id, prState ->
                                             pullToRefreshStateForSelfHomePager[id] = prState
                                         },
+                                        onSetDrawerData = { drawerData ->
+                                            currentUser?.let {
+                                                drawerDataMap[it] = drawerData
+                                            }
+                                        },
                                         mainViewModel = viewModel,
-                                        mainViewModelStoreOwner = { mainViewModelStoreOwner!! }
                                     ),
                                     modifier = Modifier
                                         .padding(topPadding)
@@ -667,8 +691,8 @@ private fun PanoNavigationRail(
     onNavigate: (PanoRoute) -> Unit,
     onTabClicked: (pos: Int) -> Unit,
     onProfileClicked: (UserCached) -> Unit,
-    userp: UserCached?,
-    drawerData: DrawerData?,
+    user: UserCached,
+    profilePicUrlOverride: String?,
     modifier: Modifier = Modifier,
 ) {
     val expandedByDefault = when (LocalNavigationType.current) {
@@ -714,8 +738,8 @@ private fun PanoNavigationRail(
     ) {
         (
                 tabs +
-                        if (tabs.find { it is PanoTab.Profile } == null && userp != null) {
-                            listOf(PanoTab.Profile(userp))
+                        if (tabs.find { it is PanoTab.Profile } == null) {
+                            listOf(PanoTab.Profile)
                         } else {
                             emptyList()
                         }
@@ -733,7 +757,7 @@ private fun PanoNavigationRail(
                     selected = index == selectedTabIdx,
                     onClick = {
                         if (tabMetadata is PanoTab.Profile) {
-                            onProfileClicked(tabMetadata.user)
+                            onProfileClicked(user)
                             return@WideNavigationRailItem
                         }
 
@@ -746,13 +770,8 @@ private fun PanoNavigationRail(
                         if (tabMetadata is PanoTab.Profile) {
 
                             AvatarOrInitials(
-                                avatarUrl =
-                                    when {
-                                        !tabMetadata.user.isSelf -> tabMetadata.user.largeImage
-                                        tabMetadata.user.isSelf && drawerData != null -> drawerData.profilePicUrl
-                                        else -> null
-                                    },
-                                avatarName = tabMetadata.user.name,
+                                avatarUrl = profilePicUrlOverride ?: user.largeImage,
+                                avatarName = user.name,
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
@@ -769,7 +788,7 @@ private fun PanoNavigationRail(
                                 if (Stuff.isInDemoMode)
                                     "me"
                                 else
-                                    tabMetadata.user.name
+                                    user.name
                             else
                                 stringResource(tabMetadata.titleRes),
                             maxLines = 1,
@@ -787,8 +806,9 @@ private fun PanoBottomNavigationBar(
     tabs: List<PanoTab>,
     selectedTabIdx: Int,
     onTabClicked: (pos: Int) -> Unit,
-    onProfileClicked: (UserCached) -> Unit,
-    drawerData: DrawerData?,
+    onProfileClicked: () -> Unit,
+    user: UserCached,
+    profilePicUrlOverride: String?,
 ) {
     NavigationBar(
         modifier = Modifier.fillMaxWidth(),
@@ -799,7 +819,7 @@ private fun PanoBottomNavigationBar(
                 selected = index == selectedTabIdx,
                 onClick = {
                     if (tabMetadata is PanoTab.Profile) {
-                        onProfileClicked(tabMetadata.user)
+                        onProfileClicked()
                         return@NavigationBarItem
                     }
 
@@ -811,13 +831,8 @@ private fun PanoBottomNavigationBar(
                     if (tabMetadata is PanoTab.Profile) {
 
                         AvatarOrInitials(
-                            avatarUrl =
-                                when {
-                                    !tabMetadata.user.isSelf -> tabMetadata.user.largeImage
-                                    tabMetadata.user.isSelf && drawerData != null -> drawerData.profilePicUrl
-                                    else -> null
-                                },
-                            avatarName = tabMetadata.user.name,
+                            avatarUrl = profilePicUrlOverride ?: user.largeImage,
+                            avatarName = user.name,
                             modifier = Modifier
                                 .size(24.dp)
                                 .clip(CircleShape)
@@ -834,7 +849,7 @@ private fun PanoBottomNavigationBar(
                             if (Stuff.isInDemoMode)
                                 "me"
                             else
-                                tabMetadata.user.name
+                                user.name
                         else
                             stringResource(tabMetadata.titleRes),
                         maxLines = 1,

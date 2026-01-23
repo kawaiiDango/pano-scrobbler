@@ -1,7 +1,6 @@
 package com.arn.scrobble.api.file
 
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEvent
@@ -25,7 +24,6 @@ import com.arn.scrobble.ui.PackageNameMetadata.englishLabel
 import com.arn.scrobble.ui.PackageNameMetadata.version
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformFile
-import com.arn.scrobble.utils.PlatformStuff
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import kotlinx.coroutines.Dispatchers
@@ -220,18 +218,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         return Result.success(createEmptyPageResult())
     }
 
-    override suspend fun loadDrawerData(username: String): DrawerData {
-        val isSelf = username == userAccount.user.name
-
-        val dd = DrawerData(0)
-        if (isSelf) {
-            PlatformStuff.mainPrefs.updateData {
-                it.copy(drawerData = it.drawerData + (userAccount.type to dd))
-            }
-        }
-
-        return dd
-    }
+    override suspend fun loadDrawerData(username: String) = null
 
     override suspend fun getCharts(
         type: Int,

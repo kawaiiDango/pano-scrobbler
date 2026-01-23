@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.Requesters.postString
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
@@ -31,7 +32,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLParserException
 import io.ktor.http.maxAge
-import io.ktor.util.encodeBase64
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -53,6 +53,8 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.Base64.PaddingOption
 import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -280,6 +282,10 @@ object Stuff {
         }
     }
 
+    private val myBase64 by lazy {
+        Base64.withPadding(PaddingOption.ABSENT)
+    }
+
     private val numberFormat by lazy {
         NumberFormat.getInstance()
     }
@@ -290,8 +296,10 @@ object Stuff {
         BillingClientData(
             proProductId = PRO_PRODUCT_ID,
             appName = BuildKonfig.APP_NAME,
-            httpClient = { Requesters.genericKtorClient },
-            lastcheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
+            httpPost = { url, body ->
+                Requesters.baseKtorClient.postString(url, body)
+            },
+            lastCheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
             deviceIdentifier = { PlatformStuff.getDeviceIdentifier() },
             setLastcheckTime = { time ->
                 PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
@@ -373,6 +381,12 @@ object Stuff {
                 "_" + cal[Calendar.HOUR_OF_DAY] + "_" + cal[Calendar.MINUTE] + "_" + cal[Calendar.SECOND]
     }
 
+    fun xorWithKey(dataB64: String, keyBytes: String): String {
+        val data = myBase64.decode(dataB64)
+        val keyBytes = keyBytes.toByteArray()
+        return xorWithKeyBytes(data, keyBytes).decodeToString()
+    }
+
     fun xorWithKeyBytes(data: ByteArray, keyBytes: ByteArray): ByteArray {
         require(keyBytes.isNotEmpty()) { "Key bytes must not be empty" }
         val out = ByteArray(data.size)
@@ -406,14 +420,6 @@ object Stuff {
         this[Calendar.MINUTE] = 0
         this[Calendar.SECOND] = 0
         this[Calendar.MILLISECOND] = 0
-    }
-
-    suspend fun Calendar.setUserFirstDayOfWeek(): Calendar {
-        val firstDayOfWeek = PlatformStuff.mainPrefs.data.map { it.firstDayOfWeek }.first()
-        if (firstDayOfWeek >= Calendar.SUNDAY)
-            this.firstDayOfWeek = firstDayOfWeek
-        // else auto
-        return this
     }
 
     fun isValidUrl(url: String): Boolean {
@@ -508,15 +514,16 @@ object Stuff {
     }
 
     fun formatBigHyphen(artist: String, title: String) = "$artist — $title"
+
+    fun sha256Truncated(str: String) =
+        MessageDigest.getInstance("SHA-256")
+            .digest(str.toByteArray())
+            .take(6)
+            .toByteArray()
+            .let {
+                myBase64.encode(it)
+            }
 }
-
-
-fun String.sha256Truncated() =
-    MessageDigest.getInstance("SHA-256")
-        .digest(toByteArray())
-        .take(6)
-        .toByteArray()
-        .encodeBase64()
 
 val Throwable.redactedMessage: String
     get() {

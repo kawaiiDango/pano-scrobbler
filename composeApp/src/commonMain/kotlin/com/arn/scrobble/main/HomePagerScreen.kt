@@ -3,17 +3,15 @@ package com.arn.scrobble.main
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arn.scrobble.api.Scrobblables
+import androidx.lifecycle.compose.LifecycleStartEffect
+import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.ChartsOverviewScreen
@@ -23,7 +21,6 @@ import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.recents.ScrobblesScreen
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -35,7 +32,6 @@ fun HomePagerScreen(
     onSetTabIdx: (Int) -> Unit,
     onSetTitle: (String) -> Unit,
     tabsList: List<PanoTab>,
-    onSetOtherUser: (UserCached?) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
@@ -46,7 +42,6 @@ fun HomePagerScreen(
     var scrobblesTitle by rememberSaveable { mutableStateOf("") }
     var followingTitle by rememberSaveable { mutableStateOf("") }
     var chartsTitle by rememberSaveable { mutableStateOf("") }
-    var lastTabIdx by remember { mutableIntStateOf(tabIdx) }
 
     LaunchedEffect(tabIdx, scrobblesTitle, followingTitle, chartsTitle) {
         val title = when (tabsList.getOrNull(tabIdx)) {
@@ -56,21 +51,16 @@ fun HomePagerScreen(
             else -> ""
         }
         onSetTitle(title)
-        lastTabIdx = tabIdx
     }
 
 
-    DisposableEffect(user) {
-        if (!user.isSelf)
-            onSetOtherUser(user)
-        else
-            onSetOtherUser(null)
-        onDispose {
+    LifecycleStartEffect(Unit) {
+        onStopOrDispose {
             if (user.isSelf) {
-                // use lastTabIdx because tabIdx somehow becomes 0 in onDispose
-                GlobalScope.launch {
+                val tabIdx = tabIdx.coerceIn(tabsList.indices)
+                mainViewModel.viewModelScope.launch {
                     PlatformStuff.mainPrefs.updateData {
-                        it.copy(lastHomePagerTab = lastTabIdx)
+                        it.copy(lastHomePagerTab = tabIdx)
                     }
                 }
             }
@@ -91,7 +81,7 @@ fun HomePagerScreen(
                 pullToRefreshTriggered = getPullToRefreshTrigger(page),
                 showChips = currentTab.showChips,
                 onNavigate = onNavigate,
-                editDataFlow = mainViewModel.editDataFlow,
+                editDataFlow = mainViewModel.editScrobbleUtils.editDataFlow,
                 onTitleChange = {
                     scrobblesTitle = it
                 },

@@ -77,38 +77,30 @@ import pano_scrobbler.composeapp.generated.resources.reports
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ProfileHeader(
-    otherUser: UserCached?,
+    user: UserCached?,
     drawerData: DrawerData?,
     compact: Boolean,
     drawSnowfall: Boolean,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val currentAccount by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccount }
+    val currentAccountType by
+    PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
+
+    val userName = user?.name ?: BuildKonfig.APP_NAME
 
     val displayText = when {
-        otherUser != null -> otherUser.name
         Stuff.isInDemoMode -> "nobody"
-        currentAccount == null -> BuildKonfig.APP_NAME
-        currentAccount!!.type == AccountType.LASTFM -> currentAccount!!.user.name
-        else -> accountTypeLabel(currentAccount!!.type) + ": " + currentAccount!!.user.name
+        currentAccountType == AccountType.LASTFM -> userName
+        else -> accountTypeLabel(currentAccountType) + ": " + userName
     }
 
 
-    val userName by remember(displayText) {
+    val profilePicUrl by remember(drawerData, user) {
         mutableStateOf(
             when {
-                otherUser != null -> otherUser.name
-                else -> currentAccount?.user?.name
-            }
-        )
-    }
-
-    val profilePicUrl by remember(currentAccount, drawerData, otherUser) {
-        mutableStateOf(
-            when {
-                otherUser != null -> otherUser.largeImage
-                currentAccount != null && drawerData != null -> drawerData.profilePicUrl
+                user != null && !user.isSelf -> user.largeImage
+                drawerData != null -> drawerData.profilePicUrl
                 else -> null
             }
         )
@@ -141,11 +133,13 @@ fun ProfileHeader(
                     modifier = Modifier.weight(1f)
                 )
 
-                ProfileHeaderDropdown(
-                    currentUser = otherUser ?: currentAccount?.user,
-                    accountType = currentAccount?.type,
-                    onNavigate = onNavigate,
-                )
+                if (user?.isSelf == true) {
+                    ProfileHeaderDropdown(
+                        currentUser = user,
+                        accountType = currentAccountType,
+                        onNavigate = onNavigate,
+                    )
+                }
             }
 
         } else {
@@ -216,11 +210,13 @@ fun ProfileHeader(
                         .weight(1f, false)
                 )
 
-                ProfileHeaderDropdown(
-                    currentUser = otherUser ?: currentAccount?.user,
-                    accountType = currentAccount?.type,
-                    onNavigate = onNavigate,
-                )
+                if (user?.isSelf == true) {
+                    ProfileHeaderDropdown(
+                        currentUser = user,
+                        accountType = currentAccountType,
+                        onNavigate = onNavigate,
+                    )
+                }
 
                 if (drawerData != null && drawerData.scrobblesToday > 0) {
                     TextWithIcon(
@@ -232,6 +228,7 @@ fun ProfileHeader(
                         ),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
+                            .padding(horizontal = 8.dp)
                             .weight(1f, false)
                     )
                 }

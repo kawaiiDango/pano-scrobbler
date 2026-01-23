@@ -12,20 +12,19 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
-import io.ktor.util.decodeBase64Bytes
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 
 class LastFmUnauthedRequester {
 
-    val apiKey = Stuff.xorWithKeyBytes(
-        BuildKonfig.LASTFM_KEY.decodeBase64Bytes(),
-        BuildKonfig.APP_ID.toByteArray()
-    ).decodeToString()
-    val apiSecret = Stuff.xorWithKeyBytes(
-        BuildKonfig.LASTFM_SECRET.decodeBase64Bytes(),
-        BuildKonfig.APP_ID.toByteArray()
-    ).decodeToString()
+    val apiKey = Stuff.xorWithKey(
+        BuildKonfig.LASTFM_KEY,
+        BuildKonfig.APP_ID
+    )
+    val apiSecret = Stuff.xorWithKey(
+        BuildKonfig.LASTFM_SECRET,
+        BuildKonfig.APP_ID
+    )
     private val client get() = Requesters.genericKtorClient
 
     // search

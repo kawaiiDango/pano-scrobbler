@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -40,6 +41,7 @@ import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.allow_background
@@ -103,6 +105,7 @@ private fun NotificationListenerStep(
     onDone: () -> Unit,
 ) {
     var warningShown by rememberSaveable { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     val toastText = stringResource(
         Res.string.check_nls,
@@ -157,7 +160,10 @@ private fun NotificationListenerStep(
             icon = Icons.Warning,
             onConfirmation = {
                 warningShown = false
-                onDone()
+                scope.launch {
+                    PlatformStuff.mainPrefs.updateData { it.copy(appListWasRun = true) }
+                    onDone()
+                }
             },
             onDismissRequest = { warningShown = false },
         )
@@ -215,7 +221,7 @@ actual fun OnboardingScreen(
         }
     }
 
-    LaunchedEffect(doneStatus.toList()) {
+    LaunchedEffect(doneStatus.all { it }) {
         if (doneStatus.all { it }) {
             onDone()
         } else {

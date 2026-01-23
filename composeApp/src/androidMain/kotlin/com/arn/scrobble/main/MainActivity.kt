@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.arn.scrobble.navigation.LocalActivityRestoredFlag
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.LocalThemeAttributes
+import com.arn.scrobble.utils.AndroidStuff.prolongSplashScreen
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 
 class MainActivity : ComponentActivity() {
@@ -20,8 +21,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        var initDone = false
+        prolongSplashScreen { initDone }
+
         setContent {
-            AppTheme {
+            AppTheme(
+                onInitDone = { initDone = true }
+            ) {
                 val isDarkTheme = LocalThemeAttributes.current.isDark
 
                 LaunchedEffect(isDarkTheme) {

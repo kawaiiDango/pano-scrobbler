@@ -9,7 +9,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import fi.iki.elonen.NanoHTTPD
 import fi.iki.elonen.NanoHTTPD.Response.Status
-import io.ktor.util.decodeBase64Bytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -128,10 +127,10 @@ class ImportVM : ViewModel() {
                 )
             kmf.init(
                 ks,
-                Stuff.xorWithKeyBytes(
-                    Stuff.EMBEDDED_SERVER_KS.decodeBase64Bytes(),
-                    BuildKonfig.APP_ID.toByteArray()
-                ).decodeToString().toCharArray()
+                Stuff.xorWithKey(
+                    Stuff.EMBEDDED_SERVER_KS,
+                    BuildKonfig.APP_ID
+                ).toCharArray()
             )
             makeSecure(makeSSLSocketFactory(ks, kmf), null)
         }
@@ -169,10 +168,10 @@ class ImportVM : ViewModel() {
                 .inputStream()
                 .use {
                     ks.load(
-                        it, Stuff.xorWithKeyBytes(
-                            Stuff.EMBEDDED_SERVER_KS.decodeBase64Bytes(),
-                            BuildKonfig.APP_ID.toByteArray()
-                        ).decodeToString().toCharArray()
+                        it, Stuff.xorWithKey(
+                            Stuff.EMBEDDED_SERVER_KS,
+                            BuildKonfig.APP_ID
+                        ).toCharArray()
                     )
                 }
 

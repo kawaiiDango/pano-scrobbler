@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.billing.LocalLicenseValidState
@@ -34,7 +35,6 @@ import com.arn.scrobble.icons.WorkspacePremium
 import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.get_pro
@@ -45,18 +45,23 @@ import pano_scrobbler.composeapp.generated.resources.settings
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavPopupDialog(
-    otherUser: UserCached?,
-    drawerDataFlow: StateFlow<DrawerData>,
+    user: UserCached,
+    initialDrawerData: DrawerData,
     drawSnowfall: Boolean,
-    loadOtherUserDrawerData: (UserCached?) -> Unit,
+    onSetDrawerData: (DrawerData) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: NavPopupVM = viewModel(key = user.key<NavPopupVM>()) {
+        NavPopupVM(user, initialDrawerData)
+    }
 ) {
-    val drawerData by drawerDataFlow.collectAsStateWithLifecycle()
+    val drawerData by viewModel.drawerData.collectAsStateWithLifecycle()
+
     val isLicenseValid = LocalLicenseValidState.current
 
-    LaunchedEffect(otherUser) {
-        loadOtherUserDrawerData(otherUser)
+    LaunchedEffect(drawerData) {
+        if (drawerData != initialDrawerData)
+            onSetDrawerData(drawerData)
     }
 
     Column(
@@ -64,7 +69,7 @@ fun NavPopupDialog(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         ProfileHeader(
-            otherUser = otherUser,
+            user = user,
             drawerData = drawerData,
             compact = false,
             onNavigate = onNavigate,

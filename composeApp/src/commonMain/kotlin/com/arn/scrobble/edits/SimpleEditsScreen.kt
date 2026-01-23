@@ -47,7 +47,7 @@ fun SimpleEditsScreen(
     viewModel: SimpleEditsVM = viewModel { SimpleEditsVM() },
 ) {
     val simpleEdits by viewModel.simpleEditsFiltered.collectAsStateWithLifecycle()
-    val count by viewModel.count.collectAsStateWithLifecycle(0)
+    val count by viewModel.count.collectAsStateWithLifecycle()
     var searchTerm by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(searchTerm) {

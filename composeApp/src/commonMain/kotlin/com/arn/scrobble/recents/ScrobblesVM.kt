@@ -69,8 +69,8 @@ class ScrobblesVM(
         private set
 
     private val _loadedCachedVersion = MutableStateFlow(false)
-    private val _lastRecentsRefreshTime = MutableStateFlow(System.currentTimeMillis())
-    val lastRecentsRefreshTime = _lastRecentsRefreshTime.asStateFlow()
+    private val _firstPageLoadedTime = MutableStateFlow<Long?>(null)
+    val firstPageLoadedTime = _firstPageLoadedTime.asStateFlow()
 
     private val pagingConfig = PagingConfig(
         pageSize = Stuff.DEFAULT_PAGE_SIZE,
@@ -102,8 +102,8 @@ class ScrobblesVM(
                         scrobbleSources = input.showScrobbleSources,
                         addToPkgMap = { time, pkg -> _pkgMap.value += time to pkg },
                         onSetFirstScrobbleTime = { _firstScrobbleTime.value = it },
-                        onSetLastRecentsRefreshTime = {
-                            _lastRecentsRefreshTime.value = it
+                        onSetFirstPageLoadedTime = {
+                            _firstPageLoadedTime.value = it
                         },
                         onSetTotal = { _total.value = it },
                         onClearOverrides = ::clearOverrides

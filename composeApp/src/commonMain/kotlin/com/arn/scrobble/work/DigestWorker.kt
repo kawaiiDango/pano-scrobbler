@@ -8,7 +8,6 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.setMidnight
-import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
@@ -40,7 +39,7 @@ class DigestWorker(
 
     override suspend fun doWork(): CommonWorkerResult {
         var error: Throwable? = null
-        cal.setUserFirstDayOfWeek()
+        cal.setDigestFirstDayOfWeek()
 
         val lastfmPeriod = when (digestType) {
             DigestType.DIGEST_DAILY,
@@ -176,7 +175,7 @@ class DigestWorker(
             val now = System.currentTimeMillis()
 
             val cal = Calendar.getInstance()
-            cal.setUserFirstDayOfWeek()
+            cal.setDigestFirstDayOfWeek()
             cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
 
             cal.setMidnight()
@@ -212,5 +211,17 @@ class DigestWorker(
             return nextWeek to nextMonth
         }
 
+        private suspend fun Calendar.setDigestFirstDayOfWeek(): Calendar {
+            val lastDayOfWeek = PlatformStuff.mainPrefs.data.map { it.digestWeekday }.first()
+            if (lastDayOfWeek >= Calendar.SUNDAY) {
+                // SATURDAY = 7; rollover to SUNDAY
+                firstDayOfWeek = if (lastDayOfWeek == Calendar.SATURDAY) {
+                    Calendar.SUNDAY
+                } else
+                    lastDayOfWeek + 1
+            }
+            // else auto
+            return this
+        }
     }
 }

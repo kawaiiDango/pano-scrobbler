@@ -82,7 +82,7 @@ kotlin {
 
         androidMain.dependencies {
 //            implementation(libs.core)
-
+            implementation(libs.kotlinx.coroutines.android)
             implementation(libs.activity.compose)
             implementation(libs.work.runtime)
             implementation(libs.core.remoteviews)
@@ -93,7 +93,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(libs.kotlin.coroutines.core)
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.runtime)
                 implementation(libs.foundation)
                 implementation(libs.material3)

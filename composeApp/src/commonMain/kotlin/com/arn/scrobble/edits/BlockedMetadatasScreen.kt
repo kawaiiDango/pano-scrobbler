@@ -57,12 +57,8 @@ fun BlockedMetadatasScreen(
     viewModel: BlockedMetadataVM = viewModel { BlockedMetadataVM() },
 ) {
     val blockedMetadatas by viewModel.blockedMetadataFiltered.collectAsStateWithLifecycle()
-    val count by viewModel.count.collectAsStateWithLifecycle(0)
+    val count by viewModel.count.collectAsStateWithLifecycle()
     var searchTerm by rememberSaveable { mutableStateOf("") }
-
-    fun doDelete(edit: BlockedMetadata) {
-        viewModel.delete(edit)
-    }
 
     LaunchedEffect(searchTerm) {
         viewModel.setFilter(searchTerm)
@@ -116,12 +112,15 @@ fun BlockedMetadatasScreen(
                 items(
                     blockedMetadatas!!,
                     key = { it._id }
-                ) { edit ->
+                ) {
                     BlockedMetadataItem(
-                        edit,
+                        it,
                         onEdit = {
+                            onNavigate(PanoRoute.Modal.BlockedMetadataAdd(it))
                         },
-                        onDelete = ::doDelete,
+                        onDelete = {
+                            viewModel.delete(it)
+                        },
                         modifier = Modifier.animateItem()
                     )
                 }
@@ -135,8 +134,8 @@ fun BlockedMetadatasScreen(
 @Composable
 private fun BlockedMetadataItem(
     blockedMetadata: BlockedMetadata,
-    onEdit: (BlockedMetadata) -> Unit,
-    onDelete: (BlockedMetadata) -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
 ) {
@@ -151,7 +150,7 @@ private fun BlockedMetadataItem(
                 .weight(1f)
                 .defaultMinSize(minHeight = 56.dp)
                 .clip(MaterialTheme.shapes.medium)
-                .clickable(enabled = !forShimmer) { onEdit(blockedMetadata) }
+                .clickable(enabled = !forShimmer, onClick = onEdit)
                 .padding(8.dp)
         ) {
             TextWithIcon(
@@ -203,7 +202,7 @@ private fun BlockedMetadataItem(
         }
 
         EditsDeleteMenu(
-            onDelete = { onDelete(blockedMetadata) },
+            onDelete = onDelete,
             enabled = !forShimmer
         )
     }

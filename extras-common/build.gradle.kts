@@ -27,16 +27,12 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(libs.ktor.client.core)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 
-        androidMain {
-            dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
-            }
+        androidMain.dependencies {
+            implementation(libs.kotlinx.coroutines.android)
         }
 
 

@@ -39,8 +39,6 @@ object DeepLinkUtils {
         }
         val routeJson = deepLinkSerializer.encodeToString(route)
 
-        println(routeJson)
-
         intent.putExtra(ROUTE, routeJson)
 
         return PendingIntent.getActivity(

@@ -37,10 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Delete
@@ -49,6 +47,7 @@ import com.arn.scrobble.icons.KeyboardArrowDown
 import com.arn.scrobble.icons.KeyboardArrowUp
 import com.arn.scrobble.icons.Save
 import com.arn.scrobble.icons.SwapVert
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.panoicons.ContentSaveOffOutline
@@ -97,9 +96,8 @@ fun SimpleEditsAddScreen(
     msid: String?,
     hash: Int?,
     key: String?,
-    notifyEdit: (String, Track) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: EditScrobbleViewModel = viewModel { EditScrobbleViewModel() },
+    viewModel: MainViewModel,
 ) {
     var hasOrigTrack by rememberSaveable { mutableStateOf(simpleEdit?.hasOrigTrack ?: true) }
     var origTrack by rememberSaveable { mutableStateOf(simpleEdit?.origTrack ?: "") }
@@ -195,13 +193,12 @@ fun SimpleEditsAddScreen(
                 verifying = true
             errorText = null
 
-            viewModel.doEdit(
+            viewModel.editScrobbleUtils.doEdit(
                 simpleEdit = newEdit,
                 origScrobbleData = origScrobbleData,
                 msid = msid,
                 hash = hash,
                 key = key,
-                notifyEdit = notifyEdit,
                 save = save,
             )
         }
@@ -230,7 +227,7 @@ fun SimpleEditsAddScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.result.collectLatest { (origSd, result) ->
+        viewModel.editScrobbleUtils.result.collectLatest { (origSd, result) ->
             if (origSd == origScrobbleData) {
                 result.onSuccess {
                     verifying = false
@@ -250,14 +247,14 @@ fun SimpleEditsAddScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.updatedAlbum.collectLatest { (origSd, it) ->
+        viewModel.editScrobbleUtils.updatedAlbum.collectLatest { (origSd, it) ->
             if (origSd == origScrobbleData)
                 album = it
         }
     }
 
     LaunchedEffect(Unit) {
-        viewModel.updatedAlbumArtist.collectLatest { (origSd, it) ->
+        viewModel.editScrobbleUtils.updatedAlbumArtist.collectLatest { (origSd, it) ->
             if (origSd == origScrobbleData)
                 albumArtist = it
         }
@@ -460,7 +457,7 @@ fun SimpleEditsAddScreen(
             if (simpleEdit != null && !networkEditMode) {
                 IconButton(
                     onClick = {
-                        viewModel.deleteSimpleEdit(simpleEdit)
+                        viewModel.editScrobbleUtils.deleteSimpleEdit(simpleEdit)
                     }
                 ) {
                     Icon(

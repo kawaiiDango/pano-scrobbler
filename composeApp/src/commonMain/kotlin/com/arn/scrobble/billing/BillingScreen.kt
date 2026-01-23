@@ -157,67 +157,68 @@ fun BillingScreen(
             }
         }
 
-        if (!needsActivationCode)
-            ErrorText(errorText)
+        ErrorText(errorText)
 
-        Box(
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            MediumExtendedFloatingActionButton(
-                onClick = {
-                    if (proProductDetails != null) {
-                        if (purchaseMethods.size > 1) {
-                            purchaseMethodsExpanded = true
-                        } else if (activity != null && purchaseMethods.isNotEmpty()) {
-                            viewModel.makePurchase(purchaseMethods.first(), activity)
-                        }
-                    } else {
-                        val failSnackbarData = PanoSnackbarVisuals(
-                            message = "...",
-                            isError = false,
-                        )
-                        Stuff.globalSnackbarFlow.tryEmit(failSnackbarData)
-                    }
-                },
-                text = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.get_pro),
-                        )
-
-                        Text(
-                            text = (proProductDetails?.formattedPrice ?: "") +
-                                    ", " + stringResource(Res.string.one_time_purchase),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Favorite,
-                        contentDescription = null
-                    )
-                },
-            )
-
-            DropdownMenu(
-                expanded = purchaseMethodsExpanded,
-                onDismissRequest = { purchaseMethodsExpanded = false }
+        if (code.isEmpty()) {
+            Box(
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                purchaseMethods.forEach { purchaseMethod ->
-                    DropdownMenuItem(
-                        onClick = {
-                            if (activity != null) {
-                                viewModel.makePurchase(purchaseMethod, activity)
+                MediumExtendedFloatingActionButton(
+                    onClick = {
+                        if (proProductDetails != null) {
+                            if (purchaseMethods.size > 1) {
+                                purchaseMethodsExpanded = true
+                            } else if (activity != null && purchaseMethods.isNotEmpty()) {
+                                viewModel.makePurchase(purchaseMethods.first(), activity)
                             }
-                            purchaseMethodsExpanded = false
-                        },
-                        text = {
-                            Text(purchaseMethod.displayName)
+                        } else {
+                            val failSnackbarData = PanoSnackbarVisuals(
+                                message = "...",
+                                isError = false,
+                            )
+                            Stuff.globalSnackbarFlow.tryEmit(failSnackbarData)
                         }
-                    )
+                    },
+                    text = {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.get_pro),
+                            )
+
+                            Text(
+                                text = (proProductDetails?.formattedPrice ?: "") +
+                                        ", " + stringResource(Res.string.one_time_purchase),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Favorite,
+                            contentDescription = null
+                        )
+                    },
+                )
+
+                DropdownMenu(
+                    expanded = purchaseMethodsExpanded,
+                    onDismissRequest = { purchaseMethodsExpanded = false }
+                ) {
+                    purchaseMethods.forEach { purchaseMethod ->
+                        DropdownMenuItem(
+                            onClick = {
+                                if (activity != null) {
+                                    viewModel.makePurchase(purchaseMethod, activity)
+                                }
+                                purchaseMethodsExpanded = false
+                            },
+                            text = {
+                                Text(purchaseMethod.displayName)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -250,16 +251,6 @@ fun BillingScreen(
                 } else
                     null,
                 isError = errorText != null,
-                supportingText = if (errorText != null) {
-                    {
-                        Text(
-                            text = errorText ?: "",
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                } else
-                    null,
-                singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
                     .padding(top = 16.dp)

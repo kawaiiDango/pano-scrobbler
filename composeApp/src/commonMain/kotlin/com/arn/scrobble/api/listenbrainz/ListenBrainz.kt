@@ -33,7 +33,6 @@ import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
-import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import io.ktor.client.HttpClient
@@ -364,22 +363,9 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         }
     }
 
-    override suspend fun loadDrawerData(username: String): DrawerData {
-        val isSelf = username == userAccount.user.name
-
-        val totalCount =
-            client.getResult<ListenBrainzCountData>("user/$username/listen-count")
-                .map { it.payload.count }
-                .getOrDefault(0)
-
-        val dd = DrawerData(totalCount)
-        if (isSelf) {
-            PlatformStuff.mainPrefs.updateData {
-                it.copy(drawerData = it.drawerData + (userAccount.type to dd))
-            }
-        }
-
-        return dd
+    override suspend fun loadDrawerData(username: String): Result<DrawerData> {
+        return client.getResult<ListenBrainzCountData>("user/$username/listen-count")
+            .map { DrawerData(it.payload.count) }
     }
 
     override suspend fun getCharts(

@@ -1,9 +1,8 @@
 package com.arn.scrobble.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.navigation3.runtime.NavKey
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Album
@@ -21,8 +20,6 @@ import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.updates.UpdateAction
-import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.serialization.Serializable
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add
@@ -35,39 +32,30 @@ sealed interface PanoRoute : NavKey {
     sealed interface DeepLinkable : PanoRoute
 
     sealed interface HasTabs : PanoRoute {
-        @Composable
-        fun getTabsList(): List<PanoTab>
+        fun getTabsList(accountType: AccountType): List<PanoTab>
     }
 
     sealed interface HasFab : PanoRoute {
         fun getFabData(): PanoFabData
     }
 
-    @Serializable
-    data class SelfHomePager(val digestTypeStr: String? = null) : PanoRoute, DeepLinkable, HasTabs {
-        @Composable
-        override fun getTabsList(): List<PanoTab> {
-            val selfAccount by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccount }
-            val account = selfAccount ?: return emptyList()
-
-            return homePagerTabData(
-                user = account.user,
-                accountType = account.type,
-            )
-        }
+    sealed interface HasUser : PanoRoute {
+        val user: UserCached?
     }
 
     @Serializable
-    data class OthersHomePager(val user: UserCached) : PanoRoute, HasTabs {
-        @Composable
-        override fun getTabsList(): List<PanoTab> {
-            val currentAccountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
+    data class SelfHomePager(val digestTypeStr: String? = null) :
+        PanoRoute, DeepLinkable, HasTabs, HasUser {
+        override val user = null
 
-            return homePagerTabData(
-                user = user,
-                accountType = currentAccountType,
-            )
-        }
+        override fun getTabsList(accountType: AccountType) = homePagerTabData(accountType)
+
+    }
+
+    @Serializable
+    data class OthersHomePager(override val user: UserCached) : PanoRoute, HasTabs, HasUser {
+        override fun getTabsList(accountType: AccountType) = homePagerTabData(accountType)
+
     }
 
     @Serializable
@@ -221,8 +209,7 @@ sealed interface PanoRoute : NavKey {
         val appId: String? = null,
     ) : PanoRoute, DeepLinkable, HasTabs {
 
-        @Composable
-        override fun getTabsList() = listOf(
+        override fun getTabsList(accountType: AccountType) = listOf(
             PanoTab.TopArtists,
             PanoTab.TopAlbums,
             PanoTab.TopTracks,
@@ -234,9 +221,8 @@ sealed interface PanoRoute : NavKey {
         val user: UserCached,
         val chartsType: Int,
     ) : PanoRoute, HasTabs {
-        
-        @Composable
-        override fun getTabsList() = listOf(
+
+        override fun getTabsList(accountType: AccountType) = listOf(
             PanoTab.TopArtists,
             PanoTab.TopAlbums,
             PanoTab.TopTracks,
@@ -275,6 +261,7 @@ sealed interface PanoRoute : NavKey {
         @Serializable
         data class NavPopup(
             val otherUser: UserCached?,
+            val initialDrawerData: DrawerData,
         ) : Modal
 
         @Serializable
@@ -339,7 +326,7 @@ sealed interface PanoRoute : NavKey {
         data object MediaSearchPref : Modal
     }
 
-    fun homePagerTabData(user: UserCached, accountType: AccountType): List<PanoTab> {
+    fun homePagerTabData(accountType: AccountType): List<PanoTab> {
         return when (accountType) {
             AccountType.LASTFM,
             AccountType.LISTENBRAINZ,
@@ -348,7 +335,7 @@ sealed interface PanoRoute : NavKey {
                 PanoTab.Scrobbles(),
                 PanoTab.Following,
                 PanoTab.Charts,
-                PanoTab.Profile(user),
+                PanoTab.Profile,
             )
 
             AccountType.LIBREFM,
@@ -356,7 +343,7 @@ sealed interface PanoRoute : NavKey {
                 -> listOf(
                 PanoTab.Scrobbles(),
                 PanoTab.Charts,
-                PanoTab.Profile(user),
+                PanoTab.Profile,
             )
 
 //        AccountType.MALOJA,
@@ -364,7 +351,7 @@ sealed interface PanoRoute : NavKey {
             AccountType.FILE,
                 -> listOf(
                 PanoTab.Scrobbles(showChips = false),
-                PanoTab.Profile(user),
+                PanoTab.Profile,
             )
         }
     }

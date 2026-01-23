@@ -11,10 +11,11 @@ class DesktopTests {
         val millis = 1734346631_000L
         val millisLastYear = 1702724231_000L
         val millisLastMonth = 1731754631_000L
-        val relative1 = PanoTimeFormatter.relative(millisLastMonth, true)
-        val relative2 = PanoTimeFormatter.relative(millisLastYear, true)
-        val relative3 = PanoTimeFormatter.relative(System.currentTimeMillis(), true)
-        val relative4 = PanoTimeFormatter.relative(System.currentTimeMillis() - 2 * 60_000L, true)
+        val relative1 = PanoTimeFormatter.relative(millisLastMonth, null, true)
+        val relative2 = PanoTimeFormatter.relative(millisLastYear, null, true)
+        val relative3 = PanoTimeFormatter.relative(System.currentTimeMillis(), null, true)
+        val relative4 =
+            PanoTimeFormatter.relative(System.currentTimeMillis() - 2 * 60_000L, null, true)
         val full = PanoTimeFormatter.full(millis)
         val day = PanoTimeFormatter.day(millis)
         val month = PanoTimeFormatter.month(millis)

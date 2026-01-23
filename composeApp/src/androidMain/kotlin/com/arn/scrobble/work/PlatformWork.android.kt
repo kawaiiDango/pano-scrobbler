@@ -9,6 +9,7 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PanoNotifications
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -74,6 +75,8 @@ class PlatformWorker(
         .createForegroundInfo(workName)
 
     override suspend fun doWork(): Result {
+        Stuff.initializeMainPrefsCache() // todo: maybe not do this
+
         val result = worker.doWork()
         return when (result) {
             CommonWorkerResult.Success -> Result.success()

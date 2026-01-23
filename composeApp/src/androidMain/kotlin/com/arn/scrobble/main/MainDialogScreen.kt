@@ -3,7 +3,6 @@ package com.arn.scrobble.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -41,7 +40,6 @@ fun PanoMainDialogContent(
         },
         PanoRoute.Blank,
     )
-    val mainViewModelStoreOwner = LocalViewModelStoreOwner.current
 
     LaunchedEffect(backStack.lastOrNull()) {
         val route = backStack.lastOrNull()
@@ -102,8 +100,8 @@ fun PanoMainDialogContent(
                     }
                 },
                 goBack = ::goBack,
-                mainViewModel = viewModel,
-                mainViewModelStoreOwner = { mainViewModelStoreOwner!! },
+                onSetDrawerData = {},
+                mainViewModel = viewModel
             )
         }
     )

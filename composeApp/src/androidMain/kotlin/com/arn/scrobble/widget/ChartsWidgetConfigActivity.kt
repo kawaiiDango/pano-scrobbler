@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.AndroidStuff.prolongSplashScreen
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 import kotlinx.coroutines.launch
@@ -35,8 +36,13 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        var initDone = false
+        prolongSplashScreen { initDone }
+
         setContent {
-            AppTheme {
+            AppTheme(
+                onInitDone = { initDone = true }
+            ) {
                 val widgetPrefs by
                 AndroidStuff.widgetPrefs.data.collectAsStateWithLifecycle(null)
 

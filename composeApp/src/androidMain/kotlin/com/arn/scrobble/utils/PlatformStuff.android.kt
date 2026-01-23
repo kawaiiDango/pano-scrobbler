@@ -75,7 +75,7 @@ actual object PlatformStuff {
 
     actual fun getDeviceIdentifier(): String {
         val name = Build.BRAND + "|" + Build.MODEL + "|" + Build.DEVICE + "|" + Build.BOARD
-        return name.sha256Truncated()
+        return Stuff.sha256Truncated(name)
     }
 
     actual val isJava8OrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O

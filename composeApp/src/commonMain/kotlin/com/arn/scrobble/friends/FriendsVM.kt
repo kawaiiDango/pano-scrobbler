@@ -54,7 +54,7 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
 
     private val friendsRecentsMutex = Mutex()
 
-    private val _lastFriendsRefreshTime = MutableStateFlow(System.currentTimeMillis())
+    private val _lastFriendsRefreshTime = MutableStateFlow<Long?>(null)
     val lastFriendsRefreshTime = _lastFriendsRefreshTime.asStateFlow()
 
     val friends = Pager(

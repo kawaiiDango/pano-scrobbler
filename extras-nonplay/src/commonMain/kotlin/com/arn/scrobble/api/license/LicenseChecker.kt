@@ -1,19 +1,11 @@
 package com.arn.scrobble.api.license
 
 import com.arn.scrobble.billing.Security
-import io.ktor.client.HttpClient
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.util.decodeBase64Bytes
-import io.ktor.util.decodeBase64String
-import io.ktor.utils.io.core.toByteArray
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.security.PublicKey
 import java.security.Signature
+import kotlin.io.encoding.Base64
 
 @Serializable
 data class JwtHeader(val alg: String, val typ: String)
@@ -42,7 +34,7 @@ object LicenseChecker {
     private const val JWT_SIGNATURE_ALGORITHM = "SHA256withRSA"
 
     suspend fun checkLicenseOnline(
-        client: HttpClient,
+        httpPost: suspend (url: String, body: String) -> String,
         url: String,
         did: String,
         token: String,
@@ -50,38 +42,38 @@ object LicenseChecker {
         val lcr = LicenseCheckRequest(did, token)
 
         return runCatching {
-            client.post(url) {
-                contentType(ContentType.Application.Json)
-                val jsonBodyString = Json.encodeToString(lcr)
-                setBody(jsonBodyString)
+            val jsonBodyString = Json.encodeToString(lcr)
+            httpPost(url, jsonBodyString).let {
+                Json.decodeFromString<LicenseCheckResponse>(it)
             }
-                .bodyAsText().let {
-                    Json.decodeFromString<LicenseCheckResponse>(it)
-                }
         }
     }
 
 
     fun validateJwt(token: String, aud: String, base64PublicKey: String): Boolean {
+        val b64 = Base64
+            .UrlSafe
+            .withPadding(Base64.PaddingOption.ABSENT)
+
         try {
             val parts = token.split(".")
             if (parts.size != 3) return false
 
-            val header = parts[0].decodeBase64String().let {
+            val header = b64.decode(parts[0]).decodeToString().let {
                 Json.decodeFromString<JwtHeader>(it)
             }
 
             if (!(header.alg == "RS256" && header.typ == "JWT"))
                 return false
 
-            val payload = parts[1].decodeBase64String().let {
+            val payload = b64.decode(parts[1]).decodeToString().let {
                 Json.decodeFromString<JwtPayload>(it)
             }
 
             if (!(payload.aud == aud && payload.nbf < System.currentTimeMillis() / 1000 && payload.exp > System.currentTimeMillis() / 1000))
                 return false
 
-            val signature = parts[2].decodeBase64Bytes()
+            val signature = b64.decode(parts[2])
 
             val data = "${parts[0]}.${parts[1]}".toByteArray()
 

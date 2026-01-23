@@ -220,9 +220,11 @@ fun ErrorText(
     errorText: String?,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedVisibility(errorText != null) {
+    AnimatedVisibility(
+        errorText != null,
+        modifier = modifier.padding(8.dp),
+    ) {
         Row(
-            modifier = modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

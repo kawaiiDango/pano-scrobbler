@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import co.touchlab.kermit.Logger
 
 @Composable
 fun FilePickerSample(modifier: Modifier = Modifier) {
@@ -32,7 +33,7 @@ fun FilePickerSample(modifier: Modifier = Modifier) {
         type = FileType.LOG,
         onDismiss = { show = false },
         onFilePicked = { file ->
-            println("File picked: ${file.uri}")
+            Logger.w { "File picked: ${file.uri}" }
 //            GlobalScope.launch {
 //                file.writeAppend { stream ->
 //                    stream.write("Hello, World!".toByteArray())

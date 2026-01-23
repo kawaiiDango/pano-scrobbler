@@ -1,6 +1,5 @@
 package com.arn.scrobble.billing
 
-import io.ktor.util.decodeBase64Bytes
 import java.io.IOException
 import java.security.InvalidKeyException
 import java.security.KeyFactory
@@ -10,6 +9,7 @@ import java.security.Signature
 import java.security.SignatureException
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
+import kotlin.io.encoding.Base64
 
 /**
  * Security-related methods. For a secure implementation, all of this code should be implemented on
@@ -53,7 +53,7 @@ object Security {
     @Throws(IOException::class)
     fun loadPublicKey(encodedPublicKey: String): PublicKey {
         try {
-            val decodedKey = encodedPublicKey.decodeBase64Bytes()
+            val decodedKey = Base64.decode(encodedPublicKey)
             val keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM)
             return keyFactory.generatePublic(X509EncodedKeySpec(decodedKey))
         } catch (e: NoSuchAlgorithmException) {
@@ -76,7 +76,7 @@ object Security {
     private fun verify(publicKey: PublicKey, signedData: String, signature: String): Boolean {
         val signatureBytes: ByteArray
         try {
-            signatureBytes = signature.decodeBase64Bytes()
+            signatureBytes = Base64.decode(signature)
         } catch (e: IllegalArgumentException) {
             return false
         }

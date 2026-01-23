@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.baselineprofile)
-//    alias(libs.plugins.play.publisher)
 }
 
 val requestedTasks = gradle.startParameter.taskNames.map { it.lowercase() }
@@ -77,6 +76,7 @@ android {
         resources {
             excludes.add("/composeResources/**") // this is a duplicate. idk why this gets added.
             excludes.add("/META-INF/**/*.txt")
+            excludes.add("DebugProbesKt.bin")
         }
 
         jniLibs {
@@ -231,13 +231,3 @@ tasks.configureEach {
         finalizedBy("copyGithubReleaseApk")
     }
 }
-
-//play {
-//    track.set("beta") // or 'rollout' or 'beta' or 'alpha'
-////    userFraction = 1.0d // only necessary for 'rollout', in this case default is 0.1 (10% of the target)
-//    defaultToAppBundles.set(true)
-//    serviceAccountCredentials.set(file("play_api_keys.json"))
-//
-//    fromTrack.set("beta")
-//    promoteTrack.set("production")
-//}

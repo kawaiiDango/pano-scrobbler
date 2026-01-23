@@ -4,8 +4,6 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.Stuff.setMidnight
-import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
@@ -28,7 +26,7 @@ class TimePeriodsGenerator(
     private val anchorTime: Long,
     private val generateFormattedStrings: Boolean = false,
 ) {
-    private val cal by lazy { runBlocking { Calendar.getInstance().setUserFirstDayOfWeek() } }
+    private val cal by lazy { Calendar.getInstance() }
 
     fun days(): List<TimePeriod> {
         val days = mutableListOf<TimePeriod>()

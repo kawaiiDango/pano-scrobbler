@@ -8,7 +8,10 @@ import android.content.pm.PackageManager
 import android.media.MediaMetadata
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.datastore.core.MultiProcessDataStoreFactory
@@ -189,5 +192,25 @@ object AndroidStuff {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun ComponentActivity.prolongSplashScreen(stopShowing: () -> Boolean) {
+        // Set up an OnPreDrawListener to the root view.
+        val content = findViewById<View>(android.R.id.content)
+        content.viewTreeObserver.addOnPreDrawListener(
+            object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    // Check whether the initial data is ready.
+                    return if (stopShowing()) {
+                        // The content is ready. Start drawing.
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                        true
+                    } else {
+                        // The content isn't ready. Suspend.
+                        false
+                    }
+                }
+            }
+        )
     }
 }

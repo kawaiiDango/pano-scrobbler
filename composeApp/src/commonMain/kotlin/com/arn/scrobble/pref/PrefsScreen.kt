@@ -1,7 +1,6 @@
 package com.arn.scrobble.pref
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,7 +92,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_enabled_apps_summary
 import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_export_desc
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_album
-import pano_scrobbler.composeapp.generated.resources.pref_first_day_of_week
 import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
@@ -124,7 +122,6 @@ import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.spotify
 import pano_scrobbler.composeapp.generated.resources.when_not_using
-import java.util.Calendar
 import java.util.Locale
 
 
@@ -152,7 +149,7 @@ fun PrefsScreen(
         p.searchUrlTemplate.takeIf { !p.usePlayFromSearchP }
     }
     val linkHeartButtonToRating by mainPrefs.data.collectAsStateWithInitialValue { it.linkHeartButtonToRating }
-    val firstDayOfWeek by mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
+    val digestWeekday by mainPrefs.data.collectAsStateWithInitialValue { it.digestWeekday }
     val locale by LocaleUtils.locale.collectAsStateWithLifecycle()
     val lastfmApiAlways by mainPrefs.data.collectAsStateWithInitialValue { it.lastfmApiAlways }
     val fetchAlbum by mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
@@ -213,11 +210,11 @@ fun PrefsScreen(
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            isAddedToStartup = isAddedToStartup()
+            isAddedToStartup = PlatformSpecificPrefs.isAddedToStartup()
         }
 
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
-            snapshotFlow { firstDayOfWeek }
+            snapshotFlow { digestWeekday }
                 .drop(1) // only for changes
                 .collect {
                     val (nextWeek, nextMonth) = DigestWorker.nextWeekAndMonth()
@@ -231,11 +228,11 @@ fun PrefsScreen(
     }
 
     PanoLazyColumn(modifier = modifier) {
-        prefScrobbler(this, scrobblerEnabled, nlsEnabled, onNavigate)
+        PlatformSpecificPrefs.prefScrobbler(this, scrobblerEnabled, nlsEnabled, onNavigate)
 
-        prefQuickSettings(this, scrobblerEnabled)
+        PlatformSpecificPrefs.prefQuickSettings(this, scrobblerEnabled)
 
-        addToStartup(this, isAddedToStartup) {
+        PlatformSpecificPrefs.addToStartup(this, isAddedToStartup) {
             isAddedToStartup = it
         }
 
@@ -338,7 +335,7 @@ fun PrefsScreen(
             )
         }
 
-        discordRpc(this, onNavigate)
+        PlatformSpecificPrefs.discordRpc(this, onNavigate)
 
         stickyHeader("pref_delay_header") {
             SimpleHeaderItem(
@@ -408,7 +405,7 @@ fun PrefsScreen(
             }
         }
 
-        prefChartsWidget(this)
+        PlatformSpecificPrefs.prefChartsWidget(this)
 
 //        item(MainPrefs::showAlbumsInRecents.name) {
 //            SwitchPref(
@@ -466,39 +463,9 @@ fun PrefsScreen(
             }
         }
 
-        item(MainPrefs::firstDayOfWeek.name) {
-            val autoString = stringResource(Res.string.auto)
+        PlatformSpecificPrefs.prefDigestWeekDay(this, digestWeekday)
 
-            val valuesToDays = remember {
-                val cal = Calendar.getInstance()
-
-                var autoDayName = ""
-
-                val days = cal.getDisplayNames(
-                    Calendar.DAY_OF_WEEK,
-                    Calendar.LONG,
-                    Locale.getDefault()
-                )!!
-                    .map { (k, v) ->
-                        if (v == cal.firstDayOfWeek)
-                            autoDayName = k
-                        v to k
-                    }
-                    .toMap()
-
-                (days + (-1 to "$autoString: $autoDayName")).toSortedMap()
-            }
-
-            DropdownPref(
-                text = stringResource(Res.string.pref_first_day_of_week),
-                selectedValue = firstDayOfWeek,
-                values = valuesToDays.keys,
-                toLabel = { valuesToDays[it] ?: autoString },
-                copyToSave = { copy(firstDayOfWeek = it) }
-            )
-        }
-
-        prefNotifications(this)
+        PlatformSpecificPrefs.prefNotifications(this)
 
         stickyHeader("lists_header") {
             SimpleHeaderItem(
@@ -655,9 +622,9 @@ fun PrefsScreen(
             )
         }
 
-        deezerApi(this, deezerApi)
+        PlatformSpecificPrefs.deezerApi(this, deezerApi)
 
-        tidalSteelSeries(this, tidalSteelSeries)
+        PlatformSpecificPrefs.tidalSteelSeries(this, tidalSteelSeries)
 
         stickyHeader("misc_header") {
             SimpleHeaderItem(
@@ -704,7 +671,7 @@ fun PrefsScreen(
             }
         }
 
-        prefPersistentNoti(this, notiPersistent)
+        PlatformSpecificPrefs.prefPersistentNoti(this, notiPersistent)
 
         if (!PlatformStuff.isTv) {
             item("automation") {
@@ -893,30 +860,3 @@ fun PrefsScreen(
     }
 }
 
-expect fun prefNotifications(listScope: LazyListScope)
-
-expect fun prefScrobbler(
-    listScope: LazyListScope,
-    scrobblerEnabled: Boolean,
-    nlsEnabled: Boolean,
-    onNavigate: (PanoRoute) -> Unit
-)
-
-expect fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean)
-
-expect fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean)
-
-expect fun prefChartsWidget(listScope: LazyListScope)
-
-expect fun addToStartup(
-    listScope: LazyListScope,
-    isAdded: Boolean,
-    onAddedChanged: (Boolean) -> Unit,
-)
-
-expect suspend fun isAddedToStartup(): Boolean
-
-expect fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit)
-expect fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean)
-
-expect fun deezerApi(listScope: LazyListScope, enabled: Boolean)

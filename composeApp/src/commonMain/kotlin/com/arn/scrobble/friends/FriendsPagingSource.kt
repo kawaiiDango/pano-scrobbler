@@ -8,7 +8,7 @@ import com.arn.scrobble.api.UserCached.Companion.toUserCached
 
 class FriendsPagingSource(
     private val username: String,
-    private val onSetLastFriendsRefreshTime: (Long) -> Unit,
+    private val onSetLastFriendsRefreshTime: (Long?) -> Unit,
     private val setTotal: (Int) -> Unit,
 ) : PagingSource<Int, UserCached>() {
 
@@ -25,8 +25,13 @@ class FriendsPagingSource(
             val nextKey = if (pr.attr.totalPages <= pr.attr.page) null else pr.attr.page + 1
             val total = pr.attr.total ?: 0
 
-            if (pr.attr.page == 1)
-                onSetLastFriendsRefreshTime(System.currentTimeMillis())
+
+            onSetLastFriendsRefreshTime(
+                if (pr.attr.page == 1)
+                    System.currentTimeMillis()
+                else
+                    null
+            )
 
             setTotal(total)
 

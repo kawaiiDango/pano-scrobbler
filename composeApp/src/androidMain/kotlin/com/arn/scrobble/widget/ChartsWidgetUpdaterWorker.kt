@@ -32,7 +32,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.setMidnight
-import com.arn.scrobble.utils.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
@@ -116,7 +115,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 .take(3)
                 .mapConcurrently(3) { period ->
                     val timePeriod = widgetTimePeriods.toTimePeriod(period)
-                    val cal = Calendar.getInstance().setUserFirstDayOfWeek()
+                    val cal = Calendar.getInstance()
                     cal.setMidnight()
 
                     val prevTimeLastfmPeriod =

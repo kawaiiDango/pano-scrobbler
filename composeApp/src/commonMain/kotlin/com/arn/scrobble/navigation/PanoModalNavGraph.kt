@@ -4,18 +4,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
 import com.arn.scrobble.charts.HiddenTagsDialog
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.edits.BlockedMetadataAddDialog
-import com.arn.scrobble.edits.EditScrobbleViewModel
 import com.arn.scrobble.edits.SimpleEditsAddScreen
 import com.arn.scrobble.info.MusicEntryInfoDialog
 import com.arn.scrobble.info.TagInfoDialog
@@ -29,6 +30,7 @@ import com.arn.scrobble.ui.verticalOverscanPadding
 import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -36,15 +38,21 @@ import kotlinx.coroutines.flow.map
 fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
     navigate: (PanoRoute) -> Unit,
     goBack: () -> Unit,
+    onSetDrawerData: (DrawerData) -> Unit,
     mainViewModel: MainViewModel,
-    mainViewModelStoreOwner: () -> ViewModelStoreOwner
 ) {
     modalEntry<PanoRoute.Modal.NavPopup> { route ->
+        val user by if (route.otherUser != null)
+            remember { mutableStateOf(route.otherUser) }
+        else
+            PlatformStuff.mainPrefs.data
+                .collectAsStateWithInitialValue { it.currentAccount?.user }
+
         NavPopupDialog(
-            otherUser = route.otherUser,
-            drawerDataFlow = mainViewModel.drawerDataFlow,
+            user = user ?: return@modalEntry,
+            initialDrawerData = route.initialDrawerData,
             drawSnowfall = mainViewModel.isItChristmas,
-            loadOtherUserDrawerData = mainViewModel::loadOtherUserDrawerData,
+            onSetDrawerData = onSetDrawerData,
             onNavigate = navigate,
             modifier = modalModifier()
         )
@@ -175,14 +183,13 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             msid = route.msid,
             hash = route.hash,
             key = route.key,
-            notifyEdit = mainViewModel::notifyEdit,
             onDone = goBack,
             onReauthenticate = {
                 goBack()
                 navigate(LoginDestinations.route(AccountType.LASTFM))
             },
             // this viewmodel should be scoped to the main viewmodel store owner
-            viewModel = viewModel(mainViewModelStoreOwner()) { EditScrobbleViewModel() },
+            viewModel = mainViewModel,
             modifier = modalModifier()
         )
     }
@@ -190,7 +197,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
 
 
 @Composable
-fun EntryProviderScope<PanoRoute>.modalModifier(padding: Boolean = true): Modifier {
+fun modalModifier(padding: Boolean = true): Modifier {
     val scrollProps = LocalModalScrollProps.current
 
     return Modifier

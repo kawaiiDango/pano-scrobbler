@@ -5,7 +5,7 @@
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
-        <item quantity="one">%1$s scrobble aujourd&apos;hui</item>
+        <item quantity="one">%1$s scrobble aujourd&amp;aposhui</item>
         <item quantity="other">%1$s scrobbles aujourd&apos;hui</item>
     </plurals>
     <plurals name="num_listeners">

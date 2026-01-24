@@ -326,7 +326,6 @@
     <string name="pref_change_locale">Mudar língua</string>
     <string name="pref_crashlytics_enabled">Reportar erros automaticamente</string>
     <string name="pref_misc">Diversos</string>
-    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">A semana começa em</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importar &amp; exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
@@ -435,6 +434,14 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Ao usar %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Ao não usar %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Como texto</string>
+    <string name="automation_cli">Parâmetros da linha de comando</string>
+    <string name="automation_cli_info">Execute o executável do pano-scrobbler com um desses parâmetros de linha de comando, enquanto uma instância já está em execução.</string>
+    <string name="album_art_now_playing_desc">Precisa de um login last.fm</string>
+    <string name="spotify_consent">Buscar imagens de artistas do Spotify?</string>
+    <string name="show_track_url">Rastrear URL</string>
+    <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">ex: Para extrair metadados do campo da faixa, se a faixa contiver "Artista - Faixa", defina a regex da faixa para %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Pesquisar diretamente no reprodutor de mídia</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Esquecer aplicativos desmarcados</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar</string>
     <string name="one_time_purchase">Uma vez</string>

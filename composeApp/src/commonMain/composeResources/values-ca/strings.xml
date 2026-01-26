@@ -90,15 +90,24 @@
     <string name="auto" comment="automatic or default setting">Automàtic</string>
     <string name="music_players">Reproductors de música</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altres aplicacions</string>
+    <string name="choose_apps">Triar aplicacions</string>
+    <string name="choose_an_app">Tria una aplicació</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicacions</string>
     <string name="offline">Sense connexió. Les informació no està actualitzada</string>
     <string name="unavailable_offline">No disponible sense connexió</string>
+    <string name="tv_url_notice">Obre aquest enllaç a un navegador o un altre dispositiu</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serveis</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava escoltant\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escoltant\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Comparteix</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Llegenda</string>
+    <string name="grid" comment="Grid view">Graella</string>
+    <string name="list" comment="Single column list view">Llistat</string>
     <string name="more_info">Més informació</string>
+    <string name="more" comment="More options menu in short">Més</string>
+    <string name="learn" comment="(Learn java regex syntax)">Aprendre</string>
+    <string name="hide">Amaga</string>
     <string name="rank_change_no_change">Sense canvis</string>
     <string name="rank_change_new">No s'ha fet scribbling en el període anterior</string>
     <string name="search">Cerca</string>

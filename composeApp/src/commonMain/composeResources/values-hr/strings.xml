@@ -450,6 +450,8 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kada se koristi %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kada se ne koristi %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Kao tekst</string>
+    <string name="album_art_now_playing_desc">Zahtijeva prijavu na last.fm</string>
+    <string name="spotify_consent">Dohvatiti slike izvođača sa Spotifya?</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>

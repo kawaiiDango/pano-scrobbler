@@ -35,12 +35,6 @@ object PlayerActions {
         Stuff.PACKAGE_OMNIA to CustomRatingAction("action_favorite", threshold = 0.15f),
     )
 
-    fun List<MediaController>.skip() {
-        forEach {
-            it.transportControls.skipToNext()
-        }
-    }
-
     // default rating tested working on:
     // youtube, yt music, poweramp, aimp, musicolet, neutron, doubletwist, playerpro, pandora,
     // amazon music, iHeartRadio, apple music, nyx, aimp, neutron, media monkey,
@@ -54,88 +48,84 @@ object PlayerActions {
     // gonemad, deezer, tidal, podcast addict, gensokyo radio, gaana, wynk, jiosaavn, DIFM,
     // antenna pod, hiby, fiio,
 
-    fun List<MediaController>.love() {
-        forEach {
-            // custom actions override the rating
-            if (it.packageName in customRatingActions) {
-                val customAction = customRatingActions[it.packageName]!!
+    fun MediaController.love() {
+        // custom actions override the rating
+        if (packageName in customRatingActions) {
+            val customAction = customRatingActions[packageName]!!
 
-                val customActionFromPlayer = it.playbackState?.customActions?.find {
-                    it.action == customAction.love
-                } ?: return@forEach
+            val customActionFromPlayer = playbackState?.customActions?.find {
+                it.action == customAction.love
+            } ?: return
 
-                if (customAction.love == customAction.unlove && isProbablyFilledHeart(
-                        it.packageName,
-                        customActionFromPlayer.icon,
-                        customAction.threshold
-                    ) == true
-                ) {
-                    // already loved
-                    return@forEach
-                }
-
-                it.transportControls.sendCustomAction(customActionFromPlayer, null)
-
-                return@forEach
+            if (customAction.love == customAction.unlove && isProbablyFilledHeart(
+                    packageName,
+                    customActionFromPlayer.icon,
+                    customAction.threshold
+                ) == true
+            ) {
+                // already loved
+                return
             }
 
-            val rating = when (it.ratingType) {
-                Rating.RATING_THUMB_UP_DOWN ->
-                    Rating.newThumbRating(true)
+            transportControls.sendCustomAction(customActionFromPlayer, null)
 
-                Rating.RATING_HEART ->
-                    Rating.newHeartRating(true)
-
-                Rating.RATING_3_STARS ->
-                    Rating.newStarRating(Rating.RATING_3_STARS, 3F)
-
-                Rating.RATING_4_STARS ->
-                    Rating.newStarRating(Rating.RATING_4_STARS, 4F)
-
-                Rating.RATING_5_STARS ->
-                    Rating.newStarRating(Rating.RATING_5_STARS, 5F)
-
-                Rating.RATING_PERCENTAGE ->
-                    Rating.newPercentageRating(100F)
-
-                else -> null
-            }
-            if (rating != null)
-                it.transportControls.setRating(rating)
-
-            Logger.i { "Rating type: ${it.ratingType}" }
+            return
         }
+
+        val rating = when (ratingType) {
+            Rating.RATING_THUMB_UP_DOWN ->
+                Rating.newThumbRating(true)
+
+            Rating.RATING_HEART ->
+                Rating.newHeartRating(true)
+
+            Rating.RATING_3_STARS ->
+                Rating.newStarRating(Rating.RATING_3_STARS, 3F)
+
+            Rating.RATING_4_STARS ->
+                Rating.newStarRating(Rating.RATING_4_STARS, 4F)
+
+            Rating.RATING_5_STARS ->
+                Rating.newStarRating(Rating.RATING_5_STARS, 5F)
+
+            Rating.RATING_PERCENTAGE ->
+                Rating.newPercentageRating(100F)
+
+            else -> null
+        }
+        if (rating != null)
+            transportControls.setRating(rating)
+
+        Logger.i { "Rating type: $ratingType" }
     }
 
-    fun List<MediaController>.unlove() {
-        forEach {
-            // custom actions override the rating
-            if (it.packageName in customRatingActions) {
-                val customAction = customRatingActions[it.packageName]!!
+    fun MediaController.unlove() {
+        // custom actions override the rating
+        if (packageName in customRatingActions) {
+            val customAction = customRatingActions[packageName]!!
 
-                val customActionFromPlayer = it.playbackState?.customActions?.find {
-                    it.action == customAction.unlove
-                } ?: return@forEach
+            val customActionFromPlayer = playbackState?.customActions?.find {
+                it.action == customAction.unlove
+            } ?: return
 
-                if (customAction.love == customAction.unlove && isProbablyFilledHeart(
-                        it.packageName,
-                        customActionFromPlayer.icon,
-                        customAction.threshold
-                    ) == false
-                ) {
-                    // already unloved
-                    return@forEach
-                }
-
-                it.transportControls.sendCustomAction(customActionFromPlayer, null)
-
-                return@forEach
+            if (customAction.love == customAction.unlove && isProbablyFilledHeart(
+                    packageName,
+                    customActionFromPlayer.icon,
+                    customAction.threshold
+                ) == false
+            ) {
+                // already unloved
+                return
             }
 
-            val ratingSupported = it.ratingType != Rating.RATING_NONE
-            if (ratingSupported)
-                it.transportControls.setRating(Rating.newUnratedRating(it.ratingType))
+            transportControls.sendCustomAction(customActionFromPlayer, null)
+
+            return
         }
+
+        val ratingSupported = ratingType != Rating.RATING_NONE
+        if (ratingSupported)
+            transportControls.setRating(Rating.newUnratedRating(ratingType))
     }
 
     private fun isProbablyFilledHeart(

@@ -70,10 +70,17 @@ sealed interface PlayingTrackNotifyEvent {
     ) : PlayingTrackNotifyEvent
 
     @Serializable
-    data class TrackLovedUnloved(
-        val hash: Int?,
+    data class CurrentTrackLovedUnloved(
         val loved: Boolean,
     ) : PlayingTrackNotifyEvent
+
+    @Serializable
+    data class TrackLovedUnloved(
+        override val notiKey: String,
+        override val scrobbleData: ScrobbleData,
+        val hash: Int,
+        val loved: Boolean,
+    ) : PlayingTrackNotifyEvent, PlayingTrackState
 
     @Serializable
     data class AppAllowedBlocked(
@@ -99,12 +106,12 @@ suspend fun listenForPlayingTrackEvents(
 
                 if (event.scrobbleError.canFixMetadata) {
                     scrobbleQueue.remove(event.hash)
-                    mediaListener.findTrackInfoByHash(event.hash)?.scrobbled()
+                    mediaListener.findTrackerByHash(event.hash)?.trackInfo?.scrobbled()
                 }
             }
 
             is PlayingTrackNotifyEvent.TrackPlaying -> {
-                val trackInfo = mediaListener.findTrackInfoByHash(event.hash)
+                val trackInfo = mediaListener.findTrackerByHash(event.hash)?.trackInfo
                 if (!event.nowPlaying) {
                     if (trackInfo != null && trackInfo.userPlayCount > 0)
                         trackInfo.updateUserProps(userPlayCount = trackInfo.userPlayCount + 1)
@@ -114,12 +121,13 @@ suspend fun listenForPlayingTrackEvents(
             }
 
             is PlayingTrackNotifyEvent.TrackCancelled -> {
-                val trackInfo = if (event.hash == null) {
-                    mediaListener.findPlayingTrackInfo()
+                val tracker = if (event.hash == null) {
+                    mediaListener.findPlayingTracker()
                 } else {
-                    mediaListener.findTrackInfoByHash(event.hash)
+                    mediaListener.findTrackerByHash(event.hash)
                 }
 
+                val trackInfo = tracker?.trackInfo
                 trackInfo ?: return@collect
 
                 val shouldCancel = if (event.hash == null)
@@ -138,7 +146,7 @@ suspend fun listenForPlayingTrackEvents(
                 val blockPlayerAction = event.blockedMetadata.blockPlayerAction
 
                 if (blockPlayerAction == BlockPlayerAction.skip) {
-                    mediaListener.skip(hash)
+                    tracker.skip()
                 } else if (blockPlayerAction == BlockPlayerAction.mute) {
                     mediaListener.mute(hash)
                 }
@@ -171,19 +179,41 @@ suspend fun listenForPlayingTrackEvents(
                 }
             }
 
+            is PlayingTrackNotifyEvent.CurrentTrackLovedUnloved,
             is PlayingTrackNotifyEvent.TrackLovedUnloved -> {
-                val trackInfo = if (event.hash == null) {
-                    mediaListener.findPlayingTrackInfo()
-                } else {
-                    mediaListener.findTrackInfoByHash(event.hash)
+
+                val tracker: MediaListener.SessionTracker?
+                val scrobbleData: ScrobbleData
+                val loved: Boolean
+
+                when (event) {
+                    is PlayingTrackNotifyEvent.CurrentTrackLovedUnloved -> {
+                        tracker = mediaListener.findPlayingTracker()
+                        scrobbleData = tracker?.trackInfo?.toScrobbleData(false) ?: return@collect
+                        loved = event.loved
+                    }
+
+                    is PlayingTrackNotifyEvent.TrackLovedUnloved -> {
+                        tracker = mediaListener.findTrackerByHash(event.hash)
+                        scrobbleData = event.scrobbleData
+                        loved = event.loved
+                    }
                 }
 
-                trackInfo ?: return@collect
-
-                if (trackInfo.artist.isEmpty() || trackInfo.title.isEmpty())
+                if (scrobbleData.artist.isEmpty() || scrobbleData.track.isEmpty())
                     return@collect
 
-                trackInfo.updateUserProps(userLoved = event.loved)
+                mediaListener.scope.launch(Dispatchers.IO) {
+                    ScrobbleEverywhere.loveOrUnlove(scrobbleData.toTrack(), loved)
+                }
+
+                if (tracker == null) {
+                    // todo maybe show the new love/unlove state in notification instead of removing it
+                    PanoNotifications.removeNotificationByKey(scrobbleData.appId!!)
+                    return@collect
+                }
+
+                tracker.trackInfo.updateUserProps(userLoved = loved)
 
                 val linkHeartButtonToRating =
                     PlatformStuff.mainPrefs.data.map { it.linkHeartButtonToRating }.first()
@@ -192,21 +222,13 @@ suspend fun listenForPlayingTrackEvents(
                     VariantStuff.billingRepository.licenseState.filterNot { it == LicenseState.UNKNOWN }
                         .first() == LicenseState.VALID
                 ) {
-                    if (event.loved)
-                        mediaListener.love(trackInfo.hash)
+                    if (loved)
+                        tracker.love()
                     else
-                        mediaListener.unlove(trackInfo.hash)
+                        tracker.unlove()
                 }
 
-                val scrobbleEvent = trackInfo.toTrackPlayingEvent()
-
-                val scrobbleData = scrobbleEvent.scrobbleData
-
-                mediaListener.scope.launch(Dispatchers.IO) {
-                    ScrobbleEverywhere.loveOrUnlove(scrobbleData.toTrack(), event.loved)
-                }
-
-                globalTrackEventFlow.emit(scrobbleEvent)
+                globalTrackEventFlow.emit(tracker.trackInfo.toTrackPlayingEvent())
             }
 
             is PlayingTrackNotifyEvent.AppAllowedBlocked -> {

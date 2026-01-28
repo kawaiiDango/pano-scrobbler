@@ -3,7 +3,7 @@
         "/DOUTFILE=..\\dist\\pano-scrobbler-windows-x64.exe",
         "/DAPPDIR=..\\build\\compose\\native\\windows-x64",
         "/DICON_FILE=..\\app-icons\\pano-scrobbler.ico",
-        "/DVERSION_CODE=402",
-        "/DVERSION_NAME=4.2"
+        "/DVERSION_CODE=422",
+        "/DVERSION_NAME=4.22"
     ]
 }

@@ -54,5 +54,18 @@ actual fun transformPlaybackState(
         ignoreScrobble = true
     }
 
+    // https://github.com/kawaiiDango/pano-scrobbler/issues/402
+
+    if (trackInfo.appId == Stuff.PACKAGE_YAMAHA_MUSIC_CAST && playbackInfo.actions == 0L) {
+        Logger.i { "ignoring yamaha session with no actions" }
+        ignoreScrobble = true
+    }
+
+    // Chromecast remote sessions
+    if (trackInfo.uniqueId.contains("|CastMediaSession")) {
+        Logger.i { "ignoring chromecast remote session" }
+        ignoreScrobble = true
+    }
+
     return commonPlaybackInfo to ignoreScrobble
 }

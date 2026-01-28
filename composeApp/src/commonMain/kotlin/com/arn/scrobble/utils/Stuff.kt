@@ -98,7 +98,7 @@ object Stuff {
     const val FRIENDS_REFRESH_INTERVAL = 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
-    const val CHARTS_WIDGET_REFRESH_INTERVAL = 2 * 60 * 60 * 1000L
+    const val CHARTS_WIDGET_REFRESH_INTERVAL_HOURS = 6
     const val META_WAIT = 1000L
     const val MAX_HISTORY_ITEMS = 20
     const val DEFAULT_PAGE_SIZE = 100
@@ -239,13 +239,6 @@ object Stuff {
     val IGNORE_DURATION = setOf(
         "com.ilv.vradio",
         "com.bbc.sounds",
-    )
-
-    val BLOCKED_MEDIA_SESSION_TAGS = setOf(
-        "*|CastMediaSession",
-        "$PACKAGE_YAMAHA_MUSIC_CAST|NotificationService",
-        // my test app
-        "com.example.myapplication.sessiontest|androidx.media3.session.id.demo_session_id 124",
     )
 
     val PACKAGES_PIXEL_NP = setOf(

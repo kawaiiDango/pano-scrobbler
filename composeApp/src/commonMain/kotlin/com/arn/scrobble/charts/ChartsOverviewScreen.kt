@@ -8,6 +8,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
@@ -566,7 +566,6 @@ private fun ListeningActivityContent(
     val tintColor = MaterialTheme.colorScheme.secondary
 
     val scrollState = rememberScrollState()
-    var boxWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -578,7 +577,7 @@ private fun ListeningActivityContent(
             icon = Icons.BarChart4Bars,
         )
 
-        Box(
+        BoxWithConstraints(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -589,11 +588,6 @@ private fun ListeningActivityContent(
                         .backgroundForShimmer(true, shape = MaterialTheme.shapes.extraLarge)
                     else Modifier
                 )
-                .onSizeChanged {
-                    boxWidth = with(density) {
-                        it.width.toDp()
-                    }
-                }
                 .horizontalScroll(scrollState)
                 .clip(MaterialTheme.shapes.medium)
                 .indication(
@@ -608,7 +602,7 @@ private fun ListeningActivityContent(
             )
 
             listeningActivity?.let { listeningActivity ->
-                if (listeningActivity.timePeriodsToCounts.isNotEmpty() && boxWidth > 0.dp) {
+                if (listeningActivity.timePeriodsToCounts.isNotEmpty()) {
                     XYGraph(
                         xAxisModel = remember(xData) { CategoryAxisModel(xData) },
                         yAxisModel = rememberFloatLinearAxisModel(
@@ -622,7 +616,7 @@ private fun ListeningActivityContent(
                         xAxisTitle = stringResource(typeStringRes),
                         xAxisLabels = { it.name },
                         modifier = Modifier
-                            .width(max(boxWidth, (xData.size * 24).dp))
+                            .width(max(minWidth, (xData.size * 24).dp))
                     ) {
                         VerticalBarPlot(
                             xData = xData,

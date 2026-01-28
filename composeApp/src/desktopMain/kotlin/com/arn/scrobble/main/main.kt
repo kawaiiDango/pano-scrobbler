@@ -2,10 +2,12 @@ package com.arn.scrobble.main
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +37,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
@@ -101,8 +104,6 @@ import java.awt.Toolkit
 import java.awt.Window
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
-import java.awt.event.WindowEvent
-import java.awt.event.WindowListener
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -607,6 +608,8 @@ private suspend fun trayMenuClickListener(
                         notifyPlayingTrackEvent(
                             PlayingTrackNotifyEvent.TrackLovedUnloved(
                                 hash = scrobblingState.hash,
+                                scrobbleData = scrobblingState.scrobbleData,
+                                notiKey = scrobblingState.notiKey,
                                 loved = !scrobblingState.userLoved
                             )
                         )
@@ -658,87 +661,77 @@ private fun TrayWindow(
     val xScaled = location.x / graphicsConfig.defaultTransform.scaleX.toFloat()
     val yScaled = location.y / graphicsConfig.defaultTransform.scaleY.toFloat()
 
+    var visible by remember { mutableStateOf(false) }
+    val state = rememberWindowState(
+        position = WindowPosition.Absolute(0.dp, 0.dp),
+        size = DpSize.Unspecified,
+        placement = WindowPlacement.Floating
+    )
+
     SwingWindow(
+        visible = visible,
         onCloseRequest = onDismiss,
         decoration = WindowDecoration.Undecorated(),
         transparent = true,
         resizable = false,
         alwaysOnTop = true,
-        state = rememberWindowState(
-            position = WindowPosition(xScaled.dp, yScaled.dp),
-            size = DpSize.Unspecified,
-            placement = WindowPlacement.Floating
-        ),
+        state = state,
         init = { window ->
             // hide it from the taskbar
             window.type = Window.Type.UTILITY
-            window.addWindowListener(
-                object : WindowListener {
-
-                    override fun windowOpened(event: WindowEvent?) {
-                        val window = event?.window ?: return
-
-                        val screenBounds = graphicsConfig.bounds
-                        val screenInsets =
-                            Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfig)
-
-                        // Calculate usable screen area (absolute coordinates)
-                        val usableX = screenBounds.x + screenInsets.left
-                        val usableY = screenBounds.y + screenInsets.top
-                        val usableWidth =
-                            screenBounds.width - screenInsets.left - screenInsets.right
-                        val usableHeight =
-                            screenBounds.height - screenInsets.top - screenInsets.bottom
-
-                        val winSize = window.size
-                        var newX = xScaled.toInt()
-                        var newY = yScaled.toInt()
-
-                        // Adjust X if out of bounds
-                        if (newX + winSize.width > usableX + usableWidth) {
-                            newX = usableX + usableWidth - winSize.width
-                        }
-                        if (newX < usableX) newX = usableX
-
-                        // Adjust Y if out of bounds
-                        if (newY + winSize.height > usableY + usableHeight) {
-                            newY = usableY + usableHeight - winSize.height
-                        }
-                        if (newY < usableY) newY = usableY
-
-                        window.setLocation(newX, newY)
-                    }
-
-                    override fun windowClosing(p0: WindowEvent?) {
-                    }
-
-                    override fun windowClosed(p0: WindowEvent?) {
-                    }
-
-                    override fun windowIconified(p0: WindowEvent?) {
-                    }
-
-                    override fun windowDeiconified(p0: WindowEvent?) {
-                    }
-
-                    override fun windowActivated(p0: WindowEvent?) {
-                    }
-
-                    override fun windowDeactivated(p0: WindowEvent?) {
-                        // close the window when deactivated
-                        onDismiss()
-                    }
-                }
-            )
         }
     ) {
+        LaunchedEffect(Unit) {
+            val screenBounds = graphicsConfig.bounds
+            val screenInsets =
+                Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfig)
+
+            // Calculate usable screen area (absolute coordinates)
+            val usableX = screenBounds.x + screenInsets.left
+            val usableY = screenBounds.y + screenInsets.top
+            val usableWidth =
+                screenBounds.width - screenInsets.left - screenInsets.right
+            val usableHeight =
+                screenBounds.height - screenInsets.top - screenInsets.bottom
+
+            val winSize = window.size
+            var newX = xScaled.toInt()
+            var newY = yScaled.toInt()
+
+            // Adjust X if out of bounds
+            if (newX + winSize.width > usableX + usableWidth) {
+                newX = usableX + usableWidth - winSize.width
+            }
+            if (newX < usableX) {
+                newX = usableX
+            }
+
+            // Adjust Y if out of bounds
+            if (newY + winSize.height > usableY + usableHeight) {
+                newY = usableY + usableHeight - winSize.height
+            }
+            if (newY < usableY) {
+                newY = usableY
+            }
+
+            state.position = WindowPosition.Absolute(newX.dp, newY.dp)
+            visible = true
+        }
+
+        LifecycleResumeEffect(Unit) {
+            onPauseOrDispose {
+                onDismiss()
+            }
+        }
+
         AppTheme {
             Surface(
                 shape = MaterialTheme.shapes.large,
             ) {
                 Column(
                     modifier = Modifier
-                        .widthIn(max = 240.dp)
+                        .width(IntrinsicSize.Max)
+                        .widthIn(max = 300.dp)
                         .padding(vertical = 8.dp)
                 ) {
                     menuItemIds.zip(menuItemTexts).forEach { (id, text) ->

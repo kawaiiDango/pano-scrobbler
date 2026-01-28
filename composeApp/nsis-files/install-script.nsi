@@ -327,6 +327,46 @@ Function PageInstallOptions_Leave
 FunctionEnd
 
 ;--------------------------------
+; Directory validation: Check for non-ASCII characters in install path
+
+# Returns: pushes 1 if $INSTDIR contains any non-ASCII char, else pushes 0
+Function InstDirHasNonASCII
+  StrLen $0 "$INSTDIR"
+  StrCpy $1 0
+  ${While} $1 < $0
+    StrCpy $2 "$INSTDIR" 1 $1
+
+    ; Allocate memory for wide char string
+    System::Call "*(&w1 r2) i .r4"
+    ; Read the wide char value (2 bytes)
+    System::Call "*$4(&i2 .r3)"
+    System::Free $4
+
+    ; Check if the character code is > 127
+    IntCmp $3 127 ok ok nonascii
+    ok:
+      IntOp $1 $1 + 1
+      Goto continue
+    nonascii:
+      Push 1
+      Return
+    continue:
+  ${EndWhile}
+
+  Push 0
+FunctionEnd
+
+Function .onVerifyInstDir
+  Call InstDirHasNonASCII
+  Pop $0
+
+  ${If} $0 = 1
+    MessageBox MB_ICONSTOP|MB_OK "This app cannot be installed in non-ASCII paths."
+    Abort ; stays on the directory page
+  ${EndIf}
+FunctionEnd
+
+;--------------------------------
 ; Installer Section
 
 Section "Install/Extract"

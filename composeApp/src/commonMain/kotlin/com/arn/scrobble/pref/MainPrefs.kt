@@ -60,7 +60,6 @@ data class MainPrefs(
     val searchInSource: Boolean = false,
     val lastSearchType: SearchType = SearchType.GLOBAL,
     val digestWeekday: Int = -1,
-    val lastInteractiveTime: Long? = null,
     private val demoMode: Boolean = false,
     val showScrobbleSources: Boolean = true,
     val themeName: String = ThemeUtils.defaultThemeName,

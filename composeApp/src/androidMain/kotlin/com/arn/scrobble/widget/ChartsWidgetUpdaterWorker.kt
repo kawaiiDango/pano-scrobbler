@@ -36,7 +36,6 @@ import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.DateFormat
@@ -78,15 +77,10 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 )
             )
         val widgetPrefs = AndroidStuff.widgetPrefs.data.first()
-        val lastInteractiveTime =
-            PlatformStuff.mainPrefs.data.map { it.lastInteractiveTime }.first()
 
-
-        // don't run if the user has not checked the device recently or it already ran recently
+        // don't run if it already ran recently
         if (!isOneTimeWork && (appWidgetIds.isEmpty() ||
-                    System.currentTimeMillis() - widgetPrefs.lastFetched < Stuff.CHARTS_WIDGET_REFRESH_INTERVAL / 2 ||
-                    lastInteractiveTime == null ||
-                    System.currentTimeMillis() - lastInteractiveTime > Stuff.CHARTS_WIDGET_REFRESH_INTERVAL * 2)
+                    (System.currentTimeMillis() - widgetPrefs.lastFetched) < Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS * 60 * 60 * 1000L / 2)
         ) {
             logTimestampToFile("skipped")
             return Result.failure(
@@ -235,6 +229,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
         fun schedule(context: Context, runImmediately: Boolean) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresBatteryNotLow(true)
                 .build()
 
             if (runImmediately) {
@@ -262,12 +257,15 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 .build()
 
             val periodicWork = PeriodicWorkRequestBuilder<ChartsWidgetUpdaterWorker>(
-                Stuff.CHARTS_WIDGET_REFRESH_INTERVAL,
-                TimeUnit.MILLISECONDS
+                Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS.toLong(),
+                TimeUnit.HOURS
             )
                 .setConstraints(constraints)
                 .setInputData(inputData)
-                .setInitialDelay(Stuff.CHARTS_WIDGET_REFRESH_INTERVAL, TimeUnit.MILLISECONDS)
+                .setInitialDelay(
+                    Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS.toLong(),
+                    TimeUnit.HOURS
+                )
                 .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(

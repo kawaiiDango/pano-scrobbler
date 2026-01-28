@@ -1,18 +1,14 @@
 package com.arn.scrobble.media
 
 import android.app.Notification
-import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import androidx.core.content.ContextCompat
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.R
@@ -44,17 +40,6 @@ class NLService : NotificationListenerService() {
     private val audioManager by lazy {
         getSystemService(AudioManager::class.java)!!
     }
-
-    private val deviceInteractiveReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Intent.ACTION_SCREEN_ON) {
-                coroutineScope.launch(Dispatchers.IO) {
-                    mainPrefs.updateData { it.copy(lastInteractiveTime = System.currentTimeMillis()) }
-                }
-            }
-        }
-    }
-
     private var inited = false
 
     override fun attachBaseContext(newBase: Context?) {
@@ -77,7 +62,6 @@ class NLService : NotificationListenerService() {
             if (BuildKonfig.DEBUG)
                 toast(R.string.scrobbler_on)
 
-            // run Stuff.initializeMainPrefsCache() in a coroutine and then call init() when that finishes
             coroutineScope.launch {
                 val prefs = Stuff.initializeMainPrefsCache()
 
@@ -96,14 +80,6 @@ class NLService : NotificationListenerService() {
     }
 
     private fun init() {
-        val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
-        ContextCompat.registerReceiver(
-            this@NLService.applicationContext,
-            deviceInteractiveReceiver,
-            filter,
-            ContextCompat.RECEIVER_EXPORTED
-        )
-
         val sessManager = getSystemService(MediaSessionManager::class.java)!!
         scrobbleQueue = ScrobbleQueue(coroutineScope)
 
@@ -159,11 +135,6 @@ class NLService : NotificationListenerService() {
         inited = false
 
         Logger.i { "destroy" }
-        try {
-            this@NLService.applicationContext.unregisterReceiver(deviceInteractiveReceiver)
-        } catch (e: IllegalArgumentException) {
-            Logger.w { "deviceInteractiveReceiver wasn't registered" }
-        }
 
         if (sessListener != null) {
             sessListener?.removeSessions(setOf<MediaSession.Token>())
@@ -183,11 +154,11 @@ class NLService : NotificationListenerService() {
     }
 
     private suspend fun shouldScrobbleFromNoti(pkgName: String): Boolean {
-        val prefs = mainPrefs.data.first()
+        val preventDuplicateAmbientScrobbles =
+            mainPrefs.data.map { it.preventDuplicateAmbientScrobbles }.first()
 
-        return prefs.scrobblerEnabled && prefs.scrobbleAccounts.isNotEmpty() &&
-                (pkgName in prefs.allowedPackages || (prefs.autoDetectAppsP && pkgName !in prefs.blockedPackages)) &&
-                !(prefs.preventDuplicateAmbientScrobbles && sessListener?.isMediaPlaying() == true)
+        return sessListener?.shouldScrobble(pkgName) == true &&
+                !(preventDuplicateAmbientScrobbles && sessListener?.isMediaPlaying() == true)
     }
 
     // don't do file reads here
@@ -301,62 +272,52 @@ class NLService : NotificationListenerService() {
 
 
     private fun stopScrobbleFromNoti(pkgName: String) {
-        val trackInfo = sessListener?.findTrackInfoByKey("$pkgName|$TAG_NOTI") ?: return
+        val trackInfo = sessListener?.createTrackInfo(
+            appId = pkgName,
+            uniqueId = "$pkgName|$TAG_NOTI",
+        ) ?: return
 
-        if (scrobbleQueue.has(trackInfo.hash))
-            trackInfo.addTimePlayed()
-        else
-            trackInfo.resetTimePlayed()
-        trackInfo.paused()
-
-        scrobbleQueue.remove(trackInfo.hash)
+        scrobbleQueue.remove(trackInfo.lastScrobbleHash)
 
         PanoNotifications.removeNotificationByKey("$pkgName|$TAG_NOTI")
-
     }
 
     private fun scrobbleFromNoti(transformIntoScrobbleData: () -> ScrobbleData?) {
-        val delay = 30 * 1000L
+        val delay = 15 * 1000L
         val cooldown = 5 * 60 * 1000L
         val scrobbleData = transformIntoScrobbleData() ?: return
         val pkgName = scrobbleData.appId ?: return
-        val trackInfo = sessListener?.findTrackInfoByKey("$pkgName|$TAG_NOTI")
         val needsDelayAndCooldown = pkgName in Stuff.PACKAGES_PIXEL_NP
-        val metadataChanged = !needsDelayAndCooldown || trackInfo == null ||
-                (System.currentTimeMillis() - trackInfo.playStartTime > cooldown) ||
-                trackInfo.origTitle != scrobbleData.track ||
-                trackInfo.origArtist != scrobbleData.artist
-
-
-        val updatedTrackInfo = trackInfo ?: PlayingTrackInfo(
+        val trackInfo = sessListener?.createTrackInfo(
             appId = pkgName,
-            uniqueId = "$pkgName|$TAG_NOTI"
+            uniqueId = "$pkgName|$TAG_NOTI",
+        ) ?: return
+
+        trackInfo.putOriginals(
+            artist = scrobbleData.artist,
+            title = scrobbleData.track,
+            album = scrobbleData.album.orEmpty(),
+            albumArtist = scrobbleData.albumArtist.orEmpty(),
+            durationMillis = scrobbleData.duration ?: 0L,
+            trackId = null,
+            artUrl = null,
+            extraData = emptyMap()
         )
 
+        val metadataChanged = !needsDelayAndCooldown ||
+                (trackInfo.hash == trackInfo.lastScrobbleHash &&
+                        System.currentTimeMillis() - trackInfo.playStartTime > cooldown) ||
+                trackInfo.hash != trackInfo.lastScrobbleHash
+
         if (metadataChanged) {
-            scrobbleQueue.remove(updatedTrackInfo.hash)
+            scrobbleQueue.remove(trackInfo.hash)
 
-            updatedTrackInfo.putOriginals(
-                artist = scrobbleData.artist,
-                title = scrobbleData.track,
-                album = scrobbleData.album.orEmpty(),
-                albumArtist = scrobbleData.albumArtist.orEmpty(),
-                durationMillis = scrobbleData.duration ?: 0L,
-                trackId = null,
-                artUrl = null,
-                extraData = emptyMap()
+            scrobbleQueue.scrobble(
+                trackInfo = trackInfo,
+                appIsAllowListed = sessListener?.isAppAllowListed(pkgName) == true,
+                delay = if (needsDelayAndCooldown) delay else 0L,
+                timestampOverride = if (!needsDelayAndCooldown) scrobbleData.timestamp else null
             )
-
-            sessListener?.putTrackInfo("$pkgName|$TAG_NOTI", updatedTrackInfo)
-            coroutineScope.launch {
-                scrobbleQueue.scrobble(
-                    trackInfo = updatedTrackInfo,
-                    appIsAllowListed =
-                        mainPrefs.data.map { it.allowedPackages.contains(pkgName) }.first(),
-                    delay = if (needsDelayAndCooldown) delay else 0L,
-                    timestampOverride = if (!needsDelayAndCooldown) scrobbleData.timestamp else null
-                )
-            }
         }
     }
 

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 scriptDir="$(cd "$(dirname "$0")" && pwd)"
 
 # Update PKGBUILD (_pkgver, pkgver, sha256sums)

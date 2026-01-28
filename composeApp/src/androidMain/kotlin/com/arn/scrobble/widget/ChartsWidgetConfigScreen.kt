@@ -42,6 +42,7 @@ import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.ui.LabeledSwitch
 import com.arn.scrobble.utils.Stuff
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
@@ -49,8 +50,8 @@ import pano_scrobbler.composeapp.generated.resources.appwidget_period
 import pano_scrobbler.composeapp.generated.resources.appwidget_refresh_every
 import pano_scrobbler.composeapp.generated.resources.appwidget_shadow
 import pano_scrobbler.composeapp.generated.resources.cancel
+import pano_scrobbler.composeapp.generated.resources.num_hours
 import pano_scrobbler.composeapp.generated.resources.ok
-import kotlin.time.Duration.Companion.hours
 
 @Composable
 fun ChartsWidgetConfigScreen(
@@ -145,7 +146,11 @@ fun ChartsWidgetConfigScreen(
                 Text(
                     text = stringResource(
                         Res.string.appwidget_refresh_every,
-                        Stuff.humanReadableDuration(2.hours.inWholeMilliseconds)
+                        pluralStringResource(
+                            Res.plurals.num_hours,
+                            Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
+                            Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
+                        )
                     ),
                 )
             }

@@ -53,10 +53,7 @@ object Automation {
             }
 
             LOVE, UNLOVE -> {
-                val event = PlayingTrackNotifyEvent.TrackLovedUnloved(
-                    hash = null,
-                    loved = (command == LOVE)
-                )
+                val event = PlayingTrackNotifyEvent.CurrentTrackLovedUnloved(command == LOVE)
 
                 notifyPlayingTrackEvent(event)
             }

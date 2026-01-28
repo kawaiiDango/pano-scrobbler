@@ -13,9 +13,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PlainTooltip
@@ -34,7 +34,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.lastfm.LastFm
@@ -45,7 +44,6 @@ import com.arn.scrobble.icons.Delete
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.KeyboardArrowDown
 import com.arn.scrobble.icons.KeyboardArrowUp
-import com.arn.scrobble.icons.Save
 import com.arn.scrobble.icons.SwapVert
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -73,6 +71,7 @@ import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.collapse
 import pano_scrobbler.composeapp.generated.resources.corrected
 import pano_scrobbler.composeapp.generated.resources.delete
+import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.edit_example
 import pano_scrobbler.composeapp.generated.resources.edit_no_save
@@ -480,34 +479,30 @@ fun SimpleEditsAddScreen(
                         Text(stringResource(Res.string.pref_login))
                     }
                 } else {
+                    val noSaveText = stringResource(Res.string.save) + ": " +
+                            stringResource(Res.string.disable)
                     TooltipBox(
                         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
                             TooltipAnchorPosition.Above
                         ),
-                        tooltip = { PlainTooltip { Text(stringResource(Res.string.save)) } },
+                        tooltip = { PlainTooltip { Text(noSaveText) } },
                         state = rememberTooltipState(),
                     ) {
-                        IconToggleButton(
-                            checked = save,
+                        FilledIconToggleButton(
+                            checked = !save,
                             onCheckedChange = {
-                                save = it
+                                save = !it
 
                                 errorText = if (!save) {
                                     editNoSaveText
                                 } else {
                                     null
                                 }
-                            },
-                            modifier = Modifier.alpha(
-                                if (save) 1f else 0.5f
-                            )
+                            }
                         ) {
                             Icon(
-                                imageVector = if (save)
-                                    Icons.Save
-                                else
-                                    PanoIcons.ContentSaveOffOutline,
-                                contentDescription = stringResource(Res.string.save),
+                                imageVector = PanoIcons.ContentSaveOffOutline,
+                                contentDescription = noSaveText,
                             )
                         }
                     }

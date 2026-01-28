@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,10 +15,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +46,6 @@ internal class BottomSheetScene<T : Any>(
     override val previousEntries: List<NavEntry<T>>,
     override val overlaidEntries: List<NavEntry<T>>,
     private val entry: NavEntry<T>,
-    private val properties: PanoModalProperties,
     private val onDismissRequest: () -> Unit,
     private val onBack: () -> Unit,
 ) : OverlayScene<T> {
@@ -66,8 +60,6 @@ internal class BottomSheetScene<T : Any>(
             } else {
                 null
             },
-            isNestedScrollable = properties.nestedScrollable,
-            forceSkipPartiallyExpanded = true,
         ) { entry.Content() }
     }
 }
@@ -78,44 +70,28 @@ internal class BottomSheetScene<T : Any>(
 private fun BottomSheetDialogParent(
     onDismissRequest: () -> Unit,
     onBack: (() -> Unit)?,
-    isNestedScrollable: Boolean, // disabling nested scrolling is a workaround until google fixes it
-    forceSkipPartiallyExpanded: Boolean,
     content: @Composable () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
-//    val sheetGesturesEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop &&
-//            (
-//                    (!scrollState.canScrollBackward && !scrollState.canScrollForward) ||
-//                            (scrollState.lastScrolledBackward && !scrollState.canScrollBackward) ||
-//                            (scrollState.lastScrolledForward && !scrollState.canScrollForward)
-//                    )
-
+    val sheetGesturesEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = forceSkipPartiallyExpanded || PlatformStuff.isTv || PlatformStuff.isDesktop
+        skipPartiallyExpanded = !sheetGesturesEnabled,
     )
-
-    val isMobile = !PlatformStuff.isTv && !PlatformStuff.isDesktop
-
-    val sheetGesturesEnabled by remember {
-        derivedStateOf {
-            isNestedScrollable && isMobile &&
-                    !scrollState.canScrollForward && !scrollState.canScrollBackward ||
-                    !isNestedScrollable && isMobile
-        }
-    }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         dragHandle = null,
         sheetGesturesEnabled = sheetGesturesEnabled,
         sheetState = sheetState,
-        modifier = Modifier
-            .windowInsetsPadding(
-                WindowInsets.statusBars
-                    .only(WindowInsetsSides.Top)
-                    .add(WindowInsets(top = 42.dp))
-            )
+        modifier = if (!sheetGesturesEnabled)
+            Modifier
+                .windowInsetsPadding(
+                    WindowInsets.statusBars
+                        .only(WindowInsetsSides.Top)
+                        .add(WindowInsets(top = 42.dp))
+                )
+        else
+            Modifier,
     ) {
         if (onBack != null) {
             IconButton(
@@ -153,16 +129,7 @@ private fun BottomSheetDialogParent(
                     .minimumInteractiveComponentSize()
             )
         }
-
-        CompositionLocalProvider(
-            LocalModalScrollProps provides
-                    ModalScrollProps(
-                        scrollState,
-                        isNestedScrollable && !sheetGesturesEnabled
-                    )
-        ) {
-            content()
-        }
+        content()
     }
 }
 
@@ -178,21 +145,20 @@ class BottomSheetSceneStrategy<T : Any>(
 
     override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
         val lastEntry = entries.lastOrNull()
-        val bottomSheetProperties =
-            lastEntry?.metadata?.get(BOTTOM_SHEET_KEY) as? PanoModalProperties
+        val isBottomSheet = lastEntry?.metadata?.get(BOTTOM_SHEET_KEY) == true
 
-        return bottomSheetProperties?.let { properties ->
+        return if (isBottomSheet)
             @Suppress("UNCHECKED_CAST")
             BottomSheetScene(
                 key = lastEntry.contentKey as T,
                 previousEntries = entries.dropLast(1),
                 overlaidEntries = entries.filterNot { BOTTOM_SHEET_KEY in it.metadata },
                 entry = lastEntry,
-                properties = properties,
                 onDismissRequest = onDismiss,
                 onBack = onBack
             )
-        }
+        else
+            null
     }
 
     companion object {
@@ -204,9 +170,7 @@ class BottomSheetSceneStrategy<T : Any>(
          * [ModalBottomSheet].
          */
         @OptIn(ExperimentalMaterial3Api::class)
-        fun bottomSheet(
-            properties: PanoModalProperties = PanoModalProperties()
-        ): Map<String, Any> = mapOf(BOTTOM_SHEET_KEY to properties)
+        fun bottomSheet(): Map<String, Any> = mapOf(BOTTOM_SHEET_KEY to true)
 
     }
 }

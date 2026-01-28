@@ -108,6 +108,8 @@ actual object PanoNotifications {
 
         val loveUnloveEvent = PlayingTrackNotifyEvent.TrackLovedUnloved(
             hash = event.hash,
+            notiKey = event.notiKey,
+            scrobbleData = event.scrobbleData,
             loved = !event.userLoved
         )
 

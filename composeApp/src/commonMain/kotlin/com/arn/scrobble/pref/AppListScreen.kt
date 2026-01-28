@@ -199,10 +199,11 @@ fun AppListScreen(
                 ) { idx, appItem ->
 
                     val showAppId =
-                        items.getOrNull(idx - 1)?.friendlyLabel.equals(
-                            appItem.friendlyLabel,
-                            ignoreCase = true
-                        ) ||
+                        (PlatformStuff.isDesktop && appItem.friendlyLabel != appItem.appId) ||
+                                items.getOrNull(idx - 1)?.friendlyLabel.equals(
+                                    appItem.friendlyLabel,
+                                    ignoreCase = true
+                                ) ||
                                 items.getOrNull(idx + 1)?.friendlyLabel.equals(
                                     appItem.friendlyLabel,
                                     ignoreCase = true

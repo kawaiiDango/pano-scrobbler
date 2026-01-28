@@ -58,9 +58,9 @@
     <plurals name="num_blocked_metadata">
         <item quantity="other">%1$s blocked metadata</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d minute</item>
-        <item quantity="other">%1$d minutes</item>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
     </plurals>
     <plurals name="num_pending"
         comment="Used for pending loves, pending scrobbles"

@@ -1,35 +1,30 @@
 package com.arn.scrobble.media
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
-import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.service.quicksettings.TileService
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.media.PlayerActions.love
-import com.arn.scrobble.media.PlayerActions.skip
 import com.arn.scrobble.media.PlayerActions.unlove
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.dump
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -44,18 +39,16 @@ class SessListener(
 
     override val notifyTimelineUpdates = false
     private val mainPrefs = PlatformStuff.mainPrefs
-    private val controllersMap =
-        mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
-    private var platformControllers: List<MediaController>? = null
+    private var platformControllers = emptyList<MediaController>()
 
     private val scrobbleSpotifyRemote =
-        mainPrefs.data.stateInWithCache(GlobalScope) { it.scrobbleSpotifyRemoteP }
+        mainPrefs.data.stateInWithCache(scope) { it.scrobbleSpotifyRemoteP }
 
     private val autoDetectApps =
-        mainPrefs.data.stateInWithCache(GlobalScope) { it.autoDetectAppsP }
+        mainPrefs.data.stateInWithCache(scope) { it.autoDetectAppsP }
 
     private val blockedPackages =
-        mainPrefs.data.stateInWithCache(GlobalScope) { it.blockedPackages }
+        mainPrefs.data.stateInWithCache(scope) { it.blockedPackages }
 
     init {
         scope.launch {
@@ -66,11 +59,11 @@ class SessListener(
                 scrobblerEnabled,
             ) { allowed, blocked, autoDetect, scrobbleEnabled ->
                 onActiveSessionsChanged(platformControllers)
-                val tokensToKeep = controllersMap.values
-                    .map { it.first }
-                    .filter { shouldScrobble(it.packageName) }
-                    .map { it.sessionToken }
-                    .toSet()
+                val tokensToKeep = sessionTrackers
+                    .filter { (k, v) ->
+                        shouldScrobble(v.trackInfo.appId)
+                    }
+                    .keys
                 removeSessions(tokensToKeep)
             }.collect()
         }
@@ -96,16 +89,31 @@ class SessListener(
         return should
     }
 
+    fun isAppAllowListed(appId: String): Boolean {
+        return appId in allowedPackages.value
+    }
+
     @Synchronized
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
-        this.platformControllers = controllers
-        Logger.d { "controllers: " + controllers?.joinToString { it.packageName } }
 
-        if (!scrobblerEnabled.value || controllers == null)
+        Logger.i {
+            "controllers: " + controllers?.joinToString {
+                "${it.packageName}|${it.tagCompat}@" + it.sessionToken.hashCode().toHexString()
+            }
+        }
+
+        if (controllers == null)
+            return
+
+        this.platformControllers = controllers
+
+        if (!scrobblerEnabled.value)
             return
 
         val controllersFiltered = controllers.mapNotNull {
-            if (shouldScrobble(it.packageName) && it.sessionToken !in controllersMap)
+            if (shouldScrobble(it.packageName) &&
+                it.sessionToken !in sessionTrackers
+            )
                 MediaController(AndroidStuff.applicationContext, it.sessionToken)
             else null
         }
@@ -116,63 +124,36 @@ class SessListener(
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
 //                if (controller.sessionToken !in controllersMap) {
 
-            val sessionId =
-                if (controllersFiltered.count { it.packageName == controller.packageName && it.tagCompat == controller.tagCompat } > 1)
-                // if there are multiple sessions with same appId and tag, append session token hash
-                    controller.tagCompat + "@" + controller.sessionToken.hashCode().toHexString()
-                else
-                    controller.tagCompat
+            val appId = controller.packageName
+            val sessionId = controller.tagCompat
 
-            val uniqueId = controller.packageName + "|" + sessionId
+            val uniqueId = "$appId|$sessionId@" + controller.sessionToken.hashCode().toHexString()
 
-            val playingTrackInfo = findTrackInfoByKey(uniqueId)
-                ?: PlayingTrackInfo(controller.packageName, uniqueId).also {
-                    putTrackInfo(uniqueId, it)
-                }
+            val playingTrackInfo = createTrackInfo(controller.packageName, uniqueId)
 
-            val cb = ControllerCallback(playingTrackInfo, controller.sessionToken)
+            val sessionTracker = AndroidSessionTracker(controller, playingTrackInfo)
 
-            controller.registerCallback(cb)
+            controller.registerCallback(sessionTracker.callback)
 
-            controller.playbackState?.let { cb.onPlaybackStateChanged(it) }
-            controller.metadata?.let { cb.onMetadataChanged(it) }
-            controller.extras?.let { cb.onExtrasChanged(it) }
-            cb.onAudioInfoChanged(controller.playbackInfo)
+            sessionTracker.callback.onPlaybackStateChanged(controller.playbackState)
+            sessionTracker.callback.onMetadataChanged(controller.metadata)
 
-            controllersMap[controller.sessionToken] = controller to cb
+            if (BuildKonfig.DEBUG) {
+                sessionTracker.callback.onExtrasChanged(controller.extras)
+                sessionTracker.callback.onAudioInfoChanged(controller.playbackInfo)
+            }
+
+            sessionTrackers[controller.sessionToken] = sessionTracker
         }
 
         // Now remove old sessions that are no longer active.
 //        removeSessions(tokens)
     }
 
-    @Synchronized
-    override fun removeSessions(
-        tokensToKeep: Set<*>,
-    ) {
-        val it = controllersMap.iterator()
-        while (it.hasNext()) {
-            val (token, pair) = it.next()
-            val (controller, callback) = pair
-            if (token !in tokensToKeep) {
-                callback.pause()
-                controller.unregisterCallback(callback)
-                it.remove()
-            }
-        }
-    }
-
-    override fun isMediaPlaying() =
-        platformControllers?.any { it.isMediaPlaying() } == true
-
-    private fun findCallbackByHash(hash: Int) =
-        controllersMap.values.firstOrNull { it.second.trackInfo.hash == hash }?.second
-
-    fun findControllersByHash(hash: Int) =
-        controllersMap.values.filter { it.second.trackInfo.hash == hash }
-            .map { it.first }
+    override fun isMediaPlaying() = platformControllers.any { it.isMediaPlaying() }
 
     private val MediaController.tagCompat
+        @SuppressLint("NewApi")
         get() = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> tag
             Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1 -> tag
@@ -184,8 +165,8 @@ class SessListener(
         if (mutedHash == null && audioManager.isStreamMute(AudioManager.STREAM_MUSIC))
             return
 
-        val callback = findCallbackByHash(hash)
-        if (callback != null) {
+        val tracker = findTrackerByHash(hash)
+        if (tracker != null) {
             audioManager.adjustStreamVolume(
                 AudioManager.STREAM_MUSIC,
                 AudioManager.ADJUST_MUTE,
@@ -194,7 +175,7 @@ class SessListener(
             Logger.i { "mute: done" }
 
             mutedHash = hash
-            callback.setMuted(true)
+            tracker.isMuted = true
 
             scope.launch(Dispatchers.Main) {
                 AndroidStuff.applicationContext.toast(getString(Res.string.mute))
@@ -211,33 +192,14 @@ class SessListener(
             )
             Logger.i { "unmute: done" }
 
-            val callback = findCallbackByHash(mutedHash!!)
-            callback?.setMuted(false)
+            val tracker = findTrackerByHash(mutedHash!!)
+            tracker?.isMuted = false
 
             if (clearMutedHash)
                 mutedHash = null
         }
     }
 
-    override fun skip(hash: Int) {
-        val controllers = findControllersByHash(hash)
-        controllers.skip()
-
-        scope.launch(Dispatchers.Main) {
-            AndroidStuff.applicationContext.toast(getString(Res.string.skip))
-        }
-    }
-
-
-    override fun love(hash: Int) {
-        val controllers = findControllersByHash(hash)
-        controllers.love()
-    }
-
-    override fun unlove(hash: Int) {
-        val controllers = findControllersByHash(hash)
-        controllers.unlove()
-    }
 
     //        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
     // MediaController.getTag() exists on Android 10 and lower but is marked as @hide
@@ -248,81 +210,87 @@ class SessListener(
             PlaybackState.STATE_BUFFERING
         ) && !metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
 
+    inner class AndroidSessionTracker(
+        val controller: MediaController,
+        trackInfo: PlayingTrackInfo,
+    ) : SessionTracker(trackInfo) {
 
-    override fun hasOtherPlayingControllers(appId: String): Boolean {
-        return controllersMap.values.count { (controller, cb) ->
-            controller.packageName == appId && controller.isMediaPlaying()
-//                        && !cb.trackInfo.hasBlockedTag
-        } > 1
-    }
+        override fun skip() {
+            controller.transportControls.skipToNext()
 
-    inner class ControllerCallback(
-        val trackInfo: PlayingTrackInfo,
-        private val token: MediaSession.Token,
-    ) : MediaController.Callback() {
-        private val sessionTracker = SessionTracker(trackInfo)
-        private var isRemotePlayback = false
-
-        @Synchronized
-        override fun onMetadataChanged(metadata: MediaMetadata?) {
-            metadata ?: return
-
-            if (metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L) {
-                trackInfo.resetMeta()
-                return
+            scope.launch(Dispatchers.Main) {
+                AndroidStuff.applicationContext.toast(getString(Res.string.skip))
             }
+        }
+
+        override fun love() {
+            controller.love()
+        }
+
+        override fun unlove() {
+            controller.unlove()
+        }
+
+        override fun stop() {
+            pause()
+            controller.unregisterCallback(callback)
+        }
+
+        val callback = object : MediaController.Callback() {
+
+            init {
+                controller.registerCallback(this)
+            }
+
+            @Synchronized
+            override fun onMetadataChanged(metadata: MediaMetadata?) {
+                metadata ?: return
+
+                if (metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L) {
+                    trackInfo.resetMeta()
+                    return
+                }
 
 //            if (BuildKonfig.DEBUG)
 //                metadata.dump()
 
-            val (metadataInfo, extras) = transformMediaMetadata(trackInfo, metadata)
+                val (metadataInfo, extras) = transformMediaMetadata(trackInfo, metadata)
 
-            sessionTracker.metadataChanged(metadataInfo, extras)
-        }
-
-        @Synchronized
-        override fun onPlaybackStateChanged(state: PlaybackState?) {
-            state ?: return
-
-            val options = TransformMetadataOptions(
-                scrobbleSpotifyRemote = scrobbleSpotifyRemote.value
-            )
-            val (playbackInfo, ignoreScrobble) = transformPlaybackState(trackInfo, state, options)
-
-            sessionTracker.playbackStateChanged(playbackInfo, ignoreScrobble)
-        }
-
-        override fun onSessionDestroyed() {
-            Logger.d { "onSessionDestroyed ${trackInfo.appId}" }
-            sessionTracker.pause()
-            synchronized(this@SessListener) {
-                controllersMap.remove(token)
-                    ?.first
-                    ?.unregisterCallback(this)
+                metadataChanged(metadataInfo, extras)
             }
-        }
 
-        override fun onExtrasChanged(extras: Bundle?) {
-            Logger.d { "extras updated ${trackInfo.appId}: ${extras.dump()}" }
-        }
+            @Synchronized
+            override fun onPlaybackStateChanged(state: PlaybackState?) {
+                state ?: return
 
-        override fun onSessionEvent(event: String, extras: Bundle?) {
-            Logger.d { "onSessionEvent ${trackInfo.appId}: $event ${extras.dump()}" }
-        }
+                val options = TransformMetadataOptions(
+                    scrobbleSpotifyRemote = scrobbleSpotifyRemote.value
+                )
+                val (playbackInfo, ignoreScrobble) = transformPlaybackState(
+                    trackInfo,
+                    state,
+                    options
+                )
 
-        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
-            Logger.d { "audioinfo updated ${trackInfo.appId}: $info" }
+                playbackStateChanged(playbackInfo, ignoreScrobble)
+            }
 
-            isRemotePlayback =
-                info.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE
-        }
+            override fun onSessionDestroyed() {
+                Logger.d { "onSessionDestroyed ${trackInfo.appId}" }
+                stop()
+            }
 
-        fun setMuted(muted: Boolean) {
-            sessionTracker.isMuted = muted
-        }
+            override fun onExtrasChanged(extras: Bundle?) {
+                Logger.d { "extras updated ${trackInfo.appId}: ${extras.dump()}" }
+            }
 
-        fun pause() {
-            sessionTracker.pause()
+            override fun onSessionEvent(event: String, extras: Bundle?) {
+                Logger.d { "onSessionEvent ${trackInfo.appId}: $event ${extras.dump()}" }
+            }
+
+            override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
+                Logger.d { "audioinfo updated ${trackInfo.appId}: $info" }
+            }
         }
     }
 

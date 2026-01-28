@@ -23,7 +23,6 @@ class DesktopMediaListener(
 
     override val notifyTimelineUpdates = true
 
-    private val sessionTrackersMap = mutableMapOf<String, SessionTracker>()
     private var sessionInfos: List<SessionInfo> = emptyList()
 
     private val seenApps =
@@ -61,7 +60,7 @@ class DesktopMediaListener(
 
     fun platformActiveSessionsChanged(sessions: List<SessionInfo>) {
         this.sessionInfos = sessions
-        Logger.d { "controllers: " + sessions.joinToString { it.rawAppId } }
+        Logger.i { "controllers: " + sessions.joinToString { it.rawAppId } }
 
         val normalizedAppIdsToNames = sessions
             .associate { DesktopStuff.normalizeAppId(it.rawAppId) to it.appName }
@@ -81,7 +80,7 @@ class DesktopMediaListener(
 
 
         val shouldScrobbleSessions = sessions.filter { shouldScrobble(it.rawAppId) }
-        val newSessions = shouldScrobbleSessions.filter { it.rawAppId !in sessionTrackersMap }
+        val newSessions = shouldScrobbleSessions.filter { it.rawAppId !in sessionTrackers }
 
 //        val tokens = mutableSetOf<MediaSession.Token>()
         for (session in newSessions) {
@@ -90,14 +89,9 @@ class DesktopMediaListener(
 //                if (controller.sessionToken !in controllersMap) {
 
             val normalizedAppId = DesktopStuff.normalizeAppId(session.rawAppId)
-            val playingTrackInfo =
-                findTrackInfoByKey(session.rawAppId)
-                // there is no concept of session tag on desktop platforms
-                    ?: PlayingTrackInfo(normalizedAppId, session.rawAppId).also {
-                        putTrackInfo(session.rawAppId, it)
-                    }
+            val playingTrackInfo = createTrackInfo(normalizedAppId, session.rawAppId)
 
-            sessionTrackersMap[playingTrackInfo.uniqueId] = SessionTracker(playingTrackInfo)
+            sessionTrackers[playingTrackInfo.uniqueId] = DesktopSessionTracker(playingTrackInfo)
         }
 //            }
         // Now remove old sessions that are no longer active.
@@ -107,39 +101,21 @@ class DesktopMediaListener(
 
     }
 
-    @Synchronized
-    override fun removeSessions(
-        tokensToKeep: Set<*>,
-    ) {
-        val it = sessionTrackersMap.iterator()
-        while (it.hasNext()) {
-            val (sessionKey, sessionTracker) = it.next()
-            if (sessionKey !in tokensToKeep) {
-                sessionTracker.pause()
-                it.remove()
-                DiscordRpc.clearDiscordActivity(sessionTracker.trackInfo.appId)
-            }
-        }
-    }
-
     override fun isMediaPlaying() =
-        sessionTrackersMap.values.any { it.isMediaPlaying() }
-
-    private fun findSessionTrackerByHash(hash: Int) =
-        sessionTrackersMap.values.firstOrNull { it.trackInfo.hash == hash }
+        sessionTrackers.values.any { it.isMediaPlaying() }
 
     override fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later
 //        if (mutedHash == null && audioManager.isStreamMute(AudioManager.STREAM_MUSIC))
 //            return
 
-        val callback = findSessionTrackerByHash(hash)
-        if (callback != null) {
-            PanoNativeComponents.mute(callback.trackInfo.uniqueId)
+        val tracker = findTrackerByHash(hash)
+        if (tracker != null) {
+            PanoNativeComponents.mute(tracker.trackInfo.uniqueId)
             Logger.i { "mute: done" }
 
             mutedHash = hash
-            callback.isMuted = true
+            tracker.isMuted = true
         }
     }
 
@@ -147,10 +123,10 @@ class DesktopMediaListener(
         if (mutedHash != null) {
             Logger.i { "unmute: done" }
 
-            val callback = findSessionTrackerByHash(mutedHash!!)
-            callback?.trackInfo?.uniqueId?.let { PanoNativeComponents.unmute(it) }
+            val tracker = findTrackerByHash(mutedHash!!)
+            tracker?.trackInfo?.uniqueId?.let { PanoNativeComponents.unmute(it) }
 
-            callback?.isMuted = false
+            tracker?.isMuted = false
 
             if (clearMutedHash)
                 mutedHash = null
@@ -158,30 +134,12 @@ class DesktopMediaListener(
         }
     }
 
-    override fun skip(hash: Int) {
-        findTrackInfoByHash(hash)?.uniqueId?.let {
-            PanoNativeComponents.skip(it)
-        }
-    }
-
-    override fun love(hash: Int) {}
-
-    override fun unlove(hash: Int) {}
-
     private fun SessionTracker.isMediaPlaying() =
         trackInfo.isPlaying && trackInfo.title.isNotBlank() && trackInfo.artist.isNotBlank()
 
-
-    override fun hasOtherPlayingControllers(appId: String): Boolean {
-        return sessionTrackersMap.entries.count { (sessionKey, sessionTracker) ->
-            sessionKey.startsWith("$appId|") && sessionTracker.isMediaPlaying()
-        } > 1
-    }
-
     fun platformMetadataChanged(uniqueAppId: String, metadata: MetadataInfo) {
 
-        val sessionTracker =
-            sessionTrackersMap[uniqueAppId] ?: return
+        val sessionTracker = sessionTrackers[uniqueAppId] ?: return
 
 //        Info: (scrobbler) metadata: MetadataInfo(app_id=Spotify.exe, title=Advertisement, artist=Spotify, album=, album_artist=Spotify, track_number=0, duration=25417)
         if (metadata.artist == "Spotify" && metadata.albumArtist == "Spotify" && metadata.title == "Advertisement" && metadata.album.isEmpty()) {
@@ -198,11 +156,30 @@ class DesktopMediaListener(
     }
 
     fun platformPlaybackStateChanged(uniqueAppId: String, playbackInfo: PlaybackInfo) {
-        val sessionTracker = sessionTrackersMap[uniqueAppId] ?: return
+        val sessionTracker = sessionTrackers[uniqueAppId] ?: return
 
         val options = TransformMetadataOptions()
         val (commonPlaybackInfo, ignoreScrobble) =
             transformPlaybackState(sessionTracker.trackInfo, playbackInfo, options)
         sessionTracker.playbackStateChanged(commonPlaybackInfo, ignoreScrobble)
+    }
+
+    inner class DesktopSessionTracker(
+        trackInfo: PlayingTrackInfo,
+    ) : SessionTracker(trackInfo) {
+        override fun love() {
+        }
+
+        override fun unlove() {
+        }
+
+        override fun skip() {
+            PanoNativeComponents.skip(trackInfo.uniqueId)
+        }
+
+        override fun stop() {
+            pause()
+            DiscordRpc.clearDiscordActivity(trackInfo.appId)
+        }
     }
 }

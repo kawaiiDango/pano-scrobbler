@@ -2,13 +2,13 @@ package com.arn.scrobble.media
 
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.MetadataUtils
-import com.arn.scrobble.utils.Stuff
 import java.util.Objects
 import kotlin.math.abs
 
 class PlayingTrackInfo(
     val appId: String, // normalized app id
     val uniqueId: String, // "appId|sessionId" on android, actual mpris name on linux
+    cachedTrackInfo: PlayingTrackInfo?,
 ) {
     enum class ScrobbledState {
         NONE,
@@ -47,12 +47,6 @@ class PlayingTrackInfo(
     var trackId: String? = null
         private set
 
-    var timelineStartTime: Long = 0
-        private set
-
-    var playStartTime: Long = 0
-        private set
-
     var durationMillis: Long = 0
         private set
 
@@ -67,18 +61,19 @@ class PlayingTrackInfo(
 
     var userLoved: Boolean = false
         private set
-
-    var scrobbledState: ScrobbledState = ScrobbledState.NONE
-        private set
-
-    var timePlayed: Long = 0L
-        private set
-
     val extras = mutableMapOf<String, String>()
 
-    val hasBlockedTag: Boolean =
-        ("*|" + uniqueId.substringAfter('|')) in Stuff.BLOCKED_MEDIA_SESSION_TAGS ||
-                uniqueId in Stuff.BLOCKED_MEDIA_SESSION_TAGS
+    // cached values
+    var timelineStartTime: Long = cachedTrackInfo?.timelineStartTime ?: 0L
+        private set
+    var playStartTime: Long = cachedTrackInfo?.playStartTime ?: 0L
+        private set
+    var scrobbledState: ScrobbledState = cachedTrackInfo?.scrobbledState ?: ScrobbledState.NONE
+        private set
+    var timePlayed: Long = cachedTrackInfo?.timePlayed ?: 0L
+        private set
+    var lastScrobbleHash: Int = cachedTrackInfo?.lastScrobbleHash ?: 0
+        private set
 
     fun resetMeta() =
         putOriginals("", "", "", "", 0, null, null, emptyMap())
@@ -143,6 +138,8 @@ class PlayingTrackInfo(
     }
 
     fun prepareForScrobbling() {
+        lastScrobbleHash = hash
+
         if (scrobbledState < ScrobbledState.PREPROCESSED) {
             artist = MetadataUtils.sanitizeArtist(origArtist)
             album = MetadataUtils.sanitizeAlbum(origAlbum)

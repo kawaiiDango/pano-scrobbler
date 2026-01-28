@@ -1,7 +1,9 @@
 package com.arn.scrobble.navigation
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,9 +60,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         )
     }
 
-    modalEntry<PanoRoute.Modal.Changelog>(
-        nestedScrollable = true
-    ) {
+    modalEntry<PanoRoute.Modal.Changelog> {
         ChangelogDialog(
             modifier = modalModifier()
         )
@@ -72,9 +72,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         )
     }
 
-    modalEntry<PanoRoute.Modal.UpdateAvailable>(
-        nestedScrollable = true
-    ) { route ->
+    modalEntry<PanoRoute.Modal.UpdateAvailable> { route ->
         UpdateAvailableDialog(
             updateAction = route.updateAction,
             modifier = modalModifier()
@@ -106,25 +104,23 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         )
     }
 
-    modalEntry<PanoRoute.Modal.MusicEntryInfo>(
-        nestedScrollable = true
-    ) { route ->
+    modalEntry<PanoRoute.Modal.MusicEntryInfo> { route ->
+        val scrollState = rememberScrollState()
         MusicEntryInfoDialog(
             musicEntry = route.artist ?: route.album ?: route.track!!,
             appId = route.appId,
             user = route.user,
             onNavigate = navigate,
-            scrollState = LocalModalScrollProps.current.scrollState,
+            scrollState = scrollState,
             modifier = modalModifier(padding = false)
         )
     }
 
-    modalEntry<PanoRoute.Modal.TagInfo>(
-        nestedScrollable = true
-    ) { route ->
+    modalEntry<PanoRoute.Modal.TagInfo> { route ->
+        val scrollState = rememberScrollState()
         TagInfoDialog(
             tag = route.tag,
-            scrollState = LocalModalScrollProps.current.scrollState,
+            scrollState = scrollState,
             modifier = modalModifier()
         )
     }
@@ -161,9 +157,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         )
     }
 
-    modalEntry<PanoRoute.Modal.EditScrobble>(
-        nestedScrollable = true
-    ) { route ->
+    modalEntry<PanoRoute.Modal.EditScrobble> { route ->
         SimpleEditsAddScreen(
             simpleEdit = SimpleEdit(
                 track = route.origScrobbleData.track,
@@ -197,9 +191,10 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
 
 
 @Composable
-fun modalModifier(padding: Boolean = true): Modifier {
-    val scrollProps = LocalModalScrollProps.current
-
+fun modalModifier(
+    padding: Boolean = true,
+    scrollState: ScrollState = rememberScrollState()
+): Modifier {
     return Modifier
         .fillMaxWidth()
         .then(
@@ -209,19 +204,14 @@ fun modalModifier(padding: Boolean = true): Modifier {
                 Modifier
         )
         .padding(bottom = verticalOverscanPadding())
-        .verticalScroll(
-            scrollProps.scrollState,
-            enabled = scrollProps.scrollEnabled
-        )
+        .verticalScroll(scrollState)
 }
 
 inline fun <reified K : PanoRoute.Modal> EntryProviderScope<PanoRoute>.modalEntry(
-    nestedScrollable: Boolean = false,
     noinline content: @Composable (K) -> Unit,
 ) {
     entry<K>(
-        metadata = BottomSheetSceneStrategy.bottomSheet(
-            PanoModalProperties(nestedScrollable)
-        ), content = content
+        metadata = BottomSheetSceneStrategy.bottomSheet(),
+        content = content
     )
 }

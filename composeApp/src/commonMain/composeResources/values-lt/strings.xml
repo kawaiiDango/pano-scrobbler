@@ -281,7 +281,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">Pirmas</string>
     <string name="edit_all" comment="All occurrences of a pattern">Visi</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Ištraukti</string>
-    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pavadinkite savo fiksavimo grupes <i>track, album, artist</i> arba <i>albumArtist</i>, kad jas ištrauktumėte iš kitų laukų.</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Pavadinkite savo fiksavimo grupes „<i>track, album, artist</i>“ arba „<i>albumArtist</i>“, kad jas ištrauktumėte iš kitų laukų.</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">pvz., kad pakeistumėte atlikėją ir pavadinimą, turėtumėte įrašyti atlikėjo reguliarųjį reiškinį kaip (?&lt;artist&gt;.*) ir takelio reguliarųjį reiškinį kaip (?&lt;track&gt;.*).</string>
     <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Jūsų reguliarieji reiškiniai turėtų turėti bent jau šias pavadintas fiksavimo grupes: „track“, „artist“.</string>
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Jūsų reguliarieji reiškiniai turi daugiau nei vieną „%1$s“ fiksavimo grupę, o tai neleidžiama.</string>
@@ -464,8 +464,8 @@
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Galimi reikšmių laikikliai: %1$s</string>
     <string name="show_paused_for">Rodyti pristabdytą mediją, skirta</string>
     <string name="edit_example">pvz., kad pakeistumėte Atlikėją1 su Atlikėju2, paliekant kitus metaduomenis nepakitusius, įjunkite tik atlikėjo lauką ir užpildykite originalią ir pataisytą atlikėjo reikšmę, palikdami kitus laukus išjungtus.</string>
-    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kai naudojant „%1$s“</string>
-    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kai nenaudojant „%1$s“</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kai naudojant „%1$s“.</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kai nenaudojant „%1$s“.</string>
     <string name="as_text" comment="Like copy as text, but in short">kaip tekstą</string>
     <string name="automation_cli">Komandinės eilutės argumentai</string>
     <string name="automation_cli_info">Vykdykite pano-scrobbler vykdomąjį su vienu iš šių komandinės eilutės argumentų, kai procesas jau paleistas.</string>
@@ -485,12 +485,12 @@
     <string name="purchase_pending">Jūsų mokėjimo teikėjas dar nepatvirtino pirkimo. Patikrinkite po kelių minučių.</string>
     <string name="billing_troubleshoot">Jau nusipirkote?
 
-Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programą naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkimas, yra įdiegti programą iš kompiuterio per „Google Play“ tinklalapį:
+Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ paskyra, kurioje atliktas pirkimas. Įdiegus programą naujame įrenginyje su keliomis paskyromis, „Google Play“ gali susieti ją su netinkama paskyra. Geriausias sprendimas aiškiai pasirinkti paskyrą, kuriai priklauso pirkinys, yra įdiegti programą iš kompiuterio per „Google Play“ tinklalapį:
 
 • Išdiegkite šią programą.
 • Atverkite „Google Play“ tinklalapį iš kompiuterio.
-• Prisijunkite su paskyra, kuriai priklauso pirkimas.
-• Diekite šią programą tiesiogiai iš „Google Play“ tinklalapio.</string>
+• Prisijunkite su paskyra, kuriai priklauso pirkinys.
+• Diegkite šią programą tiesiogiai iš „Google Play“ tinklalapio.</string>
     <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti.</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos.</string>
     <string name="billing_sharing">Šalinti programos pavadinimą bendrinant.</string>

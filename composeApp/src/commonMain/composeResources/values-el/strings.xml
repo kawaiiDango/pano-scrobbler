@@ -52,10 +52,6 @@
         <item quantity="one">%1$s μπλοκαρισμένα μεταδεδομένα</item>
         <item quantity="other">%1$s μπλοκαρισμένα μεταδεδομένα</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d λεπτό</item>
-        <item quantity="other">%1$d λεπτά</item>
-    </plurals>
     <string name="yes">Ναι</string>
     <string name="no">Όχι</string>
     <string name="reset">Επαναφορά</string>

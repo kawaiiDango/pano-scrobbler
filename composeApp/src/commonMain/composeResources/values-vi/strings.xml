@@ -30,9 +30,6 @@
     <plurals name="num_simple_edits">
         <item quantity="other">%1$s lần sửa</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="other">%1$s phút</item>
-    </plurals>
     <string name="yes">Có</string>
     <string name="no">Không</string>
     <string name="reset">Đặt lại</string>

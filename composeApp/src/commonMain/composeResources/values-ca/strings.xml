@@ -52,10 +52,6 @@
         <item quantity="one">%1$s metadada bloquejada</item>
         <item quantity="other">%1$s metadades bloquejades</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d minut</item>
-        <item quantity="other">%1$d minuts</item>
-    </plurals>
     <string name="yes">Sí</string>
     <string name="no">No</string>
     <string name="reset">Restableix</string>

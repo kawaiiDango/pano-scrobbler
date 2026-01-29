@@ -42,9 +42,6 @@
     <plurals name="num_blocked_metadata">
         <item quantity="other">%1$s 则已屏蔽的元数据条目</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="other">%1$d 分钟</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="other">%1$s 个待提交</item>
     </plurals>

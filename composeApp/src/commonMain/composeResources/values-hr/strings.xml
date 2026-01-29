@@ -70,11 +70,6 @@
         <item quantity="few">%1$s blokirana metapodatka</item>
         <item quantity="other">%1$s blokiranih metapodataka</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d minuta</item>
-        <item quantity="few">%1$d minute</item>
-        <item quantity="other">%1$d minuta</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s na čekanju</item>
         <item quantity="few">%1$s na čekanju</item>

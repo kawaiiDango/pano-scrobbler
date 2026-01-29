@@ -56,10 +56,6 @@
         <item quantity="one">%1$s metadato bloccato</item>
         <item quantity="other">%1$s metadati bloccati</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d minuto</item>
-        <item quantity="other">%1$d minuti</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s in attesa</item>
         <item quantity="other">%1$s in attesa</item>

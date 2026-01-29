@@ -42,9 +42,6 @@
     <plurals name="num_blocked_metadata">
         <item quantity="other">%1$s metadata yang disekat</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="other">%1$d minit</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="other">%1$s belum selesai</item>
     </plurals>

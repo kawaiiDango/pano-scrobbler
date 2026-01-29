@@ -56,10 +56,6 @@
         <item quantity="one">%1$s अवरुद्ध मेटाडेटा</item>
         <item quantity="other">%1$s अवरुद्ध मेटाडेटा</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d मिनेट</item>
-        <item quantity="other">%1$d मिनेट</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s विचाराधीन</item>
         <item quantity="other">%1$s विचाराधीन</item>

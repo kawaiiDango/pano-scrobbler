@@ -84,12 +84,6 @@
         <item quantity="many">%1$s заблокованих метаданих</item>
         <item quantity="other">%1$s заблокованих метаданих</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d хвилина</item>
-        <item quantity="few">%1$d хвилини</item>
-        <item quantity="many">%1$d хвилин</item>
-        <item quantity="other">%1$d хвилин</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s у черзі</item>
         <item quantity="few">%1$s у черзі</item>

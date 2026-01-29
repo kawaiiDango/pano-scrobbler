@@ -56,10 +56,6 @@
         <item quantity="one">%1$s अवरोधित मेटाडेटा</item>
         <item quantity="other">%1$s अवरोधित मेटादेटा</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d मिनट</item>
-        <item quantity="other">%1$d मिनट</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s शेष हैं</item>
         <item quantity="other">%1$s शेष हैं</item>

@@ -70,11 +70,6 @@
         <item quantity="few">%1$s blokirana metapodatka</item>
         <item quantity="other">%1$s blokiranih metapodataka</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d minuta</item>
-        <item quantity="few">%1$d minute</item>
-        <item quantity="other">%1$d minuta</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s na čekanju</item>
         <item quantity="few">%1$s na čekanju</item>
@@ -450,6 +445,8 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kada se koristi %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kada se ne koristi %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Kao tekst</string>
+    <string name="album_art_now_playing_desc">Zahtijeva prijavu na last.fm</string>
+    <string name="spotify_consent">Dohvatiti slike izvođača sa Spotifya?</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>

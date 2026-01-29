@@ -51,6 +51,7 @@ WebView2 provided by Microsoft Edge Chromium
     </string>
 
     <!--  strings for unfinalized stuff  -->
+    <string name="discord_app_name">App name</string>
     <string name="not_running_desktop">The scrobbler has stopped. Check logs.</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
     <string name="desktop">PC</string>

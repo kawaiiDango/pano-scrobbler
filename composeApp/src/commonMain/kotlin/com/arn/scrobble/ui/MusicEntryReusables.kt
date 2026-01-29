@@ -87,9 +87,9 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.AllOut
 import com.arn.scrobble.icons.AutoAwesomeMosaic
-import com.arn.scrobble.icons.Circle
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.FiberManualRecord
 import com.arn.scrobble.icons.GraphicEq
 import com.arn.scrobble.icons.GridView
 import com.arn.scrobble.icons.HeartBroken
@@ -1407,7 +1407,7 @@ fun stonksIconForDelta(delta: Int?) = when {
     delta > 5 -> Icons.KeyboardDoubleArrowUp to MaterialTheme.colorScheme.tertiary
     delta in -1 downTo -5 -> Icons.KeyboardArrowDown to MaterialTheme.colorScheme.secondary
     delta < -5 -> Icons.KeyboardDoubleArrowDown to MaterialTheme.colorScheme.secondary
-    delta == 0 -> Icons.Circle to MaterialTheme.colorScheme.outline
+    delta == 0 -> Icons.FiberManualRecord to MaterialTheme.colorScheme.outline
     else -> null
 }
 

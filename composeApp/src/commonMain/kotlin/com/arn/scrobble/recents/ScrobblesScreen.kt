@@ -378,7 +378,7 @@ fun ScrobblesScreen(
                                 )
                                 icon = Icons.OpenInBrowser
                                 onClick = {
-                                    onNavigate(PanoRoute.Modal.ShowLink(Stuff.LINK_HOMEPAGE))
+                                    onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
                                 }
                                 onDismiss = {
                                     scope.launch {

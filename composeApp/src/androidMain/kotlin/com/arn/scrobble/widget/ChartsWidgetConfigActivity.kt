@@ -49,14 +49,14 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
                 ChartsWidgetConfigScreen(
                     isPinned = isPinned,
                     prefs = widgetPrefs?.widgets[appWidgetId] ?: SpecificWidgetPrefs(),
-                    onSave = ::savePrefs,
+                    onSave = ::savePrefsAndFinish,
                     onCancel = ::cancel
                 )
             }
         }
     }
 
-    private fun savePrefs(prefs: SpecificWidgetPrefs, reFetch: Boolean) {
+    private fun savePrefsAndFinish(prefs: SpecificWidgetPrefs, reFetch: Boolean) {
         lifecycleScope.launch {
             var exists = false
 
@@ -72,10 +72,6 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
                     this@ChartsWidgetConfigActivity.applicationContext,
                     true
                 )
-            setResult(RESULT_OK, Intent().apply {
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-            })
-
             setResult(true)
             finish()
         }
@@ -94,7 +90,6 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
             if (positive) RESULT_OK else RESULT_CANCELED,
             resultValue
         )
-
     }
 
     override fun attachBaseContext(newBase: Context?) {

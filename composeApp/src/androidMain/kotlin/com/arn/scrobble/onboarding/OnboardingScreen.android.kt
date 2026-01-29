@@ -146,7 +146,7 @@ private fun NotificationListenerStep(
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 AndroidStuff.applicationContext.startActivity(intent)
             } else {
-                navigate(PanoRoute.WebView(Stuff.LINK_TV))
+                navigate(PanoRoute.WebView(Stuff.TV_URL))
             }
         },
         isDone = isDone,
@@ -236,7 +236,7 @@ actual fun OnboardingScreen(
 
         TextButton(
             onClick = {
-                onNavigate(PanoRoute.WebView(Stuff.LINK_PRIVACY_POLICY))
+                onNavigate(PanoRoute.WebView(Stuff.PRIVACY_POLICY_URL))
             },
             modifier = Modifier
                 .align(Alignment.End)

@@ -34,6 +34,7 @@ edit
 edit_note
 error
 favorite
+fiber_manual_record
 find_replace
 folder
 graphic_eq

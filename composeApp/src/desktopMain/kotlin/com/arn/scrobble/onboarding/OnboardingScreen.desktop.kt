@@ -43,7 +43,7 @@ actual fun OnboardingScreen(
 
         TextButton(
             onClick = {
-                PlatformStuff.openInBrowser(Stuff.LINK_FAQ)
+                PlatformStuff.openInBrowser(Stuff.FAQ_URL)
             },
             modifier = Modifier
                 .align(Alignment.End)

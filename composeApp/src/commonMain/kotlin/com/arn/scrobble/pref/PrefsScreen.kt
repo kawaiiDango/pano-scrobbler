@@ -545,7 +545,7 @@ fun PrefsScreen(
             TextPref(
                 text = stringResource(Res.string.pref_translate),
                 onClick = {
-                    PlatformStuff.openInBrowser(Stuff.LINK_CROWDIN)
+                    PlatformStuff.openInBrowser(Stuff.CROWDIN_URL)
                 }
             )
         }
@@ -776,9 +776,9 @@ fun PrefsScreen(
                 text = stringResource(Res.string.pref_privacy_policy),
                 onClick = {
                     if (PlatformStuff.isDesktop)
-                        PlatformStuff.openInBrowser(Stuff.LINK_PRIVACY_POLICY)
+                        PlatformStuff.openInBrowser(Stuff.PRIVACY_POLICY_URL)
                     else
-                        onNavigate(PanoRoute.WebView(Stuff.LINK_PRIVACY_POLICY))
+                        onNavigate(PanoRoute.WebView(Stuff.PRIVACY_POLICY_URL))
                 }
             )
         }
@@ -792,9 +792,9 @@ fun PrefsScreen(
                     else
                         stringResource(Res.string.desktop)
                 ),
-                summary = Stuff.LINK_HOMEPAGE,
+                summary = Stuff.HOMEPAGE_URL,
                 onClick = {
-                    onNavigate(PanoRoute.Modal.ShowLink(Stuff.LINK_HOMEPAGE))
+                    onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
                 }
             )
         }

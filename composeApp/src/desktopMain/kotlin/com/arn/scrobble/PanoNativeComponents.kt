@@ -216,21 +216,20 @@ object PanoNativeComponents {
     @JvmStatic
     external fun updateDiscordActivity(
         clientId: String,
+        name: String,
         state: String,
         details: String,
         largeText: String,
         startTime: Long,
         endTime: Long,
         artUrl: String,
+        detailsUrl: String,
         isPlaying: Boolean,
         statusLine: Int,
-        buttonTexts: Array<String>,
-        buttonUrls: Array<String>,
+        buttonText: String,
+        buttonUrl: String,
     ): Boolean
 
     @JvmStatic
-    external fun clearDiscordActivity(): Boolean
-
-    @JvmStatic
-    external fun stopDiscordActivity(): Boolean
+    external fun clearDiscordActivity(shutdown: Boolean): Boolean
 }

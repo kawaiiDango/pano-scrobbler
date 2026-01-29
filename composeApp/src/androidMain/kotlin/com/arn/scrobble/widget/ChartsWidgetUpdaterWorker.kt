@@ -227,10 +227,8 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
         private const val WORK_NAME_KEY = "uniqueWorkName"
 
         fun schedule(context: Context, runImmediately: Boolean) {
-            val constraints = Constraints.Builder()
+            val constraintsBuilder = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true)
-                .build()
 
             if (runImmediately) {
                 val inputData = Data.Builder()
@@ -238,7 +236,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                     .build()
 
                 val oneTimeWork = OneTimeWorkRequestBuilder<ChartsWidgetUpdaterWorker>()
-                    .setConstraints(constraints)
+                    .setConstraints(constraintsBuilder.build())
                     .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     .setInputData(inputData)
                     .build()
@@ -260,7 +258,11 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS.toLong(),
                 TimeUnit.HOURS
             )
-                .setConstraints(constraints)
+                .setConstraints(
+                    constraintsBuilder
+                        .setRequiresBatteryNotLow(true)
+                        .build()
+                )
                 .setInputData(inputData)
                 .setInitialDelay(
                     Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS.toLong(),

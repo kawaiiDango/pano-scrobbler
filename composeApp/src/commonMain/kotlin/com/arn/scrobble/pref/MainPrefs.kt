@@ -138,8 +138,9 @@ data class MainPrefs(
         val line1Format: String = $$"$title",
         val line2Format: String = $$"$artist",
         val line3Format: String = $$"$album",
+        val nameFormat: String = $$"$mediaPlayer",
         val showPausedForSecs: Int = 60,
-        val showUrlButton: Boolean = true,
+        val detailsUrl: Boolean = true,
     )
 
     val autoDetectAppsP

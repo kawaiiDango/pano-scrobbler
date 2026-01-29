@@ -106,7 +106,7 @@ val Icons.ResetSettings: ImageVector
                 reflectiveQuadToRelative(77f, -114f)
                 quadToRelative(48.5f, -48.5f, 114f, -77f)
                 reflectiveQuadTo(480f, 120f)
-                quadToRelative(113f, 0f, 203.5f, 63f)
+                quadToRelative(114f, 0f, 204f, 62.5f)
                 reflectiveQuadTo(814f, 345f)
                 quadToRelative(6f, 16f, 0f, 31f)
                 reflectiveQuadToRelative(-22f, 21f)

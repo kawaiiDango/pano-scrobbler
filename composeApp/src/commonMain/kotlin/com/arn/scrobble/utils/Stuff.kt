@@ -203,11 +203,12 @@ object Stuff {
         "com.mrsep.musicrecognizer.enqueued_result",
     )
 
-    const val LINK_TV = "https://kawaiidango.github.io/pano-scrobbler/tv"
-    const val LINK_HOMEPAGE = "https://kawaiidango.github.io"
-    const val LINK_CROWDIN = "https://crowdin.com/project/pscrobbler"
-    const val LINK_PRIVACY_POLICY = "https://kawaiidango.github.io/pano-scrobbler/privacy-policy"
-    const val LINK_FAQ = "https://kawaiidango.github.io/pano-scrobbler/faq"
+    const val TV_URL = "https://kawaiidango.github.io/pano-scrobbler/tv"
+    const val HOMEPAGE_URL = "https://kawaiidango.github.io"
+    const val REPO_URL = "https://github.com/kawaiiDango/pano-scrobbler"
+    const val CROWDIN_URL = "https://crowdin.com/project/pscrobbler"
+    const val PRIVACY_POLICY_URL = "https://kawaiidango.github.io/pano-scrobbler/privacy-policy"
+    const val FAQ_URL = "https://kawaiidango.github.io/pano-scrobbler/faq"
 
     const val DISCORD_CLIENT_ID = "1299386213114970172"
     const val EMBEDDED_SERVER_KS = "Jjs5awQQB0YjN10vKCsWPC8AXW0"

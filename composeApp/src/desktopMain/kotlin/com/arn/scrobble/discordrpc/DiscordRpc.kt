@@ -1,6 +1,7 @@
 package com.arn.scrobble.discordrpc
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.pref.AppItem
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -25,15 +25,15 @@ private sealed interface DiscordActivity {
         val discordClientId: String,
         val appId: String,
         val hash: Int,
+        val name: String,
         val state: String,
         val details: String,
         val largeText: String,
         val startTimeMillis: Long,
         val durationMillis: Long?,
         val artUrl: String,
+        val detailsUrl: String,
         val statusLine: Int,
-        val buttonsTexts: List<String>,
-        val buttonUrls: List<String>,
     ) : DiscordActivity
 
     data object Clear : DiscordActivity
@@ -99,16 +99,18 @@ object DiscordRpc {
 
                             success = PanoNativeComponents.updateDiscordActivity(
                                 clientId = activity.discordClientId,
+                                name = activity.name,
                                 state = activity.state,
                                 details = activity.details,
                                 largeText = activity.largeText,
                                 startTime = startTimeSecs,
                                 endTime = endTimeSecs,
                                 artUrl = activity.artUrl,
+                                detailsUrl = activity.detailsUrl,
                                 isPlaying = isPlaying,
                                 statusLine = activity.statusLine,
-                                buttonTexts = activity.buttonsTexts.toTypedArray(),
-                                buttonUrls = activity.buttonUrls.toTypedArray(),
+                                buttonText = "via " + BuildKonfig.APP_NAME,
+                                buttonUrl = Stuff.REPO_URL,
                             )
 
                             _wasSuccessful.value = success
@@ -129,12 +131,12 @@ object DiscordRpc {
                     }
 
                     is DiscordActivity.Clear -> {
-                        PanoNativeComponents.clearDiscordActivity()
+                        PanoNativeComponents.clearDiscordActivity(false)
                         _wasSuccessful.value = null
                     }
 
                     is DiscordActivity.Stop -> {
-                        PanoNativeComponents.stopDiscordActivity()
+                        PanoNativeComponents.clearDiscordActivity(true)
                         _wasSuccessful.value = null
                     }
                 }
@@ -155,46 +157,49 @@ object DiscordRpc {
 
                 if (event is PlayingTrackNotifyEvent.TrackPlaying && event.preprocessed)
                     discordActivity.value =
-                        transform(event.scrobbleData.appId.orEmpty(), event, settings)
+                        transform(
+                            appId = event.scrobbleData.appId.orEmpty(),
+                            appName = PlatformStuff.loadApplicationLabel(event.scrobbleData.appId.orEmpty()),
+                            trackPlaying = event,
+                            settings = settings
+                        )
             }
         }.launchIn(GlobalScope)
     }
 
     private fun transform(
         appId: String,
+        appName: String,
         trackPlaying: PlayingTrackNotifyEvent.TrackPlaying,
         settings: MainPrefs.DiscordRpcSettings,
     ): DiscordActivity.Activity {
         val hash = trackPlaying.hash
-        val state = formatLine(settings.line2Format, trackPlaying)
-        val details = formatLine(settings.line1Format, trackPlaying)
-        val largeText = formatLine(settings.line3Format, trackPlaying)
+        val state = formatLine(settings.line2Format, trackPlaying, appName)
+        val details = formatLine(settings.line1Format, trackPlaying, appName)
+        val largeText = formatLine(settings.line3Format, trackPlaying, appName)
+        val name = formatLine(settings.nameFormat, trackPlaying, appName)
         val startTimeMillis =
             trackPlaying.timelineStartTime.takeIf { it > 0 } ?: System.currentTimeMillis()
         val durationMillis = trackPlaying.scrobbleData.duration
         val artUrl = trackPlaying.artUrl?.takeIf { settings.albumArt }.orEmpty()
         val statusLine = settings.statusLine
-        val buttonTexts = mutableListOf<String>()
-        val buttonUrls = mutableListOf<String>()
-
-        if (settings.showUrlButton) {
-            buttonTexts.add("On last.fm")
-            buttonUrls.add("https://www.last.fm/music/${trackPlaying.scrobbleData.artist.encodeURLPathPart()}/_/${trackPlaying.scrobbleData.track.encodeURLPathPart()}")
-        }
+        val detailsUrl =
+            "https://www.last.fm/music/${trackPlaying.scrobbleData.artist.encodeURLPathPart()}/_/${trackPlaying.scrobbleData.track.encodeURLPathPart()}"
+                .takeIf { settings.detailsUrl }.orEmpty()
 
         return DiscordActivity.Activity(
             discordClientId = Stuff.DISCORD_CLIENT_ID,
             appId = appId,
             hash = hash,
+            name = name,
             state = state,
             details = details,
             largeText = largeText,
             startTimeMillis = startTimeMillis,
             durationMillis = durationMillis,
             artUrl = artUrl,
+            detailsUrl = detailsUrl,
             statusLine = statusLine,
-            buttonsTexts = buttonTexts,
-            buttonUrls = buttonUrls,
         )
     }
 
@@ -212,7 +217,8 @@ object DiscordRpc {
 
     private fun formatLine(
         template: String,
-        trackPlaying: PlayingTrackNotifyEvent.TrackPlaying
+        trackPlaying: PlayingTrackNotifyEvent.TrackPlaying,
+        appName: String,
     ): String {
         return template.replace(placeholderRegex) { match ->
             when (match.groupValues.getOrNull(1)) {
@@ -226,10 +232,7 @@ object DiscordRpc {
                 DiscordRpcPlaceholder.album.name -> trackPlaying.scrobbleData.album.orEmpty()
                 DiscordRpcPlaceholder.mediaPlayer.name -> {
                     trackPlaying.scrobbleData.appId?.let {
-                        AppItem(
-                            it,
-                            runBlocking { PlatformStuff.loadApplicationLabel(it) }
-                        ).friendlyLabel
+                        AppItem(it, appName).friendlyLabel
                     }.orEmpty()
                 }
 

@@ -50,7 +50,7 @@ fun HelpScreen(
         ) {
             OutlinedButton(
                 onClick = {
-                    PlatformStuff.openInBrowser(Stuff.LINK_FAQ)
+                    PlatformStuff.openInBrowser(Stuff.FAQ_URL)
                 }
             ) {
                 Text(stringResource(Res.string.faq))
@@ -71,7 +71,7 @@ fun HelpScreen(
         }
     } else {
         WebViewScreen(
-            initialUrl = Stuff.LINK_FAQ,
+            initialUrl = Stuff.FAQ_URL,
             onSetTitle = {},
             onBack = { },
             bottomContent = {

@@ -3,7 +3,7 @@
     <string name="artists">Atlikėjai</string>
     <string name="albums">Albumai</string>
     <string name="tracks">Takeliai</string>
-    <string name="state_scrobbling">Dabar skrobuolinama…</string>
+    <string name="state_scrobbling">Dabar skrobolinama…</string>
     <string name="search">Ieškoti</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">„%1$s“ aptikta</string>
     <string comment="Its a noun" name="channel_err">Skroblo klaidos</string>
@@ -19,8 +19,8 @@
     <string name="appwidget_loading">Įkeliama…</string>
     <string name="show_persistent_noti">Rodyti nuolatinį pranešimą</string>
     <string name="persistent_noti_text">Palieskite, kad paslėpti šį</string>
-    <string name="scrobbler_off">Skrobuoklis išjungtas</string>
-    <string name="scrobbler_on">Skrobuoklis aktyvus</string>
+    <string name="scrobbler_off">Skroboklis išjungtas</string>
+    <string name="scrobbler_on">Skroboklis aktyvius</string>
     <plurals name="num_weeks">
         <item quantity="one">%1$s savaitė</item>
         <item quantity="few">%1$s savaitės</item>

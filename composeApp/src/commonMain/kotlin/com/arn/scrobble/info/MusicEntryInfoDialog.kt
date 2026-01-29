@@ -30,7 +30,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,6 +80,7 @@ import com.arn.scrobble.panoicons.UserTag
 import com.arn.scrobble.ui.EntriesRow
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyRow
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
@@ -693,7 +693,7 @@ private fun ColumnScope.InfoTags(
                 .align(Alignment.End)
                 .width(200.dp)
         ) {
-            OutlinedTextField(
+            PanoOutlinedTextField(
                 value = userTagInput,
                 onValueChange = { userTagInput = it },
                 label = { Text(stringResource(Res.string.user_tags_hint)) },

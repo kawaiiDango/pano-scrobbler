@@ -12,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +40,7 @@ import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.InfoText
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -95,7 +95,7 @@ fun RegexEditsTestScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
-        OutlinedTextField(
+        PanoOutlinedTextField(
             value = track,
             onValueChange = {
                 track = it
@@ -106,7 +106,7 @@ fun RegexEditsTestScreen(
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
+        PanoOutlinedTextField(
             value = artist,
             onValueChange = {
                 artist = it
@@ -117,7 +117,7 @@ fun RegexEditsTestScreen(
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
+        PanoOutlinedTextField(
             value = album,
             onValueChange = {
                 album = it
@@ -127,7 +127,7 @@ fun RegexEditsTestScreen(
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
+        PanoOutlinedTextField(
             value = albumArtist,
             onValueChange = {
                 albumArtist = it

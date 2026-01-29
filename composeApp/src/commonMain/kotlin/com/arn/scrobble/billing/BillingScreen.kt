@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumExtendedFloatingActionButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +43,7 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.utils.PlatformStuff
@@ -224,7 +224,7 @@ fun BillingScreen(
         }
 
         if (needsActivationCode) {
-            OutlinedTextField(
+            PanoOutlinedTextField(
                 value = code,
                 onValueChange = {
                     code = it

@@ -59,6 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -67,6 +68,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -298,7 +306,7 @@ fun SearchField(
     enabled: Boolean = true,
     label: String = stringResource(Res.string.search),
 ) {
-    OutlinedTextField(
+    PanoOutlinedTextField(
         value = searchTerm,
         onValueChange = {
             onSearchTermChange(it)
@@ -332,14 +340,15 @@ fun SearchField(
 }
 
 @Composable
-fun OutlinedTextFieldTvSafe(
+fun PanoOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    enabledOnTv: Boolean = true,
     placeholder: @Composable (() -> Unit)? = null,
     label: @Composable (() -> Unit)? = null,
-    maxLines: Int = Int.MAX_VALUE,
+    singleLine: Boolean = false,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     supportingText: @Composable (() -> Unit)? = null,
@@ -356,11 +365,23 @@ fun OutlinedTextFieldTvSafe(
             )
         },
         label = label,
-        modifier = modifier,
-        enabled = enabled && !PlatformStuff.isTv, // Disable on TV
+        modifier = modifier then
+                if (!singleLine) {
+                    val focusManager = LocalFocusManager.current
+
+                    Modifier.onPreviewKeyEvent {
+                        if (it.type == KeyEventType.KeyDown && it.key == Key.Tab && !it.isShiftPressed) {
+                            focusManager.moveFocus(FocusDirection.Next)
+                            true
+                        } else
+                            false
+                    }
+                } else
+                    Modifier,
+        enabled = enabled && (!PlatformStuff.isTv || enabledOnTv),
 //        readOnly = PlatformStuff.isTv,
         placeholder = placeholder,
-        maxLines = maxLines,
+        singleLine = singleLine,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         supportingText = supportingText,

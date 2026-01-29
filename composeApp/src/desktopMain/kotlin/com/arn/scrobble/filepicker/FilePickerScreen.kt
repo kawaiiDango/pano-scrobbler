@@ -13,7 +13,6 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +39,7 @@ import com.arn.scrobble.icons.VisibilityOff
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoLazyColumn
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformFile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -218,7 +218,7 @@ fun FilePickerScreen(
                                 .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            OutlinedTextField(
+                            PanoOutlinedTextField(
                                 value = fileName ?: "",
                                 onValueChange = { newFileName ->
                                     fileName = newFileName

@@ -31,7 +31,7 @@ import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,7 +102,7 @@ private fun BlockedMetadataAddContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = if (hasTrack) track else anythingText,
             onValueChange = { track = it },
             label = { Text(stringResource(Res.string.track)) },
@@ -117,11 +117,12 @@ private fun BlockedMetadataAddContent(
                 imeAction = ImeAction.Next
             ),
             enabled = isLicenseValid && hasTrack,
+            enabledOnTv = false,
             modifier = Modifier
                 .fillMaxWidth()
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = if (hasArtist) artist else anythingText,
             onValueChange = { artist = it },
             label = {
@@ -145,11 +146,12 @@ private fun BlockedMetadataAddContent(
                 imeAction = ImeAction.Next
             ),
             enabled = isLicenseValid && hasArtist,
+            enabledOnTv = false,
             modifier = Modifier
                 .fillMaxWidth()
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = if (hasAlbum) album else anythingText,
             onValueChange = { album = it },
             label = { Text(stringResource(Res.string.album)) },
@@ -164,11 +166,12 @@ private fun BlockedMetadataAddContent(
                 imeAction = ImeAction.Next
             ),
             enabled = isLicenseValid && hasAlbum,
+            enabledOnTv = false,
             modifier = Modifier
                 .fillMaxWidth()
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = if (hasAlbumArtist) albumArtist else anythingText,
             onValueChange = { albumArtist = it },
             label = { Text(stringResource(Res.string.album_artist)) },
@@ -183,6 +186,7 @@ private fun BlockedMetadataAddContent(
                 imeAction = ImeAction.Done
             ),
             enabled = isLicenseValid && hasAlbumArtist,
+            enabledOnTv = false,
             modifier = Modifier
                 .fillMaxWidth()
         )

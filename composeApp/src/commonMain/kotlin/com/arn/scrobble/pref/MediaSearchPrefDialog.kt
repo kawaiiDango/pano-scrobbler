@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.ui.HighlighterVisualTransformation
-import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -148,7 +148,7 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
             }
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = searchUrlTemplateText ?: "",
             onValueChange = { searchUrlTemplateText = it },
             label = {

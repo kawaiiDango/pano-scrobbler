@@ -67,7 +67,7 @@ import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.HighlighterVisualTransformation
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
@@ -368,10 +368,11 @@ fun RegexEditsAddScreen(
                 )
             }
 
-            OutlinedTextFieldTvSafe(
+            PanoOutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text(stringResource(Res.string.edit_name)) },
+                enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 ),
@@ -655,11 +656,12 @@ private fun SearchAndReplacePair(
             )
         }
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = searchRegex,
             onValueChange = onSearchChange,
             enabled = copyFromField == null,
             label = { Text(stringResource(Res.string.search)) },
+            enabledOnTv = false,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -667,11 +669,12 @@ private fun SearchAndReplacePair(
                 .fillMaxWidth(),
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = replacementRegex,
             onValueChange = onReplacementChange,
             enabled = copyFromField == null,
             label = { Text(stringResource(Res.string.edit_replace)) },
+            enabledOnTv = false,
             modifier = Modifier
                 .fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -724,10 +727,11 @@ private fun SearchFields(
                 .padding(top = 8.dp)
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = track,
             onValueChange = { onValueChange(it, album, artist, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.track)) },
+            enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -736,10 +740,11 @@ private fun SearchFields(
             enabled = enabled
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = artist,
             onValueChange = { onValueChange(track, album, it, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.artist)) },
+            enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -748,10 +753,11 @@ private fun SearchFields(
             enabled = enabled
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = album,
             onValueChange = { onValueChange(track, it, artist, albumArtist) },
             label = { Text(labelPrefix + stringResource(Res.string.album)) },
+            enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -760,10 +766,11 @@ private fun SearchFields(
             enabled = enabled
         )
 
-        OutlinedTextFieldTvSafe(
+        PanoOutlinedTextField(
             value = albumArtist,
             onValueChange = { onValueChange(track, album, artist, it) },
             label = { Text(labelPrefix + stringResource(Res.string.album_artist)) },
+            enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = captureGroupsVisualTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(

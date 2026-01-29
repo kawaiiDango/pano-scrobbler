@@ -54,7 +54,7 @@ import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.InlineCheckButton
-import com.arn.scrobble.ui.OutlinedTextFieldTvSafe
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.redactedMessage
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.valentinilk.shimmer.ShimmerBounds
@@ -292,7 +292,7 @@ fun SimpleEditsAddScreen(
                         .padding(top = 8.dp)
                 )
 
-                OutlinedTextFieldTvSafe(
+                PanoOutlinedTextField(
                     enabled = hasOrigTrack,
                     value = if (hasOrigTrack) origTrack else anythingText,
                     onValueChange = { origTrack = it },
@@ -303,11 +303,12 @@ fun SimpleEditsAddScreen(
                         )
                     },
                     label = { Text(stringResource(Res.string.track)) },
+                    enabledOnTv = false,
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                OutlinedTextFieldTvSafe(
+                PanoOutlinedTextField(
                     enabled = hasOrigArtist,
                     value = if (hasOrigArtist) origArtist else anythingText,
                     onValueChange = { origArtist = it },
@@ -318,11 +319,12 @@ fun SimpleEditsAddScreen(
                         )
                     },
                     label = { Text(stringResource(Res.string.artist)) },
+                    enabledOnTv = false,
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                OutlinedTextFieldTvSafe(
+                PanoOutlinedTextField(
                     enabled = hasOrigAlbum,
                     value = if (hasOrigAlbum) origAlbum else anythingText,
                     onValueChange = { origAlbum = it },
@@ -333,11 +335,12 @@ fun SimpleEditsAddScreen(
                         )
                     },
                     label = { Text(stringResource(Res.string.album)) },
+                    enabledOnTv = false,
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                OutlinedTextFieldTvSafe(
+                PanoOutlinedTextField(
                     enabled = hasOrigAlbumArtist,
                     value = if (hasOrigAlbumArtist) origAlbumArtist else anythingText,
                     onValueChange = { origAlbumArtist = it },
@@ -348,6 +351,7 @@ fun SimpleEditsAddScreen(
                         )
                     },
                     label = { Text(stringResource(Res.string.album_artist)) },
+                    enabledOnTv = false,
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -367,7 +371,7 @@ fun SimpleEditsAddScreen(
                 )
             }
 
-            OutlinedTextFieldTvSafe(
+            PanoOutlinedTextField(
                 enabled = hasTrack,
                 value = if (hasTrack) track else existingText,
                 onValueChange = { track = it },
@@ -380,11 +384,12 @@ fun SimpleEditsAddScreen(
                     }
                 } else null,
                 label = { Text(stringResource(Res.string.track)) },
+                enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextFieldTvSafe(
+            PanoOutlinedTextField(
                 enabled = hasArtist,
                 value = if (hasArtist) artist else existingText,
                 onValueChange = { artist = it },
@@ -398,11 +403,12 @@ fun SimpleEditsAddScreen(
                         }
                     } else null,
                 label = { Text(stringResource(Res.string.artist)) },
+                enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextFieldTvSafe(
+            PanoOutlinedTextField(
                 enabled = hasAlbum,
                 value = if (hasAlbum) album else existingText,
                 onValueChange = { album = it },
@@ -416,12 +422,13 @@ fun SimpleEditsAddScreen(
                         }
                     } else null,
                 label = { Text(stringResource(Res.string.album)) },
+                enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth()
             )
 
             if (isExpanded || !origScrobbleData?.albumArtist.isNullOrEmpty()) {
-                OutlinedTextFieldTvSafe(
+                PanoOutlinedTextField(
                     enabled = hasAlbumArtist,
                     value = if (hasAlbumArtist) albumArtist else existingText,
                     onValueChange = { albumArtist = it },
@@ -434,6 +441,7 @@ fun SimpleEditsAddScreen(
                         }
                     } else null,
                     label = { Text(stringResource(Res.string.album_artist)) },
+                    enabledOnTv = false,
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = { doEdit() }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -24,6 +23,7 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.SliderPref
 import com.arn.scrobble.pref.SwitchPref
 import com.arn.scrobble.ui.HighlighterVisualTransformation
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -149,7 +149,7 @@ fun DiscordRpcScreen(
                 .padding(horizontal = horizontalOverscanPadding())
         )
 
-        OutlinedTextField(
+        PanoOutlinedTextField(
             label = { Text(stringResource(Res.string.line_n, 1)) },
             value = line1Format,
             onValueChange = {
@@ -175,7 +175,7 @@ fun DiscordRpcScreen(
                 .padding(horizontal = horizontalOverscanPadding())
         )
 
-        OutlinedTextField(
+        PanoOutlinedTextField(
             label = { Text(stringResource(Res.string.line_n, 2)) },
             value = line2Format,
             onValueChange = {
@@ -201,7 +201,7 @@ fun DiscordRpcScreen(
                 .padding(horizontal = horizontalOverscanPadding())
         )
 
-        OutlinedTextField(
+        PanoOutlinedTextField(
             label = { Text(stringResource(Res.string.line_n, 3)) },
             value = line3Format,
             onValueChange = {

@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.OutlinedIconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.arn.scrobble.icons.Add
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
@@ -107,7 +107,7 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
             }
         }
 
-        OutlinedTextField(
+        PanoOutlinedTextField(
             modifier = Modifier.widthIn(max = 200.dp),
             value = tagInput,
             singleLine = true,

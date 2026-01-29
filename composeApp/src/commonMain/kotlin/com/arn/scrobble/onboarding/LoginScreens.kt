@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +31,7 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.OpenInBrowser
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.InfoText
+import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.VerifyButton
 import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.PlatformStuff
@@ -69,7 +69,7 @@ fun ListenBrainzLoginScreen(
     ) {
 
         if (hasCustomApiRoot) {
-            OutlinedTextField(
+            PanoOutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = apiRoot,
                 singleLine = true,
@@ -102,7 +102,7 @@ fun ListenBrainzLoginScreen(
             )
         }
 
-        OutlinedTextField(
+        PanoOutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = token,
             singleLine = true,
@@ -147,7 +147,7 @@ fun GnufmLoginScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.testTagsAsResId()
     ) {
-        OutlinedTextField(
+        PanoOutlinedTextField(
             modifier = Modifier.fillMaxWidth().testTag("login_url"),
             singleLine = true,
             value = apiRoot,
@@ -159,7 +159,7 @@ fun GnufmLoginScreen(
                 imeAction = ImeAction.Next
             )
         )
-        OutlinedTextField(
+        PanoOutlinedTextField(
             modifier = Modifier.fillMaxWidth().testTag("login_username"),
             singleLine = true,
             value = username,
@@ -171,7 +171,7 @@ fun GnufmLoginScreen(
                 imeAction = ImeAction.Next
             )
         )
-        OutlinedTextField(
+        PanoOutlinedTextField(
             modifier = Modifier.fillMaxWidth().testTag("login_password"),
             singleLine = true,
             value = password,
@@ -276,7 +276,7 @@ fun PleromaLoginScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
-        OutlinedTextField(
+        PanoOutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = apiRoot,
             singleLine = true,

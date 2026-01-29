@@ -56,10 +56,6 @@
         <item quantity="one">%1$s geblokkeerde metadata</item>
         <item quantity="other">%1$s geblokkeerde metadata</item>
     </plurals>
-    <plurals name="num_minutes">
-        <item quantity="one">%1$d minuut</item>
-        <item quantity="other">%1$d minuten</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s in behandeling</item>
         <item quantity="other">%1$s in behandeling</item>

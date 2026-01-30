@@ -29,8 +29,9 @@ object PanoNativeComponents {
     fun load() {
         System.load(DesktopStuff.getLibraryPath("pano_native_components"))
 
-        val logFilePath = DesktopStuff.logsDir.resolve("pano-native-components.log").absolutePath
-        setLogFilePath(logFilePath)
+        val logFilePath = DesktopStuff.logsDir.resolve("pano-native-components.log")
+        logFilePath.mkdirs()
+        setLogFilePath(logFilePath.absolutePath)
     }
 
     fun init() {

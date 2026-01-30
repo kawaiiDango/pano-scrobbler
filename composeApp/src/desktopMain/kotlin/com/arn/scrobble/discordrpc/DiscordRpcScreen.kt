@@ -51,7 +51,6 @@ private enum class Line {
     Line2,
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DiscordRpcScreen(
     modifier: Modifier = Modifier,
@@ -76,13 +75,12 @@ fun DiscordRpcScreen(
                 PlatformStuff.mainPrefs.updateData {
                     it.copy(
                         discordRpc = it.discordRpc.copy(
-                            nameFormat = nameFormat.trim()
-                                .ifEmpty { defaultSettings.nameFormat },
                             line1Format = line1Format.trim()
                                 .ifEmpty { defaultSettings.line1Format },
                             line2Format = line2Format.trim()
                                 .ifEmpty { defaultSettings.line2Format },
-                            line3Format = line3Format.trim() // line 3 can be empty
+                            line3Format = line3Format.trim(), // line 3 can be empty
+                            nameFormat = nameFormat.trim(), // name can be empty
                         )
                     )
                 }

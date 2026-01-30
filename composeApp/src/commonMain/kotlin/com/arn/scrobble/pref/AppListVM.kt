@@ -55,7 +55,10 @@ class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
                 onSetSelectedPackages = { setSelectedPackages(it) },
                 onSetAppList = { _appList.value = it },
                 onSetHasLoaded = { _hasLoaded.value = true },
-                !appListWasRun
+                if (packagesOverride != null)
+                    false
+                else
+                    !appListWasRun
             )
         }
     }

@@ -346,7 +346,6 @@ sealed interface PanoRoute : NavKey {
                 PanoTab.Profile,
             )
 
-//        AccountType.MALOJA,
             AccountType.PLEROMA,
             AccountType.FILE,
                 -> listOf(

@@ -39,6 +39,7 @@ class BillingRepository(
     override val purchaseMethods = listOf(
         PurchaseMethod(
             displayName = "Google Play",
+            displayDesc = "Google Play",
             link = null
         ),
     )

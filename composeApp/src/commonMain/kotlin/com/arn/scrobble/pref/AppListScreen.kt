@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -43,6 +44,7 @@ import com.arn.scrobble.icons.OpenInBrowser
 import com.arn.scrobble.icons.PlayCircle
 import com.arn.scrobble.ui.AppIcon
 import com.arn.scrobble.ui.ExpandableHeaderItem
+import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.SimpleHeaderItem
@@ -52,11 +54,13 @@ import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.forget_unchecked_apps
 import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.needs_plugin
@@ -77,8 +81,12 @@ fun AppListScreen(
     val appListFiltered by viewModel.appListFiltered.collectAsStateWithLifecycle()
     val selectedPackages by viewModel.selectedPackages.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
+    val firstRun by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        !it.appListWasRun && it.allowedPackages.isEmpty() && it.blockedPackages.isEmpty()
+    }
     var pluginsNeededExpanded by rememberSaveable { mutableStateOf(false) }
     var searchTerm by rememberSaveable { mutableStateOf("") }
+    var useFirstArtistChecked by rememberSaveable { mutableStateOf(firstRun) }
 
     LaunchedEffect(searchTerm) {
         viewModel.setFilter(searchTerm)
@@ -103,16 +111,15 @@ fun AppListScreen(
                     AppListSaveType.Scrobbling -> {
                         GlobalScope.launch {
                             PlatformStuff.mainPrefs.updateData { pref ->
-                                val firstArtistPackages =
-                                    checkedAppIdsSet - pref.getRegexPresetApps(RegexPreset.parse_title)
-
                                 pref.copy(
                                     allowedPackages = pref.allowedPackages +
                                             checkedAppIdsSet - uncheckedAppIdsSet,
                                     blockedPackages = pref.blockedPackages +
                                             uncheckedAppIdsSet - checkedAppIdsSet,
-                                    extractFirstArtistPackages = firstArtistPackages.takeIf { !pref.appListWasRun }
-                                        ?: pref.extractFirstArtistPackages,
+                                    extractFirstArtistPackages = if (useFirstArtistChecked)
+                                        checkedAppIdsSet - pref.getRegexPresetApps(RegexPreset.parse_title)
+                                    else
+                                        pref.extractFirstArtistPackages,
                                     appListWasRun = true,
                                 )
                             }
@@ -245,11 +252,27 @@ fun AppListScreen(
             }
 
             if (appListFiltered.musicPlayers.isNotEmpty() || !hasLoaded) {
-                stickyHeader("header_music_players") {
-                    SimpleHeaderItem(
-                        text = stringResource(Res.string.music_players),
-                        icon = Icons.PlayCircle
-                    )
+                stickyHeader("header_primary") {
+                    if (saveType is AppListSaveType.Scrobbling && firstRun) {
+                        Surface(
+                            tonalElevation = 4.dp,
+                            shadowElevation = 4.dp,
+                            shape = MaterialTheme.shapes.large,
+                            modifier = modifier
+                                .fillMaxWidth()
+                        ) {
+                            LabeledCheckbox(
+                                text = stringResource(Res.string.first_artist),
+                                checked = useFirstArtistChecked,
+                                onCheckedChange = { useFirstArtistChecked = it }
+                            )
+                        }
+                    } else {
+                        SimpleHeaderItem(
+                            text = stringResource(Res.string.music_players),
+                            icon = Icons.PlayCircle
+                        )
+                    }
                 }
             }
 

@@ -59,6 +59,7 @@ import pano_scrobbler.composeapp.generated.resources.billing_pin_friends
 import pano_scrobbler.composeapp.generated.resources.billing_regex_extract
 import pano_scrobbler.composeapp.generated.resources.billing_scrobble_source
 import pano_scrobbler.composeapp.generated.resources.billing_sharing
+import pano_scrobbler.composeapp.generated.resources.code_will_be_sent
 import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.get_pro
 import pano_scrobbler.composeapp.generated.resources.help
@@ -107,6 +108,7 @@ fun BillingScreen(
     var code by rememberSaveable { mutableStateOf("") }
     val purchaseMethods = remember { VariantStuff.billingRepository.purchaseMethods }
     val needsActivationCode = remember { VariantStuff.billingRepository.needsActivationCode }
+    var purchaseMethodClicked by remember { mutableStateOf<PurchaseMethod?>(null) }
 
     fun verifyLicenseOnline() {
         code.trim().ifEmpty { null }?.let {
@@ -158,6 +160,17 @@ fun BillingScreen(
         }
 
         ErrorText(errorText)
+
+        if (purchaseMethodClicked != null && needsActivationCode) {
+            Text(
+                stringResource(
+                    Res.string.code_will_be_sent,
+                    purchaseMethodClicked!!.displayName
+                ),
+                color = MaterialTheme.colorScheme.tertiary,
+                style = MaterialTheme.typography.titleMediumEmphasized,
+            )
+        }
 
         if (code.isEmpty()) {
             Box(
@@ -213,9 +226,18 @@ fun BillingScreen(
                                     viewModel.makePurchase(purchaseMethod, activity)
                                 }
                                 purchaseMethodsExpanded = false
+                                purchaseMethodClicked = purchaseMethod
                             },
                             text = {
-                                Text(purchaseMethod.displayName)
+                                Column {
+                                    Text(
+                                        purchaseMethod.displayName,
+                                    )
+                                    Text(
+                                        purchaseMethod.displayDesc,
+                                        style = MaterialTheme.typography.bodySmallEmphasized
+                                    )
+                                }
                             }
                         )
                     }

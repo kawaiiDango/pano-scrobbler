@@ -1,6 +1,9 @@
 package com.arn.scrobble.ui
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
@@ -11,6 +14,12 @@ import com.arn.scrobble.pref.AppItem
 @Composable
 actual fun getActivityOrNull(): Any? {
     return LocalActivity.current
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+actual fun isImeVisible(): Boolean {
+    return WindowInsets.isImeVisible
 }
 
 @Composable

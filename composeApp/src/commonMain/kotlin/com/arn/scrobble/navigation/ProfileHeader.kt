@@ -20,10 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -298,7 +298,7 @@ fun ProfileHeaderDropdown(
     Box(
         modifier = modifier
     ) {
-        FilledTonalIconToggleButton(
+        OutlinedIconToggleButton(
             checked = dropDownShown,
             onCheckedChange = { dropDownShown = it },
         ) {

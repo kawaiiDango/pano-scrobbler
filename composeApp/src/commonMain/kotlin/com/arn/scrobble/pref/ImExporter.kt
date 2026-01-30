@@ -210,7 +210,7 @@ private data class ExportData(
     val regex_rules: List<RegexEdit>?,
     val blocked_metadata: List<BlockedMetadata>?,
     val scrobble_sources: List<ScrobbleSource>?,
-    val settings: MainPrefsPublic?,
+    val settings: MainPrefs.Public?,
 )
 
 enum class EditsMode {

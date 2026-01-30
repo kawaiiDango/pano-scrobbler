@@ -33,7 +33,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.media.NLService
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
 import com.arn.scrobble.utils.AndroidStuff.toast
@@ -60,7 +59,7 @@ actual object PlatformStuff {
 
     actual val mainPrefs by lazy {
         MultiProcessDataStoreFactory.create(
-            serializer = MainPrefsSerializer,
+            serializer = MainPrefs.dataStoreSerializer,
             migrations = MainPrefs.migrations(),
             corruptionHandler = null,
             produceFile = {

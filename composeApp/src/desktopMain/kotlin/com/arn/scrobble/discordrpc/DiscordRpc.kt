@@ -183,9 +183,10 @@ object DiscordRpc {
         val durationMillis = trackPlaying.scrobbleData.duration
         val artUrl = trackPlaying.artUrl?.takeIf { settings.albumArt }.orEmpty()
         val statusLine = settings.statusLine
-        val detailsUrl =
+        val detailsUrl = if (settings.detailsUrl)
             "https://www.last.fm/music/${trackPlaying.scrobbleData.artist.encodeURLPathPart()}/_/${trackPlaying.scrobbleData.track.encodeURLPathPart()}"
-                .takeIf { settings.detailsUrl }.orEmpty()
+        else
+            ""
 
         return DiscordActivity.Activity(
             discordClientId = Stuff.DISCORD_CLIENT_ID,

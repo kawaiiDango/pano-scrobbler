@@ -28,3 +28,6 @@ actual fun AppIcon(
 }
 
 actual fun Modifier.testTagsAsResId() = this
+
+@Composable
+actual fun isImeVisible() = false

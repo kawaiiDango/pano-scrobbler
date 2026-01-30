@@ -52,6 +52,7 @@ WebView2 provided by Microsoft Edge Chromium
 
     <!--  strings for unfinalized stuff  -->
     <string name="discord_app_name">App name</string>
+    <string name="code_will_be_sent" formatted="true">The code will be sent to the email address associated with your %1$s account</string>
     <string name="not_running_desktop">The scrobbler has stopped. Check logs.</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
     <string name="desktop">PC</string>

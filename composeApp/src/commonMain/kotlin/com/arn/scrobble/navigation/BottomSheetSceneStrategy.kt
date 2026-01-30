@@ -4,15 +4,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +28,7 @@ import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.automirrored.ArrowBack
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy.Companion.bottomSheet
+import com.arn.scrobble.ui.isImeVisible
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -74,27 +75,25 @@ private fun BottomSheetDialogParent(
 ) {
     val scope = rememberCoroutineScope()
     val sheetGesturesEnabled = !PlatformStuff.isTv && !PlatformStuff.isDesktop
+    val isImeVisible = isImeVisible()
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = !sheetGesturesEnabled,
+        skipPartiallyExpanded = true,
     )
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         dragHandle = null,
-        sheetGesturesEnabled = sheetGesturesEnabled,
+        sheetGesturesEnabled = sheetGesturesEnabled && !isImeVisible,
         sheetState = sheetState,
-        modifier = if (!sheetGesturesEnabled)
-            Modifier
-                .windowInsetsPadding(
-                    WindowInsets.statusBars
-                        .only(WindowInsetsSides.Top)
-                        .add(WindowInsets(top = 42.dp))
-                )
-        else
-            Modifier,
+        modifier = Modifier
+            .windowInsetsPadding(
+                WindowInsets.statusBars
+                    .only(WindowInsetsSides.Top)
+                    .add(WindowInsets(top = 42.dp))
+            ),
     ) {
         if (onBack != null) {
-            IconButton(
+            OutlinedIconButton(
                 onClick = onBack,
                 modifier = Modifier.padding(4.dp)
                     .align(Alignment.CenterHorizontally),
@@ -107,7 +106,7 @@ private fun BottomSheetDialogParent(
 
         } else if (!sheetGesturesEnabled && !PlatformStuff.isTv) {
             // there isn't much vertical space on a TV
-            IconButton(
+            OutlinedIconButton(
                 onClick = {
                     scope.launch {
                         sheetState.hide()
@@ -126,7 +125,7 @@ private fun BottomSheetDialogParent(
             // reserve space at the top
             Box(
                 modifier = Modifier
-                    .minimumInteractiveComponentSize()
+                    .height(24.dp)
             )
         }
         content()
@@ -145,7 +144,7 @@ class BottomSheetSceneStrategy<T : Any>(
 
     override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
         val lastEntry = entries.lastOrNull()
-        val isBottomSheet = lastEntry?.metadata?.get(BOTTOM_SHEET_KEY) == true
+        val isBottomSheet = lastEntry?.metadata?.contains(BOTTOM_SHEET_KEY) == true
 
         return if (isBottomSheet)
             @Suppress("UNCHECKED_CAST")
@@ -169,8 +168,8 @@ class BottomSheetSceneStrategy<T : Any>(
          * @param properties properties that should be passed to the containing
          * [ModalBottomSheet].
          */
-        @OptIn(ExperimentalMaterial3Api::class)
-        fun bottomSheet(): Map<String, Any> = mapOf(BOTTOM_SHEET_KEY to true)
+        fun bottomSheet(): Map<String, Any> =
+            mapOf(BOTTOM_SHEET_KEY to Unit)
 
     }
 }

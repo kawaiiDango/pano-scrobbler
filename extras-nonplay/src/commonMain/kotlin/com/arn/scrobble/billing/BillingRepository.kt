@@ -24,11 +24,13 @@ class BillingRepository(
     override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
     override val purchaseMethods = listOf(
         PurchaseMethod(
-            displayName = "Ko-fi (Uses Paypal)",
+            displayName = "Ko-fi",
+            displayDesc = "Uses Paypal",
             link = "https://ko-fi.com/kawaiiDango"
         ),
         PurchaseMethod(
-            displayName = "BuyMeACoffee (Uses Stripe)",
+            displayName = "BuyMeACoffee",
+            displayDesc = "Uses Stripe",
             link = "https://buymeacoffee.com/kawaiidango"
         )
     )

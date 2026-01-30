@@ -4,6 +4,7 @@ package com.arn.scrobble.pref
 
 import androidx.datastore.core.DataMigration
 import androidx.datastore.core.Serializer
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
@@ -66,7 +67,7 @@ data class MainPrefs(
     val themeContrast: ContrastMode = ContrastMode.LOW,
     val themeDynamic: Boolean = false,
     val themeDayNight: DayNightMode = DayNightMode.DARK,
-    val appListWasRun: Boolean = !(allowedPackages.isEmpty() && blockedPackages.isEmpty()),
+    val appListWasRun: Boolean = false,
     val lastHomePagerTab: Int = 0,
     val lastChartsPeriodType: TimePeriodType = TimePeriodType.CONTINUOUS,
     val lastChartsLastfmPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.MONTH),
@@ -143,6 +144,53 @@ data class MainPrefs(
         val detailsUrl: Boolean = true,
     )
 
+
+    @Serializable
+    data class Public(
+        @JsonNames("master")
+        val scrobblerEnabled: Boolean = defaultMainPrefs.scrobblerEnabled,
+        @JsonNames("delay_secs")
+        val delaySecs: Int = PREF_DELAY_SECS_DEFAULT,
+        @JsonNames("delay_per")
+        val delayPercent: Int = defaultMainPrefs.delayPercent,
+        val minDurationSecs: Int = defaultMainPrefs.minDurationSecs,
+        @JsonNames("now_playing")
+        val submitNowPlaying: Boolean = defaultMainPrefs.submitNowPlaying,
+        @JsonNames("fetch_album")
+        val fetchAlbum: Boolean = defaultMainPrefs.fetchAlbum,
+        @JsonNames("auto_detect")
+        val autoDetectApps: Boolean = defaultMainPrefs.autoDetectApps,
+        @JsonNames("show_scrobble_sources")
+        val showScrobbleSources: Boolean = defaultMainPrefs.showScrobbleSources,
+        @JsonNames("link_heart_button_to_rating")
+        val linkHeartButtonToRating: Boolean = defaultMainPrefs.linkHeartButtonToRating,
+        val themeName: String = defaultMainPrefs.themeName,
+        val themeContrast: ContrastMode = defaultMainPrefs.themeContrast,
+        val themeDayNight: DayNightMode = defaultMainPrefs.themeDayNight,
+        @JsonNames("search_in_source")
+        val searchInSource: Boolean = defaultMainPrefs.searchInSource,
+        @JsonNames("scrobble_spotify_remote")
+        val scrobbleSpotifyRemote: Boolean = defaultMainPrefs.scrobbleSpotifyRemote,
+        @JsonNames("spotify_artist_search_approximate")
+        val spotifyArtistSearchApproximate: Boolean = defaultMainPrefs.spotifyArtistSearchApproximate,
+        @JsonNames("prevent_duplicate_ambient_scrobbles")
+        val preventDuplicateAmbientScrobbles: Boolean = defaultMainPrefs.preventDuplicateAmbientScrobbles,
+        val digestWeekday: Int = defaultMainPrefs.digestWeekday,
+        val searchUrlTemplate: String = defaultMainPrefs.searchUrlTemplate,
+        val usePlayFromSearch: Boolean = defaultMainPrefs.usePlayFromSearch,
+        val regexPresets: Set<String> = defaultMainPrefs.regexPresets,
+        val extractFirstArtistPackages: Set<String> = defaultMainPrefs.extractFirstArtistPackages,
+        @JsonNames("app_whitelist")
+        val allowedPackages: Set<String> = defaultMainPrefs.allowedPackages,
+        val regexPresetsApps: Map<String, Set<String>> = defaultMainPrefs.regexPresetsApps,
+        val spotifyApi: Boolean = defaultMainPrefs.spotifyApi,
+        val spotifyCountry: String? = defaultMainPrefs.spotifyCountry,
+        val tidalSteelSeriesApi: Boolean = defaultMainPrefs.tidalSteelSeriesApi,
+        val deezerApi: Boolean = defaultMainPrefs.deezerApi,
+        val lastfmApiAlways: Boolean = defaultMainPrefs.lastfmApiAlways,
+        val discordRpc: DiscordRpcSettings = defaultMainPrefs.discordRpc,
+    )
+
     val autoDetectAppsP
         get() = if (!PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
             false
@@ -202,7 +250,7 @@ data class MainPrefs(
     fun getRegexPresetApps(regexPreset: RegexPreset): Set<String> =
         regexPresetsApps.getOrDefault(regexPreset.name, emptySet())
 
-    fun updateFromPublicPrefs(prefs: MainPrefsPublic) = copy(
+    fun updateFromPublicPrefs(prefs: Public) = copy(
         scrobblerEnabled = prefs.scrobblerEnabled,
         delaySecs = prefs.delaySecs.coerceIn(PREF_DELAY_SECS_MIN, PREF_DELAY_SECS_MAX),
         delayPercent = prefs.delayPercent.coerceIn(PREF_DELAY_PER_MIN, PREF_DELAY_PER_MAX),
@@ -223,45 +271,75 @@ data class MainPrefs(
         allowedPackages = prefs.allowedPackages,
         regexPresets = prefs.regexPresets,
         extractFirstArtistPackages = prefs.extractFirstArtistPackages,
-        regexPresetsApps = prefs.regexPresetsApps
+        regexPresetsApps = prefs.regexPresetsApps,
+        discordRpc = prefs.discordRpc,
+        spotifyApi = prefs.spotifyApi,
+        spotifyCountry = prefs.spotifyCountry,
+        tidalSteelSeriesApi = prefs.tidalSteelSeriesApi,
+        deezerApi = prefs.deezerApi,
+        lastfmApiAlways = prefs.lastfmApiAlways,
     )
 
-    fun toPublicPrefs() = MainPrefsPublic(
-        scrobblerEnabled = this.scrobblerEnabled,
-        delaySecs = this.delaySecsP,
-        delayPercent = this.delayPercentP,
-        minDurationSecs = this.minDurationSecsP,
-        submitNowPlaying = this.submitNowPlaying,
-        fetchAlbum = this.fetchAlbum,
-        autoDetectApps = this.autoDetectAppsP,
-        showScrobbleSources = this.showScrobbleSources,
-        linkHeartButtonToRating = this.linkHeartButtonToRating,
-        themeName = this.themeName,
-        themeContrast = this.themeContrast,
-        themeDayNight = this.themeDayNight,
-        searchInSource = this.searchInSource,
-        scrobbleSpotifyRemote = this.scrobbleSpotifyRemote,
-        spotifyArtistSearchApproximate = this.spotifyArtistSearchApproximate,
-        preventDuplicateAmbientScrobbles = this.preventDuplicateAmbientScrobbles,
-        digestWeekday = this.digestWeekday,
-        searchUrlTemplate = this.searchUrlTemplate,
-        allowedPackages = this.allowedPackages,
-        regexPresets = this.regexPresets,
-        extractFirstArtistPackages = this.extractFirstArtistPackages,
-        regexPresetsApps = this.regexPresetsApps
+    fun toPublicPrefs() = Public(
+        scrobblerEnabled = scrobblerEnabled,
+        delaySecs = delaySecsP,
+        delayPercent = delayPercentP,
+        minDurationSecs = minDurationSecsP,
+        submitNowPlaying = submitNowPlaying,
+        fetchAlbum = fetchAlbum,
+        autoDetectApps = autoDetectAppsP,
+        showScrobbleSources = showScrobbleSources,
+        linkHeartButtonToRating = linkHeartButtonToRating,
+        themeName = themeName,
+        themeContrast = themeContrast,
+        themeDayNight = themeDayNight,
+        searchInSource = searchInSource,
+        scrobbleSpotifyRemote = scrobbleSpotifyRemote,
+        spotifyArtistSearchApproximate = spotifyArtistSearchApproximate,
+        preventDuplicateAmbientScrobbles = preventDuplicateAmbientScrobbles,
+        digestWeekday = digestWeekday,
+        searchUrlTemplate = searchUrlTemplate,
+        allowedPackages = allowedPackages,
+        regexPresets = regexPresets,
+        extractFirstArtistPackages = extractFirstArtistPackages,
+        regexPresetsApps = regexPresetsApps,
+        discordRpc = discordRpc,
+        spotifyApi = spotifyApi,
+        spotifyCountry = spotifyCountry,
+        tidalSteelSeriesApi = tidalSteelSeriesApi,
+        deezerApi = deezerApi,
+        lastfmApiAlways = lastfmApiAlways,
     )
 
 
     companion object {
-        const val FILE_NAME = "main-prefs.json"
+        private val defaultMainPrefs = MainPrefs()
+        
+        val dataStoreSerializer = object : Serializer<MainPrefs> {
+            override val defaultValue = defaultMainPrefs
 
+            override suspend fun readFrom(input: InputStream) =
+                try {
+                    Stuff.myJson.decodeFromStream<MainPrefs>(input)
+                } catch (e: SerializationException) {
+                    Logger.e(e) { "MainPrefs deserialization error" }
+                    defaultValue
+                }
+
+            override suspend fun writeTo(
+                t: MainPrefs,
+                output: OutputStream,
+            ) = Stuff.myJson.encodeToStream(t, output)
+        }
+
+        const val FILE_NAME = "main-prefs.json"
         const val PREF_DELAY_SECS_MIN = 30
         const val PREF_DELAY_SECS_MAX = 360
-        const val PREF_DELAY_SECS_DEFAULT = 180
-        const val PREF_DELAY_PER_DEFAULT = 50
+        private const val PREF_DELAY_SECS_DEFAULT = 180
+        private const val PREF_DELAY_PER_DEFAULT = 50
         const val PREF_DELAY_PER_MIN = 30
         const val PREF_DELAY_PER_MAX = 95
-        const val PREF_MIN_DURATON_SECS_DEFAULT = 30
+        private const val PREF_MIN_DURATON_SECS_DEFAULT = 30
         const val PREF_MIN_DURATON_SECS_MIN = 10
         const val PREF_MIN_DURATON_SECS_MAX = 60
 
@@ -270,62 +348,3 @@ data class MainPrefs(
         )
     }
 }
-
-object MainPrefsSerializer : Serializer<MainPrefs> {
-    override val defaultValue = MainPrefs()
-
-    override suspend fun readFrom(input: InputStream) =
-        try {
-            Stuff.myJson.decodeFromStream<MainPrefs>(input)
-        } catch (exception: SerializationException) {
-            defaultValue
-        }
-
-    override suspend fun writeTo(
-        t: MainPrefs,
-        output: OutputStream,
-    ) = Stuff.myJson.encodeToStream(t, output)
-}
-
-@Serializable
-data class MainPrefsPublic(
-    @JsonNames("master")
-    val scrobblerEnabled: Boolean,
-    @JsonNames("delay_secs")
-    val delaySecs: Int,
-    @JsonNames("delay_per")
-    val delayPercent: Int,
-    val minDurationSecs: Int = MainPrefs.PREF_MIN_DURATON_SECS_DEFAULT,
-    @JsonNames("now_playing")
-    val submitNowPlaying: Boolean,
-    @JsonNames("fetch_album")
-    val fetchAlbum: Boolean,
-    @JsonNames("auto_detect")
-    val autoDetectApps: Boolean,
-    @JsonNames("show_scrobble_sources")
-    val showScrobbleSources: Boolean,
-    @JsonNames("link_heart_button_to_rating")
-    val linkHeartButtonToRating: Boolean,
-    val themeName: String = ThemeUtils.defaultThemeName,
-    val themeContrast: ContrastMode = ContrastMode.LOW,
-    val themeDayNight: DayNightMode = DayNightMode.DARK,
-    @JsonNames("search_in_source")
-    val searchInSource: Boolean,
-    @JsonNames("scrobble_spotify_remote")
-    val scrobbleSpotifyRemote: Boolean,
-    @JsonNames("spotify_artist_search_approximate")
-    val spotifyArtistSearchApproximate: Boolean,
-    @JsonNames("prevent_duplicate_ambient_scrobbles")
-    val preventDuplicateAmbientScrobbles: Boolean,
-    val digestWeekday: Int = -1,
-    val searchUrlTemplate: String = Stuff.DEFAULT_SEARCH_URL,
-    val usePlayFromSearch: Boolean = true,
-    val regexPresets: Set<String> = RegexPresets.defaultPresets.map { it.name }.toSet(),
-    val extractFirstArtistPackages: Set<String> = emptySet(),
-    @JsonNames("app_whitelist")
-    val allowedPackages: Set<String>,
-    val regexPresetsApps: Map<String, Set<String>> = mapOf(
-        RegexPreset.parse_title.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITHOUT_FALLBACK,
-        RegexPreset.parse_title_with_fallback.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITH_FALLBACK
-    )
-)

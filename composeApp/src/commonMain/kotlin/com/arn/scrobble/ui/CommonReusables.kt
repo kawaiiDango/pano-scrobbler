@@ -951,6 +951,9 @@ fun accountTypeLabel(accountType: AccountType) = when (accountType) {
 fun Modifier.shimmerWindowBounds() = this.shimmer(rememberShimmer(ShimmerBounds.Window))
 
 @Composable
+expect fun isImeVisible(): Boolean
+
+@Composable
 expect fun getActivityOrNull(): Any?
 
 @Composable

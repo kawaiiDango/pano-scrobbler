@@ -14,7 +14,6 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.pref.MainPrefsSerializer
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.Dispatchers
@@ -65,7 +64,7 @@ actual object PlatformStuff {
 
     actual val mainPrefs by lazy {
         DataStoreFactory.create(
-            serializer = MainPrefsSerializer,
+            serializer = MainPrefs.dataStoreSerializer,
             migrations = MainPrefs.migrations(),
             corruptionHandler = null,
             produceFile = {

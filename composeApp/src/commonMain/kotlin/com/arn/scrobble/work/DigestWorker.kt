@@ -2,7 +2,7 @@ package com.arn.scrobble.work
 
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
+import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
@@ -97,9 +97,9 @@ class DigestWorker(
 
             val timeLastfmPeriod = TimePeriod(lastfmPeriod).apply {
                 tag = when (lastfmPeriod) {
-                    LastfmPeriod.WEEK -> ListenbrainzRanges.week.name
-                    LastfmPeriod.MONTH -> ListenbrainzRanges.month.name
-                    LastfmPeriod.YEAR -> ListenbrainzRanges.year.name
+                    LastfmPeriod.WEEK -> ListenBrainzRanges.week.name
+                    LastfmPeriod.MONTH -> ListenBrainzRanges.month.name
+                    LastfmPeriod.YEAR -> ListenBrainzRanges.year.name
                     else -> null
                 }
             }

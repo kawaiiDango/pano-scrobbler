@@ -13,7 +13,7 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.CookieSerializable
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.SearchType
-import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
+import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.edits.RegexPreset
@@ -72,7 +72,7 @@ data class MainPrefs(
     val lastChartsPeriodType: TimePeriodType = TimePeriodType.CONTINUOUS,
     val lastChartsLastfmPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.MONTH),
     val lastChartsListenBrainzPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.OVERALL)
-        .apply { tag = ListenbrainzRanges.all_time.name },
+        .apply { tag = ListenBrainzRanges.all_time.name },
     val lastChartsCustomPeriod: TimePeriod = TimePeriod(1767225600000, 1798761600000), // 2026
     val currentAccountType: AccountType = AccountType.LASTFM,
     val scrobbleAccounts: List<UserAccountSerializable> = emptyList(),
@@ -314,7 +314,7 @@ data class MainPrefs(
 
     companion object {
         private val defaultMainPrefs = MainPrefs()
-        
+
         val dataStoreSerializer = object : Serializer<MainPrefs> {
             override val defaultValue = defaultMainPrefs
 

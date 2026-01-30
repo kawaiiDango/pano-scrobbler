@@ -9,7 +9,7 @@ import com.arn.scrobble.api.Requesters.parseJsonBody
 import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
@@ -67,7 +67,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
     }
 
-    override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
+    override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         val params = mutableMapOf(
             "method" to "track.updateNowPlaying",
             "artist" to scrobbleData.artist,
@@ -83,10 +83,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
 
         return client.postResult<NowPlayingResponse> {
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
-        }.map { ScrobbleIgnored(it.nowplaying.ignoredMessage.code != 0) }
+        }.map { ScrobbleResult(it.nowplaying.ignoredMessage.code != 0) }
     }
 
-    override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
+    override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         val params = mutableMapOf(
             "method" to "track.scrobble",
             "artist" to scrobbleData.artist,
@@ -104,10 +104,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
 
         return client.postResult<ScrobbleResponse> {
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
-        }.map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
+        }.map { ScrobbleResult(it.scrobbles.attr.ignored > 0) }
     }
 
-    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleIgnored> {
+    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleResult> {
         val params = mutableMapOf<String, String?>(
             "method" to "track.scrobble",
             "sk" to userAccount.authKey,
@@ -128,10 +128,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
 
         return client.postResult<ScrobbleResponse> {
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
-        }.map { ScrobbleIgnored(it.scrobbles.attr.ignored > 0) }
+        }.map { ScrobbleResult(it.scrobbles.attr.ignored > 0) }
     }
 
-    override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleIgnored> {
+    override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleResult> {
         val params = mutableMapOf(
             "method" to if (love) "track.love" else "track.unlove",
             "artist" to track.artist.name,
@@ -143,7 +143,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
 
         return client.postResult<String> {
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
-        }.map { ScrobbleIgnored(false) }
+        }.map { ScrobbleResult(false) }
     }
 
     override suspend fun delete(track: Track) = runCatching {

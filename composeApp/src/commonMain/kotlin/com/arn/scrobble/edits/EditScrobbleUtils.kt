@@ -2,7 +2,7 @@ package com.arn.scrobble.edits
 
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
@@ -148,7 +148,7 @@ class EditScrobbleUtils(private val viewModelScope: CoroutineScope) {
             appId = origScrobbleData.appId,
         )
         val scrobblable = Scrobblables.current
-        val scrobbleResult: Result<ScrobbleIgnored>
+        val scrobbleResult: Result<ScrobbleResult>
 
         val origTrackObj = Track(
             origTrack,

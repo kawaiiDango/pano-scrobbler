@@ -1,7 +1,7 @@
 package com.arn.scrobble.charts
 
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
+import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.Stuff.setMidnight
 import kotlinx.serialization.Serializable
@@ -165,7 +165,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.dateRange(start, end),
-            tag = ListenbrainzRanges.this_week.name
+            tag = ListenBrainzRanges.this_week.name
         )
 
         // previous week
@@ -175,7 +175,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             cal.timeInMillis, start,
             name = PanoTimeFormatter.dateRange(cal.timeInMillis, start),
-            tag = ListenbrainzRanges.week.name
+            tag = ListenBrainzRanges.week.name
         )
 
         // this month
@@ -188,7 +188,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.month(start),
-            tag = ListenbrainzRanges.this_month.name
+            tag = ListenBrainzRanges.this_month.name
         )
 
         // previous month
@@ -198,7 +198,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             cal.timeInMillis, start,
             name = PanoTimeFormatter.month(cal.timeInMillis),
-            tag = ListenbrainzRanges.month.name
+            tag = ListenBrainzRanges.month.name
         )
 
 
@@ -221,7 +221,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.monthRange(start, end),
-            tag = ListenbrainzRanges.quarter.name
+            tag = ListenBrainzRanges.quarter.name
         )
 
         // prev half year
@@ -238,7 +238,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.monthRange(start, end),
-            tag = ListenbrainzRanges.half_yearly.name
+            tag = ListenBrainzRanges.half_yearly.name
         )
 
         // this year
@@ -250,7 +250,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.year(start),
-            tag = ListenbrainzRanges.this_year.name
+            tag = ListenBrainzRanges.this_year.name
         )
 
         // previous year
@@ -260,7 +260,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             cal.timeInMillis, start,
             name = PanoTimeFormatter.year(cal.timeInMillis),
-            tag = ListenbrainzRanges.year.name
+            tag = ListenBrainzRanges.year.name
         )
 
         // overall
@@ -268,7 +268,7 @@ class TimePeriodsGenerator(
             LastfmPeriod.OVERALL,
             name = getString(Res.string.charts_overall),
         ).apply {
-            tag = ListenbrainzRanges.all_time.name
+            tag = ListenBrainzRanges.all_time.name
         }
 
         return timePeriods

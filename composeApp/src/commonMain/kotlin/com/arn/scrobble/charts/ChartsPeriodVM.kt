@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.listenbrainz.ListenbrainzRanges
+import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.toInverseMap
@@ -94,9 +94,9 @@ class ChartsPeriodVM(
                 digestPeriod = null
                 timePeriods.firstNotNullOfOrNull { (k, v) ->
                     val tag = when (prevDigestPeriod) {
-                        LastfmPeriod.WEEK -> ListenbrainzRanges.week.name
-                        LastfmPeriod.MONTH -> ListenbrainzRanges.month.name
-                        LastfmPeriod.YEAR -> ListenbrainzRanges.year.name
+                        LastfmPeriod.WEEK -> ListenBrainzRanges.week.name
+                        LastfmPeriod.MONTH -> ListenBrainzRanges.month.name
+                        LastfmPeriod.YEAR -> ListenBrainzRanges.year.name
                         else -> null
                     }
 

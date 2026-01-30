@@ -4,7 +4,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.ScrobbleEverywhere
-import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.utils.PanoNotifications
@@ -138,6 +138,20 @@ class ScrobbleQueue(
                         ScrobbleEverywhere.nowPlaying(sd)
                     }
 
+                // listenbrainz msid for now playing
+                val msid = npResults?.firstNotNullOfOrNull { (k, v) ->
+                    if (k.userAccount.type == AccountType.LISTENBRAINZ && v.isSuccess)
+                        v.getOrThrow().msid
+                    else
+                        null
+                }
+
+                trackInfo.nowPlayingSubmitted(msid)
+
+                if (msid != null)
+                    notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
+
+
                 if (npResults != null && npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
                         notiKey = trackInfo.uniqueId,
@@ -147,8 +161,10 @@ class ScrobbleQueue(
                     )
                 }
 
-                lastfmNpSucc =
-                    npResults?.any { (k, v) -> k.userAccount.type == AccountType.LASTFM && v.isSuccess } == true
+                lastfmNpSucc = npResults?.any { (k, v) ->
+                    k.userAccount.type == AccountType.LASTFM && v.isSuccess
+                } == true
+
             }
 
             // discord rpc album art
@@ -233,7 +249,9 @@ class ScrobbleQueue(
             // potentially wasting an api call. sleep and throw cancellation exception in that case
             delay(Stuff.META_WAIT)
 
-            if (trackInfo.scrobbledState in PlayingTrackInfo.ScrobbledState.PREPROCESSED..PlayingTrackInfo.ScrobbledState.ADDITIONAL_METADATA_FETCHED) {
+            if (trackInfo.scrobbledState in
+                PlayingTrackInfo.ScrobbledState.PREPROCESSED..PlayingTrackInfo.ScrobbledState.ADDITIONAL_METADATA_FETCHED
+            ) {
                 nowPlayingAndSubmit(
                     trackInfo.toScrobbleData(false),
                     trackInfo.scrobbledState == PlayingTrackInfo.ScrobbledState.PREPROCESSED
@@ -273,7 +291,8 @@ class ScrobbleQueue(
                                 trackInfo.appId,
                                 canFixMetadata = true
                             ),
-                            scrobbleData = scrobbleData.copy(albumArtist = "")
+                            scrobbleData = scrobbleData.copy(albumArtist = ""),
+                            msid = null,
                         )
                     )
                 }
@@ -308,7 +327,7 @@ class ScrobbleQueue(
 
     private suspend fun notifyScrobbleError(
         notiKey: String,
-        scrobbleResults: Map<Scrobblable, Result<ScrobbleIgnored>>,
+        scrobbleResults: Map<Scrobblable, Result<ScrobbleResult>>,
         scrobbleData: ScrobbleData,
         hash: Int
     ) {
@@ -340,8 +359,9 @@ class ScrobbleQueue(
                             failedText,
                             null,
                             scrobbleData.appId,
-                            canFixMetadata = true
+                            canFixMetadata = true,
                         ),
+                        msid = null,
                     )
                 )
             }

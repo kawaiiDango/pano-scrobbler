@@ -110,6 +110,7 @@ actual object PanoNotifications {
             hash = event.hash,
             notiKey = event.notiKey,
             scrobbleData = event.scrobbleData,
+            msid = event.msid,
             loved = !event.userLoved
         )
 

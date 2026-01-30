@@ -25,13 +25,13 @@ import kotlinx.serialization.Serializable
 
 abstract class Scrobblable(val userAccount: UserAccountSerializable) {
 
-    abstract suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleIgnored>
+    abstract suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult>
 
-    abstract suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleIgnored>
+    abstract suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleResult>
 
-    abstract suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleIgnored>
+    abstract suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleResult>
 
-    abstract suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleIgnored>
+    abstract suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleResult>
 
     abstract suspend fun delete(track: Track): Result<Unit>
 
@@ -149,7 +149,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
     )
 }
 
-data class ScrobbleIgnored(val ignored: Boolean)
+data class ScrobbleResult(val ignored: Boolean, val msid: String? = null)
 
 @Serializable
 enum class AccountType(val id: Int) {

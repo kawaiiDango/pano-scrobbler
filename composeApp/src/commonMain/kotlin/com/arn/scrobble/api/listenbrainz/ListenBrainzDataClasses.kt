@@ -10,17 +10,18 @@ data class ValidateToken(
 )
 
 @Serializable
-data class ListenBrainzResponse(
+data class ListenBrainzSubmitResponse(
     val code: Int?,
     val status: String?,
     val error: String?,
+    val recording_msid: String?,
 ) {
     val isOk get() = status == "ok"
 }
 
 @Serializable
 data class ListenBrainzListen(
-    val listen_type: String,
+    val listen_type: ListenBrainzListenType,
     val payload: List<ListenBrainzPayload>
 )
 
@@ -203,6 +204,10 @@ data class ListenBrainzListeningActivity(
     val to_ts: Long
 )
 
-enum class ListenbrainzRanges {
+enum class ListenBrainzRanges {
     this_week, this_month, this_year, week, month, year, quarter, half_yearly, all_time
+}
+
+enum class ListenBrainzListenType {
+    playing_now, single, import
 }

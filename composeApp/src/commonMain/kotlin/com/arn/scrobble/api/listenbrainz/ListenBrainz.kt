@@ -12,7 +12,7 @@ import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Requesters.setJsonBody
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
@@ -73,8 +73,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
     private suspend fun submitListens(
         scrobbleDatas: List<ScrobbleData>,
-        listenType: String,
-    ): Result<ScrobbleIgnored> {
+        listenType: ListenBrainzListenType,
+    ): Result<ScrobbleResult> {
 
 //      "listened_at timestamp should be greater than 1033410600 (2002-10-01 00:00:00 UTC).",
 
@@ -85,10 +85,10 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 //                val pkgName = scrobbleData.pkgName?.let { PackageName(it) }
 
                 ListenBrainzPayload(
-                    if (listenType != "playing_now") scrobbleData.timestamp else null,
+                    scrobbleData.timestamp.takeIf { listenType != ListenBrainzListenType.playing_now },
                     ListenBrainzTrackMetadata(
                         artist_name = scrobbleData.artist,
-                        release_name = if (!scrobbleData.album.isNullOrEmpty()) scrobbleData.album else null,
+                        release_name = scrobbleData.album?.ifEmpty { null },
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = scrobbleData.safeDuration(),
@@ -100,21 +100,29 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             }
         )
 
-        return client.postResult<ListenBrainzResponse>("submit-listens") {
+        return client.postResult<ListenBrainzSubmitResponse>("submit-listens") {
+            if (listenType == ListenBrainzListenType.playing_now)
+                parameter("return_msid", true)
+
             setJsonBody(listen)
-        }.map { if (it.isOk) ScrobbleIgnored(false) else ScrobbleIgnored(true) }
+        }.map {
+            if (it.isOk)
+                ScrobbleResult(false, msid = it.recording_msid)
+            else
+                ScrobbleResult(true)
+        }
     }
 
     override suspend fun updateNowPlaying(scrobbleData: ScrobbleData) =
-        submitListens(listOf(scrobbleData), "playing_now")
+        submitListens(listOf(scrobbleData), ListenBrainzListenType.playing_now)
 
     override suspend fun scrobble(scrobbleData: ScrobbleData) =
-        submitListens(listOf(scrobbleData), "single")
+        submitListens(listOf(scrobbleData), ListenBrainzListenType.single)
 
     override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>) =
-        submitListens(scrobbleDatas, "import")
+        submitListens(scrobbleDatas, ListenBrainzListenType.import)
 
-    suspend fun lookupMbid(track: Track): Result<ListenBrainzMbidLookup> {
+    private suspend fun lookupMbid(track: Track): Result<ListenBrainzMbidLookup> {
         return client.getResult<ListenBrainzMbidLookup>("metadata/lookup") {
             parameter("artist_name", track.artist.name)
             parameter("recording_name", track.name)
@@ -150,30 +158,43 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     private suspend fun feedback(
         track: Track,
         @IntRange(-1, 1) score: Int,
-    ): Result<ScrobbleIgnored> {
-        val msid = track.msid
-        val mbid = if (msid == null)
-            track.mbid ?: lookupMbid(track).getOrElse {
-                // should only retry for official listenbrainz servers
-                if (userAccount.apiRoot == Stuff.LISTENBRAINZ_API_ROOT)
+    ): Result<ScrobbleResult> {
+        val mbid = track.mbid
+        var msid = track.msid?.takeIf { track.mbid == null }
+
+        // send a temporary now playing for official listenbrainz servers
+        if (mbid == null && msid == null && userAccount.apiRoot == Stuff.LISTENBRAINZ_API_ROOT) {
+            val scrobbleData = ScrobbleData(
+                artist = track.artist.name,
+                track = track.name,
+                album = track.album?.name,
+                albumArtist = track.album?.artist?.name,
+                timestamp = 0L,
+                duration = track.duration,
+                appId = null
+            )
+            updateNowPlaying(scrobbleData)
+                .onSuccess {
+                    msid = it.msid
+                    Logger.d { "msid lookup result: $msid" }
+                }.onFailure {
                     return Result.failure(it)
-                else
-                    null
-            }?.recording_mbid
-        else
-            null
-
-        Logger.d { "msid: $msid mbid: $mbid" }
-
-        if (msid == null && mbid == null) {
-            Logger.w { "Track mbid not found, skipping feedback" }
-            return Result.success(ScrobbleIgnored(true)) // ignore
+                }
         }
 
-        return client.postResult<ListenBrainzResponse>("feedback/recording-feedback") {
+
+        if (msid == null && mbid == null) {
+            Logger.w { "Track mbid/msid not found, skipping feedback" }
+            return Result.success(ScrobbleResult(true)) // ignore
+        }
+
+        return client.postResult<ListenBrainzSubmitResponse>("feedback/recording-feedback") {
             setJsonBody(ListenBrainzFeedback(mbid, msid, score))
         }.map {
-            if (it.isOk) ScrobbleIgnored(false) else ScrobbleIgnored(true)
+            if (it.isOk)
+                ScrobbleResult(false)
+            else
+                ScrobbleResult(true)
         }
     }
 
@@ -276,7 +297,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         track.date ?: return Result.failure(IllegalStateException("no date"))
         val msid = track.msid ?: return Result.success(Unit) // ignore error
 
-        return client.postResult<ListenBrainzResponse>("delete-listen") {
+        return client.postResult<ListenBrainzSubmitResponse>("delete-listen") {
             setJsonBody(ListenBrainzDeleteRequest(track.date, msid))
         }.map { }
     }
@@ -486,11 +507,11 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             }
 
         val type = when (timePeriod.tag) {
-            ListenbrainzRanges.all_time.name -> TimePeriodType.YEAR
+            ListenBrainzRanges.all_time.name -> TimePeriodType.YEAR
 
-            ListenbrainzRanges.year.name,
-            ListenbrainzRanges.this_year.name,
-            ListenbrainzRanges.half_yearly.name
+            ListenBrainzRanges.year.name,
+            ListenBrainzRanges.this_year.name,
+            ListenBrainzRanges.half_yearly.name
                 -> TimePeriodType.MONTH
 
             else -> TimePeriodType.DAY

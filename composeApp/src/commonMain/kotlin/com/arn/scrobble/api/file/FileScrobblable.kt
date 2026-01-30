@@ -4,7 +4,7 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEvent
-import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.cache.CacheStrategy
@@ -39,12 +39,12 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
     val platformFile = PlatformFile(userAccount.apiRoot!!)
 
-    override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
+    override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         // no op
-        return Result.success(ScrobbleIgnored(false))
+        return Result.success(ScrobbleResult(false))
     }
 
-    override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
+    override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
 
         return kotlin.runCatching {
             if (!platformFile.isFileOk())
@@ -54,11 +54,11 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 writeEntry(scrobbleData, ScrobbleEvent.scrobble, outputStream)
             }
 
-            ScrobbleIgnored(false)
+            ScrobbleResult(false)
         }
     }
 
-    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleIgnored> {
+    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleResult> {
         return kotlin.runCatching {
             if (!platformFile.isFileOk())
                 throw FException("File not writable")
@@ -69,7 +69,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 }
             }
 
-            ScrobbleIgnored(false)
+            ScrobbleResult(false)
         }
     }
 
@@ -94,7 +94,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         }
     }
 
-    override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleIgnored> {
+    override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleResult> {
         return kotlin.runCatching {
             if (!platformFile.isFileOk())
                 throw FException("File not writable")
@@ -115,7 +115,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 writeEntry(scrobbleData, action, outputStream)
             }
 
-            ScrobbleIgnored(false)
+            ScrobbleResult(false)
         }
     }
 

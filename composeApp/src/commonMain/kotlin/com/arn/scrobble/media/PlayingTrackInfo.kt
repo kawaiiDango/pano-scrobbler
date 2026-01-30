@@ -15,7 +15,8 @@ class PlayingTrackInfo(
         PREPARED,
         PREPROCESSED,
         ADDITIONAL_METADATA_FETCHED,
-        SUBMITTED,
+        NOW_PLAYING_SUBMITTED,
+        SCROBBLE_SUBMITTED,
         CANCELLED,
     }
 
@@ -46,6 +47,8 @@ class PlayingTrackInfo(
 
     var trackId: String? = null
         private set
+
+    private var msid: String? = null
 
     var durationMillis: Long = 0
         private set
@@ -107,6 +110,7 @@ class PlayingTrackInfo(
         extras.putAll(extraData)
 
         scrobbledState = ScrobbledState.NONE
+        msid = null
     }
 
     fun setArtUrl(artUrl: String?) {
@@ -191,8 +195,9 @@ class PlayingTrackInfo(
         notiKey = uniqueId,
         scrobbleData = toScrobbleData(false),
         origScrobbleData = toScrobbleData(true),
+        msid = msid,
         hash = hash,
-        nowPlaying = scrobbledState < ScrobbledState.SUBMITTED,
+        nowPlaying = scrobbledState < ScrobbledState.SCROBBLE_SUBMITTED,
         userLoved = userLoved,
         userPlayCount = userPlayCount,
         artUrl = artUrl,
@@ -212,8 +217,13 @@ class PlayingTrackInfo(
             ScrobbledState.PREPROCESSED
     }
 
+    fun nowPlayingSubmitted(msid: String?) {
+        scrobbledState = ScrobbledState.NOW_PLAYING_SUBMITTED
+        this.msid = msid
+    }
+
     fun scrobbled() {
-        scrobbledState = ScrobbledState.SUBMITTED
+        scrobbledState = ScrobbledState.SCROBBLE_SUBMITTED
     }
 
     fun cancelled() {

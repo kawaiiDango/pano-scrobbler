@@ -9,7 +9,7 @@ import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.Requesters.setJsonBody
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
@@ -55,12 +55,12 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         }
     }
 
-    override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
+    override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         // no op
-        return Result.success(ScrobbleIgnored(false))
+        return Result.success(ScrobbleResult(false))
     }
 
-    override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleIgnored> {
+    override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         val pleromaTrack = PleromaTrack(
             artist = scrobbleData.artist,
             title = scrobbleData.track,
@@ -71,10 +71,10 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
 
         return client.postResult<String>("api/v1/pleroma/scrobble") {
             setJsonBody(pleromaTrack)
-        }.map { ScrobbleIgnored(false) }
+        }.map { ScrobbleResult(false) }
     }
 
-    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleIgnored> {
+    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleResult> {
         for (scrobbleData in scrobbleDatas) {
             val result = scrobble(scrobbleData)
             if (result.isFailure)
@@ -83,12 +83,12 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
             delay(1000L)
         }
 
-        return Result.success(ScrobbleIgnored(false))
+        return Result.success(ScrobbleResult(false))
     }
 
-    override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleIgnored> {
+    override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleResult> {
         // no op
-        return Result.success(ScrobbleIgnored(false))
+        return Result.success(ScrobbleResult(false))
     }
 
     override suspend fun delete(track: Track): Result<Unit> {

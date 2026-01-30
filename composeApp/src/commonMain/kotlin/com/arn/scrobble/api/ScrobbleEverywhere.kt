@@ -296,7 +296,7 @@ object ScrobbleEverywhere {
         return AdditionalMetadataResult.Empty
     }
 
-    suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleIgnored>> {
+    suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleResult>> {
         return Scrobblables.all.mapConcurrently(5) {
             it to it.updateNowPlaying(scrobbleData)
         }.toMap()

@@ -32,6 +32,7 @@ sealed interface PlayingTrackNotifyEvent {
     interface PlayingTrackState {
         val notiKey: String
         val scrobbleData: ScrobbleData
+        val msid: String?
     }
 
     @Serializable
@@ -39,6 +40,7 @@ sealed interface PlayingTrackNotifyEvent {
         val hash: Int,
         override val notiKey: String,
         override val scrobbleData: ScrobbleData,
+        override val msid: String?,
         val scrobbleError: ScrobbleError,
     ) : PlayingTrackNotifyEvent, PlayingTrackState
 
@@ -46,6 +48,7 @@ sealed interface PlayingTrackNotifyEvent {
     data class TrackPlaying(
         override val notiKey: String,
         override val scrobbleData: ScrobbleData,
+        override val msid: String?,
         val origScrobbleData: ScrobbleData,
         val hash: Int,
         val nowPlaying: Boolean,
@@ -78,6 +81,7 @@ sealed interface PlayingTrackNotifyEvent {
     data class TrackLovedUnloved(
         override val notiKey: String,
         override val scrobbleData: ScrobbleData,
+        override val msid: String?,
         val hash: Int,
         val loved: Boolean,
     ) : PlayingTrackNotifyEvent, PlayingTrackState
@@ -185,18 +189,22 @@ suspend fun listenForPlayingTrackEvents(
                 val tracker: MediaListener.SessionTracker?
                 val scrobbleData: ScrobbleData
                 val loved: Boolean
+                val msid: String?
 
                 when (event) {
                     is PlayingTrackNotifyEvent.CurrentTrackLovedUnloved -> {
                         tracker = mediaListener.findPlayingTracker()
-                        scrobbleData = tracker?.trackInfo?.toScrobbleData(false) ?: return@collect
+                        val theEvent = tracker?.trackInfo?.toTrackPlayingEvent() ?: return@collect
+                        scrobbleData = theEvent.scrobbleData
                         loved = event.loved
+                        msid = theEvent.msid
                     }
 
                     is PlayingTrackNotifyEvent.TrackLovedUnloved -> {
                         tracker = mediaListener.findTrackerByHash(event.hash)
                         scrobbleData = event.scrobbleData
                         loved = event.loved
+                        msid = event.msid
                     }
                 }
 
@@ -204,7 +212,10 @@ suspend fun listenForPlayingTrackEvents(
                     return@collect
 
                 mediaListener.scope.launch(Dispatchers.IO) {
-                    ScrobbleEverywhere.loveOrUnlove(scrobbleData.toTrack(), loved)
+                    ScrobbleEverywhere.loveOrUnlove(
+                        scrobbleData.toTrack().copy(msid = msid),
+                        loved
+                    )
                 }
 
                 if (tracker == null) {

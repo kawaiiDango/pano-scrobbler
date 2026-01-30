@@ -609,6 +609,7 @@ private suspend fun trayMenuClickListener(
                             PlayingTrackNotifyEvent.TrackLovedUnloved(
                                 hash = scrobblingState.hash,
                                 scrobbleData = scrobblingState.scrobbleData,
+                                msid = scrobblingState.msid,
                                 notiKey = scrobblingState.notiKey,
                                 loved = !scrobblingState.userLoved
                             )

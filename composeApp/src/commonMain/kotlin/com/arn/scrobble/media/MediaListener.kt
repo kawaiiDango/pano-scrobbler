@@ -221,7 +221,7 @@ abstract class MediaListener(
 
                         if (!scrobbleQueue.has(trackInfo.hash) &&
                             ((playbackInfo.position >= 0L && isPossiblyAtStart) ||
-                                    trackInfo.scrobbledState < PlayingTrackInfo.ScrobbledState.SUBMITTED &&
+                                    trackInfo.scrobbledState < PlayingTrackInfo.ScrobbledState.SCROBBLE_SUBMITTED &&
                                     // ignore state=playing, pos=lowValue spam
                                     !(!playbackStateChanged &&
                                             trackInfo.lastScrobbleHash == trackInfo.hash &&
@@ -231,7 +231,7 @@ abstract class MediaListener(
                         ) {
                             scrobble()
                         } else if ((timelineChanged && notifyTimelineUpdates || playbackStateChanged) &&
-                            trackInfo.scrobbledState <= PlayingTrackInfo.ScrobbledState.SUBMITTED
+                            trackInfo.scrobbledState <= PlayingTrackInfo.ScrobbledState.SCROBBLE_SUBMITTED
                         ) {
                             // update notification
                             notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())

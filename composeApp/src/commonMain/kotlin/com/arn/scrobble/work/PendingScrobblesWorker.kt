@@ -5,7 +5,7 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEvent
-import com.arn.scrobble.api.ScrobbleIgnored
+import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
@@ -74,7 +74,7 @@ class PendingScrobblesWorker(
         )
 
         if (entries.isNotEmpty()) {
-            val scrobbleResults = mutableMapOf<Scrobblable, Result<ScrobbleIgnored>>()
+            val scrobbleResults = mutableMapOf<Scrobblable, Result<ScrobbleResult>>()
             // if an error occurs, there will be only one result
 
             Scrobblables.all.forEach {
@@ -150,7 +150,7 @@ class PendingScrobblesWorker(
                 )
             )
 
-            val loveResults = mutableMapOf<Scrobblable, Result<ScrobbleIgnored>>()
+            val loveResults = mutableMapOf<Scrobblable, Result<ScrobbleResult>>()
 
             Scrobblables.all.forEach {
                 val shouldSubmit by lazy { filterOneForService(it, entry) }

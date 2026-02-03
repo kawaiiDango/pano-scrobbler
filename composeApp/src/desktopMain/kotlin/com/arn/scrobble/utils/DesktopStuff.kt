@@ -26,15 +26,13 @@ object DesktopStuff {
     private val execDirPath =
         File(ProcessHandle.current().info().command().get()).parentFile.absolutePath
 
-    val appDataRoot: String by lazy {
-        cmdlineArgs.dataDir ?: getDefaultDataDir()
-    }
+    val appDataRoot: File by lazy { getDataDir() }
 
     val webViewDir by lazy {
-        File(appDataRoot, "webview")
+        File(appDataRoot, "webview").also { it.mkdirs() }
     }
 
-    val logsDir by lazy { File(appDataRoot, "logs") }
+    val logsDir by lazy { File(appDataRoot, "logs").also { it.mkdirs() } }
 
     val os = when (BuildKonfig.OS_ORDINAL) {
         Os.Windows.ordinal -> Os.Windows
@@ -198,8 +196,8 @@ object DesktopStuff {
         }
     }
 
-    private fun getDefaultDataDir(): String {
-        return when (os) {
+    private fun getDataDir(): File {
+        val defaultDir = when (os) {
             Os.Windows -> {
                 System.getenv("APPDATA")?.ifEmpty { null }
                     ?: System.getProperty("user.home")
@@ -213,13 +211,14 @@ object DesktopStuff {
             Os.Macos -> {
                 System.getProperty("user.home") + "/Library/Application Support"
             }
-        }.let {
-            File(it, BuildKonfig.APP_NAME.lowercase().replace(' ', '-')).apply {
-                if (!exists()) {
-                    mkdirs()
-                }
-            }.absolutePath
         }
+
+        val dirFile = cmdlineArgs.dataDir?.let { File(it) }
+            ?: File(defaultDir, BuildKonfig.APP_NAME.lowercase().replace(' ', '-'))
+
+        dirFile.mkdirs()
+
+        return dirFile
     }
 
     fun setSystemProperties() {

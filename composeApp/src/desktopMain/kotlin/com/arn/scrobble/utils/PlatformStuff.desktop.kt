@@ -55,11 +55,11 @@ actual object PlatformStuff {
     actual const val hasSystemLocaleStore = false
 
     actual val filesDir by lazy {
-        File(DesktopStuff.appDataRoot, "data")
+        File(DesktopStuff.appDataRoot, "data").also { it.mkdirs() }
     }
 
     actual val cacheDir by lazy {
-        File(DesktopStuff.appDataRoot, "cache")
+        File(DesktopStuff.appDataRoot, "cache").also { it.mkdirs() }
     }
 
     actual val mainPrefs by lazy {

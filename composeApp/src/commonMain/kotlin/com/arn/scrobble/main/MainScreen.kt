@@ -286,7 +286,7 @@ fun PanoAppContent(
 
     // show changelog if needed
     LaunchedEffect(Unit) {
-        delay(2000)
+        delay(500)
 
         val changelogHashcode = BuildKonfig.CHANGELOG.hashCode()
         val storedHashcode = PlatformStuff.mainPrefs.data.map { it.changelogSeenHashcode }.first()

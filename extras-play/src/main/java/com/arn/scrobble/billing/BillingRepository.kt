@@ -306,7 +306,7 @@ class BillingRepository(
      * launch the Google Play Billing flow. The response to this call is returned in
      * [onPurchasesUpdated]
      */
-    override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any) {
+    override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any?) {
         if (purchaseMethod.link == null) {
             findProProduct()?.let { productDetails ->
                 val flowParams = BillingFlowParams.newBuilder()

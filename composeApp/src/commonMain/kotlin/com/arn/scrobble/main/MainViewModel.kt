@@ -104,7 +104,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun makePurchase(purchaseMethod: PurchaseMethod, activity: Any) {
+    fun makePurchase(purchaseMethod: PurchaseMethod, activity: Any?) {
         repository.launchBillingFlow(purchaseMethod, activity)
     }
 

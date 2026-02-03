@@ -12,7 +12,6 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.work.ForegroundInfo
 import com.arn.scrobble.BuildKonfig
@@ -153,7 +152,7 @@ actual object PanoNotifications {
             .setColor(notiColor)
             .setCustomBigContentView(null)
             .setSmallIcon(R.drawable.vd_noti)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(Notification.PRIORITY_LOW)
             .setStyle(style)
             .apply {
                 val user =
@@ -288,7 +287,7 @@ actual object PanoNotifications {
             .setSmallIcon(R.drawable.vd_noti_err)
             .setContentTitle(title)
             .setContentText(subtitle)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(Notification.PRIORITY_LOW)
             .setStyle(
                 Notification.BigTextStyle()
                     .setBigContentTitle(event.scrobbleError.title)
@@ -417,7 +416,7 @@ actual object PanoNotifications {
             .setShowWhen(false)
             .setColor(notiColor)
             .setSmallIcon(R.drawable.vd_noti_err)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(Notification.PRIORITY_LOW)
             .setContentTitle(
                 getString(Res.string.state_unscrobbled) + " • " +
                         getString(Res.string.blocked_metadata_noti)
@@ -471,7 +470,7 @@ actual object PanoNotifications {
             .setGroup(Stuff.GROUP_NOTI_DIGESTS)
             .setColor(notiColor)
             .setSmallIcon(R.drawable.vd_charts)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(Notification.PRIORITY_DEFAULT)
             .setContentTitle(title)
             .setContentIntent(chartsPi)
             .addAction(
@@ -535,7 +534,7 @@ actual object PanoNotifications {
             .setColor(notiColor)
             .setSmallIcon(R.drawable.vd_noti)
             .setContentTitle(getString(Res.string.update_available, updateAction.version))
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(Notification.PRIORITY_LOW)
             .setContentIntent(contentPi)
             .setAutoCancel(true)
 

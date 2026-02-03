@@ -42,5 +42,5 @@ abstract class BaseBillingRepository(
     abstract suspend fun queryPurchasesAsync()
     abstract suspend fun checkAndStoreLicense(receipt: String)
     protected abstract fun verifyPurchase(data: String, signature: String?): Boolean
-    abstract fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any)
+    abstract fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any?)
 }

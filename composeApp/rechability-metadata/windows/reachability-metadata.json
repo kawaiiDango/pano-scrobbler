@@ -4,9 +4,6 @@
       "type": "android.os.Build"
     },
     {
-      "type": "android.os.Build$VERSION"
-    },
-    {
       "type": "androidx.compose.material3.TooltipStateImpl$show$cancellableShow$1",
       "fields": [
         {
@@ -42,13 +39,19 @@
       "jniAccessible": true
     },
     {
+      "type": "byte[]"
+    },
+    {
+      "type": "char[]"
+    },
+    {
       "type": "coil3.RealImageLoader"
     },
     {
       "type": "coil3.compose.internal.DeferredDispatchCoroutineDispatcher"
     },
     {
-      "type": "coil3.network.okhttp.internal.OkHttpNetworkFetcherServiceLoaderTarget"
+      "type": "coil3.network.ktor3.internal.KtorNetworkFetcherServiceLoaderTarget"
     },
     {
       "type": "com.arn.scrobble.DesktopWebView",
@@ -61,146 +64,10 @@
       "allDeclaredMethods": true
     },
     {
-      "type": "com.arn.scrobble.api.UserAccountTemp",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.UserAccountTemp$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.UserCached",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.UserCached$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Album",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Album$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Artist",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Artist$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Track",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Track$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.pleroma.PleromaOauthClientCreds",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.pleroma.PleromaOauthClientCreds$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "com.arn.scrobble.db.PanoDb_Impl",
       "methods": [
         {
           "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.RegexEdit",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.RegexEdit$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.SimpleEdit",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.SimpleEdit$Companion",
-      "methods": [
-        {
-          "name": "serializer",
           "parameterTypes": []
         }
       ]
@@ -214,23 +81,6 @@
           "parameterTypes": [
             "java.lang.String[]"
           ]
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.pref.AppListSaveType",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.pref.AppListSaveType$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
         }
       ]
     },
@@ -760,6 +610,15 @@
             "int",
             "int"
           ]
+        }
+      ]
+    },
+    {
+      "type": "java.awt.PopupMenu",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "isTrayIconPopup"
         }
       ]
     },
@@ -1422,6 +1281,9 @@
       ]
     },
     {
+      "type": "java.io.Reader"
+    },
+    {
       "type": "java.lang.Boolean",
       "jniAccessible": true,
       "methods": [
@@ -1481,6 +1343,9 @@
       ]
     },
     {
+      "type": "java.lang.Object[]"
+    },
+    {
       "type": "java.lang.RuntimeException",
       "jniAccessible": true
     },
@@ -1527,7 +1392,22 @@
       "type": "java.lang.module.ModuleDescriptor"
     },
     {
+      "type": "java.net.URL"
+    },
+    {
+      "type": "java.nio.ByteBuffer"
+    },
+    {
+      "type": "java.nio.CharBuffer"
+    },
+    {
       "type": "java.nio.file.Files"
+    },
+    {
+      "type": "java.rmi.MarshalledObject"
+    },
+    {
+      "type": "java.rmi.Remote"
     },
     {
       "type": "java.security.AlgorithmParametersSpi"
@@ -2680,6 +2560,16 @@
       "type": "sun.awt.windows.WCanvasPeer"
     },
     {
+      "type": "sun.awt.windows.WClipboard",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "lostSelectionOwnershipImpl",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.awt.windows.WComponentPeer",
       "jniAccessible": true,
       "fields": [
@@ -2717,6 +2607,12 @@
         {
           "name": "replaceSurfaceDataLater",
           "parameterTypes": []
+        },
+        {
+          "name": "setBackground",
+          "parameterTypes": [
+            "java.awt.Color"
+          ]
         }
       ]
     },
@@ -2868,6 +2764,24 @@
       ]
     },
     {
+      "type": "sun.awt.windows.WMenuItemPeer",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "isCheckbox"
+        },
+        {
+          "name": "shortcutLabel"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getDefaultFont",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.awt.windows.WObjectPeer",
       "jniAccessible": true,
       "fields": [
@@ -2928,6 +2842,13 @@
           "name": "postEvent",
           "parameterTypes": [
             "java.awt.AWTEvent"
+          ]
+        },
+        {
+          "name": "showPopupMenu",
+          "parameterTypes": [
+            "int",
+            "int"
           ]
         },
         {
@@ -4081,6 +4002,18 @@
       ]
     },
     {
+      "type": "sun.security.x509.OCSPNoCheckExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
       "type": "sun.security.x509.PrivateKeyUsageExtension",
       "methods": [
         {
@@ -4178,6 +4111,10 @@
     {
       "module": "java.base",
       "glob": "sun/net/idn/uidna.spp"
+    },
+    {
+      "module": "java.datatransfer",
+      "glob": "sun/datatransfer/resources/flavormap.properties"
     },
     {
       "module": "java.desktop",

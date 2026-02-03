@@ -7,6 +7,14 @@
       "type": "android.os.Build$VERSION"
     },
     {
+      "type": "androidx.compose.material3.TooltipStateImpl$show$cancellableShow$1",
+      "fields": [
+        {
+          "name": "label"
+        }
+      ]
+    },
+    {
       "type": "androidx.compose.ui.awt.ComposeWindow"
     },
     {
@@ -46,7 +54,7 @@
       "type": "coil3.compose.internal.DeferredDispatchCoroutineDispatcher"
     },
     {
-      "type": "coil3.network.okhttp.internal.OkHttpNetworkFetcherServiceLoaderTarget"
+      "type": "coil3.network.ktor3.internal.KtorNetworkFetcherServiceLoaderTarget"
     },
     {
       "type": "com.arn.scrobble.DesktopWebView",
@@ -59,163 +67,10 @@
       "allDeclaredMethods": true
     },
     {
-      "type": "com.arn.scrobble.api.UserAccountTemp",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.UserAccountTemp$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.UserCached",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.UserCached$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Album",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Album$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Artist",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Artist$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Track",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.lastfm.Track$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.pleroma.PleromaOauthClientCreds",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.api.pleroma.PleromaOauthClientCreds$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "com.arn.scrobble.db.PanoDb_Impl",
       "methods": [
         {
           "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.RegexEdit",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.RegexEdit$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.SimpleEdit",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.db.SimpleEdit$Companion",
-      "methods": [
-        {
-          "name": "serializer",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.pref.AppListSaveType",
-      "fields": [
-        {
-          "name": "Companion"
-        }
-      ]
-    },
-    {
-      "type": "com.arn.scrobble.pref.AppListSaveType$Companion",
-      "methods": [
-        {
-          "name": "serializer",
           "parameterTypes": []
         }
       ]
@@ -938,6 +793,9 @@
           ]
         }
       ]
+    },
+    {
+      "type": "java.lang.Object[]"
     },
     {
       "type": "java.lang.RuntimeException",
@@ -3354,8 +3212,8 @@
       "glob": "sun/net/idn/uidna.spp"
     },
     {
-      "module": "java.desktop",
-      "glob": "com/sun/java/swing/plaf/gtk/resources/gtk_en.properties"
+      "module": "java.datatransfer",
+      "glob": "sun/datatransfer/resources/flavormap.properties"
     },
     {
       "module": "java.desktop",

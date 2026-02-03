@@ -222,9 +222,7 @@ fun BillingScreen(
                     purchaseMethods.forEach { purchaseMethod ->
                         DropdownMenuItem(
                             onClick = {
-                                if (activity != null) {
-                                    viewModel.makePurchase(purchaseMethod, activity)
-                                }
+                                viewModel.makePurchase(purchaseMethod, activity)
                                 purchaseMethodsExpanded = false
                                 purchaseMethodClicked = purchaseMethod
                             },

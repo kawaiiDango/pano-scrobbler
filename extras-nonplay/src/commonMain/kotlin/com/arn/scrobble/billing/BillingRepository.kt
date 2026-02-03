@@ -117,7 +117,7 @@ class BillingRepository(
             PUBLIC_KEY_BASE64
         )
 
-    override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any) {
+    override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any?) {
         purchaseMethod.link?.let { openInBrowser(it) }
     }
 

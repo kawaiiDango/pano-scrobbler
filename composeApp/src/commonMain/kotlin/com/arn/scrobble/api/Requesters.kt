@@ -22,7 +22,6 @@ import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.cache.HttpCache
-import io.ktor.client.plugins.cache.storage.FileStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
@@ -83,11 +82,10 @@ object Requesters {
             if (!Stuff.isRunningInTest) {
                 install(HttpCache) {
                     val cacheFile = File(PlatformStuff.cacheDir, "ktor")
-                    val fileCache = FileStorage(cacheFile)
                     val memoryCache = HttpMemoryCache(25)
                     val hybridCache = HybridCacheStorage(
                         memoryCache = memoryCache,
-                        fileCache = fileCache,
+                        cacheFile,
                     )
                     publicStorage(hybridCache)
                 }

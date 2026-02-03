@@ -126,7 +126,7 @@ object AutoUpdater {
         Logger.i { "Downloading update" }
 
         return withContext(Dispatchers.IO) {
-            Requesters.genericKtorClient.prepareGet(downloadUrl) {
+            Requesters.baseKtorClient.prepareGet(downloadUrl) {
                 timeout {
                     requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
                 }

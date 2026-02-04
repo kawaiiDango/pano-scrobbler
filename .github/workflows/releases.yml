@@ -110,8 +110,8 @@ jobs:
     runs-on: windows-latest
     if: ${{ inputs.upload-release == true }}
     steps:
-      - name: Read version
-        id: get_version
+      - name: Read version and changelog
+        id: release_metadata
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -121,6 +121,13 @@ jobs:
           verName="$((verCode / 100)).$((verCode % 100))"
           echo "verCode=$verCode" >> "$GITHUB_OUTPUT"
           echo "verName=$verName" >> "$GITHUB_OUTPUT"
+          
+          changelog="$(gh api -H "Accept: application/vnd.github.raw" "/repos/${GITHUB_REPOSITORY}/contents/changelog.txt?ref=${GITHUB_SHA}")"
+          {
+            echo "changelog<<EOF"
+            echo "$changelog"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Download all build artifacts
         uses: actions/download-artifact@v5
@@ -131,9 +138,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.get_version.outputs.verCode }}
-          name: ${{ steps.get_version.outputs.verName }}
-          body_path: changelog.txt
+          tag_name: ${{ steps.release_metadata.outputs.verCode }}
+          name: ${{ steps.release_metadata.outputs.verName }}
+          body: ${{ steps.release_metadata.outputs.changelog }}
           files: dist/**
 
       - name: Dispatch static site build
@@ -156,6 +163,6 @@ jobs:
         shell: bash
         run: |
           wingetcreate update kawaiiDango.pano-scrobbler \
-            --version ${{ steps.get_version.outputs.verName }} \
-            --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.get_version.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
+            --version ${{ steps.release_metadata.outputs.verName }} \
+            --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.release_metadata.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
             --submit

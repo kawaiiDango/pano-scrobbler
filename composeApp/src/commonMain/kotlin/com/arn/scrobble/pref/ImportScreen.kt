@@ -206,10 +206,7 @@ fun ImportScreen(
             it.onSuccess {
                 errorText = null
                 Stuff.globalSnackbarFlow.emit(
-                    PanoSnackbarVisuals(
-                        message = importSuccessText,
-                        isError = false
-                    )
+                    PanoSnackbarVisuals(importSuccessText)
                 )
                 onBack()
             }.onFailure {

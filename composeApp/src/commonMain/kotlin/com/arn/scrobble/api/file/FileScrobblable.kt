@@ -14,7 +14,6 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.ScrobbleData
-import com.arn.scrobble.api.lastfm.Session
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.ListeningActivity
@@ -37,7 +36,9 @@ import java.io.OutputStream
 class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     private val fileType = FileFormat.valueOf(userAccount.authKey)
 
-    val platformFile = PlatformFile(userAccount.apiRoot!!)
+    private val platformFile = PlatformFile(userAccount.apiRoot!!)
+    private val csvReader by lazy { csvReader() }
+    private val csvWriter by lazy { csvWriter() }
 
     override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         // no op
@@ -82,7 +83,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         when (fileType) {
             FileFormat.csv -> {
                 withContext(Dispatchers.IO) {
-                    csvWriter().writeAllAsync(listOf(entry.toCsvRow()), outputStream)
+                    csvWriter.writeAllAsync(listOf(entry.toCsvRow()), outputStream)
                 }
             }
 
@@ -141,7 +142,6 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
             if (!platformFile.isFileOk())
                 throw FException("File not writable")
 
-            val csvReader by lazy { csvReader() }
             val entries = mutableListOf<Track>()
 
             var readFirstLine = false
@@ -241,6 +241,54 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         return ListeningActivity()
     }
 
+    suspend fun convert(fromFile: PlatformFile, fromType: FileFormat) {
+        if (!platformFile.isFileOk() || !fromFile.isFileOk())
+            throw FException("File not writable")
+
+        val fileName = fromFile.getFileName()
+
+        require(fileName.lowercase().endsWith(".${fromType.name}")) {
+            "\"$fileName\" must end with .${fromType.name}"
+        }
+
+        require(fromType != fileType) { "Source and destination file types are the same" }
+
+        platformFile.writeAppend { outputStream ->
+            fromFile.read { inputStream ->
+                var readFirstLine = false
+                inputStream.bufferedReader().useLines { sequence ->
+                    sequence.forEach { line ->
+                        if (!readFirstLine) {
+                            readFirstLine = true
+
+                            if (fromType == FileFormat.csv && line.startsWith(Entry::timeHuman.name))
+                                return@forEach
+                        }
+
+                        if (fromType == FileFormat.csv && fileType == FileFormat.jsonl) {
+                            val row = csvReader.readAll(line).firstOrNull() ?: return@forEach
+                            val entry = Entry.fromCsvRow(row)
+                            val convertedLine = entry.toJson() + "\n"
+
+                            outputStream.write(convertedLine.toByteArray())
+
+                        } else if (fromType == FileFormat.jsonl && fileType == FileFormat.csv) {
+                            try {
+                                val entry = Entry.fromJson(line)
+                                val row = entry.toCsvRow()
+                                val convertedLine = csvWriter.writeAllAsString(listOf(row))
+
+                                outputStream.write(convertedLine.toByteArray())
+                            } catch (e: SerializationException) {
+                                return@forEach
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Serializable
     private data class Entry(
         val timeHuman: String,
@@ -317,23 +365,26 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         private val CSV_HEADER =
             "${Entry::timeHuman.name},${Entry::timeMs.name},${Entry::artist.name},${Entry::track.name},${Entry::album.name},${Entry::albumArtist.name},${Entry::durationMs.name},${Entry::mediaPlayerPackage.name},${Entry::mediaPlayerName.name},${Entry::mediaPlayerVersion.name},${Entry::event.name}"
 
-        suspend fun authAndGetSession(
+        suspend fun authAndGetAccount(
             platformFile: PlatformFile,
             format: FileFormat,
-        ): Result<Session> {
+        ): Result<UserAccountSerializable> {
             return kotlin.runCatching {
                 val fileName = platformFile.getFileName()
 
                 require(fileName.lowercase().endsWith(".${format.name}")) {
-                    "File name must end with .${format.name}"
+                    "\"$fileName\" must end with .${format.name}"
                 }
 
                 platformFile.takePersistableUriPermission(readWrite = true)
 
-                if (format == FileFormat.csv && platformFile.length() == 0L) {
+                // always trigger a write to create the file if it doesn't exist
+                if (platformFile.length() == 0L) {
                     platformFile.overwrite { outputStream ->
-                        outputStream.bufferedWriter().use {
-                            it.write(CSV_HEADER + "\n")
+                        if (format == FileFormat.csv) {
+                            outputStream.bufferedWriter().use {
+                                it.write(CSV_HEADER + "\n")
+                            }
                         }
                     }
                 }
@@ -352,7 +403,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 )
 
                 Scrobblables.add(account)
-                Session(fileName, format.name)
+                account
             }
         }
     }

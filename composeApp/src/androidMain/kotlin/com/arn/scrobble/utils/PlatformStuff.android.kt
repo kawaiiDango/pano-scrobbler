@@ -16,7 +16,6 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.provider.Settings
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.core.net.toUri
@@ -139,7 +138,7 @@ actual object PlatformStuff {
                     PanoSnackbarVisuals(
                         message = getString(Res.string.tv_url_notice) + "\n" + url,
                         isError = false,
-                        duration = SnackbarDuration.Long
+                        longDuration = true
                     )
                 )
             }
@@ -278,8 +277,7 @@ actual object PlatformStuff {
             GlobalScope.launch {
                 globalSnackbarFlow.tryEmit(
                     PanoSnackbarVisuals(
-                        message = getString(Res.string.copied),
-                        isError = false,
+                        getString(Res.string.copied),
                     )
                 )
             }

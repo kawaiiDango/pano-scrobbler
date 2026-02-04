@@ -78,6 +78,10 @@ actual fun FilePicker(
                     init {
                         if (mode is FilePickerMode.Save)
                             file = mode.title + extensions.first()
+
+                        mode.initialPath?.let {
+                            directory = Path.of(it).parent?.toString()
+                        }
                     }
 
                     override fun setVisible(value: Boolean) {

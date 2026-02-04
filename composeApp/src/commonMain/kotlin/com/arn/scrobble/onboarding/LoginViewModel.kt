@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -135,31 +137,6 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-//    fun malojaLogin(apiRoot: String, token: String) {
-//        viewModelScope.launch {
-//            var apiRoot = apiRoot
-//            val result = if (apiRoot.isNotBlank() && token.isNotBlank()) {
-//                if (parseUrl(apiRoot) != null) {
-//                    if (!apiRoot.endsWith('/'))
-//                        apiRoot += '/'
-//
-//                    val userAccount = UserAccountTemp(
-//                        AccountType.MALOJA,
-//                        token,
-//                        apiRoot,
-//                    )
-//                    Maloja.authAndGetSession(userAccount)
-//                } else {
-//                    Result.failure(IllegalArgumentException(getString(Res.string.failed_encode_url)))
-//                }
-//            } else {
-//                Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
-//            }
-//
-//            _result.emit(result)
-//        }
-//    }
-
     fun pleromaLogin(
         userAccountTemp: UserAccountTemp,
         creds: PleromaOauthClientCreds,
@@ -205,6 +182,32 @@ class LoginViewModel : ViewModel() {
                     tryAgainTimeout = 0 // stop trying
                 }
             }
+        }
+    }
+
+    fun fileLogin(
+        file: PlatformFile,
+        format: FileScrobblable.FileFormat
+    ) {
+        viewModelScope.launch {
+            val res = FileScrobblable.authAndGetAccount(file, format)
+            _result.emit(res.map { })
+        }
+    }
+
+    fun fileConvertLogin(
+        fromFile: PlatformFile,
+        fromFormat: FileScrobblable.FileFormat,
+        toFile: PlatformFile,
+        toFormat: FileScrobblable.FileFormat
+    ) {
+        viewModelScope.launch {
+            val res = FileScrobblable.authAndGetAccount(toFile, toFormat)
+                .mapCatching { toFileAccount ->
+                    FileScrobblable(toFileAccount)
+                        .convert(fromFile, fromFormat)
+                }
+            _result.emit(res)
         }
     }
 }

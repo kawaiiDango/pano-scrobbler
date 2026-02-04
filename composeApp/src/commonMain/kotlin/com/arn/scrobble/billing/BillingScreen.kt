@@ -186,8 +186,7 @@ fun BillingScreen(
                             }
                         } else {
                             val failSnackbarData = PanoSnackbarVisuals(
-                                message = "...",
-                                isError = false,
+                                "...",
                             )
                             Stuff.globalSnackbarFlow.tryEmit(failSnackbarData)
                         }
@@ -292,8 +291,7 @@ fun BillingScreen(
         VariantStuff.billingRepository.licenseState.collect {
             if (it == LicenseState.VALID) {
                 val thankYouSnackbarData = PanoSnackbarVisuals(
-                    message = getString(Res.string.thank_you),
-                    isError = false,
+                    getString(Res.string.thank_you),
                 )
                 Stuff.globalSnackbarFlow.emit(thankYouSnackbarData)
                 onBack()

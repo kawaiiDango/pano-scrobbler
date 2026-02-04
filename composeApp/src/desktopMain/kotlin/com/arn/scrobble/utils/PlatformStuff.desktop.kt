@@ -156,10 +156,7 @@ actual object PlatformStuff {
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         clipboard.setContents(stringSelection, null)
         Stuff.globalSnackbarFlow.tryEmit(
-            PanoSnackbarVisuals(
-                message = "Copied",
-                isError = false,
-            )
+            PanoSnackbarVisuals("Copied")
         )
     }
 

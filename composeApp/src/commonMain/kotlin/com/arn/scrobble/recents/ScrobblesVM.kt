@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import androidx.paging.insertSeparators
@@ -136,25 +137,29 @@ class ScrobblesVM(
                             keysTillNow += it.key
                             keep
                         }
-                        .insertSeparators { before, after ->
-                            if (input.loadLoved ||
-                                before?.track?.date == null ||
-                                after?.track?.date == null
-                            )
-                                return@insertSeparators null
+                        .let {
+                            if (track == null && !input.loadLoved) {
+                                it.insertSeparators { before, after ->
+                                    if (before?.track?.date == null ||
+                                        after?.track?.date == null
+                                    )
+                                        return@insertSeparators null
 
-                            cal.timeInMillis = before.track.date
-                            val beforeDay = cal[Calendar.DAY_OF_YEAR]
-                            cal.timeInMillis = after.track.date
-                            val afterDay = cal[Calendar.DAY_OF_YEAR]
+                                    cal.timeInMillis = before.track.date
+                                    val beforeDay = cal[Calendar.DAY_OF_YEAR]
+                                    cal.timeInMillis = after.track.date
+                                    val afterDay = cal[Calendar.DAY_OF_YEAR]
 
-                            if (beforeDay != afterDay)
-                                TrackWrapper.SeparatorItem(
-                                    after.track.date,
-                                    "sep_${after.track.date}"
-                                )
-                            else
-                                null
+                                    if (beforeDay != afterDay)
+                                        TrackWrapper.SeparatorItem(
+                                            after.track.date,
+                                            "sep_${after.track.date}"
+                                        )
+                                    else
+                                        null
+                                }
+                            } else
+                                it as PagingData<TrackWrapper>
                         }
                 }
         }.cachedIn(viewModelScope)

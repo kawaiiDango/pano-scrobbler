@@ -466,6 +466,9 @@
     <string name="album_art_now_playing_desc">Требуется авторизация в last.fm</string>
     <string name="spotify_consent">Использовать изображения исполнителей из Spotify?</string>
     <string name="show_track_url">URL трека</string>
+    <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">Например, для извлечения метаданных из поля трека, если трек содержит "Исполнитель - Трек", установите регулярные выражения для трека в %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Поиск в медиаплеере напрямую</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Забыть невыбранные приложения</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>

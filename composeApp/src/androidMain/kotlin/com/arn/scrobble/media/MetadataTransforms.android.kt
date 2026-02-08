@@ -10,7 +10,7 @@ actual typealias PlatformMediaMetadata = MediaMetadata
 actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
-): Pair<MetadataInfo, Map<String, String>> {
+): Pair<MetadataInfo, Boolean> {
     val trackId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID) ?: ""
     var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
     // do not scrobble empty artists, ads will get scrobbled
@@ -23,16 +23,14 @@ actual fun transformMediaMetadata(
     if (durationMillis < -1 || trackInfo.appId in Stuff.IGNORE_DURATION)
         durationMillis = -1
 
-    val extrasMap = mutableMapOf<String, String>()
-
-    metadata.getLong(Stuff.METADATA_KEY_YOUTUBE_WIDTH).takeIf { it != 0L }
-        ?.let { extrasMap[Stuff.METADATA_KEY_YOUTUBE_WIDTH] = it.toString() }
-
-    metadata.getLong(Stuff.METADATA_KEY_YOUTUBE_HEIGHT).takeIf { it != 0L }
-        ?.let { extrasMap[Stuff.METADATA_KEY_YOUTUBE_HEIGHT] = it.toString() }
-
-    metadata.getString(Stuff.METADATA_KEY_AM_ARTIST_ID)
-        ?.let { extrasMap[Stuff.METADATA_KEY_AM_ARTIST_ID] = it }
+//    metadata.getLong(Stuff.METADATA_KEY_YOUTUBE_WIDTH).takeIf { it != 0L }
+//        ?.let { extrasMap[Stuff.METADATA_KEY_YOUTUBE_WIDTH] = it.toString() }
+//
+//    metadata.getLong(Stuff.METADATA_KEY_YOUTUBE_HEIGHT).takeIf { it != 0L }
+//        ?.let { extrasMap[Stuff.METADATA_KEY_YOUTUBE_HEIGHT] = it.toString() }
+//
+//    metadata.getString(Stuff.METADATA_KEY_AM_ARTIST_ID)
+//        ?.let { extrasMap[Stuff.METADATA_KEY_AM_ARTIST_ID] = it }
 
 
     when (trackInfo.appId) {
@@ -144,5 +142,9 @@ actual fun transformMediaMetadata(
         artUrl = ""
     )
 
-    return metadataInfo to extrasMap
+    val ignoreScrobble = metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L
+
+    return metadataInfo to ignoreScrobble
 }
+
+private const val METADATA_KEY_ADVERTISEMENT = "android.media.metadata.ADVERTISEMENT"

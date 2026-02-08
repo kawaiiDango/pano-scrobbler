@@ -38,22 +38,18 @@ class ExportVM : ViewModel() {
 
     fun exportToFile(platformFile: PlatformFile, privateData: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            _result.value = if (!platformFile.isFileOk())
-                Result.failure(IOException("File is not writable"))
-            else {
-                var exported = false
-                platformFile.overwrite {
-                    exported = if (privateData)
-                        imExporter.exportPrivateData(it)
-                    else
-                        imExporter.export(it)
-                }
+            var exported = false
+            platformFile.overwrite {
+                exported = if (privateData)
+                    imExporter.exportPrivateData(it)
+                else
+                    imExporter.export(it)
+            }
 
-                if (!exported) {
-                    Result.failure(IOException("Export failed"))
-                } else {
-                    Result.success(Unit)
-                }
+            if (!exported) {
+                _result.value = Result.failure(IOException("Export failed"))
+            } else {
+                _result.value = Result.success(Unit)
             }
         }
     }

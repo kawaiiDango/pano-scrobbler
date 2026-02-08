@@ -274,7 +274,7 @@ fun main(args: Array<String>) {
 
                             val playingState =
                                 if (nowPlaying)
-                                    "▶️ "
+                                    "🎵 "
                                 else
                                     "✔️ "
 

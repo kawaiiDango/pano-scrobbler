@@ -189,6 +189,9 @@ data class MainPrefs(
         val deezerApi: Boolean = defaultMainPrefs.deezerApi,
         val lastfmApiAlways: Boolean = defaultMainPrefs.lastfmApiAlways,
         val discordRpc: DiscordRpcSettings = defaultMainPrefs.discordRpc,
+
+        // backward compatibility, not actually used anymore
+        val firstDayOfWeek: Int = -1,
     )
 
     val autoDetectAppsP

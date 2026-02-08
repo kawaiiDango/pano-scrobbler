@@ -35,7 +35,6 @@ class ImExporter {
     }
 
     suspend fun export(writer: OutputStream): Boolean {
-
         val exportData = ExportData(
             pano_version = BuildKonfig.VER_CODE,
             simple_edits = db.getSimpleEditsDao().allFlow().first().asReversed(),
@@ -57,7 +56,6 @@ class ImExporter {
                 writer.close()
             }
         }
-
 
     }
 

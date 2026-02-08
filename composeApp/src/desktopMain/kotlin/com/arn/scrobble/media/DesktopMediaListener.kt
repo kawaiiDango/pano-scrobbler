@@ -141,18 +141,12 @@ class DesktopMediaListener(
 
         val sessionTracker = sessionTrackers[uniqueAppId] ?: return
 
-//        Info: (scrobbler) metadata: MetadataInfo(app_id=Spotify.exe, title=Advertisement, artist=Spotify, album=, album_artist=Spotify, track_number=0, duration=25417)
-        if (metadata.artist == "Spotify" && metadata.albumArtist == "Spotify" && metadata.title == "Advertisement" && metadata.album.isEmpty()) {
-            sessionTracker.trackInfo.resetMeta()
-            return
-        }
-
-        val (metadata, extras) = transformMediaMetadata(
+        val (metadata, ignoreScrobble) = transformMediaMetadata(
             sessionTracker.trackInfo,
             metadata
         )
 
-        sessionTracker.metadataChanged(metadata, extras)
+        sessionTracker.metadataChanged(metadata, ignoreScrobble)
     }
 
     fun platformPlaybackStateChanged(uniqueAppId: String, playbackInfo: PlaybackInfo) {

@@ -246,17 +246,13 @@ class SessListener(
             override fun onMetadataChanged(metadata: MediaMetadata?) {
                 metadata ?: return
 
-                if (metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L) {
-                    trackInfo.resetMeta()
-                    return
-                }
 
 //            if (BuildKonfig.DEBUG)
 //                metadata.dump()
 
-                val (metadataInfo, extras) = transformMediaMetadata(trackInfo, metadata)
+                val (metadataInfo, ignoreScrobble) = transformMediaMetadata(trackInfo, metadata)
 
-                metadataChanged(metadataInfo, extras)
+                metadataChanged(metadataInfo, ignoreScrobble)
             }
 
             @Synchronized
@@ -292,9 +288,5 @@ class SessListener(
                 Logger.d { "audioinfo updated ${trackInfo.appId}: $info" }
             }
         }
-    }
-
-    companion object {
-        private const val METADATA_KEY_ADVERTISEMENT = "android.media.metadata.ADVERTISEMENT"
     }
 }

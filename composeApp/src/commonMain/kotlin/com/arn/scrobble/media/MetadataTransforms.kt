@@ -5,4 +5,4 @@ expect class PlatformMediaMetadata
 expect fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
-): Pair<MetadataInfo, Map<String, String>>
+): Pair<MetadataInfo, Boolean>

@@ -7,7 +7,7 @@ import kotlin.math.abs
 
 class PlayingTrackInfo(
     val appId: String, // normalized app id
-    val uniqueId: String, // "appId|sessionId" on android, actual mpris name on linux
+    val uniqueId: String,
     cachedTrackInfo: PlayingTrackInfo?,
 ) {
     enum class ScrobbledState {
@@ -78,8 +78,8 @@ class PlayingTrackInfo(
     var lastScrobbleHash: Int = cachedTrackInfo?.lastScrobbleHash ?: 0
         private set
 
-    fun resetMeta() =
-        putOriginals("", "", "", "", 0, null, null, emptyMap())
+//    fun resetMeta() =
+//        putOriginals("", "", "", "", 0, null, null, emptyMap())
 
     fun putOriginals(
         artist: String,
@@ -89,7 +89,7 @@ class PlayingTrackInfo(
         durationMillis: Long,
         trackId: String?,
         artUrl: String?,
-        extraData: Map<String, String>
+        extraData: Map<String, String> = emptyMap(),
     ) {
         origArtist = artist
         this.artist = artist

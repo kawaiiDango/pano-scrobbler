@@ -279,6 +279,7 @@
     <string name="pref_change_locale">Αλλαγή γλώσσας</string>
     <string name="pref_crashlytics_enabled">Αυτόματη αναφορά σφαλμάτων</string>
     <string name="pref_misc">Διάφορα.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Αρχή της εβδομάδας</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Εισαγωγή &amp; εξαγωγή</string>
     <string name="pref_export">Εξαγωγή</string>
     <string name="pref_export_desc">Δημιουργεί αντίγραφα ασφαλείας ρυθμίσεων, επεξεργασιών και blocklist. Δεν αποθηκεύει συνδέσεις για λόγους ασφαλείας. Χρήσιμο για μετακίνηση μεταξύ συσκευών ή κοινή χρήση με φίλους.</string>

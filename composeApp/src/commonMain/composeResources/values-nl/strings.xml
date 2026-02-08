@@ -288,6 +288,7 @@
     <string name="pref_change_locale">Taal wijzigen</string>
     <string name="pref_crashlytics_enabled">Rapporteer fouten automatisch</string>
     <string name="pref_misc">Diversen</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Een week begint op</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importeren &amp; Exporteren</string>
     <string name="pref_export">Exporteren</string>
     <string name="pref_export_desc">Back-up van instellingen, bewerkingen en blokkeerlijsten. Slaat logins niet op voor veiligheidsredenen. Nuttig om te wisselen tussen apparaten of delen met vrienden.</string>

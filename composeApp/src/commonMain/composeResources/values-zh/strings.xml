@@ -307,6 +307,7 @@
     <string name="pref_change_locale">更改语言</string>
     <string name="pref_crashlytics_enabled">自动上报错误</string>
     <string name="pref_misc">杂项</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">每周起始于</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">导入 &amp; 导出</string>
     <string name="pref_export">导出</string>
     <string name="pref_export_desc">备份设置、编辑列表和黑名单。出于安全原因不保存登录信息。可用于设备间同步或与朋友共享。</string>

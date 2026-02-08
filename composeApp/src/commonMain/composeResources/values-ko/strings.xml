@@ -304,6 +304,7 @@
     <string name="pref_change_locale">언어 변경</string>
     <string name="pref_crashlytics_enabled">자동으로 오류 보고</string>
     <string name="pref_misc">기타</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">한 주의 시작</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">가져오기 &amp; 내보내기</string>
     <string name="pref_export">내보내기</string>
     <string name="pref_export_desc">설정, 편집 내역, 차단 목록을 백업합니다. 보안상의 이유로 로그인 정보는 저장하지 않습니다. 데이터를 다른 기기로 이동하거나 친구들과 공유할 때 유용합니다.</string>

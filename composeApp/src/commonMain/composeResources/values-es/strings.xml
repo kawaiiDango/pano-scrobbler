@@ -321,6 +321,7 @@
     <string name="pref_change_locale">Elegir idioma</string>
     <string name="pref_crashlytics_enabled">Reportar errores automáticamente</string>
     <string name="pref_misc">Misceláneo</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La semana comienza el</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importar y exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Realiza copias de seguridad de los ajustes, las ediciones y la lista de bloqueos. Por motivos de seguridad, no guarda los datos personales. Es muy útil para pasar de un dispositivo a otro o para compartilo con tus amigos.</string>

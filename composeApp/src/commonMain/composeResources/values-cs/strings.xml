@@ -350,6 +350,7 @@
     <string name="pref_change_locale">Změnit jazyk</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
     <string name="pref_misc">Ostatní</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Začátek týdne</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Import a export</string>
     <string name="pref_export">Exportovat</string>
     <string name="pref_export_desc">Zálohuje nastavení, úpravy a seznam blokovaných. Z bezpečnostních důvodů neukládá přihlášení. Užitečné při přesouvání mezi zařízeními nebo sdílení s kamarády.</string>

@@ -279,6 +279,7 @@
     <string name="pref_change_locale">भाषा बदल्नुहोस</string>
     <string name="pref_crashlytics_enabled">एरोर स्वचीलत रूपमा रिपोर्ट गर्नुहोस्</string>
     <string name="pref_misc">मिस्क.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">हप्ता सुरु हुन्छ</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">आयात &amp; निर्यात</string>
     <string name="pref_export">निर्यात</string>
     <string name="pref_export_desc">सेटिङ्स, एडिट, ब्लकलिस्ट बाट ब्याकअप गर्नुहोस्। लग-इन सँग सम्बन्धित जानकारी ब्याकअप सुरक्षा को कारण ले ब्याकअप हुँदैन। साथीभाइ संग शेयर गर्दा र मोबाइल परिवर्तन गर्दा उपयोगी हुन्छ।.</string>

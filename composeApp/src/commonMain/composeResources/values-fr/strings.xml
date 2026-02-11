@@ -56,10 +56,6 @@
         <item quantity="one">%1$s métadonnée bloquée</item>
         <item quantity="other">%1$s métadonnées bloquées</item>
     </plurals>
-    <plurals name="num_hours">
-        <item quantity="one">%1$d heure</item>
-        <item quantity="other">%1$d heures</item>
-    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s scrobble en attente</item>
         <item quantity="other">%1$s scrobbles en attente</item>
@@ -326,7 +322,7 @@
     <string name="pref_change_locale">Changer de langage</string>
     <string name="pref_crashlytics_enabled">Signaler les erreurs automatiquement</string>
     <string name="pref_misc">Divers</string>
-    <string name="pref_digests_on_weekday">Obtenez les top scrobbles de la semaine sur</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La semaine commence le</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importer &amp; Exporter</string>
     <string name="pref_export">Exporter</string>
     <string name="pref_export_desc">Sauvegarde les paramètres, les modifications et la liste noire. Ne sauvegarde pas les identifiants pour des raisons de sécurité. Utile en cas de changement d&apos;appareil ou pour partager les paramètres avec des amis.</string>

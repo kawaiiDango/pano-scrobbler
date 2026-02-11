@@ -337,6 +337,7 @@
     <string name="pref_change_locale">Promijeni jezik</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tjedan počinje u</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Uvoz i izvoz</string>
     <string name="pref_export">Izvezi</string>
     <string name="pref_export_desc">Sigurnosno kopira postavke, uređivanja i popise blokiranja. Iz sigurnosnih razloga ne sprema prijave. Korisno za premještanje na novi uređaj ili dijeljenje s prijateljima.</string>

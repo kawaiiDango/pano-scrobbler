@@ -307,6 +307,7 @@
     <string name="pref_change_locale">Ganti bahasa</string>
     <string name="pref_crashlytics_enabled">Laporkan kesalahan secara otomatis</string>
     <string name="pref_misc">Lainnya.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Seminggu dimulai</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Impor &amp; ekspor</string>
     <string name="pref_export">Ekspor</string>
     <string name="pref_export_desc">Mencadangkan pengaturan, pengeditan, dan daftar blokir. Tidak menyimpan login untuk alasan keamanan. Berguna untuk berpindah antar perangkat atau berbagi dengan teman.</string>

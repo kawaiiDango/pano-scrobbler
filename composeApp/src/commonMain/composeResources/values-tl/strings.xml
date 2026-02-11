@@ -184,6 +184,7 @@
     <string name="pref_locale">Mga wika</string>
     <string name="pref_change_locale">Palitan ang wika</string>
     <string name="pref_crashlytics_enabled">Awtomatikong i-report Ang mga error</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Ang linggo ay nagsisimula sa</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Import at export</string>
     <string name="pref_export_desc">Iba-backup ang mga setting, mga edit at mga blocklist. Hindi nito sinasave ang mga login para sa seguridad. Nakakatulong ito pag nagpapalit ng device o i-share sa mga kaibigan.</string>
     <string name="pref_imexport_network_notice">Para sa network mode, kailangan naka-connect ang mga device sa parehong network.</string>

@@ -352,6 +352,7 @@
     <string name="pref_change_locale">Изменить язык</string>
     <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Начало недели</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Импорт и экспорт</string>
     <string name="pref_export">Экспорт</string>
     <string name="pref_export_desc">Сохраняет настройки, правки и черный список. Не сохраняет логины по соображениям безопасности. Полезно для перемещения между устройствами или обмена с друзьями.</string>
@@ -460,6 +461,14 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">При использовании</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">При неиспользовании</string>
     <string name="as_text" comment="Like copy as text, but in short">Как текст</string>
+    <string name="automation_cli">Аргументы командной строки</string>
+    <string name="automation_cli_info">Запустите исполняемый файл pano-scrobbler с одним из этих аргументов командной строки, пока экземпляр программы уже запущен.</string>
+    <string name="album_art_now_playing_desc">Требуется авторизация в last.fm</string>
+    <string name="spotify_consent">Использовать изображения исполнителей из Spotify?</string>
+    <string name="show_track_url">URL трека</string>
+    <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">Например, для извлечения метаданных из поля трека, если трек содержит "Исполнитель - Трек", установите регулярные выражения для трека в %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Поиск в медиаплеере напрямую</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Забыть невыбранные приложения</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>

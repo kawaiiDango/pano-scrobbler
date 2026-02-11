@@ -301,6 +301,7 @@
     <string name="pref_change_locale">言語を変更</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
     <string name="pref_misc">その他</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">週の始まり</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">インポート &amp; エクスポート</string>
     <string name="pref_export">エクスポート</string>
     <string name="pref_export_desc">設定や訂正内容、ブロックリストをバックアップします。ログイン情報は、セキュリティ上の観点から保存されません。デバイス間や友人との共有にご利用ください。</string>

@@ -299,7 +299,7 @@ class NLService : NotificationListenerService() {
             album = scrobbleData.album.orEmpty(),
             albumArtist = scrobbleData.albumArtist.orEmpty(),
             durationMillis = scrobbleData.duration ?: 0L,
-            trackId = null,
+            normalizedUrlHost = null,
             artUrl = null,
             extraData = emptyMap()
         )

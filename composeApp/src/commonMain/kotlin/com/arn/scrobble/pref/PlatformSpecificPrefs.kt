@@ -4,7 +4,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import com.arn.scrobble.navigation.PanoRoute
 
 expect object PlatformSpecificPrefs {
-    fun prefDigestWeekDay(listScope: LazyListScope, digestWeekday: Int)
     fun prefNotifications(listScope: LazyListScope)
 
     fun prefScrobbler(

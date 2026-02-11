@@ -74,6 +74,7 @@ import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -125,8 +126,8 @@ fun ScrobblesScreen(
         viewModel.pendingScrobbles.collectAsStateWithLifecycle()
     else
         remember { mutableStateOf(emptyList()) }
+    val total by viewModel.total.collectAsStateWithLifecycle(null)
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
-    val seenApps by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
     val scrobblerEnabled by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
@@ -170,7 +171,7 @@ fun ScrobblesScreen(
         onNavigate(PanoRoute.Modal.MusicEntryInfo(user = user, track = track, appId = appId))
     }
 
-    LaunchedEffect(user, selectedType, timeJumpMillis) {
+    LaunchedEffect(user, selectedType, timeJumpMillis, total) {
         when (selectedType) {
             ScrobblesType.LOVED -> {
                 viewModel.setScrobblesInput(
@@ -180,7 +181,13 @@ fun ScrobblesScreen(
                     )
                 )
 
-                onTitleChange(getString(Res.string.loved))
+                onTitleChange(
+                    getString(Res.string.loved) +
+                            if (total != null)
+                                ": " + total!!.format()
+                            else
+                                ""
+                )
                 expandedKey = null
             }
 
@@ -202,8 +209,13 @@ fun ScrobblesScreen(
                     ScrobblesInput(showScrobbleSources = showScrobbleSources)
                 )
 
-                onTitleChange(getString(Res.string.scrobbles))
-
+                onTitleChange(
+                    getString(Res.string.scrobbles) +
+                            if (total != null)
+                                ": " + total!!.format()
+                            else
+                                ""
+                )
                 canExpandNowPlaying = true
             }
         }
@@ -405,7 +417,6 @@ fun ScrobblesScreen(
                         headerText = pendingScrobblesheader,
                         headerIcon = Icons.HourglassEmpty,
                         items = pendingScrobbles,
-                        seenApps = seenApps,
                         expanded = pendingScrobblesExpanded,
                         onToggle = {
                             pendingScrobblesExpanded = it
@@ -430,7 +441,6 @@ fun ScrobblesScreen(
                     tracks = tracks,
                     user = user,
                     pkgMap = pkgMap,
-                    seenApps = seenApps,
                     fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,
                     showScrobbleSources = showScrobbleSources,
                     canLove = canLove,
@@ -511,6 +521,7 @@ private fun ScrobblesTypeSelector(
 ) {
     var timeJumpMenuShown by remember { mutableStateOf(false) }
     var datePickerShown by rememberSaveable { mutableStateOf(false) }
+    val firstDayOfWeek by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
 
     Row(
         modifier = modifier.padding(horizontal = 8.dp),
@@ -598,6 +609,7 @@ private fun ScrobblesTypeSelector(
                     TimePeriodsGenerator(
                         registeredTime,
                         timeJumpMillis ?: System.currentTimeMillis(),
+                        firstDayOfWeek
                     ).recentsTimeJumps
                 }
 

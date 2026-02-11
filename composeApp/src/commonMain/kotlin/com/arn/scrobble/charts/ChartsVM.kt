@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.MusicEntry
+import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.AcceptableTags
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -103,6 +105,25 @@ class ChartsVM(
 
     private val _tagCloud = MutableStateFlow<Map<String, Float>?>(null)
     val tagCloud = _tagCloud.asStateFlow()
+
+    val scrobblesCount = _inputDebounced.mapLatest { input ->
+        if (firstPageOnly && Scrobblables.current?.userAccount?.type == AccountType.LASTFM) {
+            val from = input.timePeriod.lastfmPeriod
+                ?.toTimePeriod()
+                ?.start ?: input.timePeriod.start
+
+
+            Scrobblables.current
+                ?.getRecents(
+                    1,
+                    username,
+                    from = from,
+                    limit = 1
+                )
+                ?.getOrNull()?.attr?.total ?: 0
+        } else
+            0
+    }
 
     fun setChartsInput(input: ChartsLoaderInput) {
         _input.value = input

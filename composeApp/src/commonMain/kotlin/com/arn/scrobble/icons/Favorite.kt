@@ -19,9 +19,8 @@ val Icons.Favorite: ImageVector
             viewportHeight = 960f
         ).apply {
             path(fill = SolidColor(Color.Black)) {
-                moveTo(480f, 813f)
-                quadToRelative(-14f, 0f, -28.5f, -5f)
-                reflectiveQuadTo(426f, 792f)
+                moveTo(451.5f, 808f)
+                quadToRelative(-14.5f, -5f, -25.5f, -16f)
                 lineToRelative(-69f, -63f)
                 quadToRelative(-106f, -97f, -191.5f, -192.5f)
                 reflectiveQuadTo(80f, 326f)
@@ -38,6 +37,7 @@ val Icons.Favorite: ImageVector
                 lineToRelative(-68f, 62f)
                 quadToRelative(-11f, 11f, -25.5f, 16f)
                 reflectiveQuadToRelative(-28.5f, 5f)
+                quadToRelative(-14f, 0f, -28.5f, -5f)
                 close()
                 moveTo(442f, 270f)
                 quadToRelative(-29f, -41f, -62f, -62.5f)

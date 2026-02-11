@@ -70,7 +70,6 @@ fun AutomationInfoScreen(
         if (!PlatformStuff.isDesktop) {
             AppIconsPref(
                 packageNames = allowedPackages,
-                seenAppsMap = emptyMap(),
                 title = stringResource(Res.string.choose_apps),
                 enabled = isLicenseValid,
                 onClick = {

@@ -204,7 +204,7 @@ data class ListenBrainzListeningActivity(
     val to_ts: Long
 )
 
-enum class ListenBrainzRanges {
+enum class ListenBrainzRange {
     this_week, this_month, this_year, week, month, year, quarter, half_yearly, all_time
 }
 

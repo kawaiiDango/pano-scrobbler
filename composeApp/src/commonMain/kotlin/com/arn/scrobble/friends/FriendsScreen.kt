@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -173,7 +174,7 @@ fun FriendsScreen(
 
     LaunchedEffect(totalFriends) {
         if (totalFriends > 0)
-            onTitleChange("$followingText: $totalFriends")
+            onTitleChange("$followingText: " + totalFriends.format())
         else
             onTitleChange(followingText)
     }
@@ -518,6 +519,10 @@ private fun FriendItem(
             Text(
                 text = if (Stuff.isInDemoMode) "user" else friend.name,
                 style = MaterialTheme.typography.bodyMedium,
+                fontWeight = if (pinIndex != null)
+                    FontWeight.Bold
+                else
+                    null,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )

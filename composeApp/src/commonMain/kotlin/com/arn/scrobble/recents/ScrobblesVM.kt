@@ -63,8 +63,8 @@ class ScrobblesVM(
     private val _input = MutableStateFlow<ScrobblesInput?>(null)
     private val _firstScrobbleTime = MutableStateFlow<Long?>(null)
     val firstScrobbleTime = _firstScrobbleTime.asStateFlow()
-    private val _total = MutableStateFlow<Int?>(null)
-    val total = _total.filterNotNull()
+    private val _total = MutableStateFlow(track?.userplaycount)
+    val total = _total.asStateFlow()
 
     var totalPages = 1
         private set
@@ -106,7 +106,13 @@ class ScrobblesVM(
                         onSetFirstPageLoadedTime = {
                             _firstPageLoadedTime.value = it
                         },
-                        onSetTotal = { _total.value = it },
+                        onSetTotal = {
+                            // show total only if loading loved tracks or track-specific scrobbles
+                            _total.value = if (input.loadLoved || track != null)
+                                it
+                            else
+                                null
+                        },
                         onClearOverrides = ::clearOverrides
                     )
                 }

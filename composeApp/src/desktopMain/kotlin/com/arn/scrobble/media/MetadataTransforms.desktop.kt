@@ -31,7 +31,6 @@ actual fun transformMediaMetadata(
     }
 
     val metadataInfo = MetadataInfo(
-        trackId = metadata.trackId,
         title = title,
         artist = artist,
         album = album,
@@ -39,6 +38,7 @@ actual fun transformMediaMetadata(
         trackNumber = trackNumber,
         duration = durationMillis,
         artUrl = metadata.artUrl,
+        normalizedUrlHost = metadata.normalizedUrlHost,
     )
 
     var ignoreScrobble = false

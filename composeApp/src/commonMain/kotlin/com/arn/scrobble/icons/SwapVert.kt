@@ -19,9 +19,8 @@ val Icons.SwapVert: ImageVector
             viewportHeight = 960f
         ).apply {
             path(fill = SolidColor(Color.Black)) {
-                moveTo(360f, 520f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(320f, 480f)
+                moveTo(331.5f, 508.5f)
+                quadTo(320f, 497f, 320f, 480f)
                 verticalLineToRelative(-247f)
                 lineToRelative(-75f, 75f)
                 quadToRelative(-11f, 11f, -27.5f, 11f)
@@ -42,10 +41,10 @@ val Icons.SwapVert: ImageVector
                 verticalLineToRelative(247f)
                 quadToRelative(0f, 17f, -11.5f, 28.5f)
                 reflectiveQuadTo(360f, 520f)
+                quadToRelative(-17f, 0f, -28.5f, -11.5f)
                 close()
-                moveTo(600f, 863f)
-                quadToRelative(-8f, 0f, -15f, -2.5f)
-                reflectiveQuadToRelative(-13f, -8.5f)
+                moveTo(585f, 860.5f)
+                quadToRelative(-7f, -2.5f, -13f, -8.5f)
                 lineTo(428f, 708f)
                 quadToRelative(-12f, -12f, -11.5f, -28f)
                 reflectiveQuadToRelative(12.5f, -28f)
@@ -66,6 +65,7 @@ val Icons.SwapVert: ImageVector
                 lineTo(628f, 852f)
                 quadToRelative(-6f, 6f, -13f, 8.5f)
                 reflectiveQuadTo(600f, 863f)
+                quadToRelative(-8f, 0f, -15f, -2.5f)
                 close()
             }
         }.build()

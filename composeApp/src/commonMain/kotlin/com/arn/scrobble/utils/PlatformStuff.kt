@@ -44,7 +44,7 @@ expect object PlatformStuff {
 
     fun getDatabaseBuilder(): RoomDatabase.Builder<PanoDb>
 
-    suspend fun loadApplicationLabel(appId: String): String
+    fun loadApplicationLabel(appId: String): String
 
     fun copyToClipboard(text: String)
 

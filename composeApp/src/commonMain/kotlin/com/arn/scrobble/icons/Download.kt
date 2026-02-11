@@ -19,9 +19,8 @@ val Icons.Download: ImageVector
             viewportHeight = 960f
         ).apply {
             path(fill = SolidColor(Color.Black)) {
-                moveTo(480f, 623f)
-                quadToRelative(-8f, 0f, -15f, -2.5f)
-                reflectiveQuadToRelative(-13f, -8.5f)
+                moveTo(465f, 620.5f)
+                quadToRelative(-7f, -2.5f, -13f, -8.5f)
                 lineTo(308f, 468f)
                 quadToRelative(-12f, -12f, -11.5f, -28f)
                 reflectiveQuadToRelative(11.5f, -28f)
@@ -42,6 +41,7 @@ val Icons.Download: ImageVector
                 lineTo(508f, 612f)
                 quadToRelative(-6f, 6f, -13f, 8.5f)
                 reflectiveQuadToRelative(-15f, 2.5f)
+                quadToRelative(-8f, 0f, -15f, -2.5f)
                 close()
                 moveTo(240f, 800f)
                 quadToRelative(-33f, 0f, -56.5f, -23.5f)

@@ -12,10 +12,12 @@ import com.arn.scrobble.media.SessionInfo
 import com.arn.scrobble.media.listenForPlayingTrackEvents
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 @Keep
 object PanoNativeComponents {
@@ -80,7 +82,6 @@ object PanoNativeComponents {
     @JvmStatic
     fun onMetadataChanged(
         uniqueAppId: String,
-        trackId: String,
         title: String,
         artist: String,
         album: String,
@@ -88,16 +89,30 @@ object PanoNativeComponents {
         trackNumber: Int,
         duration: Long,
         artUrl: String,
+        trackUrl: String,
     ) {
+        val artUrl = artUrl.ifEmpty { null }
+            ?.takeIf { it.toHttpUrlOrNull()?.topPrivateDomain() != null }
+        val normalizedUrlHost = trackUrl.ifEmpty { null }
+            ?.toHttpUrlOrNull()
+            ?.let {
+                if (it.host in Stuff.mprisUrlSubdomains)
+                    it.host
+                else
+                    it.topPrivateDomain()
+            }
+
         val metadataInfo = MetadataInfo(
-            trackId = trackId, // always empty for windows
             title = title,
             artist = artist,
             album = album,
             albumArtist = albumArtist,
             trackNumber = trackNumber,
             duration = duration,
-            artUrl = artUrl.takeIf { it.startsWith("https://") }.orEmpty(),
+
+            // always null for windows
+            artUrl = artUrl,
+            normalizedUrlHost = normalizedUrlHost,
         )
 
         desktopMediaListener?.platformMetadataChanged(uniqueAppId, metadataInfo)

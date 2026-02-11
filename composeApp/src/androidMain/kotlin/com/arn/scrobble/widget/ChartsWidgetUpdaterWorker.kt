@@ -22,10 +22,10 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.lastfm.webp300
-import com.arn.scrobble.charts.AllPeriods
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
@@ -36,6 +36,7 @@ import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.DateFormat
@@ -67,8 +68,6 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
 
-        val widgetTimePeriods = WidgetTimePeriods()
-
         val appWidgetIds =
             appWidgetManager.getAppWidgetIds(
                 ComponentName(
@@ -77,6 +76,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 )
             )
         val widgetPrefs = AndroidStuff.widgetPrefs.data.first()
+        val firstDayOfWeek = PlatformStuff.mainPrefs.data.map { it.firstDayOfWeek }.first()
 
         // don't run if it already ran recently
         if (!isOneTimeWork && (appWidgetIds.isEmpty() ||
@@ -108,9 +108,11 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                 .toSet()
                 .take(3)
                 .mapConcurrently(3) { period ->
-                    val timePeriod = widgetTimePeriods.toTimePeriod(period)
+                    val timePeriod = period.toTimePeriod(firstDayOfWeek)
                     val cal = Calendar.getInstance()
                     cal.setMidnight()
+                    if (firstDayOfWeek in Calendar.SUNDAY..Calendar.SATURDAY)
+                        cal.firstDayOfWeek = firstDayOfWeek
 
                     val prevTimeLastfmPeriod =
                         if (timePeriod.lastfmPeriod != null && timePeriod.lastfmPeriod != LastfmPeriod.OVERALL) {
@@ -122,9 +124,9 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                             cal.timeInMillis = timePeriod.start
 
                             when (period) {
-                                AllPeriods.THIS_WEEK -> cal.add(Calendar.WEEK_OF_YEAR, -1)
-                                AllPeriods.THIS_MONTH -> cal.add(Calendar.MONTH, -1)
-                                AllPeriods.THIS_YEAR -> cal.add(Calendar.YEAR, -1)
+                                WidgetPeriods.THIS_WEEK -> cal.add(Calendar.WEEK_OF_YEAR, -1)
+                                WidgetPeriods.THIS_MONTH -> cal.add(Calendar.MONTH, -1)
+                                WidgetPeriods.THIS_YEAR -> cal.add(Calendar.YEAR, -1)
                                 else -> null
                             }?.let {
                                 TimePeriod(cal.timeInMillis, timePeriod.start)
@@ -178,18 +180,16 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                     }
 
                     AndroidStuff.widgetPrefs.updateData {
-                        val chartsData = it.chartsData.toMutableMap()
-                        val chartsDataForPeriod = chartsData[period] ?: emptyMap()
-                        chartsData[period] = mapOf(
-                            Stuff.TYPE_ARTISTS to (artists.getOrNull()
-                                ?: chartsDataForPeriod[Stuff.TYPE_ARTISTS] ?: emptyList()),
-                            Stuff.TYPE_ALBUMS to (albums.getOrNull()
-                                ?: chartsDataForPeriod[Stuff.TYPE_ALBUMS] ?: emptyList()),
-                            Stuff.TYPE_TRACKS to (tracks.getOrNull()
-                                ?: chartsDataForPeriod[Stuff.TYPE_TRACKS] ?: emptyList())
+                        val chartsData = it.charts.toMutableMap()
+                        val chartsDataForPeriod = chartsData[period]
+                        chartsData[period] = WidgetPrefs.ChartsData(
+                            artists = artists.getOrElse { chartsDataForPeriod?.artists.orEmpty() },
+                            albums = albums.getOrElse { chartsDataForPeriod?.albums.orEmpty() },
+                            tracks = tracks.getOrElse { chartsDataForPeriod?.tracks.orEmpty() },
+                            timePeriodString = timePeriod.name
                         )
 
-                        it.copy(chartsData = chartsData, lastFetched = System.currentTimeMillis())
+                        it.copy(charts = chartsData, lastFetched = System.currentTimeMillis())
                     }
                 }
 

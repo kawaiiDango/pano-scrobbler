@@ -15,8 +15,10 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.utils.Stuff.stateInWithCache
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -146,10 +148,9 @@ actual object PlatformStuff {
 
     }
 
-    actual suspend fun loadApplicationLabel(appId: String): String =
-        mainPrefs.data.map { it.seenApps }
-            .first()[DesktopStuff.normalizeAppId(appId)]
-            .orEmpty()
+    private val seenApps = mainPrefs.data.stateInWithCache(GlobalScope) { it.seenApps }
+    actual fun loadApplicationLabel(appId: String): String =
+        seenApps.value[appId] ?: ""
 
     actual fun copyToClipboard(text: String) {
         val stringSelection = StringSelection(text)

@@ -19,9 +19,8 @@ val Icons.KeyboardArrowDown: ImageVector
             viewportHeight = 960f
         ).apply {
             path(fill = SolidColor(Color.Black)) {
-                moveTo(480f, 599f)
-                quadToRelative(-8f, 0f, -15f, -2.5f)
-                reflectiveQuadToRelative(-13f, -8.5f)
+                moveTo(465f, 596.5f)
+                quadToRelative(-7f, -2.5f, -13f, -8.5f)
                 lineTo(268f, 404f)
                 quadToRelative(-11f, -11f, -11f, -28f)
                 reflectiveQuadToRelative(11f, -28f)
@@ -36,6 +35,7 @@ val Icons.KeyboardArrowDown: ImageVector
                 lineTo(508f, 588f)
                 quadToRelative(-6f, 6f, -13f, 8.5f)
                 reflectiveQuadToRelative(-15f, 2.5f)
+                quadToRelative(-8f, 0f, -15f, -2.5f)
                 close()
             }
         }.build()

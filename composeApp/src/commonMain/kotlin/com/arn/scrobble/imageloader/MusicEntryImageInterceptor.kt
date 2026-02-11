@@ -76,9 +76,7 @@ class MusicEntryImageInterceptor : Interceptor {
                                             !it.images.isNullOrEmpty()
                                 }
 
-                                val approximateMatch = spotifyArtists?.find {
-                                    it.popularity != null && it.popularity > 0
-                                }
+                                val approximateMatch = spotifyArtists?.firstOrNull()
 
                                 val artistItem = if (spotifyArtistSearchApproximate.first())
                                     caseInsensitiveMatch ?: approximateMatch

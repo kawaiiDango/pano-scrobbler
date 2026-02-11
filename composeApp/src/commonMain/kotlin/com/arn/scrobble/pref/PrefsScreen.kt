@@ -92,6 +92,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_enabled_apps_summary
 import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_export_desc
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_album
+import pano_scrobbler.composeapp.generated.resources.pref_first_day_of_week
 import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
@@ -122,6 +123,7 @@ import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.spotify
 import pano_scrobbler.composeapp.generated.resources.when_not_using
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -137,7 +139,6 @@ fun PrefsScreen(
 
     val scrobblerEnabled by mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val allowedPackages by mainPrefs.data.collectAsStateWithInitialValue { it.allowedPackages }
-    val seenApps by mainPrefs.data.collectAsStateWithInitialValue { it.seenApps }
     val scrobbleSpotifyRemoteP by mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleSpotifyRemoteP }
     val autoDetectApps by mainPrefs.data.collectAsStateWithInitialValue { it.autoDetectAppsP }
     val delayPercent by mainPrefs.data.collectAsStateWithInitialValue { it.delayPercentP }
@@ -149,7 +150,7 @@ fun PrefsScreen(
         p.searchUrlTemplate.takeIf { !p.usePlayFromSearchP }
     }
     val linkHeartButtonToRating by mainPrefs.data.collectAsStateWithInitialValue { it.linkHeartButtonToRating }
-    val digestWeekday by mainPrefs.data.collectAsStateWithInitialValue { it.digestWeekday }
+    val firstDayOfWeek by mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
     val locale by LocaleUtils.locale.collectAsStateWithLifecycle()
     val lastfmApiAlways by mainPrefs.data.collectAsStateWithInitialValue { it.lastfmApiAlways }
     val fetchAlbum by mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
@@ -214,7 +215,7 @@ fun PrefsScreen(
         }
 
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
-            snapshotFlow { digestWeekday }
+            snapshotFlow { firstDayOfWeek }
                 .drop(1) // only for changes
                 .collect {
                     val (nextWeek, nextMonth) = DigestWorker.nextWeekAndMonth()
@@ -246,7 +247,6 @@ fun PrefsScreen(
         item(MainPrefs::allowedPackages.name) {
             AppIconsPref(
                 packageNames = allowedPackages,
-                seenAppsMap = seenApps,
                 title = stringResource(Res.string.pref_scrobble_from),
                 onClick = {
                     onNavigate(
@@ -299,7 +299,6 @@ fun PrefsScreen(
         item(MainPrefs::extractFirstArtistPackages.name) {
             AppIconsPref(
                 packageNames = extractFirstArtistPackages,
-                seenAppsMap = seenApps,
                 title = stringResource(Res.string.first_artist),
                 enabled = (allowedPackages.size + extractFirstArtistPackages.size) > 0,
                 onClick = {
@@ -463,7 +462,37 @@ fun PrefsScreen(
             }
         }
 
-        PlatformSpecificPrefs.prefDigestWeekDay(this, digestWeekday)
+        item(MainPrefs::firstDayOfWeek.name) {
+            val autoString = stringResource(Res.string.auto)
+
+            val valuesToDays = remember {
+                val cal = Calendar.getInstance()
+
+                var autoDayName = ""
+
+                val days = cal.getDisplayNames(
+                    Calendar.DAY_OF_WEEK,
+                    Calendar.LONG,
+                    Locale.getDefault()
+                )!!
+                    .map { (k, v) ->
+                        if (v == cal.firstDayOfWeek)
+                            autoDayName = k
+                        v to k
+                    }
+                    .toMap()
+
+                (days + (-1 to "$autoString: $autoDayName")).toSortedMap()
+            }
+
+            DropdownPref(
+                text = stringResource(Res.string.pref_first_day_of_week),
+                selectedValue = firstDayOfWeek,
+                values = valuesToDays.keys,
+                toLabel = { valuesToDays[it] ?: autoString },
+                copyToSave = { copy(firstDayOfWeek = it) }
+            )
+        }
 
         PlatformSpecificPrefs.prefNotifications(this)
 

@@ -120,10 +120,4 @@ actual object PlatformSpecificPrefs {
             )
         }
     }
-
-    actual fun prefDigestWeekDay(
-        listScope: LazyListScope,
-        digestWeekday: Int
-    ) {
-    }
 }

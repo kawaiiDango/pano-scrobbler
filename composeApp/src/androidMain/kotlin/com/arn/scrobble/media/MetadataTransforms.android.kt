@@ -11,7 +11,6 @@ actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
 ): Pair<MetadataInfo, Boolean> {
-    val trackId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID) ?: ""
     var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
     // do not scrobble empty artists, ads will get scrobbled
     var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?: ""
@@ -132,14 +131,14 @@ actual fun transformMediaMetadata(
 //            )
 
     val metadataInfo = MetadataInfo(
-        trackId = trackId,
         title = title,
         artist = artist,
         album = album,
         albumArtist = albumArtist,
         trackNumber = trackNumber,
         duration = durationMillis,
-        artUrl = ""
+        artUrl = null,
+        normalizedUrlHost = null,
     )
 
     val ignoreScrobble = metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L

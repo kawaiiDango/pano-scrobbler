@@ -178,7 +178,6 @@ class ScrobbleQueue(
                         if (shouldFetchNpArtUrl().firstOrNull { it } == true) {
                             val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
                                 scrobbleData,
-                                null,
                                 ::canFetchAdditionalMetadata,
                                 true,
                             )
@@ -205,12 +204,12 @@ class ScrobbleQueue(
                 val scrobbleSd = if (fetchAdditionalMetadata) {
                     val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
                         scrobbleData,
-                        trackInfo.trackId,
                         { }
                     )
 
                     ScrobbleEverywhere.preprocessMetadata(
-                        additionalMetadata.scrobbleData ?: scrobbleData
+                        additionalMetadata.scrobbleData ?: scrobbleData,
+                        trackInfo.normalizedUrlHost
                     ).scrobbleData
                 } else {
                     sd
@@ -261,12 +260,12 @@ class ScrobbleQueue(
 
             val additionalMeta = ScrobbleEverywhere.fetchAdditionalMetadata(
                 scrobbleData,
-                trackInfo.trackId,
                 ::canFetchAdditionalMetadata
             )
 
             val preprocessResult = ScrobbleEverywhere.preprocessMetadata(
-                additionalMeta.scrobbleData ?: scrobbleData
+                additionalMeta.scrobbleData ?: scrobbleData,
+                trackInfo.normalizedUrlHost
             )
 
             when {

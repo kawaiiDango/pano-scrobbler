@@ -13,7 +13,6 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.CookieSerializable
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.SearchType
-import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.edits.RegexPreset
@@ -60,7 +59,7 @@ data class MainPrefs(
     val fetchAlbum: Boolean = false,
     val searchInSource: Boolean = false,
     val lastSearchType: SearchType = SearchType.GLOBAL,
-    val digestWeekday: Int = -1,
+    val firstDayOfWeek: Int = -1,
     private val demoMode: Boolean = false,
     val showScrobbleSources: Boolean = true,
     val themeName: String = ThemeUtils.defaultThemeName,
@@ -70,9 +69,8 @@ data class MainPrefs(
     val appListWasRun: Boolean = false,
     val lastHomePagerTab: Int = 0,
     val lastChartsPeriodType: TimePeriodType = TimePeriodType.CONTINUOUS,
-    val lastChartsLastfmPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.MONTH),
-    val lastChartsListenBrainzPeriodSelected: TimePeriod = TimePeriod(LastfmPeriod.OVERALL)
-        .apply { tag = ListenBrainzRanges.all_time.name },
+    val lastChartsLastfmPeriod: TimePeriod = TimePeriod(LastfmPeriod.MONTH),
+    val lastChartsListenBrainzPeriod: TimePeriod = TimePeriod(LastfmPeriod.OVERALL),
     val lastChartsCustomPeriod: TimePeriod = TimePeriod(1767225600000, 1798761600000), // 2026
     val currentAccountType: AccountType = AccountType.LASTFM,
     val scrobbleAccounts: List<UserAccountSerializable> = emptyList(),
@@ -175,7 +173,7 @@ data class MainPrefs(
         val spotifyArtistSearchApproximate: Boolean = defaultMainPrefs.spotifyArtistSearchApproximate,
         @JsonNames("prevent_duplicate_ambient_scrobbles")
         val preventDuplicateAmbientScrobbles: Boolean = defaultMainPrefs.preventDuplicateAmbientScrobbles,
-        val digestWeekday: Int = defaultMainPrefs.digestWeekday,
+        val firstDayOfWeek: Int = defaultMainPrefs.firstDayOfWeek,
         val searchUrlTemplate: String = defaultMainPrefs.searchUrlTemplate,
         val usePlayFromSearch: Boolean = defaultMainPrefs.usePlayFromSearch,
         val regexPresets: Set<String> = defaultMainPrefs.regexPresets,
@@ -189,9 +187,6 @@ data class MainPrefs(
         val deezerApi: Boolean = defaultMainPrefs.deezerApi,
         val lastfmApiAlways: Boolean = defaultMainPrefs.lastfmApiAlways,
         val discordRpc: DiscordRpcSettings = defaultMainPrefs.discordRpc,
-
-        // backward compatibility, not actually used anymore
-        val firstDayOfWeek: Int = -1,
     )
 
     val autoDetectAppsP
@@ -269,7 +264,7 @@ data class MainPrefs(
         scrobbleSpotifyRemote = prefs.scrobbleSpotifyRemote,
         spotifyArtistSearchApproximate = prefs.spotifyArtistSearchApproximate,
         preventDuplicateAmbientScrobbles = prefs.preventDuplicateAmbientScrobbles,
-        digestWeekday = prefs.digestWeekday,
+        firstDayOfWeek = prefs.firstDayOfWeek,
         searchUrlTemplate = prefs.searchUrlTemplate,
         allowedPackages = prefs.allowedPackages,
         regexPresets = prefs.regexPresets,
@@ -300,7 +295,7 @@ data class MainPrefs(
         scrobbleSpotifyRemote = scrobbleSpotifyRemote,
         spotifyArtistSearchApproximate = spotifyArtistSearchApproximate,
         preventDuplicateAmbientScrobbles = preventDuplicateAmbientScrobbles,
-        digestWeekday = digestWeekday,
+        firstDayOfWeek = firstDayOfWeek,
         searchUrlTemplate = searchUrlTemplate,
         allowedPackages = allowedPackages,
         regexPresets = regexPresets,

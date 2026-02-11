@@ -37,11 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arn.scrobble.R
-import com.arn.scrobble.charts.AllPeriods
 import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.ui.LabeledSwitch
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -64,11 +65,11 @@ fun ChartsWidgetConfigScreen(
     var period by rememberSaveable(saver = enumSaver()) { mutableStateOf(prefs.period) }
     var bgAlpha by rememberSaveable { mutableFloatStateOf(prefs.bgAlpha) }
     var shadow by rememberSaveable { mutableStateOf(prefs.shadow) }
+    val firstDayOfWeek by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
     val scrollState = rememberScrollState()
-    val allPeriods = remember {
-        val wtp = WidgetTimePeriods()
-        AllPeriods.entries.associateWith {
-            wtp.toTimePeriod(it)
+    val widgetPeriods = remember {
+        WidgetPeriods.entries.associateWith {
+            it.toTimePeriod(firstDayOfWeek)
         }
     }
 
@@ -114,7 +115,7 @@ fun ChartsWidgetConfigScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    allPeriods.forEach { (thisPeriod, thisTimePeriod) ->
+                    widgetPeriods.forEach { (thisPeriod, thisTimePeriod) ->
                         FilterChip(
                             label = { Text(thisTimePeriod.name) },
                             selected = period == thisPeriod,

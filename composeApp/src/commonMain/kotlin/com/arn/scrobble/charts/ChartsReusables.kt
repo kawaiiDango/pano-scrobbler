@@ -18,6 +18,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerDefaults
+import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +31,6 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -72,6 +72,7 @@ import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.combineImageVectors
+import com.arn.scrobble.ui.rememberLocaleWithCustomWeekday
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
@@ -211,7 +212,7 @@ fun TimePeriodSelector(
                 viewModel.setPeriodType(TimePeriodType.LISTENBRAINZ)
                 if (digestTimePeriod == null) {
                     val selected = PlatformStuff.mainPrefs.data.mapLatest {
-                        it.lastChartsListenBrainzPeriodSelected
+                        it.lastChartsListenBrainzPeriod
                     }.first()
                     viewModel.setSelectedPeriod(selected)
                 }
@@ -221,7 +222,7 @@ fun TimePeriodSelector(
                 val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
                     Triple(
                         it.lastChartsPeriodType,
-                        it.lastChartsLastfmPeriodSelected,
+                        it.lastChartsLastfmPeriod,
                         it.lastChartsCustomPeriod
                     )
                 }.first()
@@ -500,21 +501,25 @@ private fun DateRangePickerModal(
     onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val locale = rememberLocaleWithCustomWeekday()
     val allowedRangeYears = remember { millisRangeToYears(allowedRange) }
     val dateFormatter = remember { DatePickerDefaults.dateFormatter() }
+    val initialDisplayedMonthMillis =
+        remember { selectedDateRange.first ?: System.currentTimeMillis() }
 
-    val dateRangePickerState = rememberDateRangePickerState(
-        initialSelectedStartDateMillis = selectedDateRange.first,
-        initialSelectedEndDateMillis = selectedDateRange.second,
-        initialDisplayedMonthMillis = selectedDateRange.first ?: System.currentTimeMillis(),
-        yearRange = allowedRangeYears,
-        selectableDates = remember {
-            object : SelectableDates {
+    val dateRangePickerState = remember {
+        DateRangePickerState(
+            locale = locale,
+            initialSelectedStartDateMillis = selectedDateRange.first,
+            initialSelectedEndDateMillis = selectedDateRange.second,
+            initialDisplayedMonthMillis = initialDisplayedMonthMillis,
+            yearRange = allowedRangeYears,
+            selectableDates = object : SelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long) =
                     utcTimeMillis in allowedRange.first..allowedRange.second
             }
-        }
-    )
+        )
+    }
 
     DatePickerDialog(
         onDismissRequest = onDismiss,

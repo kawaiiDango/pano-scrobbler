@@ -109,7 +109,7 @@ fun InfoWikiText(
             Text(
                 text = MinimalHtmlParser.parseLinksToAnnotatedString(
                     text = displayText,
-                    onLinkClick = if (PlatformStuff.isTv)
+                    onLinkClick = if (PlatformStuff.isTv || !expanded)
                         null
                     else {
                         { url -> PlatformStuff.openInBrowser(url) }

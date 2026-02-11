@@ -255,13 +255,18 @@ actual object PlatformStuff {
             .setAutoCloseTimeout(7, TimeUnit.MINUTES)
     }
 
-    actual suspend fun loadApplicationLabel(appId: String): String {
-        return try {
-            applicationContext.packageManager.getApplicationLabel(
+    private val appLabelCache = mutableMapOf<String, String>()
+    actual fun loadApplicationLabel(appId: String): String {
+        return appLabelCache[appId] ?: try {
+            val label = applicationContext.packageManager.getApplicationLabel(
                 applicationContext.packageManager.getApplicationInfo(appId, 0)
             ).toString()
+            appLabelCache[appId] = label
+            label
+
         } catch (e: PackageManager.NameNotFoundException) {
-            appId
+            appLabelCache[appId] = ""
+            ""
         }
     }
 

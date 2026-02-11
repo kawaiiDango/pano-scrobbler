@@ -3,6 +3,7 @@ package com.arn.scrobble.recents
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.LastFm
@@ -25,7 +26,7 @@ class ScrobblesPagingSource(
     private val addToPkgMap: (Long, String) -> Unit,
     private val onSetFirstScrobbleTime: (Long) -> Unit,
     private val onSetFirstPageLoadedTime: (Long?) -> Unit,
-    private val onSetTotal: (Int) -> Unit,
+    private val onSetTotal: (Int?) -> Unit,
     private val onClearOverrides: () -> Unit,
 ) : PagingSource<ScrobblesLoaderPage, Track>() {
 
@@ -85,12 +86,15 @@ class ScrobblesPagingSource(
 
             val prevPage = if (pr.attr.page <= 1) null else pr.attr.page - 1
             val nextPage = if (pr.attr.totalPages <= pr.attr.page) null else pr.attr.page + 1
-            val total = pr.attr.total ?: 0
+            val total = pr.attr.total
 
             if (page == 1)
                 onClearOverrides()
 
-            onSetTotal(total)
+            if (currentScrobblable?.userAccount?.type == AccountType.LASTFM)
+                onSetTotal(total)
+            else
+                onSetTotal(null)
 
             if (scrobbleSources && currentScrobblable !is FileScrobblable) {
                 val earliest = entries.lastOrNull()?.date
@@ -118,7 +122,7 @@ class ScrobblesPagingSource(
             }
 
             if (track != null) {
-                val firstScrobbleTime = loadFirstScrobbleTime(track, pr, total)
+                val firstScrobbleTime = loadFirstScrobbleTime(track, pr, total ?: 0)
                 firstScrobbleTime?.let { onSetFirstScrobbleTime(it) }
             }
 

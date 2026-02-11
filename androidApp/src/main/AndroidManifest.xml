@@ -4,7 +4,9 @@
 
     <application
         android:name="com.arn.scrobble.main.App"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:localeConfig="@xml/locales_config"
+        tools:targetApi="BAKLAVA">
 
         <provider
             android:name="androidx.startup.InitializationProvider"

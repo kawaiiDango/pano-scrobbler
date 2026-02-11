@@ -167,7 +167,8 @@ object Stuff {
     const val PACKAGE_OMNIA = "com.rhmsoft.omnia"
     const val PACKAGE_APPLE_MUSIC_WIN_EXE = "AppleMusic.exe"
     const val PACKAGE_APPLE_MUSIC_WIN_STORE = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"
-    const val PACKAGE_CIDER_LINUX = "org.mpris.MediaPlayer2.cider"
+    const val HOST_APPLE_MUSIC = "music.apple.com"
+    const val HOST_YOUTUBE_MUSIC = "music.youtube.com"
     const val PACKAGE_KDE_CONNECT_LINUX = "org.mpris.MediaPlayer2.kdeconnect"
     const val PACKAGE_FIREFOX_WIN = "308046B0AF4A39CB"
     const val PACKAGE_DEEZER_WIN = "com.deezer.deezer-desktop"
@@ -253,6 +254,11 @@ object Stuff {
         "https://www.last.fm/settings/lostpassword",
         "https://libre.fm/register.php",
         "https://libre.fm/reset.php",
+    )
+
+    val mprisUrlSubdomains = setOf(
+        HOST_APPLE_MUSIC,
+        HOST_YOUTUBE_MUSIC,
     )
 
     var isRunningInTest = false

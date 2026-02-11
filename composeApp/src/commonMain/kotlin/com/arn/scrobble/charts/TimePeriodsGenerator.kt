@@ -1,9 +1,12 @@
 package com.arn.scrobble.charts
 
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
+import com.arn.scrobble.api.listenbrainz.ListenBrainzRange
 import com.arn.scrobble.utils.PanoTimeFormatter
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.setMidnight
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
@@ -24,9 +27,15 @@ import kotlin.math.min
 class TimePeriodsGenerator(
     private val beginTime: Long,
     private val anchorTime: Long,
+    firstDayOfWeek: Int,
     private val generateFormattedStrings: Boolean = false,
 ) {
-    private val cal by lazy { Calendar.getInstance() }
+    private val cal by lazy {
+        Calendar.getInstance().apply {
+            if (firstDayOfWeek in Calendar.SUNDAY..Calendar.SATURDAY)
+                this.firstDayOfWeek = firstDayOfWeek
+        }
+    }
 
     fun days(): List<TimePeriod> {
         val days = mutableListOf<TimePeriod>()
@@ -165,7 +174,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.dateRange(start, end),
-            tag = ListenBrainzRanges.this_week.name
+            listenBrainzRange = ListenBrainzRange.this_week
         )
 
         // previous week
@@ -175,7 +184,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             cal.timeInMillis, start,
             name = PanoTimeFormatter.dateRange(cal.timeInMillis, start),
-            tag = ListenBrainzRanges.week.name
+            listenBrainzRange = ListenBrainzRange.week
         )
 
         // this month
@@ -188,7 +197,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.month(start),
-            tag = ListenBrainzRanges.this_month.name
+            listenBrainzRange = ListenBrainzRange.this_month
         )
 
         // previous month
@@ -198,7 +207,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             cal.timeInMillis, start,
             name = PanoTimeFormatter.month(cal.timeInMillis),
-            tag = ListenBrainzRanges.month.name
+            listenBrainzRange = ListenBrainzRange.month
         )
 
 
@@ -221,7 +230,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.monthRange(start, end),
-            tag = ListenBrainzRanges.quarter.name
+            listenBrainzRange = ListenBrainzRange.quarter
         )
 
         // prev half year
@@ -238,7 +247,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.monthRange(start, end),
-            tag = ListenBrainzRanges.half_yearly.name
+            listenBrainzRange = ListenBrainzRange.half_yearly
         )
 
         // this year
@@ -250,7 +259,7 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             start, end,
             name = PanoTimeFormatter.year(start),
-            tag = ListenBrainzRanges.this_year.name
+            listenBrainzRange = ListenBrainzRange.this_year
         )
 
         // previous year
@@ -260,16 +269,14 @@ class TimePeriodsGenerator(
         timePeriods += TimePeriod(
             cal.timeInMillis, start,
             name = PanoTimeFormatter.year(cal.timeInMillis),
-            tag = ListenBrainzRanges.year.name
+            listenBrainzRange = ListenBrainzRange.year
         )
 
         // overall
         timePeriods += TimePeriod(
             LastfmPeriod.OVERALL,
             name = getString(Res.string.charts_overall),
-        ).apply {
-            tag = ListenBrainzRanges.all_time.name
-        }
+        )
 
         return timePeriods
     }
@@ -307,20 +314,22 @@ class TimePeriodsGenerator(
         fun LastfmPeriod.toTimePeriod(
             registeredTime: Long = 0,
             endTime: Long = System.currentTimeMillis(),
-        ) = TimePeriod(endTime - toDuration(registeredTime, endTime), endTime, name = "")
+            name: String = ""
+        ) = TimePeriod(endTime - toDuration(registeredTime, endTime), endTime, name = name)
 
-        fun forListeningActivity(
+        suspend fun forListeningActivity(
             timePeriodp: TimePeriod,
             registeredTime: Long,
         ): ListeningActivity {
 
-            var timePeriod = timePeriodp.copy()
-            if (timePeriodp.lastfmPeriod != null) {
+            val timePeriod = if (timePeriodp.lastfmPeriod != null) {
                 val cal = Calendar.getInstance()
                 cal.timeInMillis += TimeUnit.DAYS.toMillis(1) // include today
                 cal.setMidnight()
-                timePeriod = timePeriodp.lastfmPeriod.toTimePeriod(registeredTime, cal.timeInMillis)
-                timePeriod.name = timePeriodp.name
+                timePeriodp.lastfmPeriod
+                    .toTimePeriod(registeredTime, cal.timeInMillis, timePeriodp.name)
+            } else {
+                timePeriodp
             }
 
             val type = when (TimeUnit.MILLISECONDS.toDays(timePeriod.end - timePeriod.start)) {
@@ -330,7 +339,13 @@ class TimePeriodsGenerator(
                 else -> TimePeriodType.DAY
             }
 
-            val generator = TimePeriodsGenerator(timePeriod.start, timePeriod.end - 1)
+            val firstDayOfWeek = PlatformStuff.mainPrefs.data.map { it.firstDayOfWeek }.first()
+
+            val generator = TimePeriodsGenerator(
+                timePeriod.start,
+                timePeriod.end - 1,
+                firstDayOfWeek,
+            )
 
             val timePeriods = when (type) {
                 TimePeriodType.YEAR -> generator.years()
@@ -370,10 +385,11 @@ class TimePeriodsGenerator(
                 }
             }
 
-            timePeriods.forEach { it.name = formatter(it) }
+            val timePeriodsToCounts = timePeriods.asReversed()
+                .associate { it.copy(name = formatter(it)) to 0 }
 
             return ListeningActivity(
-                timePeriodsToCounts = timePeriods.asReversed().associateWith { 0 },
+                timePeriodsToCounts = timePeriodsToCounts,
                 type = type
             )
         }
@@ -386,8 +402,16 @@ data class TimePeriod(
     val start: Long,
     val end: Long,
     val lastfmPeriod: LastfmPeriod? = null,
-    var name: String = "",
-    var tag: String? = null,
+    val listenBrainzRange: ListenBrainzRange? = when (lastfmPeriod) {
+        LastfmPeriod.WEEK -> ListenBrainzRange.week
+        LastfmPeriod.MONTH -> ListenBrainzRange.month
+        LastfmPeriod.QUARTER -> ListenBrainzRange.quarter
+        LastfmPeriod.HALF_YEAR -> ListenBrainzRange.half_yearly
+        LastfmPeriod.YEAR -> ListenBrainzRange.year
+        LastfmPeriod.OVERALL -> ListenBrainzRange.all_time
+        null -> null
+    },
+    val name: String = "",
 ) {
 
     constructor(lastfmPeriod: LastfmPeriod, name: String = "") : this(
@@ -398,7 +422,7 @@ data class TimePeriod(
     )
 
     override fun toString() =
-        "TimePeriod(start=${Date(start)}, end=${Date(end)}, period=$lastfmPeriod, name=\"$name\")"
+        "TimePeriod(start=${Date(start)}, end=${Date(end)}, period=$lastfmPeriod, listenBrainzPeriod=$listenBrainzRange, name=\"$name\")"
 }
 
 data class TimeJumpEntry(
@@ -415,18 +439,6 @@ enum class TimePeriodType {
     CONTINUOUS,
     CUSTOM,
     LISTENBRAINZ,
-}
-
-enum class AllPeriods {
-    THIS_WEEK,
-    WEEK,
-    THIS_MONTH,
-    MONTH,
-    QUARTER,
-    HALF_YEAR,
-    THIS_YEAR,
-    YEAR,
-    ALL_TIME
 }
 
 data class ListeningActivity(

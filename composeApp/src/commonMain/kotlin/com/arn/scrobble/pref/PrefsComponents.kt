@@ -21,10 +21,8 @@ import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,10 +45,8 @@ import com.arn.scrobble.ui.AppIcon
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.move_left
@@ -231,22 +227,12 @@ fun <T> DropdownPref(
 @Composable
 fun AppIconsPref(
     packageNames: Set<String>,
-    seenAppsMap: Map<String, String>,
     modifier: Modifier = Modifier,
     title: String,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     val maxIcons = 7
-    val packageNamesFiltered = remember(packageNames) { mutableStateListOf<String>() }
-
-    LaunchedEffect(packageNames) {
-        withContext(Dispatchers.IO) {
-            packageNamesFiltered.addAll(
-                filterAppList(packageNames, seenAppsMap).take(maxIcons)
-            )
-        }
-    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -263,7 +249,7 @@ fun AppIconsPref(
             style = MaterialTheme.typography.titleMedium,
         )
 
-        if (packageNamesFiltered.isEmpty()) {
+        if (packageNames.isEmpty()) {
             Text(
                 stringResource(Res.string.no_apps_enabled),
                 style = MaterialTheme.typography.bodyMedium,
@@ -273,13 +259,15 @@ fun AppIconsPref(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.height(24.dp)
             ) {
-                packageNamesFiltered.forEach {
-                    AppIcon(
-                        appItem = AppItem(it, seenAppsMap[it] ?: ""),
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                }
+                packageNames
+                    .take(maxIcons)
+                    .forEach {
+                        AppIcon(
+                            appItem = AppItem(it, PlatformStuff.loadApplicationLabel(it)),
+                            modifier = Modifier
+                                .size(24.dp)
+                        )
+                    }
             }
         }
     }
@@ -409,8 +397,3 @@ fun AccountPref(
         modifier = modifier
     )
 }
-
-expect fun filterAppList(
-    packageNames: Set<String>,
-    seenAppsMap: Map<String, String>,
-): List<String>

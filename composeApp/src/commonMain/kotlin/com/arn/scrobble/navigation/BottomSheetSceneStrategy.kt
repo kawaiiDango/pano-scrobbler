@@ -85,6 +85,7 @@ private fun BottomSheetDialogParent(
         dragHandle = null,
         sheetGesturesEnabled = sheetGesturesEnabled && !isImeVisible,
         sheetState = sheetState,
+        tonalElevation = 2.dp,
         modifier = Modifier
             .windowInsetsPadding(
                 WindowInsets.statusBars

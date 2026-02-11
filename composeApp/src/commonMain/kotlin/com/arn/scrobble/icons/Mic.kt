@@ -19,9 +19,8 @@ val Icons.Mic: ImageVector
             viewportHeight = 960f
         ).apply {
             path(fill = SolidColor(Color.Black)) {
-                moveTo(480f, 560f)
-                quadToRelative(-50f, 0f, -85f, -35f)
-                reflectiveQuadToRelative(-35f, -85f)
+                moveTo(395f, 525f)
+                quadToRelative(-35f, -35f, -35f, -85f)
                 verticalLineToRelative(-240f)
                 quadToRelative(0f, -50f, 35f, -85f)
                 reflectiveQuadToRelative(85f, -35f)
@@ -30,6 +29,7 @@ val Icons.Mic: ImageVector
                 verticalLineToRelative(240f)
                 quadToRelative(0f, 50f, -35f, 85f)
                 reflectiveQuadToRelative(-85f, 35f)
+                quadToRelative(-50f, 0f, -85f, -35f)
                 close()
                 moveTo(480f, 320f)
                 close()
@@ -57,9 +57,8 @@ val Icons.Mic: ImageVector
                 quadToRelative(-17f, 0f, -28.5f, -11.5f)
                 reflectiveQuadTo(440f, 800f)
                 close()
-                moveTo(480f, 480f)
-                quadToRelative(17f, 0f, 28.5f, -11.5f)
-                reflectiveQuadTo(520f, 440f)
+                moveTo(508.5f, 468.5f)
+                quadTo(520f, 457f, 520f, 440f)
                 verticalLineToRelative(-240f)
                 quadToRelative(0f, -17f, -11.5f, -28.5f)
                 reflectiveQuadTo(480f, 160f)
@@ -68,6 +67,7 @@ val Icons.Mic: ImageVector
                 verticalLineToRelative(240f)
                 quadToRelative(0f, 17f, 11.5f, 28.5f)
                 reflectiveQuadTo(480f, 480f)
+                quadToRelative(17f, 0f, 28.5f, -11.5f)
                 close()
             }
         }.build()

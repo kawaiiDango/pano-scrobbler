@@ -2,7 +2,6 @@ package com.arn.scrobble.work
 
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
@@ -35,11 +34,9 @@ class DigestWorker(
     private val digestType: DigestType,
     override val setProgress: suspend (CommonWorkProgress) -> Unit,
 ) : CommonWorker {
-    private val cal by lazy { Calendar.getInstance() }
 
     override suspend fun doWork(): CommonWorkerResult {
         var error: Throwable? = null
-        cal.setDigestFirstDayOfWeek()
 
         val lastfmPeriod = when (digestType) {
             DigestType.DIGEST_DAILY,
@@ -63,6 +60,7 @@ class DigestWorker(
             withContext(coExceptionHandler) {
                 fetchAndNotify(lastfmPeriod)
                 // yearly digest
+                val cal = Calendar.getInstance()
                 if (lastfmPeriod == LastfmPeriod.MONTH &&
                     (cal[Calendar.DAY_OF_YEAR] == cal.getActualMaximum(Calendar.DAY_OF_YEAR) ||
                             cal[Calendar.DAY_OF_YEAR] == 1)
@@ -95,14 +93,7 @@ class DigestWorker(
             val scrobblable = Scrobblables.current
                 ?: throw IllegalStateException("Not logged in")
 
-            val timeLastfmPeriod = TimePeriod(lastfmPeriod).apply {
-                tag = when (lastfmPeriod) {
-                    LastfmPeriod.WEEK -> ListenBrainzRanges.week.name
-                    LastfmPeriod.MONTH -> ListenBrainzRanges.month.name
-                    LastfmPeriod.YEAR -> ListenBrainzRanges.year.name
-                    else -> null
-                }
-            }
+            val timeLastfmPeriod = TimePeriod(lastfmPeriod)
 
             val artists = async {
                 scrobblable.getCharts(Stuff.TYPE_ARTISTS, timeLastfmPeriod, 1, limit = limit)
@@ -162,8 +153,8 @@ class DigestWorker(
 
     companion object {
         suspend fun nextWeekAndMonth(): Pair<Long, Long> {
-            val storedDigestSeconds = PlatformStuff.mainPrefs.data
-                .map { it.digestSeconds }.first()
+            val (storedDigestSeconds, firstDayOfWeek) = PlatformStuff.mainPrefs.data
+                .map { it.digestSeconds to it.firstDayOfWeek }.first()
 
             val digestSeconds = storedDigestSeconds ?: (60..(30 * 60)).random()
 
@@ -175,7 +166,9 @@ class DigestWorker(
             val now = System.currentTimeMillis()
 
             val cal = Calendar.getInstance()
-            cal.setDigestFirstDayOfWeek()
+            if (firstDayOfWeek in Calendar.SUNDAY..Calendar.SATURDAY)
+                cal.firstDayOfWeek = firstDayOfWeek
+
             cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
 
             cal.setMidnight()
@@ -209,19 +202,6 @@ class DigestWorker(
 
 
             return nextWeek to nextMonth
-        }
-
-        private suspend fun Calendar.setDigestFirstDayOfWeek(): Calendar {
-            val lastDayOfWeek = PlatformStuff.mainPrefs.data.map { it.digestWeekday }.first()
-            if (lastDayOfWeek >= Calendar.SUNDAY) {
-                // SATURDAY = 7; rollover to SUNDAY
-                firstDayOfWeek = if (lastDayOfWeek == Calendar.SATURDAY) {
-                    Calendar.SUNDAY
-                } else
-                    lastDayOfWeek + 1
-            }
-            // else auto
-            return this
         }
     }
 }

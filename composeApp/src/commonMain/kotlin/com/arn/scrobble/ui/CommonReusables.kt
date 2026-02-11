@@ -75,6 +75,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -101,6 +102,7 @@ import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
@@ -125,6 +127,8 @@ import pano_scrobbler.composeapp.generated.resources.retry
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.yes
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.abs
 
 @Composable
@@ -816,6 +820,29 @@ fun YesNoDropdown(
                 onDismissRequest()
             },
         )
+    }
+}
+
+@Composable
+fun rememberLocaleWithCustomWeekday(): Locale {
+    val currentLocale = LocalLocale.current.platformLocale
+    val firstWeekDay by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
+    return remember {
+        val firstWeekDayStr = when (firstWeekDay) {
+            Calendar.SUNDAY -> "sun"
+            Calendar.MONDAY -> "mon"
+            Calendar.TUESDAY -> "tue"
+            Calendar.WEDNESDAY -> "wed"
+            Calendar.THURSDAY -> "thu"
+            Calendar.FRIDAY -> "fri"
+            Calendar.SATURDAY -> "sat"
+            else -> return@remember currentLocale
+        }
+
+        Locale.Builder()
+            .setLocale(currentLocale)
+            .setUnicodeLocaleKeyword("fw", firstWeekDayStr)
+            .build()
     }
 }
 

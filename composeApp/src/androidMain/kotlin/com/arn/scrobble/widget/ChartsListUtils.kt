@@ -5,15 +5,10 @@ import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import com.arn.scrobble.R
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.navigation.DeepLinkUtils
-import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 
 object ChartsListUtils {
 
@@ -92,20 +87,6 @@ object ChartsListUtils {
         rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
 
         return rv
-    }
-
-    fun readList(prefs: SpecificWidgetPrefs): List<ChartsWidgetListItem> {
-        val tab = prefs.tab
-        val period = prefs.period
-
-        val chartsData = runBlocking {
-            AndroidStuff.widgetPrefs.data.map {
-                it.chartsData[period]?.get(tab)
-            }
-                .first()
-        } ?: emptyList()
-
-        return chartsData
     }
 
     fun updateWidgets(appWidgetIds: IntArray) {

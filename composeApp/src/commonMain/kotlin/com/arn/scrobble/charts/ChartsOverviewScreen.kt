@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -87,20 +89,27 @@ import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.Stuff.format
 import com.kennycason.kumo.WordCloud
 import com.kennycason.kumo.WordFrequency
 import com.kennycason.kumo.bg.CircleBackground
 import com.kennycason.kumo.palette.LinearGradientColorPalette
 import com.kennycason.kumo.scale.LinearFontScalar
 import io.github.koalaplot.core.bar.DefaultBar
+import io.github.koalaplot.core.bar.DefaultBarPosition
+import io.github.koalaplot.core.bar.DefaultVerticalBarPlotEntry
 import io.github.koalaplot.core.bar.VerticalBarPlot
+import io.github.koalaplot.core.gestures.GestureConfig
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.XYGraph
-import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
+import io.github.koalaplot.core.xygraph.rememberAxisStyle
+import io.github.koalaplot.core.xygraph.rememberIntLinearAxisModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -121,8 +130,8 @@ import pano_scrobbler.composeapp.generated.resources.months
 import pano_scrobbler.composeapp.generated.resources.not_enough_data
 import pano_scrobbler.composeapp.generated.resources.num_albums
 import pano_scrobbler.composeapp.generated.resources.num_artists
+import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
 import pano_scrobbler.composeapp.generated.resources.num_tracks
-import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.spotify_consent
 import pano_scrobbler.composeapp.generated.resources.tag_cloud
 import pano_scrobbler.composeapp.generated.resources.tracks
@@ -148,6 +157,7 @@ fun ChartsOverviewScreen(
     val artistsCount by viewModel.artistCount.collectAsStateWithLifecycle()
     val albumsCount by viewModel.albumCount.collectAsStateWithLifecycle()
     val tracksCount by viewModel.trackCount.collectAsStateWithLifecycle()
+    val scrobblesCount by viewModel.scrobblesCount.collectAsStateWithLifecycle(0)
 
     val tagCloud by viewModel.tagCloud.collectAsStateWithLifecycle()
     val listeningActivity by viewModel.listeningActivity.collectAsStateWithLifecycle()
@@ -180,8 +190,17 @@ fun ChartsOverviewScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        onTitleChange(getString(Res.string.charts))
+    LaunchedEffect(scrobblesCount) {
+        if (scrobblesCount > 0)
+            onTitleChange(
+                getPluralString(
+                    Res.plurals.num_scrobbles_noti,
+                    scrobblesCount,
+                    scrobblesCount.format()
+                )
+            )
+        else
+            onTitleChange(getString(Res.string.charts))
     }
 
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, refreshCount: Int) {
@@ -533,7 +552,7 @@ private fun TagCloudContent(
     }
 }
 
-@OptIn(ExperimentalKoalaPlotApi::class)
+@OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun ListeningActivityContent(
     listeningActivity: ListeningActivity?,
@@ -548,7 +567,7 @@ private fun ListeningActivityContent(
     }
     val yData by remember(listeningActivity) {
         mutableStateOf(
-            listeningActivity?.timePeriodsToCounts?.values?.map { it.toFloat() }?.toList()
+            listeningActivity?.timePeriodsToCounts?.values?.toList()
                 ?: emptyList()
         )
     }
@@ -561,7 +580,7 @@ private fun ListeningActivityContent(
         else -> Res.string.charts_custom
     }
 
-    val yValuesMax by remember(yData) { mutableFloatStateOf(yData.maxOrNull() ?: 0f) }
+    val yValuesMax by remember(yData) { mutableIntStateOf(yData.maxOrNull() ?: 0) }
 
     val tintColor = MaterialTheme.colorScheme.secondary
 
@@ -605,22 +624,45 @@ private fun ListeningActivityContent(
                 if (listeningActivity.timePeriodsToCounts.isNotEmpty()) {
                     XYGraph(
                         xAxisModel = remember(xData) { CategoryAxisModel(xData) },
-                        yAxisModel = rememberFloatLinearAxisModel(
-                            range = 0f..1.2f * yValuesMax,
-                            minViewExtent = 1f,
-                            maxViewExtent = 1.2f * yValuesMax,
+                        yAxisModel = rememberIntLinearAxisModel(
+                            range = 0..(1.2 * yValuesMax).toInt(),
+                            minViewExtent = 1,
+                            maxViewExtent = (1.2 * yValuesMax).toInt(),
                             minorTickCount = 0,
                         ),
-                        yAxisTitle = stringResource(Res.string.scrobbles),
-                        yAxisLabels = { it.toInt().toString() },
-                        xAxisTitle = stringResource(typeStringRes),
-                        xAxisLabels = { it.name },
+                        xAxisContent = AxisContent(
+                            labels = { AxisLabel(it.name) },
+                            title = {
+                                Text(
+                                    stringResource(typeStringRes),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            },
+                            style = rememberAxisStyle()
+                        ),
+                        yAxisContent = AxisContent(
+                            labels = { AxisLabel(it.toString()) },
+                            title = {},
+                            style = rememberAxisStyle(labelRotation = 90)
+                        ),
+                        gestureConfig = remember { GestureConfig() },
                         modifier = Modifier
-                            .width(max(minWidth, (xData.size * 24).dp))
+                            .width(max(minWidth, (xData.size * 24).dp)),
                     ) {
+                        val data = remember(xData, yData) {
+                            xData
+                                .zip(yData)
+                                .map { (xd, yd) ->
+                                    DefaultVerticalBarPlotEntry(
+                                        xd,
+                                        DefaultBarPosition(0, yd)
+                                    )
+                                }
+                        }
+
                         VerticalBarPlot(
-                            xData = xData,
-                            yData = yData,
+                            data = data,
                             bar = { series, index, value ->
                                 val currentYValue = value.y.end
                                 val fontSizeDp = with(density) {
@@ -638,7 +680,7 @@ private fun ListeningActivityContent(
                                 )
 
                                 Text(
-                                    currentYValue.toInt().toString(),
+                                    currentYValue.toString(),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.secondary,
                                     maxLines = 1,
@@ -660,6 +702,20 @@ private fun ListeningActivityContent(
         }
         OptionalHorizontalScrollbar(scrollState)
     }
+}
+
+@Composable
+private fun AxisLabel(
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        label,
+        color = MaterialTheme.colorScheme.onBackground,
+        style = MaterialTheme.typography.bodySmall,
+        modifier = modifier,
+        maxLines = 1,
+    )
 }
 
 private fun generateTagCloud(

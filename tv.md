@@ -16,7 +16,7 @@ Android Go.
   already: [developer.android.com/studio/releases/platform-tools](https://developer.android.com/studio/releases/platform-tools)
 
 
-- Open a terminal, nagivate to the folder which contains adb and type
+- Open a terminal, navigate to the folder which contains adb and type
 
 ```
     adb connect  <ip address of your TV>

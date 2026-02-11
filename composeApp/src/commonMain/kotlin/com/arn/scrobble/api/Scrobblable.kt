@@ -67,7 +67,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         page: Int,
         username: String = userAccount.user.name,
         cacheStrategy: CacheStrategy = CacheStrategy.CACHE_FIRST,
-        limit: Int = if (timePeriod.lastfmPeriod != null || timePeriod.tag != null) 50 else -1,
+        limit: Int = if (timePeriod.lastfmPeriod != null || timePeriod.listenBrainzRange != null) 50 else -1,
     ): Result<PageResult<out MusicEntry>>
 
     abstract suspend fun getListeningActivity(
@@ -84,7 +84,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
         page: Int,
         username: String = userAccount.user.name,
         networkOnly: Boolean = false,
-        limit: Int = if (timePeriod.lastfmPeriod != null) 50 else -1,
+        limit: Int = if (timePeriod.lastfmPeriod != null || timePeriod.listenBrainzRange != null) 50 else -1,
     ): Result<PageResult<out MusicEntry>> {
         Logger.i { this::getChartsWithStonks.name + " $type timePeriod: $timePeriod prevTimePeriod: $prevTimePeriod" }
 

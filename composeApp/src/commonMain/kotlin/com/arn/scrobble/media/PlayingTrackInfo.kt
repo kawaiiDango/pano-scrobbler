@@ -45,7 +45,7 @@ class PlayingTrackInfo(
     var artUrl: String? = null
         private set
 
-    var trackId: String? = null
+    var normalizedUrlHost: String? = null
         private set
 
     private var msid: String? = null
@@ -87,7 +87,7 @@ class PlayingTrackInfo(
         album: String,
         albumArtist: String,
         durationMillis: Long,
-        trackId: String?,
+        normalizedUrlHost: String?,
         artUrl: String?,
         extraData: Map<String, String> = emptyMap(),
     ) {
@@ -102,7 +102,7 @@ class PlayingTrackInfo(
 
         this.durationMillis = durationMillis
         hash = Objects.hash(albumArtist, artist, album, title, appId, uniqueId)
-        this.trackId = trackId
+        this.normalizedUrlHost = normalizedUrlHost
 
         this.artUrl = artUrl
 

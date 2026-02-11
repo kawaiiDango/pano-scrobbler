@@ -19,11 +19,10 @@ val Icons.MusicNote: ImageVector
             viewportHeight = 960f
         ).apply {
             path(fill = SolidColor(Color.Black)) {
-                moveTo(400f, 840f)
-                quadToRelative(-66f, 0f, -113f, -47f)
-                reflectiveQuadToRelative(-47f, -113f)
-                quadToRelative(0f, -66f, 47f, -113f)
-                reflectiveQuadToRelative(113f, -47f)
+                moveTo(287f, 793f)
+                quadToRelative(-47f, -47f, -47f, -113f)
+                reflectiveQuadToRelative(47f, -113f)
+                quadToRelative(47f, -47f, 113f, -47f)
                 quadToRelative(23f, 0f, 42.5f, 5.5f)
                 reflectiveQuadTo(480f, 542f)
                 verticalLineToRelative(-382f)
@@ -39,6 +38,7 @@ val Icons.MusicNote: ImageVector
                 verticalLineToRelative(400f)
                 quadToRelative(0f, 66f, -47f, 113f)
                 reflectiveQuadToRelative(-113f, 47f)
+                quadToRelative(-66f, 0f, -113f, -47f)
                 close()
             }
         }.build()

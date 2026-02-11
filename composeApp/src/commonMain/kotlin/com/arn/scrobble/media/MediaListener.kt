@@ -142,8 +142,8 @@ abstract class MediaListener(
                     album = metadata.album,
                     albumArtist = metadata.albumArtist,
                     durationMillis = metadata.duration,
-                    trackId = metadata.trackId.ifEmpty { null },
-                    artUrl = metadata.artUrl.ifEmpty { null },
+                    normalizedUrlHost = metadata.normalizedUrlHost,
+                    artUrl = metadata.artUrl,
                 )
 
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlaybackState == CommonPlaybackState.Playing)

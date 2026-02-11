@@ -30,15 +30,22 @@ class ChartsWidgetProvider : AppWidgetProvider() {
         // There may be multiple widgets active, so update all of them
         appWidgetIds.forEach { appWidgetId ->
             val specificWidgetPrefs = prefs.widgets[appWidgetId] ?: return
-            val chartsData =
-                prefs.chartsData[specificWidgetPrefs.period]?.get(specificWidgetPrefs.tab)
+            val chartsData = prefs.charts[specificWidgetPrefs.period]
+            val specificChartsData = when (specificWidgetPrefs.tab) {
+                Stuff.TYPE_ARTISTS -> chartsData?.artists
+                Stuff.TYPE_ALBUMS -> chartsData?.albums
+                Stuff.TYPE_TRACKS -> chartsData?.tracks
+                else -> null
+            }
+            val timePeriodString = chartsData?.timePeriodString
 
             updateAppWidget(
                 context,
                 appWidgetManager,
                 appWidgetId,
                 specificWidgetPrefs,
-                chartsData,
+                specificChartsData,
+                timePeriodString
             )
         }
     }
@@ -92,7 +99,8 @@ internal fun updateAppWidget(
     appWidgetManager: AppWidgetManager,
     appWidgetId: Int,
     prefs: SpecificWidgetPrefs,
-    chartsData: List<ChartsWidgetListItem>?,
+    specificChartsData: List<ChartsWidgetListItem>?,
+    timePeriodString: String?,
     scrollToTop: Boolean = false,
 ) {
 
@@ -107,15 +115,13 @@ internal fun updateAppWidget(
 
     val rv = RemoteViews(context.packageName, layoutId)
 
-    val periodName = WidgetTimePeriods().toTimePeriod(prefs.period).name
-
     val items = RemoteViewsCompat.RemoteCollectionItems.Builder().apply {
         setHasStableIds(true)
         setViewTypeCount(2)
-        addItem(0, ChartsListUtils.createHeader(periodName))
+        addItem(0, ChartsListUtils.createHeader(timePeriodString ?: ""))
 
-        ChartsListUtils.readList(prefs)
-            .forEachIndexed { i, item ->
+        specificChartsData
+            ?.forEachIndexed { i, item ->
                 addItem(
                     item.hashCode().toLong(),
                     ChartsListUtils.createMusicItem(tab, i, item)
@@ -130,11 +136,11 @@ internal fun updateAppWidget(
     if (scrollToTop)
         rv.setScrollPosition(R.id.appwidget_list, 0)
 
-    if (chartsData == null)
+    if (specificChartsData == null)
         rv.setInt(R.id.appwidget_status, "setText", R.string.appwidget_loading)
     else {
         val text = context.getString(R.string.charts_no_data) + "\n\n" +
-                periodName
+                timePeriodString
         rv.setTextViewText(R.id.appwidget_status, text)
     }
 

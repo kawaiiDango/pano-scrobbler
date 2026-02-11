@@ -7,14 +7,14 @@ data class SessionInfo(
 )
 
 data class MetadataInfo(
-    val trackId: String,
     val title: String,
     val artist: String,
     val album: String,
     val albumArtist: String,
     val trackNumber: Int,
     val duration: Long,
-    val artUrl: String,
+    val artUrl: String?,
+    val normalizedUrlHost: String?,
 )
 
 data class PlaybackInfo(

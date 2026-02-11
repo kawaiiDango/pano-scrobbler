@@ -624,7 +624,6 @@ fun LazyListScope.scrobblesListItems(
     tracks: LazyPagingItems<TrackWrapper>,
     user: UserCached,
     pkgMap: Map<Long, String>,
-    seenApps: Map<String, String>,
     fetchAlbumImageIfMissing: Boolean,
     showScrobbleSources: Boolean,
     canLove: Boolean,
@@ -668,7 +667,7 @@ fun LazyListScope.scrobblesListItems(
                 if (showScrobbleSources) {
                     track.date
                         ?.let { track.appId ?: pkgMap[it] }
-                        ?.let { AppItem(it, seenApps[it] ?: "") }
+                        ?.let { AppItem(it, PlatformStuff.loadApplicationLabel(it)) }
                 } else
                     null
             }
@@ -804,7 +803,6 @@ fun LazyListScope.pendingScrobblesListItems(
     headerIcon: ImageVector,
     items: List<PendingScrobble>,
     showScrobbleSources: Boolean,
-    seenApps: Map<String, String>,
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
     onItemClick: (MusicEntry) -> Unit,
@@ -843,7 +841,7 @@ fun LazyListScope.pendingScrobblesListItems(
         var menuVisible by remember { mutableStateOf(false) }
         val appItem = remember(item) {
             if (showScrobbleSources)
-                item.scrobbleData.appId?.let { AppItem(it, seenApps[it] ?: "") }
+                item.scrobbleData.appId?.let { AppItem(it, PlatformStuff.loadApplicationLabel(it)) }
             else null
         }
 

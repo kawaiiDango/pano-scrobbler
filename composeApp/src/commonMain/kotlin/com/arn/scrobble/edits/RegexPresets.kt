@@ -76,6 +76,7 @@ object RegexPresets {
     @Throws(TitleParseException::class)
     suspend fun applyAllPresets(
         scrobbleData: ScrobbleData,
+        normalizedUrlHost: String?,
         dataIsEdited: Boolean
     ): RegexPresetsResult? {
         var newScrobbleData: ScrobbleData? = null
@@ -89,6 +90,7 @@ object RegexPresets {
             .forEach { preset ->
                 val sd = applyPreset(
                     newScrobbleData ?: scrobbleData,
+                    normalizedUrlHost,
                     preset,
                     PlatformStuff.mainPrefs.data.map { it.getRegexPresetApps(preset) }.first()
                 )
@@ -110,6 +112,7 @@ object RegexPresets {
 
     private fun applyPreset(
         scrobbleData: ScrobbleData,
+        normalizedUrlHost: String?,
         regexPreset: RegexPreset,
         regexPresetsApps: Set<String>,
     ): ScrobbleData? {
@@ -202,32 +205,33 @@ object RegexPresets {
             RegexPreset.single_ep -> {
                 val pattern = " - (Single|EP)$"
                 val replacement = ""
-
-                regexEdits += RegexEdit(
-                    name = regexPreset.name,
-                    search = RegexEdit.SearchPatterns(
-                        searchTrack = "",
-                        searchAlbum = pattern,
-                        searchArtist = "",
-                        searchAlbumArtist = "",
-                    ),
-                    replacement = RegexEdit.ReplacementPatterns(
-                        replacementTrack = "",
-                        replacementAlbum = replacement,
-                        replacementArtist = "",
-                        replacementAlbumArtist = "",
-                    ),
-                    appIds = setOf(
-                        Stuff.PACKAGE_APPLE_MUSIC,
-                        Stuff.PACKAGE_CIDER_LINUX,
-                        Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE,
-                        Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
-                            .let { (first, second) -> first + "!" + second.uppercase() },
-                        Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
-                            .let { (first, second) -> first + "!" + second.lowercase() },
-                        Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE
-                    )
+                val appIds = setOf(
+                    Stuff.PACKAGE_APPLE_MUSIC,
+                    Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE,
+                    Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
+                        .let { (first, second) -> first + "!" + second.uppercase() },
+                    Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
+                        .let { (first, second) -> first + "!" + second.lowercase() },
+                    Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE
                 )
+
+                if (scrobbleData.appId in appIds || normalizedUrlHost == Stuff.HOST_APPLE_MUSIC) {
+                    regexEdits += RegexEdit(
+                        name = regexPreset.name,
+                        search = RegexEdit.SearchPatterns(
+                            searchTrack = "",
+                            searchAlbum = pattern,
+                            searchArtist = "",
+                            searchAlbumArtist = "",
+                        ),
+                        replacement = RegexEdit.ReplacementPatterns(
+                            replacementTrack = "",
+                            replacementAlbum = replacement,
+                            replacementArtist = "",
+                            replacementAlbumArtist = "",
+                        )
+                    )
+                }
             }
 
             RegexPreset.explicit -> {

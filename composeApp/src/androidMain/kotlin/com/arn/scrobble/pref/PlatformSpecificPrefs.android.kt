@@ -11,7 +11,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.arn.scrobble.MasterSwitchQS
@@ -28,10 +27,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.fix_it_desc
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
-import pano_scrobbler.composeapp.generated.resources.pref_digests_on_weekday
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
@@ -41,8 +38,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_widget_charts
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import pano_scrobbler.composeapp.generated.resources.scrobbler_on
 import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
-import java.util.Calendar
-import java.util.Locale
 
 actual object PlatformSpecificPrefs {
     actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
@@ -200,43 +195,6 @@ actual object PlatformSpecificPrefs {
                     } else
                         copy(scrobblerEnabled = it)
                 }
-            )
-        }
-    }
-
-    actual fun prefDigestWeekDay(
-        listScope: LazyListScope,
-        digestWeekday: Int
-    ) {
-        listScope.item(MainPrefs::digestWeekday.name) {
-            val autoString = stringResource(Res.string.auto)
-
-            val valuesToDays = remember {
-                val cal = Calendar.getInstance()
-
-                var autoDayName = ""
-
-                val days = cal.getDisplayNames(
-                    Calendar.DAY_OF_WEEK,
-                    Calendar.LONG,
-                    Locale.getDefault()
-                )!!
-                    .map { (k, v) ->
-                        if (v == cal.firstDayOfWeek)
-                            autoDayName = k
-                        v to k
-                    }
-                    .toMap()
-
-                (days + (-1 to "$autoString: $autoDayName")).toSortedMap()
-            }
-
-            DropdownPref(
-                text = stringResource(Res.string.pref_digests_on_weekday),
-                selectedValue = digestWeekday,
-                values = valuesToDays.keys,
-                toLabel = { valuesToDays[it] ?: autoString },
-                copyToSave = { copy(digestWeekday = it) }
             )
         }
     }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
-import com.arn.scrobble.api.listenbrainz.ListenBrainzRanges
+import com.arn.scrobble.api.listenbrainz.ListenBrainzRange
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.toInverseMap
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlin.math.max
@@ -38,12 +39,19 @@ class ChartsPeriodVM(
         .combine(
             _customPeriodInput
         ) { periodType, customPeriod ->
+            periodType to customPeriod
+        }
+        .combine(
+            PlatformStuff.mainPrefs.data.map { it.firstDayOfWeek },
+        )
+        { (periodType, customPeriod), firstDayOfWeek ->
 
             val timePeriodsGenerator =
                 TimePeriodsGenerator(
                     user.registeredTime,
                     System.currentTimeMillis(),
-                    generateFormattedStrings = true
+                    firstDayOfWeek,
+                    generateFormattedStrings = true,
                 )
 
             val timePeriods = when (periodType) {
@@ -93,14 +101,14 @@ class ChartsPeriodVM(
             } else if (prevDigestPeriod != null && periodType.value == TimePeriodType.LISTENBRAINZ) {
                 digestPeriod = null
                 timePeriods.firstNotNullOfOrNull { (k, v) ->
-                    val tag = when (prevDigestPeriod) {
-                        LastfmPeriod.WEEK -> ListenBrainzRanges.week.name
-                        LastfmPeriod.MONTH -> ListenBrainzRanges.month.name
-                        LastfmPeriod.YEAR -> ListenBrainzRanges.year.name
+                    val listenBrainzPeriod = when (prevDigestPeriod) {
+                        LastfmPeriod.WEEK -> ListenBrainzRange.week
+                        LastfmPeriod.MONTH -> ListenBrainzRange.month
+                        LastfmPeriod.YEAR -> ListenBrainzRange.year
                         else -> null
                     }
 
-                    if (k.tag == tag) k else null
+                    if (k.listenBrainzRange == listenBrainzPeriod) k else null
                 }
             } else if (selectedPeriod !in timePeriods) {
                 timePeriods.firstNotNullOf { (k, v) -> k } // just select the first
@@ -115,14 +123,14 @@ class ChartsPeriodVM(
                 PlatformStuff.mainPrefs.updateData {
                     it.copy(
                         lastChartsPeriodType = _periodType.value!!,
-                        lastChartsLastfmPeriodSelected = period,
+                        lastChartsLastfmPeriod = period,
                         lastChartsCustomPeriod = _customPeriodInput.value
                     )
                 }
             } else if (_periodType.value == TimePeriodType.LISTENBRAINZ && period != null) {
                 PlatformStuff.mainPrefs.updateData {
                     it.copy(
-                        lastChartsListenBrainzPeriodSelected = period
+                        lastChartsListenBrainzPeriod = period
                     )
                 }
             }

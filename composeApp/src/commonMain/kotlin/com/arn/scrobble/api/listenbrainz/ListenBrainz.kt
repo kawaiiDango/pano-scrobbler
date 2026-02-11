@@ -453,7 +453,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             }
         }
 
-        val range = timePeriod.tag ?: "all_time"
+        val range = timePeriod.listenBrainzRange ?: "all_time"
         val actualLimit = if (limit > 0) limit else 25
 
         val typeStr = when (type) {
@@ -497,21 +497,21 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         cacheStrategy: CacheStrategy,
     ): ListeningActivity {
 
-        timePeriod.tag ?: return ListeningActivity()
+        timePeriod.listenBrainzRange ?: return ListeningActivity()
         val username = user?.name ?: userAccount.user.name
 
         val result =
             client.getResult<ListenBrainzActivityData>("stats/user/$username/listening-activity") {
-                parameter("range", timePeriod.tag)
+                parameter("range", timePeriod.listenBrainzRange)
                 cacheStrategy(cacheStrategy)
             }
 
-        val type = when (timePeriod.tag) {
-            ListenBrainzRanges.all_time.name -> TimePeriodType.YEAR
+        val type = when (timePeriod.listenBrainzRange) {
+            ListenBrainzRange.all_time -> TimePeriodType.YEAR
 
-            ListenBrainzRanges.year.name,
-            ListenBrainzRanges.this_year.name,
-            ListenBrainzRanges.half_yearly.name
+            ListenBrainzRange.year,
+            ListenBrainzRange.this_year,
+            ListenBrainzRange.half_yearly
                 -> TimePeriodType.MONTH
 
             else -> TimePeriodType.DAY
@@ -537,8 +537,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 TimePeriod(
                     it.from_ts,
                     it.to_ts,
-                    null,
-                    dateFormatter?.format(it.from_ts) ?: it.time_range
+                    name = dateFormatter?.format(it.from_ts) ?: it.time_range
                 ) to it.listen_count
             } ?: emptyMap()
 

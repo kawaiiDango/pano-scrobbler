@@ -67,6 +67,7 @@ object ScrobbleEverywhere {
 
     private suspend fun performEditsAndBlocks(
         scrobbleData: ScrobbleData,
+        trackUrlDomain: String?,
         runPresets: Boolean
     ): PreprocessResult {
         var scrobbleData = scrobbleData
@@ -121,6 +122,7 @@ object ScrobbleEverywhere {
             try {
                 val presetsResult = RegexPresets.applyAllPresets(
                     scrobbleData,
+                    trackUrlDomain,
                     simpleEditsApplied || regexEditsApplied
                 )
 
@@ -169,18 +171,21 @@ object ScrobbleEverywhere {
         )
     }
 
-    suspend fun preprocessMetadata(origScrobbleData: ScrobbleData): PreprocessResult {
+    suspend fun preprocessMetadata(
+        origScrobbleData: ScrobbleData,
+        trackUrlDomain: String?,
+    ): PreprocessResult {
 
         Logger.i { "preprocessMetadata " + origScrobbleData.artist + " - " + origScrobbleData.track }
 
-        val preprocessResult = performEditsAndBlocks(origScrobbleData, true)
+        val preprocessResult = performEditsAndBlocks(origScrobbleData, trackUrlDomain, true)
 
         if (preprocessResult.blockPlayerAction != null) return preprocessResult
 
         val preprocessResult2 =
             if (!preprocessResult.simpleEditsApplied && !preprocessResult.regexEditsApplied && preprocessResult.presetsApplied) {
                 // don't try to parse title again here
-                performEditsAndBlocks(preprocessResult.scrobbleData, false)
+                performEditsAndBlocks(preprocessResult.scrobbleData, trackUrlDomain, false)
             } else {
                 preprocessResult
             }
@@ -206,7 +211,6 @@ object ScrobbleEverywhere {
 
     suspend fun fetchAdditionalMetadata(
         scrobbleData: ScrobbleData,
-        trackId: String?,
         onNetworkRequestMade: suspend () -> Unit,
         fetchArtUrlOnly: Boolean = false
     ): AdditionalMetadataResult {
@@ -254,8 +258,6 @@ object ScrobbleEverywhere {
                 }
 
                 fetchMissingMetadataDeezer && (
-//                        scrobbleData.appId == Stuff.PACKAGE_DEEZER ||
-//                                scrobbleData.appId == Stuff.PACKAGE_DEEZER_TV ||
                         scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||
                                 scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN_EXE ||
                                 scrobbleData.appId.equals(
@@ -265,9 +267,6 @@ object ScrobbleEverywhere {
                         ) -> {
                     return fetchFromDeezer(
                         scrobbleData,
-                        trackId
-                            ?.takeIf { it.startsWith("0.") }
-                            ?.removePrefix("0."),
                         onNetworkRequestMade
                     )
                 }
@@ -545,38 +544,23 @@ object ScrobbleEverywhere {
 
     private suspend fun fetchFromDeezer(
         scrobbleData: ScrobbleData,
-        trackId: String?,
         onNetworkRequestMade: suspend () -> Unit,
     ): AdditionalMetadataResult {
-
-        // on android, the trackId is non-null and scrobbleData has the album
-        if (trackId != null && !scrobbleData.artist.contains(", ")) {
-            return AdditionalMetadataResult.Empty
-        }
-
-        val cacheKey = trackId ?: createCacheKey(scrobbleData.artist, scrobbleData.track)
+        val cacheKey = createCacheKey(scrobbleData.artist, scrobbleData.track)
         var track = deezerTracksCache[cacheKey]
 
         if (track == null) {
             onNetworkRequestMade()
-            track = if (trackId != null) {
-                Requesters.deezerRequester.lookupTrack(trackId.toLong())
-                    .onFailure {
-                        Logger.w(it) { "Failed to look up Deezer track" }
-                    }
-                    .getOrNull()
-            } else {
-                Requesters.deezerRequester.searchTrack(
-                    scrobbleData.artist,
-                    scrobbleData.track,
-                    limit = 5
-                ).onFailure {
-                    Logger.w(it) { "Failed to search Deezer for track" }
-                }.getOrNull()?.data?.firstOrNull {
-                    it.title.equals(scrobbleData.track, ignoreCase = true)
-                    // the album may be absent in scrobbleData, and the artist may contain multiple artists,
-                    // so we don't check them here
-                }
+            track = Requesters.deezerRequester.searchTrack(
+                scrobbleData.artist,
+                scrobbleData.track,
+                limit = 5
+            ).onFailure {
+                Logger.w(it) { "Failed to search Deezer for track" }
+            }.getOrNull()?.data?.firstOrNull {
+                it.title.equals(scrobbleData.track, ignoreCase = true)
+                // the album may be absent in scrobbleData, and the artist may contain multiple artists,
+                // so we don't check them here
             }
         }
 

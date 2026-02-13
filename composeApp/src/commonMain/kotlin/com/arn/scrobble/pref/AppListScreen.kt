@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -373,60 +372,60 @@ private fun AppListItem(
     modifier: Modifier = Modifier,
     forShimmer: Boolean = false,
 ) {
-    Row(
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = if (isSelected) 8.dp else 0.dp,
         modifier = modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
             .toggleable(
                 value = isSelected,
                 onValueChange = onToggle
             )
-            .then(
-                if (isSelected)
-                    Modifier.background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
-                else
-                    Modifier
-            )
-            .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding()),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        AppIcon(
-            appItem = appItem,
+        Row(
             modifier = Modifier
-                .size(32.dp)
-                .backgroundForShimmer(forShimmer)
-        )
+                .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding()),
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .backgroundForShimmer(forShimmer)
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = appItem?.friendlyLabel ?: "",
-                maxLines = 1,
+            AppIcon(
+                appItem = appItem,
+                modifier = Modifier
+                    .size(32.dp)
+                    .backgroundForShimmer(forShimmer)
             )
 
-            if (showAppId) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .backgroundForShimmer(forShimmer)
+            ) {
                 Text(
-                    text = appItem?.appId ?: "",
-                    style = MaterialTheme.typography.bodySmall,
+                    text = appItem?.friendlyLabel ?: "",
                     maxLines = 1,
                 )
-            }
-        }
 
-        if (isSingleSelect) {
-            RadioButton(
-                selected = isSelected,
-                onClick = null
-            )
-        } else {
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = null
-            )
+                if (showAppId) {
+                    Text(
+                        text = appItem?.appId ?: "",
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                    )
+                }
+            }
+
+            if (isSingleSelect) {
+                RadioButton(
+                    selected = isSelected,
+                    onClick = null
+                )
+            } else {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = null
+                )
+            }
         }
     }
 }

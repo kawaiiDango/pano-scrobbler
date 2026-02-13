@@ -8,7 +8,7 @@ import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.utils.AndroidStuff
 
 
-enum class WidgetPeriods {
+enum class WidgetPeriod {
     THIS_WEEK,
     WEEK,
     THIS_MONTH,

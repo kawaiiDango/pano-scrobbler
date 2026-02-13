@@ -335,9 +335,6 @@
     <string name="not_enough_data"
         comment="(not enough data to draw a chart etc)"
         >Not enough data</string>
-    <string name="random"
-        comment="Displays a random scrobble or a loved track of the user"
-        >I'm feeling lucky</string>
     <string name="random_not_found">No track found</string>
     <string name="loved_track">Loved track</string>
     <string name="random_text">Random</string>

@@ -30,14 +30,10 @@ import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.redactedMessage
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.DateFormat
 import java.util.Calendar
@@ -56,6 +52,8 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
     // runs in Dispatchers.DEFAULT
     override suspend fun doWork(): Result {
+        Stuff.initializeMainPrefsCache()
+
         // not logged in
         val scrobblable = Scrobblables.current
             ?: return Result.failure(
@@ -92,113 +90,113 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
         var errorData: Data? = null
 
-        val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-            throwable.printStackTrace()
-            logTimestampToFile("errored " + throwable.redactedMessage)
-            errorData = Data.Builder()
-                .putString("reason", throwable.redactedMessage)
-                .build()
-        }
+        val periodToIds = mutableMapOf<WidgetPeriod, MutableList<Int>>()
 
-        withContext(exHandler) {
-            // support a max of 3 periods
-            widgetPrefs.widgets
-                .values
-                .map { it.period }
-                .toSet()
-                .take(3)
-                .mapConcurrently(3) { period ->
-                    val timePeriod = period.toTimePeriod(firstDayOfWeek)
-                    val cal = Calendar.getInstance()
-                    cal.setMidnight()
-                    if (firstDayOfWeek in Calendar.SUNDAY..Calendar.SATURDAY)
-                        cal.firstDayOfWeek = firstDayOfWeek
+        widgetPrefs.widgets
+            .filter { (id, pref) -> id in appWidgetIds }
+            .forEach { (id, pref) ->
+                periodToIds.getOrPut(pref.period) { mutableListOf() }.add(id)
+            }
 
-                    val prevTimeLastfmPeriod =
-                        if (timePeriod.lastfmPeriod != null && timePeriod.lastfmPeriod != LastfmPeriod.OVERALL) {
-                            val duration =
-                                timePeriod.lastfmPeriod.toDuration(endTime = cal.timeInMillis)
-                            timePeriod.lastfmPeriod.toTimePeriod(endTime = cal.timeInMillis - duration)
+        // support a max of 3 periods
+        periodToIds
+            .asSequence()
+            .take(3)
+            .forEach { (period, ids) ->
+                val timePeriod = period.toTimePeriod(firstDayOfWeek)
+                val cal = Calendar.getInstance()
+                cal.setMidnight()
+                if (firstDayOfWeek in Calendar.SUNDAY..Calendar.SATURDAY)
+                    cal.firstDayOfWeek = firstDayOfWeek
 
-                        } else {
-                            cal.timeInMillis = timePeriod.start
+                val prevTimeLastfmPeriod =
+                    if (timePeriod.lastfmPeriod != null && timePeriod.lastfmPeriod != LastfmPeriod.OVERALL) {
+                        val duration =
+                            timePeriod.lastfmPeriod.toDuration(endTime = cal.timeInMillis)
+                        timePeriod.lastfmPeriod.toTimePeriod(endTime = cal.timeInMillis - duration)
 
-                            when (period) {
-                                WidgetPeriods.THIS_WEEK -> cal.add(Calendar.WEEK_OF_YEAR, -1)
-                                WidgetPeriods.THIS_MONTH -> cal.add(Calendar.MONTH, -1)
-                                WidgetPeriods.THIS_YEAR -> cal.add(Calendar.YEAR, -1)
-                                else -> null
-                            }?.let {
-                                TimePeriod(cal.timeInMillis, timePeriod.start)
-                            }
+                    } else {
+                        cal.timeInMillis = timePeriod.start
+
+                        when (period) {
+                            WidgetPeriod.THIS_WEEK -> cal.add(Calendar.WEEK_OF_YEAR, -1)
+                            WidgetPeriod.THIS_MONTH -> cal.add(Calendar.MONTH, -1)
+                            WidgetPeriod.THIS_YEAR -> cal.add(Calendar.YEAR, -1)
+                            else -> null
+                        }?.let {
+                            TimePeriod(cal.timeInMillis, timePeriod.start)
                         }
-
-                    var noData = false
-
-                    val (artists, albums, tracks) = listOf(
-                        Stuff.TYPE_ARTISTS,
-                        Stuff.TYPE_ALBUMS,
-                        Stuff.TYPE_TRACKS
-                    ).map { type ->
-                        if (noData) {
-                            return@map kotlin.Result.success(emptyList())
-                        }
-
-                        scrobblable.getChartsWithStonks(
-                            type,
-                            timePeriod,
-                            prevTimeLastfmPeriod,
-                            1,
-                            limit = 50
-                        )
-                            .onSuccess {
-                                if (type != Stuff.TYPE_ALBUMS && it.entries.isEmpty()) {
-                                    noData = true
-                                }
-                            }.onFailure {
-                                throw it
-                            }
-                            .map { pr ->
-                                pr.entries.map {
-                                    val subtitle = when (it) {
-                                        is Album -> it.artist!!.name
-                                        is Track -> it.artist.name
-                                        else -> null
-                                    }
-
-                                    val imgUrl = if (it is Album) it.webp300 else null
-
-                                    ChartsWidgetListItem(
-                                        it.name,
-                                        subtitle,
-                                        it.playcount?.toInt() ?: 0,
-                                        imgUrl ?: "",
-                                        it.stonksDelta
-                                    )
-                                }
-                            }
                     }
 
-                    AndroidStuff.widgetPrefs.updateData {
-                        val chartsData = it.charts.toMutableMap()
-                        val chartsDataForPeriod = chartsData[period]
-                        chartsData[period] = WidgetPrefs.ChartsData(
-                            artists = artists.getOrElse { chartsDataForPeriod?.artists.orEmpty() },
-                            albums = albums.getOrElse { chartsDataForPeriod?.albums.orEmpty() },
-                            tracks = tracks.getOrElse { chartsDataForPeriod?.tracks.orEmpty() },
-                            timePeriodString = timePeriod.name
-                        )
+                var noData = false
 
-                        it.copy(charts = chartsData, lastFetched = System.currentTimeMillis())
+                val (artists, albums, tracks) = listOf(
+                    Stuff.TYPE_ARTISTS,
+                    Stuff.TYPE_ALBUMS,
+                    Stuff.TYPE_TRACKS
+                ).map { type ->
+                    if (noData) {
+                        return@map kotlin.Result.success(emptyList())
                     }
+
+                    scrobblable.getChartsWithStonks(
+                        type,
+                        timePeriod,
+                        prevTimeLastfmPeriod,
+                        1,
+                        limit = 50
+                    )
+                        .onSuccess {
+                            if (type != Stuff.TYPE_ALBUMS && it.entries.isEmpty()) {
+                                noData = true
+                            }
+                        }.onFailure {
+                            it.printStackTrace()
+
+                            logTimestampToFile("errored " + it.redactedMessage)
+                            errorData = Data.Builder()
+                                .putString("reason", it.redactedMessage)
+                                .build()
+                        }
+                        .map { pr ->
+                            pr.entries.map {
+                                val subtitle = when (it) {
+                                    is Album -> it.artist!!.name
+                                    is Track -> it.artist.name
+                                    else -> null
+                                }
+
+                                val imgUrl = if (it is Album) it.webp300 else null
+
+                                ChartsWidgetListItem(
+                                    it.name,
+                                    subtitle,
+                                    it.playcount?.toInt() ?: 0,
+                                    imgUrl ?: "",
+                                    it.stonksDelta
+                                )
+                            }
+                        }
                 }
 
-            delay(1000) // wait for apply()
+                AndroidStuff.widgetPrefs.updateData {
+                    val chartsData = it.charts.toMutableMap()
+                    val chartsDataForPeriod = chartsData[period]
+                    chartsData[period] = WidgetPrefs.ChartsData(
+                        artists = artists.getOrElse { chartsDataForPeriod?.artists.orEmpty() },
+                        albums = albums.getOrElse { chartsDataForPeriod?.albums.orEmpty() },
+                        tracks = tracks.getOrElse { chartsDataForPeriod?.tracks.orEmpty() },
+                        timePeriodString = timePeriod.name
+                    )
 
-            ChartsListUtils.updateWidgets(appWidgetIds)
+                    it.copy(charts = chartsData, lastFetched = System.currentTimeMillis())
+                }
 
-            logTimestampToFile("finished")
-        }
+                ChartsListUtils.updateWidgets(ids.toIntArray())
+                logTimestampToFile("updated for period ${period.name}")
+            }
+
+        logTimestampToFile("finished")
 
         return if (errorData != null)
             Result.failure(errorData)
@@ -239,6 +237,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                     .setConstraints(constraintsBuilder.build())
                     .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     .setInputData(inputData)
+                    .addTag(NAME_ONE_TIME)
                     .build()
 
                 WorkManager.getInstance(context).enqueueUniqueWork(
@@ -264,6 +263,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                         .build()
                 )
                 .setInputData(inputData)
+                .addTag(NAME_PERIODIC)
                 .setInitialDelay(
                     Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS.toLong(),
                     TimeUnit.HOURS

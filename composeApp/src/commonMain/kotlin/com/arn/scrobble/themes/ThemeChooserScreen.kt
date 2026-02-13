@@ -52,6 +52,7 @@ import pano_scrobbler.composeapp.generated.resources.high
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.low
 import pano_scrobbler.composeapp.generated.resources.medium
+import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.system_colors
 
 @Composable
@@ -63,6 +64,7 @@ fun ThemeChooserScreen(
     var themeName: String? by rememberSaveable { mutableStateOf(null) }
     var dynamic: Boolean? by rememberSaveable { mutableStateOf(null) }
     var dayNightMode: DayNightMode? by rememberSaveable { mutableStateOf(null) }
+    var random: Boolean? by rememberSaveable { mutableStateOf(false) }
     var contrastMode: ContrastMode? by rememberSaveable { mutableStateOf(null) }
     val isAppInNightMode = LocalThemeAttributes.current.isDark
 
@@ -76,6 +78,7 @@ fun ThemeChooserScreen(
                                 themeName = themeName!!,
                                 themeDynamic = dynamic!!,
                                 themeDayNight = dayNightMode!!,
+                                themeRandom = random!!,
                                 themeContrast = contrastMode!!
                             )
                         }
@@ -92,6 +95,7 @@ fun ThemeChooserScreen(
                 themeName = it.themeName
                 dynamic = it.themeDynamic
                 dayNightMode = it.themeDayNight
+                random = it.themeRandom
                 contrastMode = it.themeContrast
             }
     }
@@ -164,6 +168,13 @@ fun ThemeChooserScreen(
                 onCheckedChange = { dynamic = it }
             )
         }
+
+        LabeledCheckbox(
+            text = stringResource(Res.string.random_text),
+            checked = random == true,
+            enabled = isLicenseValid,
+            onCheckedChange = { random = it }
+        )
     }
 }
 

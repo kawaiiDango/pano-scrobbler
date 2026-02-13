@@ -67,7 +67,6 @@ import kotlin.math.roundToInt
 object Stuff {
     const val SCROBBLER_PROCESS_NAME = "bgScrobbler"
     const val DEEPLINK_SCHEME = "pano-scrobbler"
-    const val ARG_TAB = "tab"
     const val PRO_PRODUCT_ID = "pscrobbler_pro"
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1

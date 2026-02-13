@@ -23,7 +23,6 @@ class ReschedulerReceiver : BroadcastReceiver() {
         if (PlatformStuff.isTv)
             return
 
-        // todo reschedule digest work here
-//        DigestWork.checkAndSchedule()
+        DigestWork.reschedule()
     }
 }

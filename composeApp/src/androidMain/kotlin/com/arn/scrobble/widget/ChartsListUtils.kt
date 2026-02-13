@@ -11,6 +11,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
 
 object ChartsListUtils {
+    const val EXTRA_TAB = "widget_tab"
 
     fun createHeader(periodName: String): RemoteViews {
         val headerView =

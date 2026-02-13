@@ -17,6 +17,10 @@ import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.VariantStuff
+import kotlin.math.abs
+import kotlin.random.Random
+
+private val randomNumberForProcess = abs(Random.nextInt())
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -28,6 +32,7 @@ fun AppTheme(
     val licenseState by VariantStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
     val themeName by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeName }
     val dynamic by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDynamic }
+    val random by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeRandom }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
     val isSystemInDarkTheme by isSystemInDarkThemeNative()
@@ -83,7 +88,10 @@ fun AppTheme(
         }
 
         else -> {
-            val theme = ThemeUtils.themeNameToObject(themeName)
+            val theme = if (random)
+                ThemeUtils.themesMap.values.toList()[randomNumberForProcess % ThemeUtils.themesMap.size]
+            else
+                ThemeUtils.themeNameToObject(themeName)
 
             getColorScheme(
                 theme = theme,

@@ -75,7 +75,8 @@ class ChartsWidgetProvider : AppWidgetProvider() {
 
             ids.filter { it != AppWidgetManager.INVALID_APPWIDGET_ID }
                 .forEach { appWidgetId ->
-                    val tab = intent.getIntExtra(Stuff.ARG_TAB, -1)
+                    val tab = intent.getIntExtra(ChartsListUtils.EXTRA_TAB, -1)
+
                     if (tab != -1) {
                         runBlocking {
                             AndroidStuff.widgetPrefs.updateData { prefs ->
@@ -163,21 +164,21 @@ internal fun updateAppWidget(
     tabIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     tabIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
 
-    tabIntent.putExtra(Stuff.ARG_TAB, Stuff.TYPE_ARTISTS)
+    tabIntent.putExtra(ChartsListUtils.EXTRA_TAB, Stuff.TYPE_ARTISTS)
     var tabIntentPending = PendingIntent.getBroadcast(
         context, Objects.hash(appWidgetId, 1), tabIntent,
         AndroidStuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_artists, tabIntentPending)
 
-    tabIntent.putExtra(Stuff.ARG_TAB, Stuff.TYPE_ALBUMS)
+    tabIntent.putExtra(ChartsListUtils.EXTRA_TAB, Stuff.TYPE_ALBUMS)
     tabIntentPending = PendingIntent.getBroadcast(
         context, Objects.hash(appWidgetId, 2), tabIntent,
         AndroidStuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_albums, tabIntentPending)
 
-    tabIntent.putExtra(Stuff.ARG_TAB, Stuff.TYPE_TRACKS)
+    tabIntent.putExtra(ChartsListUtils.EXTRA_TAB, Stuff.TYPE_TRACKS)
     tabIntentPending = PendingIntent.getBroadcast(
         context, Objects.hash(appWidgetId, 3), tabIntent,
         AndroidStuff.updateCurrentOrImmutable

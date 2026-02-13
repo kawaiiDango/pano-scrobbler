@@ -67,8 +67,8 @@ fun ChartsWidgetConfigScreen(
     var shadow by rememberSaveable { mutableStateOf(prefs.shadow) }
     val firstDayOfWeek by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
     val scrollState = rememberScrollState()
-    val widgetPeriods = remember {
-        WidgetPeriods.entries.associateWith {
+    val widgetPeriod = remember {
+        WidgetPeriod.entries.associateWith {
             it.toTimePeriod(firstDayOfWeek)
         }
     }
@@ -115,7 +115,7 @@ fun ChartsWidgetConfigScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    widgetPeriods.forEach { (thisPeriod, thisTimePeriod) ->
+                    widgetPeriod.forEach { (thisPeriod, thisTimePeriod) ->
                         FilterChip(
                             label = { Text(thisTimePeriod.name) },
                             selected = period == thisPeriod,
